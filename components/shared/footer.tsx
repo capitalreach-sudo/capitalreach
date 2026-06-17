@@ -1,0 +1,178 @@
+"use client";
+
+import Link from "next/link";
+
+const LINK_GROUPS: Record<string, [string, string][]> = {
+  Platform: [
+    ["Browse startups",   "/startups"],
+    ["Find investors",    "/investors"],
+    ["AI tools",          "/ai"],
+    ["Data centre",       "/data"],
+    ["Pricing",           "/pricing"],
+  ],
+  Founders: [
+    ["List your startup", "/auth/signup"],
+    ["How it works",      "/about#how-it-works"],
+    ["Pricing",           "/pricing#founders"],
+    ["Success stories",   "/about#stories"],
+  ],
+  Investors: [
+    ["Browse deals",      "/startups"],
+    ["AI matching",       "/ai#match"],
+    ["Due diligence",     "/ai#due-diligence"],
+    ["Plans",             "/pricing#investors"],
+  ],
+  Company: [
+    ["About",   "/about"],
+    ["Blog",    "/blog"],
+    ["Careers", "/careers"],
+    ["Contact", "/contact"],
+    ["Terms",   "/terms"],
+    ["Privacy", "/privacy"],
+  ],
+};
+
+const DiamondLogo = () => (
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+    <rect x="1" y="1" width="8" height="8" rx="1"
+      fill="none" stroke="#B5651D" strokeWidth="1.5"
+      transform="rotate(45 5 5)" />
+  </svg>
+);
+
+export function Footer() {
+  return (
+    <footer style={{ background: "#EDE8DE", borderTop: "1px solid rgba(26,22,18,0.15)" }}>
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-8">
+
+        {/* Row 1 — logo + link groups */}
+        <div className="flex flex-col lg:flex-row justify-between gap-10 mb-14">
+
+          {/* Brand */}
+          <div className="flex-shrink-0" style={{ maxWidth: "220px" }}>
+            <Link href="/" className="flex items-center gap-[10px] w-fit select-none" style={{ textDecoration: "none" }}>
+              <DiamondLogo />
+              <span style={{
+                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontWeight:    700,
+                fontSize:      "17px",
+                color:         "#1A1612",
+                letterSpacing: "-0.02em",
+              }}>
+                CapitalReach
+              </span>
+            </Link>
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 300,
+              fontSize:   "14px",
+              color:      "#6B6056",
+              lineHeight: 1.6,
+              marginTop:  "12px",
+            }}>
+              A private marketplace connecting founders raising capital with qualified investors deploying it.
+            </p>
+          </div>
+
+          {/* Link groups */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1 lg:max-w-[680px]">
+            {Object.entries(LINK_GROUPS).map(([heading, links]) => (
+              <div key={heading}>
+                <h4 style={{
+                  fontFamily:    "'DM Sans', sans-serif",
+                  fontWeight:    500,
+                  fontSize:      "11px",
+                  color:         "#9C8E82",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  marginBottom:  "16px",
+                }}>
+                  {heading}
+                </h4>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {links.map(([label, href]) => (
+                    <li key={label} style={{ marginBottom: "10px" }}>
+                      <Link
+                        href={href}
+                        style={{
+                          fontFamily:     "'DM Sans', sans-serif",
+                          fontWeight:     300,
+                          fontSize:       "14px",
+                          color:          "#6B6056",
+                          textDecoration: "none",
+                          display:        "block",
+                          transition:     "color 150ms ease",
+                        }}
+                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#1A1612")}
+                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#6B6056")}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <hr style={{ border: "none", borderTop: "1px solid rgba(26,22,18,0.1)", marginBottom: "32px" }} />
+
+        {/* Row 2 — copyright / legal / social */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize:   "12px",
+            color:      "#9C8E82",
+            flexShrink: 0,
+          }}>
+            © {new Date().getFullYear()} CapitalReach Ltd.
+          </p>
+
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize:   "11px",
+            color:      "#9C8E82",
+            textAlign:  "center",
+            maxWidth:   "360px",
+            lineHeight: 1.55,
+          }}>
+            Not a registered broker-dealer or investment adviser.
+            The 2% success fee is charged only after a funding round closes.
+          </p>
+
+          <div className="flex items-center gap-5 flex-shrink-0">
+            {([
+              ["Twitter",   "https://twitter.com"],
+              ["LinkedIn",  "https://linkedin.com"],
+              ["AngelList", "https://angel.co"],
+            ] as [string, string][]).map(([label, href]) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily:     "'DM Sans', sans-serif",
+                  fontWeight:     300,
+                  fontSize:       "12px",
+                  color:          "#9C8E82",
+                  textDecoration: "none",
+                  transition:     "color 150ms ease",
+                }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </footer>
+  );
+}
