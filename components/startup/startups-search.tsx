@@ -366,7 +366,7 @@ export function StartupsSearch() {
                   {sortLabel} <ChevronDown style={{ width: 13, height: 13 }} />
                 </button>
                 {sortOpen && (
-                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 30 }}>
+                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
                     {SORT_OPTIONS.map((o) => (
                       <button key={o.value} onClick={() => { patch({ sort: o.value }); setSortOpen(false); }}
                         style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px" }}
