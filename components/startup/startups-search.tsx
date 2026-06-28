@@ -277,19 +277,16 @@ export function StartupsSearch() {
     async function load() {
       setLoading(true);
       try {
-        const { data } = await supabase
-          .from("startups")
-          .select("id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,featured,created_at,ai_score,vaultrise_score,country,business_model")
-          .eq("status", "active")
-          .order("created_at", { ascending: false });
-        setAllStartups((data as Startup[]) ?? []);
+        const res = await fetch("/api/startups/list");
+        const json = await res.json();
+        setAllStartups((json.startups as Startup[]) ?? []);
       } catch {
         setAllStartups([]);
       }
       setLoading(false);
     }
     load();
-  }, [supabase]);
+  }, []);
 
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
