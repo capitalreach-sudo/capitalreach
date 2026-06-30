@@ -40,7 +40,7 @@ interface Startup {
   industry: string; stage: string; funding_target: number;
   mrr: number | null; arr: number | null; growth_rate: number | null;
   runway_months: number | null; featured: boolean; created_at: string;
-  ai_score: number | null; vaultrise_score: number | null;
+  vaultrise_score: number | null;
   country: string | null; business_model: string | null;
 }
 
@@ -154,7 +154,7 @@ function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters:
 // ── Search result card ────────────────────────────────────────────────────────
 
 function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: (id: string) => void }) {
-  const score = s.ai_score ?? s.vaultrise_score ?? null;
+  const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
 
   return (
@@ -291,7 +291,7 @@ export function StartupsSearch() {
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
       const q     = filters.query.toLowerCase();
-      const score = s.ai_score ?? s.vaultrise_score ?? 0;
+      const score = s.vaultrise_score ?? 0;
       if (q && !s.name.toLowerCase().includes(q) && !s.tagline.toLowerCase().includes(q)) return false;
       if (filters.industries.length && !filters.industries.includes(s.industry)) return false;
       if (filters.stages.length && !filters.stages.includes(s.stage)) return false;
@@ -302,7 +302,7 @@ export function StartupsSearch() {
     });
 
     switch (filters.sort) {
-      case "score":   res = [...res].sort((a, b) => ((b.ai_score ?? b.vaultrise_score ?? 0) - (a.ai_score ?? a.vaultrise_score ?? 0))); break;
+      case "score":   res = [...res].sort((a, b) => ((b.vaultrise_score ?? 0) - (a.vaultrise_score ?? 0))); break;
       case "mrr":     res = [...res].sort((a, b) => (b.mrr ?? 0) - (a.mrr ?? 0)); break;
       case "recent":  res = [...res].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
       case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;

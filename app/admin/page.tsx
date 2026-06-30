@@ -24,10 +24,13 @@ export default async function AdminPage() {
 
   // Revenue approximation (in real app, query Stripe)
   const tierPrices: Record<string, number> = {
-    starter: 19,
-    growth: 49,
+    starter: 29,
+    growth: 79,
     angel: 99,
-    pro_investor: 299,
+    pro_investor: 249,
+    pro: 249,
+    institution: 0,
+    institutional: 0,
   };
   const startupMrr = (allStartups || []).reduce((sum, s) => sum + (tierPrices[s.subscription_tier] || 0), 0);
   const investorMrr = (allInvestors || []).reduce((sum, i) => sum + (tierPrices[i.subscription_tier] || 0), 0);

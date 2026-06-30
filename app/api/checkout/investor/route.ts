@@ -5,7 +5,7 @@ import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 const TIER_PRICES: Record<string, string> = {
   angel:        process.env.STRIPE_INVESTOR_ANGEL_PRICE_ID!,
   pro_investor: process.env.STRIPE_INVESTOR_PRO_PRICE_ID!,
-  institutional: process.env.STRIPE_INVESTOR_INSTITUTIONAL_PRICE_ID ?? "",
+  institutional: process.env.STRIPE_INVESTOR_INSTITUTIONAL_PRICE_ID ?? process.env.STRIPE_PRICE_INVESTOR_PRO_MONTHLY ?? "",
 };
 
 /** Platform is free until this many users have joined */

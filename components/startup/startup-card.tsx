@@ -64,7 +64,7 @@ function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionT
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface StartupCardProps {
-  startup:     Startup & { ai_score?: number | null };
+  startup:     Startup;
   investorTier?: SubscriptionTier | null;
   isSaved?:    boolean;
   onSave?:     (startupId: string) => void;
@@ -75,7 +75,7 @@ interface StartupCardProps {
 export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupCardProps) {
   const canSeeFinancials = canAccessFinancials(investorTier ?? null);
   const isNew            = daysSince(startup.created_at) <= 5;
-  const score            = startup.ai_score ?? startup.vaultrise_score ?? null;
+  const score            = startup.vaultrise_score ?? null;
 
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();

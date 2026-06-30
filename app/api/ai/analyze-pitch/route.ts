@@ -1,23 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { isOpenAIConfigured } from "@/lib/openai";
+import { aiRatelimit } from "@/lib/redis";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "sk-not-configured" });
-
-// In-memory rate limiter: 5 analyses per IP per hour
-const rateLimitMap = new Map<string, { count: number; reset: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.reset) {
-    rateLimitMap.set(ip, { count: 1, reset: now + 3_600_000 });
-    return true;
-  }
-  if (entry.count >= 5) return false;
-  entry.count++;
-  return true;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,10 +14,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-
-    if (!checkRateLimit(ip)) {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+    const { success } = await aiRatelimit.limit(ip);
+    if (!success) {
       return NextResponse.json(
         { error: "Rate limit reached (5/hour). Try again soon." },
         { status: 429 }
@@ -77,7 +62,6 @@ Return ONLY valid JSON with these EXACT keys — no commentary outside the JSON:
 
     const result = JSON.parse(response.choices[0].message.content!);
 
-    // Validate and clamp scores
     const clamp = (v: unknown) =>
       Math.min(100, Math.max(0, Math.round(Number(v) || 50)));
 
@@ -89,12 +73,8 @@ Return ONLY valid JSON with these EXACT keys — no commentary outside the JSON:
       team_score: clamp(result.team_score),
       traction_score: clamp(result.traction_score),
       verdict: String(result.verdict || "Promising"),
-      strengths: Array.isArray(result.strengths)
-        ? result.strengths.slice(0, 3)
-        : [],
-      improvements: Array.isArray(result.improvements)
-        ? result.improvements.slice(0, 3)
-        : [],
+      strengths: Array.isArray(result.strengths) ? result.strengths.slice(0, 3) : [],
+      improvements: Array.isArray(result.improvements) ? result.improvements.slice(0, 3) : [],
       key_insight: String(result.key_insight || ""),
     });
   } catch (err) {

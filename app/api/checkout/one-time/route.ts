@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const { amount, startupId, type } = await req.json();
   if (!amount || amount < 1) return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
 
-  const baseUrl = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   try {
     const session = await stripe.checkout.sessions.create({

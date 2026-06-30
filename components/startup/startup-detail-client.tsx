@@ -161,7 +161,7 @@ export function StartupDetailClient({
     else notify.error("Failed to send NDA");
   }
 
-  const score = (startup as any).ai_score ?? startup.vaultrise_score ?? null;
+  const score = startup.vaultrise_score ?? null;
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>

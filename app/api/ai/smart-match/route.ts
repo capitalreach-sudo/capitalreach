@@ -2,22 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { isOpenAIConfigured } from "@/lib/openai";
 import { createAdminClient } from "@/lib/supabase-server";
+import { aiRatelimit } from "@/lib/redis";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "sk-not-configured" });
-
-const rateLimitMap = new Map<string, { count: number; reset: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.reset) {
-    rateLimitMap.set(ip, { count: 1, reset: now + 3_600_000 });
-    return true;
-  }
-  if (entry.count >= 5) return false;
-  entry.count++;
-  return true;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,13 +16,13 @@ export async function POST(req: NextRequest) {
     }
 
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-    if (!checkRateLimit(ip)) {
+    const { success } = await aiRatelimit.limit(ip);
+    if (!success) {
       return NextResponse.json({ error: "Rate limit reached. Try again soon." }, { status: 429 });
     }
 
     const { industry, stage, mrr, description } = await req.json();
 
-    // Fetch real investors from the DB
     const supabase = createAdminClient();
     const { data: investors } = await supabase
       .from("investors")
@@ -51,7 +38,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ matches: [], message: "No investors in the database yet." });
     }
 
-    // Build a compact list for GPT (no PII beyond what's public)
     const investorList = investors.map((inv: any) => ({
       id: inv.id,
       slug: inv.slug,
@@ -107,7 +93,6 @@ Rules:
     const rawMatches: Array<{ investorId: string; matchScore: number; matchReason: string }> =
       Array.isArray(result.matches) ? result.matches : [];
 
-    // Validate: only return matches whose IDs actually exist in our list
     const investorMap = new Map(investorList.map((inv: any) => [inv.id, inv]));
     const validatedMatches = rawMatches
       .filter(m => investorMap.has(m.investorId))
@@ -126,7 +111,6 @@ Rules:
           geography: inv.geography,
           matchScore: m.matchScore,
           matchReason: m.matchReason,
-          // Initials for avatar
           initials: inv.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase(),
         };
       });
