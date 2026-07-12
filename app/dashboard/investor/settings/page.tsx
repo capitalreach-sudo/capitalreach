@@ -157,13 +157,25 @@ export default function InvestorSettingsPage() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
-      const { data } = await supabase.from("investors").select("*").eq("owner_id", user.id).single();
+      const [{ data }, { data: profile }] = await Promise.all([
+        supabase.from("investors").select("*").eq("owner_id", user.id).single(),
+        supabase.from("profiles").select("investor_type,portfolio_count,lead_investor,check_size_min,check_size_max,languages").eq("id", user.id).single(),
+      ]);
       if (data) {
         // Ensure arrays / json default properly
         data.industries = data.industries || [];
         data.stages = data.stages || [];
         data.geography = data.geography || [];
         data.portfolio_json = Array.isArray(data.portfolio_json) ? data.portfolio_json : [];
+        // Merge profile fields
+        if (profile) {
+          data.investor_type  = profile.investor_type;
+          data.portfolio_count = profile.portfolio_count;
+          data.lead_investor  = profile.lead_investor;
+          data.check_size_min = profile.check_size_min;
+          data.check_size_max = profile.check_size_max;
+          data.languages      = profile.languages || [];
+        }
       }
       setInvestor(data);
       setLoading(false);
@@ -211,6 +223,21 @@ export default function InvestorSettingsPage() {
         geography: investor.geography,
       })
       .eq("id", investor.id);
+
+    // Save new profile fields to profiles table
+    if (!error) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("profiles").update({
+          investor_type:    investor.investor_type || null,
+          portfolio_count:  investor.portfolio_count ? parseInt(investor.portfolio_count) : null,
+          lead_investor:    !!investor.lead_investor,
+          check_size_min:   investor.check_size_min ? parseFloat(investor.check_size_min) : null,
+          check_size_max:   investor.check_size_max ? parseFloat(investor.check_size_max) : null,
+          languages:        investor.languages?.length ? investor.languages : null,
+        }).eq("id", user.id);
+      }
+    }
 
     if (error) {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
@@ -446,6 +473,76 @@ export default function InvestorSettingsPage() {
                   tags={investor.geography || []}
                   onChange={tags => set("geography", tags)}
                   placeholder="United States, Europe, Global…"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Richer Profile Fields (Feature 3) ─────────────────────── */}
+          <div className="bg-cr-paper border rounded-2xl p-6">
+            <h2 className="font-semibold text-cr-ink mb-1">Profile Detail</h2>
+            <p className="text-xs text-cr-i3 mb-4">Shown publicly on your investor profile page.</p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Investor Type</Label>
+                  <select
+                    value={investor.investor_type || ""}
+                    onChange={e => set("investor_type", e.target.value)}
+                    className="w-full border rounded-md px-3 py-2 text-sm bg-background"
+                  >
+                    <option value="">Select…</option>
+                    {["Angel", "VC", "Family Office", "Corporate", "Syndicate"].map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>Portfolio Count</Label>
+                  <Input
+                    type="number"
+                    value={investor.portfolio_count ?? ""}
+                    onChange={e => set("portfolio_count", e.target.value)}
+                    placeholder="e.g. 12"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium text-sm text-cr-ink">Willing to Lead Rounds</p>
+                  <p className="text-xs text-cr-i3">Show a &quot;Leads rounds&quot; badge on your profile</p>
+                </div>
+                <Switch
+                  checked={!!investor.lead_investor}
+                  onCheckedChange={v => set("lead_investor", v)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Min Check Size ($)</Label>
+                  <Input
+                    type="number"
+                    value={investor.check_size_min ?? ""}
+                    onChange={e => set("check_size_min", e.target.value)}
+                    placeholder="10000"
+                  />
+                </div>
+                <div>
+                  <Label>Max Check Size ($)</Label>
+                  <Input
+                    type="number"
+                    value={investor.check_size_max ?? ""}
+                    onChange={e => set("check_size_max", e.target.value)}
+                    placeholder="500000"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="block mb-1.5">Languages Spoken</Label>
+                <TagInput
+                  tags={investor.languages || []}
+                  onChange={tags => set("languages", tags)}
+                  placeholder="English, German, French…"
                 />
               </div>
             </div>

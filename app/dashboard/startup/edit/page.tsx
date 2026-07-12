@@ -15,6 +15,9 @@ const BUSINESS_MODELS = ["B2B", "B2C", "B2B2C", "Marketplace", "SaaS", "Hardware
 const REVENUE_MODELS  = ["Subscription", "Usage-based", "One-time", "Freemium", "Commission", "Advertising", "Licensing", "Services", "Other"];
 const COMPANY_TYPES   = ["C-Corp", "LLC", "S-Corp", "PBC (Public Benefit Corp)", "Sole Proprietorship", "Not yet incorporated"];
 const TEAM_SIZES      = ["Solo founder", "2–5", "6–10", "11–25", "26–50", "51–100", "100+"];
+const DECK_LANGUAGES  = ["English", "German", "Both", "Other"];
+const LOOKING_FOR_OPTIONS = ["Capital", "Strategic investors", "Board member", "Mentorship", "Co-founder", "Customers"];
+const TARGET_MARKET_OPTIONS = ["Germany", "DACH", "Europe", "Global", "US", "UK", "Asia"];
 
 // ── Shared form element styles ────────────────────────────────────────────────
 
@@ -191,7 +194,14 @@ export default function EditStartupPage() {
       product_hunt_url: startup.product_hunt_url || null,
       twitter_url: startup.twitter_url || null,
       runway_months: parseInt(startup.runway_months) || null,
-      competitors_json: startup.competitors_json || [],
+      competitors_json:  startup.competitors_json || [],
+      target_markets:    startup.target_markets || null,
+      languages:         startup.languages || null,
+      previous_funding:  parseFloat(startup.previous_funding) || null,
+      lead_investor:     startup.lead_investor || null,
+      deck_language:     startup.deck_language || null,
+      video_pitch_url:   startup.video_pitch_url || null,
+      looking_for:       startup.looking_for || null,
       status: startup.status === "active" ? "pending_review" : startup.status,
     }).eq("id", startup.id);
 
@@ -353,11 +363,80 @@ export default function EditStartupPage() {
                 <Field label="Pitch Deck URL" hint="Or upload directly via the Document Manager">
                   <WarmInput value={startup.pitch_deck_url || ""} onChange={e => update("pitch_deck_url", e.target.value)} placeholder="https://docsend.com/…" />
                 </Field>
+                <Field label="Pitch Video URL (YouTube / Loom)" hint="Shown publicly on your profile">
+                  <WarmInput value={startup.video_pitch_url || ""} onChange={e => update("video_pitch_url", e.target.value)} placeholder="https://youtube.com/watch?v=… or loom.com/share/…" />
+                </Field>
                 <Field label="Demo Video URL (YouTube / Loom)">
                   <WarmInput value={startup.demo_video_url || ""} onChange={e => update("demo_video_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" />
                 </Field>
                 <Field label="Product Hunt URL">
                   <WarmInput value={startup.product_hunt_url || ""} onChange={e => update("product_hunt_url", e.target.value)} placeholder="https://producthunt.com/posts/…" />
+                </Field>
+              </div>
+            </section>
+
+            {/* Visibility & Outreach */}
+            <section style={sectionStyle}>
+              <h2 style={sectionHeadStyle}>Visibility &amp; Outreach</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <Field label="Looking For" hint="Select what you need from investors">
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {LOOKING_FOR_OPTIONS.map(opt => (
+                      <button key={opt} type="button"
+                        onClick={() => {
+                          const cur: string[] = startup.looking_for || [];
+                          update("looking_for", cur.includes(opt) ? cur.filter((x: string) => x !== opt) : [...cur, opt]);
+                        }}
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+                          padding: "6px 14px", borderRadius: "3px", cursor: "pointer",
+                          border: (startup.looking_for || []).includes(opt) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                          background: (startup.looking_for || []).includes(opt) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                          color: (startup.looking_for || []).includes(opt) ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
+                <Field label="Target Markets" hint="Where are your primary customers?">
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {TARGET_MARKET_OPTIONS.map(opt => (
+                      <button key={opt} type="button"
+                        onClick={() => {
+                          const cur: string[] = startup.target_markets || [];
+                          update("target_markets", cur.includes(opt) ? cur.filter((x: string) => x !== opt) : [...cur, opt]);
+                        }}
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+                          padding: "6px 14px", borderRadius: "3px", cursor: "pointer",
+                          border: (startup.target_markets || []).includes(opt) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                          background: (startup.target_markets || []).includes(opt) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                          color: (startup.target_markets || []).includes(opt) ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
+                <Field label="Deck Language">
+                  <WarmSelect value={startup.deck_language || ""} onChange={e => update("deck_language", e.target.value)}>
+                    <option value="">Select…</option>
+                    {DECK_LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+                  </WarmSelect>
+                </Field>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                  <Field label="Lead Investor (if any)" hint="Name of the investor leading this round">
+                    <WarmInput value={startup.lead_investor || ""} onChange={e => update("lead_investor", e.target.value)} placeholder="e.g. Sequoia Capital" />
+                  </Field>
+                  <Field label="Previous Funding ($)" hint="Total raised before this round">
+                    <WarmInput type="number" value={startup.previous_funding || ""} onChange={e => update("previous_funding", e.target.value)} placeholder="0" />
+                  </Field>
+                </div>
+                <Field label="Team Languages" hint="Languages the founding team speaks (press Enter to add)">
+                  <TagInput tags={startup.languages || []} onChange={tags => update("languages", tags)} placeholder="English, German, French…" />
                 </Field>
               </div>
             </section>

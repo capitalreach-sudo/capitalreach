@@ -53,6 +53,17 @@ export interface Profile {
   subscription_status: string | null;
   accreditation_certified: boolean;
   created_at: string;
+  // Feature 3: investor profile fields (migration 008)
+  investment_thesis:    string | null;
+  check_size_min:       number | null;
+  check_size_max:       number | null;
+  preferred_stages:     string[] | null;
+  preferred_industries: string[] | null;
+  preferred_countries:  string[] | null;
+  investor_type:        string | null;
+  portfolio_count:      number | null;
+  lead_investor:        boolean | null;
+  languages:            string[] | null;
 }
 
 export interface Startup {
@@ -101,6 +112,15 @@ export interface Startup {
   twitter_url: string | null;
   runway_months: number | null;
   competitors_json: Array<{ name: string; differentiator: string }>;
+  // Feature 3: rich profile fields (migration 008)
+  target_markets:   string[] | null;
+  languages:        string[] | null;
+  previous_funding: number | null;
+  lead_investor:    string | null;
+  deck_language:    string | null;
+  video_pitch_url:  string | null;
+  social_proof:     Array<{ type: string; value: string }> | null;
+  looking_for:      string[] | null;
   // joined
   founders?: StartupFounder[];
   documents?: StartupDocument[];

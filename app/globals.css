@@ -276,3 +276,61 @@
   .reveal { opacity: 1; transform: none; transition: none; }
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ── Print / PDF export ──────────────────────────────────────  */
+.print-only { display: none; }
+
+@media print {
+  nav, aside, footer,
+  .no-print, [data-no-print],
+  button:not(.print-show) {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'DM Sans', Georgia, serif;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  @page {
+    margin: 20mm 15mm;
+    size: A4 portrait;
+  }
+
+  main, .print-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  a { color: #000 !important; text-decoration: none !important; }
+
+  .card,
+  [class*="bg-\[#EDE8DE\]"],
+  [class*="bg-\[#F5F0E8\]"] {
+    background: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    break-inside: avoid;
+  }
+
+  .print-break-before { page-break-before: always; }
+  .print-break-avoid  { page-break-inside: avoid; }
+
+  .print-only { display: block !important; }
+
+  .print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12pt;
+    border-bottom: 1pt solid #cccccc;
+    margin-bottom: 16pt;
+    font-size: 9pt;
+    color: #666666;
+    font-family: 'DM Sans', sans-serif;
+  }
+}

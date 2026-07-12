@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "startups": "Startups",
+    "investors": "Investors",
+    "aiTools": "AI Tools",
+    "pricing": "Pricing",
+    "data": "Data",
+    "signIn": "Sign in",
+    "listStartup": "List your startup"
+  },
+  "hero": {
+    "eyebrow": "Private Capital Marketplace",
+    "headline": "The private marketplace for serious capital.",
+    "sub": "Vetted startups raising capital. Qualified investors deploying it. AI-powered analysis on both sides. A 2% fee, only after close.",
+    "ctaPrimary": "List your startup",
+    "ctaSecondary": "Browse deals"
+  },
+  "startups": {
+    "pageTitle": "Active fundraising rounds",
+    "pageSubtitle": "{count} companies currently listed",
+    "noListings": "No active listings yet.",
+    "loadMore": "Load {count} more startups",
+    "allLoaded": "All {count} startups loaded",
+    "raising": "Raising",
+    "aiScore": "AI Score",
+    "runway": "{months}mo runway"
+  },
+  "filters": {
+    "industry": "Industry",
+    "stage": "Stage",
+    "country": "Country",
+    "clearAll": "Clear all",
+    "apply": "Apply filters",
+    "reset": "Reset"
+  },
+  "common": {
+    "viewDeal": "View deal",
+    "saveWatchlist": "Save to watchlist",
+    "saved": "Saved",
+    "requestIntro": "Request introduction",
+    "back": "Back",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "noResults": "No results"
+  }
+}

@@ -42,7 +42,12 @@ export default async function InvestorProfilePage({ params }: Props) {
 
   const { data: investor } = await supabase
     .from("investors")
-    .select("*, owner:profiles(full_name, avatar_url, email)")
+    .select(`*, owner:profiles(
+      full_name, avatar_url, email,
+      investment_thesis, check_size_min, check_size_max,
+      preferred_stages, preferred_industries, preferred_countries,
+      investor_type, portfolio_count, lead_investor, languages
+    )`)
     .eq("slug", params.slug)
     .single();
 
@@ -86,6 +91,14 @@ export default async function InvestorProfilePage({ params }: Props) {
               )}
               {investor.lead_rounds && (
                 <Badge className="bg-emerald-100 text-emerald-700 border-0">Leads rounds</Badge>
+              )}
+              {ownerProfile?.lead_investor && (
+                <Badge style={{ background: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
+                  Leads rounds
+                </Badge>
+              )}
+              {ownerProfile?.investor_type && (
+                <Badge variant="outline">{ownerProfile.investor_type}</Badge>
               )}
             </div>
             {investor.bio && (
@@ -148,6 +161,41 @@ export default async function InvestorProfilePage({ params }: Props) {
                 <p className="text-lg font-bold text-cr-ink">{investor.avg_hold_period}</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── New profile detail stats ───────────────────────────────────── */}
+        {(ownerProfile?.check_size_min || ownerProfile?.check_size_max || ownerProfile?.portfolio_count || ownerProfile?.languages?.length) && (
+          <div className="bg-cr-paper border rounded-xl p-6 mb-6">
+            <h2 className="font-semibold text-cr-ink mb-4">Investor Detail</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {(ownerProfile?.check_size_min || ownerProfile?.check_size_max) && (
+                <div>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">Check Size</p>
+                  <p className="font-mono font-semibold text-cr-ink">
+                    {ownerProfile.check_size_min ? formatCurrency(ownerProfile.check_size_min, true) : "—"}
+                    {" – "}
+                    {ownerProfile.check_size_max ? formatCurrency(ownerProfile.check_size_max, true) : "Open"}
+                  </p>
+                </div>
+              )}
+              {ownerProfile?.portfolio_count != null && (
+                <div>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">Portfolio</p>
+                  <p className="font-mono font-semibold text-cr-ink">{ownerProfile.portfolio_count} investments</p>
+                </div>
+              )}
+              {ownerProfile?.languages?.length > 0 && (
+                <div className="col-span-2">
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">Languages</p>
+                  <div className="flex flex-wrap gap-2">
+                    {ownerProfile.languages.map((lang: string) => (
+                      <span key={lang} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{lang}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

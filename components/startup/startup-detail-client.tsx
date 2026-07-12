@@ -17,6 +17,8 @@ import { canViewFinancials, canSendMessages as canSendMessagesAccess, canAiDueDi
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
+import { PrintButton } from "@/components/ui/PrintButton";
+import { PrintHeader } from "@/components/ui/PrintHeader";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -165,6 +167,7 @@ export function StartupDetailClient({
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
+      <PrintHeader title={startup.name} />
 
       {/* ── Editorial hero ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
@@ -240,6 +243,27 @@ export function StartupDetailClient({
                 </div>
               </div>
 
+              {/* New profile fields: looking_for, social_proof, languages */}
+              {((startup as any).looking_for?.length || (startup as any).social_proof?.length || (startup as any).languages?.length) && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
+                  {((startup as any).looking_for as string[] | null)?.map((item: string) => (
+                    <span key={item} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
+                      {item}
+                    </span>
+                  ))}
+                  {((startup as any).social_proof as Array<{ type: string; value: string }> | null)?.map((sp, i) => (
+                    <span key={i} style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
+                      {sp.value}
+                    </span>
+                  ))}
+                  {((startup as any).deck_language && (startup as any).deck_language !== "English") && (
+                    <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
+                      Deck: {(startup as any).deck_language}
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Action buttons */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
                 {startup.website && (
@@ -257,6 +281,7 @@ export function StartupDetailClient({
                   style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
                   <Share2 style={{ width: 13, height: 13 }} /> Share
                 </button>
+                <PrintButton label="Export PDF" />
                 {canMessage ? (
                   <button onClick={() => setMessageOpen(true)}
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
@@ -359,6 +384,23 @@ export function StartupDetailClient({
                         </div>
                       </div>
                     ))}
+                </div>
+              </div>
+            )}
+
+            {/* Video pitch (new field) */}
+            {(startup as any).video_pitch_url && (
+              <div>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>Pitch Video</div>
+                <div style={{ aspectRatio: "16/9", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
+                  <iframe
+                    src={((startup as any).video_pitch_url as string)
+                      .replace("watch?v=", "embed/")
+                      .replace("youtu.be/", "youtube.com/embed/")
+                      .replace("loom.com/share/", "loom.com/embed/")}
+                    style={{ width: "100%", height: "100%", border: "none" }}
+                    allowFullScreen
+                  />
                 </div>
               </div>
             )}

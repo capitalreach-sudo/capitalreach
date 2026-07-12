@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "startups": "Startups",
+    "investors": "Investoren",
+    "aiTools": "KI-Tools",
+    "pricing": "Preise",
+    "data": "Daten",
+    "signIn": "Anmelden",
+    "listStartup": "Startup listen"
+  },
+  "hero": {
+    "eyebrow": "Privater Kapitalmarktplatz",
+    "headline": "Der private Marktplatz für ernsthaftes Kapital.",
+    "sub": "Geprüfte Startups suchen Kapital. Qualifizierte Investoren setzen es ein. KI-gestützte Analyse auf beiden Seiten. 2% Erfolgsgebühr, nur nach Abschluss.",
+    "ctaPrimary": "Startup listen",
+    "ctaSecondary": "Deals durchsuchen"
+  },
+  "startups": {
+    "pageTitle": "Aktive Finanzierungsrunden",
+    "pageSubtitle": "{count} Unternehmen gelistet",
+    "noListings": "Noch keine aktiven Listings.",
+    "loadMore": "{count} weitere Startups laden",
+    "allLoaded": "Alle {count} Startups geladen",
+    "raising": "Sucht",
+    "aiScore": "KI-Score",
+    "runway": "{months} Mon. Runway"
+  },
+  "filters": {
+    "industry": "Branche",
+    "stage": "Phase",
+    "country": "Land",
+    "clearAll": "Alle löschen",
+    "apply": "Filter anwenden",
+    "reset": "Zurücksetzen"
+  },
+  "common": {
+    "viewDeal": "Deal ansehen",
+    "saveWatchlist": "Merkliste",
+    "saved": "Gespeichert",
+    "requestIntro": "Kontakt anfragen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "loading": "Laden...",
+    "noResults": "Keine Ergebnisse"
+  }
+}

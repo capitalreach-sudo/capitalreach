@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown } from "lucide-react";
 import { getInitials } from "@/lib/utils";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import type { Profile } from "@/types";
 
 const NAV_LINKS = [
@@ -126,6 +127,7 @@ export function Navbar() {
 
           {/* Right — auth */}
           <div className="hidden lg:flex items-center gap-5">
+            <LanguageSwitcher />
             {profile ? (
               <>
                 <Link href="/dashboard/messages"
