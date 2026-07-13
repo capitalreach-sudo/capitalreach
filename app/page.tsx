@@ -1,9 +1,9 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
-import { getPlatformStats }           from "@/lib/stats";
-import { Navbar }                     from "@/components/shared/navbar";
-import { Footer }                     from "@/components/shared/footer";
-import { HomepageClient }             from "@/components/homepage/homepage-client";
-import type { Metadata }              from "next";
+import { createAdminClient } from "@/lib/supabase-server";
+import { getPlatformStats }  from "@/lib/stats";
+import { Navbar }            from "@/components/shared/navbar";
+import { Footer }            from "@/components/shared/footer";
+import { HomepageClient }    from "@/components/homepage/homepage-client";
+import type { Metadata }     from "next";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,7 @@ export default async function HomePage() {
   let listings: ListingSnippet[]      = [];
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createAdminClient();
     const stats    = await getPlatformStats(supabase);
 
     const [heroRes, listingsRes] = await Promise.all([
@@ -61,16 +61,13 @@ export default async function HomePage() {
       </>
     );
   } catch {
-    // DB not configured — still render the page shell
+    /* DB not configured — render shell */
   }
-
-  const { getPlatformStats: gps } = await import("@/lib/stats");
-  const fallbackStats = await gps();
 
   return (
     <>
       <Navbar />
-      <HomepageClient stats={fallbackStats} heroStartup={null} listings={[]} />
+      <HomepageClient stats={{ startupCount: 0, investorCount: 0, totalRaised: 0, dealsClosedCount: 0 }} heroStartup={null} listings={[]} />
       <Footer />
     </>
   );

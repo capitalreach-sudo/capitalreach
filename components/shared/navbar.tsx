@@ -7,15 +7,8 @@ import { createClient } from "@/lib/supabase";
 import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { Profile } from "@/types";
-
-const NAV_LINKS = [
-  { href: "/startups",  label: "Startups"  },
-  { href: "/investors", label: "Investors" },
-  { href: "/ai",        label: "AI Tools"  },
-  { href: "/pricing",   label: "Pricing"   },
-  { href: "/data",      label: "Data"      },
-];
 
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 10 10" fill="none" aria-hidden>
@@ -26,6 +19,7 @@ const DiamondLogo = ({ size = 10 }: { size?: number }) => (
 );
 
 export function Navbar() {
+  const { t } = useTranslation();
   const [profile, setProfile]       = useState<Profile | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
@@ -33,6 +27,14 @@ export function Navbar() {
   const pathname = usePathname();
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
+
+  const NAV_LINKS = [
+    { href: "/startups",  label: t("nav.startups")  },
+    { href: "/investors", label: t("nav.investors") },
+    { href: "/ai",        label: t("nav.aiTools")   },
+    { href: "/pricing",   label: t("nav.pricing")   },
+    { href: "/data",      label: t("nav.data")      },
+  ];
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -179,9 +181,9 @@ export function Navbar() {
                       </p>
                     </div>
                     {[
-                      { href: dashboardPath,         Icon: LayoutDashboard, label: "Dashboard" },
-                      { href: "/dashboard/messages", Icon: MessageSquare,   label: "Messages"  },
-                      { href: "/dashboard/settings", Icon: Settings,        label: "Settings"  },
+                      { href: dashboardPath,         Icon: LayoutDashboard, label: t("nav.dashboard") },
+                      { href: "/dashboard/messages", Icon: MessageSquare,   label: t("nav.messages")  },
+                      { href: "/dashboard/settings", Icon: Settings,        label: t("nav.settings")  },
                     ].map(({ href, Icon, label }) => (
                       <Link key={href} href={href}
                         className="flex items-center gap-3 px-4 py-2 mx-1 rounded-[3px] transition-colors"
@@ -205,7 +207,7 @@ export function Navbar() {
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "rgba(155,35,53,0.08)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "")}
                       >
-                        <LogOut className="h-3.5 w-3.5" /> Sign out
+                        <LogOut className="h-3.5 w-3.5" /> {t("nav.signOut")}
                       </button>
                     </div>
                   </div>
@@ -228,7 +230,7 @@ export function Navbar() {
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#1A1612")}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#6B6056")}
                   >
-                    Sign in
+                    {t("nav.signIn")}
                   </button>
                 </Link>
                 <Link href="/auth/signup" style={{ textDecoration: "none" }}>
@@ -248,7 +250,7 @@ export function Navbar() {
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#D4842A")}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#B5651D")}
                   >
-                    List your startup
+                    {t("nav.listStartup")}
                   </button>
                 </Link>
               </>
@@ -347,7 +349,7 @@ export function Navbar() {
                     textDecoration: "none",
                   }}
                 >
-                  Dashboard
+                  {t("nav.dashboard")}
                 </Link>
               )}
             </div>
@@ -361,7 +363,7 @@ export function Navbar() {
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
                     borderRadius: "4px", border: "none", cursor: "pointer",
                   }}>
-                    List your startup
+                    {t("nav.listStartup")}
                   </button>
                 </Link>
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
@@ -370,7 +372,7 @@ export function Navbar() {
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
                     borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer",
                   }}>
-                    Sign in
+                    {t("nav.signIn")}
                   </button>
                 </Link>
               </div>
@@ -385,7 +387,7 @@ export function Navbar() {
                     borderRadius: "4px", border: "1px solid rgba(155,35,53,0.3)", cursor: "pointer",
                   }}
                 >
-                  Sign out
+                  {t("nav.signOut")}
                 </button>
               </div>
             )}

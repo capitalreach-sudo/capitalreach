@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 
 export type PlatformStats = {
   startupCount:     number;
@@ -21,7 +21,7 @@ export async function getPlatformStats(supabase?: any): Promise<PlatformStats> {
   if (!supabaseUrl || supabaseUrl.includes("placeholder")) return FLOOR;
 
   try {
-    const db = supabase ?? (await createServerSupabaseClient());
+    const db = supabase ?? createAdminClient();
 
     const [startups, investors, deals] = await Promise.all([
       db
