@@ -3,13 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
-
-type Locale = "en" | "de";
-
-const LOCALE_OPTIONS: { code: Locale; flag: string; name: string }[] = [
-  { code: "en", flag: "🇬🇧", name: "English" },
-  { code: "de", flag: "🇩🇪", name: "Deutsch" },
-];
+import { LOCALES, LOCALE_FLAGS, LOCALE_NAMES } from "@/lib/locale";
+import type { Locale } from "@/lib/locale";
 
 export function LanguageSwitcher() {
   const router  = useRouter();
@@ -19,8 +14,9 @@ export function LanguageSwitcher() {
   const [switching, setSwitching] = useState(false);
 
   useEffect(() => {
-    const m = document.cookie.match(/(?:^|;\s*)cr_locale=([^;]+)/);
-    if (m && (m[1] === "en" || m[1] === "de")) setLocale(m[1] as Locale);
+    const m   = document.cookie.match(/(?:^|;\s*)cr_locale=([^;]+)/);
+    const raw = m?.[1] as Locale | undefined;
+    if (raw && (LOCALES as string[]).includes(raw)) setLocale(raw);
   }, []);
 
   useEffect(() => {
@@ -46,8 +42,6 @@ export function LanguageSwitcher() {
     setSwitching(false);
   }
 
-  const current = LOCALE_OPTIONS.find(o => o.code === locale)!;
-
   return (
     <div ref={wrapRef} style={{ position: "relative" }}>
       <button
@@ -72,7 +66,7 @@ export function LanguageSwitcher() {
         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
       >
         <Globe size={15} strokeWidth={1.5} />
-        <span style={{ lineHeight: 1, fontSize: "15px" }}>{current.flag}</span>
+        <span style={{ lineHeight: 1, fontSize: "15px" }}>{LOCALE_FLAGS[locale]}</span>
       </button>
 
       {open && (
@@ -86,40 +80,43 @@ export function LanguageSwitcher() {
             borderRadius: "6px",
             boxShadow:    "0 8px 24px rgba(26,22,18,0.14)",
             padding:      "4px",
-            minWidth:     "140px",
+            minWidth:     "160px",
+            maxHeight:    "340px",
+            overflowY:    "auto",
             zIndex:       200,
           }}
         >
-          {LOCALE_OPTIONS.map(opt => {
-            const isActive = opt.code === locale;
+          {LOCALES.map(code => {
+            const isActive = code === locale;
             return (
               <button
-                key={opt.code}
-                onClick={() => switchLocale(opt.code)}
+                key={code}
+                onClick={() => switchLocale(code)}
                 style={{
-                  display:     "flex",
-                  alignItems:  "center",
-                  gap:         "8px",
-                  width:       "100%",
-                  padding:     "8px 10px",
+                  display:      "flex",
+                  alignItems:   "center",
+                  gap:          "8px",
+                  width:        "100%",
+                  padding:      "8px 10px",
                   borderRadius: "4px",
-                  border:      "none",
-                  background:  isActive ? "#E4DDD2" : "transparent",
-                  cursor:      "pointer",
-                  fontFamily:  "'DM Sans', sans-serif",
-                  fontSize:    "13px",
-                  fontWeight:  isActive ? 600 : 400,
-                  color:       isActive ? "#B5651D" : "#1A1612",
-                  textAlign:   "left",
-                  transition:  "background 120ms ease",
+                  border:       "none",
+                  background:   isActive ? "#E4DDD2" : "transparent",
+                  cursor:       "pointer",
+                  fontFamily:   "'DM Sans', sans-serif",
+                  fontSize:     "13px",
+                  fontWeight:   isActive ? 600 : 400,
+                  color:        isActive ? "#B5651D" : "#1A1612",
+                  textAlign:    "left",
+                  transition:   "background 120ms ease",
+                  whiteSpace:   "nowrap",
                 }}
                 onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "#E4DDD2"; }}
                 onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
               >
-                <span style={{ fontSize: "16px", lineHeight: 1 }}>{opt.flag}</span>
-                <span>{opt.name}</span>
+                <span style={{ fontSize: "16px", lineHeight: 1, flexShrink: 0 }}>{LOCALE_FLAGS[code]}</span>
+                <span>{LOCALE_NAMES[code]}</span>
                 {isActive && (
-                  <span style={{ marginLeft: "auto", fontSize: "11px", color: "#B5651D" }}>✓</span>
+                  <span style={{ marginLeft: "auto", fontSize: "11px", color: "#B5651D", paddingLeft: "8px" }}>✓</span>
                 )}
               </button>
             );

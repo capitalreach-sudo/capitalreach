@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
-
-const SUPPORTED = ["en", "de"] as const;
+import { LOCALES } from "@/lib/locale";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const { locale } = body as { locale?: string };
 
-  if (!locale || !(SUPPORTED as readonly string[]).includes(locale)) {
+  if (!locale || !(LOCALES as string[]).includes(locale)) {
     return NextResponse.json({ error: "Invalid locale" }, { status: 400 });
   }
 

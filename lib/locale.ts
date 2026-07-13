@@ -1,23 +1,64 @@
 import { cookies } from "next/headers";
 
-export type Locale = "en" | "de";
-export const DEFAULT_LOCALE: Locale = "en";
-export const SUPPORTED_LOCALES: Locale[] = ["en", "de"];
+export type Locale =
+  | "en"  // English
+  | "de"  // German
+  | "fr"  // French
+  | "es"  // Spanish
+  | "it"  // Italian
+  | "nl"  // Dutch
+  | "pt"  // Portuguese
+  | "pl"  // Polish
+  | "sv"  // Swedish
+  | "zh"  // Chinese (Simplified)
+  | "ar"  // Arabic
+  | "ja"; // Japanese
 
-export const LOCALE_FLAGS: Record<Locale, string> = {
-  en: "🇬🇧",
-  de: "🇩🇪",
-};
+export const LOCALES: Locale[] = [
+  "en", "de", "fr", "es", "it", "nl", "pt", "pl", "sv", "zh", "ar", "ja",
+];
+
+export const DEFAULT_LOCALE: Locale = "en";
 
 export const LOCALE_NAMES: Record<Locale, string> = {
   en: "English",
   de: "Deutsch",
+  fr: "Français",
+  es: "Español",
+  it: "Italiano",
+  nl: "Nederlands",
+  pt: "Português",
+  pl: "Polski",
+  sv: "Svenska",
+  zh: "中文",
+  ar: "العربية",
+  ja: "日本語",
+};
+
+export const LOCALE_FLAGS: Record<Locale, string> = {
+  en: "🇬🇧",
+  de: "🇩🇪",
+  fr: "🇫🇷",
+  es: "🇪🇸",
+  it: "🇮🇹",
+  nl: "🇳🇱",
+  pt: "🇵🇹",
+  pl: "🇵🇱",
+  sv: "🇸🇪",
+  zh: "🇨🇳",
+  ar: "🇸🇦",
+  ja: "🇯🇵",
+};
+
+/** true for right-to-left locales */
+export const LOCALE_RTL: Partial<Record<Locale, boolean>> = {
+  ar: true,
 };
 
 export async function getLocale(): Promise<Locale> {
   const cookieStore = await cookies();
-  const locale = cookieStore.get("cr_locale")?.value as Locale;
-  return SUPPORTED_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
+  const raw = cookieStore.get("cr_locale")?.value;
+  return (LOCALES as string[]).includes(raw ?? "") ? (raw as Locale) : DEFAULT_LOCALE;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
