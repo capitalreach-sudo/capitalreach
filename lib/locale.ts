@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 export type Locale =
   | "en"  // English
   | "de"  // German
@@ -54,33 +52,6 @@ export const LOCALE_RTL: Locale[] = ["ar"];
 
 export function isRTL(locale: Locale): boolean {
   return LOCALE_RTL.includes(locale);
-}
-
-export function getLocale(): Locale {
-  try {
-    const cookieStore = cookies();
-    const raw = cookieStore.get("cr_locale")?.value;
-    return (LOCALES as string[]).includes(raw ?? "") ? (raw as Locale) : DEFAULT_LOCALE;
-  } catch {
-    return DEFAULT_LOCALE;
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getMessages(locale: Locale): Promise<Record<string, any>> {
-  try {
-    const messages = await import(`../messages/${locale}.json`);
-    return messages.default;
-  } catch {
-    const fallback = await import("../messages/en.json");
-    return fallback.default;
-  }
-}
-
-/** @deprecated use getMessages */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function loadMessages(locale: Locale): Promise<Record<string, any>> {
-  return getMessages(locale);
 }
 
 export function t(

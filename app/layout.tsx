@@ -4,7 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastNotifyProvider } from "@/components/ui/toast-notify";
 import { LaunchBanner } from "@/components/ui/LaunchBanner";
-import { getLocale, isRTL } from "@/lib/locale";
+import { isRTL } from "@/lib/locale";
+import { getLocale } from "@/lib/locale-server";
 
 const inter = Inter({ subsets: ["latin"] });
 
