@@ -11,7 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Save, X, Plus } from "lucide-react";
+import { ArrowLeft, Save, X, Plus, Globe } from "lucide-react";
+import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelector";
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn } from "@/lib/utils";
@@ -553,6 +554,18 @@ export default function InvestorSettingsPage() {
             {saving ? "Saving…" : "Save All Changes"}
           </Button>
         </form>
+
+        {/* Language section (outside form — has its own save) */}
+        <section className="bg-cr-paper border rounded-2xl p-6 mt-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Globe className="h-4 w-4 text-cr-copper" />
+            <h2 className="font-semibold text-cr-ink">Language</h2>
+          </div>
+          <p className="text-sm text-cr-i3 mb-4">
+            Choose the language for the CapitalReach interface.
+          </p>
+          <LanguageSettingsSelector />
+        </section>
       </main>
     </>
   );

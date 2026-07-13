@@ -10,7 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Save, Trash2, Shield, Bell, CreditCard } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Shield, Bell, CreditCard, Globe } from "lucide-react";
+import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelector";
 import Link from "next/link";
 import { getInitials } from "@/lib/utils";
 import type { Profile } from "@/types";
@@ -206,6 +207,18 @@ export default function AccountSettingsPage() {
             <p className="text-sm text-cr-i3">
               All transactional emails (messages, deal updates, NDA completions) are sent to <strong>{profile?.email}</strong>. Manage marketing preferences in your inbox or contact support.
             </p>
+          </section>
+
+          {/* Language section */}
+          <section className="bg-cr-paper border rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Globe className="h-4 w-4 text-cr-copper" />
+              <h2 className="font-semibold text-cr-ink">Language</h2>
+            </div>
+            <p className="text-sm text-cr-i3 mb-4">
+              Choose the language for the CapitalReach interface.
+            </p>
+            <LanguageSettingsSelector />
           </section>
 
           {/* Danger zone */}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -333,4 +333,29 @@
     color: #666666;
     font-family: 'DM Sans', sans-serif;
   }
+
+/* ── Arabic / RTL overrides ───────────────────────────────── */
+[dir="rtl"] body {
+  font-family: 'Cairo', 'Noto Sans Arabic', system-ui, sans-serif;
+}
+
+[dir="rtl"] .ruled-label::before {
+  margin-right: 0;
+  margin-left: 10px;
+  order: 1;
+}
+
+[dir="rtl"] .ruled-label {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+[dir="rtl"] .flex {
+  --tw-space-x-reverse: 1;
+}
 }

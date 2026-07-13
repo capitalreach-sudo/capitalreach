@@ -52,9 +52,10 @@ const config: Config = {
         "cr-neutral": "#5C6B7A",
       },
       fontFamily: {
-        sans:  ["DM Sans", "system-ui", "sans-serif"],
-        serif: ["Playfair Display", "Georgia", "serif"],
-        mono:  ["JetBrains Mono", "monospace"],
+        sans:    ["DM Sans", "system-ui", "sans-serif"],
+        serif:   ["Playfair Display", "Georgia", "serif"],
+        mono:    ["JetBrains Mono", "monospace"],
+        arabic:  ["Cairo", "Noto Sans Arabic", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

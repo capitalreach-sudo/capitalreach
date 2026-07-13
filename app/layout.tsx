@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastNotifyProvider } from "@/components/ui/toast-notify";
 import { LaunchBanner } from "@/components/ui/LaunchBanner";
+import { getLocale, isRTL } from "@/lib/locale";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,8 +41,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const locale = getLocale();
+  const rtl = isRTL(locale);
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={rtl ? "rtl" : "ltr"} suppressHydrationWarning>
       <body className={inter.className}>
         <LaunchBanner />
         {children}
