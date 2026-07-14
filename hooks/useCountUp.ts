@@ -18,8 +18,13 @@ export function useCountUp(target: number, duration = 1500) {
           const tick = (now: number) => {
             const t = Math.min((now - start) / duration, 1);
             setValue(Math.floor((1 - Math.pow(1 - t, 4)) * target));
-            if (t < 1) requestAnimationFrame(tick);
-            else setValue(target);
+            if (t < 1) {
+              requestAnimationFrame(tick);
+            } else {
+              setValue(target);
+              // Brief copper glow when count finishes
+              if (ref.current) ref.current.classList.add("stat-glow");
+            }
           };
           requestAnimationFrame(tick);
         }

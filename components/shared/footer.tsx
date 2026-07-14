@@ -1,36 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
-const LINK_GROUPS: Record<string, [string, string][]> = {
-  Platform: [
-    ["Browse startups",   "/startups"],
-    ["Find investors",    "/investors"],
-    ["AI tools",          "/ai"],
-    ["Data centre",       "/data"],
-    ["Pricing",           "/pricing"],
-  ],
-  Founders: [
-    ["List your startup", "/auth/signup"],
-    ["How it works",      "/about#how-it-works"],
-    ["Pricing",           "/pricing#founders"],
-    ["Success stories",   "/about#stories"],
-  ],
-  Investors: [
-    ["Browse deals",      "/startups"],
-    ["AI matching",       "/ai#match"],
-    ["Due diligence",     "/ai#due-diligence"],
-    ["Plans",             "/pricing#investors"],
-  ],
-  Company: [
-    ["About",   "/about"],
-    ["Blog",    "/blog"],
-    ["Careers", "/careers"],
-    ["Contact", "/contact"],
-    ["Terms",   "/terms"],
-    ["Privacy", "/privacy"],
-  ],
-};
+import { useTranslation } from "@/hooks/useTranslation";
 
 const DiamondLogo = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
@@ -41,6 +12,38 @@ const DiamondLogo = () => (
 );
 
 export function Footer() {
+  const { t } = useTranslation();
+
+  const LINK_GROUPS: [string, [string, string][]][] = [
+    [t("footer.platform"), [
+      ["Browse startups",   "/startups"],
+      ["Find investors",    "/investors"],
+      ["AI tools",          "/ai"],
+      ["Data centre",       "/data"],
+      ["Pricing",           "/pricing"],
+    ]],
+    [t("footer.founders"), [
+      ["List your startup", "/auth/signup"],
+      ["How it works",      "/about#how-it-works"],
+      ["Pricing",           "/pricing#founders"],
+      ["Success stories",   "/about#stories"],
+    ]],
+    [t("footer.investors"), [
+      ["Browse deals",      "/startups"],
+      ["AI matching",       "/ai#match"],
+      ["Due diligence",     "/ai#due-diligence"],
+      ["Plans",             "/pricing#investors"],
+    ]],
+    [t("footer.company"), [
+      ["About",   "/about"],
+      ["Blog",    "/blog"],
+      ["Careers", "/careers"],
+      ["Contact", "/contact"],
+      ["Terms",   "/terms"],
+      ["Privacy", "/privacy"],
+    ]],
+  ];
+
   return (
     <footer style={{ background: "#EDE8DE", borderTop: "1px solid rgba(26,22,18,0.15)" }}>
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-8">
@@ -70,13 +73,13 @@ export function Footer() {
               lineHeight: 1.6,
               marginTop:  "12px",
             }}>
-              A private marketplace connecting founders raising capital with qualified investors deploying it.
+              {t("footer.tagline")}
             </p>
           </div>
 
           {/* Link groups */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1 lg:max-w-[680px]">
-            {Object.entries(LINK_GROUPS).map(([heading, links]) => (
+            {LINK_GROUPS.map(([heading, links]) => (
               <div key={heading}>
                 <h4 style={{
                   fontFamily:    "'DM Sans', sans-serif",
@@ -140,8 +143,7 @@ export function Footer() {
             maxWidth:   "360px",
             lineHeight: 1.55,
           }}>
-            Not a registered broker-dealer or investment adviser.
-            The 2% success fee is charged only after a funding round closes.
+            {t("footer.legal")}
           </p>
 
           <div className="flex items-center gap-5 flex-shrink-0">

@@ -1,127 +1,131 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Globe } from "lucide-react";
-import { LOCALES, LOCALE_FLAGS, LOCALE_NAMES } from "@/lib/locale";
+import { Globe, Check, ChevronDown } from "lucide-react";
+import { LOCALES, LOCALE_META } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 
-export function LanguageSwitcher() {
-  const router  = useRouter();
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [locale,    setLocale]    = useState<Locale>("en");
-  const [open,      setOpen]      = useState(false);
-  const [switching, setSwitching] = useState(false);
+interface Props {
+  currentLocale: Locale;
+}
+
+export function LanguageSwitcher({ currentLocale }: Props) {
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const current = LOCALE_META[currentLocale];
 
   useEffect(() => {
-    const m   = document.cookie.match(/(?:^|;\s*)cr_locale=([^;]+)/);
-    const raw = m?.[1] as Locale | undefined;
-    if (raw && (LOCALES as string[]).includes(raw)) setLocale(raw);
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useEffect(() => {
-    if (!open) return;
-    function close(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, [open]);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
 
-  async function switchLocale(next: Locale) {
-    if (next === locale || switching) return;
-    setSwitching(true);
+  const select = async (locale: Locale) => {
+    if (locale === currentLocale) { setOpen(false); return; }
     setOpen(false);
     await fetch("/api/locale", {
-      method:  "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ locale: next }),
+      body: JSON.stringify({ locale }),
     });
-    setLocale(next);
-    router.refresh();
-    setSwitching(false);
-  }
+    startTransition(() => {
+      router.refresh();
+    });
+  };
 
   return (
-    <div ref={wrapRef} style={{ position: "relative" }}>
+    <div ref={ref} className="relative">
       <button
-        onClick={() => setOpen(v => !v)}
-        disabled={switching}
-        aria-label="Select language"
-        style={{
-          display:    "flex",
-          alignItems: "center",
-          gap:        "5px",
-          fontSize:   "14px",
-          color:      "#9C8E82",
-          background: "none",
-          border:     "none",
-          cursor:     switching ? "not-allowed" : "pointer",
-          opacity:    switching ? 0.5 : 1,
-          padding:    "4px 2px",
-          transition: "color 150ms ease",
-          lineHeight: 1,
-        }}
-        onMouseEnter={e => !switching && ((e.currentTarget as HTMLElement).style.color = "#1A1612")}
-        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
+        onClick={() => setOpen(o => !o)}
+        disabled={isPending}
+        aria-label={`Current language: ${current.name}. Click to change.`}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[4px]
+                   text-[#6B6056] hover:text-[#1A1612] hover:bg-[#E4DDD2]
+                   border border-transparent hover:border-[#D8D0C4]
+                   transition-all duration-150 text-[12px] font-medium
+                   disabled:opacity-40 select-none"
       >
-        <Globe size={15} strokeWidth={1.5} />
-        <span style={{ lineHeight: 1, fontSize: "15px" }}>{LOCALE_FLAGS[locale]}</span>
+        {isPending ? (
+          <div className="w-3.5 h-3.5 border-2 border-[#B5651D]
+                          border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <Globe className="w-3.5 h-3.5 flex-shrink-0 text-[#B5651D]" />
+        )}
+        <span className="text-[15px] leading-none">{current.flag}</span>
+        <span className="uppercase tracking-[0.05em] text-[11px]">
+          {currentLocale}
+        </span>
+        <ChevronDown
+          className={`w-3 h-3 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (
-        <div
-          style={{
-            position:     "absolute",
-            right:        0,
-            top:          "calc(100% + 10px)",
-            background:   "#EDE8DE",
-            border:       "1px solid rgba(26,22,18,0.2)",
-            borderRadius: "6px",
-            boxShadow:    "0 8px 24px rgba(26,22,18,0.14)",
-            padding:      "4px",
-            minWidth:     "160px",
-            maxHeight:    "340px",
-            overflowY:    "auto",
-            zIndex:       200,
-          }}
-        >
-          {LOCALES.map(code => {
-            const isActive = code === locale;
-            return (
-              <button
-                key={code}
-                onClick={() => switchLocale(code)}
-                style={{
-                  display:      "flex",
-                  alignItems:   "center",
-                  gap:          "8px",
-                  width:        "100%",
-                  padding:      "8px 10px",
-                  borderRadius: "4px",
-                  border:       "none",
-                  background:   isActive ? "#E4DDD2" : "transparent",
-                  cursor:       "pointer",
-                  fontFamily:   "'DM Sans', sans-serif",
-                  fontSize:     "13px",
-                  fontWeight:   isActive ? 600 : 400,
-                  color:        isActive ? "#B5651D" : "#1A1612",
-                  textAlign:    "left",
-                  transition:   "background 120ms ease",
-                  whiteSpace:   "nowrap",
-                }}
-                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "#E4DDD2"; }}
-                onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-              >
-                <span style={{ fontSize: "16px", lineHeight: 1, flexShrink: 0 }}>{LOCALE_FLAGS[code]}</span>
-                <span>{LOCALE_NAMES[code]}</span>
-                {isActive && (
-                  <span style={{ marginLeft: "auto", fontSize: "11px", color: "#B5651D", paddingLeft: "8px" }}>✓</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div
+            role="listbox"
+            aria-label="Select language"
+            className="absolute right-0 top-[calc(100%+6px)] z-50
+                       bg-[#F5F0E8] border border-[#D8D0C4] rounded-[8px]
+                       shadow-[0_8px_40px_rgba(26,22,18,0.18)]
+                       overflow-hidden w-[220px]
+                       max-h-[380px] overflow-y-auto"
+          >
+            <div className="px-4 py-2 border-b border-[#E4DDD2]">
+              <span className="text-[10px] font-medium uppercase tracking-[0.08em] text-[#9C8E82]">
+                Select language
+              </span>
+            </div>
+            {LOCALES.map(locale => {
+              const meta = LOCALE_META[locale];
+              const active = locale === currentLocale;
+              return (
+                <button
+                  key={locale}
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => select(locale)}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5
+                              text-left transition-colors duration-100
+                              ${active
+                                ? "bg-[#E4DDD2] text-[#1A1612]"
+                                : "text-[#3D3630] hover:bg-[#EDE8DE]"
+                              }`}
+                >
+                  <span className="text-[18px] flex-shrink-0 leading-none">{meta.flag}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-[13px] leading-tight ${active ? "font-semibold" : "font-normal"}`}>
+                      {meta.native}
+                    </div>
+                    <div className="text-[11px] text-[#9C8E82] mt-0.5">{meta.name}</div>
+                  </div>
+                  {active && <Check className="w-3.5 h-3.5 text-[#B5651D] flex-shrink-0" />}
+                  {meta.rtl && (
+                    <span className="text-[8px] text-[#9C8E82] uppercase tracking-[0.06em] flex-shrink-0">
+                      RTL
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

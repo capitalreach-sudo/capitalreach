@@ -19,6 +19,8 @@ import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintHeader } from "@/components/ui/PrintHeader";
+import { useTranslation } from "@/hooks/useTranslation";
+import { ScoreRing } from "@/components/ui/ScoreRing";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -163,7 +165,16 @@ export function StartupDetailClient({
     else notify.error("Failed to send NDA");
   }
 
+  const { t } = useTranslation();
   const score = startup.vaultrise_score ?? null;
+
+  const TAB_LABELS: Record<Tab, string> = {
+    overview:   t("startupDetail.overview"),
+    team:       t("startupDetail.team"),
+    financials: t("startupDetail.financials"),
+    documents:  t("startupDetail.documents"),
+    traction:   "Traction",
+  };
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
@@ -183,7 +194,7 @@ export function StartupDetailClient({
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
           >
             <ChevronLeft style={{ width: 14, height: 14 }} />
-            All startups
+            {t("startupDetail.backToListings")}
           </Link>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -236,9 +247,9 @@ export function StartupDetailClient({
                     </span>
                   )}
                   {score != null && (
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>
-                      AI {score}/100
-                    </span>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <ScoreRing score={score} size={32} strokeWidth={3} />
+                    </div>
                   )}
                 </div>
               </div>
@@ -274,22 +285,25 @@ export function StartupDetailClient({
                 )}
                 <button onClick={toggleSave} style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
                   <Bookmark style={{ width: 13, height: 13, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
-                  {isSaved ? "Saved" : "Save"}
+                  {isSaved ? t("toast.saved") : t("common.saveWatchlist")}
                 </button>
                 <button
-                  onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success("Link copied!"); }}
+                  onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); }}
                   style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-                  <Share2 style={{ width: 13, height: 13 }} /> Share
+                  <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")}
                 </button>
                 <PrintButton label="Export PDF" />
                 {canMessage ? (
                   <button onClick={() => setMessageOpen(true)}
+                    className="btn-copper-shimmer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
-                    <MessageSquare style={{ width: 13, height: 13 }} /> Express Interest
+                    <MessageSquare style={{ width: 13, height: 13 }} /> {t("startupDetail.requestIntro")}
                   </button>
                 ) : (
-                  <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", textDecoration: "none" }}>
-                    <Lock style={{ width: 13, height: 13 }} /> Upgrade to Message
+                  <Link href="/pricing"
+                    className="btn-copper-shimmer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", textDecoration: "none" }}>
+                    <Lock style={{ width: 13, height: 13 }} /> {t("common.upgrade")}
                   </Link>
                 )}
               </div>
@@ -297,7 +311,7 @@ export function StartupDetailClient({
 
             {/* Key metrics strip */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px" }}>
-              <MetricCell label="Raising"   value={formatCurrency(startup.funding_target, true)} copper />
+              <MetricCell label={t("startupDetail.raising")} value={formatCurrency(startup.funding_target, true)} copper />
               <MetricCell label="Equity"    value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
               <MetricCell label="Min Check" value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />
               <MetricCell label="Views"     value={formatNumber(startup.pageviews ?? 0)} />
@@ -349,7 +363,7 @@ export function StartupDetailClient({
                 borderBottom: activeTab === tab ? "2px solid var(--cr-copper)" : "2px solid transparent",
                 transition: "color 100ms ease, border-color 100ms ease",
               }}>
-              {tab}
+              {TAB_LABELS[tab]}
             </button>
           ))}
         </div>
@@ -477,10 +491,10 @@ export function StartupDetailClient({
         {activeTab === "financials" && (
           canFinancials ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-              <MetricCell label="MRR"        value={startup.mrr         ? formatCurrency(startup.mrr)        : null} />
-              <MetricCell label="ARR"        value={startup.arr         ? formatCurrency(startup.arr)        : null} />
-              <MetricCell label="Total Users" value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
-              <MetricCell label="MoM Growth" value={startup.growth_rate  ? formatPercent(startup.growth_rate) : null} />
+              <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? formatCurrency(startup.mrr)        : null} />
+              <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? formatCurrency(startup.arr)        : null} />
+              <MetricCell label="Total Users"               value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
+              <MetricCell label={t("startupDetail.growth")} value={startup.growth_rate  ? formatPercent(startup.growth_rate) : null} />
             </div>
           ) : (
             <GateBlur
@@ -623,11 +637,12 @@ export function StartupDetailClient({
             <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
               <button onClick={() => setMessageOpen(false)}
                 style={{ flex: 1, height: "44px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
-                Cancel
+                {t("common.cancel")}
               </button>
               <button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()}
+                className="btn-copper-shimmer"
                 style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer", opacity: sendingMessage || !messageBody.trim() ? 0.5 : 1 }}>
-                {sendingMessage ? "Sending…" : "Send Message"}
+                {sendingMessage ? t("common.saving") : t("toast.messageSent")}
               </button>
             </div>
           </div>

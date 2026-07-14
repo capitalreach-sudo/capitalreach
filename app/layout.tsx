@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastNotifyProvider } from "@/components/ui/toast-notify";
 import { LaunchBanner } from "@/components/ui/LaunchBanner";
-import { isRTL } from "@/lib/locale";
+import { CopperCursor } from "@/components/ui/CopperCursor";
+import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -44,9 +42,20 @@ export default function RootLayout({
 }) {
   const locale = getLocale();
   const rtl = isRTL(locale);
+  const extraFont = getLocaleFont(locale);
+
   return (
     <html lang={locale} dir={rtl ? "rtl" : "ltr"} suppressHydrationWarning>
-      <body className={inter.className}>
+      <head>
+        {extraFont && (
+          <link
+            rel="stylesheet"
+            href={`https://fonts.googleapis.com/css2?family=${extraFont.replace(/ /g, "+")}:wght@300;400;500;600;700&display=swap`}
+          />
+        )}
+      </head>
+      <body className="font-sans">
+        <CopperCursor />
         <LaunchBanner />
         {children}
         <Toaster />

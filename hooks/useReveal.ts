@@ -11,6 +11,11 @@ export function useReveal(threshold = 0.08) {
       ([e]) => {
         if (e.isIntersecting) {
           el.classList.add("visible");
+          // Stagger children with reveal-child class
+          const children = el.querySelectorAll(".reveal-child");
+          children.forEach((child, i) => {
+            setTimeout(() => child.classList.add("visible"), i * 80);
+          });
           obs.unobserve(el);
         }
       },

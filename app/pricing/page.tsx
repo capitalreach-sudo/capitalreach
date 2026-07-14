@@ -9,6 +9,7 @@ import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
 import { notify } from "@/components/ui/toast-notify";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Feature row builders ──────────────────────────────────────
 
@@ -93,6 +94,7 @@ function PlanCard({
   isInstitution: boolean;
   userType: "founder" | "investor";
 }) {
+  const { t } = useTranslation();
   const hi = plan.highlight !== undefined;
   const monthly = isInstitution ? null : plan.price;
   const price   = monthly === null ? null : annual ? Math.round(monthly * 0.8) : monthly;
@@ -108,10 +110,10 @@ function PlanCard({
   const ctaLabel = isInstitution
     ? "Contact Sales"
     : isLaunch
-      ? "Claim Free Access"
+      ? t("pricing.getStartedFree")
       : free
-        ? "Start Free"
-        : `Get ${plan.name}`;
+        ? t("pricing.getStartedFree")
+        : `${t("pricing.getStarted")} — ${plan.name}`;
 
   return (
     <div style={{
@@ -180,6 +182,7 @@ function PlanCard({
         </ul>
 
         <button onClick={handleClick}
+          className={hi || isLaunch ? "btn-copper-shimmer" : ""}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: "100%", height: "42px", borderRadius: "4px",
@@ -228,6 +231,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 // ── Page ──────────────────────────────────────────────────────
 export default function PricingPage() {
+  const { t } = useTranslation();
   const [annual,    setAnnual]    = useState(false);
   const [activeTab, setActiveTab] = useState<"startup" | "investor">("startup");
   const { isLaunch, memberCount, target, loading } = useLaunchMode();
@@ -293,7 +297,7 @@ export default function PricingPage() {
 
               {/* Tab switcher */}
               <div style={{ display: "flex", borderBottom: "2px solid var(--cr-rule)", gap: "0" }}>
-                {([["startup", Building2, "For Startups"], ["investor", TrendingUp, "For Investors"]] as const).map(([tab, Icon, label]) => (
+                {([["startup", Building2, t("pricing.founders")], ["investor", TrendingUp, t("pricing.investors")]] as const).map(([tab, Icon, label]) => (
                   <button key={tab} onClick={() => setActiveTab(tab)}
                     style={{
                       display: "flex", alignItems: "center", gap: "7px",
@@ -419,10 +423,11 @@ export default function PricingPage() {
 
             <div style={{ display: "flex", gap: "12px" }}>
               <Link href="/auth/signup"
+                className="btn-copper-shimmer"
                 style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                 onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-                List Your Startup Free <ArrowRight style={{ width: 14, height: 14 }} />
+                {t("hero.ctaPrimary")} <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
               <Link href="/auth/signup"
                 style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}

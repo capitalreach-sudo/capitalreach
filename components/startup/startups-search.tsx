@@ -7,6 +7,8 @@ import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark }
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/useTranslation";
+import { ScoreRing } from "@/components/ui/ScoreRing";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -79,28 +81,6 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
   );
 }
 
-function ScoreRing({ score }: { score: number | null }) {
-  if (!score) return null;
-  const size  = 36;
-  const sw    = 3;
-  const r     = size / 2 - sw;
-  const c     = size / 2;
-  const circ  = 2 * Math.PI * r;
-  const dash  = (score / 100) * circ;
-  return (
-    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }} title={`AI Score: ${score}`}>
-      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-paper-4)" strokeWidth={sw} />
-        <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-copper)" strokeWidth={sw}
-          strokeLinecap="square" strokeDasharray={`${dash} ${circ}`} />
-      </svg>
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "9px", color: "var(--cr-copper)" }}>{score}</span>
-      </div>
-    </div>
-  );
-}
-
 function SkeletonCard() {
   return (
     <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "20px" }}>
@@ -128,14 +108,15 @@ function SkeletonCard() {
 }
 
 function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters: boolean; onReset: () => void }) {
+  const { t } = useTranslation();
   return (
     <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
       <Search style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
       <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>
-        {query ? `No results for "${query}"` : "No startups found"}
+        {query ? `${t("startups.noResults")} "${query}"` : t("startups.noListings")}
       </h3>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
-        {hasFilters ? "Try adjusting your filters." : "No startups are currently listed."}
+        {hasFilters ? t("startups.noResults") : t("startups.noListings")}
       </p>
       {hasFilters && (
         <button onClick={onReset} style={{
@@ -144,7 +125,7 @@ function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters:
           padding: "8px 20px", borderRadius: "4px", border: "1px solid var(--cr-paper-4)",
           cursor: "pointer",
         }}>
-          Clear filters
+          {t("filters.clearAll")}
         </button>
       )}
     </div>
@@ -154,6 +135,7 @@ function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters:
 // ── Search result card ────────────────────────────────────────────────────────
 
 function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: (id: string) => void }) {
+  const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
 
@@ -201,7 +183,7 @@ function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: 
               {s.tagline}
             </p>
           </div>
-          <ScoreRing score={score} />
+          {score !== null && <ScoreRing score={score} size={36} strokeWidth={3} />}
         </div>
 
         {/* Badges */}
@@ -222,9 +204,9 @@ function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: 
         {/* Metrics */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
           {[
-            { label: "MRR",    val: s.mrr         ? formatCurrency(s.mrr, true)                                : null },
-            { label: "ARR",    val: s.arr         ? formatCurrency(s.arr, true)                                : null },
-            { label: "Growth", val: s.growth_rate != null ? `${s.growth_rate >= 0 ? "+" : ""}${s.growth_rate}%` : null, isGrowth: true, positiveGrowth: (s.growth_rate ?? 0) >= 0 },
+            { label: t("startupDetail.mrr"),    val: s.mrr         ? formatCurrency(s.mrr, true)                                : null },
+            { label: t("startupDetail.arr"),    val: s.arr         ? formatCurrency(s.arr, true)                                : null },
+            { label: t("startupDetail.growth"), val: s.growth_rate != null ? `${s.growth_rate >= 0 ? "+" : ""}${s.growth_rate}%` : null, isGrowth: true, positiveGrowth: (s.growth_rate ?? 0) >= 0 },
           ].map(({ label, val, isGrowth, positiveGrowth }) => (
             <div key={label} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "8px 10px 7px" }}>
               <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{label}</div>
@@ -241,14 +223,14 @@ function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: 
         {/* Raise strip */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
           <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>Raising</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("listings.raising")}</div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
               {formatCurrency(s.funding_target, true)}
             </div>
           </div>
           {s.runway_months != null && (
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-              {s.runway_months}mo runway
+              {t("startups.runway", { months: s.runway_months ?? 0 })}
             </div>
           )}
         </div>
@@ -260,6 +242,7 @@ function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export function StartupsSearch() {
+  const { t } = useTranslation();
   const searchParams  = useSearchParams();
   const initialQuery  = searchParams.get("q") ?? "";
 
@@ -346,12 +329,12 @@ export function StartupsSearch() {
             <div>
               <div className="ruled-label" style={{ marginBottom: "12px" }}>Deal Flow</div>
               <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "10px" }}>
-                Active fundraising rounds
+                {t("startups.pageTitle")}
               </h1>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>
-                {loading ? "Loading startups…" : allStartups.length > 0
-                  ? `${allStartups.length.toLocaleString()} vetted startup${allStartups.length !== 1 ? "s" : ""} currently raising`
-                  : "Vetted startups currently raising capital"}
+                {loading ? t("common.loading") : allStartups.length > 0
+                  ? t("startups.pageSubtitle", { count: allStartups.length })
+                  : t("startups.noListings")}
               </p>
             </div>
 
@@ -404,7 +387,7 @@ export function StartupsSearch() {
               type="text"
               value={filters.query}
               onChange={(e) => patch({ query: e.target.value })}
-              placeholder="Search startups…"
+              placeholder={t("startups.search")}
               style={{
                 background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
                 borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
@@ -443,14 +426,14 @@ export function StartupsSearch() {
             style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer", flexShrink: 0 }}
           >
             <SlidersHorizontal style={{ width: 13, height: 13 }} />
-            Filters{activeCount > 0 ? ` · ${activeCount}` : ""}
+            {t("startups.filters")}{activeCount > 0 ? ` · ${activeCount}` : ""}
           </button>
 
           {/* Clear */}
           {(activeCount > 0 || filters.query) && (
             <button onClick={resetFilters}
               style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 10px", cursor: "pointer", flexShrink: 0 }}>
-              <X style={{ width: 11, height: 11 }} /> Clear
+              <X style={{ width: 11, height: 11 }} /> {t("filters.clearAll")}
             </button>
           )}
         </div>
@@ -461,7 +444,7 @@ export function StartupsSearch() {
         {/* Count + mobile sort */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-            {loading ? "Loading…" : `Showing ${visible.length.toLocaleString()} of ${filtered.length.toLocaleString()} startups`}
+            {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
           </p>
           <button
             className="lg:hidden"
@@ -493,13 +476,13 @@ export function StartupsSearch() {
           <div style={{ marginTop: "40px", display: "flex", justifyContent: "center" }}>
             <button onClick={() => setPage((p) => p + 1)}
               style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "10px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: "pointer" }}>
-              Load {Math.min(PAGE_SIZE, filtered.length - visible.length)} more startups
+              {t("startups.loadMore", { count: Math.min(PAGE_SIZE, filtered.length - visible.length) })}
             </button>
           </div>
         )}
         {!hasMore && !loading && filtered.length > 0 && (
           <p style={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "40px" }}>
-            All {filtered.length.toLocaleString()} startups loaded
+            {t("startups.allLoaded", { count: filtered.length })}
           </p>
         )}
       </div>
@@ -512,7 +495,7 @@ export function StartupsSearch() {
             <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "12px auto 20px" }} />
             <div style={{ padding: "0 20px 20px" }}>
               <div style={{ marginBottom: "24px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>Industry</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>{t("filters.industry")}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {INDUSTRIES.map((ind) => (
                     <FilterChip key={ind} active={filters.industries.includes(ind)}
@@ -523,7 +506,7 @@ export function StartupsSearch() {
                 </div>
               </div>
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>Stage</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>{t("filters.stage")}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {STAGES.map((s) => (
                     <FilterChip key={s.value} active={filters.stages.includes(s.value)}
@@ -537,11 +520,12 @@ export function StartupsSearch() {
             <div style={{ position: "sticky", bottom: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "14px 20px", display: "flex", gap: "10px" }}>
               <button onClick={resetFilters}
                 style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
-                Reset
+                {t("filters.reset")}
               </button>
               <button onClick={() => setSidebarOpen(false)}
+                className="btn-copper-shimmer"
                 style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer" }}>
-                Apply
+                {t("filters.apply")}
               </button>
             </div>
           </div>

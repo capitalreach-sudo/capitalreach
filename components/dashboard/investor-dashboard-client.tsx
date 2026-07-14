@@ -15,6 +15,7 @@ import {
 } from "@/types";
 import { formatDate } from "@/lib/utils";
 import type { Profile, Investor, Watchlist, Deal, AiReport, DealStatus } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   profile:    Profile;
@@ -24,13 +25,7 @@ interface Props {
   aiReports:  AiReport[];
 }
 
-const TABS = [
-  { value: "watchlist", label: "Watchlist",  Icon: Bookmark   },
-  { value: "deals",     label: "Deal Flow",  Icon: TrendingUp },
-  { value: "reports",   label: "AI Reports", Icon: Brain      },
-  { value: "billing",   label: "Billing",    Icon: CreditCard },
-] as const;
-type InvestorTab = typeof TABS[number]["value"];
+type InvestorTab = "watchlist" | "deals" | "reports" | "billing";
 
 // ── Shared button styles ──────────────────────────────────────────────────────
 
@@ -69,7 +64,15 @@ const FEATURE_ROWS = [
 export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
+  const { t }        = useTranslation();
   const [activeTab, setActiveTab] = useState<InvestorTab>("watchlist");
+
+  const TABS: { value: InvestorTab; label: string; Icon: React.ElementType }[] = [
+    { value: "watchlist", label: t("dashboard.watchlist"), Icon: Bookmark   },
+    { value: "deals",     label: t("dashboard.dealFlow"),  Icon: TrendingUp },
+    { value: "reports",   label: t("dashboard.aiReports"), Icon: Brain      },
+    { value: "billing",   label: t("dashboard.billing"),   Icon: CreditCard },
+  ];
 
   useEffect(() => {
     if (searchParams.get("upgraded") === "1") {
@@ -155,7 +158,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "10px" }}>Investor Dashboard</div>
+            <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.investorDashboard")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "6px" }}>
               {profile.full_name || "Your Portfolio"}
             </h1>

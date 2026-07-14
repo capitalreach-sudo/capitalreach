@@ -19,7 +19,7 @@ const DiamondLogo = ({ size = 10 }: { size?: number }) => (
 );
 
 export function Navbar() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [profile, setProfile]       = useState<Profile | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
@@ -129,7 +129,7 @@ export function Navbar() {
 
           {/* Right — auth */}
           <div className="hidden lg:flex items-center gap-5">
-            <LanguageSwitcher />
+            <LanguageSwitcher currentLocale={locale} />
             {profile ? (
               <>
                 <Link href="/dashboard/messages"
@@ -207,7 +207,7 @@ export function Navbar() {
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "rgba(155,35,53,0.08)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "")}
                       >
-                        <LogOut className="h-3.5 w-3.5" /> {t("nav.signOut")}
+                        <LogOut className="h-3.5 w-3.5" /> {t("nav.logOut")}
                       </button>
                     </div>
                   </div>
@@ -387,7 +387,7 @@ export function Navbar() {
                     borderRadius: "4px", border: "1px solid rgba(155,35,53,0.3)", cursor: "pointer",
                   }}
                 >
-                  {t("nav.signOut")}
+                  {t("nav.logOut")}
                 </button>
               </div>
             )}

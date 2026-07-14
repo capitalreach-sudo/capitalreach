@@ -15,8 +15,10 @@ import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelect
 import Link from "next/link";
 import { getInitials } from "@/lib/utils";
 import type { Profile } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AccountSettingsPage() {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -100,9 +102,9 @@ export default function AccountSettingsPage() {
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="flex items-center gap-3 mb-6">
           <Link href={dashboardPath}>
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> Back</Button>
+            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
           </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">Account Settings</h1>
+          <h1 className="text-2xl font-bold text-cr-ink">{t("settings.pageTitle")}</h1>
         </div>
 
         <div className="space-y-6">
@@ -110,7 +112,7 @@ export default function AccountSettingsPage() {
           <section className="bg-cr-paper border rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-5">
               <Shield className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">Profile</h2>
+              <h2 className="font-semibold text-cr-ink">{t("settings.profile")}</h2>
             </div>
 
             <div className="flex items-center gap-4 mb-5">
@@ -121,7 +123,7 @@ export default function AccountSettingsPage() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium text-cr-ink">{profile?.full_name || "No name set"}</p>
+                <p className="font-medium text-cr-ink">{profile?.full_name || t("settings.noNameSet")}</p>
                 <p className="text-sm text-cr-i3">{profile?.email}</p>
                 <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-cr-copper/15 text-cr-cu-l capitalize">
                   {profile?.role}
@@ -131,22 +133,22 @@ export default function AccountSettingsPage() {
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div className="space-y-1.5">
-                <Label>Full Name</Label>
-                <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Your name" />
+                <Label>{t("settings.fullName")}</Label>
+                <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={t("settings.yourName")} />
               </div>
               <div className="space-y-1.5">
-                <Label>Avatar URL</Label>
+                <Label>{t("settings.avatarUrl")}</Label>
                 <Input value={avatarUrl} onChange={e => setAvatarUrl(e.target.value)} placeholder="https://…" />
-                <p className="text-xs text-cr-i4">Paste a direct image URL, or use a service like Gravatar</p>
+                <p className="text-xs text-cr-i4">{t("settings.avatarHint")}</p>
               </div>
               <div className="space-y-1.5">
-                <Label>Email</Label>
+                <Label>{t("settings.email")}</Label>
                 <Input value={profile?.email || ""} disabled className="bg-cr-p2 text-cr-i3" />
-                <p className="text-xs text-cr-i4">Email changes require contacting support</p>
+                <p className="text-xs text-cr-i4">{t("settings.emailHint")}</p>
               </div>
               <Button type="submit" className="gap-2" disabled={saving}>
                 <Save className="h-4 w-4" />
-                {saving ? "Saving…" : "Save Changes"}
+                {saving ? t("settings.saving2") : t("settings.saveChanges")}
               </Button>
             </form>
           </section>
@@ -155,30 +157,30 @@ export default function AccountSettingsPage() {
           <section className="bg-cr-paper border rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-5">
               <Shield className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">Change Password</h2>
+              <h2 className="font-semibold text-cr-ink">{t("settings.changePassword")}</h2>
             </div>
             <form onSubmit={handleChangePassword} className="space-y-4">
               <div className="space-y-1.5">
-                <Label>New Password</Label>
+                <Label>{t("settings.newPassword")}</Label>
                 <Input
                   type="password"
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  placeholder="Minimum 8 characters"
+                  placeholder={t("settings.passwordMinLength")}
                   minLength={8}
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Confirm New Password</Label>
+                <Label>{t("settings.confirmPassword")}</Label>
                 <Input
                   type="password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter new password"
+                  placeholder={t("settings.reEnterPassword")}
                 />
               </div>
               <Button type="submit" variant="outline" className="gap-2" disabled={savingPassword || newPassword.length < 8}>
-                {savingPassword ? "Updating…" : "Update Password"}
+                {savingPassword ? t("settings.updating") : t("settings.updatePassword")}
               </Button>
             </form>
           </section>
@@ -187,14 +189,14 @@ export default function AccountSettingsPage() {
           <section className="bg-cr-paper border rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-2">
               <CreditCard className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">Billing & Subscription</h2>
+              <h2 className="font-semibold text-cr-ink">{t("settings.billing")}</h2>
             </div>
             <p className="text-sm text-cr-i3 mb-4">
-              Manage your subscription, update your payment method, or download invoices through the Stripe Customer Portal.
+              {t("settings.billingDesc")}
             </p>
             <Button variant="outline" onClick={handlePortal} className="gap-2">
               <CreditCard className="h-4 w-4" />
-              Open Billing Portal
+              {t("settings.openBillingPortal")}
             </Button>
           </section>
 
@@ -202,10 +204,10 @@ export default function AccountSettingsPage() {
           <section className="bg-cr-paper border rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-2">
               <Bell className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">Email Notifications</h2>
+              <h2 className="font-semibold text-cr-ink">{t("settings.notifications")}</h2>
             </div>
             <p className="text-sm text-cr-i3">
-              All transactional emails (messages, deal updates, NDA completions) are sent to <strong>{profile?.email}</strong>. Manage marketing preferences in your inbox or contact support.
+              {t("settings.notificationsDesc")} <strong>{profile?.email}</strong>.
             </p>
           </section>
 
@@ -213,10 +215,10 @@ export default function AccountSettingsPage() {
           <section className="bg-cr-paper border rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-2">
               <Globe className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">Language</h2>
+              <h2 className="font-semibold text-cr-ink">{t("settings.language")}</h2>
             </div>
             <p className="text-sm text-cr-i3 mb-4">
-              Choose the language for the CapitalReach interface.
+              {t("settings.languageDesc")}
             </p>
             <LanguageSettingsSelector />
           </section>
@@ -225,10 +227,10 @@ export default function AccountSettingsPage() {
           <section className="bg-cr-paper border border-red-100 rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-2">
               <Trash2 className="h-4 w-4 text-red-500" />
-              <h2 className="font-semibold text-red-400">Danger Zone</h2>
+              <h2 className="font-semibold text-red-400">{t("settings.dangerZone")}</h2>
             </div>
             <p className="text-sm text-cr-i3 mb-4">
-              Permanently delete your account and all associated data. This action cannot be undone.
+              {t("settings.dangerZoneDesc")}
             </p>
             {!deletingAccount ? (
               <Button
@@ -237,12 +239,12 @@ export default function AccountSettingsPage() {
                 onClick={() => setDeletingAccount(true)}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete Account
+                {t("settings.deleteAccount")}
               </Button>
             ) : (
               <div className="space-y-3">
                 <p className="text-sm font-medium text-red-400">
-                  Are you sure? All your data, listings, and subscriptions will be permanently removed.
+                  {t("settings.deleteConfirm")}
                 </p>
                 <div className="flex gap-3">
                   <Button
@@ -269,9 +271,9 @@ export default function AccountSettingsPage() {
                       }
                     }}
                   >
-                    {deleteLoading ? "Deleting…" : "Yes, permanently delete my account"}
+                    {deleteLoading ? t("settings.deletingAccount") : t("settings.deletePermanently")}
                   </Button>
-                  <Button variant="ghost" onClick={() => setDeletingAccount(false)} disabled={deleteLoading}>Cancel</Button>
+                  <Button variant="ghost" onClick={() => setDeletingAccount(false)} disabled={deleteLoading}>{t("common.cancel")}</Button>
                 </div>
               </div>
             )}

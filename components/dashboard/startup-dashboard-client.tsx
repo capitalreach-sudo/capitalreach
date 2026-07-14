@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup, Deal, DealStatus } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -23,14 +24,7 @@ interface Props {
   isLaunchMode: boolean;
 }
 
-const TABS = [
-  { value: "overview",   label: "Overview"      },
-  { value: "deals",      label: "Deal Pipeline" },
-  { value: "documents",  label: "Documents"     },
-  { value: "ai",         label: "AI Feedback"   },
-  { value: "billing",    label: "Billing"       },
-] as const;
-type StartupTab = typeof TABS[number]["value"];
+type StartupTab = "overview" | "deals" | "documents" | "ai" | "billing";
 
 // ── Profile completion ────────────────────────────────────────────────────────
 
@@ -103,9 +97,18 @@ const VIS_ROWS = [
 
 export function StartupDashboardClient({ profile, startup, analytics, deals, isLaunchMode }: Props) {
   const router       = useRouter();
+  const { t }        = useTranslation();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
+
+  const TABS: { value: StartupTab; label: string }[] = [
+    { value: "overview",  label: t("dashboard.overview")    },
+    { value: "deals",     label: t("dashboard.dealPipeline") },
+    { value: "documents", label: t("dashboard.documents")   },
+    { value: "ai",        label: t("dashboard.aiFeedback")  },
+    { value: "billing",   label: t("dashboard.billing")     },
+  ];
 
   const { score, missing } = startup
     ? getProfileCompletion(startup)
@@ -148,11 +151,11 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
         <div style={{ width: 56, height: 56, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
           <LayoutGrid style={{ width: 24, height: 24, color: "var(--cr-ink-4)" }} />
         </div>
-        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "28px", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>Set up your startup profile</h2>
+        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "28px", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>{t("dashboard.setUpProfile")}</h2>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "400px", marginBottom: "28px" }}>
-          Create your listing to start attracting investors on CapitalReach.
+          {t("dashboard.setUpProfileSub")}
         </p>
-        <Link href="/onboarding/startup" style={primaryBtn}>Create Your Profile</Link>
+        <Link href="/onboarding/startup" style={primaryBtn}>{t("dashboard.createYourProfile")}</Link>
       </main>
     );
   }
@@ -164,7 +167,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "10px" }}>Startup Dashboard</div>
+            <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.startupDashboard")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(26px, 4vw, 34px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "10px" }}>
               {startup.name}
             </h1>
@@ -177,10 +180,10 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <Link href={`/startups/${startup.slug}`} target="_blank" style={outlineBtn}>
-              <ExternalLink style={{ width: 12, height: 12 }} /> View Listing
+              <ExternalLink style={{ width: 12, height: 12 }} /> {t("dashboard.viewListing")}
             </Link>
             <Link href="/dashboard/startup/edit" style={outlineBtn}>
-              <Settings style={{ width: 12, height: 12 }} /> Edit Profile
+              <Settings style={{ width: 12, height: 12 }} /> {t("dashboard.editProfile")}
             </Link>
           </div>
         </div>
@@ -193,8 +196,8 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
           <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(180,83,9,0.2)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "#B45309", flexShrink: 0 }} />
             <div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#B45309" }}>Profile under review</p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#92400E" }}>Our team will approve your listing within 1–2 business days.</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#B45309" }}>{t("dashboard.profileUnderReview")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#92400E" }}>{t("dashboard.reviewNote")}</p>
             </div>
           </div>
         )}
@@ -202,10 +205,10 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
         {/* Stats strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
           {[
-            { label: "Profile Views (30d)", val: analytics.views,                      Icon: Eye           },
-            { label: "Investor Saves",      val: analytics.saves,                      Icon: Bookmark      },
-            { label: "Active Deals",        val: analytics.deals,                      Icon: MessageSquare },
-            { label: "AI Score",            val: startup.vaultrise_score ?? "—",       Icon: TrendingUp    },
+            { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye           },
+            { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark      },
+            { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: MessageSquare },
+            { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp   },
           ].map(({ label, val, Icon }) => (
             <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
@@ -219,7 +222,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
 
         {/* Tab bar */}
         <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", overflowX: "auto" }}>
-          {TABS.filter(t => t.value !== "ai" || canGrowth).map(({ value, label }) => (
+          {TABS.filter(tab => tab.value !== "ai" || canGrowth).map(({ value, label }) => (
             <button key={value} onClick={() => setActiveTab(value)}
               style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === value ? 600 : 300, fontSize: "13px", color: activeTab === value ? "var(--cr-ink)" : "var(--cr-ink-4)", padding: "10px 18px 9px", whiteSpace: "nowrap", borderBottom: activeTab === value ? "2px solid var(--cr-copper)" : "2px solid transparent", transition: "color 100ms, border-color 100ms" }}>
               {label}
@@ -232,7 +235,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,2fr)", gap: "20px" }}>
             {/* Profile completion */}
             <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "16px" }}>Profile Completion</h3>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "16px" }}>{t("dashboard.profileCompletion")}</h3>
               <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "10px" }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", color: "var(--cr-copper)", lineHeight: 1 }}>{score}</span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "18px", color: "var(--cr-ink-4)" }}>%</span>
@@ -243,7 +246,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
               </div>
               {missing.length === 0 ? (
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-up)" }}>
-                  <CheckCircle2 style={{ width: 14, height: 14 }} /> Profile complete!
+                  <CheckCircle2 style={{ width: 14, height: 14 }} /> {t("dashboard.profileComplete")}
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
@@ -256,7 +259,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                 </div>
               )}
               <Link href="/dashboard/startup/edit" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "36px", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", textDecoration: "none", marginTop: "8px" }}>
-                Complete Profile
+                {t("dashboard.completeProfile")}
               </Link>
             </div>
 
@@ -264,13 +267,13 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {/* Quick actions */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "14px" }}>Quick Actions</h3>
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "14px" }}>{t("dashboard.quickActions")}</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                   {[
-                    { href: "/dashboard/messages",       Icon: MessageSquare, label: "Messages"    },
-                    { href: "/dashboard/startup/edit",   Icon: Settings,      label: "Edit Profile" },
-                    { href: "/pricing",                  Icon: TrendingUp,    label: "Upgrade Plan" },
-                    { href: `/startups/${startup.slug}`, Icon: ExternalLink,  label: "Public View", ext: true },
+                    { href: "/dashboard/messages",       Icon: MessageSquare, label: t("dashboard.messages")    },
+                    { href: "/dashboard/startup/edit",   Icon: Settings,      label: t("dashboard.editProfile") },
+                    { href: "/pricing",                  Icon: TrendingUp,    label: t("dashboard.upgradePlan") },
+                    { href: `/startups/${startup.slug}`, Icon: ExternalLink,  label: t("dashboard.publicView"), ext: true },
                   ].map(({ href, Icon, label, ext }) => (
                     <Link key={label} href={href} {...(ext ? { target: "_blank" } : {})}
                       style={{ display: "flex", alignItems: "center", gap: "6px", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", textDecoration: "none" }}
@@ -287,7 +290,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                 <div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{tier} Plan</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
-                    {tier === "free" ? "Upgrade to get publicly listed" : "Active subscription"}
+                    {tier === "free" ? t("dashboard.upgradeTierNote") : t("dashboard.activeSubscription")}
                   </p>
                 </div>
                 {tier === "free"
@@ -298,7 +301,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
               {/* Profile visibility */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
                 <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <Zap style={{ width: 13, height: 13, color: "var(--cr-copper)" }} /> Profile Visibility
+                  <Zap style={{ width: 13, height: 13, color: "var(--cr-copper)" }} /> {t("dashboard.profileVisibility")}
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {VIS_ROWS.map((row) => {
@@ -322,7 +325,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                 </div>
                 {tier === "free" && (
                   <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "16px", width: "100%", boxSizing: "border-box" }}>
-                    Unlock More Profile Info
+                    {t("dashboard.unlockProfileInfo")}
                   </Link>
                 )}
               </div>
@@ -339,9 +342,9 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
         {activeTab === "documents" && (
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>Uploaded Documents</h3>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>{t("dashboard.uploadedDocuments")}</h3>
               <Link href="/dashboard/startup/documents" style={primaryBtn}>
-                <FileText style={{ width: 12, height: 12 }} /> Manage
+                <FileText style={{ width: 12, height: 12 }} /> {t("dashboard.manage")}
               </Link>
             </div>
             {startup.documents && startup.documents.length > 0 ? (
@@ -371,7 +374,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
               </div>
             ) : (
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-                No documents uploaded. Add your pitch deck to attract investors.
+                {t("dashboard.noDocuments")}
               </p>
             )}
           </div>
