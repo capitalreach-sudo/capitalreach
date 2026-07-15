@@ -48,6 +48,23 @@ export function Footer() {
     <footer style={{ background: "#EDE8DE", borderTop: "1px solid rgba(26,22,18,0.15)" }}>
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-8">
 
+        {/* Copper promise line */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: "8px", marginBottom: "40px",
+          padding: "12px 0",
+          borderTop: "1px solid rgba(181,101,29,0.2)",
+          borderBottom: "1px solid rgba(181,101,29,0.2)",
+        }}>
+          <span style={{
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+            fontSize: "12px", color: "#B5651D", letterSpacing: "0.05em",
+            textAlign: "center",
+          }}>
+            ◆ 2% success fee · only after close · founders only · never investors
+          </span>
+        </div>
+
         {/* Row 1 — logo + link groups */}
         <div className="flex flex-col lg:flex-row justify-between gap-10 mb-14">
 

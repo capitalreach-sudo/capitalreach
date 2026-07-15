@@ -7,6 +7,9 @@ import { useReveal } from "@/hooks/useReveal";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
+import { TypewriterText } from "@/components/ui/TypewriterText";
+import { HeroParticles } from "@/components/ui/HeroParticles";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import { formatCurrency, formatGrowth } from "@/lib/format";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 import type { PlatformStats } from "@/lib/stats";
@@ -100,6 +103,16 @@ function HeroCard({ startup }: { startup: HeroStartup }) {
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
           <StageBadge stage={startup.stage} />
+          {/* 2% badge */}
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: "4px",
+            background: "rgba(181,101,29,0.12)", border: "1px solid rgba(181,101,29,0.3)",
+            borderRadius: "3px", padding: "3px 7px",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+            fontSize: "10px", color: "#B5651D", letterSpacing: "0.04em",
+          }}>
+            ◆ 2% at close only
+          </span>
           <Link href={`/startups/${startup.slug}`}
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "#B5651D", textDecoration: "none" }}>
             {t("common.viewDeal")} →
@@ -216,6 +229,9 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
         style={{ background: "#F5F0E8", position: "relative", overflow: "hidden" }}
         className="min-h-[calc(100svh-56px)] flex items-center"
       >
+        {/* Copper dot particle trail on mouse move */}
+        <HeroParticles />
+
         {/* Ambient orbs */}
         <div className="hero-orb" style={{ width: 600, height: 600, top: "-200px", left: "-200px" }} />
         <div className="hero-orb" style={{ width: 400, height: 400, bottom: "-100px", right: "-100px", animationDelay: "-6s" }} />
@@ -240,7 +256,17 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
             }}>
               {t("hero.headline1")}<br />
               {t("hero.headline2")}<br />
-              <span style={{ color: "#B5651D" }}>{t("hero.headline3")}</span>
+              <TypewriterText
+                texts={[
+                  t("hero.headline3"),
+                  "Raise smarter.",
+                  "Close faster.",
+                  "2% at close.",
+                ]}
+                speed={52}
+                delay={2000}
+                style={{ color: "#B5651D" }}
+              />
             </h1>
 
             <p style={{
@@ -253,27 +279,35 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
             }}>
               {t("hero.sub")}
             </p>
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
+              fontSize: "13px", color: "#9C8E82", lineHeight: 1.5,
+              marginTop: "12px", maxWidth: "420px",
+              display: "flex", alignItems: "center", gap: "8px",
+            }}>
+              <span style={{ color: "#B5651D", fontSize: "10px" }}>◆</span>
+              <span>
+                <strong style={{ fontWeight: 600, color: "#B5651D" }}>2% success fee</strong>
+                {" — "}invoiced only after your deal closes. Zero upfront cost.
+              </span>
+            </p>
 
             {/* CTAs */}
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "40px", flexWrap: "wrap" }}>
               <Link href="/auth/signup?role=startup" style={{ textDecoration: "none" }}>
-                <button
+                <MagneticButton
                   className="btn-copper-shimmer"
-                  style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "4px", border: "none", cursor: "pointer", transition: "background 120ms ease" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#D4842A")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#B5651D")}
+                  style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "4px", border: "none", cursor: "pointer" }}
                 >
                   {t("hero.ctaPrimary")}
-                </button>
+                </MagneticButton>
               </Link>
               <Link href="/startups" style={{ textDecoration: "none" }}>
-                <button
-                  style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer", transition: "border-color 120ms ease" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "#9C8E82")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "#D8D0C4")}
+                <MagneticButton
+                  style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
                 >
                   {t("hero.ctaSecondary")} →
-                </button>
+                </MagneticButton>
               </Link>
             </div>
 
@@ -459,6 +493,51 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           )}
         </div>
       </section>
+
+      {/* ── 2% FEE STRIP ── */}
+      <div style={{
+        background: "#1A1612", padding: "32px 0", position: "relative", overflow: "hidden",
+      }}>
+        {/* Animated copper draw-line — class defined in globals.css */}
+        <div className="fee-strip-line" />
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10">
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: "40px", flexWrap: "wrap",
+          }}>
+            <span style={{
+              fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+              fontSize: "clamp(36px,5vw,56px)", color: "#B5651D",
+              lineHeight: 1, letterSpacing: "-0.04em", flexShrink: 0,
+            }}>
+              2%
+            </span>
+            <div style={{ maxWidth: "440px" }}>
+              <p style={{
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+                fontSize: "16px", color: "#F5F0E8", marginBottom: "6px",
+              }}>
+                Success fee. Paid at close. Nothing before.
+              </p>
+              <p style={{
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
+                fontSize: "13px", color: "#9C8E82", lineHeight: 1.6,
+              }}>
+                Only charged to startups when a deal is confirmed closed through a CapitalReach connection.
+                Investors pay <strong style={{ fontWeight: 600, color: "#B5651D" }}>zero</strong> transaction fees.
+              </p>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexShrink: 0 }}>
+              {["Zero upfront fees", "Invoiced after close", "Founders only"].map(item => (
+                <div key={item} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ color: "#B5651D", fontSize: "10px" }}>◆</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#9C8E82" }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ── HOW IT WORKS ── */}
       <section
@@ -757,23 +836,19 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
               <Link href="/auth/signup?role=startup" style={{ textDecoration: "none" }}>
-                <button
+                <MagneticButton
                   className="btn-copper-shimmer"
                   style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 32px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#D4842A")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#B5651D")}
                 >
                   {t("cta.listStartup")}
-                </button>
+                </MagneticButton>
               </Link>
               <Link href="/auth/signup?role=investor" style={{ textDecoration: "none" }}>
-                <button
+                <MagneticButton
                   style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 32px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "#9C8E82")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "#D8D0C4")}
                 >
                   {t("cta.exploreInvestor")} →
-                </button>
+                </MagneticButton>
               </Link>
             </div>
           </div>

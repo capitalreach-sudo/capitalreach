@@ -83,20 +83,35 @@ export function Navbar() {
       >
         <div className="flex items-center justify-between h-full max-w-[1200px] mx-auto px-6 lg:px-10">
 
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-[10px] flex-shrink-0 select-none" style={{ textDecoration: "none" }}>
-            <DiamondLogo size={10} />
-            <span style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
-              fontWeight:    700,
-              fontSize:      "18px",
-              color:         "#1A1612",
-              letterSpacing: "-0.02em",
-              lineHeight:    1,
-            }}>
-              CapitalReach
-            </span>
-          </Link>
+          {/* Logo + 2% signal */}
+          <div className="flex items-center gap-4 flex-shrink-0 select-none">
+            <Link href="/" className="flex items-center gap-[10px]" style={{ textDecoration: "none" }}>
+              <DiamondLogo size={10} />
+              <span style={{
+                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontWeight:    700,
+                fontSize:      "18px",
+                color:         "#1A1612",
+                letterSpacing: "-0.02em",
+                lineHeight:    1,
+              }}>
+                CapitalReach
+              </span>
+            </Link>
+
+            {/* 2% at close signal — desktop only */}
+            <div className="hidden lg:flex items-center gap-3" aria-label="2% success fee at close">
+              <div style={{ width: "1px", height: "20px", background: "rgba(26,22,18,0.15)" }} />
+              <span style={{
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+                fontSize: "11px", color: "#B5651D", letterSpacing: "0.02em",
+                display: "flex", alignItems: "center", gap: "5px",
+              }}>
+                <span style={{ fontSize: "9px" }}>◆</span>
+                2% at close
+              </span>
+            </div>
+          </div>
 
           {/* Center links — desktop */}
           <div className="hidden lg:flex items-center gap-10">

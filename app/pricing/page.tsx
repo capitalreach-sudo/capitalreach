@@ -167,7 +167,7 @@ function PlanCard({
         <ul style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1, marginBottom: "24px" }}>
           {features.map((f) => (
             <li key={f.text} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              {(f.on || isLaunch) ? (
+              {f.on ? (
                 <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-up)" }} />
                 </span>
@@ -176,7 +176,7 @@ function PlanCard({
                   <span style={{ width: 10, height: "1px", background: "var(--cr-rule-dark)" }} />
                 </span>
               )}
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: (f.on || isLaunch) ? "var(--cr-ink-3)" : "var(--cr-ink-4)" }}>{f.text}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: f.on ? "var(--cr-ink-3)" : "var(--cr-ink-4)" }}>{f.text}</span>
             </li>
           ))}
         </ul>
@@ -337,6 +337,43 @@ export default function PricingPage() {
                   </span>
                 </div>
               )}
+            </div>
+
+            {/* 2% success fee callout */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: "20px",
+              background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)",
+              borderRadius: "4px", padding: "16px 20px", marginBottom: "24px",
+            }}>
+              <div style={{
+                flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                width: "40px", height: "40px",
+                background: "rgba(181,101,29,0.12)", borderRadius: "4px",
+                border: "1px solid var(--cr-copper-br)",
+              }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)", letterSpacing: "-0.03em" }}>2%</span>
+              </div>
+              <div>
+                {activeTab === "startup" ? (
+                  <>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>
+                      One success fee. Only after closing.
+                    </p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
+                      All startup plans carry a <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>2% fee on capital raised</strong> through a CapitalReach connection — invoiced after the deal closes. Zero upfront. Investors pay nothing.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>
+                      Investors pay zero success fees.
+                    </p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
+                      The <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>2% success fee</strong> is charged only to startups, after a deal closes. Your subscription covers your access — nothing more.
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
 
             {activeTab === "startup" && (

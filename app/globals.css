@@ -501,6 +501,54 @@ body::before {
   }
 }
 
+/* ── FEATURE 10: Spinner ────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── FEATURE 11: Count-up glow → ink transition ─────────── */
+@keyframes countGlow {
+  0%   { color: var(--cr-copper); text-shadow: 0 0 20px rgba(181,101,29,0.35); }
+  100% { color: var(--cr-ink);    text-shadow: none; }
+}
+.count-glow-done {
+  animation: countGlow 1.2s ease forwards;
+}
+
+/* ── FEATURE 12: Grid paper background (data page) ──────── */
+.data-page-bg {
+  background-color: var(--cr-paper);
+  background-image:
+    linear-gradient(rgba(181,101,29,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(181,101,29,0.055) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── FEATURE 13: Copper drawLine (fee strip) ─────────────── */
+@keyframes drawLine {
+  from { width: 0;    opacity: 0; }
+  to   { width: 100%; opacity: 0.3; }
+}
+.fee-strip-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fee-strip-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  height: 1px;
+  width: 0;
+  background: var(--cr-copper);
+  animation: drawLine 1.6s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+}
+
 /* ── Reduced motion — disable all new animations ────────── */
 @media (prefers-reduced-motion: reduce) {
   body::before { display: none; }
@@ -508,4 +556,6 @@ body::before {
   .hero-orb { animation: none; }
   .reveal-child { opacity: 1; transform: none; transition: none; }
   .listing-row::before { transition: none; }
+  .count-glow-done { animation: none; }
+  .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
 }

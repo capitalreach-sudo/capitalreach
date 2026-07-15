@@ -1,81 +1,63 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { createClient } from "@/lib/supabase";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  TrendingUp, BarChart3, Users, DollarSign, Zap, ArrowUpRight,
-  Clock, CheckCircle2, Activity, Globe, Building2, Brain,
-  Loader2, RefreshCw,
+  TrendingUp, BarChart3, Users, DollarSign,
+  Zap, Activity, Building2, Brain,
+  Loader2, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
-interface PlatformStats {
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+interface TopStartup {
+  name: string;
+  slug: string;
+  industry: string;
+  stage: string;
+  mrr: number | null;
+  ai_score: number | null;
+  funding_target: number;
+  created_at: string;
+}
+
+interface PlatformData {
   startupCount: number;
   investorCount: number;
-  activeListings: number;
-  aiScoresGenerated: number;
+  totalRaised: number;
+  dealsCount: number;
+  byIndustry: Record<string, number>;
+  byStage: Record<string, number>;
+  topStartups: TopStartup[];
+  recentStartups: TopStartup[];
+  lastUpdated: string;
 }
 
-interface IndustryCount {
-  industry: string;
-  count: number;
-}
-
-interface StageCount {
-  stage: string;
-  count: number;
-}
-
-interface RecentStartup {
-  id: string;
-  slug: string;
-  name: string;
-  industry: string;
-  stage: string;
-  funding_target: number;
-  mrr: number | null;
-  vaultrise_score: number | null;
-  created_at: string;
-  featured: boolean;
-}
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
 const STAGE_LABELS: Record<string, string> = {
   pre_seed: "Pre-Seed",
-  seed: "Seed",
+  seed:     "Seed",
   series_a: "Series A",
   series_b: "Series B+",
 };
 
-const INDUSTRY_COLORS: Record<string, string> = {
-  "FinTech": "bg-blue-500",
-  "HealthTech": "bg-emerald-500",
-  "Deep Tech / AI": "bg-purple-600",
-  "EdTech": "bg-amber-500",
-  "Climate / CleanTech": "bg-teal-500",
-  "B2B SaaS": "bg-slate-500",
-  "AgriTech": "bg-lime-500",
-  "PropTech": "bg-orange-500",
-  "Logistics / Supply Chain": "bg-cyan-500",
-  "Consumer": "bg-pink-500",
-};
-
-const STAGE_COLORS: Record<string, string> = {
-  pre_seed: "#818cf8",
-  seed: "#22c55e",
-  series_a: "#f59e0b",
-  series_b: "#f43f5e",
-};
-
-function formatMrr(n: number | null) {
-  if (!n || n === 0) return "Pre-rev";
+function fmtMrr(n: number | null) {
+  if (!n) return "Pre-rev";
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
   return `$${n}`;
 }
 
-function formatFunding(n: number) {
+function fmtRaising(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   return `$${(n / 1000).toFixed(0)}K`;
+}
+
+function fmtMoney(n: number) {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
+  return `$${n}`;
 }
 
 function timeAgo(iso: string) {
@@ -86,350 +68,358 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function HorizontalBar({ label, pct, count, color }: { label: string; pct: number; count: number; color: string }) {
+// ── Animated count-up ─────────────────────────────────────────────────────────
+
+function useCountUp(target: number, duration = 900) {
+  const [value, setValue] = useState(0);
+  const [done, setDone] = useState(false);
+  const raf = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (target === 0) { setValue(0); setDone(true); return; }
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(ease * target));
+      if (progress < 1) { raf.current = requestAnimationFrame(tick); }
+      else { setDone(true); }
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => { if (raf.current) cancelAnimationFrame(raf.current); };
+  }, [target, duration]);
+
+  return { value, done };
+}
+
+// ── Stat card ─────────────────────────────────────────────────────────────────
+
+function StatCard({
+  label, value, prefix = "", Icon, color,
+}: {
+  label: string;
+  value: number;
+  prefix?: string;
+  Icon: React.ElementType;
+  color: string;
+}) {
+  const { value: displayed, done } = useCountUp(value);
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-28 text-sm text-cr-i2 font-medium flex-shrink-0 truncate">{label}</span>
-      <div className="flex-1 h-6 bg-cr-p3 rounded-full overflow-hidden relative">
-        <div
-          className={`h-full rounded-full ${color} transition-all duration-700`}
-          style={{ width: `${Math.max(pct, 2)}%` }}
-        />
-        <span className="absolute inset-0 flex items-center pl-3 text-[11px] font-bold text-white mix-blend-luminosity">
-          {count} startup{count !== 1 ? "s" : ""}
-        </span>
+    <div style={{
+      background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
+      borderRadius: "4px", padding: "20px 22px",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
+        <Icon style={{ width: 13, height: 13, color: "var(--cr-paper-4)" }} />
       </div>
-      <span className="w-10 text-right text-sm font-bold text-cr-i2">{pct}%</span>
+      <p
+        className={done ? "count-glow-done" : ""}
+        style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", lineHeight: 1 }}
+      >
+        {prefix}{displayed.toLocaleString()}
+      </p>
     </div>
   );
 }
 
-function ScorePill({ score }: { score: number | null }) {
-  if (!score) return <span className="text-xs text-cr-i4">N/A</span>;
-  const color = score >= 80
-    ? "bg-emerald-900/50 text-emerald-400 border border-emerald-700/50"
-    : score >= 60
-    ? "bg-cr-ink/50 text-cr-cu-l border border-cr-cu-d/50"
-    : score >= 40
-    ? "bg-amber-900/50 text-amber-400 border border-amber-700/50"
-    : "bg-red-900/50 text-red-400 border border-red-700/50";
-  return <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", color)}>⚡{score}</span>;
+// ── Skeleton card ─────────────────────────────────────────────────────────────
+
+function SkeletonCard() {
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px 22px" }}>
+      <div style={{ height: 10, width: "55%", background: "var(--cr-paper-4)", borderRadius: 3, marginBottom: 16, opacity: 0.6 }} />
+      <div style={{ height: 32, width: "40%", background: "var(--cr-paper-4)", borderRadius: 3, opacity: 0.5 }} />
+    </div>
+  );
 }
 
+// ── Animated bar chart row ────────────────────────────────────────────────────
+
+function BarRow({ label, count, maxCount, animate }: {
+  label: string; count: number; maxCount: number; animate: boolean;
+}) {
+  const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "16px", padding: "10px 0", borderBottom: "1px solid var(--cr-rule)" }}>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#3D3630", width: "120px", flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, background: "#E4DDD2", height: "3px", borderRadius: "9999px", overflow: "hidden" }}>
+        <div style={{
+          height: "100%",
+          background: "#B5651D",
+          borderRadius: "9999px",
+          width: animate ? `${pct}%` : "0%",
+          transition: "width 800ms cubic-bezier(.16,1,.3,1)",
+        }} />
+      </div>
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "#B5651D", width: "28px", textAlign: "right" }}>
+        {count}
+      </span>
+    </div>
+  );
+}
+
+// ── Score pill ────────────────────────────────────────────────────────────────
+
+function ScorePill({ score }: { score: number | null }) {
+  if (!score) return <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>—</span>;
+  const color = score >= 80 ? "#2D6A4F" : score >= 60 ? "#B5651D" : score >= 40 ? "#B45309" : "#B91C1C";
+  return (
+    <span style={{
+      fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px",
+      color, background: `${color}14`, border: `1px solid ${color}40`,
+      borderRadius: "3px", padding: "2px 7px",
+    }}>
+      {score}
+    </span>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export function DataCentre() {
-  const [stats, setStats] = useState<PlatformStats | null>(null);
-  const [industries, setIndustries] = useState<IndustryCount[]>([]);
-  const [stages, setStages] = useState<StageCount[]>([]);
-  const [recentStartups, setRecentStartups] = useState<RecentStartup[]>([]);
-  const [topStartups, setTopStartups] = useState<RecentStartup[]>([]);
+  const [data, setData] = useState<PlatformData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [error, setError] = useState(false);
+  const [barsVisible, setBarsVisible] = useState(false);
+  const barsRef = useRef<HTMLDivElement>(null);
 
-  const supabaseRef = useRef(createClient());
-  const supabase = supabaseRef.current;
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     setLoading(true);
+    setError(false);
+    setBarsVisible(false);
     try {
-      const [
-        { count: startupCount },
-        { count: investorCount },
-        { count: activeCount },
-        { count: aiScoreCount },
-        { data: startupData },
-      ] = await Promise.all([
-        supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "startup"),
-        supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "investor"),
-        supabase.from("startups").select("*", { count: "exact", head: true }).eq("status", "active"),
-        supabase.from("startups").select("*", { count: "exact", head: true }).not("vaultrise_score", "is", null),
-        supabase
-          .from("startups")
-          .select("id, slug, name, industry, stage, funding_target, mrr, vaultrise_score, created_at, featured")
-          .eq("status", "active")
-          .order("created_at", { ascending: false })
-          .limit(50),
-      ]);
-
-      setStats({
-        startupCount: startupCount ?? 0,
-        investorCount: investorCount ?? 0,
-        activeListings: activeCount ?? 0,
-        aiScoresGenerated: aiScoreCount ?? 0,
-      });
-
-      const allStartups = (startupData as RecentStartup[]) || [];
-
-      // Compute industry breakdown
-      const indMap: Record<string, number> = {};
-      allStartups.forEach(s => { indMap[s.industry] = (indMap[s.industry] || 0) + 1; });
-      const total = allStartups.length || 1;
-      const indList = Object.entries(indMap)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 6)
-        .map(([industry, count]) => ({ industry, count }));
-      setIndustries(indList);
-
-      // Compute stage breakdown
-      const stageMap: Record<string, number> = {};
-      allStartups.forEach(s => { stageMap[s.stage] = (stageMap[s.stage] || 0) + 1; });
-      const stageList = Object.entries(stageMap)
-        .sort((a, b) => b[1] - a[1])
-        .map(([stage, count]) => ({ stage, count }));
-      setStages(stageList);
-
-      // Recent 5
-      setRecentStartups(allStartups.slice(0, 5));
-
-      // Top by AI score
-      const scored = [...allStartups].filter(s => s.vaultrise_score != null);
-      scored.sort((a, b) => (b.vaultrise_score || 0) - (a.vaultrise_score || 0));
-      setTopStartups(scored.slice(0, 5));
-
-      setLastRefreshed(new Date());
-    } catch (err) {
-      // DB not connected — leave stats as null
+      const res = await fetch("/api/platform-data");
+      if (!res.ok) throw new Error("Failed");
+      const json = await res.json();
+      setData(json);
+      // Trigger bar animations after a short delay
+      setTimeout(() => setBarsVisible(true), 120);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }
+  }, []);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
-  const totalStartups = industries.reduce((s, i) => s + i.count, 0) || 1;
+  // Intersection Observer to trigger bars when in viewport
+  useEffect(() => {
+    if (!barsRef.current || loading || !data) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setBarsVisible(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(barsRef.current);
+    return () => obs.disconnect();
+  }, [loading, data]);
+
+  const industryEntries = data
+    ? Object.entries(data.byIndustry).sort((a, b) => b[1] - a[1]).slice(0, 6)
+    : [];
+  const stageEntries = data
+    ? Object.entries(data.byStage).sort((a, b) => b[1] - a[1])
+    : [];
+  const industryMax = industryEntries[0]?.[1] ?? 1;
+  const stageMax = stageEntries[0]?.[1] ?? 1;
 
   return (
-    <div className="min-h-screen bg-cr-p2/40">
-      {/* Hero */}
-      <div className="bg-gradient-to-br from-[#0F0C0A] via-[#1A1612] to-slate-900 text-white py-16">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex items-center gap-2 mb-3">
-            <BarChart3 className="h-5 w-5 text-cr-cu-l" />
-            <span className="text-sm font-semibold text-cr-cu-l uppercase tracking-wide">Live Platform Data</span>
+    <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
+
+      {/* Header strip */}
+      <div style={{ background: "#1A1612", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px 40px 48px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+            <BarChart3 style={{ width: 16, height: 16, color: "#B5651D" }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#B5651D", textTransform: "uppercase", letterSpacing: "0.1em" }}>Live Platform Data</span>
           </div>
-          <h1 className="text-4xl font-extrabold mb-3">Data Centre</h1>
-          <p className="text-cr-i4 text-lg max-w-xl">
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(32px,5vw,52px)", color: "#F5F0E8", letterSpacing: "-0.03em", marginBottom: "12px" }}>
+            Data Centre
+          </h1>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "#9C8E82", maxWidth: "480px", lineHeight: 1.6 }}>
             Real-time platform analytics — startup counts, funding activity, industry breakdown, and top-performing listings.
           </p>
-          <div className="flex items-center gap-2 mt-4 text-xs text-cr-i4">
-            <Activity className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
-            <span>Live data</span>
-            <span className="mx-1">·</span>
-            <span>Last refreshed: {lastRefreshed?.toLocaleTimeString() ?? "Loading…"}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Activity style={{ width: 12, height: 12, color: "#4ADE80" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>Live</span>
+            </div>
+            {data && (
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>
+                Updated {timeAgo(data.lastUpdated)}
+              </span>
+            )}
             <button
               onClick={fetchData}
               disabled={loading}
-              className="ml-2 flex items-center gap-1 text-cr-cu-l hover:text-white transition-colors"
+              style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "#B5651D", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", opacity: loading ? 0.5 : 1, padding: 0 }}
             >
-              <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+              <RefreshCw style={{ width: 11, height: 11, animation: loading ? "spin 1s linear infinite" : "none" }} />
               Refresh
             </button>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 max-w-6xl py-10">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3 text-cr-i4">
-            <Loader2 className="h-8 w-8 animate-spin text-cr-copper" />
-            <p className="text-sm">Loading platform data…</p>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 80px" }}>
+
+        {/* Loading skeleton */}
+        {loading && (
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "32px" }}>
+              {[0, 1, 2, 3].map(i => <SkeletonCard key={i} />)}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 0", gap: "12px" }}>
+              <Loader2 style={{ width: 24, height: 24, color: "#B5651D", animation: "spin 1s linear infinite" }} />
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)" }}>Loading platform data…</p>
+            </div>
+          </>
+        )}
+
+        {/* Error state */}
+        {!loading && error && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
+            <AlertTriangle style={{ width: 32, height: 32, color: "#B5651D", marginBottom: "16px" }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>Data temporarily unavailable</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>Try refreshing the page.</p>
+            <button
+              onClick={fetchData}
+              style={{ display: "flex", alignItems: "center", gap: "8px", background: "#B5651D", color: "#fff", border: "none", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
+            >
+              <RefreshCw style={{ width: 13, height: 13 }} /> Try again
+            </button>
           </div>
-        ) : stats === null ? (
-          /* DB not connected */
-          <div className="text-center py-24 bg-cr-paper rounded-2xl border border-cr-p4">
-            <BarChart3 className="h-12 w-12 text-cr-i4 mx-auto mb-4" />
-            <p className="font-bold text-cr-i2 text-lg mb-2">No data available yet</p>
-            <p className="text-sm text-cr-i3 max-w-xs mx-auto mb-6">
-              Connect your Supabase database to start tracking real platform analytics.
-            </p>
-            <Link href="/auth/signup" className="inline-flex items-center gap-2 bg-cr-cu-d text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-cr-cu-l transition-colors">
-              Join the platform →
+        )}
+
+        {/* Empty platform state */}
+        {!loading && !error && data && data.startupCount === 0 && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
+            <Building2 style={{ width: 32, height: 32, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>Platform data will appear as startups join.</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>Be among the first founders listed.</p>
+            <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#B5651D", color: "#fff", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
+              List your startup →
             </Link>
           </div>
-        ) : (
+        )}
+
+        {/* Data loaded */}
+        {!loading && !error && data && data.startupCount > 0 && (
           <>
-            {/* Platform stat cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {[
-                { label: "Listed Startups", value: stats.activeListings.toString(), icon: Building2, color: "text-cr-copper", bg: "bg-cr-copper/10", border: "border-cr-copper/20" },
-                { label: "Registered Investors", value: stats.investorCount.toString(), icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-                { label: "Total Founders", value: stats.startupCount.toString(), icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-                { label: "Industries Covered", value: industries.length.toString(), icon: Globe, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-              ].map(s => (
-                <div key={s.label} className={`bg-cr-paper rounded-2xl border ${s.border} p-5 flex flex-col gap-3`}>
-                  <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center`}>
-                    <s.icon className={`h-5 w-5 ${s.color}`} />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-extrabold text-cr-ink">{s.value}</p>
-                    <p className="text-xs text-cr-i3 mt-0.5">{s.label}</p>
-                  </div>
-                </div>
-              ))}
+            {/* Stat cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "32px" }}>
+              <StatCard label="Active listings"    value={data.startupCount}  Icon={Building2}   color="#B5651D" />
+              <StatCard label="Investors"           value={data.investorCount} Icon={Users}       color="#3B82F6" />
+              <StatCard label="Capital raised"      value={data.totalRaised}   prefix="$" Icon={DollarSign} color="#2D6A4F" />
+              <StatCard label="Deals closed"        value={data.dealsCount}    Icon={TrendingUp}  color="#B45309" />
             </div>
 
-            {/* Charts row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Charts */}
+            <div ref={barsRef} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "28px" }}>
+
               {/* Industry breakdown */}
-              <div className="bg-cr-paper rounded-2xl border border-cr-p4 p-6">
-                <h3 className="font-bold text-cr-ink mb-4 flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-cr-copper" /> Startups by Industry
-                </h3>
-                {industries.length === 0 ? (
-                  <p className="text-sm text-cr-i4 py-8 text-center">No startups listed yet</p>
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+                  <BarChart3 style={{ width: 13, height: 13, color: "#B5651D" }} />
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>By Industry</h3>
+                </div>
+                {industryEntries.length === 0 ? (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>No data yet</p>
                 ) : (
-                  <div className="space-y-3">
-                    {industries.map(ind => (
-                      <HorizontalBar
-                        key={ind.industry}
-                        label={ind.industry}
-                        count={ind.count}
-                        pct={Math.round((ind.count / totalStartups) * 100)}
-                        color={INDUSTRY_COLORS[ind.industry] || "bg-gray-400"}
-                      />
-                    ))}
-                  </div>
+                  industryEntries.map(([label, count]) => (
+                    <BarRow key={label} label={label} count={count} maxCount={industryMax} animate={barsVisible} />
+                  ))
                 )}
               </div>
 
               {/* Stage breakdown */}
-              <div className="bg-cr-paper rounded-2xl border border-cr-p4 p-6">
-                <h3 className="font-bold text-cr-ink mb-4 flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" /> Startups by Stage
-                </h3>
-                {stages.length === 0 ? (
-                  <p className="text-sm text-cr-i4 py-8 text-center">No startups listed yet</p>
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+                  <Zap style={{ width: 13, height: 13, color: "#B5651D" }} />
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>By Stage</h3>
+                </div>
+                {stageEntries.length === 0 ? (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>No data yet</p>
                 ) : (
-                  <>
-                    {/* Donut-style visual */}
-                    <div className="flex gap-4 mb-5">
-                      <div className="relative w-28 h-28 flex-shrink-0">
-                        <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                          {(() => {
-                            let offset = 0;
-                            const total = stages.reduce((s, x) => s + x.count, 0);
-                            return stages.map(s => {
-                              const pct = (s.count / total) * 100;
-                              const el = (
-                                <circle
-                                  key={s.stage}
-                                  cx="18" cy="18" r="15.915"
-                                  fill="none"
-                                  stroke={STAGE_COLORS[s.stage] || "#94a3b8"}
-                                  strokeWidth="3"
-                                  strokeDasharray={`${pct} ${100 - pct}`}
-                                  strokeDashoffset={`${-offset}`}
-                                />
-                              );
-                              offset += pct;
-                              return el;
-                            });
-                          })()}
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-lg font-extrabold text-cr-ink">{stages.reduce((s, x) => s + x.count, 0)}</span>
-                        </div>
-                      </div>
-                      <div className="flex flex-col justify-center gap-2">
-                        {stages.map(s => {
-                          const total = stages.reduce((a, x) => a + x.count, 0);
-                          const pct = Math.round((s.count / total) * 100);
-                          return (
-                            <div key={s.stage} className="flex items-center gap-2">
-                              <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: STAGE_COLORS[s.stage] || "#94a3b8" }} />
-                              <span className="text-sm text-cr-i2">{STAGE_LABELS[s.stage] || s.stage}</span>
-                              <span className="text-sm font-bold text-cr-ink ml-auto">{pct}%</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
+                  stageEntries.map(([label, count]) => (
+                    <BarRow key={label} label={STAGE_LABELS[label] ?? label} count={count} maxCount={stageMax} animate={barsVisible} />
+                  ))
                 )}
               </div>
             </div>
 
-            {/* Bottom row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Recent listings */}
-              <div className="bg-cr-paper rounded-2xl border border-cr-p4 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-cr-ink flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-emerald-500" /> Recent Listings
-                  </h3>
-                  <Link href="/startups" className="text-xs text-cr-copper hover:underline font-medium">View all →</Link>
+            {/* Top startups + Recent */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "40px" }}>
+
+              {/* Top AI scores */}
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Brain style={{ width: 13, height: 13, color: "#B5651D" }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>Top AI Scores</h3>
+                  </div>
+                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#B5651D", textDecoration: "none" }}>View all →</Link>
                 </div>
-                {recentStartups.length === 0 ? (
-                  <div className="text-center py-10">
-                    <Building2 className="h-8 w-8 text-cr-i4 mx-auto mb-2" />
-                    <p className="text-sm text-cr-i4">No startups listed yet</p>
-                    <Link href="/auth/signup?role=startup" className="text-xs text-cr-copper hover:underline mt-1 block font-medium">
-                      Be the first to list →
-                    </Link>
-                  </div>
+                {data.topStartups.length === 0 ? (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>No scores yet</p>
                 ) : (
-                  <div className="space-y-3">
-                    {recentStartups.map(s => (
-                      <Link key={s.id} href={`/startups/${s.slug}`} className="flex items-center gap-3 hover:bg-cr-p2 -mx-2 px-2 py-1.5 rounded-xl transition-colors group">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cr-cu-l to-brand-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                          {s.name[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-cr-ink text-sm truncate group-hover:text-cr-cu-l transition-colors">{s.name}</p>
-                          <p className="text-xs text-cr-i4">{s.industry} · {STAGE_LABELS[s.stage] || s.stage}</p>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <p className="text-xs font-bold text-cr-ink">{formatFunding(s.funding_target)}</p>
-                          <p className="text-[10px] text-cr-i4">{timeAgo(s.created_at)}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                  data.topStartups.map((s, i) => (
+                    <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.topStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink-4)", width: "16px", flexShrink: 0 }}>{i + 1}</span>
+                      <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "#B5651D" }}>{s.name[0]}</span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {fmtMrr(s.mrr)}</p>
+                      </div>
+                      <ScorePill score={s.ai_score} />
+                    </Link>
+                  ))
                 )}
               </div>
 
-              {/* Top AI scores */}
-              <div className="bg-cr-paper rounded-2xl border border-cr-p4 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-cr-ink flex items-center gap-2">
-                    <Brain className="h-4 w-4 text-cr-copper" /> Top AI Scores
-                  </h3>
-                  <Link href="/startups?sort=score" className="text-xs text-cr-copper hover:underline font-medium">View all →</Link>
+              {/* Recent listings */}
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Activity style={{ width: 13, height: 13, color: "#B5651D" }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>Recent Listings</h3>
+                  </div>
+                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#B5651D", textDecoration: "none" }}>View all →</Link>
                 </div>
-                {topStartups.length === 0 ? (
-                  <div className="text-center py-10">
-                    <Brain className="h-8 w-8 text-cr-i4 mx-auto mb-2" />
-                    <p className="text-sm text-cr-i4">No AI scores generated yet</p>
-                  </div>
+                {data.recentStartups.length === 0 ? (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>No listings yet</p>
                 ) : (
-                  <div className="space-y-3">
-                    {topStartups.map((s, i) => (
-                      <Link key={s.id} href={`/startups/${s.slug}`} className="flex items-center gap-3 hover:bg-cr-p2 -mx-2 px-2 py-1.5 rounded-xl transition-colors group">
-                        <div className={cn(
-                          "w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0",
-                          i === 0 ? "bg-amber-400 text-white" : i === 1 ? "bg-gray-300 text-cr-i2" : i === 2 ? "bg-amber-700 text-white" : "bg-cr-p3 text-cr-i3"
-                        )}>
-                          {i + 1}
-                        </div>
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cr-cu-l to-brand-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                          {s.name[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-cr-ink text-sm truncate group-hover:text-cr-cu-l transition-colors">{s.name}</p>
-                          <p className="text-xs text-cr-i4">{s.industry} · {formatMrr(s.mrr)}</p>
-                        </div>
-                        <ScorePill score={s.vaultrise_score} />
-                      </Link>
-                    ))}
-                  </div>
+                  data.recentStartups.map((s, i) => (
+                    <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.recentStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink-3)" }}>{s.name[0]}</span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)" }}>{fmtRaising(s.funding_target)}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)" }}>{timeAgo(s.created_at)}</p>
+                      </div>
+                    </Link>
+                  ))
                 )}
               </div>
             </div>
 
             {/* CTA */}
-            <div className="mt-10 text-center bg-gradient-to-br from-[#0F0C0A] to-slate-900 rounded-2xl p-10 text-white">
-              <h2 className="text-2xl font-bold mb-2">Want your startup featured here?</h2>
-              <p className="text-cr-i4 mb-6 max-w-md mx-auto">List your startup on CapitalReach to appear in our data charts and get discovered by investors.</p>
-              <Link href="/auth/signup?role=startup" className="inline-flex items-center gap-2 bg-cr-copper hover:bg-cr-cu-l text-white font-semibold px-6 py-3 rounded-xl transition-colors">
-                List Your Startup Free →
+            <div style={{ background: "#1A1612", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "#F5F0E8", marginBottom: "8px" }}>Want your startup featured here?</h2>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "#9C8E82", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
+                List on CapitalReach to appear in platform charts and get discovered by investors.
+              </p>
+              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#B5651D", color: "#fff", borderRadius: "4px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
+                List your startup free →
               </Link>
             </div>
           </>

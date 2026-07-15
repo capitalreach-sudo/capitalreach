@@ -10,13 +10,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid locale" }, { status: 400 });
   }
 
-  const res = NextResponse.json({ success: true });
+  const res = NextResponse.json({ success: true, locale });
+
   res.cookies.set("cr_locale", locale, {
     path:     "/",
     maxAge:   60 * 60 * 24 * 365,
     sameSite: "lax",
     httpOnly: false,
   });
+
+  // Cache-busting — forces router.refresh() to always re-fetch from server
+  res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.headers.set("Pragma", "no-cache");
+  res.headers.set("X-Locale-Changed", locale);
 
   // Persist to profile when authenticated
   try {

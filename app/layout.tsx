@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ToastNotifyProvider } from "@/components/ui/toast-notify";
 import { LaunchBanner } from "@/components/ui/LaunchBanner";
 import { CopperCursor } from "@/components/ui/CopperCursor";
+import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
 
@@ -57,6 +58,7 @@ export default function RootLayout({
       <body className="font-sans">
         <CopperCursor />
         <LaunchBanner />
+        <LocaleChangeToast />
         {children}
         <Toaster />
         <ToastNotifyProvider />
