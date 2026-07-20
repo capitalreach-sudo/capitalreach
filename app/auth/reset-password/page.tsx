@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Mail, TrendingUp } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const iStyle: React.CSSProperties = {
   width: "100%", height: "44px", borderRadius: "3px",
@@ -21,6 +22,7 @@ const labelSt: React.CSSProperties = {
 };
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail]   = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent]     = useState(false);
@@ -56,24 +58,24 @@ export default function ResetPasswordPage() {
               <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <Mail style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>Check your inbox</h2>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "24px" }}>
-                We sent a reset link to <strong style={{ fontWeight: 500, color: "var(--cr-ink)" }}>{email}</strong>. Click it to set a new password.
+                {t("auth.resetSentTo")} <strong style={{ fontWeight: 500, color: "var(--cr-ink)" }}>{email}</strong>. {t("auth.resetSentAction")}
               </p>
               <Link href="/auth/login" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
-                Back to sign in
+                {t("auth.backToSignIn")}
               </Link>
             </div>
           ) : (
             <>
               <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "20px" }}>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>Reset your password</h1>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>Enter your email and we&apos;ll send a reset link</p>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.resetTitle")}</h1>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.resetSub")}</p>
               </div>
 
               <form onSubmit={handleReset} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div>
-                  <label htmlFor="email" style={labelSt}>Email address</label>
+                  <label htmlFor="email" style={labelSt}>{t("auth.email")}</label>
                   <input id="email" type="email" placeholder="you@example.com" value={email}
                     onChange={e => setEmail(e.target.value)} required
                     onFocus={e => (e.target.style.borderColor = "var(--cr-copper)")}
@@ -82,12 +84,12 @@ export default function ResetPasswordPage() {
                 </div>
                 <button type="submit" disabled={loading}
                   style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, transition: "opacity 120ms" }}>
-                  {loading ? "Sending…" : "Send Reset Link"}
+                  {loading ? t("auth.sending") : t("auth.sendReset")}
                 </button>
               </form>
 
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", marginTop: "20px" }}>
-                <Link href="/auth/login" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>Back to sign in</Link>
+                <Link href="/auth/login" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.backToSignIn")}</Link>
               </p>
             </>
           )}

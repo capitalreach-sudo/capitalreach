@@ -14,52 +14,38 @@ import { useTranslation } from "@/hooks/useTranslation";
 // ── Feature row builders ──────────────────────────────────────
 
 type FeatureRow = { text: string; on: boolean };
+type TFn = (key: string, vars?: Record<string, string | number>) => string;
 
-function founderFeatureRows(plan: FounderPlan): FeatureRow[] {
+function founderFeatureRows(plan: FounderPlan, t: TFn): FeatureRow[] {
   const f = plan.features;
   return [
-    { text: "Public, searchable listing",                                                         on: f.listed },
-    { text: "Analytics dashboard",                                                                 on: f.analytics },
-    { text: f.documentsLimit > 0 ? `Upload up to ${f.documentsLimit} documents` : "Document uploads", on: f.documentsLimit > 0 },
-    { text: "AI pitch feedback",                                                                   on: f.aiPitchFeedback },
-    { text: "Featured badge",                                                                      on: f.featuredBadge },
-    { text: "Product demo video",                                                                  on: f.demoVideo },
+    { text: t("pricing.feature_publicListing"),   on: f.listed },
+    { text: t("pricing.feature_analyticsBoard"),   on: f.analytics },
+    { text: f.documentsLimit > 0 ? t("pricing.feature_uploadDocs", { n: f.documentsLimit }) : t("pricing.feature_docUploads"), on: f.documentsLimit > 0 },
+    { text: t("pricing.feature_aiPitchFeedback"),  on: f.aiPitchFeedback },
+    { text: t("pricing.feature_featuredBadge"),    on: f.featuredBadge },
+    { text: t("pricing.feature_demoVideo"),        on: f.demoVideo },
   ];
 }
 
-function investorFeatureRows(plan: InvestorPlan): FeatureRow[] {
+function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
   const f = plan.features;
   return [
-    { text: "Browse startup profiles",     on: f.browseStartups },
-    { text: "Financial data & pitch decks", on: f.viewFinancials },
+    { text: t("pricing.feature_browseStartups"),   on: f.browseStartups },
+    { text: t("pricing.feature_financials"),        on: f.viewFinancials },
     {
       text: !f.sendMessages
-        ? "Direct messaging"
+        ? t("pricing.feature_messaging")
         : f.messageLimit === null
-          ? "Unlimited messaging"
-          : `Direct messaging (${f.messageLimit}/mo)`,
+          ? t("pricing.feature_unlimitedMessaging")
+          : t("pricing.feature_messagingLimit", { n: f.messageLimit }),
       on: f.sendMessages,
     },
-    { text: "AI due diligence reports", on: f.aiDueDiligence },
-    { text: "Export to CSV",            on: f.exportData },
-    { text: "Saved searches & filters", on: f.savedSearches },
+    { text: t("pricing.feature_aiDiligence"),  on: f.aiDueDiligence },
+    { text: t("pricing.feature_exportCsv"),    on: f.exportData },
+    { text: t("pricing.feature_savedSearches"), on: f.savedSearches },
   ];
 }
-
-const FAQ = [
-  { q: "How does the 2% success fee work?",
-    a: "When an investor marks a deal as closed, we invoice the startup for 2% of the amount raised — after closing. 14-day payment window via Stripe. Zero upfront fees." },
-  { q: "What does 'Free until 100 members' mean?",
-    a: "We're waiving subscription fees entirely for our first 100 members on the platform. Everyone gets full access to the top tier at no cost. Once we hit 100 members, regular pricing kicks in for new signups — existing launch members keep their plan." },
-  { q: "Can I cancel my subscription anytime?",
-    a: "Yes. Cancel from your dashboard via the Stripe Customer Portal at any time. You retain access until the end of your billing period." },
-  { q: "What counts as a 'closed deal' for the 2% fee?",
-    a: "A deal is closed when both parties confirm the investment was completed through a CapitalReach connection. We don't charge for deals made outside the platform." },
-  { q: "Do investors pay the success fee?",
-    a: "No. The 2% fee is charged only to startups. Investors pay zero transaction fees." },
-  { q: "What is accreditation certification?",
-    a: "Investors must self-certify as accredited to access financial data. CapitalReach stores this certification and may request documentation for institutional accounts." },
-];
 
 // ── Checkout ───────────────────────────────────────────────────
 
@@ -108,7 +94,7 @@ function PlanCard({
   }
 
   const ctaLabel = isInstitution
-    ? "Contact Sales"
+    ? t("pricing.contactSales")
     : isLaunch
       ? t("pricing.getStartedFree")
       : free
@@ -116,12 +102,13 @@ function PlanCard({
         : `${t("pricing.getStarted")} — ${plan.name}`;
 
   return (
-    <div style={{
-      position: "relative", display: "flex", flexDirection: "column",
-      borderRadius: "4px", overflow: "hidden",
-      border: hi ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
-      background: "var(--cr-paper-2)", transition: "border-color 150ms ease",
-    }}
+    <div className={hi ? "plan-card featured" : "plan-card"}
+      style={{
+        position: "relative", display: "flex", flexDirection: "column",
+        borderRadius: "4px", overflow: "hidden",
+        border: hi ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
+        transition: "border-color 150ms ease",
+      }}
       onMouseEnter={e => { if (!hi) (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)"; }}
       onMouseLeave={e => { if (!hi) (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; }}>
       {hi && <div style={{ height: "3px", background: "var(--cr-copper)" }} />}
@@ -238,6 +225,15 @@ export default function PricingPage() {
 
   const userType = activeTab === "startup" ? "founder" : "investor";
 
+  const faqItems = [
+    { q: t("pricing.faq.q1"), a: t("pricing.faq.a1") },
+    { q: t("pricing.faq.q2"), a: t("pricing.faq.a2") },
+    { q: t("pricing.faq.q3"), a: t("pricing.faq.a3") },
+    { q: t("pricing.faq.q4"), a: t("pricing.faq.a4") },
+    { q: t("pricing.faq.q5"), a: t("pricing.faq.a5") },
+    { q: t("pricing.faq.q6"), a: t("pricing.faq.a6") },
+  ];
+
   return (
     <>
       <Navbar />
@@ -279,7 +275,7 @@ export default function PricingPage() {
                     </>
                   ) : (
                     <>
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", lineHeight: 1, marginBottom: "8px", fontSize: "72px", letterSpacing: "-0.05em" }}>2%</p>
+                      <p className="copper-foil" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, lineHeight: 1, marginBottom: "8px", fontSize: "72px", letterSpacing: "-0.05em" }}>2%</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>Success fee</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>After closing · zero upfront</p>
                     </>
@@ -379,14 +375,14 @@ export default function PricingPage() {
             {activeTab === "startup" && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", maxWidth: "900px", marginBottom: "24px" }}>
                 {FOUNDER_PLANS_LIST.map((p) => (
-                  <PlanCard key={p.id} plan={p} features={founderFeatureRows(p)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" />
+                  <PlanCard key={p.id} plan={p} features={founderFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" />
                 ))}
               </div>
             )}
             {activeTab === "investor" && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "24px" }}>
                 {INVESTOR_PLANS_LIST.map((p) => (
-                  <PlanCard key={p.id} plan={p} features={investorFeatureRows(p)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" />
+                  <PlanCard key={p.id} plan={p} features={investorFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" />
                 ))}
               </div>
             )}
@@ -410,7 +406,7 @@ export default function PricingPage() {
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>The CapitalReach Model</span>
               </div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4vw,52px)", lineHeight: 0.93, letterSpacing: "-0.03em", maxWidth: "480px" }}>
-                We only win when<br /><span style={{ color: "var(--cr-copper)" }}>you win.</span>
+                {t("pricing.winHeadline")}
               </h2>
             </div>
 
@@ -470,7 +466,7 @@ export default function PricingPage() {
                 style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
-                Browse as Investor
+                {t("pricing.browseAsInvestor")}
               </Link>
             </div>
           </div>
@@ -504,11 +500,11 @@ export default function PricingPage() {
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>FAQ</span>
               </div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(26px,3.5vw,42px)", color: "var(--cr-ink)", letterSpacing: "-0.03em" }}>
-                Common questions
+                {t("pricing.commonQuestions")}
               </h2>
             </div>
             <div style={{ borderTop: "1px solid var(--cr-rule)" }}>
-              {FAQ.map((item) => <FaqItem key={item.q} q={item.q} a={item.a} />)}
+              {faqItems.map((item) => <FaqItem key={item.q} q={item.q} a={item.a} />)}
             </div>
           </div>
         </section>
@@ -525,7 +521,7 @@ export default function PricingPage() {
                   </span>
                 </div>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4.5vw,60px)", lineHeight: 0.93, letterSpacing: "-0.03em", marginBottom: "20px", maxWidth: "560px", margin: "0 auto 20px" }}>
-                  Ready to find your<br /><span style={{ color: "var(--cr-copper)" }}>next investment?</span>
+                  {t("pricing.ctaHeadline")}
                 </h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "40px", maxWidth: "360px", margin: "0 auto 40px", lineHeight: 1.7 }}>
                   {!loading && isLaunch
@@ -537,13 +533,13 @@ export default function PricingPage() {
                     style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                     onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-                    List Your Startup Free <ArrowRight style={{ width: 14, height: 14 }} />
+                    {t("pricing.listStartupFree")} <ArrowRight style={{ width: 14, height: 14 }} />
                   </Link>
                   <Link href="/auth/signup"
                     style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
-                    Browse as Investor
+                    {t("pricing.browseAsInvestor")}
                   </Link>
                 </div>
               </div>

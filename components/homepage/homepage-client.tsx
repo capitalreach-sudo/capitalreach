@@ -7,7 +7,9 @@ import { useReveal } from "@/hooks/useReveal";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
-import { TypewriterText } from "@/components/ui/TypewriterText";
+import { WordReveal }  from "@/components/ui/WordReveal";
+import { StatsTicker } from "@/components/ui/StatsTicker";
+import { FeeCounter }  from "@/components/ui/FeeCounter";
 import { HeroParticles } from "@/components/ui/HeroParticles";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { formatCurrency, formatGrowth } from "@/lib/format";
@@ -229,6 +231,9 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
         style={{ background: "#F5F0E8", position: "relative", overflow: "hidden" }}
         className="min-h-[calc(100svh-56px)] flex items-center"
       >
+        {/* Copper noise texture overlay */}
+        <div className="hero-noise" />
+
         {/* Copper dot particle trail on mouse move */}
         <HeroParticles />
 
@@ -254,19 +259,15 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
               letterSpacing: "-0.02em",
               marginBottom:  "24px",
             }}>
-              {t("hero.headline1")}<br />
-              {t("hero.headline2")}<br />
-              <TypewriterText
-                texts={[
-                  t("hero.headline3"),
-                  "Raise smarter.",
-                  "Close faster.",
-                  "2% at close.",
-                ]}
-                speed={52}
-                delay={2000}
-                style={{ color: "#B5651D" }}
-              />
+              <span style={{ display: "block" }}>
+                <WordReveal text={t("hero.headline1")} delay={60} threshold={0.05} />
+              </span>
+              <span style={{ display: "block" }}>
+                <WordReveal text={t("hero.headline2")} delay={60} threshold={0.05} />
+              </span>
+              <span style={{ display: "block" }}>
+                <WordReveal text={t("hero.headline3")} delay={60} threshold={0.05} className="copper-foil" />
+              </span>
             </h1>
 
             <p style={{
@@ -332,6 +333,19 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           </div>
         </div>
       </section>
+
+      {/* ── SCROLLING TICKER TAPE ── */}
+      <StatsTicker
+        items={[
+          { value: stats.startupCount > 0 ? stats.startupCount.toLocaleString() : "—", label: t("stats.startupsListed") },
+          { value: "2%",                                                                 label: t("feeStrip.tagline")     },
+          { value: stats.investorCount > 0 ? stats.investorCount.toLocaleString() : "—", label: t("stats.verifiedInvestors") },
+          { value: "0",                                                                  label: "upfront fees"            },
+          { value: stats.dealsClosedCount > 0 ? stats.dealsClosedCount.toLocaleString() : "—", label: t("stats.dealsClosed") },
+          { value: "100%",                                                               label: "vetted listings"         },
+        ]}
+        speed={36}
+      />
 
       {/* ── STATS STRIP ── */}
       {showStats && (
@@ -507,10 +521,10 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           }}>
             <span style={{
               fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-              fontSize: "clamp(36px,5vw,56px)", color: "#B5651D",
+              fontSize: "clamp(36px,5vw,56px)",
               lineHeight: 1, letterSpacing: "-0.04em", flexShrink: 0,
             }}>
-              2%
+              <FeeCounter from={10} to={2} className="copper-foil" duration={1600} />
             </span>
             <div style={{ maxWidth: "440px" }}>
               <p style={{

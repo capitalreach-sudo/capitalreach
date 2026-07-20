@@ -30,17 +30,17 @@ type StartupTab = "overview" | "deals" | "documents" | "ai" | "billing";
 
 function getProfileCompletion(s: Startup) {
   const checks: [boolean, string][] = [
-    [!!s.tagline,                                     "Add a tagline"                ],
-    [!!s.problem,                                     "Describe the problem"         ],
-    [!!s.solution,                                    "Describe your solution"       ],
-    [!!s.market,                                      "Define your target market"    ],
-    [!!s.competitive_advantage,                       "Add competitive advantage"    ],
-    [!!s.funding_target,                              "Set your funding target"      ],
-    [!!s.use_of_funds,                                "Add use of funds"             ],
-    [(s.founders?.length ?? 0) > 0,                  "Add at least one founder"     ],
-    [(s.founders ?? []).some((f) => f.linkedin_url), "Add a founder LinkedIn"       ],
-    [(s.documents?.length ?? 0) > 0,                 "Upload a pitch deck"          ],
-    [(s.milestones?.length ?? 0) > 0,                "Add at least one milestone"   ],
+    [!!s.tagline,                                     "dashboard.ckTagline"    ],
+    [!!s.problem,                                     "dashboard.ckProblem"    ],
+    [!!s.solution,                                    "dashboard.ckSolution"   ],
+    [!!s.market,                                      "dashboard.ckMarket"     ],
+    [!!s.competitive_advantage,                       "dashboard.ckAdvantage"  ],
+    [!!s.funding_target,                              "dashboard.ckFunding"    ],
+    [!!s.use_of_funds,                                "dashboard.ckUseOfFunds" ],
+    [(s.founders?.length ?? 0) > 0,                  "dashboard.ckFounder"    ],
+    [(s.founders ?? []).some((f) => f.linkedin_url), "dashboard.ckLinkedin"   ],
+    [(s.documents?.length ?? 0) > 0,                 "dashboard.ckDeck"       ],
+    [(s.milestones?.length ?? 0) > 0,                "dashboard.ckMilestone"  ],
   ];
   const missing = checks.filter(([ok]) => !ok).map(([, msg]) => msg);
   return { score: Math.round(((checks.length - missing.length) / checks.length) * 100), missing };
@@ -49,16 +49,23 @@ function getProfileCompletion(s: Startup) {
 // ── Status badge ──────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const styles: Record<string, { bg: string; color: string; border: string }> = {
     active:         { bg: "var(--cr-up-bg)",     color: "var(--cr-up)",      border: "rgba(45,106,79,0.25)" },
     pending_review: { bg: "rgba(245,158,11,0.08)", color: "#B45309",          border: "rgba(180,83,9,0.25)"  },
     suspended:      { bg: "var(--cr-down-bg)",   color: "var(--cr-down)",    border: "rgba(180,50,50,0.2)"  },
     draft:          { bg: "var(--cr-paper-3)",   color: "var(--cr-ink-4)",   border: "var(--cr-rule)"       },
   };
+  const labelKeys: Record<string, string> = {
+    active:         "dashboard.statusActive",
+    pending_review: "dashboard.statusPendingReview",
+    suspended:      "dashboard.statusSuspended",
+    draft:          "dashboard.statusDraft",
+  };
   const s = styles[status] || styles.draft;
   return (
     <span style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-      {status.replace(/_/g, " ")}
+      {labelKeys[status] ? t(labelKeys[status]) : status.replace(/_/g, " ")}
     </span>
   );
 }
@@ -83,14 +90,14 @@ const primaryBtn: React.CSSProperties = {
 // ── Visibility feature rows ───────────────────────────────────────────────────
 
 const VIS_ROWS = [
-  { label: "Company name & tagline",  always: true },
-  { label: "Team bios & founders",    tier: "Starter", key: "docs" },
-  { label: "Pitch deck & documents",  tier: "Starter", key: "docs" },
-  { label: "Investor messaging",      tier: "Starter", key: "docs" },
-  { label: "MRR, ARR & financials",   tier: "Growth",  key: "growth" },
-  { label: "Demo video embed",        tier: "Growth",  key: "growth" },
-  { label: "AI CapitalReach score",   tier: "Growth",  key: "growth" },
-  { label: "Featured in search",      tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visName",       always: true },
+  { labelKey: "dashboard.visTeam",       tier: "Starter", key: "docs" },
+  { labelKey: "dashboard.visDeck",       tier: "Starter", key: "docs" },
+  { labelKey: "dashboard.visMessaging",  tier: "Starter", key: "docs" },
+  { labelKey: "dashboard.visFinancials", tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visDemo",       tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visAiScore",    tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visFeatured",   tier: "Growth",  key: "growth" },
 ] as const;
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -112,7 +119,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
 
   const { score, missing } = startup
     ? getProfileCompletion(startup)
-    : { score: 0, missing: ["Complete onboarding"] };
+    : { score: 0, missing: ["dashboard.ckOnboarding"] };
 
   const tier             = startup?.subscription_tier || "free";
   const canDocs          = isLaunchMode || tier === "starter" || tier === "growth";
@@ -120,14 +127,14 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
 
   async function handleDealStatusChange(dealId: string, status: DealStatus) {
     const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status }) });
-    if (!res.ok) notify.error("Failed to update deal"); else router.refresh();
+    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else router.refresh();
   }
 
   async function handleDealClose(dealId: string, amount: number) {
     const res = await fetch("/api/deals/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, amount }) });
     const data = await res.json();
-    if (!res.ok) { notify.error(data.error || "Failed to close deal"); }
-    else { notify.success(amount ? `Deal closed at ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount)}` : "Deal marked as closed."); router.refresh(); }
+    if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); }
+    else { notify.success(amount ? t("dashboard.dealClosedAt", { amount: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount) }) : t("dashboard.dealClosed")); router.refresh(); }
   }
 
   async function generatePitchFeedback() {
@@ -174,7 +181,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
               <StatusBadge status={startup.status} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>
-                {tier} plan
+                {t("dashboard.tier", { tier })}
               </span>
             </div>
           </div>
@@ -253,7 +260,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                   {missing.slice(0, 5).map((m) => (
                     <div key={m} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <Circle style={{ width: 10, height: 10, color: "var(--cr-paper-4)", flexShrink: 0 }} />
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{m}</span>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t(m)}</span>
                     </div>
                   ))}
                 </div>
@@ -288,14 +295,14 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
               {/* Subscription */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
                 <div>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{tier} Plan</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
                     {tier === "free" ? t("dashboard.upgradeTierNote") : t("dashboard.activeSubscription")}
                   </p>
                 </div>
                 {tier === "free"
-                  ? <Link href="/pricing" style={primaryBtn}>Upgrade</Link>
-                  : <button onClick={openBillingPortal} style={outlineBtn}><CreditCard style={{ width: 12, height: 12 }} /> Manage</button>}
+                  ? <Link href="/pricing" style={primaryBtn}>{t("common.upgrade")}</Link>
+                  : <button onClick={openBillingPortal} style={outlineBtn}><CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manage")}</button>}
               </div>
 
               {/* Profile visibility */}
@@ -307,12 +314,12 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                   {VIS_ROWS.map((row) => {
                     const unlocked = "always" in row ? true : ("key" in row && row.key === "docs" ? canDocs : canGrowth);
                     return (
-                      <div key={row.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div key={row.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           {unlocked
                             ? <CheckCircle2 style={{ width: 13, height: 13, color: "var(--cr-up)", flexShrink: 0 }} />
                             : <Lock style={{ width: 13, height: 13, color: "var(--cr-ink-4)", flexShrink: 0 }} />}
-                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{row.label}</span>
+                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(row.labelKey)}</span>
                         </div>
                         {!unlocked && (row as any).tier && (
                           <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
@@ -361,13 +368,13 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                       </div>
                       {doc.requires_nda && (
                         <span style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(180,83,9,0.2)", color: "#B45309", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                          NDA Required
+                          {t("dashboard.ndaRequired")}
                         </span>
                       )}
                     </div>
                     <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
-                      View
+                      {t("dashboard.view")}
                     </a>
                   </div>
                 ))}
@@ -386,13 +393,13 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
               <Brain style={{ width: 20, height: 20, color: "var(--cr-copper)" }} />
               <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>AI Pitch Feedback</h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>Structured feedback on your pitch from Claude</p>
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>{t("dashboard.aiPitchFeedback")}</h3>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.aiPitchFeedbackSub")}</p>
               </div>
             </div>
             {!aiFeedback ? (
               <button onClick={generatePitchFeedback} disabled={loadingFeedback} style={{ ...primaryBtn, opacity: loadingFeedback ? 0.6 : 1 }}>
-                {loadingFeedback ? "Analyzing…" : "Generate Feedback"}
+                {loadingFeedback ? t("dashboard.analyzing") : t("dashboard.generateFeedback")}
               </button>
             ) : (
               <div>
@@ -402,10 +409,10 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
                   {[
-                    { key: "clarity",                 label: "Narrative Clarity"       },
-                    { key: "market_sizing",           label: "Market Sizing"           },
-                    { key: "competitive_positioning", label: "Competitive Positioning" },
-                    { key: "missing_information",     label: "What's Missing"          },
+                    { key: "clarity",                 label: t("dashboard.fbClarity")     },
+                    { key: "market_sizing",           label: t("dashboard.fbMarket")      },
+                    { key: "competitive_positioning", label: t("dashboard.fbCompetitive") },
+                    { key: "missing_information",     label: t("dashboard.fbMissing")     },
                   ].map(({ key, label }) => (
                     <div key={key} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px" }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>{label}</p>
@@ -413,7 +420,7 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
                     </div>
                   ))}
                 </div>
-                <button onClick={generatePitchFeedback} style={outlineBtn}>Regenerate</button>
+                <button onClick={generatePitchFeedback} style={outlineBtn}>{t("dashboard.regenerate")}</button>
               </div>
             )}
           </div>
@@ -422,18 +429,18 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
         {/* ── Billing ── */}
         {activeTab === "billing" && (
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "20px" }}>Subscription &amp; Billing</h3>
+            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "20px" }}>{t("dashboard.subscriptionBilling")}</h3>
             <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{tier} Plan</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{profile.subscription_status || "Active"}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{profile.subscription_status || t("dashboard.statusActive")}</p>
               </div>
               <button onClick={openBillingPortal} style={outlineBtn}>
-                <CreditCard style={{ width: 12, height: 12 }} /> Manage Billing
+                <CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manageBilling")}
               </button>
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.7 }}>
-              Manage your subscription, update payment methods, and view invoice history through the Stripe Customer Portal.
+              {t("dashboard.billingNote")}
             </p>
           </div>
         )}

@@ -11,6 +11,7 @@ import {
   Users, Settings, User, ShieldCheck, CreditCard,
   Globe, Twitter, Linkedin, Plus, Trash2, Building2, Lock,
 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Shared style tokens ────────────────────────────────────────
 const iStyle: React.CSSProperties = {
@@ -56,19 +57,19 @@ function onBlurRule(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement |
 
 // ── Step config ────────────────────────────────────────────────
 const STEPS = [
-  { id: 1, label: "Investor Type", icon: Users,      desc: "What kind of investor?" },
-  { id: 2, label: "Preferences",   icon: Settings,   desc: "What you look for"      },
-  { id: 3, label: "Your Profile",  icon: User,       desc: "About you & your firm"  },
-  { id: 4, label: "Portfolio",     icon: Building2,  desc: "Track record & style"   },
-  { id: 5, label: "Accreditation", icon: ShieldCheck,desc: "Legal certification"    },
-  { id: 6, label: "Membership",    icon: CreditCard, desc: "Choose your plan"       },
+  { id: 1, labelKey: "onboarding.inv.step1", icon: Users,       descKey: "onboarding.inv.step1Desc" },
+  { id: 2, labelKey: "onboarding.inv.step2", icon: Settings,    descKey: "onboarding.inv.step2Desc" },
+  { id: 3, labelKey: "onboarding.inv.step3", icon: User,        descKey: "onboarding.inv.step3Desc" },
+  { id: 4, labelKey: "onboarding.inv.step4", icon: Building2,   descKey: "onboarding.inv.step4Desc" },
+  { id: 5, labelKey: "onboarding.inv.step5", icon: ShieldCheck, descKey: "onboarding.inv.step5Desc" },
+  { id: 6, labelKey: "onboarding.inv.step6", icon: CreditCard,  descKey: "onboarding.inv.step6Desc" },
 ];
 
 const INVESTOR_TYPES = [
-  { value: "angel",       label: "Angel Investor",         desc: "Individual writing personal checks, typically $10K–$250K",              emoji: "👼" },
-  { value: "vc",          label: "Venture Capital",         desc: "Institutional fund deploying LP capital, typically $500K+",             emoji: "🏢" },
-  { value: "family_office",label: "Family Office",          desc: "Private wealth management for high-net-worth families",                emoji: "🏡" },
-  { value: "corporate",   label: "Corporate VC / Strategic",desc: "Investment arm of a corporation seeking strategic alignment",           emoji: "🏭" },
+  { value: "angel",        labelKey: "onboarding.inv.typeAngel", descKey: "onboarding.inv.typeAngelDesc", emoji: "👼" },
+  { value: "vc",           labelKey: "onboarding.inv.typeVc",    descKey: "onboarding.inv.typeVcDesc",    emoji: "🏢" },
+  { value: "family_office",labelKey: "onboarding.inv.typeFo",    descKey: "onboarding.inv.typeFoDesc",    emoji: "🏡" },
+  { value: "corporate",    labelKey: "onboarding.inv.typeCorp",  descKey: "onboarding.inv.typeCorpDesc",  emoji: "🏭" },
 ] as const;
 
 const AUM_RANGES = [
@@ -76,20 +77,21 @@ const AUM_RANGES = [
   "$100M – $500M", "$500M – $1B", "$1B+",
 ];
 const FOLLOW_ON_OPTIONS = [
-  { value: "yes",       label: "Yes — I actively reserve capital for follow-ons"      },
-  { value: "sometimes", label: "Case-by-case — depends on performance"                },
-  { value: "no",        label: "No — I only lead or participate in initial rounds"    },
+  { value: "yes",       labelKey: "onboarding.inv.followOnYes"       },
+  { value: "sometimes", labelKey: "onboarding.inv.followOnSometimes" },
+  { value: "no",        labelKey: "onboarding.inv.followOnNo"        },
 ];
 const BOARD_OPTIONS = [
-  { value: "actively_seek",  label: "Actively seek board seats"       },
-  { value: "open",           label: "Open to board or observer roles" },
-  { value: "no_preference",  label: "No preference — passive investor"},
-  { value: "no",             label: "Prefer not to take board seats"  },
+  { value: "actively_seek", labelKey: "onboarding.inv.boardSeek"   },
+  { value: "open",          labelKey: "onboarding.inv.boardOpen"   },
+  { value: "no_preference", labelKey: "onboarding.inv.boardNoPref" },
+  { value: "no",            labelKey: "onboarding.inv.boardNo"     },
 ];
 
 interface PortfolioCompany { name: string; stage: string; year: string; }
 
 export default function InvestorOnboardingPage() {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -168,7 +170,7 @@ export default function InvestorOnboardingPage() {
     }).select().single();
 
     if (error || !investor) {
-      notify.error("Error creating profile: " + (error?.message || "Unknown error"));
+      notify.error(t("onboarding.inv.errorCreating") + " " + (error?.message || ""));
       setLoading(false); return;
     }
     await supabase.from("profiles").update({
@@ -179,7 +181,7 @@ export default function InvestorOnboardingPage() {
     if (tier !== "free") {
       router.push(`/api/checkout/investor?tier=${tier}`);
     } else {
-      notify.success("Profile created! Start discovering startups on CapitalReach.");
+      notify.success(t("onboarding.inv.created"));
       router.push("/dashboard/investor");
     }
     setLoading(false);
@@ -204,7 +206,7 @@ export default function InvestorOnboardingPage() {
               <TrendingUp style={{ width: 14, height: 14, color: "#fff" }} />
             </div>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>CapitalReach</span>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginLeft: "4px" }}>for investors</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginLeft: "4px" }}>{t("onboarding.inv.forInvestors")}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ width: "160px", height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
@@ -221,7 +223,7 @@ export default function InvestorOnboardingPage() {
           {/* Sidebar */}
           <div className="hidden lg:block">
             <div style={{ position: "sticky", top: "72px" }}>
-              <p style={{ ...labelSt, marginBottom: "16px", paddingLeft: "12px" }}>Steps</p>
+              <p style={{ ...labelSt, marginBottom: "16px", paddingLeft: "12px" }}>{t("onboarding.su.steps")}</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {STEPS.map(s => {
                   const Icon = s.icon;
@@ -244,8 +246,8 @@ export default function InvestorOnboardingPage() {
                           : <Icon style={{ width: 14, height: 14, color: active ? "#fff" : "var(--cr-ink-4)" }} />}
                       </div>
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", lineHeight: 1.2, color: active ? "var(--cr-copper)" : done ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{s.label}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: active ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{s.desc}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", lineHeight: 1.2, color: active ? "var(--cr-copper)" : done ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(s.labelKey)}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: active ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t(s.descKey)}</p>
                       </div>
                     </button>
                   );
@@ -268,24 +270,24 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 1: Type ─────────────────────────────────────── */}
               {step === 1 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>What type of investor are you?</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>This helps us tailor your experience and match you to the right deal flow.</p>
+                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h1")}</h2>
+                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h1Sub")}</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {INVESTOR_TYPES.map(t => (
-                      <button key={t.value} onClick={() => setInvestorType(t.value)}
+                    {INVESTOR_TYPES.map(ty => (
+                      <button key={ty.value} onClick={() => setInvestorType(ty.value)}
                         style={{
                           width: "100%", textAlign: "left", display: "flex", alignItems: "flex-start", gap: "16px",
                           padding: "18px 20px", borderRadius: "4px",
-                          border: investorType === t.value ? "2px solid var(--cr-copper)" : "2px solid var(--cr-rule-dark)",
-                          background: investorType === t.value ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                          border: investorType === ty.value ? "2px solid var(--cr-copper)" : "2px solid var(--cr-rule-dark)",
+                          background: investorType === ty.value ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
                           cursor: "pointer", transition: "all 120ms ease",
                         }}>
-                        <span style={{ fontSize: "28px", flexShrink: 0 }}>{t.emoji}</span>
+                        <span style={{ fontSize: "28px", flexShrink: 0 }}>{ty.emoji}</span>
                         <div style={{ flex: 1 }}>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "3px" }}>{t.label}</p>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t.desc}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "3px" }}>{t(ty.labelKey)}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t(ty.descKey)}</p>
                         </div>
-                        {investorType === t.value && <CheckCircle2 style={{ width: 18, height: 18, color: "var(--cr-copper)", flexShrink: 0, marginTop: "2px" }} />}
+                        {investorType === ty.value && <CheckCircle2 style={{ width: 18, height: 18, color: "var(--cr-copper)", flexShrink: 0, marginTop: "2px" }} />}
                       </button>
                     ))}
                   </div>
@@ -295,12 +297,12 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 2: Preferences ─────────────────────────────── */}
               {step === 2 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>Investment preferences</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>We use these to surface the most relevant startups for you.</p>
+                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h2")}</h2>
+                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h2Sub")}</p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div>
-                      <label style={labelSt}>Industries (select all that apply)</label>
+                      <label style={labelSt}>{t("onboarding.inv.industriesLabel")}</label>
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
                         {INDUSTRIES.map(ind => (
                           <button key={ind} onClick={() => toggleIndustry(ind)}
@@ -319,7 +321,7 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>Preferred Stages</label>
+                      <label style={labelSt}>{t("onboarding.inv.preferredStages")}</label>
                       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                         {STAGES.map(s => (
                           <button key={s.value} onClick={() => toggleStage(s.value)}
@@ -339,7 +341,7 @@ export default function InvestorOnboardingPage() {
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                       <div>
-                        <label style={labelSt}>Min Check Size (USD)</label>
+                        <label style={labelSt}>{t("onboarding.inv.minCheck")}</label>
                         <div style={{ position: "relative" }}>
                           <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
                           <input type="number" value={minCheck} onChange={e => setMinCheck(e.target.value)}
@@ -348,7 +350,7 @@ export default function InvestorOnboardingPage() {
                         </div>
                       </div>
                       <div>
-                        <label style={labelSt}>Max Check Size (USD)</label>
+                        <label style={labelSt}>{t("onboarding.inv.maxCheck")}</label>
                         <div style={{ position: "relative" }}>
                           <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
                           <input type="number" value={maxCheck} onChange={e => setMaxCheck(e.target.value)}
@@ -359,10 +361,10 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>Geography Focus</label>
-                      <p style={hintSt}>Comma-separated regions or countries</p>
+                      <label style={labelSt}>{t("onboarding.inv.geography")}</label>
+                      <p style={hintSt}>{t("onboarding.inv.geographyHint")}</p>
                       <input type="text" value={geography} onChange={e => setGeography(e.target.value)}
-                        placeholder="United States, United Kingdom, Global"
+                        placeholder={t("onboarding.inv.geographyPh")}
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
                     </div>
 
@@ -370,8 +372,8 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={leadRounds} onChange={e => setLeadRounds(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>I lead rounds</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>I&apos;m willing to be the lead investor and set terms</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("onboarding.inv.leadRounds")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("onboarding.inv.leadRoundsSub")}</p>
                       </div>
                     </label>
                   </div>
@@ -381,19 +383,19 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 3: Profile ─────────────────────────────────── */}
               {step === 3 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>Your profile</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>Startups will see this when you reach out. Be specific about your background.</p>
+                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h3")}</h2>
+                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h3Sub")}</p>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                     <div>
-                      <label style={labelSt}>Your Full Name</label>
+                      <label style={labelSt}>{t("onboarding.inv.fullName")}</label>
                       <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)}
                         placeholder="Sarah Chen" onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
                     </div>
 
                     {(investorType === "vc" || investorType === "family_office" || investorType === "corporate") && (
                       <div>
-                        <label style={labelSt}>Firm / Fund Name</label>
+                        <label style={labelSt}>{t("onboarding.inv.firmName")}</label>
                         <div style={{ position: "relative" }}>
                           <Building2 style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
                           <input type="text" value={firmName} onChange={e => setFirmName(e.target.value)}
@@ -404,22 +406,22 @@ export default function InvestorOnboardingPage() {
                     )}
 
                     <div>
-                      <label style={labelSt}>AUM / Fund Size</label>
+                      <label style={labelSt}>{t("onboarding.inv.aumLabel")}</label>
                       <select value={aum} onChange={e => setAum(e.target.value)}
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={selStyle}>
-                        <option value="">Select range</option>
+                        <option value="">{t("onboarding.inv.selectRange")}</option>
                         {AUM_RANGES.map(r => <option key={r} value={r}>{r}</option>)}
                       </select>
                     </div>
 
                     <div>
-                      <label style={labelSt}>Number of Investments Made</label>
+                      <label style={labelSt}>{t("onboarding.inv.numInvestments")}</label>
                       <input type="number" value={numberOfInvestments} onChange={e => setNumberOfInvestments(e.target.value)}
-                        placeholder="e.g. 24" onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                        placeholder={t("onboarding.inv.numInvestmentsPh")} onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
                     </div>
 
                     <div>
-                      <label style={labelSt}>Website</label>
+                      <label style={labelSt}>{t("onboarding.inv.website")}</label>
                       <div style={{ position: "relative" }}>
                         <Globe style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
                         <input type="text" value={website} onChange={e => setWebsite(e.target.value)}
@@ -429,7 +431,7 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>LinkedIn</label>
+                      <label style={labelSt}>{t("onboarding.inv.linkedin")}</label>
                       <div style={{ position: "relative" }}>
                         <Linkedin style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "#0077B5" }} />
                         <input type="text" value={linkedin} onChange={e => setLinkedin(e.target.value)}
@@ -439,7 +441,7 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>Twitter / X</label>
+                      <label style={labelSt}>{t("onboarding.inv.twitterX")}</label>
                       <div style={{ position: "relative" }}>
                         <Twitter style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
                         <input type="text" value={twitter} onChange={e => setTwitter(e.target.value)}
@@ -449,16 +451,16 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={labelSt}>Short Bio <span style={{ color: "var(--cr-down)" }}>*</span></label>
-                      <p style={hintSt}>Tell founders who you are and what you bring beyond capital.</p>
+                      <label style={labelSt}>{t("onboarding.inv.shortBio")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <p style={hintSt}>{t("onboarding.inv.bioHint")}</p>
                       <textarea value={bio} onChange={e => setBio(e.target.value)} rows={5}
                         placeholder="Angel investor focused on HealthTech and B2B SaaS. Former CMO at Stripe. Led 30+ investments at pre-seed and seed. Board member at 4 portfolio companies."
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={taStyle} />
                     </div>
 
                     <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={labelSt}>Investment Thesis</label>
-                      <p style={hintSt}>What patterns, missions, or founders do you get excited about?</p>
+                      <label style={labelSt}>{t("onboarding.inv.thesis")}</label>
+                      <p style={hintSt}>{t("onboarding.inv.thesisHint")}</p>
                       <textarea value={investmentThesis} onChange={e => setInvestmentThesis(e.target.value)} rows={4}
                         placeholder="I invest in mission-driven founders using AI to reduce inequality in access to healthcare and education."
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={taStyle} />
@@ -470,20 +472,20 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 4: Portfolio ────────────────────────────────── */}
               {step === 4 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>Portfolio & investing style</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>Share your track record and how you work with portfolio companies.</p>
+                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h4")}</h2>
+                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h4Sub")}</p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                         <div>
-                          <label style={labelSt}>Notable Portfolio Companies</label>
-                          <p style={hintSt}>Up to 10 companies you&apos;ve invested in</p>
+                          <label style={labelSt}>{t("onboarding.inv.portfolioLabel")}</label>
+                          <p style={hintSt}>{t("onboarding.inv.portfolioHint")}</p>
                         </div>
                         {portfolioCompanies.length < 10 && (
                           <button onClick={addPortfolioCompany}
                             style={{ display: "flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>
-                            <Plus style={{ width: 13, height: 13 }} /> Add company
+                            <Plus style={{ width: 13, height: 13 }} /> {t("onboarding.inv.addCompany")}
                           </button>
                         )}
                       </div>
@@ -491,16 +493,16 @@ export default function InvestorOnboardingPage() {
                         {portfolioCompanies.map((co, i) => (
                           <div key={i} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                             <input type="text" value={co.name} onChange={e => updatePortfolioCompany(i, "name", e.target.value)}
-                              placeholder="Company name" style={{ ...iStyle, flex: 1 }} />
+                              placeholder={t("onboarding.inv.companyNamePh")} style={{ ...iStyle, flex: 1 }} />
                             <select value={co.stage} onChange={e => updatePortfolioCompany(i, "stage", e.target.value)}
                               style={{ ...selStyle, width: "130px" }}>
-                              <option value="">Stage</option>
+                              <option value="">{t("onboarding.inv.stagePh")}</option>
                               {["Pre-Seed", "Seed", "Series A", "Series B", "Series C+", "IPO", "Acquired"].map(s => (
                                 <option key={s} value={s}>{s}</option>
                               ))}
                             </select>
                             <input type="number" value={co.year} onChange={e => updatePortfolioCompany(i, "year", e.target.value)}
-                              placeholder="Year" style={{ ...iStyle, width: "80px" }} />
+                              placeholder={t("onboarding.inv.yearPh")} style={{ ...iStyle, width: "80px" }} />
                             {portfolioCompanies.length > 1 && (
                               <button onClick={() => removePortfolioCompany(i)}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
@@ -513,7 +515,7 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>Follow-on Investment Policy</label>
+                      <label style={labelSt}>{t("onboarding.inv.followOn")}</label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
                         {FOLLOW_ON_OPTIONS.map(o => (
                           <button key={o.value} onClick={() => setFollowOnPolicy(o.value)}
@@ -525,14 +527,14 @@ export default function InvestorOnboardingPage() {
                               color: followOnPolicy === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)",
                               cursor: "pointer", transition: "all 120ms",
                             }}>
-                            {o.label}
+                            {t(o.labelKey)}
                           </button>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <label style={labelSt}>Board Seat Preference</label>
+                      <label style={labelSt}>{t("onboarding.inv.boardPref")}</label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
                         {BOARD_OPTIONS.map(o => (
                           <button key={o.value} onClick={() => setBoardSeatPref(o.value)}
@@ -544,16 +546,16 @@ export default function InvestorOnboardingPage() {
                               color: boardSeatPref === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)",
                               cursor: "pointer", transition: "all 120ms",
                             }}>
-                            {o.label}
+                            {t(o.labelKey)}
                           </button>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <label style={labelSt}>Average Hold Period</label>
+                      <label style={labelSt}>{t("onboarding.inv.holdPeriod")}</label>
                       <input type="text" value={avgHoldPeriod} onChange={e => setAvgHoldPeriod(e.target.value)}
-                        placeholder="e.g. 5–7 years, until exit or IPO"
+                        placeholder={t("onboarding.inv.holdPeriodPh")}
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
                     </div>
                   </div>
@@ -563,15 +565,15 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 5: Accreditation ───────────────────────────── */}
               {step === 5 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>Investor accreditation</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>Required by securities regulations in most jurisdictions to access private investment opportunities.</p>
+                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h5")}</h2>
+                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h5Sub")}</p>
 
                   <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px 18px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
                     <ShieldCheck style={{ width: 18, height: 18, color: "var(--cr-copper)", flexShrink: 0, marginTop: "1px" }} />
                     <div>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginBottom: "4px" }}>Legal requirement</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("onboarding.inv.legalReq")}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-copper)", lineHeight: 1.5 }}>
-                        To access full startup profiles, financial data, pitch decks, and direct communication with founders, you must self-certify as an accredited investor under applicable securities law.
+                        {t("onboarding.inv.legalReqBody")}
                       </p>
                     </div>
                   </div>
@@ -586,9 +588,9 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={accredited} onChange={e => setAccredited(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>I am an accredited investor</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.accTitle")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
-                          I certify that I meet one of the following criteria: (a) net worth exceeding $1M excluding primary residence, (b) annual income exceeding $200K ($300K jointly with spouse) for the past two years with reasonable expectation of the same this year, or (c) I am a licensed investment professional (Series 65, 82, or equivalent).
+                          {t("onboarding.inv.accBody")}
                         </p>
                       </div>
                     </label>
@@ -602,15 +604,15 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={accreditedDeclaration} onChange={e => setAccreditedDeclaration(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>I understand the risks</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.riskTitle")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
-                          I understand that investments in early-stage private companies are highly speculative, illiquid, and involve significant risk of loss. I may lose my entire investment. I am making investment decisions independently and am not relying on CapitalReach for investment advice.
+                          {t("onboarding.inv.riskBody")}
                         </p>
                       </div>
                     </label>
 
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center" }}>
-                      This self-certification is stored securely and may be subject to verification for institutional members.
+                      {t("onboarding.inv.certNote")}
                     </p>
                   </div>
                 </div>
@@ -619,17 +621,17 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 6: Membership ──────────────────────────────── */}
               {step === 6 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>Choose your membership</h2>
-                  <p style={{ ...hintSt, marginBottom: "16px" }}>Unlock more deal flow, AI tools, and direct access to founders.</p>
+                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h6")}</h2>
+                  <p style={{ ...hintSt, marginBottom: "16px" }}>{t("onboarding.inv.h6Sub")}</p>
 
                   <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "20px" }}>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>What each plan unlocks:</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.inv.unlocksTitle")}</p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                       {[
-                        ["Free", "Browse startup cards only"],
-                        ["Angel", "Full profiles, financials, messaging"],
-                        ["Pro", "AI due diligence + unlimited messaging"],
-                        ["Institutional", "API access + dedicated team"],
+                        ["Free", t("onboarding.inv.unlockFree")],
+                        ["Angel", t("onboarding.inv.unlockAngel")],
+                        ["Pro", t("onboarding.inv.unlockPro")],
+                        ["Institutional", t("onboarding.inv.unlockInst")],
                       ].map(([tier, desc]) => (
                         <div key={tier} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
                           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
@@ -642,27 +644,27 @@ export default function InvestorOnboardingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                     {[
                       {
-                        tier: "free", name: "Explorer", price: "Free", highlight: false,
-                        desc: "Browse the marketplace and see startup cards.",
-                        features: ["Browse startup cards", "See name, tagline, industry, stage", "Use AI pitch analyzer & matching tools"],
-                        locked: ["Full startup profiles & financials", "Pitch deck access", "Messaging with founders", "Watchlists & deal tracking"],
+                        tier: "free", name: "Explorer", price: t("common.free"), highlight: false,
+                        desc: t("onboarding.inv.planExplorerDesc"),
+                        features: [t("onboarding.inv.ef1"), t("onboarding.inv.ef2"), t("onboarding.inv.ef3")],
+                        locked: [t("onboarding.inv.el1"), t("onboarding.inv.el2"), t("onboarding.inv.el3"), t("onboarding.inv.el4")],
                       },
                       {
                         tier: "angel", name: "Angel", price: "$99/mo", highlight: false,
-                        desc: "Full startup profiles and direct messaging.",
-                        features: ["Full startup profiles & financials", "Pitch deck & document access", "Direct messaging (5 threads/mo)", "Saved watchlists", "AI score access"],
-                        locked: ["AI due diligence reports", "Unlimited messaging", "CSV data export", "Weekly deal flow digest"],
+                        desc: t("onboarding.inv.planAngelDesc"),
+                        features: [t("onboarding.inv.af1"), t("onboarding.inv.af2"), t("onboarding.inv.af3"), t("onboarding.inv.af4"), t("onboarding.inv.af5")],
+                        locked: [t("onboarding.inv.al1"), t("onboarding.inv.al2"), t("onboarding.inv.al3"), t("onboarding.inv.al4")],
                       },
                       {
                         tier: "pro_investor", name: "Pro", price: "$299/mo", highlight: true,
-                        desc: "The full deal flow experience with AI superpowers.",
-                        features: ["Everything in Angel", "Unlimited messaging", "AI due diligence reports included", "Weekly curated deal flow digest", "CSV data export", "Early access to new deals"],
+                        desc: t("onboarding.inv.planProDesc"),
+                        features: [t("onboarding.inv.pf1"), t("onboarding.inv.pf2"), t("onboarding.inv.pf3"), t("onboarding.inv.pf4"), t("onboarding.inv.pf5"), t("onboarding.inv.pf6")],
                         locked: [],
                       },
                       {
-                        tier: "institutional", name: "Institutional", price: "Custom", highlight: false,
-                        desc: "Unlimited access, integrations, and a dedicated team.",
-                        features: ["Everything in Pro", "API access & CRM integrations", "Dedicated relationship manager", "SLA & compliance support", "Custom reporting"],
+                        tier: "institutional", name: "Institutional", price: t("onboarding.inv.custom"), highlight: false,
+                        desc: t("onboarding.inv.planInstDesc"),
+                        features: [t("onboarding.inv.if1"), t("onboarding.inv.if2"), t("onboarding.inv.if3"), t("onboarding.inv.if4"), t("onboarding.inv.if5")],
                         locked: [],
                       },
                     ].map(plan => (
@@ -674,7 +676,7 @@ export default function InvestorOnboardingPage() {
                         {plan.highlight && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "var(--cr-copper)" }} />}
                         {plan.highlight && (
                           <div style={{ position: "absolute", top: "14px", right: "14px" }}>
-                            <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Most Popular</span>
+                            <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
                           </div>
                         )}
                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
@@ -692,7 +694,7 @@ export default function InvestorOnboardingPage() {
                               else { handleSubmit(plan.tier); }
                             }}
                             style={{ ...plan.highlight ? primaryBtn : outlineBtn, marginLeft: "16px", opacity: loading ? 0.5 : 1 }}>
-                            {plan.tier === "institutional" ? "Contact Sales" : plan.tier === "free" ? "Start Free" : `Select ${plan.name}`}
+                            {plan.tier === "institutional" ? t("pricing.contactSales") : plan.tier === "free" ? t("onboarding.su.startFree") : t("onboarding.su.selectPlan", { name: plan.name })}
                           </button>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
@@ -719,13 +721,13 @@ export default function InvestorOnboardingPage() {
               <div style={{ display: "flex", gap: "10px", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--cr-rule)" }}>
                 {step > 1 && (
                   <button style={outlineBtn} onClick={() => setStep(s => s - 1)}>
-                    <ChevronLeft style={{ width: 14, height: 14 }} /> Back
+                    <ChevronLeft style={{ width: 14, height: 14 }} /> {t("onboarding.back")}
                   </button>
                 )}
                 {step < 6 && (
                   <button style={{ ...primaryBtn, flex: 1, justifyContent: "center", opacity: !canNext() ? 0.4 : 1, cursor: !canNext() ? "not-allowed" : "pointer" }}
                     onClick={() => setStep(s => s + 1)} disabled={!canNext()}>
-                    Continue <ChevronRight style={{ width: 14, height: 14 }} />
+                    {t("onboarding.continue")} <ChevronRight style={{ width: 14, height: 14 }} />
                   </button>
                 )}
               </div>

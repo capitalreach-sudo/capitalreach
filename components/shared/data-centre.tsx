@@ -7,6 +7,8 @@ import {
   Loader2, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/useTranslation";
+import { LiveClock } from "@/components/ui/LiveClock";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -42,8 +44,8 @@ const STAGE_LABELS: Record<string, string> = {
   series_b: "Series B+",
 };
 
-function fmtMrr(n: number | null) {
-  if (!n) return "Pre-rev";
+function fmtMrr(n: number | null, preRevLabel = "Pre-rev") {
+  if (!n) return preRevLabel;
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
   return `$${n}`;
@@ -180,6 +182,7 @@ function ScorePill({ score }: { score: number | null }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function DataCentre() {
+  const { t } = useTranslation();
   const [data, setData] = useState<PlatformData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -233,22 +236,25 @@ export function DataCentre() {
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px 40px 48px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
             <BarChart3 style={{ width: 16, height: 16, color: "#B5651D" }} />
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#B5651D", textTransform: "uppercase", letterSpacing: "0.1em" }}>Live Platform Data</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#B5651D", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("data.eyebrow")}</span>
           </div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(32px,5vw,52px)", color: "#F5F0E8", letterSpacing: "-0.03em", marginBottom: "12px" }}>
-            Data Centre
+            {t("data.title")}
           </h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "#9C8E82", maxWidth: "480px", lineHeight: 1.6 }}>
-            Real-time platform analytics — startup counts, funding activity, industry breakdown, and top-performing listings.
+            {t("data.subtitle")}
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "20px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <Activity style={{ width: 12, height: 12, color: "#4ADE80" }} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>Live</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>{t("data.live")}</span>
             </div>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>
+              <LiveClock />
+            </span>
             {data && (
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>
-                Updated {timeAgo(data.lastUpdated)}
+                {t("data.updated", { time: timeAgo(data.lastUpdated) })}
               </span>
             )}
             <button
@@ -257,7 +263,7 @@ export function DataCentre() {
               style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "#B5651D", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", opacity: loading ? 0.5 : 1, padding: 0 }}
             >
               <RefreshCw style={{ width: 11, height: 11, animation: loading ? "spin 1s linear infinite" : "none" }} />
-              Refresh
+              {t("data.refresh")}
             </button>
           </div>
         </div>
@@ -273,7 +279,7 @@ export function DataCentre() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 0", gap: "12px" }}>
               <Loader2 style={{ width: 24, height: 24, color: "#B5651D", animation: "spin 1s linear infinite" }} />
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)" }}>Loading platform data…</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("data.loading")}</p>
             </div>
           </>
         )}
@@ -282,13 +288,13 @@ export function DataCentre() {
         {!loading && error && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
             <AlertTriangle style={{ width: 32, height: 32, color: "#B5651D", marginBottom: "16px" }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>Data temporarily unavailable</p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>Try refreshing the page.</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("data.errorTitle")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.errorSub")}</p>
             <button
               onClick={fetchData}
               style={{ display: "flex", alignItems: "center", gap: "8px", background: "#B5651D", color: "#fff", border: "none", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
             >
-              <RefreshCw style={{ width: 13, height: 13 }} /> Try again
+              <RefreshCw style={{ width: 13, height: 13 }} /> {t("data.retry")}
             </button>
           </div>
         )}
@@ -297,10 +303,10 @@ export function DataCentre() {
         {!loading && !error && data && data.startupCount === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
             <Building2 style={{ width: 32, height: 32, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>Platform data will appear as startups join.</p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>Be among the first founders listed.</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("data.noData")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.beFirstFounders")}</p>
             <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#B5651D", color: "#fff", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
-              List your startup →
+              {t("data.listYourStartup")} →
             </Link>
           </div>
         )}
@@ -310,10 +316,10 @@ export function DataCentre() {
           <>
             {/* Stat cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "32px" }}>
-              <StatCard label="Active listings"    value={data.startupCount}  Icon={Building2}   color="#B5651D" />
-              <StatCard label="Investors"           value={data.investorCount} Icon={Users}       color="#3B82F6" />
-              <StatCard label="Capital raised"      value={data.totalRaised}   prefix="$" Icon={DollarSign} color="#2D6A4F" />
-              <StatCard label="Deals closed"        value={data.dealsCount}    Icon={TrendingUp}  color="#B45309" />
+              <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}   color="#B5651D" />
+              <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}       color="#3B82F6" />
+              <StatCard label={t("data.raised")}    value={data.totalRaised}   prefix="$" Icon={DollarSign} color="#2D6A4F" />
+              <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="#B45309" />
             </div>
 
             {/* Charts */}
@@ -323,10 +329,10 @@ export function DataCentre() {
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
                   <BarChart3 style={{ width: 13, height: 13, color: "#B5651D" }} />
-                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>By Industry</h3>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.industryBreakdown")}</h3>
                 </div>
                 {industryEntries.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>No data yet</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
                   industryEntries.map(([label, count]) => (
                     <BarRow key={label} label={label} count={count} maxCount={industryMax} animate={barsVisible} />
@@ -338,10 +344,10 @@ export function DataCentre() {
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
                   <Zap style={{ width: 13, height: 13, color: "#B5651D" }} />
-                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>By Stage</h3>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.stageBreakdown")}</h3>
                 </div>
                 {stageEntries.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>No data yet</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
                   stageEntries.map(([label, count]) => (
                     <BarRow key={label} label={STAGE_LABELS[label] ?? label} count={count} maxCount={stageMax} animate={barsVisible} />
@@ -358,12 +364,12 @@ export function DataCentre() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <Brain style={{ width: 13, height: 13, color: "#B5651D" }} />
-                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>Top AI Scores</h3>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.topAiScores")}</h3>
                   </div>
-                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#B5651D", textDecoration: "none" }}>View all →</Link>
+                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#B5651D", textDecoration: "none" }}>{t("common.viewAll")} →</Link>
                 </div>
                 {data.topStartups.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>No scores yet</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noScoresYet")}</p>
                 ) : (
                   data.topStartups.map((s, i) => (
                     <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.topStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
@@ -373,7 +379,7 @@ export function DataCentre() {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {fmtMrr(s.mrr)}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {fmtMrr(s.mrr, t("data.preRev"))}</p>
                       </div>
                       <ScorePill score={s.ai_score} />
                     </Link>
@@ -386,12 +392,12 @@ export function DataCentre() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <Activity style={{ width: 13, height: 13, color: "#B5651D" }} />
-                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>Recent Listings</h3>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.recentListings")}</h3>
                   </div>
-                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#B5651D", textDecoration: "none" }}>View all →</Link>
+                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#B5651D", textDecoration: "none" }}>{t("common.viewAll")} →</Link>
                 </div>
                 {data.recentStartups.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>No listings yet</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noListingsYet")}</p>
                 ) : (
                   data.recentStartups.map((s, i) => (
                     <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.recentStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
@@ -414,12 +420,12 @@ export function DataCentre() {
 
             {/* CTA */}
             <div style={{ background: "#1A1612", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "#F5F0E8", marginBottom: "8px" }}>Want your startup featured here?</h2>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "#F5F0E8", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "#9C8E82", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
-                List on CapitalReach to appear in platform charts and get discovered by investors.
+                {t("data.featuredHereSub")}
               </p>
               <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#B5651D", color: "#fff", borderRadius: "4px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
-                List your startup free →
+                {t("data.listFree")} →
               </Link>
             </div>
           </>

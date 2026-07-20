@@ -11,12 +11,13 @@ import { INDUSTRIES, STAGES } from "@/types";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTranslation } from "@/hooks/useTranslation";
 
-const TYPE_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  angel:         { label: "Angel",         color: "text-blue-300",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
-  vc:            { label: "VC Fund",       color: "text-cr-cu-l",  bg: "bg-cr-copper/10",  border: "border-cr-copper/30"  },
-  family_office: { label: "Family Office", color: "text-amber-300",  bg: "bg-amber-500/10",  border: "border-amber-500/30"  },
-  corporate:     { label: "Corporate VC",  color: "text-rose-300",   bg: "bg-rose-500/10",   border: "border-rose-500/30"   },
+const TYPE_META: Record<string, { labelKey: string; color: string; bg: string; border: string }> = {
+  angel:         { labelKey: "investors.typeAngel",        color: "text-blue-300",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
+  vc:            { labelKey: "investors.typeVc",           color: "text-cr-cu-l",  bg: "bg-cr-copper/10",  border: "border-cr-copper/30"  },
+  family_office: { labelKey: "investors.typeFamilyOffice", color: "text-amber-300",  bg: "bg-amber-500/10",  border: "border-amber-500/30"  },
+  corporate:     { labelKey: "investors.typeCorporate",    color: "text-rose-300",   bg: "bg-rose-500/10",   border: "border-rose-500/30"   },
 };
 
 const STAGE_LABELS: Record<string, string> = {
@@ -89,6 +90,7 @@ const DEFAULT: InvestorFilters = {
 };
 
 export function InvestorsClient() {
+  const { t } = useTranslation();
   const [f, setF] = useState<InvestorFilters>(DEFAULT);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [investors, setInvestors] = useState<Investor[]>([]);
@@ -170,14 +172,14 @@ export function InvestorsClient() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 font-bold text-cr-ink">
           <Filter className="h-4 w-4 text-cr-copper" />
-          Filters
+          {t("investors.filters")}
           {activeCount > 0 && (
             <span className="ml-1 text-[10px] font-bold bg-cr-copper text-white px-1.5 py-0.5 rounded-full">{activeCount}</span>
           )}
         </div>
         {activeCount > 0 && (
           <button onClick={() => setF(DEFAULT)} className="text-xs text-cr-copper hover:text-cr-cu-l flex items-center gap-1 font-medium">
-            <X className="h-3 w-3" /> Clear
+            <X className="h-3 w-3" /> {t("investors.clear")}
           </button>
         )}
       </div>
@@ -185,12 +187,12 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Sort */}
-      <Section title="Sort By">
+      <Section title={t("investors.sortBy")}>
         <div className="space-y-1">
           {([
-            ["recent",       "Recently Joined"],
-            ["check_desc",   "Largest Checks First"],
-            ["check_asc",    "Smallest Checks First"],
+            ["recent",       t("investors.sortRecent")],
+            ["check_desc",   t("investors.sortLargest")],
+            ["check_asc",    t("investors.sortSmallest")],
           ] as const).map(([val, label]) => (
             <button key={val} onClick={() => setF(p => ({ ...p, sort: val }))}
               className={cn("w-full text-left text-sm px-3 py-1.5 rounded-lg transition-colors",
@@ -203,7 +205,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Investor type */}
-      <Section title="Investor Type">
+      <Section title={t("investors.investorType")}>
         <div className="flex flex-wrap gap-1.5">
           {Object.entries(TYPE_META).map(([val, meta]) => (
             <button key={val} onClick={() => toggle("types", val)}
@@ -212,7 +214,7 @@ export function InvestorsClient() {
                   ? `${meta.bg} ${meta.color} ${meta.border} font-bold`
                   : "border-cr-p4 text-cr-i4 hover:border-cr-i4 hover:text-cr-i2"
               )}
-            >{meta.label}</button>
+            >{t(meta.labelKey)}</button>
           ))}
         </div>
       </Section>
@@ -220,7 +222,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Check size */}
-      <Section title="Check Size Range">
+      <Section title={t("investors.checkSizeRange")}>
         <div className="px-1 pt-1">
           <Slider
             min={0} max={100_000_000} step={100_000}
@@ -229,7 +231,7 @@ export function InvestorsClient() {
           />
           <div className="flex justify-between text-xs text-cr-i4 mt-2 font-medium">
             <span>{formatCheck(f.minCheck)}</span>
-            <span>{f.maxCheck >= 100_000_000 ? "No max" : formatCheck(f.maxCheck)}</span>
+            <span>{f.maxCheck >= 100_000_000 ? t("investors.noMax") : formatCheck(f.maxCheck)}</span>
           </div>
         </div>
       </Section>
@@ -237,7 +239,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Stages */}
-      <Section title="Investment Stage">
+      <Section title={t("investors.investmentStage")}>
         <div className="flex flex-wrap gap-1.5">
           {STAGES.map(s => (
             <button key={s.value} onClick={() => toggle("stages", s.value)}
@@ -253,7 +255,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Industries */}
-      <Section title="Focus Industries" defaultOpen={false}>
+      <Section title={t("investors.focusIndustries")} defaultOpen={false}>
         <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
           {INDUSTRIES.map(ind => (
             <label key={ind} className={cn(
@@ -276,12 +278,16 @@ export function InvestorsClient() {
         <div className="inline-flex items-center gap-2 bg-cr-copper/10 border border-cr-copper/20 rounded-full px-4 py-1.5 mb-4">
           <Users className="h-3.5 w-3.5 text-cr-copper" />
           <span className="text-sm font-semibold text-cr-cu-l">
-            {loading ? "Loading…" : `${investors.length} Registered Investor${investors.length !== 1 ? "s" : ""}`}
+            {loading
+              ? t("common.loading")
+              : investors.length === 1
+                ? t("investors.registeredCountOne")
+                : t("investors.registeredCount", { count: investors.length })}
           </span>
         </div>
-        <h1 className="text-4xl font-extrabold text-cr-ink mb-3 tracking-tight">Investor Directory</h1>
+        <h1 className="text-4xl font-extrabold text-cr-ink mb-3 tracking-tight">{t("investors.directoryTitle")}</h1>
         <p className="text-lg text-cr-i3 max-w-xl mx-auto">
-          Browse accredited angels, VCs, and institutional funds actively deploying capital. Filter by stage, sector, check size, and more.
+          {t("investors.directorySub")}
         </p>
       </div>
 
@@ -298,7 +304,7 @@ export function InvestorsClient() {
               <input
                 value={f.query}
                 onChange={e => setF(p => ({ ...p, query: e.target.value }))}
-                placeholder="Search by name, industry, or location…"
+                placeholder={t("investors.searchPlaceholder")}
                 className="w-full h-11 pl-10 pr-4 rounded-xl border border-cr-p4 bg-cr-paper text-cr-ink text-sm placeholder:text-cr-i4 focus:outline-none focus:ring-2 focus:ring-cr-copper/40 focus:border-cr-copper/50"
               />
               {f.query && (
@@ -316,7 +322,7 @@ export function InvestorsClient() {
               )}
             >
               <SlidersHorizontal className="h-4 w-4" />
-              Filters {activeCount > 0 && `(${activeCount})`}
+              {t("investors.filters")} {activeCount > 0 && `(${activeCount})`}
             </button>
           </div>
 
@@ -327,7 +333,7 @@ export function InvestorsClient() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-cr-i4">
               <Loader2 className="h-8 w-8 animate-spin text-cr-copper" />
-              <p className="text-sm">Loading investors…</p>
+              <p className="text-sm">{t("investors.loadingInvestors")}</p>
             </div>
           ) : investors.length === 0 ? (
             /* No investors yet */
@@ -335,15 +341,15 @@ export function InvestorsClient() {
               <div className="w-16 h-16 bg-cr-copper/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-cr-copper/40" />
               </div>
-              <p className="font-bold text-cr-ink text-lg mb-2">No investors yet</p>
+              <p className="font-bold text-cr-ink text-lg mb-2">{t("investors.noInvestorsYet")}</p>
               <p className="text-sm text-cr-i3 mb-6 max-w-xs mx-auto">
-                Be among the first investors to join CapitalReach and get exclusive access to early-stage deal flow.
+                {t("investors.noInvestorsYetSub")}
               </p>
               <Link
                 href="/auth/signup?role=investor"
                 className="inline-flex items-center gap-2 bg-cr-copper text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-cr-cu-l transition-colors"
               >
-                Join as Investor →
+                {t("investors.joinAsInvestor")} →
               </Link>
             </div>
           ) : (
@@ -351,12 +357,14 @@ export function InvestorsClient() {
               {/* Result count */}
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm text-cr-i3">
-                  <span className="font-semibold text-cr-ink">{results.length}</span> investor{results.length !== 1 ? "s" : ""} found
-                  {f.query && <span className="ml-1">for &ldquo;<em>{f.query}</em>&rdquo;</span>}
+                  {results.length === 1
+                    ? t("investors.foundCountOne")
+                    : t("investors.foundCount", { count: results.length })}
+                  {f.query && <span className="ml-1">{t("investors.forQuery")} &ldquo;<em>{f.query}</em>&rdquo;</span>}
                 </p>
                 {activeCount > 0 && (
                   <button onClick={() => setF(DEFAULT)} className="text-xs text-cr-copper hover:underline font-medium flex items-center gap-1">
-                    <X className="h-3 w-3" /> Clear filters
+                    <X className="h-3 w-3" /> {t("investors.clearFilters")}
                   </button>
                 )}
               </div>
@@ -365,10 +373,10 @@ export function InvestorsClient() {
               {results.length === 0 ? (
                 <div className="text-center py-20 text-cr-i4">
                   <Users className="h-10 w-10 mx-auto mb-3 text-cr-i4/40" />
-                  <p className="font-medium text-cr-i3">No investors match your filters</p>
-                  <p className="text-sm mt-1">Try loosening your criteria</p>
+                  <p className="font-medium text-cr-i3">{t("investors.noMatch")}</p>
+                  <p className="text-sm mt-1">{t("investors.noMatchSub")}</p>
                   <button onClick={() => setF(DEFAULT)} className="mt-4 text-sm text-cr-copper hover:underline font-medium">
-                    Clear all filters
+                    {t("investors.clearAllFilters")}
                   </button>
                 </div>
               ) : (
@@ -376,7 +384,7 @@ export function InvestorsClient() {
                   {results.map((inv, idx) => {
                     const meta = TYPE_META[inv.type] ?? TYPE_META.angel;
                     const grad = GRAD_COLORS[idx % GRAD_COLORS.length];
-                    const displayName = inv.full_name || "Anonymous Investor";
+                    const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
                       <div key={inv.id} className="group bg-cr-paper border border-cr-p4 rounded-2xl p-5 hover:border-cr-copper/30 hover:shadow-[0_0_20px_rgba(196,158,80,0.1)] transition-all duration-200 flex flex-col">
                         {/* Top */}
@@ -390,7 +398,7 @@ export function InvestorsClient() {
                               {inv.firm && <p className="text-xs text-cr-i4 mt-0.5">{inv.firm}</p>}
                               <div className="flex items-center gap-1.5 mt-1">
                                 <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full border", meta.bg, meta.color, meta.border)}>
-                                  {meta.label}
+                                  {t(meta.labelKey)}
                                 </span>
                               </div>
                             </div>
@@ -405,9 +413,9 @@ export function InvestorsClient() {
                         {/* Check size */}
                         {(inv.min_check || inv.max_check) && (
                           <div className="bg-cr-p2 rounded-xl px-3 py-2 mb-3 border border-cr-p4">
-                            <p className="text-[10px] text-cr-i4 font-medium mb-0.5">Check Size</p>
+                            <p className="text-[10px] text-cr-i4 font-medium mb-0.5">{t("investors.checkSize")}</p>
                             <p className="text-xs font-bold text-cr-ink">
-                              {inv.min_check ? formatCheck(inv.min_check) : "Any"} – {inv.max_check ? formatCheck(inv.max_check) : "Any"}
+                              {inv.min_check ? formatCheck(inv.min_check) : t("investors.any")} – {inv.max_check ? formatCheck(inv.max_check) : t("investors.any")}
                             </p>
                           </div>
                         )}
@@ -449,7 +457,7 @@ export function InvestorsClient() {
                           href={`/investors/${inv.slug}`}
                           className="mt-auto w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-cr-copper hover:bg-cr-cu-l text-white text-sm font-semibold transition-colors"
                         >
-                          View Profile →
+                          {t("investors.viewProfile")} →
                         </Link>
                       </div>
                     );
@@ -463,12 +471,12 @@ export function InvestorsClient() {
           {!loading && (
             <div className="mt-16 bg-gradient-to-r from-cr-cu-d to-emerald-700 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-5 text-white">
               <div>
-                <h2 className="text-xl font-bold mb-1">Ready to get funded?</h2>
-                <p className="text-white/70 text-sm">List your startup and get discovered by investors on CapitalReach.</p>
+                <h2 className="text-xl font-bold mb-1">{t("investors.readyFunded")}</h2>
+                <p className="text-white/70 text-sm">{t("investors.readyFundedSub")}</p>
               </div>
               <Link href="/auth/signup?role=startup"
                 className="inline-flex items-center gap-2 bg-cr-copper text-white hover:bg-cr-cu-l h-11 px-6 rounded-xl text-sm font-bold whitespace-nowrap transition-colors shadow-lg flex-shrink-0">
-                List Your Startup →
+                {t("investors.listYourStartup")} →
               </Link>
             </div>
           )}

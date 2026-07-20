@@ -8,6 +8,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { ArrowLeft, Save, X } from "lucide-react";
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -16,8 +17,23 @@ const REVENUE_MODELS  = ["Subscription", "Usage-based", "One-time", "Freemium", 
 const COMPANY_TYPES   = ["C-Corp", "LLC", "S-Corp", "PBC (Public Benefit Corp)", "Sole Proprietorship", "Not yet incorporated"];
 const TEAM_SIZES      = ["Solo founder", "2–5", "6–10", "11–25", "26–50", "51–100", "100+"];
 const DECK_LANGUAGES  = ["English", "German", "Both", "Other"];
-const LOOKING_FOR_OPTIONS = ["Capital", "Strategic investors", "Board member", "Mentorship", "Co-founder", "Customers"];
-const TARGET_MARKET_OPTIONS = ["Germany", "DACH", "Europe", "Global", "US", "UK", "Asia"];
+const LOOKING_FOR_OPTIONS = [
+  { value: "Capital",             labelKey: "dashboard.lf1" },
+  { value: "Strategic investors", labelKey: "dashboard.lf2" },
+  { value: "Board member",        labelKey: "dashboard.lf3" },
+  { value: "Mentorship",          labelKey: "dashboard.lf4" },
+  { value: "Co-founder",          labelKey: "dashboard.lf5" },
+  { value: "Customers",           labelKey: "dashboard.lf6" },
+];
+const TARGET_MARKET_OPTIONS = [
+  { value: "Germany", labelKey: "dashboard.tm1" },
+  { value: "DACH",    labelKey: "dashboard.tm2" },
+  { value: "Europe",  labelKey: "dashboard.tm3" },
+  { value: "Global",  labelKey: "dashboard.tm4" },
+  { value: "US",      labelKey: "dashboard.tm5" },
+  { value: "UK",      labelKey: "dashboard.tm6" },
+  { value: "Asia",    labelKey: "dashboard.tm7" },
+];
 
 // ── Shared form element styles ────────────────────────────────────────────────
 
@@ -149,6 +165,7 @@ function Field({ label, children, hint }: { label: string; children: React.React
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function EditStartupPage() {
+  const { t } = useTranslation();
   const [startup, setStartup] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving]   = useState(false);
@@ -206,7 +223,7 @@ export default function EditStartupPage() {
     }).eq("id", startup.id);
 
     if (error) { notify.error(error.message); }
-    else { notify.success("Changes submitted for review."); router.push("/dashboard/startup"); }
+    else { notify.success(t("dashboard.editChangesSubmitted")); router.push("/dashboard/startup"); }
     setSaving(false);
   }
 
@@ -215,7 +232,7 @@ export default function EditStartupPage() {
   if (loading) return (
     <><Navbar />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-        Loading…
+        {t("common.loading")}
       </div>
     </>
   );
@@ -223,7 +240,7 @@ export default function EditStartupPage() {
   if (!startup) return (
     <><Navbar />
       <div style={{ textAlign: "center", padding: "80px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-        No startup found. <Link href="/onboarding/startup" style={{ color: "var(--cr-copper)" }}>Create one →</Link>
+        {t("dashboard.editNoStartup")} <Link href="/onboarding/startup" style={{ color: "var(--cr-copper)" }}>{t("dashboard.editCreateOne")} →</Link>
       </div>
     </>
   );
@@ -239,78 +256,78 @@ export default function EditStartupPage() {
             <Link href="/dashboard/startup" style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", textDecoration: "none" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}>
-              <ArrowLeft style={{ width: 14, height: 14 }} /> Back
+              <ArrowLeft style={{ width: 14, height: 14 }} /> {t("common.back")}
             </Link>
             <div style={{ width: 1, height: 14, background: "var(--cr-rule-dark)" }} />
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "24px", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>Edit Profile</h1>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "24px", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>{t("dashboard.editProfile")}</h1>
           </div>
 
           {/* Review notice */}
           <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(180,83,9,0.2)", borderRadius: "4px", padding: "12px 16px", marginBottom: "28px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#B45309" }}>
-            Saving major changes will re-submit your listing for admin review.
+            {t("dashboard.editReviewNotice")}
           </div>
 
           <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Company Basics */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Company Basics</h2>
+              <h2 style={sectionHeadStyle}>{t("dashboard.secCompanyBasics")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Field label="Company Name"><WarmInput value={startup.name || ""} onChange={e => update("name", e.target.value)} /></Field>
-                <Field label="Tagline"><WarmInput value={startup.tagline || ""} onChange={e => update("tagline", e.target.value)} /></Field>
-                <Field label="Website"><WarmInput value={startup.website || ""} onChange={e => update("website", e.target.value)} placeholder="https://…" /></Field>
+                <Field label={t("onboarding.su.companyName")}><WarmInput value={startup.name || ""} onChange={e => update("name", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.tagline")}><WarmInput value={startup.tagline || ""} onChange={e => update("tagline", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.website")}><WarmInput value={startup.website || ""} onChange={e => update("website", e.target.value)} placeholder="https://…" /></Field>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                  <Field label="Industry">
+                  <Field label={t("onboarding.su.industry")}>
                     <WarmSelect value={startup.industry || ""} onChange={e => update("industry", e.target.value)}>
-                      <option value="">Select industry</option>
+                      <option value="">{t("onboarding.su.selectIndustry")}</option>
                       {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
                     </WarmSelect>
                   </Field>
-                  <Field label="Stage">
+                  <Field label={t("onboarding.su.stage")}>
                     <WarmSelect value={startup.stage || ""} onChange={e => update("stage", e.target.value)}>
-                      <option value="">Select stage</option>
+                      <option value="">{t("onboarding.su.selectStage")}</option>
                       {STAGES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </WarmSelect>
                   </Field>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                  <Field label="Country"><WarmInput value={startup.country || ""} onChange={e => update("country", e.target.value)} /></Field>
-                  <Field label="City"><WarmInput value={startup.city || ""} onChange={e => update("city", e.target.value)} placeholder="San Francisco" /></Field>
+                  <Field label={t("onboarding.su.country")}><WarmInput value={startup.country || ""} onChange={e => update("country", e.target.value)} /></Field>
+                  <Field label={t("onboarding.su.city")}><WarmInput value={startup.city || ""} onChange={e => update("city", e.target.value)} placeholder="San Francisco" /></Field>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                  <Field label="Founded Date"><WarmInput type="date" value={startup.founded_date || ""} onChange={e => update("founded_date", e.target.value)} /></Field>
-                  <Field label="Company Type">
+                  <Field label={t("onboarding.su.foundedDate")}><WarmInput type="date" value={startup.founded_date || ""} onChange={e => update("founded_date", e.target.value)} /></Field>
+                  <Field label={t("onboarding.su.companyType")}>
                     <WarmSelect value={startup.company_type || ""} onChange={e => update("company_type", e.target.value)}>
-                      <option value="">Select type</option>
-                      {COMPANY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                      <option value="">{t("onboarding.su.selectType")}</option>
+                      {COMPANY_TYPES.map(ct => <option key={ct} value={ct}>{ct}</option>)}
                     </WarmSelect>
                   </Field>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                  <Field label="Team Size">
+                  <Field label={t("onboarding.su.teamSize")}>
                     <WarmSelect value={startup.team_size || ""} onChange={e => update("team_size", e.target.value)}>
-                      <option value="">Select size</option>
-                      {TEAM_SIZES.map(t => <option key={t} value={t}>{t}</option>)}
+                      <option value="">{t("onboarding.su.numEmployees")}</option>
+                      {TEAM_SIZES.map(ts => <option key={ts} value={ts}>{ts}</option>)}
                     </WarmSelect>
                   </Field>
-                  <Field label="Twitter / X URL"><WarmInput value={startup.twitter_url || ""} onChange={e => update("twitter_url", e.target.value)} placeholder="https://x.com/…" /></Field>
+                  <Field label={t("onboarding.su.companyTwitter")}><WarmInput value={startup.twitter_url || ""} onChange={e => update("twitter_url", e.target.value)} placeholder="https://x.com/…" /></Field>
                 </div>
               </div>
             </section>
 
             {/* Business Model */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Business Model</h2>
+              <h2 style={sectionHeadStyle}>{t("onboarding.su.businessModel")}</h2>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                <Field label="Business Model">
+                <Field label={t("onboarding.su.businessModel")}>
                   <WarmSelect value={startup.business_model || ""} onChange={e => update("business_model", e.target.value)}>
-                    <option value="">Select…</option>
+                    <option value="">{t("dashboard.selectDots")}</option>
                     {BUSINESS_MODELS.map(m => <option key={m} value={m}>{m}</option>)}
                   </WarmSelect>
                 </Field>
-                <Field label="Revenue Model">
+                <Field label={t("onboarding.su.revenueModel")}>
                   <WarmSelect value={startup.revenue_model || ""} onChange={e => update("revenue_model", e.target.value)}>
-                    <option value="">Select…</option>
+                    <option value="">{t("dashboard.selectDots")}</option>
                     {REVENUE_MODELS.map(m => <option key={m} value={m}>{m}</option>)}
                   </WarmSelect>
                 </Field>
@@ -319,57 +336,57 @@ export default function EditStartupPage() {
 
             {/* Pitch */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Pitch</h2>
+              <h2 style={sectionHeadStyle}>{t("onboarding.su.step3")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Field label="Problem"><WarmTextarea value={startup.problem || ""} onChange={e => update("problem", e.target.value)} /></Field>
-                <Field label="Solution"><WarmTextarea value={startup.solution || ""} onChange={e => update("solution", e.target.value)} /></Field>
-                <Field label="Target Market"><WarmTextarea value={startup.market || ""} onChange={e => update("market", e.target.value)} /></Field>
-                <Field label="Competitive Advantage"><WarmTextarea value={startup.competitive_advantage || ""} onChange={e => update("competitive_advantage", e.target.value)} /></Field>
-                <Field label="Competitors" hint="Press Enter or comma to add each competitor">
-                  <TagInput tags={startup.competitors_json || []} onChange={tags => update("competitors_json", tags)} placeholder="Competitor name…" />
+                <Field label={t("onboarding.su.problem")}><WarmTextarea value={startup.problem || ""} onChange={e => update("problem", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.solution")}><WarmTextarea value={startup.solution || ""} onChange={e => update("solution", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.targetMarket")}><WarmTextarea value={startup.market || ""} onChange={e => update("market", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.advantage")}><WarmTextarea value={startup.competitive_advantage || ""} onChange={e => update("competitive_advantage", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.competitors")} hint={t("dashboard.competitorsHintEnter")}>
+                  <TagInput tags={startup.competitors_json || []} onChange={tags => update("competitors_json", tags)} placeholder={t("onboarding.su.competitorNamePh")} />
                 </Field>
               </div>
             </section>
 
             {/* Traction & Metrics */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Traction &amp; Metrics</h2>
+              <h2 style={sectionHeadStyle}>{t("dashboard.secTraction")}</h2>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                <Field label="MRR ($)"><WarmInput type="number" value={startup.mrr || ""} onChange={e => update("mrr", e.target.value)} /></Field>
-                <Field label="ARR ($)"><WarmInput type="number" value={startup.arr || ""} onChange={e => update("arr", e.target.value)} /></Field>
-                <Field label="Users"><WarmInput type="number" value={startup.user_count || ""} onChange={e => update("user_count", e.target.value)} /></Field>
-                <Field label="MoM Growth (%)"><WarmInput type="number" value={startup.growth_rate || ""} onChange={e => update("growth_rate", e.target.value)} /></Field>
-                <Field label="Paying Customers"><WarmInput type="number" value={startup.paying_customers || ""} onChange={e => update("paying_customers", e.target.value)} /></Field>
-                <Field label="Churn Rate (%)"><WarmInput type="number" step="0.1" value={startup.churn_rate || ""} onChange={e => update("churn_rate", e.target.value)} /></Field>
-                <Field label="Runway (months)"><WarmInput type="number" value={startup.runway_months || ""} onChange={e => update("runway_months", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.mrrUsd")}><WarmInput type="number" value={startup.mrr || ""} onChange={e => update("mrr", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.arrUsd")}><WarmInput type="number" value={startup.arr || ""} onChange={e => update("arr", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.totalUsers")}><WarmInput type="number" value={startup.user_count || ""} onChange={e => update("user_count", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.momGrowth")}><WarmInput type="number" value={startup.growth_rate || ""} onChange={e => update("growth_rate", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.payingCustomers")}><WarmInput type="number" value={startup.paying_customers || ""} onChange={e => update("paying_customers", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.churn")}><WarmInput type="number" step="0.1" value={startup.churn_rate || ""} onChange={e => update("churn_rate", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.runwayMonths")}><WarmInput type="number" value={startup.runway_months || ""} onChange={e => update("runway_months", e.target.value)} /></Field>
               </div>
             </section>
 
             {/* The Ask */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>The Ask</h2>
+              <h2 style={sectionHeadStyle}>{t("onboarding.su.step5")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Field label="Funding Target ($)"><WarmInput type="number" value={startup.funding_target || ""} onChange={e => update("funding_target", e.target.value)} /></Field>
-                <Field label="Equity Offered (%)"><WarmInput type="number" step="0.1" value={startup.equity_offered || ""} onChange={e => update("equity_offered", e.target.value)} /></Field>
-                <Field label="Min Check Size ($)"><WarmInput type="number" value={startup.min_check_size || ""} onChange={e => update("min_check_size", e.target.value)} /></Field>
-                <Field label="Use of Funds"><WarmTextarea value={startup.use_of_funds || ""} onChange={e => update("use_of_funds", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.fundingTarget")}><WarmInput type="number" value={startup.funding_target || ""} onChange={e => update("funding_target", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.equityOffered")}><WarmInput type="number" step="0.1" value={startup.equity_offered || ""} onChange={e => update("equity_offered", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.minCheckSize")}><WarmInput type="number" value={startup.min_check_size || ""} onChange={e => update("min_check_size", e.target.value)} /></Field>
+                <Field label={t("onboarding.su.useOfFunds")}><WarmTextarea value={startup.use_of_funds || ""} onChange={e => update("use_of_funds", e.target.value)} /></Field>
               </div>
             </section>
 
             {/* Links & Assets */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Links &amp; Assets</h2>
+              <h2 style={sectionHeadStyle}>{t("dashboard.secLinks")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Field label="Pitch Deck URL" hint="Or upload directly via the Document Manager">
+                <Field label={t("onboarding.su.pitchDeckUrl")} hint={t("dashboard.pitchDeckHint2")}>
                   <WarmInput value={startup.pitch_deck_url || ""} onChange={e => update("pitch_deck_url", e.target.value)} placeholder="https://docsend.com/…" />
                 </Field>
-                <Field label="Pitch Video URL (YouTube / Loom)" hint="Shown publicly on your profile">
+                <Field label={t("dashboard.pitchVideoUrl")} hint={t("dashboard.pitchVideoHint")}>
                   <WarmInput value={startup.video_pitch_url || ""} onChange={e => update("video_pitch_url", e.target.value)} placeholder="https://youtube.com/watch?v=… or loom.com/share/…" />
                 </Field>
-                <Field label="Demo Video URL (YouTube / Loom)">
+                <Field label={t("onboarding.su.demoVideoUrl")}>
                   <WarmInput value={startup.demo_video_url || ""} onChange={e => update("demo_video_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" />
                 </Field>
-                <Field label="Product Hunt URL">
+                <Field label={t("onboarding.su.productHuntUrl")}>
                   <WarmInput value={startup.product_hunt_url || ""} onChange={e => update("product_hunt_url", e.target.value)} placeholder="https://producthunt.com/posts/…" />
                 </Field>
               </div>
@@ -377,65 +394,65 @@ export default function EditStartupPage() {
 
             {/* Visibility & Outreach */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Visibility &amp; Outreach</h2>
+              <h2 style={sectionHeadStyle}>{t("dashboard.secVisibility")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Field label="Looking For" hint="Select what you need from investors">
+                <Field label={t("dashboard.lookingFor")} hint={t("dashboard.lookingForHint")}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     {LOOKING_FOR_OPTIONS.map(opt => (
-                      <button key={opt} type="button"
+                      <button key={opt.value} type="button"
                         onClick={() => {
                           const cur: string[] = startup.looking_for || [];
-                          update("looking_for", cur.includes(opt) ? cur.filter((x: string) => x !== opt) : [...cur, opt]);
+                          update("looking_for", cur.includes(opt.value) ? cur.filter((x: string) => x !== opt.value) : [...cur, opt.value]);
                         }}
                         style={{
                           fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
                           padding: "6px 14px", borderRadius: "3px", cursor: "pointer",
-                          border: (startup.looking_for || []).includes(opt) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
-                          background: (startup.looking_for || []).includes(opt) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                          color: (startup.looking_for || []).includes(opt) ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                          border: (startup.looking_for || []).includes(opt.value) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                          background: (startup.looking_for || []).includes(opt.value) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                          color: (startup.looking_for || []).includes(opt.value) ? "var(--cr-copper)" : "var(--cr-ink-3)",
                         }}
                       >
-                        {opt}
+                        {t(opt.labelKey)}
                       </button>
                     ))}
                   </div>
                 </Field>
-                <Field label="Target Markets" hint="Where are your primary customers?">
+                <Field label={t("dashboard.targetMarketsLabel")} hint={t("dashboard.targetMarketsHint")}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     {TARGET_MARKET_OPTIONS.map(opt => (
-                      <button key={opt} type="button"
+                      <button key={opt.value} type="button"
                         onClick={() => {
                           const cur: string[] = startup.target_markets || [];
-                          update("target_markets", cur.includes(opt) ? cur.filter((x: string) => x !== opt) : [...cur, opt]);
+                          update("target_markets", cur.includes(opt.value) ? cur.filter((x: string) => x !== opt.value) : [...cur, opt.value]);
                         }}
                         style={{
                           fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
                           padding: "6px 14px", borderRadius: "3px", cursor: "pointer",
-                          border: (startup.target_markets || []).includes(opt) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
-                          background: (startup.target_markets || []).includes(opt) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                          color: (startup.target_markets || []).includes(opt) ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                          border: (startup.target_markets || []).includes(opt.value) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                          background: (startup.target_markets || []).includes(opt.value) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                          color: (startup.target_markets || []).includes(opt.value) ? "var(--cr-copper)" : "var(--cr-ink-3)",
                         }}
                       >
-                        {opt}
+                        {t(opt.labelKey)}
                       </button>
                     ))}
                   </div>
                 </Field>
-                <Field label="Deck Language">
+                <Field label={t("dashboard.deckLanguage")}>
                   <WarmSelect value={startup.deck_language || ""} onChange={e => update("deck_language", e.target.value)}>
-                    <option value="">Select…</option>
+                    <option value="">{t("dashboard.selectDots")}</option>
                     {DECK_LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
                   </WarmSelect>
                 </Field>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                  <Field label="Lead Investor (if any)" hint="Name of the investor leading this round">
+                  <Field label={t("dashboard.leadInvestor")} hint={t("dashboard.leadInvestorHint")}>
                     <WarmInput value={startup.lead_investor || ""} onChange={e => update("lead_investor", e.target.value)} placeholder="e.g. Sequoia Capital" />
                   </Field>
-                  <Field label="Previous Funding ($)" hint="Total raised before this round">
+                  <Field label={t("dashboard.prevFunding")} hint={t("dashboard.prevFundingHint")}>
                     <WarmInput type="number" value={startup.previous_funding || ""} onChange={e => update("previous_funding", e.target.value)} placeholder="0" />
                   </Field>
                 </div>
-                <Field label="Team Languages" hint="Languages the founding team speaks (press Enter to add)">
+                <Field label={t("dashboard.teamLanguages")} hint={t("dashboard.teamLanguagesHint")}>
                   <TagInput tags={startup.languages || []} onChange={tags => update("languages", tags)} placeholder="English, German, French…" />
                 </Field>
               </div>
@@ -443,12 +460,12 @@ export default function EditStartupPage() {
 
             {/* Settings */}
             <section style={sectionStyle}>
-              <h2 style={sectionHeadStyle}>Settings</h2>
+              <h2 style={sectionHeadStyle}>{t("dashboard.settings")}</h2>
               <WarmToggle
                 checked={!!startup.require_nda}
                 onChange={v => update("require_nda", v)}
-                label="Require NDA for sensitive documents"
-                hint="Investors must sign an NDA before accessing financial model and cap table"
+                label={t("dashboard.ndaToggle")}
+                hint={t("dashboard.ndaToggleHint")}
               />
             </section>
 
@@ -456,7 +473,7 @@ export default function EditStartupPage() {
             <button type="submit" disabled={saving}
               style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#fff", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
               <Save style={{ width: 16, height: 16 }} />
-              {saving ? "Saving…" : "Save All Changes"}
+              {saving ? t("common.saving") : t("dashboard.saveAll")}
             </button>
           </form>
         </div>

@@ -9,21 +9,22 @@ import {
 } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { Profile, Thread, Message } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string, t: (key: string, vars?: Record<string, string | number>) => string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (diff < 60)    return "Just now";
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60)    return t("dashboard.timeJustNow");
+  if (diff < 3600)  return t("dashboard.timeMinAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t("dashboard.timeHourAgo", { n: Math.floor(diff / 3600) });
+  return t("dashboard.timeDayAgo", { n: Math.floor(diff / 86400) });
 }
 
-const STATUS_STYLE: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  active:         { label: "Active",         bg: "var(--cr-up-bg)",   color: "var(--cr-up)",    border: "rgba(45,106,79,0.25)"   },
-  due_diligence:  { label: "Due Diligence",  bg: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "var(--cr-copper-br)" },
-  archived:       { label: "Archived",       bg: "var(--cr-paper-3)", color: "var(--cr-ink-4)", border: "var(--cr-rule)"         },
+const STATUS_KEYS: Record<string, { labelKey: string; bg: string; color: string; border: string }> = {
+  active:         { labelKey: "dashboard.statusActiveThread", bg: "var(--cr-up-bg)",   color: "var(--cr-up)",    border: "rgba(45,106,79,0.25)"   },
+  due_diligence:  { labelKey: "dashboard.statusDueDiligence",  bg: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "var(--cr-copper-br)" },
+  archived:       { labelKey: "dashboard.statusArchived",       bg: "var(--cr-paper-3)", color: "var(--cr-ink-4)", border: "var(--cr-rule)"         },
 };
 
 interface SearchAccount {
@@ -54,6 +55,7 @@ const labelStyle: React.CSSProperties = {
 
 export function MessagesClient({ profile, threads: initialThreads }: Props) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [selectedThread, setSelectedThread] = useState<Thread | null>(initialThreads[0] || null);
   const [messages, setMessages]             = useState<Message[]>([]);
   const [newMessage, setNewMessage]         = useState("");
@@ -148,19 +150,19 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
     }, 300);
   }, [accountSearch, accountDropOpen]);
 
-  const getLabel = (t: Thread) => {
+  const getLabel = (th: Thread) => {
     if (profile.role === "startup") {
-      const inv = (t as any).investor;
-      return inv?.display_name || inv?.firm_name || inv?.slug?.replace(/-/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase()) || "Investor";
+      const inv = (th as any).investor;
+      return inv?.display_name || inv?.firm_name || inv?.slug?.replace(/-/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase()) || t("dashboard.investorLabel");
     }
-    return (t as any).startup?.name || "Startup";
+    return (th as any).startup?.name || t("dashboard.startupLabel");
   };
-  const getSubLabel = (t: Thread) => {
+  const getSubLabel = (th: Thread) => {
     if (profile.role === "startup") {
-      const type = (t as any).investor?.type || "";
+      const type = (th as any).investor?.type || "";
       return type.replace(/_/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase());
     }
-    return (t as any).startup?.slug || "";
+    return (th as any).startup?.slug || "";
   };
 
   const filteredThreads = initialThreads.filter(t => {
@@ -206,23 +208,24 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
         supabase.from("startups").select("id").eq("owner_id", startupOwnerId).maybeSingle(),
         supabase.from("investors").select("id").eq("owner_id", investorOwnerId).maybeSingle(),
       ]);
-      if (!startupData) { setSendNewError(profile.role === "investor" ? "This user hasn't set up a startup profile yet." : "Complete your startup profile setup first."); setSendingNew(false); return; }
-      if (!investorData) { setSendNewError(profile.role === "startup" ? "This user hasn't set up an investor profile yet." : "Complete your investor profile setup first."); setSendingNew(false); return; }
+      if (!startupData) { setSendNewError(profile.role === "investor" ? t("dashboard.errNoStartupYet") : t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
+      if (!investorData) { setSendNewError(profile.role === "startup" ? t("dashboard.errNoInvestorYet") : t("dashboard.errCompleteInvestor")); setSendingNew(false); return; }
       const { data: existing } = await supabase.from("threads").select("id").eq("startup_id", startupData.id).eq("investor_id", investorData.id).maybeSingle();
       let threadId = existing?.id;
       if (!threadId) {
         const { data: newThread, error } = await supabase.from("threads").insert({ startup_id: startupData.id, investor_id: investorData.id, status: "active" }).select().single();
-        if (error || !newThread) { setSendNewError("Failed to start conversation. Please try again."); setSendingNew(false); return; }
+        if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
         threadId = newThread.id;
       }
       await supabase.from("messages").insert({ thread_id: threadId, sender_id: profile.id, body: newBody.trim() });
       closeNewModal();
       router.refresh();
-    } catch (err: any) { setSendNewError(err?.message || "Something went wrong."); }
+    } catch (err: any) { setSendNewError(err?.message || t("dashboard.errSomethingWrong2")); }
     setSendingNew(false);
   }
 
-  const selectedStatusInfo = STATUS_STYLE[(selectedThread as any)?.status || "active"] || STATUS_STYLE.active;
+  const selectedStatusKey = STATUS_KEYS[(selectedThread as any)?.status || "active"] || STATUS_KEYS.active;
+  const selectedStatusInfo = { ...selectedStatusKey, label: t(selectedStatusKey.labelKey) };
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
@@ -231,17 +234,17 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
         {/* Page header */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "10px" }}>Inbox</div>
+            <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.inbox")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(24px,3vw,32px)", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
-              Messages
+              {t("dashboard.messages")}
             </h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-              {initialThreads.length === 0 ? "No conversations yet" : `${initialThreads.length} conversation${initialThreads.length !== 1 ? "s" : ""}`}
+              {initialThreads.length === 0 ? t("dashboard.noConversationsYet") : initialThreads.length === 1 ? t("dashboard.conversationCountOne") : t("dashboard.conversationsCount", { count: initialThreads.length })}
             </p>
           </div>
           <button onClick={() => setShowNewModal(true)}
             style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 18px", cursor: "pointer" }}>
-            <Plus style={{ width: 14, height: 14 }} /> New Message
+            <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
           </button>
         </div>
 
@@ -254,17 +257,22 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
             <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search conversations…"
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("dashboard.searchConversations")}
                   style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "10px", paddingTop: "7px", paddingBottom: "7px", outline: "none", boxSizing: "border-box" }} />
               </div>
             </div>
 
             {/* Status filters */}
             <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--cr-rule)", display: "flex", gap: "6px", flexWrap: "wrap" }}>
-              {[{ v: "all", l: "All" }, { v: "active", l: "Active" }, { v: "due_diligence", l: "Due Diligence" }, { v: "archived", l: "Archived" }].map(f => (
+              {[
+                { v: "all", lk: "dashboard.filterAll" },
+                { v: "active", lk: "dashboard.filterActive" },
+                { v: "due_diligence", lk: "dashboard.filterDueDiligence" },
+                { v: "archived", lk: "dashboard.filterArchived" },
+              ].map(f => (
                 <button key={f.v} onClick={() => setStatusFilter(f.v)}
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === f.v ? 500 : 300, fontSize: "11px", padding: "4px 10px", borderRadius: "3px", border: statusFilter === f.v ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", background: statusFilter === f.v ? "var(--cr-copper-bg)" : "transparent", color: statusFilter === f.v ? "var(--cr-copper)" : "var(--cr-ink-4)", cursor: "pointer" }}>
-                  {f.l}
+                  {t(f.lk)}
                 </button>
               ))}
             </div>
@@ -274,7 +282,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
               {filteredThreads.length === 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: "24px", textAlign: "center", gap: "12px" }}>
                   <MessageSquare style={{ width: 32, height: 32, color: "var(--cr-ink-4)" }} />
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>No conversations yet</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noConversationsYet")}</p>
                 </div>
               ) : filteredThreads.map(thread => {
                 const isSelected = selectedThread?.id === thread.id;
@@ -289,12 +297,12 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{getLabel(thread)}</p>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{timeAgo(thread.updated_at)}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{timeAgo(thread.updated_at, t)}</span>
                         </div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px", textTransform: "capitalize" }}>{getSubLabel(thread)}</p>
                         {st !== "active" && (
-                          <span style={{ background: STATUS_STYLE[st]?.bg || "var(--cr-paper-3)", color: STATUS_STYLE[st]?.color || "var(--cr-ink-4)", border: `1px solid ${STATUS_STYLE[st]?.border || "var(--cr-rule)"}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.05em", display: "inline-block", marginTop: "4px" }}>
-                            {STATUS_STYLE[st]?.label}
+                          <span style={{ background: STATUS_KEYS[st]?.bg || "var(--cr-paper-3)", color: STATUS_KEYS[st]?.color || "var(--cr-ink-4)", border: `1px solid ${STATUS_KEYS[st]?.border || "var(--cr-rule)"}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.05em", display: "inline-block", marginTop: "4px" }}>
+                            {STATUS_KEYS[st] ? t(STATUS_KEYS[st].labelKey) : ""}
                           </span>
                         )}
                       </div>
@@ -331,19 +339,19 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                   {profile.role === "startup" && (selectedThread as any).status === "active" && (
                     <button onClick={() => updateStatus("due_diligence")}
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
-                      Move to Due Diligence
+                      {t("dashboard.moveToDueDiligence")}
                     </button>
                   )}
                   {profile.role === "startup" && (selectedThread as any).status === "due_diligence" && (
                     <button onClick={() => updateStatus("active")}
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
-                      Back to Active
+                      {t("dashboard.backToActive")}
                     </button>
                   )}
                   {(selectedThread as any).startup?.slug && (
                     <a href={`/startups/${(selectedThread as any).startup.slug}`}
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
-                      View startup →
+                      {t("dashboard.viewStartup2")} →
                     </a>
                   )}
                 </div>
@@ -354,7 +362,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                 {messages.length === 0 && (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "12px", color: "var(--cr-ink-4)" }}>
                     <MessageSquare style={{ width: 28, height: 28 }} />
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>No messages yet. Start the conversation.</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.startConversation")}</p>
                   </div>
                 )}
                 {messages.map((msg, i) => {
@@ -394,9 +402,9 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
               {/* Compose */}
               <form onSubmit={sendMessage} style={{ padding: "12px 16px", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", display: "flex", gap: "8px", alignItems: "flex-end", flexShrink: 0 }}>
                 <textarea value={newMessage} onChange={e => setNewMessage(e.target.value)}
-                  placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
+                  placeholder={t("dashboard.composePlaceholder")}
                   rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", resize: "none", minHeight: "38px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
-                  onInput={e => { const t = e.target as HTMLTextAreaElement; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 120) + "px"; }}
+                  onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim()) sendMessage(e as any); } }}
                   onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                   onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
@@ -411,8 +419,8 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-paper)" }}>
               <div style={{ textAlign: "center" }}>
                 <MessageSquare style={{ width: 36, height: 36, color: "var(--cr-ink-4)", margin: "0 auto 12px" }} />
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>Select a conversation</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>Or start a new one above</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
               </div>
             </div>
           )}
@@ -425,9 +433,9 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "28px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>New Message</h2>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("dashboard.newMessageModalTitle")}</h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                  {profile.role === "investor" ? "Search for a startup by company name or founder" : "Search for an investor by name or firm"}
+                  {profile.role === "investor" ? t("dashboard.searchStartupHint") : t("dashboard.searchInvestorHint")}
                 </p>
               </div>
               <button onClick={closeNewModal} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
@@ -438,7 +446,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {/* To field */}
               <div>
-                <span style={labelStyle}>To</span>
+                <span style={labelStyle}>{t("dashboard.toLabel")}</span>
                 <div style={{ position: "relative" }}>
                   {selectedAccount ? (
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", border: "1px solid var(--cr-copper)", borderRadius: "4px", padding: "10px 12px", background: "var(--cr-copper-bg)" }}>
@@ -464,7 +472,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                       <input value={accountSearch}
                         onChange={e => { setAccountSearch(e.target.value); setAccountDropOpen(true); setSendNewError(""); }}
                         onFocus={() => setAccountDropOpen(true)}
-                        placeholder={profile.role === "investor" ? "Search startups by name or founder…" : "Search investors by name or firm…"}
+                        placeholder={profile.role === "investor" ? t("dashboard.searchStartupsPh") : t("dashboard.searchInvestorsPh")}
                         autoFocus
                         style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "9px", paddingBottom: "9px", outline: "none", boxSizing: "border-box" }} />
                     </>
@@ -475,14 +483,14 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                     <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 10, maxHeight: "220px", overflowY: "auto" }}>
                       {accountSearching ? (
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", gap: "8px", color: "var(--cr-ink-4)" }}>
-                          <Loader2 style={{ width: 14, height: 14 }} /> <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>Searching…</span>
+                          <Loader2 style={{ width: 14, height: 14 }} /> <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.searching")}</span>
                         </div>
                       ) : !accountSearch.trim() ? (
                         <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-                          Start typing to search {profile.role === "investor" ? "startups" : "investors"}
+                          {profile.role === "investor" ? t("dashboard.startTypingToSearchStartups") : t("dashboard.startTypingToSearchInvestors")}
                         </p>
                       ) : accountResults.length === 0 ? (
-                        <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>No results found</p>
+                        <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noResultsFound")}</p>
                       ) : accountResults.map(a => (
                         <button key={a.id} onClick={() => { setSelectedAccount(a); setAccountDropOpen(false); setAccountSearch(""); }}
                           style={{ width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px", textAlign: "left" }}
@@ -522,9 +530,9 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
 
               {/* Message body */}
               <div>
-                <span style={labelStyle}>Message</span>
+                <span style={labelStyle}>{t("dashboard.messageLabel")}</span>
                 <textarea value={newBody} onChange={e => setNewBody(e.target.value)}
-                  placeholder={selectedAccount ? `Message ${selectedAccount.entity_name || selectedAccount.full_name || selectedAccount.email}…` : "Select a recipient above, then write your message…"}
+                  placeholder={selectedAccount ? t("dashboard.messageTo", { name: selectedAccount.entity_name || selectedAccount.full_name || selectedAccount.email }) : t("dashboard.selectRecipientFirst")}
                   rows={5} disabled={!selectedAccount}
                   style={{ width: "100%", background: selectedAccount ? "var(--cr-paper-3)" : "var(--cr-paper-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", resize: "none", outline: "none", boxSizing: "border-box", opacity: selectedAccount ? 1 : 0.5 }}
                   onFocus={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
@@ -535,11 +543,11 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
               <div style={{ display: "flex", gap: "10px" }}>
                 <button onClick={closeNewModal}
                   style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
-                  Cancel
+                  {t("dashboard.cancel")}
                 </button>
                 <button onClick={sendNewMessage} disabled={!selectedAccount || !newBody.trim() || sendingNew}
                   style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
-                  {sendingNew ? <><Loader2 style={{ width: 14, height: 14 }} /> Sending…</> : <><Send style={{ width: 14, height: 14 }} /> Send Message</>}
+                  {sendingNew ? <><Loader2 style={{ width: 14, height: 14 }} /> {t("dashboard.sending2")}</> : <><Send style={{ width: 14, height: 14 }} /> {t("dashboard.sendMessageBtn")}</>}
                 </button>
               </div>
             </div>

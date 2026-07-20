@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
 import { Lock, Eye, EyeOff, TrendingUp, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const iStyle: React.CSSProperties = {
   width: "100%", height: "44px", borderRadius: "3px",
@@ -22,6 +23,7 @@ const labelSt: React.CSSProperties = {
 };
 
 export default function UpdatePasswordPage() {
+  const { t } = useTranslation();
   const [password, setPassword]         = useState("");
   const [confirm, setConfirm]           = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,14 +42,14 @@ export default function UpdatePasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== confirm) { notify.error("Passwords don't match"); return; }
-    if (password.length < 8) { notify.error("Password must be at least 8 characters"); return; }
+    if (password !== confirm) { notify.error(t("auth.passwordsNoMatch")); return; }
+    if (password.length < 8) { notify.error(t("auth.passwordMin")); return; }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
     if (error) { notify.error(error.message); }
     else {
       setDone(true);
-      notify.success("Password updated!");
+      notify.success(t("auth.passwordUpdated"));
       setTimeout(() => router.push("/auth/login"), 2500);
     }
     setLoading(false);
@@ -63,7 +65,10 @@ export default function UpdatePasswordPage() {
     return Math.min(Math.floor(score / 1.25), 4);
   }
 
-  const strengthLabels = ["Too weak", "Weak", "Fair", "Good", "Strong"];
+  const strengthLabels = [
+    t("auth.strength0"), t("auth.strength1"), t("auth.strength2"),
+    t("auth.strength3"), t("auth.strength4"),
+  ];
   const strengthBarColors = [
     "var(--cr-down)",
     "var(--cr-down)",
@@ -93,22 +98,22 @@ export default function UpdatePasswordPage() {
               <div style={{ width: 48, height: 48, background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.2)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <CheckCircle2 style={{ width: 22, height: 22, color: "var(--cr-up)" }} />
               </div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>Password updated!</h2>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>Redirecting you to sign in…</p>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("auth.passwordUpdated")}</h2>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.redirectingSignIn")}</p>
             </div>
           ) : (
             <>
               <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "20px" }}>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>Set a new password</h1>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>Choose a strong password for your account</p>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.updateTitle")}</h1>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.updateSub")}</p>
               </div>
 
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div>
-                  <label htmlFor="password" style={labelSt}>New Password</label>
+                  <label htmlFor="password" style={labelSt}>{t("auth.newPassword")}</label>
                   <div style={{ position: "relative" }}>
                     <input id="password" type={showPassword ? "text" : "password"} value={password}
-                      onChange={e => setPassword(e.target.value)} placeholder="Minimum 8 characters"
+                      onChange={e => setPassword(e.target.value)} placeholder={t("auth.minChars")}
                       required minLength={8}
                       onFocus={e => (e.target.style.borderColor = "var(--cr-copper)")}
                       onBlur={e => (e.target.style.borderColor = "var(--cr-rule-dark)")}
@@ -131,26 +136,26 @@ export default function UpdatePasswordPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="confirm" style={labelSt}>Confirm Password</label>
+                  <label htmlFor="confirm" style={labelSt}>{t("auth.confirmPassword")}</label>
                   <input id="confirm" type={showPassword ? "text" : "password"} value={confirm}
-                    onChange={e => setConfirm(e.target.value)} placeholder="Re-enter new password"
+                    onChange={e => setConfirm(e.target.value)} placeholder={t("auth.reenterPassword")}
                     required
                     onFocus={e => (e.target.style.borderColor = "var(--cr-copper)")}
                     onBlur={e => (e.target.style.borderColor = "var(--cr-rule-dark)")}
                     style={{ ...iStyle, borderColor: confirm && password !== confirm ? "var(--cr-down)" : "var(--cr-rule-dark)" }} />
                   {confirm && password !== confirm && (
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: "4px" }}>Passwords don&apos;t match</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: "4px" }}>{t("auth.passwordsNoMatch")}</p>
                   )}
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px 12px" }}>
                   <Lock style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>256-bit SSL encryption. Your password is never stored in plain text.</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("auth.sslNote")}</p>
                 </div>
 
                 <button type="submit" disabled={loading || password !== confirm || password.length < 8}
                   style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
-                  {loading ? "Updating…" : "Update Password"}
+                  {loading ? t("auth.updating") : t("auth.updatePassword")}
                 </button>
               </form>
             </>
@@ -158,8 +163,8 @@ export default function UpdatePasswordPage() {
         </div>
 
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", marginTop: "16px" }}>
-          Remember it now?{" "}
-          <Link href="/auth/login" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>Sign in</Link>
+          {t("auth.rememberNow")}{" "}
+          <Link href="/auth/login" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.signIn")}</Link>
         </p>
       </div>
     </div>

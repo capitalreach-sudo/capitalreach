@@ -48,15 +48,15 @@ const primaryBtn: React.CSSProperties = {
 // ── Feature access rows ───────────────────────────────────────────────────────
 
 const FEATURE_ROWS = [
-  { label: "Browse startup cards",                unlocked: true },
-  { label: "See funding target & stage",          unlocked: true },
-  { label: "Full startup profiles & pitch decks", tier: "Angel", key: "financials" },
-  { label: "MRR, ARR & financial metrics",        tier: "Angel", key: "financials" },
-  { label: "Direct messaging with founders",      tier: "Angel", key: "msg" },
-  { label: "Saved watchlists",                    tier: "Angel", key: "msg" },
-  { label: "AI due diligence reports",            tier: "Pro",   key: "ai" },
-  { label: "CSV data export",                     tier: "Pro",   key: "export" },
-  { label: "Weekly deal flow digest",             tier: "Pro",   key: "ai" },
+  { labelKey: "dashboard.fr1", unlocked: true },
+  { labelKey: "dashboard.fr2", unlocked: true },
+  { labelKey: "dashboard.fr3", tier: "Angel", key: "financials" },
+  { labelKey: "dashboard.fr4", tier: "Angel", key: "financials" },
+  { labelKey: "dashboard.fr5", tier: "Angel", key: "msg" },
+  { labelKey: "dashboard.fr6", tier: "Angel", key: "msg" },
+  { labelKey: "dashboard.fr7", tier: "Pro",   key: "ai" },
+  { labelKey: "dashboard.fr8", tier: "Pro",   key: "export" },
+  { labelKey: "dashboard.fr9", tier: "Pro",   key: "ai" },
 ] as const;
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
   useEffect(() => {
     if (searchParams.get("upgraded") === "1") {
-      notify.success("Your membership has been upgraded. Enjoy your new features.");
+      notify.success(t("dashboard.upgradedToast"));
       const url = new URL(window.location.href);
       url.searchParams.delete("upgraded");
       url.searchParams.delete("free");
@@ -99,7 +99,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dealId, status }),
     });
-    if (!res.ok) notify.error("Failed to update deal");
+    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed"));
     else router.refresh();
   }
 
@@ -110,12 +110,12 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
     });
     const data = await res.json();
     if (!res.ok) {
-      notify.error(data.error || "Failed to close deal");
+      notify.error(data.error || t("dashboard.dealCloseFailed"));
     } else {
       const fmt = amount
         ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount)
         : null;
-      notify.success(fmt ? `Deal closed at ${fmt}` : "Deal marked as closed.");
+      notify.success(fmt ? t("dashboard.dealClosedAt", { amount: fmt }) : t("dashboard.dealClosed"));
       router.refresh();
     }
   }
@@ -160,18 +160,18 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           <div>
             <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.investorDashboard")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "6px" }}>
-              {profile.full_name || "Your Portfolio"}
+              {profile.full_name || t("dashboard.yourPortfolio")}
             </h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-              {tierLabel} membership
+              {t("dashboard.membership", { tier: tierLabel })}
             </p>
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <Link href="/dashboard/messages" style={outlineBtn}>
-              <MessageSquare style={{ width: 13, height: 13 }} /> Messages
+              <MessageSquare style={{ width: 13, height: 13 }} /> {t("dashboard.messages")}
             </Link>
             <Link href="/dashboard/investor/settings" style={outlineBtn}>
-              <Settings style={{ width: 13, height: 13 }} /> Settings
+              <Settings style={{ width: 13, height: 13 }} /> {t("dashboard.settings")}
             </Link>
           </div>
         </div>
@@ -182,10 +182,10 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* Stats strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
           {[
-            { label: "Watchlist",    val: watchlist.length,  Icon: Bookmark    },
-            { label: "Active Deals", val: activeDeals,       Icon: TrendingUp  },
-            { label: "Closed Deals", val: closedDeals,       Icon: CheckCircle2 },
-            { label: "AI Reports",   val: aiReports.length,  Icon: Brain       },
+            { label: t("dashboard.watchlist"),   val: watchlist.length,  Icon: Bookmark    },
+            { label: t("dashboard.activeDeals"), val: activeDeals,       Icon: TrendingUp  },
+            { label: t("dashboard.closedDeals"), val: closedDeals,       Icon: CheckCircle2 },
+            { label: t("dashboard.aiReports"),   val: aiReports.length,  Icon: Brain       },
           ].map(({ label, val, Icon }) => (
             <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
@@ -219,22 +219,22 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-                {watchlist.length} saved {watchlist.length === 1 ? "startup" : "startups"}
+                {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}
               </p>
               {canExport && watchlist.length > 0 && (
                 <button onClick={exportWatchlist} style={outlineBtn}>
-                  <Download style={{ width: 12, height: 12 }} /> Export CSV
+                  <Download style={{ width: 12, height: 12 }} /> {t("dashboard.exportCsv")}
                 </button>
               )}
             </div>
             {watchlist.length === 0 ? (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
                 <Bookmark style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>No saved startups yet</h3>
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noSavedYet")}</h3>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
-                  Browse startups and click the bookmark icon to save them here.
+                  {t("dashboard.noSavedYetSub")}
                 </p>
-                <Link href="/startups" style={primaryBtn}>Browse startups →</Link>
+                <Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
@@ -256,13 +256,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           aiReports.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
               <Brain style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>No AI reports yet</h3>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noAiReportsTitle")}</h3>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
                 {canAi
-                  ? "Visit a startup profile and click 'Generate Report'."
-                  : "Upgrade to Pro to access AI due diligence reports."}
+                  ? t("dashboard.aiReportsHintPro")
+                  : t("dashboard.aiReportsHintUpgrade")}
               </p>
-              {!canAi && <Link href="/pricing" style={primaryBtn}>View plans</Link>}
+              {!canAi && <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewPlans")}</Link>}
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -287,7 +287,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                   </p>
                   <Link href={`/startups/${(report as any).startup?.slug}`}
                     style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", display: "block", marginTop: "12px" }}>
-                    View startup →
+                    {t("dashboard.viewStartup")} →
                   </Link>
                 </div>
               ))}
@@ -299,41 +299,41 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {activeTab === "billing" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "20px" }}>Membership &amp; Billing</h3>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "20px" }}>{t("dashboard.membershipBilling")}</h3>
 
               {/* Current plan row */}
               <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
                 <div>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{tierLabel} plan</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.tier", { tier: tierLabel })}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
-                    {profile.subscription_status || "Active"}
+                    {profile.subscription_status || t("dashboard.statusActive")}
                   </p>
                 </div>
                 {investor.subscription_tier !== "free" ? (
                   <button onClick={openBillingPortal} style={outlineBtn}>
-                    <CreditCard style={{ width: 13, height: 13 }} /> Manage Billing
+                    <CreditCard style={{ width: 13, height: 13 }} /> {t("dashboard.manageBilling")}
                   </button>
                 ) : (
-                  <Link href="/pricing" style={primaryBtn}>Upgrade plan</Link>
+                  <Link href="/pricing" style={primaryBtn}>{t("dashboard.upgradePlan")}</Link>
                 )}
               </div>
 
               {/* Feature list */}
               <div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <Zap style={{ width: 12, height: 12, color: "var(--cr-copper)" }} /> Access level
+                  <Zap style={{ width: 12, height: 12, color: "var(--cr-copper)" }} /> {t("dashboard.accessLevel")}
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {FEATURE_ROWS.map((item) => {
                     const unlocked = "unlocked" in item ? item.unlocked : isUnlocked((item as any).key);
                     return (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div key={item.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           {unlocked
                             ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0 }} />
                             : <Lock style={{ width: 14, height: 14, color: "var(--cr-ink-4)", flexShrink: 0 }} />}
                           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>
-                            {item.label}
+                            {t(item.labelKey)}
                           </span>
                         </div>
                         {!unlocked && (item as any).tier && (
@@ -349,12 +349,12 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                 {investor.subscription_tier === "free" && (
                   <div style={{ marginTop: "24px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "18px 20px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)", marginBottom: "6px" }}>
-                      Upgrade to Angel — $99/month
+                      {t("dashboard.upgradeAngel")}
                     </p>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
-                      Unlock full startup profiles, financials, pitch decks, and direct founder messaging.
+                      {t("dashboard.upgradeAngelSub")}
                     </p>
-                    <Link href="/pricing" style={primaryBtn}>View all plans</Link>
+                    <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewAllPlans")}</Link>
                   </div>
                 )}
               </div>

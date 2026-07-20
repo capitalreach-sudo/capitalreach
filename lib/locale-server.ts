@@ -4,12 +4,10 @@ import type { Locale } from "./locale";
 
 export function getLocale(): Locale {
   try {
-    // Force a fresh cookie read — calling getAll() prevents Next.js from
-    // serving a cached snapshot when the cr_locale cookie has just changed.
     const cookieStore = cookies();
-    cookieStore.getAll(); // trigger fresh read
     const raw = cookieStore.get("cr_locale")?.value;
-    return LOCALES.includes(raw as Locale) ? (raw as Locale) : DEFAULT_LOCALE;
+    if (raw && (LOCALES as string[]).includes(raw)) return raw as Locale;
+    return DEFAULT_LOCALE;
   } catch {
     return DEFAULT_LOCALE;
   }

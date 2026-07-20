@@ -13,15 +13,17 @@ import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
 import { ArrowLeft, Upload, FileText, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const DOC_TYPES = [
-  { value: "pitch_deck", label: "Pitch Deck (PDF)" },
-  { value: "financial_model", label: "Financial Model (XLSX)" },
-  { value: "cap_table", label: "Cap Table (PDF/XLSX)" },
-  { value: "other", label: "Other" },
+  { value: "pitch_deck",      labelKey: "dashboard.docPitchDeck" },
+  { value: "financial_model", labelKey: "dashboard.docFinModel"  },
+  { value: "cap_table",       labelKey: "dashboard.docCapTable"  },
+  { value: "other",           labelKey: "dashboard.docOther"     },
 ];
 
 export default function DocumentsPage() {
+  const { t } = useTranslation();
   const [startup, setStartup] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -63,9 +65,9 @@ export default function DocumentsPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      toast({ title: "Upload failed", description: data.error, variant: "destructive" });
+      toast({ title: t("dashboard.uploadFailed"), description: data.error, variant: "destructive" });
     } else {
-      toast({ title: "Document uploaded!" });
+      toast({ title: t("dashboard.docUploaded") });
       setDocuments(prev => [...prev, data.document]);
       if (fileRef.current) fileRef.current.value = "";
       setDocLabel("");
@@ -76,7 +78,7 @@ export default function DocumentsPage() {
   async function deleteDocument(docId: string) {
     await supabase.from("startup_documents").delete().eq("id", docId);
     setDocuments(prev => prev.filter(d => d.id !== docId));
-    toast({ title: "Document removed" });
+    toast({ title: t("dashboard.docRemoved") });
   }
 
   const isLimitedPlan = startup?.subscription_tier === "starter";
@@ -88,35 +90,35 @@ export default function DocumentsPage() {
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/dashboard/startup">
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> Back</Button>
+            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
           </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">Document Manager</h1>
+          <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.docManager")}</h1>
         </div>
 
         {isLimitedPlan && (
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-5 flex items-center justify-between">
-            <p className="text-sm text-amber-300">{documents.length}/3 documents (Starter plan). Upgrade to Growth for unlimited.</p>
-            <Link href="/pricing"><Button size="sm" variant="outline" className="text-xs">Upgrade</Button></Link>
+            <p className="text-sm text-amber-300">{t("dashboard.docLimitBanner", { count: documents.length })}</p>
+            <Link href="/pricing"><Button size="sm" variant="outline" className="text-xs">{t("common.upgrade")}</Button></Link>
           </div>
         )}
 
         {/* Upload form */}
         {!atLimit && (
           <form onSubmit={handleUpload} className="bg-cr-paper border rounded-2xl p-5 mb-6 space-y-4">
-            <h2 className="font-semibold text-cr-ink">Upload Document</h2>
+            <h2 className="font-semibold text-cr-ink">{t("dashboard.uploadDocument")}</h2>
             <div>
-              <Label>Document Type</Label>
+              <Label>{t("dashboard.docType")}</Label>
               <Select value={docType} onValueChange={setDocType}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{DOC_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.value} value={d.value}>{t(d.labelKey)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Label (optional)</Label>
+              <Label>{t("dashboard.docLabelOptional")}</Label>
               <Input value={docLabel} onChange={e => setDocLabel(e.target.value)} placeholder="Pitch Deck v3 — June 2026" />
             </div>
             <div>
-              <Label>File</Label>
+              <Label>{t("dashboard.docFile")}</Label>
               <input
                 ref={fileRef}
                 type="file"
@@ -124,18 +126,18 @@ export default function DocumentsPage() {
                 className="block w-full text-sm text-cr-i3 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-cr-copper/10 file:text-cr-cu-l hover:file:bg-cr-copper/15 cursor-pointer"
                 required
               />
-              <p className="text-xs text-cr-i4 mt-1">PDF, XLSX, or MP4 · Max 50MB</p>
+              <p className="text-xs text-cr-i4 mt-1">{t("dashboard.docFormats")}</p>
             </div>
             <div className="flex items-center justify-between p-3 bg-cr-p2 rounded-lg">
               <div>
-                <p className="text-sm font-medium text-cr-ink">Require NDA to access</p>
-                <p className="text-xs text-cr-i3">Investors must sign an NDA before viewing this document</p>
+                <p className="text-sm font-medium text-cr-ink">{t("dashboard.requireNda")}</p>
+                <p className="text-xs text-cr-i3">{t("dashboard.requireNdaSub")}</p>
               </div>
               <Switch checked={requiresNda} onCheckedChange={setRequiresNda} />
             </div>
             <Button type="submit" className="w-full gap-2" disabled={uploading}>
               <Upload className="h-4 w-4" />
-              {uploading ? "Uploading…" : "Upload Document"}
+              {uploading ? t("dashboard.uploading") : t("dashboard.uploadDocument")}
             </Button>
           </form>
         )}
@@ -143,12 +145,12 @@ export default function DocumentsPage() {
         {/* Document list */}
         <div className="bg-cr-paper border rounded-2xl overflow-hidden">
           <div className="px-5 py-3 border-b bg-cr-p2">
-            <h2 className="font-semibold text-cr-ink text-sm">Uploaded Documents ({documents.length})</h2>
+            <h2 className="font-semibold text-cr-ink text-sm">{t("dashboard.uploadedDocuments")} ({documents.length})</h2>
           </div>
           {documents.length === 0 ? (
             <div className="p-8 text-center text-cr-i4">
               <FileText className="h-8 w-8 mx-auto mb-2 text-cr-i4" />
-              <p>No documents uploaded yet.</p>
+              <p>{t("startupDetail.noDocumentsUploaded")}</p>
             </div>
           ) : (
             <div className="divide-y">
@@ -160,7 +162,7 @@ export default function DocumentsPage() {
                       <p className="text-sm font-medium text-cr-ink">{doc.label}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="text-xs text-cr-i4 capitalize">{doc.type.replace(/_/g, " ")}</span>
-                        {doc.requires_nda && <Badge variant="warning" className="text-xs py-0">NDA Required</Badge>}
+                        {doc.requires_nda && <Badge variant="warning" className="text-xs py-0">{t("dashboard.ndaRequired")}</Badge>}
                       </div>
                     </div>
                   </div>

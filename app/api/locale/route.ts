@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
     httpOnly: false,
   });
 
-  // Cache-busting — forces router.refresh() to always re-fetch from server
   res.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
   res.headers.set("Pragma", "no-cache");
+  res.headers.set("Expires", "0");
   res.headers.set("X-Locale-Changed", locale);
 
   // Persist to profile when authenticated

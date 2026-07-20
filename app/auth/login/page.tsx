@@ -54,7 +54,7 @@ function LoginForm() {
     if (error) {
       notify.error(error.message);
     } else {
-      notify.success("Welcome back. Redirecting…");
+      notify.success(t("auth.welcomeRedirect"));
       if (redirect && redirect !== "/") {
         router.push(redirect); router.refresh();
       } else {
@@ -148,9 +148,9 @@ function LoginForm() {
       </div>
 
       <div style={{ marginTop: "20px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
-        {["256-bit SSL", "Bank-grade security", "2% success fee"].map((t, i, arr) => (
-          <span key={t} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t}</span>
+        {[t("auth.trustSsl"), t("auth.trustSecurity"), t("auth.trustFee")].map((item, i, arr) => (
+          <span key={item} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{item}</span>
             {i < arr.length - 1 && <span style={{ width: 1, height: 10, background: "var(--cr-rule-dark)" }} />}
           </span>
         ))}

@@ -37,6 +37,9 @@ export function LanguageSwitcher({ currentLocale }: Props) {
     setLoading(true);
 
     try {
+      // Set cookie directly as a backup so it's available before the fetch resolves
+      document.cookie = `cr_locale=${locale};path=/;max-age=31536000;SameSite=Lax`;
+
       const res = await fetch("/api/locale", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,10 +47,10 @@ export function LanguageSwitcher({ currentLocale }: Props) {
       });
 
       if (res.ok) {
-        // Store in sessionStorage so layout can show a toast on next render
         try { sessionStorage.setItem("just_changed_locale", locale); } catch {}
-        // Full reload — guarantees server components re-render with new cookie
-        window.location.reload();
+        // Navigate to same path — forces a full server round-trip reading the new cookie.
+        // window.location.reload() can serve a cached response with the old cookie value.
+        window.location.href = window.location.pathname;
       } else {
         console.error("Failed to set locale");
         setLoading(false);

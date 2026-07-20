@@ -173,7 +173,7 @@ export function StartupDetailClient({
     team:       t("startupDetail.team"),
     financials: t("startupDetail.financials"),
     documents:  t("startupDetail.documents"),
-    traction:   "Traction",
+    traction:   t("startupDetail.traction"),
   };
 
   return (
@@ -280,7 +280,7 @@ export function StartupDetailClient({
                 {startup.website && (
                   <a href={startup.website} target="_blank" rel="noopener noreferrer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
-                    <Globe style={{ width: 13, height: 13 }} /> Website
+                    <Globe style={{ width: 13, height: 13 }} /> {t("startupDetail.website")}
                   </a>
                 )}
                 <button onClick={toggleSave} style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
@@ -292,7 +292,7 @@ export function StartupDetailClient({
                   style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
                   <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")}
                 </button>
-                <PrintButton label="Export PDF" />
+                <PrintButton label={t("startupDetail.aiDiligenceTitle")} />
                 {canMessage ? (
                   <button onClick={() => setMessageOpen(true)}
                     className="btn-copper-shimmer"
@@ -311,10 +311,10 @@ export function StartupDetailClient({
 
             {/* Key metrics strip */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px" }}>
-              <MetricCell label={t("startupDetail.raising")} value={formatCurrency(startup.funding_target, true)} copper />
-              <MetricCell label="Equity"    value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
-              <MetricCell label="Min Check" value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />
-              <MetricCell label="Views"     value={formatNumber(startup.pageviews ?? 0)} />
+              <MetricCell label={t("startupDetail.raising")}  value={formatCurrency(startup.funding_target, true)} copper />
+              <MetricCell label={t("startupDetail.equity")}   value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
+              <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />
+              <MetricCell label={t("startupDetail.pageViews")} value={formatNumber(startup.pageviews ?? 0)} />
             </div>
           </div>
         </div>
@@ -329,13 +329,13 @@ export function StartupDetailClient({
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <Brain style={{ width: 20, height: 20, color: "var(--cr-copper)", flexShrink: 0 }} />
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "2px" }}>AI Due Diligence Report</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>500-word investment analysis powered by Claude</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("startupDetail.aiDiligenceTitle")}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("ai.diligence.generate")}</p>
               </div>
             </div>
             <button onClick={generateAiReport} disabled={generatingReport}
               style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
-              {generatingReport ? "Generating…" : "Generate Report"}
+              {generatingReport ? t("startupDetail.generating") : t("startupDetail.generateReport")}
             </button>
           </div>
         )}
@@ -344,7 +344,7 @@ export function StartupDetailClient({
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "24px", marginBottom: "24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
               <Brain style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>AI Due Diligence Report</h3>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("startupDetail.aiDiligenceTitle")}</h3>
               <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Claude</span>
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{aiReport}</p>
@@ -371,16 +371,16 @@ export function StartupDetailClient({
         {/* ── Tab: Overview ── */}
         {activeTab === "overview" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-            {startup.problem             && <Section title="The Problem">{startup.problem}</Section>}
-            {startup.solution            && <Section title="Our Solution">{startup.solution}</Section>}
-            {startup.market              && <Section title="Target Market">{startup.market}</Section>}
-            {startup.competitive_advantage && <Section title="Competitive Advantage">{startup.competitive_advantage}</Section>}
-            {startup.use_of_funds        && <Section title="Use of Funds">{startup.use_of_funds}</Section>}
+            {startup.problem             && <Section title={t("startupDetail.problem")}>{startup.problem}</Section>}
+            {startup.solution            && <Section title={t("startupDetail.solution")}>{startup.solution}</Section>}
+            {startup.market              && <Section title={t("startupDetail.market")}>{startup.market}</Section>}
+            {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}>{startup.competitive_advantage}</Section>}
+            {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}>{startup.use_of_funds}</Section>}
 
             {/* Milestones */}
             {startup.milestones && startup.milestones.length > 0 && (
               <div>
-                <div className="ruled-label" style={{ marginBottom: "16px" }}>Milestones</div>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.milestones")}</div>
                 <div>
                   {[...startup.milestones]
                     .sort((a, b) => a.date.localeCompare(b.date))
@@ -405,7 +405,7 @@ export function StartupDetailClient({
             {/* Video pitch (new field) */}
             {(startup as any).video_pitch_url && (
               <div>
-                <div className="ruled-label" style={{ marginBottom: "16px" }}>Pitch Video</div>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.pitchVideo")}</div>
                 <div style={{ aspectRatio: "16/9", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
                   <iframe
                     src={((startup as any).video_pitch_url as string)
@@ -422,7 +422,7 @@ export function StartupDetailClient({
             {/* Demo video */}
             {(startup as any).demo_video_url && startup.subscription_tier === "growth" && (
               <div>
-                <div className="ruled-label" style={{ marginBottom: "16px" }}>Product Demo</div>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.productDemo")}</div>
                 {canFinancials ? (
                   <div style={{ aspectRatio: "16/9", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
                     <iframe
@@ -483,7 +483,7 @@ export function StartupDetailClient({
               ))}
             </div>
           ) : (
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>Team information not provided.</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noTeamInfo")}</p>
           )
         )}
 
@@ -493,7 +493,7 @@ export function StartupDetailClient({
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
               <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? formatCurrency(startup.mrr)        : null} />
               <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? formatCurrency(startup.arr)        : null} />
-              <MetricCell label="Total Users"               value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
+              <MetricCell label={t("startupDetail.totalUsers")} value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
               <MetricCell label={t("startupDetail.growth")} value={startup.growth_rate  ? formatPercent(startup.growth_rate) : null} />
             </div>
           ) : (
@@ -554,7 +554,7 @@ export function StartupDetailClient({
                         <button onClick={requestNda} disabled={ndaLoading}
                           style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer", opacity: ndaLoading ? 0.6 : 1 }}>
                           <Lock style={{ width: 11, height: 11 }} />
-                          {ndaLoading ? "Sending NDA…" : "Sign NDA to Access"}
+                          {ndaLoading ? t("common.saving") : t("startupDetail.signNdaAccess")}
                         </button>
                       ) : requiresUpgrade ? (
                         <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", textDecoration: "none" }}>
@@ -571,7 +571,7 @@ export function StartupDetailClient({
                 })}
               </div>
             ) : (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>No documents uploaded yet.</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noDocumentsUploaded")}</p>
             )}
           </>
         )}
@@ -580,10 +580,10 @@ export function StartupDetailClient({
         {activeTab === "traction" && (
           canFinancials ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
-              <MetricCell label="Monthly Revenue" value={startup.mrr         ? formatCurrency(startup.mrr)        : null} copper />
-              <MetricCell label="Annual Revenue"  value={startup.arr         ? formatCurrency(startup.arr)        : null} />
-              <MetricCell label="Total Users"     value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
-              <MetricCell label="MoM Growth"      value={startup.growth_rate  ? formatPercent(startup.growth_rate) : null} />
+              <MetricCell label={t("startupDetail.monthlyRevenue")} value={startup.mrr        ? formatCurrency(startup.mrr)        : null} copper />
+              <MetricCell label={t("startupDetail.annualRevenue")}  value={startup.arr        ? formatCurrency(startup.arr)        : null} />
+              <MetricCell label={t("startupDetail.totalUsers")}     value={startup.user_count ? formatNumber(startup.user_count)   : null} />
+              <MetricCell label={t("startupDetail.momGrowth")}      value={startup.growth_rate ? formatPercent(startup.growth_rate) : null} />
             </div>
           ) : (
             <GateBlur
@@ -603,7 +603,7 @@ export function StartupDetailClient({
         {/* ── Related startups ── */}
         {relatedStartups.length > 0 && (
           <section style={{ marginTop: "64px", paddingTop: "32px", borderTop: "1px solid var(--cr-rule)" }}>
-            <div className="ruled-label" style={{ marginBottom: "20px" }}>Similar startups</div>
+            <div className="ruled-label" style={{ marginBottom: "20px" }}>{t("startupDetail.similarStartups")}</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "14px" }}>
               {relatedStartups.map((s) => (
                 <StartupCard key={s.id} startup={s as any} investorTier={null} />
@@ -618,7 +618,7 @@ export function StartupDetailClient({
         <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "28px", width: "100%", maxWidth: "440px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>Express Interest</h3>
+              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startupDetail.expressInterest")}</h3>
               <button onClick={() => setMessageOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>

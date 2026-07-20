@@ -16,6 +16,7 @@ import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelect
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Simple tag-input component ─────────────────────────────────────────────
 function TagInput({
@@ -96,6 +97,7 @@ function PortfolioEditor({
   portfolio: PortfolioCompany[];
   onChange: (p: PortfolioCompany[]) => void;
 }) {
+  const { t } = useTranslation();
   function add() {
     onChange([...portfolio, { name: "", stage: "", outcome: "" }]);
   }
@@ -113,19 +115,19 @@ function PortfolioEditor({
           <Input
             value={co.name}
             onChange={e => update(i, "name", e.target.value)}
-            placeholder="Company name"
+            placeholder={t("onboarding.inv.companyNamePh")}
             className="flex-1"
           />
           <Input
             value={co.stage || ""}
             onChange={e => update(i, "stage", e.target.value)}
-            placeholder="Stage (e.g. Seed)"
+            placeholder={t("dashboard.phStage")}
             className="w-32"
           />
           <Input
             value={co.outcome || ""}
             onChange={e => update(i, "outcome", e.target.value)}
-            placeholder="Outcome (e.g. Acquired)"
+            placeholder={t("dashboard.phOutcome")}
             className="w-36"
           />
           <button
@@ -138,7 +140,7 @@ function PortfolioEditor({
         </div>
       ))}
       <Button type="button" variant="outline" size="sm" onClick={add} className="gap-1.5 text-xs">
-        <Plus className="h-3.5 w-3.5" /> Add Company
+        <Plus className="h-3.5 w-3.5" /> {t("onboarding.inv.addCompany")}
       </Button>
     </div>
   );
@@ -146,6 +148,7 @@ function PortfolioEditor({
 
 // ── Main component ─────────────────────────────────────────────────────────
 export default function InvestorSettingsPage() {
+  const { t } = useTranslation();
   const [investor, setInvestor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -241,15 +244,15 @@ export default function InvestorSettingsPage() {
     }
 
     if (error) {
-      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      toast({ title: t("dashboard.saveFailed"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Profile updated", description: "All changes saved." });
+      toast({ title: t("dashboard.profileUpdated"), description: t("dashboard.allChangesSaved") });
     }
     setSaving(false);
   }
 
-  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">Loading…</div></>;
-  if (!investor) return <><Navbar /><div className="text-center py-20">No investor profile found.</div></>;
+  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">{t("common.loading")}</div></>;
+  if (!investor) return <><Navbar /><div className="text-center py-20">{t("dashboard.noInvestorProfile")}</div></>;
 
   return (
     <>
@@ -257,28 +260,28 @@ export default function InvestorSettingsPage() {
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/dashboard/investor">
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> Back</Button>
+            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
           </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">Investor Settings</h1>
+          <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.investorSettings")}</h1>
         </div>
 
         <form onSubmit={handleSave} className="space-y-6">
 
           {/* ── Identity ──────────────────────────────────────────────────── */}
           <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">Identity</h2>
+            <h2 className="font-semibold text-cr-ink mb-4">{t("dashboard.secIdentity")}</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Display Name</Label>
+                  <Label>{t("dashboard.displayName")}</Label>
                   <Input
                     value={investor.display_name || ""}
                     onChange={e => set("display_name", e.target.value)}
-                    placeholder="How you appear on CapitalReach"
+                    placeholder={t("dashboard.displayNamePh")}
                   />
                 </div>
                 <div>
-                  <Label>Firm / Fund Name</Label>
+                  <Label>{t("onboarding.inv.firmName")}</Label>
                   <Input
                     value={investor.firm_name || ""}
                     onChange={e => set("firm_name", e.target.value)}
@@ -287,7 +290,7 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
               <div>
-                <Label>Bio</Label>
+                <Label>{t("onboarding.inv.shortBio")}</Label>
                 <Textarea
                   value={investor.bio || ""}
                   onChange={e => set("bio", e.target.value)}
@@ -297,7 +300,7 @@ export default function InvestorSettingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Website</Label>
+                  <Label>{t("onboarding.inv.website")}</Label>
                   <Input
                     value={investor.website || ""}
                     onChange={e => set("website", e.target.value)}
@@ -305,7 +308,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>LinkedIn URL</Label>
+                  <Label>{t("onboarding.inv.linkedin")}</Label>
                   <Input
                     value={investor.linkedin_url || ""}
                     onChange={e => set("linkedin_url", e.target.value)}
@@ -314,7 +317,7 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
               <div>
-                <Label>Twitter / X URL</Label>
+                <Label>{t("onboarding.inv.twitterX")}</Label>
                 <Input
                   value={investor.twitter_url || ""}
                   onChange={e => set("twitter_url", e.target.value)}
@@ -326,10 +329,10 @@ export default function InvestorSettingsPage() {
 
           {/* ── Investment Details ─────────────────────────────────────────── */}
           <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">Investment Details</h2>
+            <h2 className="font-semibold text-cr-ink mb-4">{t("dashboard.secInvestmentDetails")}</h2>
             <div className="space-y-4">
               <div>
-                <Label>Investment Thesis</Label>
+                <Label>{t("onboarding.inv.thesis")}</Label>
                 <Textarea
                   value={investor.investment_thesis || ""}
                   onChange={e => set("investment_thesis", e.target.value)}
@@ -339,7 +342,7 @@ export default function InvestorSettingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>AUM / Fund Size</Label>
+                  <Label>{t("onboarding.inv.aumLabel")}</Label>
                   <Input
                     value={investor.aum || ""}
                     onChange={e => set("aum", e.target.value)}
@@ -347,7 +350,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Number of Investments</Label>
+                  <Label>{t("onboarding.inv.numInvestments")}</Label>
                   <Input
                     type="number"
                     min={0}
@@ -359,7 +362,7 @@ export default function InvestorSettingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Avg Hold Period</Label>
+                  <Label>{t("onboarding.inv.holdPeriod")}</Label>
                   <Input
                     value={investor.avg_hold_period || ""}
                     onChange={e => set("avg_hold_period", e.target.value)}
@@ -367,7 +370,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Follow-On Policy</Label>
+                  <Label>{t("onboarding.inv.followOn")}</Label>
                   <Input
                     value={investor.follow_on_policy || ""}
                     onChange={e => set("follow_on_policy", e.target.value)}
@@ -376,7 +379,7 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
               <div>
-                <Label>Board Seat Preference</Label>
+                <Label>{t("onboarding.inv.boardPref")}</Label>
                 <Input
                   value={investor.board_seat_pref || ""}
                   onChange={e => set("board_seat_pref", e.target.value)}
@@ -385,8 +388,8 @@ export default function InvestorSettingsPage() {
               </div>
               <div className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
-                  <p className="font-medium text-sm text-cr-ink">Lead Rounds</p>
-                  <p className="text-xs text-cr-i3">Do you lead investment rounds?</p>
+                  <p className="font-medium text-sm text-cr-ink">{t("dashboard.leadRoundsLabel")}</p>
+                  <p className="text-xs text-cr-i3">{t("dashboard.leadRoundsQ")}</p>
                 </div>
                 <Switch
                   checked={!!investor.lead_rounds}
@@ -398,8 +401,8 @@ export default function InvestorSettingsPage() {
 
           {/* ── Portfolio ──────────────────────────────────────────────────── */}
           <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-1">Portfolio Companies</h2>
-            <p className="text-xs text-cr-i3 mb-4">Add notable investments shown on your public profile.</p>
+            <h2 className="font-semibold text-cr-ink mb-1">{t("onboarding.inv.portfolioLabel")}</h2>
+            <p className="text-xs text-cr-i3 mb-4">{t("dashboard.portfolioSub")}</p>
             <PortfolioEditor
               portfolio={investor.portfolio_json || []}
               onChange={p => set("portfolio_json", p)}
@@ -408,10 +411,10 @@ export default function InvestorSettingsPage() {
 
           {/* ── Investment Preferences ─────────────────────────────────────── */}
           <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">Investment Preferences</h2>
+            <h2 className="font-semibold text-cr-ink mb-4">{t("onboarding.inv.h2")}</h2>
             <div className="space-y-5">
               <div>
-                <Label className="text-sm font-semibold mb-2 block">Industries</Label>
+                <Label className="text-sm font-semibold mb-2 block">{t("dashboard.industriesLabel")}</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {INDUSTRIES.map(ind => (
                     <label key={ind} className="flex items-center gap-2 cursor-pointer">
@@ -426,7 +429,7 @@ export default function InvestorSettingsPage() {
               </div>
 
               <div>
-                <Label className="text-sm font-semibold mb-2 block">Stages</Label>
+                <Label className="text-sm font-semibold mb-2 block">{t("dashboard.stagesLabel")}</Label>
                 <div className="flex flex-wrap gap-2">
                   {STAGES.map(s => (
                     <button
@@ -448,7 +451,7 @@ export default function InvestorSettingsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Min Check ($)</Label>
+                  <Label>{t("onboarding.inv.minCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.min_check || ""}
@@ -457,7 +460,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Max Check ($)</Label>
+                  <Label>{t("onboarding.inv.maxCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.max_check || ""}
@@ -468,8 +471,8 @@ export default function InvestorSettingsPage() {
               </div>
 
               <div>
-                <Label className="block mb-1.5">Geography</Label>
-                <p className="text-xs text-cr-i3 mb-2">Press Enter or comma to add each region</p>
+                <Label className="block mb-1.5">{t("onboarding.inv.geography")}</Label>
+                <p className="text-xs text-cr-i3 mb-2">{t("dashboard.geoHintEnter")}</p>
                 <TagInput
                   tags={investor.geography || []}
                   onChange={tags => set("geography", tags)}
@@ -481,25 +484,31 @@ export default function InvestorSettingsPage() {
 
           {/* ── Richer Profile Fields (Feature 3) ─────────────────────── */}
           <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-1">Profile Detail</h2>
-            <p className="text-xs text-cr-i3 mb-4">Shown publicly on your investor profile page.</p>
+            <h2 className="font-semibold text-cr-ink mb-1">{t("dashboard.secProfileDetail")}</h2>
+            <p className="text-xs text-cr-i3 mb-4">{t("dashboard.profileDetailSub")}</p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Investor Type</Label>
+                  <Label>{t("onboarding.inv.step1")}</Label>
                   <select
                     value={investor.investor_type || ""}
                     onChange={e => set("investor_type", e.target.value)}
                     className="w-full border rounded-md px-3 py-2 text-sm bg-background"
                   >
-                    <option value="">Select…</option>
-                    {["Angel", "VC", "Family Office", "Corporate", "Syndicate"].map(t => (
-                      <option key={t} value={t}>{t}</option>
+                    <option value="">{t("dashboard.selectDots")}</option>
+                    {[
+                      { value: "Angel",         labelKey: "dashboard.itAngel" },
+                      { value: "VC",            labelKey: "dashboard.itVc"    },
+                      { value: "Family Office", labelKey: "dashboard.itFo"    },
+                      { value: "Corporate",     labelKey: "dashboard.itCorp"  },
+                      { value: "Syndicate",     labelKey: "dashboard.itSynd"  },
+                    ].map(it => (
+                      <option key={it.value} value={it.value}>{t(it.labelKey)}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <Label>Portfolio Count</Label>
+                  <Label>{t("dashboard.portfolioCount")}</Label>
                   <Input
                     type="number"
                     value={investor.portfolio_count ?? ""}
@@ -510,8 +519,8 @@ export default function InvestorSettingsPage() {
               </div>
               <div className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
-                  <p className="font-medium text-sm text-cr-ink">Willing to Lead Rounds</p>
-                  <p className="text-xs text-cr-i3">Show a &quot;Leads rounds&quot; badge on your profile</p>
+                  <p className="font-medium text-sm text-cr-ink">{t("dashboard.willingLead")}</p>
+                  <p className="text-xs text-cr-i3">{t("dashboard.willingLeadSub")}</p>
                 </div>
                 <Switch
                   checked={!!investor.lead_investor}
@@ -520,7 +529,7 @@ export default function InvestorSettingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Min Check Size ($)</Label>
+                  <Label>{t("onboarding.inv.minCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.check_size_min ?? ""}
@@ -529,7 +538,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Max Check Size ($)</Label>
+                  <Label>{t("onboarding.inv.maxCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.check_size_max ?? ""}
@@ -539,7 +548,7 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
               <div>
-                <Label className="block mb-1.5">Languages Spoken</Label>
+                <Label className="block mb-1.5">{t("dashboard.languagesSpoken")}</Label>
                 <TagInput
                   tags={investor.languages || []}
                   onChange={tags => set("languages", tags)}
@@ -551,7 +560,7 @@ export default function InvestorSettingsPage() {
 
           <Button type="submit" className="w-full gap-2" disabled={saving}>
             <Save className="h-4 w-4" />
-            {saving ? "Saving…" : "Save All Changes"}
+            {saving ? t("common.saving") : t("dashboard.saveAll")}
           </Button>
         </form>
 
@@ -559,10 +568,10 @@ export default function InvestorSettingsPage() {
         <section className="bg-cr-paper border rounded-2xl p-6 mt-6">
           <div className="flex items-center gap-2 mb-2">
             <Globe className="h-4 w-4 text-cr-copper" />
-            <h2 className="font-semibold text-cr-ink">Language</h2>
+            <h2 className="font-semibold text-cr-ink">{t("settings.language")}</h2>
           </div>
           <p className="text-sm text-cr-i3 mb-4">
-            Choose the language for the CapitalReach interface.
+            {t("settings.languageDesc")}
           </p>
           <LanguageSettingsSelector />
         </section>
