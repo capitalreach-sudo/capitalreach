@@ -10,18 +10,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, MessageSquare, Building2, CheckCircle } from "lucide-react";
-
-const SUBJECTS = [
-  { value: "institutional", label: "Institutional / Enterprise Inquiry" },
-  { value: "billing", label: "Billing & Subscriptions" },
-  { value: "technical", label: "Technical Support" },
-  { value: "partnership", label: "Partnership Opportunity" },
-  { value: "general", label: "General Question" },
-];
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const defaultType = searchParams.get("type") ?? "general";
+
+  const SUBJECTS = [
+    { value: "institutional", label: t("contact.subjInstitutional") },
+    { value: "billing", label: t("contact.subjBilling") },
+    { value: "technical", label: t("contact.subjTechnical") },
+    { value: "partnership", label: t("contact.subjPartnership") },
+    { value: "general", label: t("contact.subjGeneral") },
+  ];
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -44,8 +46,8 @@ export default function ContactPage() {
       const data = await res.json();
       if (!res.ok) {
         toast({
-          title: "Failed to send message",
-          description: data.error || "Please email us directly at support@capitalreach.com",
+          title: t("contact.toastFailedTitle"),
+          description: data.error || t("contact.toastFailedDescFallback"),
           variant: "destructive",
         });
       } else {
@@ -53,8 +55,8 @@ export default function ContactPage() {
       }
     } catch {
       toast({
-        title: "Network error",
-        description: "Could not reach the server. Please email us at support@capitalreach.com",
+        title: t("contact.toastNetworkErrorTitle"),
+        description: t("contact.toastNetworkErrorDesc"),
         variant: "destructive",
       });
     }
@@ -70,9 +72,9 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Left column */}
           <div className="lg:col-span-2">
-            <h1 className="text-3xl font-bold text-cr-ink mb-3">Get in Touch</h1>
+            <h1 className="text-3xl font-bold text-cr-ink mb-3">{t("contact.title")}</h1>
             <p className="text-cr-i3 mb-8 text-sm">
-              Whether you&apos;re a startup looking to raise, an investor deploying capital, or an enterprise exploring custom plans — we&apos;re here to help.
+              {t("contact.subtitle")}
             </p>
 
             <div className="space-y-5">
@@ -81,7 +83,7 @@ export default function ContactPage() {
                   <Mail className="h-4 w-4 text-cr-copper" />
                 </div>
                 <div>
-                  <p className="font-medium text-cr-ink text-sm">Email Us</p>
+                  <p className="font-medium text-cr-ink text-sm">{t("contact.emailUs")}</p>
                   <a href="mailto:support@capitalreach.com" className="text-sm text-cr-copper hover:text-cr-cu-l transition-colors">support@capitalreach.com</a>
                 </div>
               </div>
@@ -91,8 +93,8 @@ export default function ContactPage() {
                   <MessageSquare className="h-4 w-4 text-cr-copper" />
                 </div>
                 <div>
-                  <p className="font-medium text-cr-ink text-sm">Response Time</p>
-                  <p className="text-sm text-cr-i3">We reply within 1 business day</p>
+                  <p className="font-medium text-cr-ink text-sm">{t("contact.responseTime")}</p>
+                  <p className="text-sm text-cr-i3">{t("contact.responseTimeDesc")}</p>
                 </div>
               </div>
 
@@ -101,9 +103,9 @@ export default function ContactPage() {
                   <div className="flex items-start gap-3">
                     <Building2 className="h-5 w-5 text-cr-copper flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-cr-ink text-sm mb-1">Enterprise & Institutional</p>
+                      <p className="font-semibold text-cr-ink text-sm mb-1">{t("contact.enterpriseTitle")}</p>
                       <p className="text-xs text-cr-i3">
-                        Custom pricing available for family offices, VC funds, and corporate venture arms. Includes white-glove onboarding, API access, dedicated account management, and custom NDA templates.
+                        {t("contact.enterpriseDesc")}
                       </p>
                     </div>
                   </div>
@@ -119,29 +121,33 @@ export default function ContactPage() {
                 <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
                   <CheckCircle className="h-8 w-8 text-emerald-400" />
                 </div>
-                <h2 className="text-xl font-bold text-cr-ink mb-2">Message sent!</h2>
-                <p className="text-cr-i3 text-sm">Thanks for reaching out, {name.split(" ")[0]}. We&apos;ll get back to you at <strong className="text-cr-i2">{email}</strong> within 1 business day.</p>
+                <h2 className="text-xl font-bold text-cr-ink mb-2">{t("contact.messageSentTitle")}</h2>
+                <p className="text-cr-i3 text-sm">
+                  {t("contact.messageSentDesc", { name: name.split(" ")[0] }).split("{email}")[0]}
+                  <strong className="text-cr-i2">{email}</strong>
+                  {t("contact.messageSentDesc", { name: name.split(" ")[0] }).split("{email}")[1]}
+                </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="bg-cr-paper border border-cr-p4 rounded-xl p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-cr-i2 text-sm">Full Name</Label>
+                    <Label htmlFor="name" className="text-cr-i2 text-sm">{t("contact.fullName")}</Label>
                     <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" required className="bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-cr-i2 text-sm">Email</Label>
+                    <Label htmlFor="email" className="text-cr-i2 text-sm">{t("contact.emailLabel")}</Label>
                     <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jane@example.com" required className="bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="company" className="text-cr-i2 text-sm">Company / Fund (optional)</Label>
+                  <Label htmlFor="company" className="text-cr-i2 text-sm">{t("contact.companyLabel")}</Label>
                   <Input id="company" value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Ventures" className="bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4" />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-cr-i2 text-sm">Subject</Label>
+                  <Label className="text-cr-i2 text-sm">{t("contact.subjectLabel")}</Label>
                   <div className="flex flex-wrap gap-2">
                     {SUBJECTS.map(s => (
                       <button
@@ -161,7 +167,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="message" className="text-cr-i2 text-sm">Message</Label>
+                  <Label htmlFor="message" className="text-cr-i2 text-sm">{t("contact.messageLabel")}</Label>
                   <Textarea
                     id="message"
                     value={message}
@@ -169,20 +175,20 @@ export default function ContactPage() {
                     className="h-32 bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4"
                     placeholder={
                       isInstitutional
-                        ? "Tell us about your fund size, AUM, and what you're looking for in a custom plan…"
-                        : "How can we help you?"
+                        ? t("contact.messagePlaceholderInstitutional")
+                        : t("contact.messagePlaceholderGeneral")
                     }
                     required
                   />
                 </div>
 
                 <Button type="submit" className="w-full bg-cr-copper hover:bg-cr-cu-l text-white" disabled={loading}>
-                  {loading ? "Sending…" : "Send Message"}
+                  {loading ? t("contact.sending") : t("contact.sendMessage")}
                 </Button>
 
                 <p className="text-xs text-cr-i4 text-center">
-                  By submitting this form you agree to our{" "}
-                  <a href="/privacy" className="text-cr-copper hover:underline">Privacy Policy</a>.
+                  {t("contact.agreeToPrivacy")}{" "}
+                  <a href="/privacy" className="text-cr-copper hover:underline">{t("auth.privacy")}</a>.
                 </p>
               </form>
             )}

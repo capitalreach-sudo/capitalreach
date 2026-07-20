@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { CheckCircle2, XCircle, AlertCircle, DollarSign, Users, Building2, TrendingUp } from "lucide-react";
 import { formatCurrency, formatDate, STATUS_COLORS } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { Startup, Investor, Deal } from "@/types";
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats }: Props) {
+  const { t } = useTranslation();
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
   const [processingId, setProcessingId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -31,23 +33,23 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ startupId: id }),
     });
-    if (res.ok) toast({ title: "Startup approved and live!" });
-    else toast({ title: "Failed to approve", variant: "destructive" });
+    if (res.ok) toast({ title: t("admin.toastApproved") });
+    else toast({ title: t("admin.toastApproveFailed"), variant: "destructive" });
     setProcessingId(null);
     window.location.reload();
   }
 
   async function rejectStartup(id: string) {
     const reason = rejectionReason[id];
-    if (!reason) { toast({ title: "Please add a rejection reason", variant: "destructive" }); return; }
+    if (!reason) { toast({ title: t("admin.toastRejectReasonRequired"), variant: "destructive" }); return; }
     setProcessingId(id);
     const res = await fetch("/api/admin/startup/reject", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ startupId: id, reason }),
     });
-    if (res.ok) toast({ title: "Startup rejected, email sent" });
-    else toast({ title: "Failed to reject", variant: "destructive" });
+    if (res.ok) toast({ title: t("admin.toastRejected") });
+    else toast({ title: t("admin.toastRejectFailed"), variant: "destructive" });
     setProcessingId(null);
     window.location.reload();
   }
@@ -68,18 +70,18 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <AlertCircle className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-cr-ink">Admin Panel</h1>
-          <p className="text-cr-i3 text-sm">CapitalReach operations dashboard</p>
+          <h1 className="text-2xl font-bold text-cr-ink">{t("admin.panelTitle")}</h1>
+          <p className="text-cr-i3 text-sm">{t("admin.panelSub")}</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total Startups", value: stats.totalStartups, icon: Building2, color: "text-blue-600" },
-          { label: "Total Investors", value: stats.totalInvestors, icon: Users, color: "text-emerald-400" },
-          { label: "Startup MRR", value: formatCurrency(stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
-          { label: "Investor MRR", value: formatCurrency(stats.investorMrr), icon: TrendingUp, color: "text-purple-600" },
+          { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-blue-600" },
+          { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-emerald-400" },
+          { label: t("admin.statStartupMrr"), value: formatCurrency(stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
+          { label: t("admin.statInvestorMrr"), value: formatCurrency(stats.investorMrr), icon: TrendingUp, color: "text-purple-600" },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4">
@@ -96,16 +98,16 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       <Tabs defaultValue="pending">
         <TabsList className="mb-6">
           <TabsTrigger value="pending">
-            Pending Review
+            {t("admin.tabPending")}
             {pendingStartups.length > 0 && (
               <span className="ml-1.5 bg-red-100 text-red-700 text-xs px-1.5 py-0.5 rounded-full">
                 {pendingStartups.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="startups">All Startups</TabsTrigger>
-          <TabsTrigger value="investors">Investors</TabsTrigger>
-          <TabsTrigger value="deals">Deals</TabsTrigger>
+          <TabsTrigger value="startups">{t("admin.tabAllStartups")}</TabsTrigger>
+          <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
+          <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
         </TabsList>
 
         {/* Pending */}
@@ -113,7 +115,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           {pendingStartups.length === 0 ? (
             <div className="text-center py-12 text-cr-i4">
               <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
-              <p>All caught up! No pending reviews.</p>
+              <p>{t("admin.allCaughtUp")}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -129,7 +131,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                         </div>
                         <p className="text-sm text-cr-i3">{s.tagline}</p>
                         <p className="text-xs text-cr-i4 mt-1">
-                          by {s.owner?.full_name || s.owner?.email} · {formatDate(s.created_at)}
+                          {t("admin.byLabel")} {s.owner?.full_name || s.owner?.email} · {formatDate(s.created_at)}
                         </p>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
@@ -139,7 +141,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                           onClick={() => approveStartup(s.id)}
                           disabled={processingId === s.id}
                         >
-                          <CheckCircle2 className="h-4 w-4" /> Approve
+                          <CheckCircle2 className="h-4 w-4" /> {t("admin.approve")}
                         </Button>
                         <Button
                           size="sm"
@@ -148,15 +150,15 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                           onClick={() => rejectStartup(s.id)}
                           disabled={processingId === s.id}
                         >
-                          <XCircle className="h-4 w-4" /> Reject
+                          <XCircle className="h-4 w-4" /> {t("admin.reject")}
                         </Button>
                       </div>
                     </div>
                     <div className="border-t pt-3">
-                      <p className="text-xs text-cr-i3 mb-1">Rejection reason (required to reject):</p>
+                      <p className="text-xs text-cr-i3 mb-1">{t("admin.rejectionReasonLabel")}</p>
                       <Textarea
                         className="text-sm h-16"
-                        placeholder="Please describe the issue (missing information, policy violation, etc.)"
+                        placeholder={t("admin.rejectionPlaceholder")}
                         value={rejectionReason[s.id] || ""}
                         onChange={e => setRejectionReason(prev => ({ ...prev, [s.id]: e.target.value }))}
                       />
@@ -186,7 +188,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                   <span className="text-xs bg-cr-p3 text-cr-i3 px-2 py-0.5 rounded-full capitalize">{s.subscription_tier}</span>
                   {s.status === "active" && (
                     <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => suspendStartup(s.id)}>
-                      Suspend
+                      {t("admin.suspend")}
                     </Button>
                   )}
                 </div>
@@ -202,7 +204,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               <div key={inv.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
                 <div>
                   <p className="font-medium text-cr-ink text-sm">{inv.owner?.email}</p>
-                  <p className="text-xs text-cr-i4">{inv.type} · {inv.industries?.join(", ") || "No preferences"}</p>
+                  <p className="text-xs text-cr-i4">{inv.type} · {inv.industries?.join(", ") || t("admin.noPreferences")}</p>
                 </div>
                 <span className="text-xs bg-cr-copper/15 text-cr-cu-l px-2 py-0.5 rounded-full capitalize">
                   {inv.subscription_tier.replace(/_/g, " ")}
@@ -222,7 +224,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     {deal.startup?.name} ↔ {deal.investor?.slug}
                   </p>
                   <p className="text-xs text-cr-i4">
-                    {deal.amount ? formatCurrency(deal.amount) : "Amount TBD"} · {formatDate(deal.updated_at)}
+                    {deal.amount ? formatCurrency(deal.amount) : t("admin.amountTBD")} · {formatDate(deal.updated_at)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -230,7 +232,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     {deal.status}
                   </Badge>
                   {deal.success_fee_invoiced && (
-                    <Badge variant="success" className="text-xs">Fee invoiced</Badge>
+                    <Badge variant="success" className="text-xs">{t("admin.feeInvoiced")}</Badge>
                   )}
                 </div>
               </div>

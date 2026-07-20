@@ -2,52 +2,34 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, Clock, Zap, Globe, Handshake } from "lucide-react";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Careers",
-  description: "Join CapitalReach and help build the future of startup investing.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    title: t("careers.metaTitle"),
+    description: t("careers.metaDesc"),
+  };
+}
 
-const OPENINGS = [
-  {
-    title: "Senior Full-Stack Engineer",
-    team: "Engineering",
-    location: "Remote (US / EU)",
-    type: "Full-time",
-    desc: "Own end-to-end features on our Next.js + Supabase stack. Help us scale to thousands of transactions per day.",
-  },
-  {
-    title: "Investor Success Manager",
-    team: "Growth",
-    location: "New York, NY",
-    type: "Full-time",
-    desc: "Onboard, support, and grow relationships with our institutional investor members. Own NPS and retention.",
-  },
-  {
-    title: "Startup Partnerships Lead",
-    team: "BD & Partnerships",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    desc: "Build and manage relationships with startup ecosystems, accelerators, and VC scouts to grow deal flow.",
-  },
-  {
-    title: "AI / ML Engineer",
-    team: "Engineering",
-    location: "Remote",
-    type: "Full-time",
-    desc: "Build the matching algorithms and AI due diligence features that make CapitalReach smarter every day.",
-  },
-];
+export default async function CareersPage() {
+  const t = await getTranslator(getLocale());
 
-const PERKS = [
-  { icon: Globe, title: "Remote-first", desc: "Work from anywhere. We have team members across 8 countries." },
-  { icon: Zap, title: "Equity", desc: "Meaningful ownership in a company that's changing how capital moves." },
-  { icon: Handshake, title: "Aligned incentives", desc: "Your success is tied to the platform's success — just like our fee model." },
-  { icon: Briefcase, title: "High ownership", desc: "Small team, big problems. You'll own entire product areas from day one." },
-];
+  const OPENINGS = [
+    { title: t("careers.role1Title"), team: t("careers.role1Team"), location: t("careers.role1Location"), type: t("careers.fullTime"), desc: t("careers.role1Desc") },
+    { title: t("careers.role2Title"), team: t("careers.role2Team"), location: t("careers.role2Location"), type: t("careers.fullTime"), desc: t("careers.role2Desc") },
+    { title: t("careers.role3Title"), team: t("careers.role3Team"), location: t("careers.role3Location"), type: t("careers.fullTime"), desc: t("careers.role3Desc") },
+    { title: t("careers.role4Title"), team: t("careers.role4Team"), location: t("careers.role4Location"), type: t("careers.fullTime"), desc: t("careers.role4Desc") },
+  ];
 
-export default function CareersPage() {
+  const PERKS = [
+    { icon: Globe, title: t("careers.perk1Title"), desc: t("careers.perk1Desc") },
+    { icon: Zap, title: t("careers.perk2Title"), desc: t("careers.perk2Desc") },
+    { icon: Handshake, title: t("careers.perk3Title"), desc: t("careers.perk3Desc") },
+    { icon: Briefcase, title: t("careers.perk4Title"), desc: t("careers.perk4Desc") },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-base">
       <Navbar />
@@ -60,13 +42,13 @@ export default function CareersPage() {
             <Briefcase className="h-6 w-6 text-cr-copper" />
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-cr-ink">
-            Build the future of<br />
+            {t("careers.heroLine1")}<br />
             <span className="bg-gradient-to-r from-cr-cu-l to-emerald-400 bg-clip-text text-transparent">
-              startup investing
+              {t("careers.heroLine2")}
             </span>
           </h1>
           <p className="text-cr-i3 text-lg max-w-xl mx-auto">
-            We&apos;re a small, high-conviction team. If you want to move fast and own your work, you&apos;ll fit right in.
+            {t("careers.heroSub")}
           </p>
         </div>
       </section>
@@ -74,8 +56,8 @@ export default function CareersPage() {
       {/* Perks */}
       <section className="py-20 px-4 bg-cr-paper border-b border-cr-p4">
         <div className="container mx-auto max-w-4xl">
-          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3 text-center">Why CapitalReach</p>
-          <h2 className="text-2xl font-extrabold text-cr-ink mb-10 text-center">What sets us apart</h2>
+          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3 text-center">{t("careers.whyLabel")}</p>
+          <h2 className="text-2xl font-extrabold text-cr-ink mb-10 text-center">{t("careers.whyTitle")}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {PERKS.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-cr-p2 rounded-xl p-5 border border-cr-p4 text-center hover:border-cr-i4 transition-colors">
@@ -93,9 +75,9 @@ export default function CareersPage() {
       {/* Open roles */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
-          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3">Open Roles</p>
-          <h2 className="text-2xl font-extrabold text-cr-ink mb-2">We&apos;re hiring</h2>
-          <p className="text-cr-i3 mb-10 text-sm">Across engineering, growth, and partnerships.</p>
+          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3">{t("careers.openRolesLabel")}</p>
+          <h2 className="text-2xl font-extrabold text-cr-ink mb-2">{t("careers.hiringTitle")}</h2>
+          <p className="text-cr-i3 mb-10 text-sm">{t("careers.hiringSub")}</p>
 
           <div className="space-y-4">
             {OPENINGS.map(role => (
@@ -122,7 +104,7 @@ export default function CareersPage() {
                 </div>
                 <a href={`mailto:careers@capitalreach.com?subject=Application: ${role.title}`}>
                   <Button size="sm" variant="outline" className="flex-shrink-0 border-cr-p4 text-cr-i2 hover:text-cr-ink hover:bg-cr-paper/5">
-                    Apply now
+                    {t("careers.applyNow")}
                   </Button>
                 </a>
               </div>
@@ -130,12 +112,12 @@ export default function CareersPage() {
           </div>
 
           <div className="mt-12 bg-cr-copper/5 border border-cr-copper/15 rounded-xl p-8 text-center">
-            <h3 className="font-bold text-cr-ink text-lg mb-2">Don&apos;t see your role?</h3>
+            <h3 className="font-bold text-cr-ink text-lg mb-2">{t("careers.noRoleTitle")}</h3>
             <p className="text-sm text-cr-i3 mb-5 max-w-md mx-auto">
-              We&apos;re always looking for exceptional people. Send us a note and tell us how you&apos;d contribute.
+              {t("careers.noRoleDesc")}
             </p>
             <a href="mailto:careers@capitalreach.com">
-              <Button className="bg-cr-copper hover:bg-cr-cu-l text-white">Get in touch</Button>
+              <Button className="bg-cr-copper hover:bg-cr-cu-l text-white">{t("careers.getInTouch")}</Button>
             </a>
           </div>
         </div>

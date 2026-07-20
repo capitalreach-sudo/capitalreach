@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { BookOpen, ArrowRight } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function BlogPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex flex-col bg-base">
       <Navbar />
@@ -17,9 +19,9 @@ export default function BlogPage() {
           <div className="w-12 h-12 bg-cr-copper/10 rounded-xl flex items-center justify-center mx-auto mb-5 border border-cr-copper/20">
             <BookOpen className="h-6 w-6 text-cr-copper" />
           </div>
-          <h1 className="text-4xl font-extrabold mb-3 text-cr-ink">The CapitalReach Blog</h1>
+          <h1 className="text-4xl font-extrabold mb-3 text-cr-ink">{t("blog.heroTitle")}</h1>
           <p className="text-cr-i3 text-lg max-w-xl mx-auto">
-            Fundraising tactics, investor insights, and market intelligence for founders and VCs.
+            {t("blog.heroSub")}
           </p>
         </div>
       </section>
@@ -30,15 +32,15 @@ export default function BlogPage() {
           <div className="w-16 h-16 bg-cr-copper/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-cr-copper/20">
             <BookOpen className="h-8 w-8 text-cr-copper" />
           </div>
-          <h2 className="text-2xl font-bold text-cr-ink mb-3">Articles coming soon</h2>
+          <h2 className="text-2xl font-bold text-cr-ink mb-3">{t("blog.comingSoonTitle")}</h2>
           <p className="text-cr-i3 leading-relaxed mb-6">
-            We&apos;re working on in-depth guides covering fundraising strategy, investor relations, and market intelligence. Check back soon.
+            {t("blog.comingSoonDesc")}
           </p>
           <Link
             href="/startups"
             className="inline-flex items-center gap-2 text-sm font-medium text-cr-copper hover:text-cr-cu-l transition-colors"
           >
-            Browse startups instead <ArrowRight className="h-4 w-4" />
+            {t("blog.browseStartups")} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

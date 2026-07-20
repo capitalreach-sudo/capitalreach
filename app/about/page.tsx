@@ -1,38 +1,27 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Users, Target, Zap, Shield, Heart } from "lucide-react";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "Learn about CapitalReach — our mission, team, and why we built the platform.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    title: t("about.metaTitle"),
+    description: t("about.metaDesc"),
+  };
+}
 
-const VALUES = [
-  {
-    icon: Target,
-    title: "Aligned incentives",
-    desc: "We only charge 2% when a deal closes. Your success is our success — no other way to see it.",
-  },
-  {
-    icon: Shield,
-    title: "Rigorous curation",
-    desc: "Every startup is manually reviewed before going live. We'd rather have fewer, better listings than a crowded directory.",
-  },
-  {
-    icon: Zap,
-    title: "AI-first infrastructure",
-    desc: "From matching to due diligence, we use AI to remove friction — not to replace human judgment.",
-  },
-  {
-    icon: Heart,
-    title: "Founder obsession",
-    desc: "We were founders first. We build for the version of ourselves that needed this five years ago.",
-  },
-];
+export default async function AboutPage() {
+  const t = await getTranslator(getLocale());
 
+  const VALUES = [
+    { icon: Target, title: t("about.v1Title"), desc: t("about.v1Desc") },
+    { icon: Shield, title: t("about.v2Title"), desc: t("about.v2Desc") },
+    { icon: Zap,    title: t("about.v3Title"), desc: t("about.v3Desc") },
+    { icon: Heart,  title: t("about.v4Title"), desc: t("about.v4Desc") },
+  ];
 
-export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-base">
       <Navbar />
@@ -45,10 +34,10 @@ export default function AboutPage() {
             <Users className="h-6 w-6 text-cr-copper" />
           </div>
           <h1 className="text-4xl font-extrabold mb-4 text-cr-ink">
-            Where capital meets ambition
+            {t("about.heroTitle")}
           </h1>
           <p className="text-cr-i3 text-lg max-w-xl mx-auto leading-relaxed">
-            CapitalReach is the private marketplace where vetted early-stage startups connect with serious investors — powered by AI and aligned incentives.
+            {t("about.heroSub")}
           </p>
         </div>
       </section>
@@ -58,21 +47,21 @@ export default function AboutPage() {
         <div className="container mx-auto max-w-4xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3">Our Mission</p>
+              <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3">{t("about.missionLabel")}</p>
               <h2 className="text-3xl font-extrabold text-cr-ink mb-4">
-                Fix the broken connection between great ideas and patient capital
+                {t("about.missionTitle")}
               </h2>
               <p className="text-cr-i3 leading-relaxed text-sm">
-                Most fundraising is opaque, relationship-dependent, and painfully slow. Great founders with real traction get passed over because they don&apos;t know the right people. Investors miss obvious opportunities because the deal flow is noisy and unfiltered.
+                {t("about.missionP1")}
               </p>
               <p className="text-cr-i3 leading-relaxed text-sm mt-3">
-                CapitalReach solves this by building curated infrastructure: every startup is reviewed, every investor is verified, and AI does the heavy lifting of matching. We make money only when deals close — so our incentives are perfectly aligned with yours.
+                {t("about.missionP2")}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {[
-                { label: "Success Fee", value: "2%" },
-                { label: "Avg Review Time", value: "48h" },
+                { label: t("about.statSuccessFee"), value: "2%" },
+                { label: t("about.statAvgReview"), value: "48h" },
               ].map(stat => (
                 <div key={stat.label} className="bg-cr-paper border border-cr-p4 rounded-xl p-5 text-center">
                   <p className="text-3xl font-extrabold text-cr-ink">{stat.value}</p>
@@ -87,8 +76,8 @@ export default function AboutPage() {
       {/* Values */}
       <section className="py-20 px-4 bg-cr-paper border-y border-cr-p4">
         <div className="container mx-auto max-w-4xl">
-          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3 text-center">Our Values</p>
-          <h2 className="text-3xl font-extrabold text-cr-ink text-center mb-12">What we believe in</h2>
+          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3 text-center">{t("about.valuesLabel")}</p>
+          <h2 className="text-3xl font-extrabold text-cr-ink text-center mb-12">{t("about.valuesTitle")}</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {VALUES.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-cr-p2 border border-cr-p4 rounded-xl p-6 hover:border-cr-i4 transition-colors">
