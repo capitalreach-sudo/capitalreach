@@ -189,7 +189,7 @@ export function Navbar() {
                   >
                     <div className="px-4 py-3 mb-1" style={{ borderBottom: "1px solid rgba(26,22,18,0.1)" }}>
                       <p style={{ fontSize: "13px", fontWeight: 600, color: "#1A1612", fontFamily: "'DM Sans', sans-serif" }} className="truncate">
-                        {profile.full_name || "Account"}
+                        {profile.full_name || t("nav.account")}
                       </p>
                       <p style={{ fontSize: "11px", color: "#9C8E82", fontFamily: "'DM Sans', sans-serif" }} className="truncate mt-0.5">
                         {profile.email}
@@ -281,7 +281,7 @@ export function Navbar() {
               color: "#6B6056", background: "none", border: "none", cursor: "pointer",
             }}
             onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
+            aria-label={t("nav.openMenu")}
           >
             <Menu size={24} />
           </button>
@@ -324,7 +324,7 @@ export function Navbar() {
               <button
                 onClick={() => setMobileOpen(false)}
                 style={{ color: "#6B6056", background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
-                aria-label="Close menu"
+                aria-label={t("nav.closeMenu")}
               >
                 <X size={20} />
               </button>

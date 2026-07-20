@@ -12,7 +12,10 @@
     "signOut": "ログアウト",
     "language": "言語",
     "messages": "メッセージ",
-    "settings": "設定"
+    "settings": "設定",
+    "account": "アカウント",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
   },
   "hero": {
     "eyebrow": "プライベートキャピタル · 2024年設立",
@@ -189,7 +192,14 @@
       "dimMarket": "市場機会",
       "dimMoat": "競争の堀",
       "dimTeam": "チームの強さ",
-      "dimTraction": "牽引力の証拠"
+      "dimTraction": "牽引力の証拠",
+      "descLong": "スタートアップについて説明してください — 課題、解決策、市場規模、チーム背景、トラクション。GPT-4oが5つの投資次元でスコアリングし、実用的なフィードバックを提供します。",
+      "proTipLabel": "プロのヒント：",
+      "proTipBody": "最も正確なスコアを得るために、TAM、MRR/成長率、過去のエグジット、チームの経歴、主要指標を含めてください。",
+      "footerInfo": "GPT-4o搭載 · 約3秒 · 無料分析5回/時間 · データは保存されません",
+      "analysisFailedErr": "分析に失敗しました",
+      "analysisFailedFull": "ピッチ分析に失敗しました。接続を確認して再試行してください。",
+      "placeholderExample": "例：\n\n私たちは臨床診療をリアルタイムで文字起こしするAIを開発しており、地方の医療提供者の文書作成負担を70%削減します。\n\n課題：医師は1日3時間以上を事務作業に費やし、180億ドルの生産性損失を引き起こしています。\n\nトラクション：MRR 4.2万ドル、月次成長率18%、病院からの意向書3件。元Epic社員+スタンフォード臨床AI博士号。"
     },
     "matching": {
       "locked": "AI投資家マッチングはアップグレードが必要",
@@ -205,7 +215,11 @@
       "finding": "マッチを検索中…",
       "results": "マッチした投資家",
       "messageCta": "これらの投資家に直接連絡しますか？",
-      "messageCtaSub": "スタートアッププロフィールを作成し、数秒でイントロメッセージを送信"
+      "messageCtaSub": "スタートアッププロフィールを作成し、数秒でイントロメッセージを送信",
+      "descLong": "あなたのスタートアップについて教えてください。AIがCapitalReachネットワークから最適な投資家を特定します — 業界、ステージ、チェックサイズ、地域でマッチング。",
+      "matchingFailedErr": "マッチングに失敗しました",
+      "matchingFailedFull": "投資家マッチングに失敗しました。接続を確認して再試行してください。",
+      "descPlaceholder": "例：地方医療向けのAI臨床文書作成。MRR 4.2万ドル、月次成長率18%、病院ネットワークからの意向書3件。"
     },
     "diligence": {
       "search": "スタートアップを検索…",
@@ -229,7 +243,20 @@
       "step2": "市場機会を分析中…",
       "step3": "チームと牽引力を評価中…",
       "step4": "競争環境を評価中…",
-      "step5": "投資メモを作成中…"
+      "step5": "投資メモを作成中…",
+      "reportTitlePrefix": "デューデリジェンスレポート — {name}",
+      "item1": "エグゼクティブサマリー",
+      "item2": "市場機会 — TAMとタイミング",
+      "item3": "チーム評価",
+      "item4": "トラクション分析",
+      "item5": "競合状況",
+      "item6": "主要リスクトップ3",
+      "item7": "比較可能企業",
+      "item8": "投資判断 — 買い/様子見/見送り",
+      "descLong": "CapitalReachネットワーク内のあらゆるスタートアップについて、数秒で包括的な投資メモを取得できます。市場分析、チーム、競合状況、リスク、買い/様子見/見送りの判定をカバーします。Pro InvestorおよびInstitutionプランでは無制限に含まれます。",
+      "generationFailed": "レポートの生成に失敗しました。",
+      "networkError": "ネットワークエラーです。もう一度お試しください。",
+      "searchPlaceholder": "例：Vaultrise、HealthAI、ClimateOS…"
     },
     "hub": {
       "heroPowered": "GPT-4o搭載",
@@ -244,7 +271,15 @@
       "tablePlansSub": "無料から始める — 必要に応じてアップグレード",
       "startInvestor": "投資家として始める",
       "listStartup": "スタートアップを掲載",
-      "viewPricing": "すべての料金を見る"
+      "viewPricing": "すべての料金を見る",
+      "statPitchVal": "本物のGPT",
+      "statMatchVal": "AI搭載",
+      "statDDVal": "500語のメモ",
+      "statSpeedVal": "約3秒",
+      "tierFreeSub": "常に無料",
+      "tierAngelName": "Angel",
+      "tierAngelSub": "月99ドル",
+      "tierProSub": "月249ドル"
     },
     "tier": {
       "pitchAnalyzer": "ピッチ分析ツール",
@@ -252,7 +287,8 @@
       "dueDiligence": "デューデリジェンスレポート",
       "aiScore": "AIスタートアップスコア",
       "savedReports": "保存済みレポート",
-      "exportPdf": "レポートエクスポート（PDF）"
+      "exportPdf": "レポートエクスポート（PDF）",
+      "viewOnly": "閲覧のみ"
     }
   },
   "pricing": {
@@ -314,7 +350,60 @@
     "browseAsInvestor": "投資家として閲覧",
     "listStartupFree": "スタートアップを無料でリスト",
     "commonQuestions": "よくある質問",
-    "contactSales": "営業に問い合わせる"
+    "contactSales": "営業に問い合わせる",
+    "launchPricingLabel": "ローンチ価格",
+    "transparentPricingLabel": "透明な価格設定",
+    "launchHeadlineLine1": "最初の",
+    "launchHeadlineLine2": "{target}名は無料。",
+    "launchHeadlineLine3": "参加しますか？",
+    "headlineLine1": "シンプルな",
+    "headlineLine2": "料金。",
+    "headlineLine3": "無料で開始。",
+    "launchSub": "{memberCount}/{target}名が参加済み。全員が無料でトップティアへのフルアクセスを取得 — 適用されるのは{bold}のみです。",
+    "launchSubBold": "成立ラウンドへの2%成功報酬",
+    "sub": "サブスクリプション + わずか{bold}。リテーナーなし。仲介手数料なし。",
+    "subBold": "成立ラウンドへの2%",
+    "spotsLeftFree": "残り無料枠",
+    "successFeeLabel": "成功報酬",
+    "afterClosingUpfront": "成立後 · 前払いゼロ",
+    "monthly": "月払い",
+    "annual": "年払い",
+    "oneSuccessFeeTitle": "成功報酬は一つだけ。成立後のみ。",
+    "founderFeeBody": "すべてのスタートアッププランには、CapitalReach経由の{bold}が含まれます — ディール成立後に請求。前払いゼロ。投資家は何も支払いません。",
+    "founderFeeBodyBold": "調達額の2%の手数料",
+    "investorZeroFeeTitle": "投資家は成功報酬をゼロ支払います。",
+    "investorFeeBody": "{bold}はディール成立後にスタートアップにのみ請求されます。サブスクリプションはアクセスをカバーします — それ以上はありません。",
+    "investorFeeBodyBold": "2%成功報酬",
+    "founderInfoLine": "すべてのスタートアッププランには、CapitalReach経由で調達した資金への2%成功報酬が含まれます。",
+    "investorInfoLine": "投資家は成功報酬をゼロ支払います — サブスクリプションのみです。",
+    "modelEyebrow": "CapitalReachモデル",
+    "colTraditional": "従来のブローカー",
+    "colDiy": "自力での資金調達",
+    "successFeeLower": "成功報酬",
+    "bestValue": "ベストバリュー",
+    "tradItem1": "多額の前払いリテーナー",
+    "tradItem2": "年間管理手数料",
+    "tradItem3": "5–7%の成功報酬",
+    "tradItem4": "遅い手動プロセス",
+    "tradItem5": "限られたディールの可視性",
+    "crItem1": "前払いゼロ",
+    "crItem2": "任意のサブスクリプション",
+    "crItem3": "成立ラウンドへの2%",
+    "crItem4": "AIによるスピード",
+    "crItem5": "完全なパイプラインの可視性",
+    "diyItem1": "数百通のコールドメール",
+    "diyItem2": "投資家のフィルタリングなし",
+    "diyItem3": "AIマッチングなし",
+    "diyItem4": "ディール追跡なし",
+    "diyItem5": "数ヶ月の労力",
+    "aiReportTitle": "AIデューデリジェンスレポート",
+    "aiReportDesc": "あらゆるスタートアップの包括的なAI分析 — 市場規模、参入障壁、主要リスク、投資テーゼを数秒で。",
+    "aiReportIncluded": "Pro Investorに含まれます",
+    "limitedLaunchSpots": "限定ローンチ枠",
+    "earlyAccess": "早期アクセス",
+    "finalCtaLaunchSub": "最初の{target}名に参加し、無料でフルアクセスを取得 — クレジットカード不要。",
+    "finalCtaSub": "CapitalReachの創業者と投資家の早期コミュニティに参加。今すぐ無料で開始。",
+    "saveAnnual": "年払いで${amount}/年節約"
   },
   "cta": {
     "headline": "適切な資本を、適切なステージで。",
@@ -712,7 +801,8 @@
     "errCompleteInvestor": "まず投資家プロフィールの設定を完了してください。",
     "errStartConvo": "会話の開始に失敗しました。もう一度お試しください。",
     "errSomethingWrong2": "問題が発生しました。",
-    "startupLabel": "スタートアップ"
+    "startupLabel": "スタートアップ",
+    "tabsLabel": "ダッシュボードタブ"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -752,7 +842,15 @@
     "saveChanges": "変更を保存",
     "saving2": "保存中…",
     "backToDashboard": "戻る",
-    "noNameSet": "名前が設定されていません"
+    "noNameSet": "名前が設定されていません",
+    "saveFailed": "保存に失敗しました",
+    "passwordUpdateFailed": "パスワードの更新に失敗しました",
+    "passwordUpdatedSuccess": "パスワードが正常に更新されました",
+    "deletionFailed": "削除に失敗しました",
+    "accountDeleted": "アカウントが削除されました",
+    "accountDeletedDesc": "アカウントとすべてのデータは完全に削除されました。",
+    "networkError": "ネットワークエラー",
+    "networkErrorDesc": "サーバーに接続できませんでした。もう一度お試しください。"
   },
   "startups": {
     "pageTitle": "アクティブな資金調達ラウンド",
@@ -838,7 +936,18 @@
     "noTeamInfo": "チーム情報が提供されていません。",
     "noDocumentsUploaded": "書類未アップロード。",
     "signNdaAccess": "NDA署名",
-    "website": "ウェブサイト"
+    "website": "ウェブサイト",
+    "signInToSave": "投資家としてサインインしてスタートアップを保存",
+    "failedSendMessage": "メッセージの送信に失敗しました",
+    "ndaSent": "署名のためNDAを両当事者に送信しました",
+    "failedSendNda": "NDAの送信に失敗しました",
+    "upgradeWatchDemo": "Angelにアップグレードして製品デモを視聴",
+    "angelTierRequired": "Angelティアが必要です",
+    "upgradeFinancialsDesc": "Angelにアップグレードして、MRR、ARR、成長率、完全な財務データを表示。",
+    "signUpPitchDeck": "サインアップして完全なピッチデッキを表示",
+    "createFreeAccount": "無料アカウントを作成",
+    "upgradeTractionTitle": "トラクションデータを見るにはアップグレード",
+    "upgradeTractionDesc": "Angelメンバーは MRR、ARR、ユーザー数、成長率を確認できます。"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -970,7 +1079,9 @@
     "success": "保存されました。",
     "optional": "任意",
     "required": "必須",
-    "sort": "並び替え"
+    "sort": "並び替え",
+    "custom": "カスタム",
+    "open": "制限なし"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",

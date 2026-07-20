@@ -12,7 +12,10 @@
     "signOut": "Abmelden",
     "language": "Sprache",
     "messages": "Nachrichten",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "account": "Konto",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen"
   },
   "hero": {
     "eyebrow": "Privates Kapital · Gegr. 2024",
@@ -189,7 +192,14 @@
       "dimMarket": "Marktchance",
       "dimMoat": "Wettbewerbsvorteil",
       "dimTeam": "Teamstärke",
-      "dimTraction": "Traktionsnachweise"
+      "dimTraction": "Traktionsnachweise",
+      "descLong": "Beschreibe dein Startup — Problem, Lösung, Marktgröße, Team-Hintergrund und Traktion. GPT-4o bewertet es anhand von 5 Investment-Dimensionen und gibt umsetzbares Feedback.",
+      "proTipLabel": "Profi-Tipp:",
+      "proTipBody": "Gib TAM, MRR/Wachstumsrate, frühere Exits, Team-Bios und Kennzahlen an, um den genauesten Score zu erhalten.",
+      "footerInfo": "Powered by GPT-4o · ~3 Sekunden · 5 kostenlose Analysen/Stunde · Keine Datenspeicherung",
+      "analysisFailedErr": "Analyse fehlgeschlagen",
+      "analysisFailedFull": "Pitch-Analyse fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
+      "placeholderExample": "Beispiel:\n\nWir entwickeln KI, die klinische Gespräche in Echtzeit transkribiert und die Dokumentation für Gesundheitsdienstleister im ländlichen Raum um 70 % reduziert.\n\nProblem: Ärzte verbringen 3+ Stunden/Tag mit Verwaltung, was zu 18 Mrd. $ Produktivitätsverlust führt.\n\nTraktion: 42.000 $ MRR, 18 % monatliches Wachstum, 3 Krankenhaus-Absichtserklärungen. Ex-Epic + Stanford-Promotion in klinischer KI."
     },
     "matching": {
       "locked": "Upgrade erforderlich für KI-Investor-Matching",
@@ -205,7 +215,11 @@
       "finding": "Suche deine Matches…",
       "results": "Gematchte Investoren",
       "messageCta": "Möchtest du diesen Investoren direkt schreiben?",
-      "messageCtaSub": "Erstelle dein Startup-Profil und sende in Sekunden Intro-Nachrichten"
+      "messageCtaSub": "Erstelle dein Startup-Profil und sende in Sekunden Intro-Nachrichten",
+      "descLong": "Erzähle uns von deinem Startup und unsere KI identifiziert die am besten passenden Investoren aus dem CapitalReach-Netzwerk — abgeglichen nach Branche, Phase, Check-Größe und Geografie.",
+      "matchingFailedErr": "Matching fehlgeschlagen",
+      "matchingFailedFull": "Investoren-Matching fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
+      "descPlaceholder": "z. B. KI-gestützte klinische Dokumentation für ländliche Gesundheitsversorgung. 42.000 $ MRR, 18 % monatliches Wachstum, 3 Absichtserklärungen von Krankenhausnetzwerken."
     },
     "diligence": {
       "search": "Startup suchen…",
@@ -229,7 +243,20 @@
       "step2": "Marktchance wird analysiert…",
       "step3": "Team und Traktion werden bewertet…",
       "step4": "Wettbewerbslandschaft wird bewertet…",
-      "step5": "Investment-Memo wird erstellt…"
+      "step5": "Investment-Memo wird erstellt…",
+      "reportTitlePrefix": "Due-Diligence-Bericht — {name}",
+      "item1": "Zusammenfassung",
+      "item2": "Marktchance — TAM & Timing",
+      "item3": "Team-Bewertung",
+      "item4": "Traktionsanalyse",
+      "item5": "Wettbewerbslandschaft",
+      "item6": "Top 3 Hauptrisiken",
+      "item7": "Vergleichbare Unternehmen",
+      "item8": "Investmentverdikt — Kaufen / Beobachten / Ablehnen",
+      "descLong": "Erhalte in Sekunden ein umfassendes Investment-Memo zu jedem Startup im CapitalReach-Netzwerk. Deckt Marktanalyse, Team, Wettbewerbslandschaft, Risiken und ein Kaufen/Beobachten/Ablehnen-Urteil ab. Unbegrenzt inklusive bei Pro-Investor- und Institution-Plänen.",
+      "generationFailed": "Berichtserstellung fehlgeschlagen.",
+      "networkError": "Netzwerkfehler. Bitte versuche es erneut.",
+      "searchPlaceholder": "z. B. Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
       "heroPowered": "Betrieben von GPT-4o",
@@ -244,7 +271,15 @@
       "tablePlansSub": "Kostenlos starten — Upgrade bei Bedarf",
       "startInvestor": "Als Investor starten",
       "listStartup": "Startup listen",
-      "viewPricing": "Alle Preise ansehen"
+      "viewPricing": "Alle Preise ansehen",
+      "statPitchVal": "Echtes GPT",
+      "statMatchVal": "KI-gestützt",
+      "statDDVal": "500-Wort-Memos",
+      "statSpeedVal": "~3 Sekunden",
+      "tierFreeSub": "Immer kostenlos",
+      "tierAngelName": "Angel",
+      "tierAngelSub": "99 $/Monat",
+      "tierProSub": "249 $/Monat"
     },
     "tier": {
       "pitchAnalyzer": "Pitch-Analyse",
@@ -252,7 +287,8 @@
       "dueDiligence": "Due-Diligence-Berichte",
       "aiScore": "KI-Startup-Score",
       "savedReports": "Gespeicherte Berichte",
-      "exportPdf": "Berichte exportieren (PDF)"
+      "exportPdf": "Berichte exportieren (PDF)",
+      "viewOnly": "Nur ansehen"
     }
   },
   "pricing": {
@@ -314,7 +350,60 @@
     "browseAsInvestor": "Als Investor durchsuchen",
     "listStartupFree": "Startup kostenlos listen",
     "commonQuestions": "Häufige Fragen",
-    "contactSales": "Vertrieb kontaktieren"
+    "contactSales": "Vertrieb kontaktieren",
+    "launchPricingLabel": "Launch-Preise",
+    "transparentPricingLabel": "Transparente Preise",
+    "launchHeadlineLine1": "Kostenlos für unsere",
+    "launchHeadlineLine2": "ersten {target}.",
+    "launchHeadlineLine3": "Bist du dabei?",
+    "headlineLine1": "Einfache",
+    "headlineLine2": "Preise.",
+    "headlineLine3": "Kostenlos starten.",
+    "launchSub": "{memberCount}/{target} Mitglieder beigetreten. Alle erhalten vollen Zugang zur Top-Stufe kostenlos — nur die {bold} gilt.",
+    "launchSubBold": "2% Erfolgsgebühr auf abgeschlossene Runden",
+    "sub": "Abo plus nur {bold}. Keine Retainer. Keine Vermittlungsgebühren.",
+    "subBold": "2% auf abgeschlossene Runden",
+    "spotsLeftFree": "Kostenlose Plätze übrig",
+    "successFeeLabel": "Erfolgsgebühr",
+    "afterClosingUpfront": "Nach Abschluss · keine Vorabkosten",
+    "monthly": "Monatlich",
+    "annual": "Jährlich",
+    "oneSuccessFeeTitle": "Eine Erfolgsgebühr. Nur nach Abschluss.",
+    "founderFeeBody": "Alle Startup-Tarife beinhalten eine {bold} über eine CapitalReach-Verbindung — abgerechnet nach Abschluss des Deals. Keine Vorabkosten. Investoren zahlen nichts.",
+    "founderFeeBodyBold": "2% Gebühr auf das eingesammelte Kapital",
+    "investorZeroFeeTitle": "Investoren zahlen keine Erfolgsgebühren.",
+    "investorFeeBody": "Die {bold} wird nur Startups berechnet, nach Abschluss eines Deals. Dein Abo deckt deinen Zugang — nichts weiter.",
+    "investorFeeBodyBold": "2% Erfolgsgebühr",
+    "founderInfoLine": "Alle Startup-Tarife beinhalten eine 2% Erfolgsgebühr auf über CapitalReach-Verbindungen eingesammeltes Kapital.",
+    "investorInfoLine": "Investoren zahlen keine Erfolgsgebühren — nur ihr Abo.",
+    "modelEyebrow": "Das CapitalReach-Modell",
+    "colTraditional": "Klassischer Broker",
+    "colDiy": "DIY-Fundraising",
+    "successFeeLower": "Erfolgsgebühr",
+    "bestValue": "Bester Wert",
+    "tradItem1": "Hohe Vorab-Retainer",
+    "tradItem2": "Jährliche Verwaltungsgebühren",
+    "tradItem3": "5–7% Erfolgsgebühren",
+    "tradItem4": "Langsamer manueller Prozess",
+    "tradItem5": "Begrenzte Deal-Sichtbarkeit",
+    "crItem1": "Keine Vorabkosten",
+    "crItem2": "Optionales Abo",
+    "crItem3": "2% auf abgeschlossene Runden",
+    "crItem4": "KI-gestützte Geschwindigkeit",
+    "crItem5": "Volle Pipeline-Sichtbarkeit",
+    "diyItem1": "Hunderte Kaltakquise-E-Mails",
+    "diyItem2": "Keine Investorenfilterung",
+    "diyItem3": "Keine KI-Zuordnung",
+    "diyItem4": "Kein Deal-Tracking",
+    "diyItem5": "Monatelanger Aufwand",
+    "aiReportTitle": "KI-Due-Diligence-Berichte",
+    "aiReportDesc": "Umfassende KI-Analyse für jedes Startup — Marktgröße, Burggraben, Kernrisiken und Investmentthese in Sekunden.",
+    "aiReportIncluded": "Inbegriffen bei Pro Investor",
+    "limitedLaunchSpots": "Begrenzte Launch-Plätze",
+    "earlyAccess": "Früher Zugang",
+    "finalCtaLaunchSub": "Tritt den ersten {target} Mitgliedern bei und erhalte vollen Zugang kostenlos — keine Kreditkarte erforderlich.",
+    "finalCtaSub": "Tritt der frühen Community von Gründern und Investoren auf CapitalReach bei. Heute kostenlos starten.",
+    "saveAnnual": "Spare ${amount}/Jahr bei jährlicher Zahlung"
   },
   "cta": {
     "headline": "Das richtige Kapital, zur richtigen Phase.",
@@ -712,7 +801,8 @@
     "errCompleteInvestor": "Richte zuerst dein Investorenprofil ein.",
     "errStartConvo": "Unterhaltung konnte nicht gestartet werden. Bitte versuche es erneut.",
     "errSomethingWrong2": "Etwas ist schiefgelaufen.",
-    "startupLabel": "Startup"
+    "startupLabel": "Startup",
+    "tabsLabel": "Dashboard-Tabs"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -752,7 +842,15 @@
     "saveChanges": "Änderungen speichern",
     "saving2": "Wird gespeichert…",
     "backToDashboard": "Zurück",
-    "noNameSet": "Kein Name festgelegt"
+    "noNameSet": "Kein Name festgelegt",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "passwordUpdateFailed": "Passwort-Update fehlgeschlagen",
+    "passwordUpdatedSuccess": "Passwort erfolgreich aktualisiert",
+    "deletionFailed": "Löschen fehlgeschlagen",
+    "accountDeleted": "Konto gelöscht",
+    "accountDeletedDesc": "Dein Konto und alle Daten wurden dauerhaft entfernt.",
+    "networkError": "Netzwerkfehler",
+    "networkErrorDesc": "Server konnte nicht erreicht werden. Bitte versuche es erneut."
   },
   "startups": {
     "pageTitle": "Aktive Finanzierungsrunden",
@@ -838,7 +936,18 @@
     "noTeamInfo": "Keine Teamangaben vorhanden.",
     "noDocumentsUploaded": "Noch keine Dokumente hochgeladen.",
     "signNdaAccess": "NDA unterzeichnen",
-    "website": "Website"
+    "website": "Website",
+    "signInToSave": "Melde dich als Investor an, um Startups zu speichern",
+    "failedSendMessage": "Nachricht konnte nicht gesendet werden",
+    "ndaSent": "NDA zur Unterschrift an beide Parteien gesendet",
+    "failedSendNda": "NDA konnte nicht gesendet werden",
+    "upgradeWatchDemo": "Upgrade auf Angel, um die Produktdemo anzusehen",
+    "angelTierRequired": "Angel-Stufe erforderlich",
+    "upgradeFinancialsDesc": "Upgrade auf Angel, um MRR, ARR, Wachstumsrate und vollständige Finanzdaten zu sehen.",
+    "signUpPitchDeck": "Registriere dich, um das vollständige Pitch-Deck zu sehen",
+    "createFreeAccount": "Kostenloses Konto erstellen",
+    "upgradeTractionTitle": "Upgrade, um Traktionsdaten zu sehen",
+    "upgradeTractionDesc": "Angel-Mitglieder sehen MRR, ARR, Nutzerzahlen und Wachstumsraten."
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -970,7 +1079,9 @@
     "success": "Erfolgreich gespeichert.",
     "optional": "optional",
     "required": "erforderlich",
-    "sort": "Sortieren nach"
+    "sort": "Sortieren nach",
+    "custom": "Individuell",
+    "open": "Offen"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",

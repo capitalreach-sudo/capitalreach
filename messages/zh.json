@@ -12,7 +12,10 @@
     "signOut": "退出登录",
     "language": "语言",
     "messages": "消息",
-    "settings": "设置"
+    "settings": "设置",
+    "account": "账户",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
   },
   "hero": {
     "eyebrow": "私募资本 · 成立于 2024",
@@ -189,7 +192,14 @@
       "dimMarket": "市场机会",
       "dimMoat": "竞争壁垒",
       "dimTeam": "团队实力",
-      "dimTraction": "牵引力证据"
+      "dimTraction": "牵引力证据",
+      "descLong": "描述您的初创公司 — 问题、解决方案、市场规模、团队背景和业务进展。GPT-4o 将从5个投资维度打分并提供可操作的反馈。",
+      "proTipLabel": "专业提示：",
+      "proTipBody": "包含TAM、MRR/增长率、以往退出情况、团队简介和关键指标以获得最准确的评分。",
+      "footerInfo": "由 GPT-4o 提供支持 · 约3秒 · 每小时5次免费分析 · 不存储数据",
+      "analysisFailedErr": "分析失败",
+      "analysisFailedFull": "路演分析失败。请检查您的网络连接并重试。",
+      "placeholderExample": "示例：\n\n我们正在打造能够实时转录临床问诊的AI，为农村医疗机构减少70%的文书工作。\n\n问题：医生每天花费3小时以上处理行政事务，造成180亿美元的生产力损失。\n\n业务进展：MRR 4.2万美元，月增长率18%，3份医院意向书。团队来自Epic前员工+斯坦福临床AI博士。"
     },
     "matching": {
       "locked": "升级以解锁 AI 投资者匹配",
@@ -205,7 +215,11 @@
       "finding": "正在查找您的匹配…",
       "results": "匹配的投资者",
       "messageCta": "想直接联系这些投资者吗？",
-      "messageCtaSub": "创建您的初创公司档案，几秒内发送介绍信息"
+      "messageCtaSub": "创建您的初创公司档案，几秒内发送介绍信息",
+      "descLong": "告诉我们您的初创公司情况，我们的AI将从 CapitalReach 网络中识别最适合您的投资者 — 按行业、阶段、投资额度和地域匹配。",
+      "matchingFailedErr": "匹配失败",
+      "matchingFailedFull": "投资者匹配失败。请检查您的网络连接并重试。",
+      "descPlaceholder": "例如：面向农村医疗的AI临床文档系统。MRR 4.2万美元，月增长率18%，3份医院网络意向书。"
     },
     "diligence": {
       "search": "搜索创业公司…",
@@ -229,7 +243,20 @@
       "step2": "正在分析市场机会…",
       "step3": "正在评估团队和牵引力…",
       "step4": "正在评估竞争格局…",
-      "step5": "正在撰写投资备忘录…"
+      "step5": "正在撰写投资备忘录…",
+      "reportTitlePrefix": "尽职调查报告 — {name}",
+      "item1": "执行摘要",
+      "item2": "市场机会 — TAM与时机",
+      "item3": "团队评估",
+      "item4": "业务进展分析",
+      "item5": "竞争格局",
+      "item6": "三大主要风险",
+      "item7": "可比公司",
+      "item8": "投资结论 — 买入/观察/放弃",
+      "descLong": "几秒钟内获取 CapitalReach 网络中任何初创公司的全面投资备忘录。涵盖市场分析、团队、竞争格局、风险以及买入/观察/放弃的结论。Pro Investor 和 Institution 计划包含无限次使用。",
+      "generationFailed": "报告生成失败。",
+      "networkError": "网络错误，请重试。",
+      "searchPlaceholder": "例如 Vaultrise、HealthAI、ClimateOS…"
     },
     "hub": {
       "heroPowered": "由GPT-4o驱动",
@@ -244,7 +271,15 @@
       "tablePlansSub": "免费开始——按需升级",
       "startInvestor": "以投资者身份开始",
       "listStartup": "发布您的初创公司",
-      "viewPricing": "查看所有定价"
+      "viewPricing": "查看所有定价",
+      "statPitchVal": "真实GPT",
+      "statMatchVal": "AI驱动",
+      "statDDVal": "500字备忘录",
+      "statSpeedVal": "约3秒",
+      "tierFreeSub": "永久免费",
+      "tierAngelName": "Angel",
+      "tierAngelSub": "99美元/月",
+      "tierProSub": "249美元/月"
     },
     "tier": {
       "pitchAnalyzer": "路演分析器",
@@ -252,7 +287,8 @@
       "dueDiligence": "尽职调查报告",
       "aiScore": "AI初创公司评分",
       "savedReports": "已保存报告",
-      "exportPdf": "导出报告（PDF）"
+      "exportPdf": "导出报告（PDF）",
+      "viewOnly": "仅查看"
     }
   },
   "pricing": {
@@ -314,7 +350,60 @@
     "browseAsInvestor": "以投资者身份浏览",
     "listStartupFree": "免费发布您的初创公司",
     "commonQuestions": "常见问题",
-    "contactSales": "联系销售"
+    "contactSales": "联系销售",
+    "launchPricingLabel": "发布期定价",
+    "transparentPricingLabel": "透明定价",
+    "launchHeadlineLine1": "前",
+    "launchHeadlineLine2": "{target}名免费。",
+    "launchHeadlineLine3": "加入吗？",
+    "headlineLine1": "简单",
+    "headlineLine2": "定价。",
+    "headlineLine3": "免费开始。",
+    "launchSub": "已有 {memberCount}/{target} 名会员加入。所有人免费获得完整顶级访问权限 — 仅适用{bold}。",
+    "launchSubBold": "已完成轮次2%的成功费",
+    "sub": "订阅费 + 仅{bold}。无留任费。无中介费。",
+    "subBold": "已完成轮次收取2%",
+    "spotsLeftFree": "剩余免费名额",
+    "successFeeLabel": "成功费",
+    "afterClosingUpfront": "完成后收取 · 无前期费用",
+    "monthly": "月付",
+    "annual": "年付",
+    "oneSuccessFeeTitle": "仅一项成功费，完成后收取。",
+    "founderFeeBody": "所有初创公司套餐均通过 CapitalReach 连接收取{bold} — 交易完成后开票。无前期费用。投资者无需支付。",
+    "founderFeeBodyBold": "2%的融资额费用",
+    "investorZeroFeeTitle": "投资者无需支付成功费。",
+    "investorFeeBody": "{bold}仅在交易完成后向初创公司收取。您的订阅涵盖您的访问权限 — 仅此而已。",
+    "investorFeeBodyBold": "2%成功费",
+    "founderInfoLine": "所有初创公司套餐均包含通过 CapitalReach 连接筹集资金的2%成功费。",
+    "investorInfoLine": "投资者无需支付成功费 — 仅需订阅费用。",
+    "modelEyebrow": "CapitalReach 模式",
+    "colTraditional": "传统经纪人",
+    "colDiy": "自行融资",
+    "successFeeLower": "成功费",
+    "bestValue": "最超值",
+    "tradItem1": "高额前期留任费",
+    "tradItem2": "年度管理费",
+    "tradItem3": "5–7%成功费",
+    "tradItem4": "缓慢的人工流程",
+    "tradItem5": "有限的交易可见性",
+    "crItem1": "零前期费用",
+    "crItem2": "可选订阅",
+    "crItem3": "完成轮次收取2%",
+    "crItem4": "AI驱动的速度",
+    "crItem5": "完整的流程可见性",
+    "diyItem1": "数百封陌生开发邮件",
+    "diyItem2": "无投资者筛选",
+    "diyItem3": "无AI匹配",
+    "diyItem4": "无交易跟踪",
+    "diyItem5": "数月的努力",
+    "aiReportTitle": "AI尽职调查报告",
+    "aiReportDesc": "对任何初创公司的全面AI分析 — 市场规模、护城河、关键风险和投资论点，仅需几秒。",
+    "aiReportIncluded": "Pro Investor 套餐已包含",
+    "limitedLaunchSpots": "发布期名额有限",
+    "earlyAccess": "抢先体验",
+    "finalCtaLaunchSub": "加入首批 {target} 名会员，免费获得完整访问权限 — 无需信用卡。",
+    "finalCtaSub": "加入 CapitalReach 上创始人和投资者的早期社区。立即免费开始。",
+    "saveAnnual": "年付可节省 ${amount}/年"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",
@@ -712,7 +801,8 @@
     "errCompleteInvestor": "请先完成您的投资者资料设置。",
     "errStartConvo": "发起对话失败，请重试。",
     "errSomethingWrong2": "出了点问题。",
-    "startupLabel": "初创公司"
+    "startupLabel": "初创公司",
+    "tabsLabel": "仪表盘标签页"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -752,7 +842,15 @@
     "saveChanges": "保存更改",
     "saving2": "保存中…",
     "backToDashboard": "返回",
-    "noNameSet": "未设置姓名"
+    "noNameSet": "未设置姓名",
+    "saveFailed": "保存失败",
+    "passwordUpdateFailed": "密码更新失败",
+    "passwordUpdatedSuccess": "密码更新成功",
+    "deletionFailed": "删除失败",
+    "accountDeleted": "账户已删除",
+    "accountDeletedDesc": "您的账户和所有数据已被永久删除。",
+    "networkError": "网络错误",
+    "networkErrorDesc": "无法连接到服务器，请重试。"
   },
   "startups": {
     "pageTitle": "活跃融资轮次",
@@ -838,7 +936,18 @@
     "noTeamInfo": "未提供团队信息。",
     "noDocumentsUploaded": "尚未上传文件。",
     "signNdaAccess": "签署保密协议",
-    "website": "网站"
+    "website": "网站",
+    "signInToSave": "以投资者身份登录以保存初创公司",
+    "failedSendMessage": "消息发送失败",
+    "ndaSent": "NDA已发送给双方签署",
+    "failedSendNda": "NDA发送失败",
+    "upgradeWatchDemo": "升级到Angel以观看产品演示",
+    "angelTierRequired": "需要Angel等级",
+    "upgradeFinancialsDesc": "升级到Angel以查看MRR、ARR、增长率和完整财务数据。",
+    "signUpPitchDeck": "注册以查看完整路演文稿",
+    "createFreeAccount": "创建免费账户",
+    "upgradeTractionTitle": "升级以查看业务进展数据",
+    "upgradeTractionDesc": "Angel会员可查看MRR、ARR、用户数和增长率。"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -970,7 +1079,9 @@
     "success": "保存成功。",
     "optional": "可选",
     "required": "必填",
-    "sort": "排序方式"
+    "sort": "排序方式",
+    "custom": "定制",
+    "open": "不限"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",

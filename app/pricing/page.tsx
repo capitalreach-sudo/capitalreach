@@ -49,7 +49,7 @@ function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
 
 // ── Checkout ───────────────────────────────────────────────────
 
-async function startCheckout(planId: string, userType: "founder" | "investor") {
+async function startCheckout(planId: string, userType: "founder" | "investor", errorMessage: string) {
   try {
     const res = await fetch("/api/checkout", {
       method: "POST",
@@ -62,9 +62,9 @@ async function startCheckout(planId: string, userType: "founder" | "investor") {
     }
     const data = await res.json();
     if (data.url) window.location.href = data.url;
-    else notify.error(data.error || "Something went wrong");
+    else notify.error(data.error || errorMessage);
   } catch {
-    notify.error("Something went wrong. Please try again.");
+    notify.error(errorMessage);
   }
 }
 
@@ -90,7 +90,7 @@ function PlanCard({
   function handleClick() {
     if (isInstitution) { window.location.href = "/contact?type=institutional"; return; }
     if (free) { window.location.href = "/auth/signup"; return; }
-    startCheckout(plan.id, userType);
+    startCheckout(plan.id, userType, t("errors.generic"));
   }
 
   const ctaLabel = isInstitution
@@ -127,15 +127,15 @@ function PlanCard({
         <div style={{ marginBottom: "8px" }}>
           {isLaunch && !isInstitution && !free ? (
             <div>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: "var(--cr-copper)", lineHeight: 1, letterSpacing: "-0.04em" }}>Free</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: "var(--cr-copper)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", textDecoration: "line-through" }}>
-                ${plan.price}/mo after launch
+                ${plan.price}{t("pricing.perMonth")} after launch
               </p>
             </div>
           ) : price === null ? (
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>Custom</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("common.custom")}</span>
           ) : price === 0 ? (
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>Free</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
           ) : (
             <div style={{ display: "flex", alignItems: "flex-end", gap: "4px" }}>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
@@ -146,7 +146,7 @@ function PlanCard({
           )}
         </div>
         {!isLaunch && annual && saved > 0 && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>Save ${Math.round(saved)}/yr with annual</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: Math.round(saved) })}</p>
         )}
 
         <div style={{ height: "1px", background: "var(--cr-rule)", margin: "16px 0 24px" }} />
@@ -246,21 +246,29 @@ export default function PricingPage() {
               <div>
                 <div className="ruled-label" style={{ marginBottom: "24px" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    {!loading && isLaunch ? "Launch pricing" : "Transparent pricing"}
+                    {!loading && isLaunch ? t("pricing.launchPricingLabel") : t("pricing.transparentPricingLabel")}
                   </span>
                 </div>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(48px,7vw,88px)", lineHeight: 0.9, letterSpacing: "-0.03em", marginBottom: "20px" }}>
                   {!loading && isLaunch ? (
-                    <>Free for our<br />first {target}.<br /><span style={{ color: "var(--cr-copper)" }}>You in?</span></>
+                    <>{t("pricing.launchHeadlineLine1")}<br />{t("pricing.launchHeadlineLine2", { target })}<br /><span style={{ color: "var(--cr-copper)" }}>{t("pricing.launchHeadlineLine3")}</span></>
                   ) : (
-                    <>Simple<br />pricing.<br /><span style={{ color: "var(--cr-copper)" }}>Start free.</span></>
+                    <>{t("pricing.headlineLine1")}<br />{t("pricing.headlineLine2")}<br /><span style={{ color: "var(--cr-copper)" }}>{t("pricing.headlineLine3")}</span></>
                   )}
                 </h1>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", maxWidth: "360px", lineHeight: 1.7 }}>
                   {!loading && isLaunch ? (
-                    <>{memberCount}/{target} members joined. Everyone gets full top-tier access at zero cost — only the <strong style={{ fontWeight: 600, color: "var(--cr-ink)" }}>2% success fee on closed rounds</strong> applies.</>
+                    <>
+                      {t("pricing.launchSub", { memberCount, target }).split("{bold}")[0]}
+                      <strong style={{ fontWeight: 600, color: "var(--cr-ink)" }}>{t("pricing.launchSubBold")}</strong>
+                      {t("pricing.launchSub", { memberCount, target }).split("{bold}")[1]}
+                    </>
                   ) : (
-                    <>Subscription + just <strong style={{ fontWeight: 600, color: "var(--cr-ink)" }}>2% on closed rounds</strong>. No retainers. No placement fees.</>
+                    <>
+                      {t("pricing.sub").split("{bold}")[0]}
+                      <strong style={{ fontWeight: 600, color: "var(--cr-ink)" }}>{t("pricing.subBold")}</strong>
+                      {t("pricing.sub").split("{bold}")[1]}
+                    </>
                   )}
                 </p>
               </div>
@@ -271,13 +279,13 @@ export default function PricingPage() {
                     <>
                       <Sparkles style={{ width: 40, height: 40, color: "var(--cr-copper)", margin: "0 auto 8px" }} />
                       <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", lineHeight: 1, marginBottom: "8px", fontSize: "40px", letterSpacing: "-0.05em" }}>{Math.max(target - memberCount, 0)}</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>Spots left free</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>{t("pricing.spotsLeftFree")}</p>
                     </>
                   ) : (
                     <>
                       <p className="copper-foil" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, lineHeight: 1, marginBottom: "8px", fontSize: "72px", letterSpacing: "-0.05em" }}>2%</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>Success fee</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>After closing · zero upfront</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>{t("pricing.successFeeLabel")}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("pricing.afterClosingUpfront")}</p>
                     </>
                   )}
                 </div>
@@ -312,7 +320,7 @@ export default function PricingPage() {
               {/* Annual toggle — hidden during launch (pricing isn't live) */}
               {!isLaunch && (
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: !annual ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>Monthly</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: !annual ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t("pricing.monthly")}</span>
                   <button onClick={() => setAnnual((a) => !a)}
                     style={{
                       position: "relative", width: "44px", height: "24px", borderRadius: "12px",
@@ -326,7 +334,7 @@ export default function PricingPage() {
                     }} />
                   </button>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: annual ? "var(--cr-ink)" : "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "6px" }}>
-                    Annual
+                    {t("pricing.annual")}
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 6px" }}>
                       −20%
                     </span>
@@ -353,19 +361,23 @@ export default function PricingPage() {
                 {activeTab === "startup" ? (
                   <>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>
-                      One success fee. Only after closing.
+                      {t("pricing.oneSuccessFeeTitle")}
                     </p>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
-                      All startup plans carry a <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>2% fee on capital raised</strong> through a CapitalReach connection — invoiced after the deal closes. Zero upfront. Investors pay nothing.
+                      {t("pricing.founderFeeBody").split("{bold}")[0]}
+                      <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>{t("pricing.founderFeeBodyBold")}</strong>
+                      {t("pricing.founderFeeBody").split("{bold}")[1]}
                     </p>
                   </>
                 ) : (
                   <>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>
-                      Investors pay zero success fees.
+                      {t("pricing.investorZeroFeeTitle")}
                     </p>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
-                      The <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>2% success fee</strong> is charged only to startups, after a deal closes. Your subscription covers your access — nothing more.
+                      {t("pricing.investorFeeBody").split("{bold}")[0]}
+                      <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>{t("pricing.investorFeeBodyBold")}</strong>
+                      {t("pricing.investorFeeBody").split("{bold}")[1]}
                     </p>
                   </>
                 )}
@@ -391,8 +403,8 @@ export default function PricingPage() {
               <Info style={{ width: 13, height: 13, color: "var(--cr-ink-4)", flexShrink: 0 }} />
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                 {activeTab === "startup"
-                  ? "All startup plans include a 2% success fee on capital raised through CapitalReach connections."
-                  : "Investors pay zero success fees — only your subscription."}
+                  ? t("pricing.founderInfoLine")
+                  : t("pricing.investorInfoLine")}
               </p>
             </div>
           </div>
@@ -403,7 +415,7 @@ export default function PricingPage() {
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
             <div style={{ marginBottom: "48px" }}>
               <div className="ruled-label" style={{ marginBottom: "16px" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>The CapitalReach Model</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("pricing.modelEyebrow")}</span>
               </div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4vw,52px)", lineHeight: 0.93, letterSpacing: "-0.03em", maxWidth: "480px" }}>
                 {t("pricing.winHeadline")}
@@ -413,31 +425,31 @@ export default function PricingPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "48px" }}>
               {[
                 {
-                  label: "Traditional Broker", fee: "5–7%",
+                  label: t("pricing.colTraditional"), fee: "5–7%",
                   border: "rgba(180,50,50,0.2)", bg: "var(--cr-down-bg)", feeClr: "var(--cr-down)", badge: false, isUs: false,
-                  items: ["Large upfront retainer","Annual management fees","5–7% success fees","Slow manual process","Limited deal visibility"],
+                  items: [t("pricing.tradItem1"), t("pricing.tradItem2"), t("pricing.tradItem3"), t("pricing.tradItem4"), t("pricing.tradItem5")],
                 },
                 {
                   label: "CapitalReach", fee: "2%",
                   border: "var(--cr-copper-br)", bg: "var(--cr-copper-bg)", feeClr: "var(--cr-copper)", badge: true, isUs: true,
-                  items: ["Zero upfront fees","Optional subscription","2% on closed rounds","AI-powered speed","Full pipeline visibility"],
+                  items: [t("pricing.crItem1"), t("pricing.crItem2"), t("pricing.crItem3"), t("pricing.crItem4"), t("pricing.crItem5")],
                 },
                 {
-                  label: "DIY Fundraising", fee: "0%",
+                  label: t("pricing.colDiy"), fee: "0%",
                   border: "var(--cr-rule-dark)", bg: "var(--cr-paper-3)", feeClr: "var(--cr-ink-4)", badge: false, isUs: false,
-                  items: ["Hundreds of cold emails","No investor filtering","No AI matching","No deal tracking","Months of effort"],
+                  items: [t("pricing.diyItem1"), t("pricing.diyItem2"), t("pricing.diyItem3"), t("pricing.diyItem4"), t("pricing.diyItem5")],
                 },
               ].map((col) => (
                 <div key={col.label} style={{ position: "relative", borderRadius: "4px", border: `1px solid ${col.border}`, padding: "28px", background: col.bg }}>
                   {col.badge && (
                     <div style={{ position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)" }}>
-                      <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "4px 12px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>✓ Best Value</span>
+                      <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "4px 12px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>✓ {t("pricing.bestValue")}</span>
                     </div>
                   )}
                   <div style={{ textAlign: "center", marginBottom: "24px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{col.label}</p>
                     <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, lineHeight: 1, marginBottom: "4px", fontSize: "52px", letterSpacing: "-0.05em", color: col.feeClr }}>{col.fee}</p>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.12em" }}>success fee</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.12em" }}>{t("pricing.successFeeLower")}</p>
                   </div>
                   <ul style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     {col.items.map((item) => (
@@ -482,11 +494,11 @@ export default function PricingPage() {
                 <Brain style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
               <div style={{ flex: 1 }}>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>AI Due Diligence Reports</h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>Comprehensive AI analysis on any startup — market sizing, moat, key risks, and investment thesis in seconds.</p>
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("pricing.aiReportTitle")}</h3>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{t("pricing.aiReportDesc")}</p>
               </div>
               <div style={{ textAlign: "center", flexShrink: 0 }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>Included with Pro Investor</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>{t("pricing.aiReportIncluded")}</p>
               </div>
             </div>
           </div>
@@ -517,7 +529,7 @@ export default function PricingPage() {
               <div style={{ padding: "64px 80px", textAlign: "center" }}>
                 <div className="ruled-label" style={{ justifyContent: "center", marginBottom: "24px" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    {!loading && isLaunch ? "Limited launch spots" : "Early Access"}
+                    {!loading && isLaunch ? t("pricing.limitedLaunchSpots") : t("pricing.earlyAccess")}
                   </span>
                 </div>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4.5vw,60px)", lineHeight: 0.93, letterSpacing: "-0.03em", marginBottom: "20px", maxWidth: "560px", margin: "0 auto 20px" }}>
@@ -525,8 +537,8 @@ export default function PricingPage() {
                 </h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "40px", maxWidth: "360px", margin: "0 auto 40px", lineHeight: 1.7 }}>
                   {!loading && isLaunch
-                    ? `Join the first ${target} members and get full access for free — no card required.`
-                    : "Join the early community of founders and investors on CapitalReach. Start free today."}
+                    ? t("pricing.finalCtaLaunchSub", { target })
+                    : t("pricing.finalCtaSub")}
                 </p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
                   <Link href="/auth/signup"

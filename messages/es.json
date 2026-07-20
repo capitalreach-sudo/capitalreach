@@ -12,7 +12,10 @@
     "signOut": "Cerrar sesión",
     "language": "Idioma",
     "messages": "Mensajes",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "account": "Cuenta",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
   },
   "hero": {
     "eyebrow": "Capital privado · Est. 2024",
@@ -189,7 +192,14 @@
       "dimMarket": "Oportunidad de mercado",
       "dimMoat": "Ventaja competitiva",
       "dimTeam": "Fortaleza del equipo",
-      "dimTraction": "Evidencia de tracción"
+      "dimTraction": "Evidencia de tracción",
+      "descLong": "Describe tu startup — problema, solución, tamaño del mercado, trayectoria del equipo y tracción. GPT-4o la puntuará en 5 dimensiones de inversión y dará comentarios prácticos.",
+      "proTipLabel": "Consejo pro:",
+      "proTipBody": "Incluye TAM, MRR/tasa de crecimiento, salidas previas, bios del equipo y métricas clave para la puntuación más precisa.",
+      "footerInfo": "Con tecnología de GPT-4o · ~3 segundos · 5 análisis gratis/hora · Sin datos almacenados",
+      "analysisFailedErr": "Error en el análisis",
+      "analysisFailedFull": "El análisis del pitch falló. Comprueba tu conexión e inténtalo de nuevo.",
+      "placeholderExample": "Ejemplo:\n\nEstamos creando IA que transcribe encuentros clínicos en tiempo real, reduciendo la documentación en un 70% para proveedores de salud rurales.\n\nProblema: los médicos dedican más de 3 horas/día a tareas administrativas, causando $18B en productividad perdida.\n\nTracción: $42K de MRR, 18% de crecimiento mensual, 3 cartas de intención hospitalarias. Ex-Epic + doctorado en IA clínica de Stanford."
     },
     "matching": {
       "locked": "Actualiza para desbloquear el matching de inversores IA",
@@ -205,7 +215,11 @@
       "finding": "Buscando tus matches…",
       "results": "Inversores encontrados",
       "messageCta": "¿Quieres contactar directamente a estos inversores?",
-      "messageCtaSub": "Crea tu perfil de startup y envía mensajes de intro en segundos"
+      "messageCtaSub": "Crea tu perfil de startup y envía mensajes de intro en segundos",
+      "descLong": "Cuéntanos sobre tu startup y nuestra IA identificará tus inversores más afines de la red de CapitalReach — comparando por industria, etapa, tamaño de cheque y geografía.",
+      "matchingFailedErr": "Error en el matching",
+      "matchingFailedFull": "El matching de inversores falló. Comprueba tu conexión e inténtalo de nuevo.",
+      "descPlaceholder": "p. ej. Documentación clínica impulsada por IA para atención sanitaria rural. 42 000 $ de MRR, 18 % de crecimiento mensual, 3 cartas de intención hospitalarias."
     },
     "diligence": {
       "search": "Buscar una startup…",
@@ -229,7 +243,20 @@
       "step2": "Analizando oportunidad de mercado…",
       "step3": "Evaluando equipo y tracción…",
       "step4": "Evaluando panorama competitivo…",
-      "step5": "Redactando memo de inversión…"
+      "step5": "Redactando memo de inversión…",
+      "reportTitlePrefix": "Informe de due diligence — {name}",
+      "item1": "Resumen ejecutivo",
+      "item2": "Oportunidad de mercado — TAM y timing",
+      "item3": "Evaluación del equipo",
+      "item4": "Análisis de tracción",
+      "item5": "Panorama competitivo",
+      "item6": "Top 3 riesgos clave",
+      "item7": "Empresas comparables",
+      "item8": "Veredicto de inversión — Comprar / Observar / Pasar",
+      "descLong": "Obtén en segundos un memo de inversión completo sobre cualquier startup de la red CapitalReach. Cubre análisis de mercado, equipo, panorama competitivo, riesgos y un veredicto Comprar / Observar / Pasar. Ilimitado incluido con los planes Pro Investor e Institution.",
+      "generationFailed": "Error al generar el informe.",
+      "networkError": "Error de red. Inténtalo de nuevo.",
+      "searchPlaceholder": "p. ej. Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
       "heroPowered": "Impulsado por GPT-4o",
@@ -244,7 +271,15 @@
       "tablePlansSub": "Gratis para empezar — mejora cuando necesites más",
       "startInvestor": "Empezar como inversor",
       "listStartup": "Listar tu startup",
-      "viewPricing": "Ver todos los precios"
+      "viewPricing": "Ver todos los precios",
+      "statPitchVal": "GPT real",
+      "statMatchVal": "Impulsado por IA",
+      "statDDVal": "Memos de 500 palabras",
+      "statSpeedVal": "~3 segundos",
+      "tierFreeSub": "Siempre gratis",
+      "tierAngelName": "Angel",
+      "tierAngelSub": "$99/mes",
+      "tierProSub": "$249/mes"
     },
     "tier": {
       "pitchAnalyzer": "Analizador de Pitch",
@@ -252,7 +287,8 @@
       "dueDiligence": "Informes de Due Diligence",
       "aiScore": "Puntuación IA Startup",
       "savedReports": "Informes guardados",
-      "exportPdf": "Exportar informes (PDF)"
+      "exportPdf": "Exportar informes (PDF)",
+      "viewOnly": "Solo ver"
     }
   },
   "pricing": {
@@ -314,7 +350,60 @@
     "browseAsInvestor": "Explorar como inversor",
     "listStartupFree": "Listar tu startup gratis",
     "commonQuestions": "Preguntas frecuentes",
-    "contactSales": "Contactar ventas"
+    "contactSales": "Contactar ventas",
+    "launchPricingLabel": "Precios de lanzamiento",
+    "transparentPricingLabel": "Precios transparentes",
+    "launchHeadlineLine1": "Gratis para nuestros",
+    "launchHeadlineLine2": "primeros {target}.",
+    "launchHeadlineLine3": "¿Te apuntas?",
+    "headlineLine1": "Precios",
+    "headlineLine2": "simples.",
+    "headlineLine3": "Empieza gratis.",
+    "launchSub": "{memberCount}/{target} miembros unidos. Todos obtienen acceso completo al nivel superior sin coste — solo aplica {bold}.",
+    "launchSubBold": "la comisión de éxito del 2% en rondas cerradas",
+    "sub": "Suscripción + solo {bold}. Sin retenedores. Sin comisiones de colocación.",
+    "subBold": "2% en rondas cerradas",
+    "spotsLeftFree": "Plazas gratis restantes",
+    "successFeeLabel": "Comisión de éxito",
+    "afterClosingUpfront": "Tras el cierre · sin coste inicial",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "oneSuccessFeeTitle": "Una sola comisión de éxito. Solo tras el cierre.",
+    "founderFeeBody": "Todos los planes de startup incluyen una {bold} a través de una conexión de CapitalReach — facturada tras el cierre del acuerdo. Sin coste inicial. Los inversores no pagan nada.",
+    "founderFeeBodyBold": "comisión del 2% sobre el capital recaudado",
+    "investorZeroFeeTitle": "Los inversores no pagan comisiones de éxito.",
+    "investorFeeBody": "La {bold} se cobra solo a las startups, tras el cierre de un acuerdo. Tu suscripción cubre tu acceso — nada más.",
+    "investorFeeBodyBold": "comisión de éxito del 2%",
+    "founderInfoLine": "Todos los planes de startup incluyen una comisión de éxito del 2% sobre el capital recaudado a través de conexiones de CapitalReach.",
+    "investorInfoLine": "Los inversores no pagan comisiones de éxito — solo su suscripción.",
+    "modelEyebrow": "El modelo CapitalReach",
+    "colTraditional": "Bróker tradicional",
+    "colDiy": "Recaudación por tu cuenta",
+    "successFeeLower": "comisión de éxito",
+    "bestValue": "Mejor valor",
+    "tradItem1": "Gran retenedor inicial",
+    "tradItem2": "Comisiones de gestión anuales",
+    "tradItem3": "Comisiones de éxito del 5–7%",
+    "tradItem4": "Proceso manual lento",
+    "tradItem5": "Visibilidad limitada de acuerdos",
+    "crItem1": "Sin coste inicial",
+    "crItem2": "Suscripción opcional",
+    "crItem3": "2% en rondas cerradas",
+    "crItem4": "Velocidad impulsada por IA",
+    "crItem5": "Visibilidad completa del pipeline",
+    "diyItem1": "Cientos de correos en frío",
+    "diyItem2": "Sin filtrado de inversores",
+    "diyItem3": "Sin matching por IA",
+    "diyItem4": "Sin seguimiento de acuerdos",
+    "diyItem5": "Meses de esfuerzo",
+    "aiReportTitle": "Informes de due diligence con IA",
+    "aiReportDesc": "Análisis IA completo de cualquier startup — tamaño de mercado, foso competitivo, riesgos clave y tesis de inversión en segundos.",
+    "aiReportIncluded": "Incluido con Pro Investor",
+    "limitedLaunchSpots": "Plazas de lanzamiento limitadas",
+    "earlyAccess": "Acceso anticipado",
+    "finalCtaLaunchSub": "Únete a los primeros {target} miembros y obtén acceso completo gratis — sin tarjeta requerida.",
+    "finalCtaSub": "Únete a la comunidad temprana de fundadores e inversores en CapitalReach. Empieza gratis hoy.",
+    "saveAnnual": "Ahorra ${amount}/año con el plan anual"
   },
   "cta": {
     "headline": "El capital correcto, en la etapa correcta.",
@@ -712,7 +801,8 @@
     "errCompleteInvestor": "Completa primero la configuración de tu perfil de inversor.",
     "errStartConvo": "No se pudo iniciar la conversación. Inténtalo de nuevo.",
     "errSomethingWrong2": "Algo salió mal.",
-    "startupLabel": "Startup"
+    "startupLabel": "Startup",
+    "tabsLabel": "Pestañas del panel"
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",
@@ -751,8 +841,16 @@
     "yourName": "Tu nombre",
     "saveChanges": "Guardar cambios",
     "saving2": "Guardando…",
-    "backToDashboard": "Volver",
-    "noNameSet": "Sin nombre definido"
+    "backToDashboard": "Atrás",
+    "noNameSet": "Sin nombre definido",
+    "saveFailed": "Error al guardar",
+    "passwordUpdateFailed": "Error al actualizar la contraseña",
+    "passwordUpdatedSuccess": "Contraseña actualizada correctamente",
+    "deletionFailed": "Error al eliminar",
+    "accountDeleted": "Cuenta eliminada",
+    "accountDeletedDesc": "Tu cuenta y todos los datos se han eliminado permanentemente.",
+    "networkError": "Error de red",
+    "networkErrorDesc": "No se pudo conectar con el servidor. Inténtalo de nuevo."
   },
   "startups": {
     "pageTitle": "Rondas de financiación activas",
@@ -838,7 +936,18 @@
     "noTeamInfo": "Información del equipo no disponible.",
     "noDocumentsUploaded": "Sin documentos cargados.",
     "signNdaAccess": "Firmar NDA",
-    "website": "Sitio web"
+    "website": "Sitio web",
+    "signInToSave": "Inicia sesión como inversor para guardar startups",
+    "failedSendMessage": "Error al enviar el mensaje",
+    "ndaSent": "NDA enviado a ambas partes para su firma",
+    "failedSendNda": "Error al enviar el NDA",
+    "upgradeWatchDemo": "Mejora a Angel para ver la demo del producto",
+    "angelTierRequired": "Se requiere nivel Angel",
+    "upgradeFinancialsDesc": "Mejora a Angel para ver MRR, ARR, tasa de crecimiento y datos financieros completos.",
+    "signUpPitchDeck": "Regístrate para ver el pitch deck completo",
+    "createFreeAccount": "Crear cuenta gratis",
+    "upgradeTractionTitle": "Mejora tu plan para ver los datos de tracción",
+    "upgradeTractionDesc": "Los miembros Angel ven MRR, ARR, número de usuarios y tasas de crecimiento."
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -970,7 +1079,9 @@
     "success": "Guardado correctamente.",
     "optional": "opcional",
     "required": "obligatorio",
-    "sort": "Ordenar por"
+    "sort": "Ordenar por",
+    "custom": "Personalizado",
+    "open": "Abierto"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",

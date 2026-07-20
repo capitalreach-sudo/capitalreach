@@ -364,7 +364,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
       </div>
 
       {/* ── Mobile bottom nav ── */}
-      <nav style={{ display: "none" }} className="sm:hidden" aria-label="Dashboard tabs">
+      <nav style={{ display: "none" }} className="sm:hidden" aria-label={t("dashboard.tabsLabel")}>
         <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule-dark)", display: "flex" }}>
           {TABS.map(({ value, label, Icon }) => (
             <button key={value} onClick={() => setActiveTab(value)}

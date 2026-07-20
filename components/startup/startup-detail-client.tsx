@@ -109,15 +109,15 @@ export function StartupDetailClient({
   }, [investorId, startup.id, supabase]);
 
   async function toggleSave() {
-    if (!investorId) { notify.info("Sign in as an investor to save startups"); return; }
+    if (!investorId) { notify.info(t("startupDetail.signInToSave")); return; }
     if (isSaved) {
       await supabase.from("watchlists").delete().match({ investor_id: investorId, startup_id: startup.id });
       setIsSaved(false);
-      notify.info("Removed from watchlist");
+      notify.info(t("toast.unsaved"));
     } else {
       await supabase.from("watchlists").insert({ investor_id: investorId, startup_id: startup.id });
       setIsSaved(true);
-      notify.success("Saved to watchlist");
+      notify.success(t("toast.saved"));
     }
   }
 
@@ -133,10 +133,10 @@ export function StartupDetailClient({
     if (res.ok) {
       setMessageOpen(false);
       setMessageBody("");
-      notify.success("Message sent!");
+      notify.success(t("toast.messageSent"));
     } else {
       const err = await res.json();
-      notify.error(err.error || "Failed to send message");
+      notify.error(err.error || t("startupDetail.failedSendMessage"));
     }
   }
 
@@ -161,8 +161,8 @@ export function StartupDetailClient({
       body: JSON.stringify({ startupId: startup.id, investorId }),
     });
     setNdaLoading(false);
-    if (res.ok) notify.success("NDA sent to both parties for signing");
-    else notify.error("Failed to send NDA");
+    if (res.ok) notify.success(t("startupDetail.ndaSent"));
+    else notify.error(t("startupDetail.failedSendNda"));
   }
 
   const { t } = useTranslation();
@@ -436,8 +436,8 @@ export function StartupDetailClient({
                 ) : (
                   <div style={{ aspectRatio: "16/9", borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px dashed var(--cr-paper-4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>
                     <Lock style={{ width: 24, height: 24, color: "var(--cr-ink-4)" }} />
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>Upgrade to Angel to watch the product demo</p>
-                    <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>View plans →</Link>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("startupDetail.upgradeWatchDemo")}</p>
+                    <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewPlans")} →</Link>
                   </div>
                 )}
               </div>
@@ -498,14 +498,14 @@ export function StartupDetailClient({
             </div>
           ) : (
             <GateBlur
-              title="Angel tier required"
-              description="Upgrade to Angel to see MRR, ARR, growth rate, and full financial data."
+              title={t("startupDetail.angelTierRequired")}
+              description={t("startupDetail.upgradeFinancialsDesc")}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-                <MetricCell label="MRR" value="$42,000" />
-                <MetricCell label="ARR" value="$504,000" />
-                <MetricCell label="Total Users" value="3,200" />
-                <MetricCell label="MoM Growth" value="14%" />
+                <MetricCell label={t("startupDetail.mrr")} value="$42,000" />
+                <MetricCell label={t("startupDetail.arr")} value="$504,000" />
+                <MetricCell label={t("startupDetail.totalUsers")} value="3,200" />
+                <MetricCell label={t("startupDetail.growth")} value="14%" />
               </div>
             </GateBlur>
           )
@@ -525,9 +525,9 @@ export function StartupDetailClient({
                   </div>
                 </div>
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(245,240,232,0.95) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "20px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>Sign up to view the full pitch deck</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("startupDetail.signUpPitchDeck")}</p>
                   <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "9px 22px", borderRadius: "4px", textDecoration: "none" }}>
-                    Create free account →
+                    {t("startupDetail.createFreeAccount")} →
                   </Link>
                 </div>
               </div>
@@ -558,7 +558,7 @@ export function StartupDetailClient({
                         </button>
                       ) : requiresUpgrade ? (
                         <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", textDecoration: "none" }}>
-                          <Lock style={{ width: 11, height: 11 }} /> Upgrade
+                          <Lock style={{ width: 11, height: 11 }} /> {t("common.upgrade")}
                         </Link>
                       ) : (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
@@ -587,14 +587,14 @@ export function StartupDetailClient({
             </div>
           ) : (
             <GateBlur
-              title="Upgrade to see traction data"
-              description="Angel members see MRR, ARR, user counts, and growth rates."
+              title={t("startupDetail.upgradeTractionTitle")}
+              description={t("startupDetail.upgradeTractionDesc")}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
-                <MetricCell label="Monthly Revenue" value="$42,000" copper />
-                <MetricCell label="Annual Revenue" value="$504,000" />
-                <MetricCell label="Total Users" value="3,200" />
-                <MetricCell label="MoM Growth" value="14%" />
+                <MetricCell label={t("startupDetail.monthlyRevenue")} value="$42,000" copper />
+                <MetricCell label={t("startupDetail.annualRevenue")} value="$504,000" />
+                <MetricCell label={t("startupDetail.totalUsers")} value="3,200" />
+                <MetricCell label={t("startupDetail.momGrowth")} value="14%" />
               </div>
             </GateBlur>
           )

@@ -311,13 +311,13 @@ export function StartupsSearch() {
   function toggleSave(id: string) {
     setSavedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); notify.info("Removed from watchlist"); }
-      else { next.add(id); notify.success("Saved to watchlist"); }
+      if (next.has(id)) { next.delete(id); notify.info(t("toast.unsaved")); }
+      else { next.add(id); notify.success(t("toast.saved")); }
       return next;
     });
   }
 
-  const sortLabel = SORT_OPTIONS.find((o) => o.value === filters.sort)?.label ?? "Sort";
+  const sortLabel = SORT_OPTIONS.find((o) => o.value === filters.sort)?.label ?? t("filters.sort");
 
   return (
     <div style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
@@ -327,7 +327,7 @@ export function StartupsSearch() {
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
-              <div className="ruled-label" style={{ marginBottom: "12px" }}>Deal Flow</div>
+              <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.dealFlow")}</div>
               <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "10px" }}>
                 {t("startups.pageTitle")}
               </h1>

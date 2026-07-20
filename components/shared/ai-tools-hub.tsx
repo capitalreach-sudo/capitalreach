@@ -66,10 +66,10 @@ function PitchTab() {
         body: JSON.stringify({ pitch_text: pitch }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Analysis failed");
+      if (!res.ok) throw new Error(data.error || t("ai.pitch.analysisFailedErr"));
       setResult(data);
     } catch (e: any) {
-      setError(e.message || "Pitch analysis failed. Check your connection and try again.");
+      setError(e.message || t("ai.pitch.analysisFailedFull"));
     } finally {
       setLoading(false);
     }
@@ -82,14 +82,13 @@ function PitchTab() {
         <div>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.pitch.title")}</h3>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
-            Describe your startup — problem, solution, market size, team background, and traction.
-            GPT-4o will score it across 5 investment dimensions and give actionable feedback.
+            {t("ai.pitch.descLong")}
           </p>
         </div>
         <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 14px", display: "flex", alignItems: "flex-start", gap: "10px" }}>
           <Sparkles style={{ width: 14, height: 14, color: "var(--cr-copper)", marginTop: "2px", flexShrink: 0 }} />
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", lineHeight: 1.5 }}>
-            <strong>Pro tip:</strong> Include TAM, MRR/growth rate, prior exits, team bios, and key metrics for the most accurate score.
+            <strong>{t("ai.pitch.proTipLabel")}</strong> {t("ai.pitch.proTipBody")}
           </p>
         </div>
         <textarea
@@ -97,7 +96,7 @@ function PitchTab() {
           onChange={(e) => setPitch(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder={`Example:\n\nWe're building AI that transcribes clinical encounters in real-time, reducing documentation by 70% for rural healthcare providers.\n\nProblem: Physicians spend 3+ hours/day on admin, causing $18B in lost productivity.\n\nTraction: $42K MRR, 18% MoM growth, 3 hospital LOIs. Ex-Epic + Stanford clinical AI PhD.`}
+          placeholder={t("ai.pitch.placeholderExample")}
           rows={12}
           style={{
             width: "100%", borderRadius: "4px",
@@ -132,7 +131,7 @@ function PitchTab() {
           )}
         </div>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
-          Powered by GPT-4o · ~3 seconds · 5 free analyses/hour · No data stored
+          {t("ai.pitch.footerInfo")}
         </p>
         {error && <ErrorBox msg={error} />}
       </div>
@@ -327,11 +326,11 @@ function MatchingTab() {
         body: JSON.stringify({ industry, stage, mrr, description }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Matching failed");
+      if (!res.ok) throw new Error(data.error || t("ai.matching.matchingFailedErr"));
       setMatches(data.matches || []);
       if (data.message) setMessage(data.message);
     } catch (e: any) {
-      setError(e.message || "Investor matching failed. Check your connection and try again.");
+      setError(e.message || t("ai.matching.matchingFailedFull"));
     } finally {
       setLoading(false);
     }
@@ -342,8 +341,7 @@ function MatchingTab() {
       <div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.matching.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
-          Tell us about your startup and our AI will identify your best-fit investors from the
-          CapitalReach network — matching on industry, stage, check size, and geography.
+          {t("ai.matching.descLong")}
         </p>
       </div>
 
@@ -384,7 +382,7 @@ function MatchingTab() {
           onChange={(e) => setDescription(e.target.value)}
           onFocus={() => setDescFocused(true)}
           onBlur={() => setDescFocused(false)}
-          placeholder="e.g. AI-powered clinical documentation for rural healthcare. $42K MRR, 18% MoM growth, 3 hospital network LOIs."
+          placeholder={t("ai.matching.descPlaceholder")}
           rows={3}
           style={{
             width: "100%", borderRadius: "4px",
@@ -423,7 +421,7 @@ function MatchingTab() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
             <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>{t("ai.matching.results")}</h4>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "3px 10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              {matches.length} match{matches.length !== 1 ? "es" : ""} found
+              {t("ai.matching.matches", { count: matches.length })}
             </span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "14px", marginBottom: "20px" }}>
@@ -447,7 +445,7 @@ function MatchingTab() {
                   </div>
                   {(m.minCheck || m.maxCheck) && (
                     <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
-                      {fmtCheck(m.minCheck) ?? "Open"} – {fmtCheck(m.maxCheck) ?? "Open"}
+                      {fmtCheck(m.minCheck) ?? t("common.open")} – {fmtCheck(m.maxCheck) ?? t("common.open")}
                     </p>
                   )}
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{m.matchReason}</p>
@@ -538,13 +536,13 @@ function DiligenceTab() {
         if (res.status === 401) { setError("auth_required"); }
         else if (res.status === 403) { setError("upgrade_required"); }
         else {
-          setError(data.error || "Report generation failed.");
+          setError(data.error || t("ai.diligence.generationFailed"));
         }
       } else {
         setReport(data.report || data.content || "");
       }
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("ai.diligence.networkError"));
     } finally {
       clearInterval(interval); setLoading(false); setStepIdx(0);
     }
@@ -555,9 +553,7 @@ function DiligenceTab() {
       <div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.diligence.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
-          Get a comprehensive investment memo on any startup in the CapitalReach network in seconds.
-          Covers market analysis, team, competitive landscape, risks, and a Buy / Watch / Pass verdict.
-          Included unlimited with Pro Investor and Institution plans.
+          {t("ai.diligence.descLong")}
         </p>
       </div>
 
@@ -568,7 +564,7 @@ function DiligenceTab() {
             onFocus={() => setInputFocused(true)}
             onBlur={() => setInputFocused(false)}
             onChange={(e) => { setSelected(null); searchStartups(e.target.value); }}
-            placeholder="e.g. Vaultrise, HealthAI, ClimateOS…"
+            placeholder={t("ai.diligence.searchPlaceholder")}
             style={{
               width: "100%", borderRadius: "4px",
               border: `1px solid ${inputFocused ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
@@ -660,7 +656,7 @@ function DiligenceTab() {
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
               <FileSearch style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
-                Due Diligence Report — {selected?.name}
+                {t("ai.diligence.reportTitlePrefix", { name: selected?.name ?? "" })}
               </span>
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{report}</p>
@@ -673,14 +669,14 @@ function DiligenceTab() {
           <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "16px" }}>{t("ai.diligence.reportIncludes")}</h4>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
             {[
-              ["📋", "Executive Summary"],
-              ["📊", "Market Opportunity — TAM & timing"],
-              ["👥", "Team Assessment"],
-              ["📈", "Traction Analysis"],
-              ["🛡️", "Competitive Landscape"],
-              ["⚠️", "Top 3 Key Risks"],
-              ["🏆", "Comparable Companies"],
-              ["⚡", "Investment Verdict — Buy / Watch / Pass"],
+              ["📋", t("ai.diligence.item1")],
+              ["📊", t("ai.diligence.item2")],
+              ["👥", t("ai.diligence.item3")],
+              ["📈", t("ai.diligence.item4")],
+              ["🛡️", t("ai.diligence.item5")],
+              ["⚠️", t("ai.diligence.item6")],
+              ["🏆", t("ai.diligence.item7")],
+              ["⚡", t("ai.diligence.item8")],
             ].map(([icon, text]) => (
               <div key={text as string} style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
                 <span>{icon}</span> {text}
@@ -731,7 +727,7 @@ export function AiToolsHub() {
     { feature: t("ai.tier.pitchAnalyzer"),    free: "5/hr",      angel: "20/hr",      pro: t("common.unlimited") },
     { feature: t("ai.tier.investorMatching"), free: "5/hr",      angel: "20/hr",      pro: t("common.unlimited") },
     { feature: t("ai.tier.dueDiligence"),     free: false,       angel: false,        pro: t("common.unlimited") },
-    { feature: t("ai.tier.aiScore"),          free: "View only", angel: true,         pro: true                  },
+    { feature: t("ai.tier.aiScore"),          free: t("ai.tier.viewOnly"), angel: true, pro: true                },
     { feature: t("ai.tier.savedReports"),     free: false,       angel: false,        pro: true                  },
     { feature: t("ai.tier.exportPdf"),        free: false,       angel: false,        pro: true                  },
   ];
@@ -751,15 +747,14 @@ export function AiToolsHub() {
             <span style={{ color: "var(--cr-copper)" }}>{t("ai.hub.heroLine2")}</span>
           </h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", maxWidth: "480px", marginBottom: "40px", lineHeight: 1.6 }}>
-            Three powerful AI tools in one place — analyze pitches, match with the right investors,
-            and generate due diligence reports. All real GPT-4o, all in seconds.
+            {t("ai.hub.heroSub")}
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
             {[
-              { icon: Sparkles,   label: "Pitch Analyses",    val: "Real GPT"       },
-              { icon: Brain,      label: "Investor Matching",  val: "AI-Powered"     },
-              { icon: FileSearch, label: "Due Diligence",      val: "500-word Memos" },
-              { icon: Zap,        label: "Analysis Speed",     val: "~3 seconds"     },
+              { icon: Sparkles,   label: t("ai.hub.statPitchLabel"), val: t("ai.hub.statPitchVal") },
+              { icon: Brain,      label: t("ai.hub.statMatchLabel"), val: t("ai.hub.statMatchVal") },
+              { icon: FileSearch, label: t("ai.hub.statDDLabel"),    val: t("ai.hub.statDDVal")    },
+              { icon: Zap,        label: t("ai.hub.statSpeedLabel"), val: t("ai.hub.statSpeedVal") },
             ].map(({ icon: Icon, label, val }) => (
               <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px" }}>
                 <Icon style={{ width: 18, height: 18, color: "var(--cr-copper)", marginBottom: "8px" }} />
@@ -811,18 +806,18 @@ export function AiToolsHub() {
               <table style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                    <th style={{ textAlign: "left", padding: "16px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", width: "200px" }}>Feature</th>
+                    <th style={{ textAlign: "left", padding: "16px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", width: "200px" }}>{t("pricing.feature")}</th>
                     {[
-                      { tier: "Free",         sub: "Always free", highlight: false },
-                      { tier: "Angel",        sub: "$99/mo",      highlight: false },
-                      { tier: "Pro Investor", sub: "$249/mo",     highlight: true  },
+                      { tier: t("pricing.freeLabel"),        sub: t("ai.hub.tierFreeSub"),  highlight: false },
+                      { tier: t("ai.hub.tierAngelName"),     sub: t("ai.hub.tierAngelSub"), highlight: false },
+                      { tier: t("ai.diligence.proInvestor"), sub: t("ai.hub.tierProSub"),   highlight: true  },
                     ].map(({ tier, sub, highlight }) => (
                       <th key={tier} style={{ padding: "16px", textAlign: "center", background: highlight ? "var(--cr-copper-bg)" : "transparent" }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: highlight ? "var(--cr-copper)" : "var(--cr-ink)" }}>{tier}</p>
                         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{sub}</p>
                         {highlight && (
                           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", background: "var(--cr-copper)", color: "#fff", borderRadius: "3px", padding: "2px 8px", display: "inline-block", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                            Best Value
+                            {t("pricing.bestValue")}
                           </span>
                         )}
                       </th>

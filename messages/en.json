@@ -12,7 +12,10 @@
     "signOut": "Log out",
     "language": "Language",
     "messages": "Messages",
-    "settings": "Settings"
+    "settings": "Settings",
+    "account": "Account",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "hero": {
     "eyebrow": "Private Capital · Est. 2024",
@@ -189,7 +192,14 @@
       "dimMarket": "Market Opportunity",
       "dimMoat": "Competitive Moat",
       "dimTeam": "Team Strength",
-      "dimTraction": "Traction Evidence"
+      "dimTraction": "Traction Evidence",
+      "descLong": "Describe your startup — problem, solution, market size, team background, and traction. GPT-4o will score it across 5 investment dimensions and give actionable feedback.",
+      "proTipLabel": "Pro tip:",
+      "proTipBody": "Include TAM, MRR/growth rate, prior exits, team bios, and key metrics for the most accurate score.",
+      "footerInfo": "Powered by GPT-4o · ~3 seconds · 5 free analyses/hour · No data stored",
+      "analysisFailedErr": "Analysis failed",
+      "analysisFailedFull": "Pitch analysis failed. Check your connection and try again.",
+      "placeholderExample": "Example:\n\nWe're building AI that transcribes clinical encounters in real-time, reducing documentation by 70% for rural healthcare providers.\n\nProblem: Physicians spend 3+ hours/day on admin, causing $18B in lost productivity.\n\nTraction: $42K MRR, 18% MoM growth, 3 hospital LOIs. Ex-Epic + Stanford clinical AI PhD."
     },
     "matching": {
       "locked": "Upgrade to unlock AI investor matching",
@@ -205,7 +215,11 @@
       "finding": "Finding your matches…",
       "results": "Matched Investors",
       "messageCta": "Want to message these investors directly?",
-      "messageCtaSub": "Create your startup profile and send intro messages in seconds"
+      "messageCtaSub": "Create your startup profile and send intro messages in seconds",
+      "descLong": "Tell us about your startup and our AI will identify your best-fit investors from the CapitalReach network — matching on industry, stage, check size, and geography.",
+      "matchingFailedErr": "Matching failed",
+      "matchingFailedFull": "Investor matching failed. Check your connection and try again.",
+      "descPlaceholder": "e.g. AI-powered clinical documentation for rural healthcare. $42K MRR, 18% MoM growth, 3 hospital network LOIs."
     },
     "diligence": {
       "search": "Search for a startup...",
@@ -229,7 +243,20 @@
       "step2": "Analysing market opportunity…",
       "step3": "Assessing team and traction…",
       "step4": "Evaluating competitive landscape…",
-      "step5": "Writing investment memo…"
+      "step5": "Writing investment memo…",
+      "reportTitlePrefix": "Due Diligence Report — {name}",
+      "item1": "Executive Summary",
+      "item2": "Market Opportunity — TAM & timing",
+      "item3": "Team Assessment",
+      "item4": "Traction Analysis",
+      "item5": "Competitive Landscape",
+      "item6": "Top 3 Key Risks",
+      "item7": "Comparable Companies",
+      "item8": "Investment Verdict — Buy / Watch / Pass",
+      "descLong": "Get a comprehensive investment memo on any startup in the CapitalReach network in seconds. Covers market analysis, team, competitive landscape, risks, and a Buy / Watch / Pass verdict. Included unlimited with Pro Investor and Institution plans.",
+      "generationFailed": "Report generation failed.",
+      "networkError": "Network error. Please try again.",
+      "searchPlaceholder": "e.g. Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
       "heroPowered": "Powered by GPT-4o",
@@ -244,7 +271,15 @@
       "tablePlansSub": "Free to start — upgrade when you need more",
       "startInvestor": "Start as an Investor",
       "listStartup": "List Your Startup",
-      "viewPricing": "View all pricing"
+      "viewPricing": "View all pricing",
+      "statPitchVal": "Real GPT",
+      "statMatchVal": "AI-Powered",
+      "statDDVal": "500-word Memos",
+      "statSpeedVal": "~3 seconds",
+      "tierFreeSub": "Always free",
+      "tierAngelName": "Angel",
+      "tierAngelSub": "$99/mo",
+      "tierProSub": "$249/mo"
     },
     "tier": {
       "pitchAnalyzer": "Pitch Analyzer",
@@ -252,7 +287,8 @@
       "dueDiligence": "Due Diligence Reports",
       "aiScore": "AI Startup Score",
       "savedReports": "Saved Reports",
-      "exportPdf": "Export Reports (PDF)"
+      "exportPdf": "Export Reports (PDF)",
+      "viewOnly": "View only"
     }
   },
   "pricing": {
@@ -314,7 +350,60 @@
     "browseAsInvestor": "Browse as Investor",
     "listStartupFree": "List Your Startup Free",
     "commonQuestions": "Common questions",
-    "contactSales": "Contact Sales"
+    "contactSales": "Contact Sales",
+    "launchPricingLabel": "Launch pricing",
+    "transparentPricingLabel": "Transparent pricing",
+    "launchHeadlineLine1": "Free for our",
+    "launchHeadlineLine2": "first {target}.",
+    "launchHeadlineLine3": "You in?",
+    "headlineLine1": "Simple",
+    "headlineLine2": "pricing.",
+    "headlineLine3": "Start free.",
+    "launchSub": "{memberCount}/{target} members joined. Everyone gets full top-tier access at zero cost — only the {bold} applies.",
+    "launchSubBold": "2% success fee on closed rounds",
+    "sub": "Subscription + just {bold}. No retainers. No placement fees.",
+    "subBold": "2% on closed rounds",
+    "spotsLeftFree": "Spots left free",
+    "successFeeLabel": "Success fee",
+    "afterClosingUpfront": "After closing · zero upfront",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "oneSuccessFeeTitle": "One success fee. Only after closing.",
+    "founderFeeBody": "All startup plans carry a {bold} through a CapitalReach connection — invoiced after the deal closes. Zero upfront. Investors pay nothing.",
+    "founderFeeBodyBold": "2% fee on capital raised",
+    "investorZeroFeeTitle": "Investors pay zero success fees.",
+    "investorFeeBody": "The {bold} is charged only to startups, after a deal closes. Your subscription covers your access — nothing more.",
+    "investorFeeBodyBold": "2% success fee",
+    "founderInfoLine": "All startup plans include a 2% success fee on capital raised through CapitalReach connections.",
+    "investorInfoLine": "Investors pay zero success fees — only your subscription.",
+    "modelEyebrow": "The CapitalReach Model",
+    "colTraditional": "Traditional Broker",
+    "colDiy": "DIY Fundraising",
+    "successFeeLower": "success fee",
+    "bestValue": "Best Value",
+    "tradItem1": "Large upfront retainer",
+    "tradItem2": "Annual management fees",
+    "tradItem3": "5–7% success fees",
+    "tradItem4": "Slow manual process",
+    "tradItem5": "Limited deal visibility",
+    "crItem1": "Zero upfront fees",
+    "crItem2": "Optional subscription",
+    "crItem3": "2% on closed rounds",
+    "crItem4": "AI-powered speed",
+    "crItem5": "Full pipeline visibility",
+    "diyItem1": "Hundreds of cold emails",
+    "diyItem2": "No investor filtering",
+    "diyItem3": "No AI matching",
+    "diyItem4": "No deal tracking",
+    "diyItem5": "Months of effort",
+    "aiReportTitle": "AI Due Diligence Reports",
+    "aiReportDesc": "Comprehensive AI analysis on any startup — market sizing, moat, key risks, and investment thesis in seconds.",
+    "aiReportIncluded": "Included with Pro Investor",
+    "limitedLaunchSpots": "Limited launch spots",
+    "earlyAccess": "Early Access",
+    "finalCtaLaunchSub": "Join the first {target} members and get full access for free — no card required.",
+    "finalCtaSub": "Join the early community of founders and investors on CapitalReach. Start free today.",
+    "saveAnnual": "Save ${amount}/yr with annual"
   },
   "cta": {
     "headline": "The right capital, at the right stage.",
@@ -712,7 +801,8 @@
     "errCompleteInvestor": "Complete your investor profile setup first.",
     "errStartConvo": "Failed to start conversation. Please try again.",
     "errSomethingWrong2": "Something went wrong.",
-    "startupLabel": "Startup"
+    "startupLabel": "Startup",
+    "tabsLabel": "Dashboard tabs"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -752,7 +842,15 @@
     "saveChanges": "Save Changes",
     "saving2": "Saving…",
     "backToDashboard": "Back",
-    "noNameSet": "No name set"
+    "noNameSet": "No name set",
+    "saveFailed": "Save failed",
+    "passwordUpdateFailed": "Password update failed",
+    "passwordUpdatedSuccess": "Password updated successfully",
+    "deletionFailed": "Deletion failed",
+    "accountDeleted": "Account deleted",
+    "accountDeletedDesc": "Your account and all data have been permanently removed.",
+    "networkError": "Network error",
+    "networkErrorDesc": "Could not reach server. Please try again."
   },
   "startups": {
     "pageTitle": "Active fundraising rounds",
@@ -838,7 +936,18 @@
     "noTeamInfo": "Team information not provided.",
     "noDocumentsUploaded": "No documents uploaded yet.",
     "signNdaAccess": "Sign NDA to Access",
-    "website": "Website"
+    "website": "Website",
+    "signInToSave": "Sign in as an investor to save startups",
+    "failedSendMessage": "Failed to send message",
+    "ndaSent": "NDA sent to both parties for signing",
+    "failedSendNda": "Failed to send NDA",
+    "upgradeWatchDemo": "Upgrade to Angel to watch the product demo",
+    "angelTierRequired": "Angel tier required",
+    "upgradeFinancialsDesc": "Upgrade to Angel to see MRR, ARR, growth rate, and full financial data.",
+    "signUpPitchDeck": "Sign up to view the full pitch deck",
+    "createFreeAccount": "Create free account",
+    "upgradeTractionTitle": "Upgrade to see traction data",
+    "upgradeTractionDesc": "Angel members see MRR, ARR, user counts, and growth rates."
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -970,7 +1079,9 @@
     "success": "Saved successfully.",
     "optional": "optional",
     "required": "required",
-    "sort": "Sort by"
+    "sort": "Sort by",
+    "custom": "Custom",
+    "open": "Open"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",

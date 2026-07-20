@@ -56,9 +56,9 @@ export default function AccountSettingsPage() {
       .update({ full_name: fullName, avatar_url: avatarUrl })
       .eq("id", profile!.id);
     if (error) {
-      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      toast({ title: t("settings.saveFailed"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Profile updated" });
+      toast({ title: t("dashboard.profileUpdated") });
       setProfile(prev => prev ? { ...prev, full_name: fullName, avatar_url: avatarUrl } : prev);
     }
     setSaving(false);
@@ -67,19 +67,19 @@ export default function AccountSettingsPage() {
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      toast({ title: "Passwords don't match", variant: "destructive" });
+      toast({ title: t("auth.passwordsNoMatch"), variant: "destructive" });
       return;
     }
     if (newPassword.length < 8) {
-      toast({ title: "Password must be at least 8 characters", variant: "destructive" });
+      toast({ title: t("errors.passwordTooShort"), variant: "destructive" });
       return;
     }
     setSavingPassword(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
-      toast({ title: "Password update failed", description: error.message, variant: "destructive" });
+      toast({ title: t("settings.passwordUpdateFailed"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Password updated successfully" });
+      toast({ title: t("settings.passwordUpdatedSuccess") });
       setNewPassword("");
       setConfirmPassword("");
     }
@@ -94,7 +94,7 @@ export default function AccountSettingsPage() {
 
   const dashboardPath = profile?.role === "startup" ? "/dashboard/startup" : "/dashboard/investor";
 
-  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">Loading…</div></>;
+  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">{t("common.loading")}</div></>;
 
   return (
     <>
@@ -257,16 +257,16 @@ export default function AccountSettingsPage() {
                         const res = await fetch("/api/account/delete", { method: "DELETE" });
                         const data = await res.json();
                         if (!res.ok) {
-                          toast({ title: "Deletion failed", description: data.error, variant: "destructive" });
+                          toast({ title: t("settings.deletionFailed"), description: data.error, variant: "destructive" });
                           setDeleteLoading(false);
                           return;
                         }
                         // Sign out locally after server-side deletion
                         await supabase.auth.signOut();
-                        toast({ title: "Account deleted", description: "Your account and all data have been permanently removed." });
+                        toast({ title: t("settings.accountDeleted"), description: t("settings.accountDeletedDesc") });
                         router.push("/");
                       } catch {
-                        toast({ title: "Network error", description: "Could not reach server. Please try again.", variant: "destructive" });
+                        toast({ title: t("settings.networkError"), description: t("settings.networkErrorDesc"), variant: "destructive" });
                         setDeleteLoading(false);
                       }
                     }}
