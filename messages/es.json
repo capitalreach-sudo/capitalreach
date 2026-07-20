@@ -30,10 +30,18 @@
     "trust": "Únete a los fundadores e inversores que construyen la próxima generación de empresas.",
     "listed": "{count} startups listadas",
     "beFirst": "Sé uno de los primeros listings verificados.",
-    "applyToList": "Solicitar listing"
+    "applyToList": "Solicitar listing",
+    "feeNoteSuffix": "facturado solo tras el cierre de tu operación. Cero coste inicial.",
+    "feeNoteLabel": "2% de comisión de éxito"
   },
   "feeStrip": {
-    "tagline": "comisión de éxito — solo después del cierre. Media del sector: 5–7% por adelantado."
+    "tagline": "comisión de éxito — solo después del cierre. Media del sector: 5–7% por adelantado.",
+    "stripTitle": "Comisión de éxito. Se paga al cierre. Nada antes.",
+    "stripBody": "Solo se cobra a las startups cuando un acuerdo se confirma cerrado a través de una conexión de CapitalReach. Los inversores pagan {zero} comisiones de transacción.",
+    "zero": "cero",
+    "bullet1": "Cero coste inicial",
+    "bullet2": "Facturado tras el cierre",
+    "bullet3": "Solo para fundadores"
   },
   "trustIndicators": {
     "startupsListed": "startups listadas",

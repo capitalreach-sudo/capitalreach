@@ -30,7 +30,9 @@
     "trust": "Junte-se a fundadores e investidores construindo a próxima geração de empresas.",
     "listed": "{count} startups listadas",
     "beFirst": "Seja um dos primeiros listings verificados.",
-    "applyToList": "Candidatar-se para listar"
+    "applyToList": "Candidatar-se para listar",
+    "feeNoteSuffix": "faturado apenas após o fecho do seu negócio. Custo inicial zero.",
+    "feeNoteLabel": "2% de taxa de sucesso"
   },
   "trustIndicators": {
     "startupsListed": "startups listadas",
@@ -913,7 +915,13 @@
     "label": "Taxa de sucesso",
     "value": "2%",
     "sub": "Somente após o fechamento · Apenas fundadores",
-    "tagline": "taxa de sucesso — apenas após o fecho. Média do setor: 5–7% adiantado."
+    "tagline": "taxa de sucesso — apenas após o fecho. Média do setor: 5–7% adiantado.",
+    "stripTitle": "Taxa de sucesso. Paga no fecho. Nada antes disso.",
+    "stripBody": "Cobrada às startups apenas quando um negócio é confirmado como fechado através de uma ligação CapitalReach. Os investidores pagam {zero} taxas de transação.",
+    "zero": "zero",
+    "bullet1": "Zero custos iniciais",
+    "bullet2": "Faturado após o fecho",
+    "bullet3": "Apenas para fundadores"
   },
   "startup": {
     "applyTitle": "Candidatar-se para listar",

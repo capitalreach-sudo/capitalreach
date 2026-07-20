@@ -30,7 +30,9 @@
     "trust": "Gå med grundare och investerare som bygger nästa generation av företag.",
     "listed": "{count} startups listade",
     "beFirst": "Var bland de första granskade listingarna.",
-    "applyToList": "Ansök om att listas"
+    "applyToList": "Ansök om att listas",
+    "feeNoteSuffix": "faktureras endast efter att din affär stängts. Noll förskottskostnad.",
+    "feeNoteLabel": "2% framgångsavgift"
   },
   "trustIndicators": {
     "startupsListed": "startups listade",
@@ -913,7 +915,13 @@
     "label": "Framgångsavgift",
     "value": "2%",
     "sub": "Bara efter avslut · Endast grundare",
-    "tagline": "framgångsavgift — endast efter avslut. Branschsnitt: 5–7% i förskott."
+    "tagline": "framgångsavgift — endast efter avslut. Branschsnitt: 5–7% i förskott.",
+    "stripTitle": "Framgångsavgift. Betalas vid avslut. Inget innan dess.",
+    "stripBody": "Debiteras endast startups när en affär bekräftas som avslutad via en CapitalReach-koppling. Investerare betalar {zero} transaktionsavgifter.",
+    "zero": "noll",
+    "bullet1": "Noll förskottskostnad",
+    "bullet2": "Faktureras efter avslut",
+    "bullet3": "Endast för grundare"
   },
   "startup": {
     "applyTitle": "Ansök om att listas",

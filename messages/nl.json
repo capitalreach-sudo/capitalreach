@@ -30,7 +30,9 @@
     "trust": "Sluit je aan bij oprichters en investeerders die de volgende generatie bedrijven bouwen.",
     "listed": "{count} startups geplaatst",
     "beFirst": "Wees een van de eerste geverifieerde listings.",
-    "applyToList": "Aanmelden voor listing"
+    "applyToList": "Aanmelden voor listing",
+    "feeNoteSuffix": "alleen gefactureerd nadat uw deal is gesloten. Nul kosten vooraf.",
+    "feeNoteLabel": "2% succesvergoeding"
   },
   "trustIndicators": {
     "startupsListed": "startups geplaatst",
@@ -913,7 +915,13 @@
     "label": "Succesfee",
     "value": "2%",
     "sub": "Alleen na closing · Alleen oprichters",
-    "tagline": "succesvergoeding — alleen na sluiting. Sectorgemiddelde: 5–7% vooraf."
+    "tagline": "succesvergoeding — alleen na sluiting. Sectorgemiddelde: 5–7% vooraf.",
+    "stripTitle": "Succesvergoeding. Betaald bij sluiting. Daarvoor niets.",
+    "stripBody": "Alleen in rekening gebracht bij startups wanneer een deal bevestigd is gesloten via een CapitalReach-verbinding. Investeerders betalen {zero} transactiekosten.",
+    "zero": "nul",
+    "bullet1": "Nul kosten vooraf",
+    "bullet2": "Gefactureerd na sluiting",
+    "bullet3": "Alleen voor oprichters"
   },
   "startup": {
     "applyTitle": "Aanmelden voor listing",

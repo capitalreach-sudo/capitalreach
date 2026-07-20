@@ -30,7 +30,9 @@
     "trust": "차세대 기업을 만드는 창업자와 투자자와 함께하세요.",
     "listed": "{count}개의 스타트업 등록됨",
     "beFirst": "최초 검증 등록 중 하나가 되세요.",
-    "applyToList": "등록 신청"
+    "applyToList": "등록 신청",
+    "feeNoteSuffix": "딜이 성사된 후에만 청구됩니다. 선불 비용은 없습니다.",
+    "feeNoteLabel": "2% 성공 수수료"
   },
   "trustIndicators": {
     "startupsListed": "개 스타트업 등록",
@@ -913,7 +915,13 @@
     "label": "성공 수수료",
     "value": "2%",
     "sub": "클로징 후에만 · 창업자 전용",
-    "tagline": "성공 수수료 — 클로징 후에만 청구. 업계 평균: 선불 5–7%."
+    "tagline": "성공 수수료 — 클로징 후에만 청구. 업계 평균: 선불 5–7%.",
+    "stripTitle": "성공 수수료. 성사 시 지불. 그전엔 없음.",
+    "stripBody": "CapitalReach 연결을 통해 딜이 성사된 것으로 확인될 때만 스타트업에 청구됩니다. 투자자는 거래 수수료를 {zero} 지불합니다.",
+    "zero": "0원",
+    "bullet1": "선불 비용 없음",
+    "bullet2": "성사 후 청구",
+    "bullet3": "창업자만 해당"
   },
   "startup": {
     "applyTitle": "등록 신청",

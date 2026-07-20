@@ -30,10 +30,18 @@
     "trust": "Rejoignez les fondateurs et investisseurs qui construisent la prochaine génération d'entreprises.",
     "listed": "{count} startups listées",
     "beFirst": "Soyez parmi les premiers listings vérifiés.",
-    "applyToList": "Postuler pour lister"
+    "applyToList": "Postuler pour lister",
+    "feeNoteSuffix": "facturés uniquement après la clôture de votre deal. Aucun coût initial.",
+    "feeNoteLabel": "2% de frais de succès"
   },
   "feeStrip": {
-    "tagline": "commission de réussite — uniquement après la clôture. Moyenne du secteur : 5–7% en avance."
+    "tagline": "commission de réussite — uniquement après la clôture. Moyenne du secteur : 5–7% en avance.",
+    "stripTitle": "Frais de succès. Payables à la clôture. Rien avant.",
+    "stripBody": "Facturé aux startups uniquement lorsqu'un deal est confirmé comme clôturé via une connexion CapitalReach. Les investisseurs paient {zero} frais de transaction.",
+    "zero": "zéro",
+    "bullet1": "Zéro frais initial",
+    "bullet2": "Facturé après clôture",
+    "bullet3": "Fondateurs uniquement"
   },
   "trustIndicators": {
     "startupsListed": "startups listées",

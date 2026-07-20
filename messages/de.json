@@ -30,10 +30,18 @@
     "trust": "Schließen Sie sich Gründern und Investoren an, die die nächste Generation aufbauen.",
     "listed": "{count} Startups gelistet",
     "beFirst": "Seien Sie unter den ersten geprüften Listings.",
-    "applyToList": "Jetzt bewerben"
+    "applyToList": "Jetzt bewerben",
+    "feeNoteSuffix": "abgerechnet nur nach Abschluss Ihres Deals. Keine Vorabkosten.",
+    "feeNoteLabel": "2% Erfolgsgebühr"
   },
   "feeStrip": {
-    "tagline": "Erfolgsgebühr — nur nach Abschluss. Branchendurchschnitt: 5–7% im Voraus."
+    "tagline": "Erfolgsgebühr — nur nach Abschluss. Branchendurchschnitt: 5–7% im Voraus.",
+    "stripTitle": "Erfolgsgebühr. Zahlbar bei Abschluss. Vorher nichts.",
+    "stripBody": "Wird Startups nur berechnet, wenn ein Deal über eine CapitalReach-Verbindung als abgeschlossen bestätigt wird. Investoren zahlen {zero} Transaktionsgebühren.",
+    "zero": "keine",
+    "bullet1": "Keine Vorabkosten",
+    "bullet2": "Abrechnung nach Abschluss",
+    "bullet3": "Nur für Gründer"
   },
   "trustIndicators": {
     "startupsListed": "Startups gelistet",

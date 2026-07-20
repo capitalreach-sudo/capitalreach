@@ -30,7 +30,9 @@
     "trust": "Dołącz do założycieli i inwestorów budujących kolejne pokolenie firm.",
     "listed": "{count} startupów na liście",
     "beFirst": "Bądź wśród pierwszych zweryfikowanych listingów.",
-    "applyToList": "Zgłoś się do listingu"
+    "applyToList": "Zgłoś się do listingu",
+    "feeNoteSuffix": "naliczana dopiero po zamknięciu Twojej transakcji. Zero kosztów z góry.",
+    "feeNoteLabel": "2% opłata za sukces"
   },
   "trustIndicators": {
     "startupsListed": "startupów na liście",
@@ -913,7 +915,13 @@
     "label": "Prowizja od sukcesu",
     "value": "2%",
     "sub": "Wyłącznie po zamknięciu · Tylko założyciele",
-    "tagline": "opłata za sukces — tylko po zamknięciu. Średnia branżowa: 5–7% z góry."
+    "tagline": "opłata za sukces — tylko po zamknięciu. Średnia branżowa: 5–7% z góry.",
+    "stripTitle": "Opłata za sukces. Płatna przy zamknięciu. Wcześniej nic.",
+    "stripBody": "Naliczana startupom tylko wtedy, gdy transakcja zostanie potwierdzona jako zamknięta poprzez połączenie CapitalReach. Inwestorzy płacą {zero} opłat transakcyjnych.",
+    "zero": "zero",
+    "bullet1": "Zero opłat z góry",
+    "bullet2": "Naliczana po zamknięciu",
+    "bullet3": "Tylko dla founderów"
   },
   "startup": {
     "applyTitle": "Zgłoś się do listingu",

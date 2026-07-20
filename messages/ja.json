@@ -30,10 +30,18 @@
     "trust": "次世代企業を構築する創業者と投資家に参加しましょう。",
     "listed": "{count}社が掲載中",
     "beFirst": "最初の検証済み掲載のひとつになりましょう。",
-    "applyToList": "掲載を申請"
+    "applyToList": "掲載を申請",
+    "feeNoteSuffix": "ディールが成立した後にのみ請求されます。前払い費用はゼロです。",
+    "feeNoteLabel": "2%成功報酬"
   },
   "feeStrip": {
-    "tagline": "サクセスフィー — クロージング後のみ。業界平均：前払い5〜7%。"
+    "tagline": "サクセスフィー — クロージング後のみ。業界平均：前払い5〜7%。",
+    "stripTitle": "成功報酬。成立時に支払い。それまでは無料。",
+    "stripBody": "CapitalReach経由のディールが成立と確認された場合のみスタートアップに請求されます。投資家の取引手数料は{zero}です。",
+    "zero": "ゼロ",
+    "bullet1": "前払い費用ゼロ",
+    "bullet2": "成立後に請求",
+    "bullet3": "創業者のみ対象"
   },
   "trustIndicators": {
     "startupsListed": "社が掲載",

@@ -30,10 +30,18 @@
     "trust": "加入正在构建下一代公司的创始人和投资者。",
     "listed": "{count}家创业公司已列出",
     "beFirst": "成为第一批经过审核的列表之一。",
-    "applyToList": "申请列出"
+    "applyToList": "申请列出",
+    "feeNoteSuffix": "仅在交易完成后收取，无需任何前期费用。",
+    "feeNoteLabel": "2% 成功费"
   },
   "feeStrip": {
-    "tagline": "成功费——仅在交割完成后收取。行业平均水平：预先收取 5–7%。"
+    "tagline": "成功费——仅在交割完成后收取。行业平均水平：预先收取 5–7%。",
+    "stripTitle": "成功费用，交易完成后支付，之前分文不取。",
+    "stripBody": "仅当通过 CapitalReach 连接确认交易完成时才向初创公司收取费用。投资者支付 {zero} 交易费用。",
+    "zero": "零",
+    "bullet1": "零前期费用",
+    "bullet2": "交易完成后开票",
+    "bullet3": "仅限创始人"
   },
   "trustIndicators": {
     "startupsListed": "个创业公司上线",

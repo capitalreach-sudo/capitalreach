@@ -30,10 +30,18 @@
     "trust": "Join founders and investors building the next generation of companies.",
     "listed": "{count} startups listed",
     "beFirst": "Be among the first vetted listings.",
-    "applyToList": "Apply to list"
+    "applyToList": "Apply to list",
+    "feeNoteSuffix": "invoiced only after your deal closes. Zero upfront cost.",
+    "feeNoteLabel": "2% success fee"
   },
   "feeStrip": {
-    "tagline": "success fee — only after you close. Industry average: 5–7% upfront."
+    "tagline": "success fee — only after you close. Industry average: 5–7% upfront.",
+    "stripTitle": "Success fee. Paid at close. Nothing before.",
+    "stripBody": "Only charged to startups when a deal is confirmed closed through a CapitalReach connection. Investors pay {zero} transaction fees.",
+    "zero": "zero",
+    "bullet1": "Zero upfront fees",
+    "bullet2": "Invoiced after close",
+    "bullet3": "Founders only"
   },
   "trustIndicators": {
     "startupsListed": "startups listed",

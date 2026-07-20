@@ -288,8 +288,8 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
             }}>
               <span style={{ color: "#B5651D", fontSize: "10px" }}>◆</span>
               <span>
-                <strong style={{ fontWeight: 600, color: "#B5651D" }}>2% success fee</strong>
-                {" — "}invoiced only after your deal closes. Zero upfront cost.
+                <strong style={{ fontWeight: 600, color: "#B5651D" }}>{t("hero.feeNoteLabel")}</strong>
+                {" — "}{t("hero.feeNoteSuffix")}
               </span>
             </p>
 
@@ -531,18 +531,19 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
                 fontSize: "16px", color: "#F5F0E8", marginBottom: "6px",
               }}>
-                Success fee. Paid at close. Nothing before.
+                {t("feeStrip.stripTitle")}
               </p>
               <p style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
                 fontSize: "13px", color: "#9C8E82", lineHeight: 1.6,
               }}>
-                Only charged to startups when a deal is confirmed closed through a CapitalReach connection.
-                Investors pay <strong style={{ fontWeight: 600, color: "#B5651D" }}>zero</strong> transaction fees.
+                {t("feeStrip.stripBody").split("{zero}")[0]}
+                <strong style={{ fontWeight: 600, color: "#B5651D" }}>{t("feeStrip.zero")}</strong>
+                {t("feeStrip.stripBody").split("{zero}")[1]}
               </p>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexShrink: 0 }}>
-              {["Zero upfront fees", "Invoiced after close", "Founders only"].map(item => (
+              {[t("feeStrip.bullet1"), t("feeStrip.bullet2"), t("feeStrip.bullet3")].map(item => (
                 <div key={item} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ color: "#B5651D", fontSize: "10px" }}>◆</span>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#9C8E82" }}>{item}</span>

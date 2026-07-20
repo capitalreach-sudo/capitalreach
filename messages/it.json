@@ -30,7 +30,9 @@
     "trust": "Unisciti ai fondatori e agli investitori che costruiscono la prossima generazione di imprese.",
     "listed": "{count} startup elencate",
     "beFirst": "Sii tra i primi listing verificati.",
-    "applyToList": "Candidati per elencarti"
+    "applyToList": "Candidati per elencarti",
+    "feeNoteSuffix": "fatturata solo dopo la chiusura del tuo affare. Zero costi anticipati.",
+    "feeNoteLabel": "2% di commissione di successo"
   },
   "trustIndicators": {
     "startupsListed": "startup elencate",
@@ -913,7 +915,13 @@
     "label": "Commissione di successo",
     "value": "2%",
     "sub": "Solo dopo la chiusura · Solo fondatori",
-    "tagline": "commissione di successo — solo dopo la chiusura. Media del settore: 5–7% anticipato."
+    "tagline": "commissione di successo — solo dopo la chiusura. Media del settore: 5–7% anticipato.",
+    "stripTitle": "Commissione di successo. Pagata alla chiusura. Nulla prima.",
+    "stripBody": "Addebitata alle startup solo quando un affare è confermato chiuso tramite una connessione CapitalReach. Gli investitori pagano {zero} commissioni di transazione.",
+    "zero": "zero",
+    "bullet1": "Zero costi anticipati",
+    "bullet2": "Fatturata dopo la chiusura",
+    "bullet3": "Solo per fondatori"
   },
   "startup": {
     "applyTitle": "Candidati per elencarti",
