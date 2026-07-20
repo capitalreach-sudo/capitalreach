@@ -808,7 +808,9 @@
     "errStartConvo": "Failed to start conversation. Please try again.",
     "errSomethingWrong2": "Something went wrong.",
     "startupLabel": "Startup",
-    "tabsLabel": "Dashboard tabs"
+    "tabsLabel": "Dashboard tabs",
+    "errSendMessageFailed": "Failed to send message. Please try again.",
+    "errLoadMessagesFailed": "Failed to load messages. Please refresh."
   },
   "settings": {
     "pageTitle": "Account Settings",

@@ -808,7 +808,9 @@
     "errStartConvo": "发起对话失败，请重试。",
     "errSomethingWrong2": "出了点问题。",
     "startupLabel": "初创公司",
-    "tabsLabel": "仪表盘标签页"
+    "tabsLabel": "仪表盘标签页",
+    "errSendMessageFailed": "消息发送失败，请重试。",
+    "errLoadMessagesFailed": "消息加载失败，请刷新页面。"
   },
   "settings": {
     "pageTitle": "账号设置",

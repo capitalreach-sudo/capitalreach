@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { notify } from "@/components/ui/toast-notify";
 import {
   Send, MessageSquare, Plus, Search, X, ArrowLeft,
   CheckCheck, Building2, Loader2, Users, AlertCircle,
@@ -84,11 +85,17 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
     if (!selectedThread) return;
     supabase.from("messages").select("*").eq("thread_id", selectedThread.id)
       .order("created_at", { ascending: true })
-      .then(({ data }) => setMessages((data as Message[]) || []));
+      .then(({ data, error }) => {
+        if (error) notify.error(t("dashboard.errLoadMessagesFailed"));
+        setMessages((data as Message[]) || []);
+      });
 
     const ch = supabase.channel(`thread:${selectedThread.id}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `thread_id=eq.${selectedThread.id}` },
-        (payload) => setMessages(prev => [...prev, payload.new as Message]))
+        (payload) => {
+          const incoming = payload.new as Message;
+          setMessages(prev => prev.some(m => m.id === incoming.id) ? prev : [...prev, incoming]);
+        })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [selectedThread?.id]);
@@ -181,8 +188,20 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
     e.preventDefault();
     if (!newMessage.trim() || !selectedThread) return;
     setSending(true);
-    await supabase.from("messages").insert({ thread_id: selectedThread.id, sender_id: profile.id, body: newMessage.trim() });
-    setNewMessage("");
+    const body = newMessage.trim();
+    const { data, error } = await supabase
+      .from("messages")
+      .insert({ thread_id: selectedThread.id, sender_id: profile.id, body })
+      .select()
+      .single();
+    if (error) {
+      notify.error(t("dashboard.errSendMessageFailed"));
+    } else {
+      const sent = data as Message;
+      setMessages(prev => prev.some(m => m.id === sent.id) ? prev : [...prev, sent]);
+      setNewMessage("");
+      await supabase.from("threads").update({ updated_at: sent.created_at }).eq("id", selectedThread.id);
+    }
     setSending(false);
   }
 
@@ -217,7 +236,8 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
         if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
         threadId = newThread.id;
       }
-      await supabase.from("messages").insert({ thread_id: threadId, sender_id: profile.id, body: newBody.trim() });
+      const { error: msgError } = await supabase.from("messages").insert({ thread_id: threadId, sender_id: profile.id, body: newBody.trim() });
+      if (msgError) { setSendNewError(t("dashboard.errSendMessageFailed")); setSendingNew(false); return; }
       closeNewModal();
       router.refresh();
     } catch (err: any) { setSendNewError(err?.message || t("dashboard.errSomethingWrong2")); }

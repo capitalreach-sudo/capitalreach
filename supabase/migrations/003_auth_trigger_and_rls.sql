@@ -100,7 +100,7 @@ CREATE POLICY "Thread participants can read messages"
   ON messages FOR SELECT
   USING (
     EXISTS (
-      SELECT 1 FROM message_threads t
+      SELECT 1 FROM threads t
       WHERE t.id = thread_id
         AND (t.startup_id IN (
               SELECT id FROM startups WHERE owner_id = auth.uid()
@@ -116,19 +116,27 @@ CREATE POLICY "Thread participants can insert messages"
   ON messages FOR INSERT
   WITH CHECK (sender_id = auth.uid());
 
--- ─── Row Level Security for message_threads ──────────────────────────────────
+-- ─── Row Level Security for threads ──────────────────────────────────────────
 
-ALTER TABLE public.message_threads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.threads ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Participants can view threads" ON message_threads;
+DROP POLICY IF EXISTS "Participants can view threads" ON threads;
 CREATE POLICY "Participants can view threads"
-  ON message_threads FOR SELECT
+  ON threads FOR SELECT
   USING (
     startup_id IN (SELECT id FROM startups WHERE owner_id = auth.uid())
     OR investor_id IN (SELECT id FROM investors WHERE owner_id = auth.uid())
   );
 
-DROP POLICY IF EXISTS "Anyone can create a thread" ON message_threads;
+DROP POLICY IF EXISTS "Anyone can create a thread" ON threads;
 CREATE POLICY "Anyone can create a thread"
-  ON message_threads FOR INSERT
+  ON threads FOR INSERT
   WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Participants can update threads" ON threads;
+CREATE POLICY "Participants can update threads"
+  ON threads FOR UPDATE
+  USING (
+    startup_id IN (SELECT id FROM startups WHERE owner_id = auth.uid())
+    OR investor_id IN (SELECT id FROM investors WHERE owner_id = auth.uid())
+  );

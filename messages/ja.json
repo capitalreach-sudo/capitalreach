@@ -808,7 +808,9 @@
     "errStartConvo": "会話の開始に失敗しました。もう一度お試しください。",
     "errSomethingWrong2": "問題が発生しました。",
     "startupLabel": "スタートアップ",
-    "tabsLabel": "ダッシュボードタブ"
+    "tabsLabel": "ダッシュボードタブ",
+    "errSendMessageFailed": "メッセージの送信に失敗しました。もう一度お試しください。",
+    "errLoadMessagesFailed": "メッセージの読み込みに失敗しました。ページを更新してください。"
   },
   "settings": {
     "pageTitle": "アカウント設定",

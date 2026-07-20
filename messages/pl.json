@@ -833,7 +833,9 @@
     "errStartConvo": "Nie udało się rozpocząć rozmowy. Spróbuj ponownie.",
     "errSomethingWrong2": "Coś poszło nie tak.",
     "startupLabel": "Startup",
-    "tabsLabel": "Karty pulpitu"
+    "tabsLabel": "Karty pulpitu",
+    "errSendMessageFailed": "Nie udało się wysłać wiadomości. Spróbuj ponownie.",
+    "errLoadMessagesFailed": "Nie udało się załadować wiadomości. Odśwież stronę."
   },
   "settings": {
     "pageTitle": "Ustawienia",

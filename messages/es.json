@@ -808,7 +808,9 @@
     "errStartConvo": "No se pudo iniciar la conversación. Inténtalo de nuevo.",
     "errSomethingWrong2": "Algo salió mal.",
     "startupLabel": "Startup",
-    "tabsLabel": "Pestañas del panel"
+    "tabsLabel": "Pestañas del panel",
+    "errSendMessageFailed": "Error al enviar el mensaje. Inténtalo de nuevo.",
+    "errLoadMessagesFailed": "Error al cargar los mensajes. Actualiza la página."
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",

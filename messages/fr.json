@@ -808,7 +808,9 @@
     "errStartConvo": "Échec du démarrage de la conversation. Veuillez réessayer.",
     "errSomethingWrong2": "Une erreur s'est produite.",
     "startupLabel": "Startup",
-    "tabsLabel": "Onglets du tableau de bord"
+    "tabsLabel": "Onglets du tableau de bord",
+    "errSendMessageFailed": "Échec de l'envoi du message. Veuillez réessayer.",
+    "errLoadMessagesFailed": "Échec du chargement des messages. Veuillez actualiser la page."
   },
   "settings": {
     "pageTitle": "Paramètres du compte",

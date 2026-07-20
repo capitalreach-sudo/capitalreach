@@ -833,7 +833,9 @@
     "errStartConvo": "Impossibile avviare la conversazione. Riprova.",
     "errSomethingWrong2": "Qualcosa è andato storto.",
     "startupLabel": "Startup",
-    "tabsLabel": "Schede della dashboard"
+    "tabsLabel": "Schede della dashboard",
+    "errSendMessageFailed": "Invio del messaggio non riuscito. Riprova.",
+    "errLoadMessagesFailed": "Caricamento dei messaggi non riuscito. Aggiorna la pagina."
   },
   "settings": {
     "pageTitle": "Impostazioni",

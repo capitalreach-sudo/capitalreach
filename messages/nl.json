@@ -833,7 +833,9 @@
     "errStartConvo": "Kan gesprek niet starten. Probeer het opnieuw.",
     "errSomethingWrong2": "Er is iets misgegaan.",
     "startupLabel": "Startup",
-    "tabsLabel": "Dashboardtabbladen"
+    "tabsLabel": "Dashboardtabbladen",
+    "errSendMessageFailed": "Bericht verzenden mislukt. Probeer het opnieuw.",
+    "errLoadMessagesFailed": "Berichten laden mislukt. Vernieuw de pagina."
   },
   "settings": {
     "pageTitle": "Instellingen",

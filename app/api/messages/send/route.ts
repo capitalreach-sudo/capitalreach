@@ -67,20 +67,26 @@ export async function POST(req: NextRequest) {
       .update({ updated_at: new Date().toISOString() })
       .eq("id", threadId);
   } else {
-    const { data: newThread } = await adminClient
+    const { data: newThread, error: threadError } = await adminClient
       .from("threads")
       .insert({ startup_id: startupId, investor_id: investorId, status: "active" })
       .select("id")
       .single();
-    threadId = newThread!.id;
+    if (threadError || !newThread) {
+      return NextResponse.json({ error: "Failed to create conversation" }, { status: 500 });
+    }
+    threadId = newThread.id;
   }
 
   // Insert message
-  await adminClient.from("messages").insert({
+  const { error: messageError } = await adminClient.from("messages").insert({
     thread_id: threadId,
     sender_id: user.id,
     body: messageBody.trim(),
   });
+  if (messageError) {
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+  }
 
   // Notify startup owner by email
   const { data: startup } = await adminClient

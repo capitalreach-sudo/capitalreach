@@ -833,7 +833,9 @@
     "errStartConvo": "Det gick inte att starta konversationen. Försök igen.",
     "errSomethingWrong2": "Något gick fel.",
     "startupLabel": "Startup",
-    "tabsLabel": "Instrumentpanelsflikar"
+    "tabsLabel": "Instrumentpanelsflikar",
+    "errSendMessageFailed": "Det gick inte att skicka meddelandet. Försök igen.",
+    "errLoadMessagesFailed": "Det gick inte att läsa in meddelanden. Uppdatera sidan."
   },
   "settings": {
     "pageTitle": "Inställningar",

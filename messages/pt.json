@@ -833,7 +833,9 @@
     "errStartConvo": "Falha ao iniciar a conversa. Tente novamente.",
     "errSomethingWrong2": "Algo correu mal.",
     "startupLabel": "Startup",
-    "tabsLabel": "Separadores do painel"
+    "tabsLabel": "Separadores do painel",
+    "errSendMessageFailed": "Falha ao enviar a mensagem. Tente novamente.",
+    "errLoadMessagesFailed": "Falha ao carregar as mensagens. Atualize a página."
   },
   "settings": {
     "pageTitle": "Configurações",

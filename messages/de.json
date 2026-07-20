@@ -808,7 +808,9 @@
     "errStartConvo": "Unterhaltung konnte nicht gestartet werden. Bitte versuche es erneut.",
     "errSomethingWrong2": "Etwas ist schiefgelaufen.",
     "startupLabel": "Startup",
-    "tabsLabel": "Dashboard-Tabs"
+    "tabsLabel": "Dashboard-Tabs",
+    "errSendMessageFailed": "Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.",
+    "errLoadMessagesFailed": "Nachrichten konnten nicht geladen werden. Bitte aktualisiere die Seite."
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",

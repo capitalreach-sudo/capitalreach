@@ -833,7 +833,9 @@
     "errStartConvo": "बातचीत शुरू करने में विफल। कृपया पुनः प्रयास करें।",
     "errSomethingWrong2": "कुछ गलत हो गया।",
     "startupLabel": "स्टार्टअप",
-    "tabsLabel": "डैशबोर्ड टैब"
+    "tabsLabel": "डैशबोर्ड टैब",
+    "errSendMessageFailed": "संदेश भेजने में विफल। कृपया पुनः प्रयास करें।",
+    "errLoadMessagesFailed": "संदेश लोड करने में विफल। कृपया पेज रीफ्रेश करें।"
   },
   "settings": {
     "pageTitle": "सेटिंग्स",

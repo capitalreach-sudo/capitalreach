@@ -808,7 +808,9 @@
     "errStartConvo": "فشل بدء المحادثة. يرجى المحاولة مرة أخرى.",
     "errSomethingWrong2": "حدث خطأ ما.",
     "startupLabel": "شركة ناشئة",
-    "tabsLabel": "علامات تبويب لوحة التحكم"
+    "tabsLabel": "علامات تبويب لوحة التحكم",
+    "errSendMessageFailed": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    "errLoadMessagesFailed": "فشل تحميل الرسائل. يرجى تحديث الصفحة."
   },
   "settings": {
     "pageTitle": "إعدادات الحساب",
