@@ -178,7 +178,7 @@ export function StartupDetailClient({
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
-      <PrintHeader title={startup.name} />
+      <PrintHeader title={startup.name} tagline={t("common.printTagline")} />
 
       {/* ── Editorial hero ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
@@ -500,6 +500,7 @@ export function StartupDetailClient({
             <GateBlur
               title={t("startupDetail.angelTierRequired")}
               description={t("startupDetail.upgradeFinancialsDesc")}
+              ctaLabel={t("dashboard.viewPlans")}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
                 <MetricCell label={t("startupDetail.mrr")} value="$42,000" />
@@ -563,7 +564,7 @@ export function StartupDetailClient({
                       ) : (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
                           style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", textDecoration: "none" }}>
-                          <ExternalLink style={{ width: 11, height: 11 }} /> View
+                          <ExternalLink style={{ width: 11, height: 11 }} /> {t("common.view")}
                         </a>
                       )}
                     </div>
@@ -589,6 +590,7 @@ export function StartupDetailClient({
             <GateBlur
               title={t("startupDetail.upgradeTractionTitle")}
               description={t("startupDetail.upgradeTractionDesc")}
+              ctaLabel={t("dashboard.viewPlans")}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
                 <MetricCell label={t("startupDetail.monthlyRevenue")} value="$42,000" copper />

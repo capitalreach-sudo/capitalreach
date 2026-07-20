@@ -10,6 +10,7 @@ import {
   Briefcase, TrendingUp, BookOpen, Users, Clock,
 } from "lucide-react";
 import { formatCurrency, getInitials } from "@/lib/utils";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 
 interface Props { params: { slug: string } }
@@ -30,15 +31,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const INVESTOR_TYPE_LABELS: Record<string, string> = {
-  angel: "Angel Investor",
-  vc: "Venture Capital",
-  family_office: "Family Office",
-  corporate: "Corporate Investor",
-};
-
 export default async function InvestorProfilePage({ params }: Props) {
   const supabase = await createServerSupabaseClient();
+  const t = await getTranslator(getLocale());
+
+  const INVESTOR_TYPE_LABELS: Record<string, string> = {
+    angel: t("investorProfile.angelInvestor"),
+    vc: t("investorProfile.ventureCapital"),
+    family_office: t("investorProfile.familyOffice"),
+    corporate: t("investorProfile.corporateInvestor"),
+  };
 
   const { data: investor } = await supabase
     .from("investors")
@@ -65,7 +67,7 @@ export default async function InvestorProfilePage({ params }: Props) {
 
         {/* Back nav */}
         <Link href="/investors" className="inline-flex items-center gap-1.5 text-sm text-cr-i4 hover:text-cr-i2 mb-6 transition-colors">
-          ← Back to investors
+          ← {t("investorProfile.back")}
         </Link>
 
         {/* ── Profile header ─────────────────────────────────────────────── */}
@@ -84,17 +86,17 @@ export default async function InvestorProfilePage({ params }: Props) {
               <Badge variant="outline">{INVESTOR_TYPE_LABELS[investor.type] || investor.type}</Badge>
               {investor.subscription_tier !== "free" && (
                 <Badge className="bg-cr-copper/15 text-cr-cu-l border-0">
-                  {investor.subscription_tier === "pro_investor" ? "Pro Investor" :
-                   investor.subscription_tier === "institutional" ? "Institutional" :
+                  {investor.subscription_tier === "pro_investor" ? t("investorProfile.tierProInvestor") :
+                   investor.subscription_tier === "institutional" ? t("investorProfile.tierInstitutional") :
                    investor.subscription_tier}
                 </Badge>
               )}
               {investor.lead_rounds && (
-                <Badge className="bg-emerald-100 text-emerald-700 border-0">Leads rounds</Badge>
+                <Badge className="bg-emerald-100 text-emerald-700 border-0">{t("investors.leadsRounds")}</Badge>
               )}
               {ownerProfile?.lead_investor && (
                 <Badge style={{ background: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
-                  Leads rounds
+                  {t("investors.leadsRounds")}
                 </Badge>
               )}
               {ownerProfile?.investor_type && (
@@ -122,7 +124,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               {investor.website && (
                 <a href={investor.website} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-sm text-cr-i3 hover:underline">
-                  <Globe className="h-4 w-4" /> Website
+                  <Globe className="h-4 w-4" /> {t("investorProfile.website")}
                 </a>
               )}
             </div>
@@ -134,7 +136,7 @@ export default async function InvestorProfilePage({ params }: Props) {
           <div className="bg-cr-copper/10 border border-cr-copper/20 rounded-xl p-5 mb-6">
             <div className="flex items-center gap-2 mb-2">
               <BookOpen className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-cu-l text-sm">Investment Thesis</h2>
+              <h2 className="font-semibold text-cr-cu-l text-sm">{t("investors.thesis")}</h2>
             </div>
             <p className="text-sm text-cr-cu-l leading-relaxed">{investor.investment_thesis}</p>
           </div>
@@ -145,19 +147,19 @@ export default async function InvestorProfilePage({ params }: Props) {
           <div className="grid grid-cols-3 gap-3 mb-6">
             {investor.aum && (
               <div className="bg-cr-paper border rounded-xl p-4 text-center">
-                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">AUM / Fund Size</p>
+                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">{t("investorProfile.aumFundSize")}</p>
                 <p className="text-lg font-bold text-cr-ink">{investor.aum}</p>
               </div>
             )}
             {investor.number_of_investments != null && (
               <div className="bg-cr-paper border rounded-xl p-4 text-center">
-                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">Investments</p>
+                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">{t("investorProfile.investmentsLabel")}</p>
                 <p className="text-lg font-bold text-cr-ink">{investor.number_of_investments}</p>
               </div>
             )}
             {investor.avg_hold_period && (
               <div className="bg-cr-paper border rounded-xl p-4 text-center">
-                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">Avg Hold</p>
+                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">{t("investorProfile.avgHold")}</p>
                 <p className="text-lg font-bold text-cr-ink">{investor.avg_hold_period}</p>
               </div>
             )}
@@ -167,27 +169,27 @@ export default async function InvestorProfilePage({ params }: Props) {
         {/* ── New profile detail stats ───────────────────────────────────── */}
         {(ownerProfile?.check_size_min || ownerProfile?.check_size_max || ownerProfile?.portfolio_count || ownerProfile?.languages?.length) && (
           <div className="bg-cr-paper border rounded-xl p-6 mb-6">
-            <h2 className="font-semibold text-cr-ink mb-4">Investor Detail</h2>
+            <h2 className="font-semibold text-cr-ink mb-4">{t("investorProfile.investorDetail")}</h2>
             <div className="grid grid-cols-2 gap-4">
               {(ownerProfile?.check_size_min || ownerProfile?.check_size_max) && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">Check Size</p>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investors.checkSize")}</p>
                   <p className="font-mono font-semibold text-cr-ink">
                     {ownerProfile.check_size_min ? formatCurrency(ownerProfile.check_size_min, true) : "—"}
                     {" – "}
-                    {ownerProfile.check_size_max ? formatCurrency(ownerProfile.check_size_max, true) : "Open"}
+                    {ownerProfile.check_size_max ? formatCurrency(ownerProfile.check_size_max, true) : t("common.open")}
                   </p>
                 </div>
               )}
               {ownerProfile?.portfolio_count != null && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">Portfolio</p>
-                  <p className="font-mono font-semibold text-cr-ink">{ownerProfile.portfolio_count} investments</p>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.portfolioLabel")}</p>
+                  <p className="font-mono font-semibold text-cr-ink">{t("investors.investments", { count: ownerProfile.portfolio_count })}</p>
                 </div>
               )}
               {ownerProfile?.languages?.length > 0 && (
                 <div className="col-span-2">
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">Languages</p>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.languagesLabel")}</p>
                   <div className="flex flex-wrap gap-2">
                     {ownerProfile.languages.map((lang: string) => (
                       <span key={lang} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{lang}</span>
@@ -201,11 +203,11 @@ export default async function InvestorProfilePage({ params }: Props) {
 
         {/* ── Investment preferences ─────────────────────────────────────── */}
         <div className="bg-cr-paper border rounded-xl p-6 space-y-5 mb-6">
-          <h2 className="font-semibold text-cr-ink">Investment Preferences</h2>
+          <h2 className="font-semibold text-cr-ink">{t("investorProfile.investmentPreferences")}</h2>
 
           {investor.industries?.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">Industries</p>
+              <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.industriesLabel")}</p>
               <div className="flex flex-wrap gap-2">
                 {investor.industries.map((ind: string) => (
                   <span key={ind} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{ind}</span>
@@ -216,7 +218,7 @@ export default async function InvestorProfilePage({ params }: Props) {
 
           {investor.stages?.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">Stages</p>
+              <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.stagesLabel")}</p>
               <div className="flex flex-wrap gap-2">
                 {investor.stages.map((s: string) => (
                   <span key={s} className="text-xs bg-blue-100 text-blue-400 px-2.5 py-1 rounded-full capitalize">
@@ -231,8 +233,8 @@ export default async function InvestorProfilePage({ params }: Props) {
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-cr-i4" />
               <span className="text-sm text-cr-i2">
-                {investor.min_check ? formatCurrency(investor.min_check, true) : "Open"}{" "}–{" "}
-                {investor.max_check ? formatCurrency(investor.max_check, true) : "Open"} check size
+                {investor.min_check ? formatCurrency(investor.min_check, true) : t("common.open")}{" "}–{" "}
+                {investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")} {t("investorProfile.checkSizeSuffix")}
               </span>
             </div>
           )}
@@ -252,13 +254,13 @@ export default async function InvestorProfilePage({ params }: Props) {
             <div className="grid grid-cols-2 gap-4 pt-2 border-t">
               {investor.follow_on_policy && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">Follow-On Policy</p>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.followOnPolicy")}</p>
                   <p className="text-sm text-cr-i2">{investor.follow_on_policy}</p>
                 </div>
               )}
               {investor.board_seat_pref && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">Board Preference</p>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.boardPreference")}</p>
                   <p className="text-sm text-cr-i2">{investor.board_seat_pref}</p>
                 </div>
               )}
@@ -271,7 +273,7 @@ export default async function InvestorProfilePage({ params }: Props) {
           <div className="bg-cr-paper border rounded-xl p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Briefcase className="h-4 w-4 text-cr-i4" />
-              <h2 className="font-semibold text-cr-ink">Portfolio Companies</h2>
+              <h2 className="font-semibold text-cr-ink">{t("investorProfile.portfolioCompanies")}</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {portfolio.map((co, i) => (
@@ -294,10 +296,10 @@ export default async function InvestorProfilePage({ params }: Props) {
         {/* ── CTA ───────────────────────────────────────────────────────── */}
         <div className="mt-4 text-center">
           <p className="text-cr-i3 text-sm mb-4">
-            Are you a founder? Create your profile on CapitalReach to get in front of investors like {displayName}.
+            {t("investorProfile.founderCta", { name: displayName })}
           </p>
           <a href="/auth/signup?role=startup" className="text-cr-copper font-medium hover:underline">
-            List your startup →
+            {t("investors.listYourStartup")} →
           </a>
         </div>
       </main>

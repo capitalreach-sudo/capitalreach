@@ -403,7 +403,13 @@
     "earlyAccess": "早期アクセス",
     "finalCtaLaunchSub": "最初の{target}名に参加し、無料でフルアクセスを取得 — クレジットカード不要。",
     "finalCtaSub": "CapitalReachの創業者と投資家の早期コミュニティに参加。今すぐ無料で開始。",
-    "saveAnnual": "年払いで${amount}/年節約"
+    "saveAnnual": "年払いで${amount}/年節約",
+    "feature_investorBrowse": "掲載一覧を閲覧",
+    "feature_investorFinancials": "完全な財務情報",
+    "feature_investorMessaging": "創業者へのメッセージ",
+    "feature_investorDiligence": "AIデューデリジェンス",
+    "feature_investorMatching": "AIスマートマッチング",
+    "feature_investorExport": "データエクスポート"
   },
   "cta": {
     "headline": "適切な資本を、適切なステージで。",
@@ -892,7 +898,12 @@
     "scoredBy": "CapitalReach AIによる評価",
     "share": "共有",
     "milestones": "マイルストーン",
-    "unlockFinancials": "完全な財務データとピッチデッキにアクセスするにはプランをアップグレードしてください。"
+    "unlockFinancials": "完全な財務データとピッチデッキにアクセスするにはプランをアップグレードしてください。",
+    "removeWatchlist": "ウォッチリストから削除",
+    "new": "新着",
+    "runwayMonths": "残り{n}ヶ月分の資金",
+    "unlockScores": "アップグレードして財務情報とAIスコアを解除",
+    "scoreTitle": "AIスコア：{score}/100"
   },
   "startupDetail": {
     "overview": "概要",
@@ -1081,7 +1092,9 @@
     "required": "必須",
     "sort": "並び替え",
     "custom": "カスタム",
-    "open": "制限なし"
+    "open": "制限なし",
+    "printTagline": "CapitalReach — プライベートキャピタル市場",
+    "view": "表示"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",
@@ -1419,5 +1432,62 @@
     "contact": "お問い合わせ",
     "terms": "利用規約",
     "privacy": "プライバシーポリシー"
+  },
+  "banner": {
+    "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",
+    "cta": "今すぐ確保する"
+  },
+  "locale": {
+    "changedTo": "言語を{name}に変更しました",
+    "currentLangAria": "現在の言語：{name}。クリックして変更。",
+    "selectLanguage": "言語を選択",
+    "rtl": "RTL",
+    "save": "言語を保存",
+    "saving": "保存中…",
+    "languageSaved": "言語を更新しました"
+  },
+  "deals": {
+    "colIntro": "紹介",
+    "colTermSheet": "タームシート",
+    "colClosed": "成立",
+    "colPassed": "見送り",
+    "noDealsCol": "取引なし",
+    "investorFallback": "投資家",
+    "startupFallback": "スタートアップ",
+    "interestedInvestor": "関心のある投資家",
+    "upgradeSeeWho": "アップグレードして相手を見る",
+    "closeDeal": "取引を成立させる",
+    "confirmClose": "成立を確認",
+    "amountRaisedPlaceholder": "調達金額",
+    "feeNotice": "2%の成功報酬の請求書が自動的に発行されます。",
+    "closing": "処理中…",
+    "confirm": "確認",
+    "invoiceSent": "請求書送信済み",
+    "emptyTitle": "まだ取引がありません",
+    "emptyDesc": "スタートアップにメッセージを送るか、返信があるとここに取引が表示されます。"
+  },
+  "investorProfile": {
+    "back": "投資家一覧に戻る",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "機関投資家",
+    "aumFundSize": "運用資産/ファンド規模",
+    "investmentsLabel": "投資件数",
+    "avgHold": "平均保有期間",
+    "investorDetail": "投資家詳細",
+    "portfolioLabel": "ポートフォリオ",
+    "languagesLabel": "言語",
+    "investmentPreferences": "投資選好",
+    "industriesLabel": "業界",
+    "stagesLabel": "ステージ",
+    "checkSizeSuffix": "投資規模",
+    "followOnPolicy": "フォローオン方針",
+    "boardPreference": "役員会の希望",
+    "portfolioCompanies": "ポートフォリオ企業",
+    "founderCta": "創業者の方ですか？CapitalReachでプロフィールを作成し、{name}のような投資家の目に留まりましょう。",
+    "website": "ウェブサイト",
+    "angelInvestor": "エンジェル投資家",
+    "ventureCapital": "ベンチャーキャピタル",
+    "familyOffice": "ファミリーオフィス",
+    "corporateInvestor": "コーポレート投資家"
   }
 }

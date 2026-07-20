@@ -403,7 +403,13 @@
     "earlyAccess": "Early Access",
     "finalCtaLaunchSub": "Join the first {target} members and get full access for free — no card required.",
     "finalCtaSub": "Join the early community of founders and investors on CapitalReach. Start free today.",
-    "saveAnnual": "Save ${amount}/yr with annual"
+    "saveAnnual": "Save ${amount}/yr with annual",
+    "feature_investorBrowse": "Browse listings",
+    "feature_investorFinancials": "Full financials",
+    "feature_investorMessaging": "Founder messaging",
+    "feature_investorDiligence": "AI due diligence",
+    "feature_investorMatching": "AI smart matching",
+    "feature_investorExport": "Data export"
   },
   "cta": {
     "headline": "The right capital, at the right stage.",
@@ -892,7 +898,12 @@
     "scoredBy": "Scored by CapitalReach AI",
     "share": "Share",
     "milestones": "Milestones",
-    "unlockFinancials": "Upgrade your plan to unlock full financials and pitch deck."
+    "unlockFinancials": "Upgrade your plan to unlock full financials and pitch deck.",
+    "removeWatchlist": "Remove from watchlist",
+    "new": "New",
+    "runwayMonths": "{n}mo runway",
+    "unlockScores": "Upgrade to unlock financials & AI scores",
+    "scoreTitle": "AI Score: {score}/100"
   },
   "startupDetail": {
     "overview": "Overview",
@@ -1081,7 +1092,9 @@
     "required": "required",
     "sort": "Sort by",
     "custom": "Custom",
-    "open": "Open"
+    "open": "Open",
+    "printTagline": "CapitalReach — Private Capital Marketplace",
+    "view": "View"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",
@@ -1419,5 +1432,62 @@
     "contact": "Contact",
     "terms": "Terms",
     "privacy": "Privacy"
+  },
+  "banner": {
+    "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
+    "cta": "Claim your spot"
+  },
+  "locale": {
+    "changedTo": "Language changed to {name}",
+    "currentLangAria": "Current language: {name}. Click to change.",
+    "selectLanguage": "Select language",
+    "rtl": "RTL",
+    "save": "Save language",
+    "saving": "Saving…",
+    "languageSaved": "Language updated"
+  },
+  "deals": {
+    "colIntro": "Intro",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Closed",
+    "colPassed": "Passed",
+    "noDealsCol": "No deals",
+    "investorFallback": "Investor",
+    "startupFallback": "Startup",
+    "interestedInvestor": "Interested Investor",
+    "upgradeSeeWho": "Upgrade to see who",
+    "closeDeal": "Close Deal",
+    "confirmClose": "Confirm Close",
+    "amountRaisedPlaceholder": "Amount raised",
+    "feeNotice": "A 2% success fee invoice will be generated automatically.",
+    "closing": "Closing…",
+    "confirm": "Confirm",
+    "invoiceSent": "Invoice sent",
+    "emptyTitle": "No deals yet",
+    "emptyDesc": "Deals appear here when you message a startup or they respond."
+  },
+  "investorProfile": {
+    "back": "Back to investors",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Institutional",
+    "aumFundSize": "AUM / Fund Size",
+    "investmentsLabel": "Investments",
+    "avgHold": "Avg Hold",
+    "investorDetail": "Investor Detail",
+    "portfolioLabel": "Portfolio",
+    "languagesLabel": "Languages",
+    "investmentPreferences": "Investment Preferences",
+    "industriesLabel": "Industries",
+    "stagesLabel": "Stages",
+    "checkSizeSuffix": "check size",
+    "followOnPolicy": "Follow-On Policy",
+    "boardPreference": "Board Preference",
+    "portfolioCompanies": "Portfolio Companies",
+    "founderCta": "Are you a founder? Create your profile on CapitalReach to get in front of investors like {name}.",
+    "website": "Website",
+    "angelInvestor": "Angel Investor",
+    "ventureCapital": "Venture Capital",
+    "familyOffice": "Family Office",
+    "corporateInvestor": "Corporate Investor"
   }
 }

@@ -409,7 +409,13 @@
     "earlyAccess": "Tidig åtkomst",
     "finalCtaLaunchSub": "Gå med bland de första {target} medlemmarna och få full åtkomst gratis — inget kort krävs.",
     "finalCtaSub": "Gå med i den tidiga gemenskapen av grundare och investerare på CapitalReach. Börja gratis idag.",
-    "saveAnnual": "Spara ${amount}/år med årsvis"
+    "saveAnnual": "Spara ${amount}/år med årsvis",
+    "feature_investorBrowse": "Bläddra bland listningar",
+    "feature_investorFinancials": "Fullständig ekonomi",
+    "feature_investorMessaging": "Meddelanden till grundare",
+    "feature_investorDiligence": "AI due diligence",
+    "feature_investorMatching": "AI smart matchning",
+    "feature_investorExport": "Dataexport"
   },
   "cta": {
     "headline": "Rätt kapital, i rätt fas.",
@@ -1006,7 +1012,9 @@
     "required": "obligatoriskt",
     "sort": "Sortera",
     "custom": "Anpassad",
-    "open": "Öppet"
+    "open": "Öppet",
+    "printTagline": "CapitalReach — Marknadsplats för privat kapital",
+    "view": "Visa"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",
@@ -1097,7 +1105,12 @@
     "traction": "Traktion",
     "unlockFinancials": "Uppgradera din plan för att låsa upp fullständig ekonomi och pitch deck.",
     "viewPitchDeck": "Visa pitch deck",
-    "viewedThisWeek": "{count} investerare har visat denna vecka"
+    "viewedThisWeek": "{count} investerare har visat denna vecka",
+    "removeWatchlist": "Ta bort från bevakningslista",
+    "new": "Nytt",
+    "runwayMonths": "{n} mån runway",
+    "unlockScores": "Uppgradera för att låsa upp ekonomi och AI-poäng",
+    "scoreTitle": "AI-poäng: {score}/100"
   },
   "investors": {
     "pageTitle": "Verifierade investerare",
@@ -1515,5 +1528,62 @@
       "errorCreating": "Fel vid skapande av profil:",
       "created": "Profil skapad! Börja upptäcka startups på CapitalReach."
     }
+  },
+  "banner": {
+    "text": "Gratis för våra första {target} medlemmar — {memberCount}/{target} har gått med, {spotsLeft} platser kvar.",
+    "cta": "Säkra din plats"
+  },
+  "locale": {
+    "changedTo": "Språk ändrat till {name}",
+    "currentLangAria": "Nuvarande språk: {name}. Klicka för att ändra.",
+    "selectLanguage": "Välj språk",
+    "rtl": "RTL",
+    "save": "Spara språk",
+    "saving": "Sparar…",
+    "languageSaved": "Språk uppdaterat"
+  },
+  "deals": {
+    "colIntro": "Intro",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Avslutad",
+    "colPassed": "Avböjd",
+    "noDealsCol": "Inga affärer",
+    "investorFallback": "Investerare",
+    "startupFallback": "Startup",
+    "interestedInvestor": "Intresserad investerare",
+    "upgradeSeeWho": "Uppgradera för att se vem",
+    "closeDeal": "Slutför affär",
+    "confirmClose": "Bekräfta slutförande",
+    "amountRaisedPlaceholder": "Insamlat belopp",
+    "feeNotice": "En framgångsavgift på 2% faktureras automatiskt.",
+    "closing": "Slutför…",
+    "confirm": "Bekräfta",
+    "invoiceSent": "Faktura skickad",
+    "emptyTitle": "Inga affärer än",
+    "emptyDesc": "Affärer visas här när du skickar meddelande till en startup eller de svarar."
+  },
+  "investorProfile": {
+    "back": "Tillbaka till investerare",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Institutionell",
+    "aumFundSize": "AUM / Fondstorlek",
+    "investmentsLabel": "Investeringar",
+    "avgHold": "Genomsn. innehavstid",
+    "investorDetail": "Investerardetaljer",
+    "portfolioLabel": "Portfölj",
+    "languagesLabel": "Språk",
+    "investmentPreferences": "Investeringspreferenser",
+    "industriesLabel": "Branscher",
+    "stagesLabel": "Faser",
+    "checkSizeSuffix": "investeringsstorlek",
+    "followOnPolicy": "Uppföljningsinvesteringspolicy",
+    "boardPreference": "Styrelsepreferens",
+    "portfolioCompanies": "Portföljbolag",
+    "founderCta": "Är du grundare? Skapa din profil på CapitalReach för att synas för investerare som {name}.",
+    "website": "Webbplats",
+    "angelInvestor": "Ängelinvesterare",
+    "ventureCapital": "Riskkapital",
+    "familyOffice": "Family Office",
+    "corporateInvestor": "Företagsinvesterare"
   }
 }

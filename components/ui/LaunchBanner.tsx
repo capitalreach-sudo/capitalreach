@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function LaunchBanner() {
   const { isLaunch, memberCount, target, loading } = useLaunchMode();
+  const { t } = useTranslation();
 
   if (loading || !isLaunch) return null;
 
@@ -23,7 +25,7 @@ export function LaunchBanner() {
     >
       <Sparkles style={{ width: 14, height: 14, color: "#fff", flexShrink: 0 }} />
       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff" }}>
-        Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.
+        {t("banner.text", { target, memberCount, spotsLeft })}
       </span>
       <Link
         href="/pricing"
@@ -32,7 +34,7 @@ export function LaunchBanner() {
           color: "#fff", textDecoration: "underline", whiteSpace: "nowrap",
         }}
       >
-        Claim your spot →
+        {t("banner.cta")} →
       </Link>
     </div>
   );

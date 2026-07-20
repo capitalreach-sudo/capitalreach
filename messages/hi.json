@@ -409,7 +409,13 @@
     "earlyAccess": "शीघ्र पहुंच",
     "finalCtaLaunchSub": "पहले {target} सदस्यों में शामिल हों और मुफ्त में पूर्ण पहुंच प्राप्त करें — कोई कार्ड आवश्यक नहीं।",
     "finalCtaSub": "CapitalReach पर संस्थापकों और निवेशकों के शुरुआती समुदाय में शामिल हों। आज ही मुफ्त शुरू करें।",
-    "saveAnnual": "वार्षिक के साथ ${amount}/वर्ष बचाएं"
+    "saveAnnual": "वार्षिक के साथ ${amount}/वर्ष बचाएं",
+    "feature_investorBrowse": "लिस्टिंग ब्राउज़ करें",
+    "feature_investorFinancials": "पूर्ण वित्तीय जानकारी",
+    "feature_investorMessaging": "संस्थापक संदेश",
+    "feature_investorDiligence": "AI ड्यू डिलिजेंस",
+    "feature_investorMatching": "AI स्मार्ट मिलान",
+    "feature_investorExport": "डेटा निर्यात"
   },
   "cta": {
     "headline": "सही चरण में सही पूंजी।",
@@ -1006,7 +1012,9 @@
     "required": "आवश्यक",
     "sort": "क्रमबद्ध करें",
     "custom": "कस्टम",
-    "open": "खुला"
+    "open": "खुला",
+    "printTagline": "CapitalReach — निजी पूंजी बाज़ार",
+    "view": "देखें"
   },
   "errors": {
     "required": "यह फ़ील्ड आवश्यक है",
@@ -1097,7 +1105,12 @@
     "traction": "ट्रैक्शन",
     "unlockFinancials": "पूर्ण वित्तीय जानकारी और पिच डेक अनलॉक करने के लिए अपनी योजना अपग्रेड करें।",
     "viewPitchDeck": "पिच डेक देखें",
-    "viewedThisWeek": "इस सप्ताह {count} निवेशकों ने देखा"
+    "viewedThisWeek": "इस सप्ताह {count} निवेशकों ने देखा",
+    "removeWatchlist": "वॉचलिस्ट से हटाएं",
+    "new": "नया",
+    "runwayMonths": "{n} माह की रनवे",
+    "unlockScores": "वित्तीय जानकारी और AI स्कोर अनलॉक करने के लिए अपग्रेड करें",
+    "scoreTitle": "AI स्कोर: {score}/100"
   },
   "investors": {
     "pageTitle": "सत्यापित निवेशक",
@@ -1515,5 +1528,62 @@
       "errorCreating": "प्रोफ़ाइल बनाने में त्रुटि:",
       "created": "प्रोफ़ाइल बन गई! CapitalReach पर स्टार्टअप खोजना शुरू करें।"
     }
+  },
+  "banner": {
+    "text": "हमारे पहले {target} सदस्यों के लिए मुफ्त — {memberCount}/{target} शामिल हुए, {spotsLeft} स्थान शेष।",
+    "cta": "अपना स्थान सुरक्षित करें"
+  },
+  "locale": {
+    "changedTo": "भाषा {name} में बदल दी गई",
+    "currentLangAria": "वर्तमान भाषा: {name}। बदलने के लिए क्लिक करें।",
+    "selectLanguage": "भाषा चुनें",
+    "rtl": "RTL",
+    "save": "भाषा सहेजें",
+    "saving": "सहेजा जा रहा है…",
+    "languageSaved": "भाषा अपडेट हो गई"
+  },
+  "deals": {
+    "colIntro": "परिचय",
+    "colTermSheet": "टर्म शीट",
+    "colClosed": "बंद",
+    "colPassed": "छोड़ी गई",
+    "noDealsCol": "कोई डील नहीं",
+    "investorFallback": "निवेशक",
+    "startupFallback": "स्टार्टअप",
+    "interestedInvestor": "रुचि रखने वाला निवेशक",
+    "upgradeSeeWho": "कौन है यह देखने के लिए अपग्रेड करें",
+    "closeDeal": "डील बंद करें",
+    "confirmClose": "बंद करने की पुष्टि करें",
+    "amountRaisedPlaceholder": "जुटाई गई राशि",
+    "feeNotice": "2% सफलता शुल्क का चालान स्वचालित रूप से जनरेट होगा।",
+    "closing": "बंद हो रहा है…",
+    "confirm": "पुष्टि करें",
+    "invoiceSent": "चालान भेजा गया",
+    "emptyTitle": "अभी तक कोई डील नहीं",
+    "emptyDesc": "जब आप किसी स्टार्टअप को संदेश भेजते हैं या वे जवाब देते हैं, तो डील यहां दिखाई देंगी।"
+  },
+  "investorProfile": {
+    "back": "निवेशकों पर वापस जाएं",
+    "tierProInvestor": "प्रो इन्वेस्टर",
+    "tierInstitutional": "संस्थागत",
+    "aumFundSize": "AUM / फंड आकार",
+    "investmentsLabel": "निवेश",
+    "avgHold": "औसत होल्ड अवधि",
+    "investorDetail": "निवेशक विवरण",
+    "portfolioLabel": "पोर्टफोलियो",
+    "languagesLabel": "भाषाएं",
+    "investmentPreferences": "निवेश प्राथमिकताएं",
+    "industriesLabel": "उद्योग",
+    "stagesLabel": "चरण",
+    "checkSizeSuffix": "निवेश आकार",
+    "followOnPolicy": "फॉलो-ऑन नीति",
+    "boardPreference": "बोर्ड प्राथमिकता",
+    "portfolioCompanies": "पोर्टफोलियो कंपनियां",
+    "founderCta": "क्या आप संस्थापक हैं? {name} जैसे निवेशकों के सामने आने के लिए CapitalReach पर अपनी प्रोफ़ाइल बनाएं।",
+    "website": "वेबसाइट",
+    "angelInvestor": "एंजल निवेशक",
+    "ventureCapital": "वेंचर कैपिटल",
+    "familyOffice": "फैमिली ऑफिस",
+    "corporateInvestor": "कॉर्पोरेट निवेशक"
   }
 }

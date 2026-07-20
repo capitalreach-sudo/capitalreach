@@ -409,7 +409,13 @@
     "earlyAccess": "Ранний доступ",
     "finalCtaLaunchSub": "Присоединяйтесь к первым {target} участникам и получите полный доступ бесплатно — карта не требуется.",
     "finalCtaSub": "Присоединяйтесь к раннему сообществу основателей и инвесторов на CapitalReach. Начните бесплатно уже сегодня.",
-    "saveAnnual": "Экономьте ${amount}/год при годовой оплате"
+    "saveAnnual": "Экономьте ${amount}/год при годовой оплате",
+    "feature_investorBrowse": "Просмотр листингов",
+    "feature_investorFinancials": "Полные финансы",
+    "feature_investorMessaging": "Сообщения основателям",
+    "feature_investorDiligence": "ИИ due diligence",
+    "feature_investorMatching": "Умный ИИ-подбор",
+    "feature_investorExport": "Экспорт данных"
   },
   "cta": {
     "headline": "Правильный капитал на нужной стадии.",
@@ -1006,7 +1012,9 @@
     "required": "обязательно",
     "sort": "Сортировка",
     "custom": "Индивидуально",
-    "open": "Открыто"
+    "open": "Открыто",
+    "printTagline": "CapitalReach — Рынок частного капитала",
+    "view": "Просмотр"
   },
   "errors": {
     "required": "Это поле обязательно",
@@ -1097,7 +1105,12 @@
     "traction": "Трекшн",
     "unlockFinancials": "Обновите тариф, чтобы разблокировать полные финансы и питч-дек.",
     "viewPitchDeck": "Просмотреть питч-дек",
-    "viewedThisWeek": "{count} инвесторов просмотрели на этой неделе"
+    "viewedThisWeek": "{count} инвесторов просмотрели на этой неделе",
+    "removeWatchlist": "Удалить из списка наблюдения",
+    "new": "Новое",
+    "runwayMonths": "{n} мес. запаса",
+    "unlockScores": "Обновите тариф, чтобы разблокировать финансы и ИИ-оценки",
+    "scoreTitle": "ИИ-оценка: {score}/100"
   },
   "investors": {
     "pageTitle": "Верифицированные инвесторы",
@@ -1515,5 +1528,62 @@
       "errorCreating": "Ошибка создания профиля:",
       "created": "Профиль создан! Начните открывать стартапы на CapitalReach."
     }
+  },
+  "banner": {
+    "text": "Бесплатно для первых {target} участников — присоединилось {memberCount}/{target}, осталось мест: {spotsLeft}.",
+    "cta": "Займите своё место"
+  },
+  "locale": {
+    "changedTo": "Язык изменён на {name}",
+    "currentLangAria": "Текущий язык: {name}. Нажмите, чтобы изменить.",
+    "selectLanguage": "Выбрать язык",
+    "rtl": "RTL",
+    "save": "Сохранить язык",
+    "saving": "Сохранение…",
+    "languageSaved": "Язык обновлён"
+  },
+  "deals": {
+    "colIntro": "Знакомство",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Закрыта",
+    "colPassed": "Отклонена",
+    "noDealsCol": "Нет сделок",
+    "investorFallback": "Инвестор",
+    "startupFallback": "Стартап",
+    "interestedInvestor": "Заинтересованный инвестор",
+    "upgradeSeeWho": "Обновите тариф, чтобы увидеть, кто это",
+    "closeDeal": "Закрыть сделку",
+    "confirmClose": "Подтвердить закрытие",
+    "amountRaisedPlaceholder": "Привлечённая сумма",
+    "feeNotice": "Счёт на комиссию успеха 2% будет выставлен автоматически.",
+    "closing": "Закрытие…",
+    "confirm": "Подтвердить",
+    "invoiceSent": "Счёт отправлен",
+    "emptyTitle": "Сделок пока нет",
+    "emptyDesc": "Сделки появятся здесь, когда вы напишете стартапу или он ответит."
+  },
+  "investorProfile": {
+    "back": "Назад к инвесторам",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Институциональный",
+    "aumFundSize": "AUM / Размер фонда",
+    "investmentsLabel": "Инвестиции",
+    "avgHold": "Средний срок владения",
+    "investorDetail": "Детали инвестора",
+    "portfolioLabel": "Портфель",
+    "languagesLabel": "Языки",
+    "investmentPreferences": "Инвестиционные предпочтения",
+    "industriesLabel": "Отрасли",
+    "stagesLabel": "Стадии",
+    "checkSizeSuffix": "размер чека",
+    "followOnPolicy": "Политика последующих инвестиций",
+    "boardPreference": "Предпочтение по месту в совете",
+    "portfolioCompanies": "Портфельные компании",
+    "founderCta": "Вы основатель? Создайте профиль на CapitalReach, чтобы быть на виду у таких инвесторов, как {name}.",
+    "website": "Веб-сайт",
+    "angelInvestor": "Ангел-инвестор",
+    "ventureCapital": "Венчурный капитал",
+    "familyOffice": "Семейный офис",
+    "corporateInvestor": "Корпоративный инвестор"
   }
 }

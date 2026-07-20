@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { LOCALES, LOCALE_META } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   initialLocale?: Locale;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function LanguageSettingsSelector({ initialLocale = "en", translations }: Props) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [selected, setSelected] = useState<Locale>(initialLocale);
   const [saved, setSaved] = useState(false);
@@ -34,9 +36,9 @@ export function LanguageSettingsSelector({ initialLocale = "en", translations }:
     }
   };
 
-  const saveLabel = translations?.save ?? "Save language";
-  const savingLabel = translations?.saving ?? "Saving…";
-  const savedLabel = translations?.languageSaved ?? "Language updated";
+  const saveLabel = translations?.save ?? t("locale.save");
+  const savingLabel = translations?.saving ?? t("locale.saving");
+  const savedLabel = translations?.languageSaved ?? t("locale.languageSaved");
 
   return (
     <div className="space-y-3">
@@ -64,7 +66,7 @@ export function LanguageSettingsSelector({ initialLocale = "en", translations }:
               </div>
               {meta.rtl && (
                 <span className="text-[9px] text-[#9C8E82] uppercase tracking-[0.06em] flex-shrink-0">
-                  RTL
+                  {t("locale.rtl")}
                 </span>
               )}
               {active && <Check className="w-4 h-4 text-[#B5651D] flex-shrink-0" />}

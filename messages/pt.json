@@ -409,7 +409,13 @@
     "earlyAccess": "Acesso antecipado",
     "finalCtaLaunchSub": "Junte-se aos primeiros {target} membros e obtenha acesso completo grátis — sem cartão necessário.",
     "finalCtaSub": "Junte-se à comunidade inicial de fundadores e investidores na CapitalReach. Comece grátis hoje.",
-    "saveAnnual": "Poupe ${amount}/ano com o plano anual"
+    "saveAnnual": "Poupe ${amount}/ano com o plano anual",
+    "feature_investorBrowse": "Explorar listagens",
+    "feature_investorFinancials": "Finanças completas",
+    "feature_investorMessaging": "Mensagens aos fundadores",
+    "feature_investorDiligence": "Due diligence com IA",
+    "feature_investorMatching": "Correspondência inteligente IA",
+    "feature_investorExport": "Exportação de dados"
   },
   "cta": {
     "headline": "O capital certo, no estágio certo.",
@@ -1006,7 +1012,9 @@
     "required": "obrigatório",
     "sort": "Ordenar",
     "custom": "Personalizado",
-    "open": "Aberto"
+    "open": "Aberto",
+    "printTagline": "CapitalReach — Mercado de Capital Privado",
+    "view": "Ver"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -1097,7 +1105,12 @@
     "traction": "Tração",
     "unlockFinancials": "Faça upgrade do seu plano para desbloquear as finanças completas e o pitch deck.",
     "viewPitchDeck": "Ver pitch deck",
-    "viewedThisWeek": "{count} investidores visualizaram esta semana"
+    "viewedThisWeek": "{count} investidores visualizaram esta semana",
+    "removeWatchlist": "Remover da watchlist",
+    "new": "Novo",
+    "runwayMonths": "{n} meses de runway",
+    "unlockScores": "Faça upgrade para desbloquear finanças e pontuações de IA",
+    "scoreTitle": "Pontuação IA: {score}/100"
   },
   "investors": {
     "pageTitle": "Investidores verificados",
@@ -1515,5 +1528,62 @@
       "errorCreating": "Erro ao criar o perfil:",
       "created": "Perfil criado! Comece a descobrir startups na CapitalReach."
     }
+  },
+  "banner": {
+    "text": "Grátis para os primeiros {target} membros — {memberCount}/{target} aderiram, restam {spotsLeft} vagas.",
+    "cta": "Garanta o seu lugar"
+  },
+  "locale": {
+    "changedTo": "Idioma alterado para {name}",
+    "currentLangAria": "Idioma atual: {name}. Clique para alterar.",
+    "selectLanguage": "Selecionar idioma",
+    "rtl": "RTL",
+    "save": "Guardar idioma",
+    "saving": "A guardar…",
+    "languageSaved": "Idioma atualizado"
+  },
+  "deals": {
+    "colIntro": "Introdução",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Fechado",
+    "colPassed": "Recusado",
+    "noDealsCol": "Sem negócios",
+    "investorFallback": "Investidor",
+    "startupFallback": "Startup",
+    "interestedInvestor": "Investidor interessado",
+    "upgradeSeeWho": "Faça upgrade para ver quem",
+    "closeDeal": "Fechar negócio",
+    "confirmClose": "Confirmar fecho",
+    "amountRaisedPlaceholder": "Montante angariado",
+    "feeNotice": "Uma fatura de taxa de sucesso de 2% será gerada automaticamente.",
+    "closing": "A fechar…",
+    "confirm": "Confirmar",
+    "invoiceSent": "Fatura enviada",
+    "emptyTitle": "Ainda sem negócios",
+    "emptyDesc": "Os negócios aparecem aqui quando enviar uma mensagem a uma startup ou ela responder."
+  },
+  "investorProfile": {
+    "back": "Voltar aos investidores",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Institucional",
+    "aumFundSize": "AUM / Tamanho do fundo",
+    "investmentsLabel": "Investimentos",
+    "avgHold": "Período médio de retenção",
+    "investorDetail": "Detalhe do investidor",
+    "portfolioLabel": "Portefólio",
+    "languagesLabel": "Idiomas",
+    "investmentPreferences": "Preferências de investimento",
+    "industriesLabel": "Indústrias",
+    "stagesLabel": "Fases",
+    "checkSizeSuffix": "tamanho de investimento",
+    "followOnPolicy": "Política de acompanhamento",
+    "boardPreference": "Preferência de conselho",
+    "portfolioCompanies": "Empresas do portefólio",
+    "founderCta": "É fundador? Crie o seu perfil na CapitalReach para ficar visível a investidores como {name}.",
+    "website": "Website",
+    "angelInvestor": "Investidor anjo",
+    "ventureCapital": "Capital de risco",
+    "familyOffice": "Family Office",
+    "corporateInvestor": "Investidor corporativo"
   }
 }

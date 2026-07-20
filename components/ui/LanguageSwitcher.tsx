@@ -4,12 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import { Globe, Check, ChevronDown } from "lucide-react";
 import { LOCALES, LOCALE_META } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   currentLocale: Locale;
 }
 
 export function LanguageSwitcher({ currentLocale }: Props) {
+  const { t } = useTranslation();
   const [open, setOpen]       = useState(false);
   const [loading, setLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -66,7 +68,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
       <button
         onClick={() => { if (!loading) setOpen(o => !o); }}
         disabled={loading}
-        aria-label={`Current language: ${current.name}. Click to change.`}
+        aria-label={t("locale.currentLangAria", { name: current.name })}
         aria-expanded={open}
         aria-haspopup="listbox"
         style={{
@@ -134,7 +136,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
 
           <div
             role="listbox"
-            aria-label="Select language"
+            aria-label={t("locale.selectLanguage")}
             style={{
               position: "absolute", right: 0, top: "calc(100% + 6px)", zIndex: 50,
               background: "#F5F0E8", border: "1px solid #D8D0C4",
@@ -151,7 +153,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
                 fontSize: "10px", textTransform: "uppercase",
                 letterSpacing: "0.08em", color: "#9C8E82",
               }}>
-                Select language
+                {t("locale.selectLanguage")}
               </span>
             </div>
 
@@ -195,7 +197,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
                     <span style={{
                       fontFamily: "'DM Sans', sans-serif", fontSize: "8px",
                       color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0,
-                    }}>RTL</span>
+                    }}>{t("locale.rtl")}</span>
                   )}
                 </button>
               );

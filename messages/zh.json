@@ -403,7 +403,13 @@
     "earlyAccess": "抢先体验",
     "finalCtaLaunchSub": "加入首批 {target} 名会员，免费获得完整访问权限 — 无需信用卡。",
     "finalCtaSub": "加入 CapitalReach 上创始人和投资者的早期社区。立即免费开始。",
-    "saveAnnual": "年付可节省 ${amount}/年"
+    "saveAnnual": "年付可节省 ${amount}/年",
+    "feature_investorBrowse": "浏览项目列表",
+    "feature_investorFinancials": "完整财务数据",
+    "feature_investorMessaging": "创始人消息",
+    "feature_investorDiligence": "AI尽职调查",
+    "feature_investorMatching": "AI智能匹配",
+    "feature_investorExport": "数据导出"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",
@@ -892,7 +898,12 @@
     "scoredBy": "由CapitalReach AI评分",
     "share": "分享",
     "milestones": "里程碑",
-    "unlockFinancials": "升级您的方案以解锁完整财务数据和路演材料。"
+    "unlockFinancials": "升级您的方案以解锁完整财务数据和路演材料。",
+    "removeWatchlist": "从关注列表移除",
+    "new": "新",
+    "runwayMonths": "{n}个月现金跑道",
+    "unlockScores": "升级以解锁财务数据和AI评分",
+    "scoreTitle": "AI评分：{score}/100"
   },
   "startupDetail": {
     "overview": "概述",
@@ -1081,7 +1092,9 @@
     "required": "必填",
     "sort": "排序方式",
     "custom": "定制",
-    "open": "不限"
+    "open": "不限",
+    "printTagline": "CapitalReach — 私募资本交易平台",
+    "view": "查看"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
@@ -1419,5 +1432,62 @@
     "contact": "联系",
     "terms": "条款",
     "privacy": "隐私政策"
+  },
+  "banner": {
+    "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",
+    "cta": "抢占名额"
+  },
+  "locale": {
+    "changedTo": "语言已切换为 {name}",
+    "currentLangAria": "当前语言：{name}。点击更改。",
+    "selectLanguage": "选择语言",
+    "rtl": "从右到左",
+    "save": "保存语言",
+    "saving": "保存中…",
+    "languageSaved": "语言已更新"
+  },
+  "deals": {
+    "colIntro": "初步接触",
+    "colTermSheet": "条款清单",
+    "colClosed": "已完成",
+    "colPassed": "已放弃",
+    "noDealsCol": "暂无交易",
+    "investorFallback": "投资者",
+    "startupFallback": "初创公司",
+    "interestedInvestor": "感兴趣的投资者",
+    "upgradeSeeWho": "升级以查看是谁",
+    "closeDeal": "完成交易",
+    "confirmClose": "确认完成",
+    "amountRaisedPlaceholder": "已筹集金额",
+    "feeNotice": "系统将自动生成2%的成功费发票。",
+    "closing": "处理中…",
+    "confirm": "确认",
+    "invoiceSent": "发票已发送",
+    "emptyTitle": "暂无交易",
+    "emptyDesc": "当您给初创公司发消息或对方回复后，交易将显示在此处。"
+  },
+  "investorProfile": {
+    "back": "返回投资者列表",
+    "tierProInvestor": "高级投资者",
+    "tierInstitutional": "机构投资者",
+    "aumFundSize": "资产管理规模/基金规模",
+    "investmentsLabel": "投资项目",
+    "avgHold": "平均持有期",
+    "investorDetail": "投资者详情",
+    "portfolioLabel": "投资组合",
+    "languagesLabel": "语言",
+    "investmentPreferences": "投资偏好",
+    "industriesLabel": "行业",
+    "stagesLabel": "阶段",
+    "checkSizeSuffix": "投资额度",
+    "followOnPolicy": "跟投政策",
+    "boardPreference": "董事会席位偏好",
+    "portfolioCompanies": "投资组合公司",
+    "founderCta": "您是创始人吗？在CapitalReach创建您的资料，让像{name}这样的投资者看到您。",
+    "website": "网站",
+    "angelInvestor": "天使投资人",
+    "ventureCapital": "风险投资",
+    "familyOffice": "家族办公室",
+    "corporateInvestor": "企业投资者"
   }
 }

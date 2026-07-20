@@ -403,7 +403,13 @@
     "earlyAccess": "Acceso anticipado",
     "finalCtaLaunchSub": "Únete a los primeros {target} miembros y obtén acceso completo gratis — sin tarjeta requerida.",
     "finalCtaSub": "Únete a la comunidad temprana de fundadores e inversores en CapitalReach. Empieza gratis hoy.",
-    "saveAnnual": "Ahorra ${amount}/año con el plan anual"
+    "saveAnnual": "Ahorra ${amount}/año con el plan anual",
+    "feature_investorBrowse": "Explorar listados",
+    "feature_investorFinancials": "Finanzas completas",
+    "feature_investorMessaging": "Mensajería con fundadores",
+    "feature_investorDiligence": "Due diligence con IA",
+    "feature_investorMatching": "Matching inteligente IA",
+    "feature_investorExport": "Exportación de datos"
   },
   "cta": {
     "headline": "El capital correcto, en la etapa correcta.",
@@ -892,7 +898,12 @@
     "scoredBy": "Puntuado por CapitalReach IA",
     "share": "Compartir",
     "milestones": "Hitos",
-    "unlockFinancials": "Actualiza tu plan para acceder a los datos financieros completos y al pitch deck."
+    "unlockFinancials": "Actualiza tu plan para acceder a los datos financieros completos y al pitch deck.",
+    "removeWatchlist": "Quitar de la watchlist",
+    "new": "Nuevo",
+    "runwayMonths": "{n} meses de runway",
+    "unlockScores": "Mejora tu plan para desbloquear finanzas y puntuaciones de IA",
+    "scoreTitle": "Puntuación IA: {score}/100"
   },
   "startupDetail": {
     "overview": "Resumen",
@@ -1081,7 +1092,9 @@
     "required": "obligatorio",
     "sort": "Ordenar por",
     "custom": "Personalizado",
-    "open": "Abierto"
+    "open": "Abierto",
+    "printTagline": "CapitalReach — Mercado de capital privado",
+    "view": "Ver"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",
@@ -1419,5 +1432,62 @@
     "contact": "Contacto",
     "terms": "Términos",
     "privacy": "Privacidad"
+  },
+  "banner": {
+    "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",
+    "cta": "Reserva tu lugar"
+  },
+  "locale": {
+    "changedTo": "Idioma cambiado a {name}",
+    "currentLangAria": "Idioma actual: {name}. Haz clic para cambiar.",
+    "selectLanguage": "Seleccionar idioma",
+    "rtl": "RTL",
+    "save": "Guardar idioma",
+    "saving": "Guardando…",
+    "languageSaved": "Idioma actualizado"
+  },
+  "deals": {
+    "colIntro": "Intro",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Cerrado",
+    "colPassed": "Rechazado",
+    "noDealsCol": "Sin deals",
+    "investorFallback": "Inversor",
+    "startupFallback": "Startup",
+    "interestedInvestor": "Inversor interesado",
+    "upgradeSeeWho": "Mejora tu plan para ver quién",
+    "closeDeal": "Cerrar deal",
+    "confirmClose": "Confirmar cierre",
+    "amountRaisedPlaceholder": "Monto recaudado",
+    "feeNotice": "Se generará automáticamente una factura de comisión de éxito del 2 %.",
+    "closing": "Cerrando…",
+    "confirm": "Confirmar",
+    "invoiceSent": "Factura enviada",
+    "emptyTitle": "Aún no hay deals",
+    "emptyDesc": "Los deals aparecen aquí cuando envías un mensaje a una startup o ella responde."
+  },
+  "investorProfile": {
+    "back": "Volver a inversores",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Institucional",
+    "aumFundSize": "AUM / Tamaño del fondo",
+    "investmentsLabel": "Inversiones",
+    "avgHold": "Periodo de tenencia prom.",
+    "investorDetail": "Detalle del inversor",
+    "portfolioLabel": "Cartera",
+    "languagesLabel": "Idiomas",
+    "investmentPreferences": "Preferencias de inversión",
+    "industriesLabel": "Industrias",
+    "stagesLabel": "Etapas",
+    "checkSizeSuffix": "tamaño de inversión",
+    "followOnPolicy": "Política de seguimiento",
+    "boardPreference": "Preferencia de junta",
+    "portfolioCompanies": "Empresas de la cartera",
+    "founderCta": "¿Eres fundador? Crea tu perfil en CapitalReach para estar frente a inversores como {name}.",
+    "website": "Sitio web",
+    "angelInvestor": "Inversor ángel",
+    "ventureCapital": "Capital de riesgo",
+    "familyOffice": "Family Office",
+    "corporateInvestor": "Inversor corporativo"
   }
 }

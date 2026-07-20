@@ -6,10 +6,12 @@ import { formatCurrency, daysSince, getInitials, STAGE_LABELS } from "@/lib/util
 import { canAccessFinancials } from "@/types";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Score Ring ────────────────────────────────────────────────────────────────
 
 function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionTier | null }) {
+  const { t } = useTranslation();
   const size  = 40;
   const sw    = 3.5;
   const r     = size / 2 - sw;
@@ -48,7 +50,7 @@ function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionT
   const dash = (score / 100) * circ;
 
   return (
-    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }} title={`AI Score: ${score}/100`}>
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }} title={t("startup.scoreTitle", { score })}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
         <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-paper-4)" strokeWidth={sw} />
         <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-copper)" strokeWidth={sw}
@@ -73,6 +75,7 @@ interface StartupCardProps {
 // ── Card ──────────────────────────────────────────────────────────────────────
 
 export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupCardProps) {
+  const { t } = useTranslation();
   const canSeeFinancials = canAccessFinancials(investorTier ?? null);
   const isNew            = daysSince(startup.created_at) <= 5;
   const score            = startup.vaultrise_score ?? null;
@@ -81,7 +84,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
     e.preventDefault();
     e.stopPropagation();
     onSave?.(startup.id);
-    notify[isSaved ? "info" : "success"](isSaved ? "Removed from watchlist" : "Saved to watchlist");
+    notify[isSaved ? "info" : "success"](isSaved ? t("toast.unsaved") : t("toast.saved"));
   }
 
   return (
@@ -123,7 +126,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               display:    "flex",
               alignItems: "center",
             }}
-            aria-label={isSaved ? "Remove from watchlist" : "Save to watchlist"}
+            aria-label={isSaved ? t("startup.removeWatchlist") : t("startup.saveWatchlist")}
           >
             <Bookmark style={{
               width:  16,
@@ -208,7 +211,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               textTransform: "uppercase",
               letterSpacing: "0.05em",
             }}>
-              New
+              {t("startup.new")}
             </span>
           )}
         </div>
@@ -216,11 +219,11 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
         {/* Row 3 — Metrics */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
           {[
-            { label: "MRR",    value: startup.mrr         ? formatCurrency(startup.mrr, true)                                              : null, gated: true  },
-            { label: "ARR",    value: startup.arr         ? formatCurrency(startup.arr, true)                                              : null, gated: true  },
-            { label: "Growth", value: startup.growth_rate != null ? `${startup.growth_rate >= 0 ? "+" : ""}${startup.growth_rate}%`        : null, gated: false },
-          ].map(({ label, value, gated }) => (
-            <div key={label} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "10px 10px 8px" }}>
+            { key: "mrr",    label: t("startupDetail.mrr"),    value: startup.mrr         ? formatCurrency(startup.mrr, true)                                              : null, gated: true  },
+            { key: "arr",    label: t("startupDetail.arr"),    value: startup.arr         ? formatCurrency(startup.arr, true)                                              : null, gated: true  },
+            { key: "growth", label: t("startupDetail.growth"), value: startup.growth_rate != null ? `${startup.growth_rate >= 0 ? "+" : ""}${startup.growth_rate}%`        : null, gated: false },
+          ].map(({ key, label, value, gated }) => (
+            <div key={key} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "10px 10px 8px" }}>
               <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "5px" }}>
                 {label}
               </div>
@@ -234,7 +237,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
                   fontFamily: "'JetBrains Mono', monospace",
                   fontWeight: 600,
                   fontSize:   "13px",
-                  color:      startup.growth_rate != null && label === "Growth"
+                  color:      startup.growth_rate != null && key === "growth"
                     ? startup.growth_rate >= 0 ? "var(--cr-up)" : "var(--cr-down)"
                     : "var(--cr-ink)",
                 }}>
@@ -257,7 +260,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
         }}>
           <div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>
-              Raising
+              {t("startupDetail.raising")}
             </div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
               {formatCurrency(startup.funding_target, true)}
@@ -265,7 +268,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           </div>
           {startup.runway_months != null && (
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-              {startup.runway_months}mo runway
+              {t("startup.runwayMonths", { n: startup.runway_months })}
             </div>
           )}
         </div>
@@ -289,7 +292,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               }}
             >
               <Lock style={{ width: 10, height: 10 }} />
-              Upgrade to unlock financials &amp; AI scores
+              {t("startup.unlockScores")}
             </Link>
           </div>
         )}

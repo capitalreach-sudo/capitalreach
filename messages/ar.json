@@ -403,7 +403,13 @@
     "earlyAccess": "وصول مبكر",
     "finalCtaLaunchSub": "انضم إلى أول {target} عضو واحصل على وصول كامل مجاناً — بدون بطاقة مطلوبة.",
     "finalCtaSub": "انضم إلى المجتمع المبكر للمؤسسين والمستثمرين على CapitalReach. ابدأ مجاناً اليوم.",
-    "saveAnnual": "وفّر ${amount} سنوياً مع الخطة السنوية"
+    "saveAnnual": "وفّر ${amount} سنوياً مع الخطة السنوية",
+    "feature_investorBrowse": "تصفح القوائم",
+    "feature_investorFinancials": "البيانات المالية الكاملة",
+    "feature_investorMessaging": "مراسلة المؤسسين",
+    "feature_investorDiligence": "العناية الواجبة بالذكاء الاصطناعي",
+    "feature_investorMatching": "مطابقة ذكية بالذكاء الاصطناعي",
+    "feature_investorExport": "تصدير البيانات"
   },
   "cta": {
     "headline": "رأس المال المناسب في المرحلة المناسبة.",
@@ -892,7 +898,12 @@
     "scoredBy": "تم التقييم بواسطة CapitalReach AI",
     "share": "مشاركة",
     "milestones": "المعالم",
-    "unlockFinancials": "قم بترقية خطتك للوصول إلى البيانات المالية الكاملة والمواد التقديمية."
+    "unlockFinancials": "قم بترقية خطتك للوصول إلى البيانات المالية الكاملة والمواد التقديمية.",
+    "removeWatchlist": "إزالة من قائمة المراقبة",
+    "new": "جديد",
+    "runwayMonths": "{n} أشهر من السيولة المتبقية",
+    "unlockScores": "قم بالترقية لفتح البيانات المالية ودرجات الذكاء الاصطناعي",
+    "scoreTitle": "درجة الذكاء الاصطناعي: {score}/100"
   },
   "startupDetail": {
     "overview": "نظرة عامة",
@@ -1081,7 +1092,9 @@
     "required": "مطلوب",
     "sort": "ترتيب حسب",
     "custom": "مخصص",
-    "open": "مفتوح"
+    "open": "مفتوح",
+    "printTagline": "CapitalReach — سوق رأس المال الخاص",
+    "view": "عرض"
   },
   "onboarding": {
     "welcomeTitle": "مرحباً بك في CapitalReach",
@@ -1419,5 +1432,62 @@
     "contact": "اتصل بنا",
     "terms": "الشروط",
     "privacy": "الخصوصية"
+  },
+  "banner": {
+    "text": "مجاني لأول {target} عضو — انضم {memberCount}/{target}، تبقى {spotsLeft} مقعد.",
+    "cta": "احجز مكانك"
+  },
+  "locale": {
+    "changedTo": "تم تغيير اللغة إلى {name}",
+    "currentLangAria": "اللغة الحالية: {name}. انقر للتغيير.",
+    "selectLanguage": "اختر اللغة",
+    "rtl": "من اليمين لليسار",
+    "save": "حفظ اللغة",
+    "saving": "جارٍ الحفظ…",
+    "languageSaved": "تم تحديث اللغة"
+  },
+  "deals": {
+    "colIntro": "مقدمة",
+    "colTermSheet": "ورقة الشروط",
+    "colClosed": "مغلقة",
+    "colPassed": "متجاوزة",
+    "noDealsCol": "لا توجد صفقات",
+    "investorFallback": "مستثمر",
+    "startupFallback": "شركة ناشئة",
+    "interestedInvestor": "مستثمر مهتم",
+    "upgradeSeeWho": "قم بالترقية لمعرفة من",
+    "closeDeal": "إغلاق الصفقة",
+    "confirmClose": "تأكيد الإغلاق",
+    "amountRaisedPlaceholder": "المبلغ المُجمع",
+    "feeNotice": "سيتم إصدار فاتورة رسوم نجاح بنسبة 2% تلقائياً.",
+    "closing": "جارٍ الإغلاق…",
+    "confirm": "تأكيد",
+    "invoiceSent": "تم إرسال الفاتورة",
+    "emptyTitle": "لا توجد صفقات بعد",
+    "emptyDesc": "تظهر الصفقات هنا عند مراسلة شركة ناشئة أو ردها عليك."
+  },
+  "investorProfile": {
+    "back": "العودة إلى المستثمرين",
+    "tierProInvestor": "مستثمر محترف",
+    "tierInstitutional": "مؤسسي",
+    "aumFundSize": "الأصول المُدارة / حجم الصندوق",
+    "investmentsLabel": "الاستثمارات",
+    "avgHold": "متوسط مدة الاحتفاظ",
+    "investorDetail": "تفاصيل المستثمر",
+    "portfolioLabel": "المحفظة",
+    "languagesLabel": "اللغات",
+    "investmentPreferences": "تفضيلات الاستثمار",
+    "industriesLabel": "القطاعات",
+    "stagesLabel": "المراحل",
+    "checkSizeSuffix": "حجم الاستثمار",
+    "followOnPolicy": "سياسة الاستثمار المتابع",
+    "boardPreference": "تفضيل مقعد مجلس الإدارة",
+    "portfolioCompanies": "شركات المحفظة",
+    "founderCta": "هل أنت مؤسس؟ أنشئ ملفك الشخصي على CapitalReach لتظهر أمام مستثمرين مثل {name}.",
+    "website": "الموقع الإلكتروني",
+    "angelInvestor": "مستثمر ملاك",
+    "ventureCapital": "رأس مال جريء",
+    "familyOffice": "مكتب عائلي",
+    "corporateInvestor": "مستثمر مؤسسي"
   }
 }

@@ -4,16 +4,20 @@ import { useState } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { DollarSign, X, CheckCircle2, TrendingUp, Lock } from "lucide-react";
 import type { Deal, DealStatus } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Column config ─────────────────────────────────────────────────────────────
 
-const COLUMNS: { status: DealStatus; label: string; copperActive: boolean }[] = [
-  { status: "intro",          label: "Intro",         copperActive: false },
-  { status: "due_diligence",  label: "Due Diligence", copperActive: false },
-  { status: "term_sheet",     label: "Term Sheet",    copperActive: true  },
-  { status: "closed",         label: "Closed",        copperActive: false },
-  { status: "passed",         label: "Passed",        copperActive: false },
-];
+function useColumns(): { status: DealStatus; label: string; copperActive: boolean }[] {
+  const { t } = useTranslation();
+  return [
+    { status: "intro",          label: t("deals.colIntro"),        copperActive: false },
+    { status: "due_diligence",  label: t("dashboard.dueDiligence"), copperActive: false },
+    { status: "term_sheet",     label: t("deals.colTermSheet"),     copperActive: true  },
+    { status: "closed",         label: t("deals.colClosed"),        copperActive: false },
+    { status: "passed",         label: t("deals.colPassed"),        copperActive: false },
+  ];
+}
 
 const QUICK_MOVE: DealStatus[] = ["due_diligence", "term_sheet", "passed"];
 
@@ -44,9 +48,10 @@ function colBadgeStyle(status: DealStatus, count: number): React.CSSProperties {
 // ── Empty column placeholder ──────────────────────────────────────────────────
 
 function EmptySlot() {
+  const { t } = useTranslation();
   return (
     <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", padding: "20px 12px", textAlign: "center" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>No deals</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("deals.noDealsCol")}</p>
     </div>
   );
 }
@@ -60,16 +65,18 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   onDealClose?: (id: string, amount: number) => void;
   revealIdentity?: boolean;
 }) {
+  const { t } = useTranslation();
+  const columns = useColumns();
   const [showCloseForm, setShowCloseForm] = useState(false);
   const [closeAmount, setCloseAmount]     = useState(deal.amount ? String(deal.amount) : "");
   const [closing, setClosing]             = useState(false);
 
   const realName = viewAs === "startup"
-    ? ((deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || "Investor")
-    : ((deal as any).startup?.name || "Startup");
+    ? ((deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || t("deals.investorFallback"))
+    : ((deal as any).startup?.name || t("deals.startupFallback"));
 
   const masked = viewAs === "startup" && !revealIdentity;
-  const name   = masked ? "Interested Investor" : realName;
+  const name   = masked ? t("deals.interestedInvestor") : realName;
 
   const isActive = deal.status !== "closed" && deal.status !== "passed";
 
@@ -101,7 +108,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       </p>
       {masked && (
         <a href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>
-          Upgrade to see who →
+          {t("deals.upgradeSeeWho")} →
         </a>
       )}
       {deal.amount != null && (
@@ -119,7 +126,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           {QUICK_MOVE.filter(s => s !== deal.status).map((s) => (
             <button key={s} onClick={() => onStatusChange(deal.id, s)}
               style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
-              → {COLUMNS.find(c => c.status === s)?.label}
+              → {columns.find(c => c.status === s)?.label}
             </button>
           ))}
         </div>
@@ -129,27 +136,27 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {isActive && onDealClose && !showCloseForm && (
         <button onClick={() => setShowCloseForm(true)}
           style={{ marginTop: "10px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "7px 0", cursor: "pointer" }}>
-          <CheckCircle2 style={{ width: 12, height: 12 }} /> Close Deal
+          <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.closeDeal")}
         </button>
       )}
 
       {/* Close form */}
       {showCloseForm && (
         <div style={{ marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>Confirm Close</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>{t("deals.confirmClose")}</p>
           <div style={{ position: "relative", marginBottom: "8px" }}>
             <DollarSign style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "var(--cr-ink-4)" }} />
-            <input type="number" placeholder="Amount raised"
+            <input type="number" placeholder={t("deals.amountRaisedPlaceholder")}
               value={closeAmount} onChange={e => setCloseAmount(e.target.value)}
               style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "28px", paddingRight: "10px", paddingTop: "6px", paddingBottom: "6px", outline: "none", boxSizing: "border-box" }} />
           </div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "10px" }}>
-            A 2% success fee invoice will be generated automatically.
+            {t("deals.feeNotice")}
           </p>
           <div style={{ display: "flex", gap: "6px" }}>
             <button onClick={handleClose} disabled={closing}
               style={{ flex: 1, height: "32px", background: "var(--cr-up)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", cursor: "pointer", opacity: closing ? 0.6 : 1 }}>
-              {closing ? "Closing…" : "Confirm"}
+              {closing ? t("deals.closing") : t("deals.confirm")}
             </button>
             <button onClick={() => setShowCloseForm(false)}
               style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
@@ -161,7 +168,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {(deal as any).success_fee_invoiced && (
         <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
-          Invoice sent
+          {t("deals.invoiceSent")}
         </span>
       )}
     </div>
@@ -171,13 +178,16 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true }: DealKanbanProps) {
+  const { t } = useTranslation();
+  const columns = useColumns();
+
   if (deals.length === 0) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px", textAlign: "center" }}>
         <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>No deals yet</p>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("deals.emptyTitle")}</p>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>
-          Deals appear here when you message a startup or they respond.
+          {t("deals.emptyDesc")}
         </p>
       </div>
     );
@@ -186,7 +196,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   return (
     <div style={{ overflowX: "auto" }}>
       <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
-        {COLUMNS.map(col => {
+        {columns.map(col => {
           const colDeals = deals.filter(d => d.status === col.status);
           return (
             <div key={col.status} style={{ width: "264px", flexShrink: 0 }}>

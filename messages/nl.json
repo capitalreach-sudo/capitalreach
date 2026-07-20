@@ -409,7 +409,13 @@
     "earlyAccess": "Vroege toegang",
     "finalCtaLaunchSub": "Sluit u aan bij de eerste {target} leden en krijg gratis volledige toegang — geen kaart nodig.",
     "finalCtaSub": "Sluit u aan bij de vroege community van oprichters en investeerders op CapitalReach. Begin vandaag nog gratis.",
-    "saveAnnual": "Bespaar ${amount}/jaar met jaarlijks"
+    "saveAnnual": "Bespaar ${amount}/jaar met jaarlijks",
+    "feature_investorBrowse": "Aanbiedingen bekijken",
+    "feature_investorFinancials": "Volledige financiën",
+    "feature_investorMessaging": "Berichten naar oprichters",
+    "feature_investorDiligence": "AI due diligence",
+    "feature_investorMatching": "AI-slimme matching",
+    "feature_investorExport": "Gegevens exporteren"
   },
   "cta": {
     "headline": "Het juiste kapitaal, op het juiste moment.",
@@ -1006,7 +1012,9 @@
     "required": "verplicht",
     "sort": "Sorteren",
     "custom": "Op maat",
-    "open": "Open"
+    "open": "Open",
+    "printTagline": "CapitalReach — Marktplaats voor privékapitaal",
+    "view": "Bekijken"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1097,7 +1105,12 @@
     "traction": "Tractie",
     "unlockFinancials": "Upgrade uw abonnement om volledige financiën en pitch deck te ontgrendelen.",
     "viewPitchDeck": "Pitch deck bekijken",
-    "viewedThisWeek": "{count} investeerders bekeken deze week"
+    "viewedThisWeek": "{count} investeerders bekeken deze week",
+    "removeWatchlist": "Verwijderen uit watchlist",
+    "new": "Nieuw",
+    "runwayMonths": "{n} mnd cashrunway",
+    "unlockScores": "Upgrade om financiën en AI-scores te ontgrendelen",
+    "scoreTitle": "AI-score: {score}/100"
   },
   "investors": {
     "pageTitle": "Geverifieerde investeerders",
@@ -1515,5 +1528,62 @@
       "errorCreating": "Fout bij het aanmaken van profiel:",
       "created": "Profiel aangemaakt! Ontdek nu startups op CapitalReach."
     }
+  },
+  "banner": {
+    "text": "Gratis voor onze eerste {target} leden — {memberCount}/{target} aangesloten, nog {spotsLeft} plekken vrij.",
+    "cta": "Claim uw plek"
+  },
+  "locale": {
+    "changedTo": "Taal gewijzigd naar {name}",
+    "currentLangAria": "Huidige taal: {name}. Klik om te wijzigen.",
+    "selectLanguage": "Taal selecteren",
+    "rtl": "RTL",
+    "save": "Taal opslaan",
+    "saving": "Opslaan…",
+    "languageSaved": "Taal bijgewerkt"
+  },
+  "deals": {
+    "colIntro": "Intro",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Afgesloten",
+    "colPassed": "Afgewezen",
+    "noDealsCol": "Geen deals",
+    "investorFallback": "Investeerder",
+    "startupFallback": "Startup",
+    "interestedInvestor": "Geïnteresseerde investeerder",
+    "upgradeSeeWho": "Upgrade om te zien wie",
+    "closeDeal": "Deal afsluiten",
+    "confirmClose": "Afsluiting bevestigen",
+    "amountRaisedPlaceholder": "Opgehaald bedrag",
+    "feeNotice": "Er wordt automatisch een factuur voor 2% succesvergoeding gegenereerd.",
+    "closing": "Afsluiten…",
+    "confirm": "Bevestigen",
+    "invoiceSent": "Factuur verzonden",
+    "emptyTitle": "Nog geen deals",
+    "emptyDesc": "Deals verschijnen hier zodra u een startup een bericht stuurt of zij reageren."
+  },
+  "investorProfile": {
+    "back": "Terug naar investeerders",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Institutioneel",
+    "aumFundSize": "AUM / Fondsgrootte",
+    "investmentsLabel": "Investeringen",
+    "avgHold": "Gem. houdperiode",
+    "investorDetail": "Investeerdersdetail",
+    "portfolioLabel": "Portfolio",
+    "languagesLabel": "Talen",
+    "investmentPreferences": "Investeringsvoorkeuren",
+    "industriesLabel": "Sectoren",
+    "stagesLabel": "Fases",
+    "checkSizeSuffix": "investeringsgrootte",
+    "followOnPolicy": "Vervolginvesteringsbeleid",
+    "boardPreference": "Bestuursvoorkeur",
+    "portfolioCompanies": "Portfoliobedrijven",
+    "founderCta": "Bent u oprichter? Maak uw profiel aan op CapitalReach om gezien te worden door investeerders zoals {name}.",
+    "website": "Website",
+    "angelInvestor": "Angel-investeerder",
+    "ventureCapital": "Durfkapitaal",
+    "familyOffice": "Family Office",
+    "corporateInvestor": "Corporate investeerder"
   }
 }

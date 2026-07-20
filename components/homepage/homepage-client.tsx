@@ -194,12 +194,12 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
   ];
 
   const INVESTOR_FEATURES_T = [
-    { feature: "Browse listings",   values: ["✓", "✓",          "✓"]                                      as [string,string,string] },
-    { feature: "Full financials",   values: ["—", "✓",          "✓"]                                      as [string,string,string] },
-    { feature: "Founder messaging", values: ["—", "✓",          "✓"]                                      as [string,string,string] },
-    { feature: "AI due diligence",  values: ["—", "$29/report", t("common.included")]                     as [string,string,string] },
-    { feature: "AI smart matching", values: ["—", "—",          "✓"]                                      as [string,string,string] },
-    { feature: "Data export",       values: ["—", "—",          "✓"]                                      as [string,string,string] },
+    { feature: t("pricing.feature_investorBrowse"),     values: ["✓", "✓",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorFinancials"), values: ["—", "✓",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorMessaging"),  values: ["—", "✓",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorDiligence"),  values: ["—", "$29/report", t("common.included")]    as [string,string,string] },
+    { feature: t("pricing.feature_investorMatching"),   values: ["—", "—",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorExport"),     values: ["—", "—",          "✓"]                     as [string,string,string] },
   ];
 
   // Stats — filter zeros

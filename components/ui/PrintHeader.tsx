@@ -1,7 +1,7 @@
-export function PrintHeader({ title }: { title: string }) {
+export function PrintHeader({ title, tagline }: { title: string; tagline: string }) {
   return (
     <div className="print-only print-header">
-      <span>CapitalReach — Private Capital Marketplace</span>
+      <span>{tagline}</span>
       <span>{title}</span>
       <span>{new Date().toLocaleDateString("en-GB")}</span>
     </div>

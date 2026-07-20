@@ -409,7 +409,13 @@
     "earlyAccess": "Wczesny dostęp",
     "finalCtaLaunchSub": "Dołącz do pierwszych {target} członków i uzyskaj pełny dostęp za darmo — bez karty.",
     "finalCtaSub": "Dołącz do wczesnej społeczności founderów i inwestorów na CapitalReach. Zacznij za darmo już dziś.",
-    "saveAnnual": "Oszczędź ${amount}/rok przy rocznej płatności"
+    "saveAnnual": "Oszczędź ${amount}/rok przy rocznej płatności",
+    "feature_investorBrowse": "Przeglądaj oferty",
+    "feature_investorFinancials": "Pełne finanse",
+    "feature_investorMessaging": "Wiadomości do założycieli",
+    "feature_investorDiligence": "Due diligence AI",
+    "feature_investorMatching": "Inteligentne dopasowanie AI",
+    "feature_investorExport": "Eksport danych"
   },
   "cta": {
     "headline": "Właściwy kapitał, na właściwym etapie.",
@@ -1006,7 +1012,9 @@
     "required": "wymagane",
     "sort": "Sortuj",
     "custom": "Niestandardowy",
-    "open": "Otwarte"
+    "open": "Otwarte",
+    "printTagline": "CapitalReach — Rynek kapitału prywatnego",
+    "view": "Zobacz"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -1097,7 +1105,12 @@
     "traction": "Trakcja",
     "unlockFinancials": "Ulepsz plan, aby odblokować pełne finanse i pitch deck.",
     "viewPitchDeck": "Zobacz pitch deck",
-    "viewedThisWeek": "{count} inwestorów wyświetliło w tym tygodniu"
+    "viewedThisWeek": "{count} inwestorów wyświetliło w tym tygodniu",
+    "removeWatchlist": "Usuń z listy obserwowanych",
+    "new": "Nowe",
+    "runwayMonths": "Płynność na {n} mies.",
+    "unlockScores": "Ulepsz plan, aby odblokować finanse i wyniki AI",
+    "scoreTitle": "Wynik AI: {score}/100"
   },
   "investors": {
     "pageTitle": "Zweryfikowani inwestorzy",
@@ -1515,5 +1528,62 @@
       "errorCreating": "Błąd tworzenia profilu:",
       "created": "Profil utworzony! Zacznij odkrywać startupy na CapitalReach."
     }
+  },
+  "banner": {
+    "text": "Bezpłatnie dla pierwszych {target} członków — dołączyło {memberCount}/{target}, pozostało {spotsLeft} miejsc.",
+    "cta": "Zajmij swoje miejsce"
+  },
+  "locale": {
+    "changedTo": "Zmieniono język na {name}",
+    "currentLangAria": "Bieżący język: {name}. Kliknij, aby zmienić.",
+    "selectLanguage": "Wybierz język",
+    "rtl": "RTL",
+    "save": "Zapisz język",
+    "saving": "Zapisywanie…",
+    "languageSaved": "Język zaktualizowany"
+  },
+  "deals": {
+    "colIntro": "Wstęp",
+    "colTermSheet": "Term Sheet",
+    "colClosed": "Zamknięta",
+    "colPassed": "Odrzucona",
+    "noDealsCol": "Brak transakcji",
+    "investorFallback": "Inwestor",
+    "startupFallback": "Startup",
+    "interestedInvestor": "Zainteresowany inwestor",
+    "upgradeSeeWho": "Ulepsz plan, aby zobaczyć kto",
+    "closeDeal": "Zamknij transakcję",
+    "confirmClose": "Potwierdź zamknięcie",
+    "amountRaisedPlaceholder": "Zebrana kwota",
+    "feeNotice": "Faktura za 2% opłaty za sukces zostanie wygenerowana automatycznie.",
+    "closing": "Zamykanie…",
+    "confirm": "Potwierdź",
+    "invoiceSent": "Faktura wysłana",
+    "emptyTitle": "Brak transakcji",
+    "emptyDesc": "Transakcje pojawią się tutaj, gdy napiszesz do startupu lub on odpowie."
+  },
+  "investorProfile": {
+    "back": "Wróć do inwestorów",
+    "tierProInvestor": "Pro Investor",
+    "tierInstitutional": "Instytucjonalny",
+    "aumFundSize": "AUM / Wielkość funduszu",
+    "investmentsLabel": "Inwestycje",
+    "avgHold": "Śr. okres utrzymania",
+    "investorDetail": "Szczegóły inwestora",
+    "portfolioLabel": "Portfel",
+    "languagesLabel": "Języki",
+    "investmentPreferences": "Preferencje inwestycyjne",
+    "industriesLabel": "Branże",
+    "stagesLabel": "Etapy",
+    "checkSizeSuffix": "wielkość inwestycji",
+    "followOnPolicy": "Polityka inwestycji uzupełniających",
+    "boardPreference": "Preferencja miejsca w zarządzie",
+    "portfolioCompanies": "Spółki portfelowe",
+    "founderCta": "Jesteś założycielem? Stwórz swój profil na CapitalReach, aby zaistnieć przed inwestorami takimi jak {name}.",
+    "website": "Strona internetowa",
+    "angelInvestor": "Anioł biznesu",
+    "ventureCapital": "Venture capital",
+    "familyOffice": "Family Office",
+    "corporateInvestor": "Inwestor korporacyjny"
   }
 }

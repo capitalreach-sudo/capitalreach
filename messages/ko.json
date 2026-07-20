@@ -409,7 +409,13 @@
     "earlyAccess": "얼리 액세스",
     "finalCtaLaunchSub": "첫 {target}명의 회원으로 가입하고 무료로 완전한 접근 권한을 받으세요 — 카드 불필요.",
     "finalCtaSub": "CapitalReach의 창업자와 투자자로 구성된 초기 커뮤니티에 참여하세요. 오늘 무료로 시작하세요.",
-    "saveAnnual": "연간 결제 시 ${amount}/년 절약"
+    "saveAnnual": "연간 결제 시 ${amount}/년 절약",
+    "feature_investorBrowse": "목록 탐색",
+    "feature_investorFinancials": "전체 재무 정보",
+    "feature_investorMessaging": "창업자 메시지",
+    "feature_investorDiligence": "AI 실사",
+    "feature_investorMatching": "AI 스마트 매칭",
+    "feature_investorExport": "데이터 내보내기"
   },
   "cta": {
     "headline": "적절한 단계의 적절한 자본.",
@@ -1006,7 +1012,9 @@
     "required": "필수",
     "sort": "정렬",
     "custom": "맞춤형",
-    "open": "제한 없음"
+    "open": "제한 없음",
+    "printTagline": "CapitalReach — 사모 자본 마켓플레이스",
+    "view": "보기"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1097,7 +1105,12 @@
     "traction": "트랙션",
     "unlockFinancials": "전체 재무 정보와 피치덱을 잠금 해제하려면 요금제를 업그레이드하세요.",
     "viewPitchDeck": "피치덱 보기",
-    "viewedThisWeek": "이번 주 {count}명의 투자자가 조회했습니다"
+    "viewedThisWeek": "이번 주 {count}명의 투자자가 조회했습니다",
+    "removeWatchlist": "관심목록에서 제거",
+    "new": "신규",
+    "runwayMonths": "활주로 {n}개월",
+    "unlockScores": "업그레이드하여 재무 정보와 AI 점수를 잠금 해제하세요",
+    "scoreTitle": "AI 점수: {score}/100"
   },
   "investors": {
     "pageTitle": "검증된 투자자",
@@ -1515,5 +1528,62 @@
       "errorCreating": "프로필 생성 오류:",
       "created": "프로필이 생성되었습니다! CapitalReach에서 스타트업을 발견해 보세요."
     }
+  },
+  "banner": {
+    "text": "첫 {target}명 회원 무료 — {memberCount}/{target}명 가입, {spotsLeft}자리 남음.",
+    "cta": "자리 확보하기"
+  },
+  "locale": {
+    "changedTo": "언어가 {name}(으)로 변경되었습니다",
+    "currentLangAria": "현재 언어: {name}. 클릭하여 변경.",
+    "selectLanguage": "언어 선택",
+    "rtl": "RTL",
+    "save": "언어 저장",
+    "saving": "저장 중…",
+    "languageSaved": "언어가 업데이트되었습니다"
+  },
+  "deals": {
+    "colIntro": "소개",
+    "colTermSheet": "텀시트",
+    "colClosed": "완료",
+    "colPassed": "보류",
+    "noDealsCol": "거래 없음",
+    "investorFallback": "투자자",
+    "startupFallback": "스타트업",
+    "interestedInvestor": "관심 있는 투자자",
+    "upgradeSeeWho": "업그레이드하여 누구인지 확인하세요",
+    "closeDeal": "거래 완료",
+    "confirmClose": "완료 확인",
+    "amountRaisedPlaceholder": "모금 금액",
+    "feeNotice": "2% 성공 수수료 청구서가 자동으로 생성됩니다.",
+    "closing": "완료 처리 중…",
+    "confirm": "확인",
+    "invoiceSent": "청구서 발송됨",
+    "emptyTitle": "아직 거래가 없습니다",
+    "emptyDesc": "스타트업에 메시지를 보내거나 응답을 받으면 여기에 거래가 표시됩니다."
+  },
+  "investorProfile": {
+    "back": "투자자 목록으로 돌아가기",
+    "tierProInvestor": "프로 투자자",
+    "tierInstitutional": "기관 투자자",
+    "aumFundSize": "운용자산/펀드 규모",
+    "investmentsLabel": "투자 건수",
+    "avgHold": "평균 보유 기간",
+    "investorDetail": "투자자 상세정보",
+    "portfolioLabel": "포트폴리오",
+    "languagesLabel": "언어",
+    "investmentPreferences": "투자 선호사항",
+    "industriesLabel": "산업",
+    "stagesLabel": "단계",
+    "checkSizeSuffix": "투자 규모",
+    "followOnPolicy": "후속 투자 정책",
+    "boardPreference": "이사회 참여 선호도",
+    "portfolioCompanies": "포트폴리오 기업",
+    "founderCta": "창업자이신가요? CapitalReach에서 프로필을 만들고 {name}과 같은 투자자들 앞에 나서보세요.",
+    "website": "웹사이트",
+    "angelInvestor": "엔젤 투자자",
+    "ventureCapital": "벤처 캐피탈",
+    "familyOffice": "패밀리 오피스",
+    "corporateInvestor": "기업 투자자"
   }
 }
