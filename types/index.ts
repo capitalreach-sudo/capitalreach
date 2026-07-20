@@ -186,12 +186,14 @@ export interface Investor {
 export interface Thread {
   id: string;
   startup_id: string;
-  investor_id: string;
+  investor_id: string | null;
+  recipient_startup_id: string | null;
   status: ThreadStatus;
   created_at: string;
   updated_at: string;
   startup?: Startup;
   investor?: Investor;
+  recipient_startup?: Startup;
 }
 
 export interface Message {

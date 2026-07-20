@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 export default async function MessagesPage() {
   let profile: any = null;
   let threads: any[] = [];
+  let myStartupId: string | null = null;
 
   try {
     const supabase = await createServerSupabaseClient();
@@ -33,10 +34,11 @@ export default async function MessagesPage() {
         .eq("owner_id", user.id)
         .single();
       if (startup) {
+        myStartupId = startup.id;
         const { data } = await supabase
           .from("threads")
-          .select("*, investor:investors(slug, type, display_name, firm_name), startup:startups(name, slug)")
-          .eq("startup_id", startup.id)
+          .select("*, investor:investors(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug), recipient_startup:startups!threads_recipient_startup_id_fkey(name, slug)")
+          .or(`startup_id.eq.${startup.id},recipient_startup_id.eq.${startup.id}`)
           .order("updated_at", { ascending: false });
         threads = data || [];
       }
@@ -49,7 +51,7 @@ export default async function MessagesPage() {
       if (investor) {
         const { data } = await supabase
           .from("threads")
-          .select("*, investor:investors(slug, type, display_name, firm_name), startup:startups(name, slug)")
+          .select("*, investor:investors(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug)")
           .eq("investor_id", investor.id)
           .order("updated_at", { ascending: false });
         threads = data || [];
@@ -63,7 +65,7 @@ export default async function MessagesPage() {
   return (
     <>
       <Navbar />
-      <MessagesClient profile={profile} threads={threads} />
+      <MessagesClient profile={profile} threads={threads} myStartupId={myStartupId} />
     </>
   );
 }

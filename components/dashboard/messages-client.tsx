@@ -37,11 +37,13 @@ interface SearchAccount {
   entity_name?: string;
   entity_slug?: string;
   entity_type?: string;
+  kind: "investor" | "startup";
 }
 
 interface Props {
   profile: Profile;
   threads: Thread[];
+  myStartupId?: string | null;
 }
 
 // ── Shared element styles ─────────────────────────────────────────────────────
@@ -54,7 +56,7 @@ const labelStyle: React.CSSProperties = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function MessagesClient({ profile, threads: initialThreads }: Props) {
+export function MessagesClient({ profile, threads: initialThreads, myStartupId }: Props) {
   const router = useRouter();
   const { t } = useTranslation();
   const [selectedThread, setSelectedThread] = useState<Thread | null>(initialThreads[0] || null);
@@ -64,6 +66,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
   const [search, setSearch]                 = useState("");
   const [showNewModal, setShowNewModal]     = useState(false);
   const [newBody, setNewBody]               = useState("");
+  const [targetKind, setTargetKind]         = useState<"investor" | "startup">("investor");
   const [accountSearch, setAccountSearch]   = useState("");
   const [accountResults, setAccountResults] = useState<SearchAccount[]>([]);
   const [accountSearching, setAccountSearching] = useState(false);
@@ -110,21 +113,38 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
     searchTimeoutRef.current = setTimeout(async () => {
       setAccountSearching(true);
       const q          = accountSearch.trim();
-      const targetRole = profile.role === "investor" ? "startup" : "investor";
+      const targetRole = profile.role === "investor" ? "startup" : targetKind;
       try {
-        if (targetRole === "startup") {
+        if (targetRole === "startup" && profile.role === "investor") {
           const [profileRes, startupRes] = await Promise.all([
             supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","startup").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(6),
             supabase.from("startups").select("owner_id,name,slug").or(`status.eq.active,status.eq.pending_review`).ilike("name",`%${q}%`).limit(6),
           ]);
           const merged = new Map<string, SearchAccount>();
-          (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount) }));
+          (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount), kind: "startup" }));
           const ownerIds = (startupRes.data || []).map(s => s.owner_id).filter(Boolean);
           if (ownerIds.length > 0) {
             const { data: owners } = await supabase.from("profiles").select("id,full_name,email,role,avatar_url").in("id", ownerIds);
             (owners || []).forEach(owner => {
               const s = startupRes.data?.find(s => s.owner_id === owner.id);
-              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug });
+              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug, kind: "startup" });
+            });
+          }
+          setAccountResults(Array.from(merged.values()).slice(0, 8));
+        } else if (targetRole === "startup" && profile.role === "startup") {
+          // Startup searching for another startup (peer messaging)
+          const { data: startupRes } = await supabase
+            .from("startups").select("owner_id,name,slug")
+            .neq("owner_id", profile.id)
+            .or(`status.eq.active,status.eq.pending_review`)
+            .ilike("name", `%${q}%`).limit(8);
+          const ownerIds = (startupRes || []).map(s => s.owner_id).filter(Boolean);
+          const merged = new Map<string, SearchAccount>();
+          if (ownerIds.length > 0) {
+            const { data: owners } = await supabase.from("profiles").select("id,full_name,email,role,avatar_url").in("id", ownerIds);
+            (owners || []).forEach(owner => {
+              const s = startupRes?.find(s => s.owner_id === owner.id);
+              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug, kind: "startup" });
             });
           }
           setAccountResults(Array.from(merged.values()).slice(0, 8));
@@ -134,13 +154,13 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
             supabase.from("investors").select("owner_id,slug,type,display_name,firm_name").or(`display_name.ilike.%${q}%,firm_name.ilike.%${q}%`).limit(6),
           ]);
           const merged = new Map<string, SearchAccount>();
-          (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount) }));
+          (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount), kind: "investor" }));
           const ownerIds = (investorRes.data || []).map(i => i.owner_id).filter(Boolean);
           if (ownerIds.length > 0) {
             const { data: owners } = await supabase.from("profiles").select("id,full_name,email,role,avatar_url").in("id", ownerIds);
             (owners || []).forEach(owner => {
               const inv = investorRes.data?.find(i => i.owner_id === owner.id);
-              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: inv?.firm_name || inv?.display_name || owner.full_name || undefined, entity_slug: inv?.slug, entity_type: inv?.type });
+              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: inv?.firm_name || inv?.display_name || owner.full_name || undefined, entity_slug: inv?.slug, entity_type: inv?.type, kind: "investor" });
             });
           }
           const profileIds = (profileRes.data || []).map(p => p.id);
@@ -148,16 +168,21 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
             const { data: invData } = await supabase.from("investors").select("owner_id,slug,type,display_name,firm_name").in("owner_id", profileIds);
             (invData || []).forEach(inv => {
               const ex = merged.get(inv.owner_id);
-              if (ex && !ex.entity_name) merged.set(inv.owner_id, { ...ex, entity_name: inv.firm_name || inv.display_name || undefined, entity_slug: inv.slug, entity_type: inv.type });
+              if (ex && !ex.entity_name) merged.set(inv.owner_id, { ...ex, entity_name: inv.firm_name || inv.display_name || undefined, entity_slug: inv.slug, entity_type: inv.type, kind: "investor" });
             });
           }
           setAccountResults(Array.from(merged.values()).slice(0, 8));
         }
       } finally { setAccountSearching(false); }
     }, 300);
-  }, [accountSearch, accountDropOpen]);
+  }, [accountSearch, accountDropOpen, targetKind]);
+
+  const otherStartup = (th: Thread) => th.startup_id === myStartupId ? (th as any).recipient_startup : (th as any).startup;
 
   const getLabel = (th: Thread) => {
+    if (th.recipient_startup_id) {
+      return otherStartup(th)?.name || t("dashboard.startupLabel");
+    }
     if (profile.role === "startup") {
       const inv = (th as any).investor;
       return inv?.display_name || inv?.firm_name || inv?.slug?.replace(/-/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase()) || t("dashboard.investorLabel");
@@ -165,6 +190,9 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
     return (th as any).startup?.name || t("dashboard.startupLabel");
   };
   const getSubLabel = (th: Thread) => {
+    if (th.recipient_startup_id) {
+      return otherStartup(th)?.slug || "";
+    }
     if (profile.role === "startup") {
       const type = (th as any).investor?.type || "";
       return type.replace(/_/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase());
@@ -213,29 +241,50 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
 
   function closeNewModal() {
     setShowNewModal(false); setSelectedAccount(null); setAccountSearch("");
-    setNewBody(""); setAccountResults([]); setSendNewError("");
+    setNewBody(""); setAccountResults([]); setSendNewError(""); setTargetKind("investor");
   }
 
   async function sendNewMessage() {
     if (!selectedAccount || !newBody.trim()) return;
     setSendingNew(true); setSendNewError("");
     try {
-      const [startupOwnerId, investorOwnerId] = profile.role === "investor"
-        ? [selectedAccount.id, profile.id]
-        : [profile.id, selectedAccount.id];
-      const [{ data: startupData }, { data: investorData }] = await Promise.all([
-        supabase.from("startups").select("id").eq("owner_id", startupOwnerId).maybeSingle(),
-        supabase.from("investors").select("id").eq("owner_id", investorOwnerId).maybeSingle(),
-      ]);
-      if (!startupData) { setSendNewError(profile.role === "investor" ? t("dashboard.errNoStartupYet") : t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
-      if (!investorData) { setSendNewError(profile.role === "startup" ? t("dashboard.errNoInvestorYet") : t("dashboard.errCompleteInvestor")); setSendingNew(false); return; }
-      const { data: existing } = await supabase.from("threads").select("id").eq("startup_id", startupData.id).eq("investor_id", investorData.id).maybeSingle();
-      let threadId = existing?.id;
-      if (!threadId) {
-        const { data: newThread, error } = await supabase.from("threads").insert({ startup_id: startupData.id, investor_id: investorData.id, status: "active" }).select().single();
-        if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
-        threadId = newThread.id;
+      let threadId: string | undefined;
+
+      if (selectedAccount.kind === "startup") {
+        // Peer messaging: both sides are startups.
+        if (!myStartupId) { setSendNewError(t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
+        const { data: otherStartupData } = await supabase.from("startups").select("id").eq("owner_id", selectedAccount.id).maybeSingle();
+        if (!otherStartupData) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
+        const { data: existing } = await supabase.from("threads").select("id")
+          .or(`and(startup_id.eq.${myStartupId},recipient_startup_id.eq.${otherStartupData.id}),and(startup_id.eq.${otherStartupData.id},recipient_startup_id.eq.${myStartupId})`)
+          .maybeSingle();
+        threadId = existing?.id;
+        if (!threadId) {
+          const { data: newThread, error } = await supabase.from("threads")
+            .insert({ startup_id: myStartupId, recipient_startup_id: otherStartupData.id, status: "active" })
+            .select().single();
+          if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
+          threadId = newThread.id;
+        }
+      } else {
+        const [startupOwnerId, investorOwnerId] = profile.role === "investor"
+          ? [selectedAccount.id, profile.id]
+          : [profile.id, selectedAccount.id];
+        const [{ data: startupData }, { data: investorData }] = await Promise.all([
+          supabase.from("startups").select("id").eq("owner_id", startupOwnerId).maybeSingle(),
+          supabase.from("investors").select("id").eq("owner_id", investorOwnerId).maybeSingle(),
+        ]);
+        if (!startupData) { setSendNewError(profile.role === "investor" ? t("dashboard.errNoStartupYet") : t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
+        if (!investorData) { setSendNewError(profile.role === "startup" ? t("dashboard.errNoInvestorYet") : t("dashboard.errCompleteInvestor")); setSendingNew(false); return; }
+        const { data: existing } = await supabase.from("threads").select("id").eq("startup_id", startupData.id).eq("investor_id", investorData.id).maybeSingle();
+        threadId = existing?.id;
+        if (!threadId) {
+          const { data: newThread, error } = await supabase.from("threads").insert({ startup_id: startupData.id, investor_id: investorData.id, status: "active" }).select().single();
+          if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
+          threadId = newThread.id;
+        }
       }
+
       const { error: msgError } = await supabase.from("messages").insert({ thread_id: threadId, sender_id: profile.id, body: newBody.trim() });
       if (msgError) { setSendNewError(t("dashboard.errSendMessageFailed")); setSendingNew(false); return; }
       closeNewModal();
@@ -368,8 +417,8 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                       {t("dashboard.backToActive")}
                     </button>
                   )}
-                  {(selectedThread as any).startup?.slug && (
-                    <a href={`/startups/${(selectedThread as any).startup.slug}`}
+                  {(selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : (selectedThread as any).startup?.slug) && (
+                    <a href={`/startups/${selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : (selectedThread as any).startup.slug}`}
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
                       {t("dashboard.viewStartup2")} →
                     </a>
@@ -455,7 +504,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
               <div>
                 <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("dashboard.newMessageModalTitle")}</h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                  {profile.role === "investor" ? t("dashboard.searchStartupHint") : t("dashboard.searchInvestorHint")}
+                  {profile.role === "investor" ? t("dashboard.searchStartupHint") : targetKind === "investor" ? t("dashboard.searchInvestorHint") : t("dashboard.searchStartupHint")}
                 </p>
               </div>
               <button onClick={closeNewModal} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
@@ -464,6 +513,25 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {/* Recipient type toggle — only startups can choose between investor and peer startup */}
+              {profile.role === "startup" && !selectedAccount && (
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {(["investor", "startup"] as const).map(k => (
+                    <button key={k}
+                      onClick={() => { setTargetKind(k); setAccountSearch(""); setAccountResults([]); setSendNewError(""); }}
+                      style={{
+                        flex: 1, height: "36px", borderRadius: "4px",
+                        border: targetKind === k ? "1px solid var(--cr-copper)" : "1px solid var(--cr-rule-dark)",
+                        background: targetKind === k ? "var(--cr-copper-bg)" : "transparent",
+                        color: targetKind === k ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer",
+                      }}>
+                      {k === "investor" ? t("nav.investors") : t("nav.startups")}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {/* To field */}
               <div>
                 <span style={labelStyle}>{t("dashboard.toLabel")}</span>
@@ -492,7 +560,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                       <input value={accountSearch}
                         onChange={e => { setAccountSearch(e.target.value); setAccountDropOpen(true); setSendNewError(""); }}
                         onFocus={() => setAccountDropOpen(true)}
-                        placeholder={profile.role === "investor" ? t("dashboard.searchStartupsPh") : t("dashboard.searchInvestorsPh")}
+                        placeholder={profile.role === "investor" ? t("dashboard.searchStartupsPh") : targetKind === "investor" ? t("dashboard.searchInvestorsPh") : t("dashboard.searchStartupsPh")}
                         autoFocus
                         style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "9px", paddingBottom: "9px", outline: "none", boxSizing: "border-box" }} />
                     </>
@@ -507,7 +575,7 @@ export function MessagesClient({ profile, threads: initialThreads }: Props) {
                         </div>
                       ) : !accountSearch.trim() ? (
                         <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-                          {profile.role === "investor" ? t("dashboard.startTypingToSearchStartups") : t("dashboard.startTypingToSearchInvestors")}
+                          {profile.role === "investor" ? t("dashboard.startTypingToSearchStartups") : targetKind === "investor" ? t("dashboard.startTypingToSearchInvestors") : t("dashboard.startTypingToSearchStartups")}
                         </p>
                       ) : accountResults.length === 0 ? (
                         <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noResultsFound")}</p>
