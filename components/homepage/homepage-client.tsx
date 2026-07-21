@@ -8,10 +8,15 @@ import { useCountUp } from "@/hooks/useCountUp";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { WordReveal }  from "@/components/ui/WordReveal";
-import { StatsTicker } from "@/components/ui/StatsTicker";
+import { MarketTicker } from "@/components/ui/MarketTicker";
 import { FeeCounter }  from "@/components/ui/FeeCounter";
 import { HeroParticles } from "@/components/ui/HeroParticles";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { SectionDivider } from "@/components/ui/SectionDivider";
+import { FeeFloatingBadge } from "@/components/ui/FeeFloatingBadge";
+import { AmbientBackground } from "@/components/ui/AmbientBackground";
+import { PullQuote } from "@/components/ui/PullQuote";
 import { formatCurrency, formatGrowth } from "@/lib/format";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 import type { PlatformStats } from "@/lib/stats";
@@ -53,7 +58,7 @@ function HeroCard({ startup }: { startup: HeroStartup }) {
   ];
 
   return (
-    <div style={{ width: "100%", border: "1px solid #D8D0C4", borderRadius: "6px", overflow: "hidden", background: "#EDE8DE" }}>
+    <div className="trace-border" style={{ width: "100%", border: "1px solid #D8D0C4", borderRadius: "6px", overflow: "hidden", background: "#EDE8DE" }}>
 
       {/* Top strip */}
       <div style={{
@@ -221,6 +226,8 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
 
   return (
     <main style={{ background: "#F5F0E8" }}>
+      <ScrollProgress />
+      <FeeFloatingBadge />
 
       {/* ── HERO ── */}
       <section
@@ -232,6 +239,9 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
 
         {/* Copper dot particle trail on mouse move */}
         <HeroParticles />
+
+        {/* Scroll-linked ambient glow */}
+        <AmbientBackground />
 
         {/* Ambient orbs */}
         <div className="hero-orb" style={{ width: 600, height: 600, top: "-200px", left: "-200px" }} />
@@ -330,15 +340,15 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
         </div>
       </section>
 
-      {/* ── SCROLLING TICKER TAPE ── */}
-      <StatsTicker
+      {/* ── SCROLLING MARKET TICKER ── */}
+      <MarketTicker
         items={[
-          { value: stats.startupCount > 0 ? stats.startupCount.toLocaleString() : "—", label: t("stats.startupsListed") },
-          { value: "2%",                                                                 label: t("feeStrip.tagline")     },
-          { value: stats.investorCount > 0 ? stats.investorCount.toLocaleString() : "—", label: t("stats.verifiedInvestors") },
-          { value: "0",                                                                  label: "upfront fees"            },
-          { value: stats.dealsClosedCount > 0 ? stats.dealsClosedCount.toLocaleString() : "—", label: t("stats.dealsClosed") },
-          { value: "100%",                                                               label: "vetted listings"         },
+          { value: stats.startupCount > 0 ? stats.startupCount.toLocaleString() : "—", label: t("stats.startupsListed"), trend: "up" },
+          { value: "2%",                                                                 label: t("feeStrip.tagline"),     trend: "down" },
+          { value: stats.investorCount > 0 ? stats.investorCount.toLocaleString() : "—", label: t("stats.verifiedInvestors"), trend: "up" },
+          { value: "0",                                                                  label: "upfront fees",            trend: "down" },
+          { value: stats.dealsClosedCount > 0 ? stats.dealsClosedCount.toLocaleString() : "—", label: t("stats.dealsClosed"), trend: "up" },
+          { value: "100%",                                                               label: "vetted listings",         trend: "up" },
         ]}
         speed={36}
       />
@@ -429,10 +439,15 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
               return (
                 <div
                   key={s.id}
-                  className="listing-row reveal-child flex items-center h-[56px]"
+                  className="listing-row listing-row-spotlight reveal-child flex items-center h-[56px]"
                   onClick={() => router.push(`/startups/${s.slug}`)}
                   onMouseEnter={() => setHoveredRow(s.id)}
                   onMouseLeave={() => setHoveredRow(null)}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    e.currentTarget.style.setProperty("--spot-x", `${e.clientX - rect.left}px`);
+                    e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
+                  }}
                   style={{
                     borderBottom: "1px solid rgba(26,22,18,0.08)",
                     background: isHovered ? "#E4DDD2" : "transparent",
@@ -499,6 +514,15 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           )}
         </div>
       </section>
+
+      {/* ── EDITORIAL PULL QUOTE ── */}
+      <div style={{ background: "#F5F0E8", padding: "48px 24px 32px" }}>
+        <PullQuote quote={t("pullQuote.text")} attribution={t("pullQuote.attribution")} />
+      </div>
+
+      <div style={{ background: "#F5F0E8", paddingBottom: "32px" }}>
+        <SectionDivider />
+      </div>
 
       {/* ── 2% FEE STRIP ── */}
       <div style={{
@@ -600,6 +624,10 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           </div>
         </div>
       </section>
+
+      <div style={{ background: "#F5F0E8", padding: "48px 0" }}>
+        <SectionDivider />
+      </div>
 
       {/* ── AI TOOLS ── */}
       <section

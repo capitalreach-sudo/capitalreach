@@ -46,6 +46,10 @@
     "bullet2": "Invoiced after close",
     "bullet3": "Founders only"
   },
+  "pullQuote": {
+    "text": "Every listing vetted. Every number real. Capital shouldn't require a leap of faith.",
+    "attribution": "The CapitalReach Standard"
+  },
   "trustIndicators": {
     "startupsListed": "startups listed",
     "verifiedInvestors": "verified investors",

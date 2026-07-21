@@ -648,6 +648,232 @@ body::before {
   transition: opacity 300ms ease, transform 300ms ease;
 }
 
+/* ── FEATURE 17: Scroll progress bar ─────────────────────── */
+.scroll-progress-track {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 200;
+  background: transparent;
+  pointer-events: none;
+}
+.scroll-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cr-copper-d), var(--cr-copper), var(--cr-copper-l));
+}
+
+/* ── FEATURE 18: Section divider ─────────────────────────── */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.section-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--cr-rule-dark);
+}
+.section-divider-diamond {
+  color: var(--cr-copper);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* ── FEATURE 19: Market ticker ───────────────────────────── */
+.market-ticker {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  border-top: 1px solid var(--cr-paper-4);
+  border-bottom: 1px solid var(--cr-paper-4);
+  padding: 10px 0;
+}
+.market-ticker-fade {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.market-ticker-fade-left  { left: 0;  background: linear-gradient(to right, var(--cr-paper), transparent); }
+.market-ticker-fade-right { right: 0; background: linear-gradient(to left,  var(--cr-paper), transparent); }
+.market-ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  will-change: transform;
+  white-space: nowrap;
+}
+.market-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  padding-right: 48px;
+}
+.market-ticker-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--cr-paper-4);
+  display: inline-block;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+/* ── FEATURE 20: Floating fee badge ──────────────────────── */
+.fee-floating-badge {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cr-ink);
+  color: var(--cr-paper);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(26,22,18,0.25);
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+.fee-floating-badge-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.fee-floating-badge:hover {
+  background: var(--cr-ink-2);
+}
+.fee-floating-badge-diamond {
+  color: var(--cr-copper-l);
+  font-size: 10px;
+}
+@media (max-width: 640px) {
+  .fee-floating-badge { bottom: 16px; right: 16px; font-size: 12px; padding: 10px 14px; }
+}
+
+/* ── FEATURE 21: Scroll-linked ambient background ────────── */
+.ambient-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.ambient-bg-orb {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 900px;
+  height: 900px;
+  margin-left: -450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(181,101,29,0.05) 0%, rgba(181,101,29,0.015) 45%, transparent 70%);
+  filter: blur(60px);
+  will-change: transform;
+}
+
+/* ── FEATURE 22: Spotlight hover on listing rows ─────────── */
+.listing-row-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+.listing-row-spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(160px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(181,101,29,0.08), transparent 70%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.listing-row-spotlight:hover::after {
+  opacity: 1;
+}
+
+/* ── FEATURE 23: Editorial pull quote ────────────────────── */
+.pull-quote {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+.pull-quote-mark {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--cr-copper);
+  opacity: 0.35;
+  margin-bottom: 8px;
+}
+.pull-quote-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(22px, 3.4vw, 34px);
+  line-height: 1.35;
+  color: var(--cr-ink);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.pull-quote-attribution {
+  margin-top: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cr-ink-4);
+}
+
+/* ── FEATURE 24: Animated trace border ───────────────────── */
+@property --trace-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes traceRotate {
+  from { --trace-angle: 0deg; }
+  to   { --trace-angle: 360deg; }
+}
+.trace-border {
+  position: relative;
+  z-index: 0;
+  transition: box-shadow 250ms ease;
+}
+.trace-border:hover {
+  box-shadow: 0 0 0 1.5px var(--cr-copper-l), 0 10px 32px rgba(181,101,29,0.16);
+}
+.trace-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from var(--trace-angle), transparent 0%, var(--cr-copper-l) 12%, transparent 26%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  pointer-events: none;
+  z-index: -1;
+}
+.trace-border:hover::before {
+  opacity: 1;
+  animation: traceRotate 2.4s linear infinite;
+}
+
 /* ── Reduced motion — disable all new animations ────────── */
 @media (prefers-reduced-motion: reduce) {
   body::before { display: none; }
@@ -664,4 +890,6 @@ body::before {
   .ruled-label::before { height: 16px; opacity: 1; animation: none; }
   .ruled-label.visible::before { animation: none; height: 16px; opacity: 1; }
   .word-reveal-word { opacity: 1 !important; transform: none !important; }
+  .fee-floating-badge { transition: opacity 150ms ease; transform: none; }
+  .trace-border::before { animation: none; }
 }
