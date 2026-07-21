@@ -12,7 +12,7 @@ export async function GET() {
     const [startups, investors, deals] = await Promise.all([
       supabase
         .from("startups")
-        .select("id, name, industry, stage, mrr, ai_score, vaultrise_score, funding_target, status, slug, created_at, featured")
+        .select("id, name, industry, stage, mrr, vaultrise_score, funding_target, status, slug, created_at, featured")
         .eq("status", "active"),
       supabase
         .from("profiles")
@@ -42,8 +42,8 @@ export async function GET() {
 
     // Top by AI score (vaultrise_score column)
     const topStartups = [...startupData]
-      .filter((s) => (s.vaultrise_score ?? s.ai_score) != null)
-      .sort((a, b) => ((b.vaultrise_score ?? b.ai_score) ?? 0) - ((a.vaultrise_score ?? a.ai_score) ?? 0))
+      .filter((s) => s.vaultrise_score != null)
+      .sort((a, b) => (b.vaultrise_score ?? 0) - (a.vaultrise_score ?? 0))
       .slice(0, 5)
       .map((s) => ({
         name: s.name,
@@ -51,7 +51,7 @@ export async function GET() {
         industry: s.industry,
         stage: s.stage,
         mrr: s.mrr,
-        ai_score: s.vaultrise_score ?? s.ai_score,
+        ai_score: s.vaultrise_score,
         funding_target: s.funding_target,
         created_at: s.created_at,
       }));
@@ -66,7 +66,7 @@ export async function GET() {
         industry: s.industry,
         stage: s.stage,
         mrr: s.mrr,
-        ai_score: s.vaultrise_score ?? s.ai_score,
+        ai_score: s.vaultrise_score,
         funding_target: s.funding_target,
         created_at: s.created_at,
       }));
