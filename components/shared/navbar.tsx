@@ -330,6 +330,11 @@ export function Navbar() {
               </button>
             </div>
 
+            {/* Language switcher */}
+            <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: "1px solid rgba(26,22,18,0.08)" }}>
+              <LanguageSwitcher currentLocale={locale} />
+            </div>
+
             {/* Nav items */}
             <div className="flex-1 overflow-y-auto">
               {NAV_LINKS.map(({ href, label }) => (
