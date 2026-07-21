@@ -704,7 +704,7 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block" style={{ border: "1px solid rgba(26,22,18,0.15)", overflowX: "auto" }}>
+          <div className="hidden md:block" style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 <col style={{ minWidth: "200px" }} />
@@ -712,20 +712,30 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
               </colgroup>
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(26,22,18,0.2)" }}>
-                  <th style={{ padding: "16px 20px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textAlign: "left", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("pricing.feature")}</th>
+                  <th style={{ padding: "18px 20px 14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textAlign: "left", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("pricing.feature")}</th>
                   {pricingPlans.map((plan, i) => {
                     const featured = i === 1;
                     return (
                       <th key={plan.id} style={{
-                        padding: "16px 20px 12px", textAlign: "center",
-                        background: featured ? "rgba(181,101,29,0.05)" : "transparent",
+                        padding: "18px 20px 14px", textAlign: "center", position: "relative",
+                        background: featured ? "rgba(181,101,29,0.06)" : "transparent",
                         borderLeft: featured ? "1px solid rgba(181,101,29,0.2)" : "1px solid rgba(26,22,18,0.1)",
                         borderRight: featured ? "1px solid rgba(181,101,29,0.2)" : "none",
                       }}>
+                        {featured && (
+                          <span style={{
+                            position: "absolute", top: "-1px", left: "50%", transform: "translate(-50%, -100%)",
+                            background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
+                            fontSize: "9px", padding: "3px 10px", borderRadius: "3px 3px 0 0",
+                            textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap",
+                          }}>
+                            {t("pricing.popular")}
+                          </span>
+                        )}
                         <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: featured ? "#B5651D" : "#1A1612" }}>{plan.name}</div>
                         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "22px", color: featured ? "#B5651D" : "#1A1612", marginTop: "4px", lineHeight: 1 }}>
                           {plan.price === 0
-                            ? t("pricing.free")
+                            ? "$0"
                             : <>{`$${plan.price}`}<span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#9C8E82" }}>{t("pricing.perMonth")}</span></>
                           }
                         </div>
@@ -736,36 +746,42 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
               </thead>
               <tbody>
                 {pricingFeatures.map(({ feature, values }, rowIdx) => (
-                  <tr key={feature} style={{ background: rowIdx % 2 === 0 ? "rgba(26,22,18,0.03)" : "transparent", borderBottom: "1px solid rgba(26,22,18,0.08)" }}>
-                    <td style={{ padding: "11px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "#1A1612" }}>{feature}</td>
+                  <tr key={feature} className="pricing-row" style={{ background: rowIdx % 2 === 0 ? "rgba(26,22,18,0.03)" : "transparent", borderBottom: "1px solid rgba(26,22,18,0.08)" }}>
+                    <td style={{ padding: "13px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "#1A1612" }}>{feature}</td>
                     {values.map((v, i) => {
                       const isCheck = v === "✓";
                       const isDash  = v === "—";
                       const featured = i === 1;
                       return (
                         <td key={i} style={{
-                          padding: "11px 20px", textAlign: "center",
+                          padding: "13px 20px", textAlign: "center",
                           fontFamily: isCheck || isDash ? "'DM Sans', sans-serif" : "'JetBrains Mono', monospace",
                           fontWeight: isCheck ? 500 : isDash ? 300 : 500,
                           fontSize: "14px",
-                          color: isCheck ? "#2D6A4F" : isDash ? "#9C8E82" : "#3D3630",
+                          color: isDash ? "#C4BAAC" : "#3D3630",
                           background: featured ? "rgba(181,101,29,0.05)" : "transparent",
                           borderLeft: featured ? "1px solid rgba(181,101,29,0.2)" : "1px solid rgba(26,22,18,0.08)",
                           borderRight: featured ? "1px solid rgba(181,101,29,0.2)" : "none",
                         }}>
-                          {v}
+                          {isCheck ? (
+                            <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "rgba(45,106,79,0.1)", border: "1px solid rgba(45,106,79,0.25)", alignItems: "center", justifyContent: "center" }}>
+                              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2D6A4F" }} />
+                            </span>
+                          ) : isDash ? (
+                            <span style={{ display: "inline-block", width: 10, height: 1, background: "#D8D0C4" }} />
+                          ) : v}
                         </td>
                       );
                     })}
                   </tr>
                 ))}
                 <tr>
-                  <td style={{ padding: "16px 20px" }} />
+                  <td style={{ padding: "18px 20px" }} />
                   {pricingPlans.map((plan, i) => {
                     const featured = i === 1;
                     return (
                       <td key={plan.id} style={{
-                        padding: "16px 20px", textAlign: "center",
+                        padding: "18px 20px", textAlign: "center",
                         background: featured ? "rgba(181,101,29,0.05)" : "transparent",
                         borderLeft: featured ? "1px solid rgba(181,101,29,0.2)" : "1px solid rgba(26,22,18,0.08)",
                         borderRight: featured ? "1px solid rgba(181,101,29,0.2)" : "none",

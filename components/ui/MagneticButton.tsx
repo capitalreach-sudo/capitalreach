@@ -14,7 +14,7 @@ interface Props {
 
 export function MagneticButton({
   children,
-  strength = 0.25,
+  strength = 0.15,
   className,
   style,
   onClick,
@@ -38,8 +38,10 @@ export function MagneticButton({
     const rect = el.getBoundingClientRect();
     const cx = rect.left + rect.width  / 2;
     const cy = rect.top  + rect.height / 2;
-    setTx((e.clientX - cx) * strength);
-    setTy((e.clientY - cy) * strength);
+    const maxOffset = 8;
+    const clamp = (n: number) => Math.max(-maxOffset, Math.min(maxOffset, n));
+    setTx(clamp((e.clientX - cx) * strength));
+    setTy(clamp((e.clientY - cy) * strength));
   };
 
   const onMouseEnter = (e: React.MouseEvent<HTMLElement>) => {

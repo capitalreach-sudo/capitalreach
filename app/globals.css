@@ -263,6 +263,10 @@
 /* ── Zebra table ─────────────────────────────────────────────  */
 .table-zebra tr:nth-child(odd) { background: var(--cr-paper-3); }
 
+/* ── Pricing comparison table row hover ───────────────────────  */
+.pricing-row { transition: background 120ms ease; }
+.pricing-row:hover { background: var(--cr-paper-3) !important; }
+
 /* ── PDF embed ───────────────────────────────────────────────  */
 .pdf-embed-container { position: relative; width: 100%; padding-bottom: 130%; }
 .pdf-embed-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
