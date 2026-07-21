@@ -266,16 +266,36 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
           if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
           threadId = newThread.id;
         }
+      } else if (profile.role === "investor") {
+        // Investor messaging a startup: route through the same gated API used
+        // by the startup detail page's "Message" button, so tier limits and
+        // rate limiting apply consistently regardless of entry point.
+        const { data: startupData } = await supabase.from("startups").select("id").eq("owner_id", selectedAccount.id).maybeSingle();
+        if (!startupData) { setSendNewError(t("dashboard.errNoStartupYet")); setSendingNew(false); return; }
+        const { data: investorData } = await supabase.from("investors").select("id").eq("owner_id", profile.id).maybeSingle();
+        if (!investorData) { setSendNewError(t("dashboard.errCompleteInvestor")); setSendingNew(false); return; }
+        const res = await fetch("/api/messages/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ startupId: startupData.id, investorId: investorData.id, body: newBody.trim() }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          setSendNewError(err.error || t("dashboard.errStartConvo"));
+          setSendingNew(false);
+          return;
+        }
+        closeNewModal();
+        router.refresh();
+        return;
       } else {
-        const [startupOwnerId, investorOwnerId] = profile.role === "investor"
-          ? [selectedAccount.id, profile.id]
-          : [profile.id, selectedAccount.id];
-        const [{ data: startupData }, { data: investorData }] = await Promise.all([
-          supabase.from("startups").select("id").eq("owner_id", startupOwnerId).maybeSingle(),
-          supabase.from("investors").select("id").eq("owner_id", investorOwnerId).maybeSingle(),
-        ]);
-        if (!startupData) { setSendNewError(profile.role === "investor" ? t("dashboard.errNoStartupYet") : t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
-        if (!investorData) { setSendNewError(profile.role === "startup" ? t("dashboard.errNoInvestorYet") : t("dashboard.errCompleteInvestor")); setSendingNew(false); return; }
+        // Startup messaging an investor for the first time — no tier gate
+        // exists on this direction today (only investor-initiated contact
+        // is rate-limited), so this stays a direct insert.
+        const { data: startupData } = await supabase.from("startups").select("id").eq("owner_id", profile.id).maybeSingle();
+        const { data: investorData } = await supabase.from("investors").select("id").eq("owner_id", selectedAccount.id).maybeSingle();
+        if (!startupData) { setSendNewError(t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
+        if (!investorData) { setSendNewError(t("dashboard.errNoInvestorYet")); setSendingNew(false); return; }
         const { data: existing } = await supabase.from("threads").select("id").eq("startup_id", startupData.id).eq("investor_id", investorData.id).maybeSingle();
         threadId = existing?.id;
         if (!threadId) {
