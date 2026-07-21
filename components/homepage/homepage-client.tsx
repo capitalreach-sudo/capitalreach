@@ -10,17 +10,16 @@ import { ScoreRing } from "@/components/ui/ScoreRing";
 import { WordReveal }  from "@/components/ui/WordReveal";
 import { MarketTicker } from "@/components/ui/MarketTicker";
 import { FeeCounter }  from "@/components/ui/FeeCounter";
-import { HeroParticles } from "@/components/ui/HeroParticles";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import { FeeFloatingBadge } from "@/components/ui/FeeFloatingBadge";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { PullQuote } from "@/components/ui/PullQuote";
-import { formatCurrency, formatGrowth } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 import type { PlatformStats } from "@/lib/stats";
-import type { HeroStartup, ListingSnippet } from "@/app/page";
+import type { ListingSnippet } from "@/app/page";
 
 // ── Primitives ────────────────────────────────────────────────
 
@@ -45,108 +44,14 @@ function StageBadge({ stage }: { stage: string }) {
   );
 }
 
-// ── Hero Card ────────────────────────────────────────────────
-
-function HeroCard({ startup }: { startup: HeroStartup }) {
-  const { t } = useTranslation();
-
-  const metrics = [
-    { label: t("startupDetail.mrr"),    value: startup.mrr        != null ? formatCurrency(startup.mrr)           : "—" },
-    { label: t("startupDetail.arr"),    value: startup.arr        != null ? formatCurrency(startup.arr)           : "—" },
-    { label: t("startupDetail.growth"), value: startup.growth_rate   != null ? formatGrowth(startup.growth_rate).text : "—" },
-    { label: t("startupDetail.runway"), value: startup.runway_months != null ? `${startup.runway_months}mo`           : "—" },
-  ];
-
-  return (
-    <div className="trace-border" style={{ width: "100%", border: "1px solid #D8D0C4", borderRadius: "6px", overflow: "hidden", background: "#EDE8DE" }}>
-
-      {/* Top strip */}
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 20px", background: "#EDE8DE",
-        borderBottom: "1px solid #D8D0C4",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: "4px", background: "#E4DDD2",
-            border: "1px solid #D8D0C4", display: "flex", alignItems: "center",
-            justifyContent: "center", overflow: "hidden", flexShrink: 0,
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "#B5651D",
-          }}>
-            {startup.name.charAt(0)}
-          </div>
-          <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#1A1612" }}>{startup.name}</div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#9C8E82", marginTop: "2px" }}>{startup.industry}</div>
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-          <ScoreRing score={startup.vaultrise_score} size={52} strokeWidth={4} />
-          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "9px", fontWeight: 500, color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            {t("listings.aiScore")}
-          </div>
-        </div>
-      </div>
-
-      {/* Metrics area */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "#D8D0C4" }}>
-        {metrics.map(({ label, value }) => (
-          <div key={label} style={{ padding: "12px 14px", background: "#F5F0E8" }}>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{label}</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "20px", color: "#1A1612", lineHeight: 1.1 }}>{value}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Bottom strip */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", background: "#E4DDD2", borderTop: "1px solid #D8D0C4" }}>
-        <div>
-          <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px" }}>{t("listings.raising")}</div>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "20px", color: "#B5651D", lineHeight: 1.1 }}>{formatCurrency(startup.funding_target)}</div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-          <StageBadge stage={startup.stage} />
-          {/* 2% badge */}
-          <span style={{
-            display: "inline-flex", alignItems: "center", gap: "4px",
-            background: "rgba(181,101,29,0.12)", border: "1px solid rgba(181,101,29,0.3)",
-            borderRadius: "3px", padding: "3px 7px",
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-            fontSize: "10px", color: "#B5651D", letterSpacing: "0.04em",
-          }}>
-            ◆ 2% at close only
-          </span>
-          <Link href={`/startups/${startup.slug}`}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "#B5651D", textDecoration: "none" }}>
-            {t("common.viewDeal")} →
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HeroCardPlaceholder() {
-  const { t } = useTranslation();
-  return (
-    <div style={{ width: "100%", background: "#EDE8DE", border: "1px solid #D8D0C4", borderRadius: "6px", padding: "60px 40px", textAlign: "center" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "#9C8E82", lineHeight: 1.7 }}>
-        {t("hero.beFirst")}<br />
-        <Link href="/auth/signup?role=startup" style={{ color: "#B5651D", textDecoration: "none" }}>{t("hero.applyToList")} →</Link>
-      </p>
-    </div>
-  );
-}
-
 // ── Main Component ────────────────────────────────────────────
 
 interface Props {
-  stats:       PlatformStats;
-  heroStartup: HeroStartup | null;
-  listings:    ListingSnippet[];
+  stats:    PlatformStats;
+  listings: ListingSnippet[];
 }
 
-export function HomepageClient({ stats, heroStartup, listings }: Props) {
+export function HomepageClient({ stats, listings }: Props) {
   const { t } = useTranslation();
   const [pricingTab, setPricingTab] = useState<"founder" | "investor">("founder");
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
@@ -237,9 +142,6 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
         {/* Copper noise texture overlay */}
         <div className="hero-noise" />
 
-        {/* Copper dot particle trail on mouse move */}
-        <HeroParticles />
-
         {/* Scroll-linked ambient glow */}
         <AmbientBackground />
 
@@ -248,95 +150,87 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
         <div className="hero-orb" style={{ width: 400, height: 400, bottom: "-100px", right: "-100px", animationDelay: "-6s" }} />
 
         <div
-          className="max-w-[1200px] mx-auto w-full px-6 md:px-10 grid grid-cols-1 md:grid-cols-[55fr_45fr] gap-10 md:gap-16 py-16 md:py-0"
+          className="max-w-[900px] mx-auto w-full px-6 md:px-10 py-16 md:py-0 flex flex-col items-center text-center"
           style={{ position: "relative", zIndex: 1 }}
         >
-          {/* Left column */}
-          <div className="flex flex-col justify-center">
-            <div className="ruled-label" style={{ marginBottom: "40px" }}>{t("hero.eyebrow")}</div>
+          <div className="ruled-label" style={{ marginBottom: "40px", justifyContent: "center" }}>{t("hero.eyebrow")}</div>
 
-            <h1 style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
-              fontWeight:    700,
-              fontStyle:     "italic",
-              fontSize:      "clamp(36px, 8vw, 72px)",
-              color:         "#1A1612",
-              lineHeight:    0.95,
-              letterSpacing: "-0.02em",
-              marginBottom:  "24px",
-            }}>
-              <span style={{ display: "block" }}>
-                <WordReveal text={t("hero.headline1")} delay={60} threshold={0.05} />
-              </span>
-              <span style={{ display: "block" }}>
-                <WordReveal text={t("hero.headline2")} delay={60} threshold={0.05} />
-              </span>
-              <span style={{ display: "block" }}>
-                <WordReveal text={t("hero.headline3")} delay={60} threshold={0.05} className="copper-foil" />
-              </span>
-            </h1>
+          <h1 style={{
+            fontFamily:    "'Playfair Display', Georgia, serif",
+            fontWeight:    700,
+            fontStyle:     "italic",
+            fontSize:      "clamp(40px, 9vw, 92px)",
+            color:         "#1A1612",
+            lineHeight:    0.95,
+            letterSpacing: "-0.02em",
+            marginBottom:  "28px",
+          }}>
+            <span style={{ display: "block" }}>
+              <WordReveal text={t("hero.headline1")} delay={60} threshold={0.05} />
+            </span>
+            <span style={{ display: "block" }}>
+              <WordReveal text={t("hero.headline2")} delay={60} threshold={0.05} />
+            </span>
+            <span style={{ display: "block" }}>
+              <WordReveal text={t("hero.headline3")} delay={60} threshold={0.05} className="copper-foil" />
+            </span>
+          </h1>
 
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 300,
-              fontSize:   "17px",
-              color:      "#6B6056",
-              lineHeight: 1.7,
-              maxWidth:   "420px",
-            }}>
-              {t("hero.sub")}
-            </p>
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
-              fontSize: "13px", color: "#9C8E82", lineHeight: 1.5,
-              marginTop: "12px", maxWidth: "420px",
-              display: "flex", alignItems: "center", gap: "8px",
-            }}>
-              <span style={{ color: "#B5651D", fontSize: "10px" }}>◆</span>
-              <span>
-                <strong style={{ fontWeight: 600, color: "#B5651D" }}>{t("hero.feeNoteLabel")}</strong>
-                {" — "}{t("hero.feeNoteSuffix")}
-              </span>
-            </p>
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize:   "17px",
+            color:      "#6B6056",
+            lineHeight: 1.7,
+            maxWidth:   "520px",
+          }}>
+            {t("hero.sub")}
+          </p>
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
+            fontSize: "13px", color: "#9C8E82", lineHeight: 1.5,
+            marginTop: "12px", maxWidth: "520px",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+          }}>
+            <span style={{ color: "#B5651D", fontSize: "10px" }}>◆</span>
+            <span>
+              <strong style={{ fontWeight: 600, color: "#B5651D" }}>{t("hero.feeNoteLabel")}</strong>
+              {" — "}{t("hero.feeNoteSuffix")}
+            </span>
+          </p>
 
-            {/* CTAs */}
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "40px", flexWrap: "wrap" }}>
-              <Link href="/auth/signup?role=startup" style={{ textDecoration: "none" }}>
-                <MagneticButton
-                  className="btn-copper-shimmer"
-                  style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-                >
-                  {t("hero.ctaPrimary")}
-                </MagneticButton>
-              </Link>
-              <Link href="/startups" style={{ textDecoration: "none" }}>
-                <MagneticButton
-                  style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
-                >
-                  {t("hero.ctaSecondary")} →
-                </MagneticButton>
-              </Link>
+          {/* CTAs */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", marginTop: "40px", flexWrap: "wrap" }}>
+            <Link href="/auth/signup?role=startup" style={{ textDecoration: "none" }}>
+              <MagneticButton
+                className="btn-copper-shimmer"
+                style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "4px", border: "none", cursor: "pointer" }}
+              >
+                {t("hero.ctaPrimary")}
+              </MagneticButton>
+            </Link>
+            <Link href="/startups" style={{ textDecoration: "none" }}>
+              <MagneticButton
+                style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
+              >
+                {t("hero.ctaSecondary")} →
+              </MagneticButton>
+            </Link>
+          </div>
+
+          {/* Trust indicators */}
+          {trustItems.some(([v]) => v > 0) && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "24px", marginTop: "32px", flexWrap: "wrap" }}>
+              {trustItems.filter(([v]) => v > 0).map(([v, label]) => (
+                <div key={label} style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <DiamondDot />
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#6B6056" }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "#3D3630" }}>{v.toLocaleString()}</span>{" "}{label}
+                  </span>
+                </div>
+              ))}
             </div>
-
-            {/* Trust indicators */}
-            {trustItems.some(([v]) => v > 0) && (
-              <div style={{ display: "flex", alignItems: "center", gap: "24px", marginTop: "32px", flexWrap: "wrap" }}>
-                {trustItems.filter(([v]) => v > 0).map(([v, label]) => (
-                  <div key={label} style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                    <DiamondDot />
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#6B6056" }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "#3D3630" }}>{v.toLocaleString()}</span>{" "}{label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right column */}
-          <div className="flex items-center mt-10 md:mt-0">
-            {heroStartup ? <HeroCard startup={heroStartup} /> : <HeroCardPlaceholder />}
-          </div>
+          )}
         </div>
       </section>
 
@@ -399,8 +293,12 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
             <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#B5651D", textDecoration: "none" }}>{t("listings.viewAll")} →</Link>
           </div>
 
+          <div style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden", background: "#F5F0E8", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
+          {/* Copper accent bar */}
+          <div style={{ height: "3px", background: "linear-gradient(90deg, #8A4A15, #B5651D, #D4842A)" }} />
+
           {/* Desktop header */}
-          <div className="hidden md:flex items-center" style={{ paddingBottom: "12px", borderBottom: "1px solid rgba(26,22,18,0.2)" }}>
+          <div className="hidden md:flex items-center" style={{ padding: "14px 20px", background: "#EDE8DE", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
             <div style={{ minWidth: "28px" }} />
             <div style={{ flex: 1, minWidth: "180px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("listings.company")}</div>
             <div style={{ minWidth: "120px", maxWidth: "120px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("listings.industry")}</div>
@@ -412,7 +310,7 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           </div>
 
           {/* Mobile header */}
-          <div className="flex md:hidden items-center" style={{ paddingBottom: "12px", borderBottom: "1px solid rgba(26,22,18,0.2)" }}>
+          <div className="flex md:hidden items-center" style={{ padding: "14px 16px", background: "#EDE8DE", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
             <div style={{ flex: 1, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("listings.company")}</div>
             <div style={{ minWidth: "80px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("listings.stage")}</div>
             <div style={{ minWidth: "90px", textAlign: "right", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("listings.raising")}</div>
@@ -420,7 +318,7 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           </div>
 
           {listings.length === 0 ? (
-            <div style={{ paddingTop: "32px", textAlign: "center" }}>
+            <div style={{ padding: "40px 20px", textAlign: "center" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "#9C8E82", marginBottom: "16px" }}>
                 {t("listings.noListings")}
               </p>
@@ -436,10 +334,11 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           ) : (
             listings.map((s, rowIdx) => {
               const isHovered = hoveredRow === s.id;
+              const isLast = rowIdx === listings.length - 1;
               return (
                 <div
                   key={s.id}
-                  className="listing-row listing-row-spotlight reveal-child flex items-center h-[56px]"
+                  className="listing-row listing-row-spotlight reveal-child flex items-center h-[60px]"
                   onClick={() => router.push(`/startups/${s.slug}`)}
                   onMouseEnter={() => setHoveredRow(s.id)}
                   onMouseLeave={() => setHoveredRow(null)}
@@ -449,10 +348,12 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
                     e.currentTarget.style.setProperty("--spot-y", `${e.clientY - rect.top}px`);
                   }}
                   style={{
-                    borderBottom: "1px solid rgba(26,22,18,0.08)",
+                    borderBottom: isLast ? "none" : "1px solid rgba(26,22,18,0.08)",
                     background: isHovered ? "#E4DDD2" : "transparent",
                     transition: "background 120ms ease",
                     cursor: "pointer",
+                    paddingLeft: "20px",
+                    paddingRight: "20px",
                   }}
                 >
                   {/* Row number */}
@@ -512,6 +413,7 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
               );
             })
           )}
+          </div>
         </div>
       </section>
 
@@ -704,7 +606,8 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block" style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden" }}>
+          <div className="hidden md:block" style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden", background: "#F5F0E8", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
+            <div style={{ height: "3px", background: "linear-gradient(90deg, #8A4A15, #B5651D, #D4842A)" }} />
             <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
               <colgroup>
                 <col style={{ minWidth: "200px" }} />
@@ -717,16 +620,16 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
                     const featured = i === 1;
                     return (
                       <th key={plan.id} style={{
-                        padding: "18px 20px 14px", textAlign: "center", position: "relative",
+                        padding: featured ? "30px 20px 14px" : "18px 20px 14px", textAlign: "center", position: "relative",
                         background: featured ? "rgba(181,101,29,0.06)" : "transparent",
                         borderLeft: featured ? "1px solid rgba(181,101,29,0.2)" : "1px solid rgba(26,22,18,0.1)",
                         borderRight: featured ? "1px solid rgba(181,101,29,0.2)" : "none",
                       }}>
                         {featured && (
                           <span style={{
-                            position: "absolute", top: "-1px", left: "50%", transform: "translate(-50%, -100%)",
+                            position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
                             background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
-                            fontSize: "9px", padding: "3px 10px", borderRadius: "3px 3px 0 0",
+                            fontSize: "9px", padding: "3px 10px", borderRadius: "0 0 3px 3px",
                             textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap",
                           }}>
                             {t("pricing.popular")}

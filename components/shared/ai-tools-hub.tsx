@@ -801,7 +801,8 @@ export function AiToolsHub() {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>{t("ai.hub.tablePlansSub")}</p>
           </div>
 
-          <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "8px", overflow: "hidden", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
+            <div style={{ height: "3px", background: "linear-gradient(90deg, var(--cr-copper-d), var(--cr-copper), var(--cr-copper-l))" }} />
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
                 <thead>
@@ -826,7 +827,7 @@ export function AiToolsHub() {
                 </thead>
                 <tbody>
                   {TIER_ROWS.map((row, i) => (
-                    <tr key={row.feature} style={{ borderBottom: "1px solid var(--cr-rule)", background: i % 2 === 0 ? "transparent" : "var(--cr-paper-2)" }}>
+                    <tr key={row.feature} className="pricing-row" style={{ borderBottom: "1px solid var(--cr-rule)", background: i % 2 === 0 ? "transparent" : "var(--cr-paper-2)" }}>
                       <td style={{ padding: "14px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>{row.feature}</td>
                       <td style={{ padding: "14px", textAlign: "center" }}><TierCheck val={row.free} /></td>
                       <td style={{ padding: "14px", textAlign: "center", background: "rgba(181,101,29,0.03)" }}><TierCheck val={row.angel} /></td>
