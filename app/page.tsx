@@ -14,14 +14,14 @@ export const metadata: Metadata = {
 };
 
 export type HeroStartup = {
-  id: string; name: string; slug: string; logo_url: string | null;
+  id: string; name: string; slug: string;
   industry: string; stage: string;
-  mrr: number | null; arr: number | null; growth_mom: number | null; runway: number | null;
+  mrr: number | null; arr: number | null; growth_rate: number | null; runway_months: number | null;
   funding_target: number; vaultrise_score: number | null;
 };
 
 export type ListingSnippet = {
-  id: string; name: string; slug: string; logo_url: string | null;
+  id: string; name: string; slug: string;
   industry: string; stage: string;
   mrr: number | null; funding_target: number; vaultrise_score: number | null;
 };
@@ -37,14 +37,14 @@ export default async function HomePage() {
     const [heroRes, listingsRes] = await Promise.all([
       supabase
         .from("startups")
-        .select("id,name,slug,logo_url,industry,stage,mrr,arr,growth_mom,runway,funding_target,vaultrise_score")
+        .select("id,name,slug,industry,stage,mrr,arr,growth_rate,runway_months,funding_target,vaultrise_score")
         .eq("status", "active")
         .order("vaultrise_score", { ascending: false })
         .limit(1)
         .maybeSingle(),
       supabase
         .from("startups")
-        .select("id,name,slug,logo_url,industry,stage,mrr,funding_target,vaultrise_score")
+        .select("id,name,slug,industry,stage,mrr,funding_target,vaultrise_score")
         .eq("status", "active")
         .order("vaultrise_score", { ascending: false })
         .limit(8),

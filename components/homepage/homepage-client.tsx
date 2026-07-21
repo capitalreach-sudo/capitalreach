@@ -48,8 +48,8 @@ function HeroCard({ startup }: { startup: HeroStartup }) {
   const metrics = [
     { label: t("startupDetail.mrr"),    value: startup.mrr        != null ? formatCurrency(startup.mrr)           : "—" },
     { label: t("startupDetail.arr"),    value: startup.arr        != null ? formatCurrency(startup.arr)           : "—" },
-    { label: t("startupDetail.growth"), value: startup.growth_mom != null ? formatGrowth(startup.growth_mom).text : "—" },
-    { label: t("startupDetail.runway"), value: startup.runway     != null ? `${startup.runway}mo`                 : "—" },
+    { label: t("startupDetail.growth"), value: startup.growth_rate   != null ? formatGrowth(startup.growth_rate).text : "—" },
+    { label: t("startupDetail.runway"), value: startup.runway_months != null ? `${startup.runway_months}mo`           : "—" },
   ];
 
   return (
@@ -68,11 +68,7 @@ function HeroCard({ startup }: { startup: HeroStartup }) {
             justifyContent: "center", overflow: "hidden", flexShrink: 0,
             fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "#B5651D",
           }}>
-            {startup.logo_url
-              // eslint-disable-next-line @next/next/no-img-element
-              ? <img src={startup.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : startup.name.charAt(0)
-            }
+            {startup.name.charAt(0)}
           </div>
           <div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "#1A1612" }}>{startup.name}</div>
@@ -457,11 +453,7 @@ export function HomepageClient({ stats, heroStartup, listings }: Props) {
                       justifyContent: "center", overflow: "hidden", flexShrink: 0,
                       fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#B5651D",
                     }}>
-                      {s.logo_url
-                        // eslint-disable-next-line @next/next/no-img-element
-                        ? <img src={s.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        : s.name.charAt(0)
-                      }
+                      {s.name.charAt(0)}
                     </div>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A1612" }}>{s.name}</span>
                   </div>
