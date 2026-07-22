@@ -4,44 +4,47 @@ import { useEffect, useRef, useState } from "react";
 
 interface Props {
   from?: number;   // start percentage e.g. 10
-  to?: number;     // end percentage e.g. 2
+  to?: number;     // end percentage e.g. 2 (the true, final value)
   duration?: number; // ms
   className?: string;
 }
 
 export function FeeCounter({ from = 10, to = 2, duration = 1800, className = "" }: Props) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [value, setValue] = useState(from);
-  const [started, setStarted] = useState(false);
+  // Rest at the true final value. If the count-down animation never runs
+  // (reduced motion, a throttled background tab, or before the element scrolls
+  // into view) the ad still correctly shows the real fee — never a higher,
+  // misleading number.
+  const [value, setValue] = useState(to);
+  const startedRef = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setStarted(true); obs.disconnect(); } },
+      ([entry]) => {
+        if (!entry.isIntersecting || startedRef.current) return;
+        startedRef.current = true;
+        obs.disconnect();
+
+        const start = performance.now();
+        const range = from - to;
+        const tick = (now: number) => {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+          setValue(progress >= 1 ? to : parseFloat((from - range * eased).toFixed(1)));
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        setValue(from);          // jump to the starting number…
+        requestAnimationFrame(tick); // …then animate down to `to`
+      },
       { threshold: 0.5 }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!started) return;
-    const start = performance.now();
-    const range = from - to;
-
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = from - range * eased;
-      setValue(Math.max(to, parseFloat(current.toFixed(1))));
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-
-    requestAnimationFrame(tick);
-  }, [started, from, to, duration]);
+  }, [from, to, duration]);
 
   return (
     <span ref={ref} className={className}>

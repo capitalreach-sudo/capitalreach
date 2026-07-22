@@ -14,6 +14,7 @@ import {
   canExportData, canGetAiDueDiligence, canAccessFinancials, canSendMessages,
 } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { formatMoney } from "@/lib/currency";
 import type { Profile, Investor, Watchlist, Deal, AiReport, DealStatus } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -103,18 +104,16 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
     else router.refresh();
   }
 
-  async function handleDealClose(dealId: string, amount: number) {
+  async function handleDealClose(dealId: string, amount: number, currency: string) {
     const res = await fetch("/api/deals/close", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dealId, amount }),
+      body: JSON.stringify({ dealId, amount, currency }),
     });
     const data = await res.json();
     if (!res.ok) {
       notify.error(data.error || t("dashboard.dealCloseFailed"));
     } else {
-      const fmt = amount
-        ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount)
-        : null;
+      const fmt = amount ? formatMoney(amount, currency) : null;
       notify.success(fmt ? t("dashboard.dealClosedAt", { amount: fmt }) : t("dashboard.dealClosed"));
       router.refresh();
     }

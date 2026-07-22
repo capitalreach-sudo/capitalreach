@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import { DollarSign, X, CheckCircle2, TrendingUp, Lock } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import { formatMoney, CURRENCIES, getCurrency, DEFAULT_CURRENCY } from "@/lib/currency";
+import { X, CheckCircle2, TrendingUp, Lock } from "lucide-react";
 import type { Deal, DealStatus } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -24,7 +25,7 @@ const QUICK_MOVE: DealStatus[] = ["due_diligence", "term_sheet", "passed"];
 interface DealKanbanProps {
   deals: Deal[];
   onStatusChange?: (dealId: string, status: DealStatus) => void;
-  onDealClose?: (dealId: string, amount: number) => void;
+  onDealClose?: (dealId: string, amount: number, currency: string) => void;
   viewAs: "startup" | "investor";
   // When false and viewAs === "startup", the investor's identity is masked
   // behind an upgrade prompt (Free founders don't see who's interested).
@@ -62,13 +63,14 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   deal: Deal;
   viewAs: "startup" | "investor";
   onStatusChange?: (id: string, status: DealStatus) => void;
-  onDealClose?: (id: string, amount: number) => void;
+  onDealClose?: (id: string, amount: number, currency: string) => void;
   revealIdentity?: boolean;
 }) {
   const { t } = useTranslation();
   const columns = useColumns();
   const [showCloseForm, setShowCloseForm] = useState(false);
   const [closeAmount, setCloseAmount]     = useState(deal.amount ? String(deal.amount) : "");
+  const [closeCurrency, setCloseCurrency] = useState(deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
 
   const realName = viewAs === "startup"
@@ -83,7 +85,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   async function handleClose() {
     if (!onDealClose) return;
     setClosing(true);
-    await onDealClose(deal.id, parseFloat(closeAmount) || 0);
+    await onDealClose(deal.id, parseFloat(closeAmount) || 0, closeCurrency);
     setClosing(false);
     setShowCloseForm(false);
   }
@@ -112,8 +114,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </a>
       )}
       {deal.amount != null && (
-        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginTop: "4px" }}>
-          {formatCurrency(deal.amount, true)}
+        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginTop: "4px", display: "flex", alignItems: "baseline", gap: "5px" }}>
+          {formatMoney(deal.amount, deal.currency, { compact: true })}
+          <span style={{ fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
         </p>
       )}
       <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
@@ -144,11 +147,20 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {showCloseForm && (
         <div style={{ marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>{t("deals.confirmClose")}</p>
-          <div style={{ position: "relative", marginBottom: "8px" }}>
-            <DollarSign style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "var(--cr-ink-4)" }} />
-            <input type="number" placeholder={t("deals.amountRaisedPlaceholder")}
-              value={closeAmount} onChange={e => setCloseAmount(e.target.value)}
-              style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "28px", paddingRight: "10px", paddingTop: "6px", paddingBottom: "6px", outline: "none", boxSizing: "border-box" }} />
+          <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
+            <div style={{ position: "relative", flex: 1 }}>
+              <span style={{ position: "absolute", left: "9px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)", pointerEvents: "none" }}>
+                {getCurrency(closeCurrency).symbol}
+              </span>
+              <input type="number" placeholder={t("deals.amountRaisedPlaceholder")}
+                value={closeAmount} onChange={e => setCloseAmount(e.target.value)}
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "34px", paddingRight: "10px", paddingTop: "6px", paddingBottom: "6px", outline: "none", boxSizing: "border-box" }} />
+            </div>
+            <select value={closeCurrency} onChange={e => setCloseCurrency(e.target.value)}
+              aria-label={t("deals.currency")}
+              style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", cursor: "pointer" }}>
+              {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+            </select>
           </div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "10px" }}>
             {t("deals.feeNotice")}

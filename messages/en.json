@@ -1465,6 +1465,7 @@
     "closeDeal": "Close Deal",
     "confirmClose": "Confirm Close",
     "amountRaisedPlaceholder": "Amount raised",
+    "currency": "Currency",
     "feeNotice": "A 2% success fee invoice will be generated automatically.",
     "closing": "Closing…",
     "confirm": "Confirm",

@@ -67,18 +67,25 @@ export async function createCustomerPortalSession(
   });
 }
 
+// Stripe expects amounts in the currency's minor unit (cents) — except for
+// zero-decimal currencies like JPY, where the amount is the whole unit.
+const ZERO_DECIMAL_CURRENCIES = new Set(["jpy"]);
+
 export async function createSuccessFeeInvoice(
   customerId: string,
   amountRaised: number,
-  startupName: string
+  startupName: string,
+  currency: string = "USD"
 ): Promise<Stripe.Invoice> {
-  const feeAmount = Math.round(amountRaised * 0.02 * 100); // 2% in cents
+  const cur = currency.toLowerCase();
+  const minorUnitFactor = ZERO_DECIMAL_CURRENCIES.has(cur) ? 1 : 100;
+  const feeAmount = Math.round(amountRaised * 0.02 * minorUnitFactor); // 2% success fee
 
   await stripe.invoiceItems.create({
     customer: customerId,
     amount: feeAmount,
-    currency: "usd",
-    description: `CapitalReach Success Fee (2%) — ${startupName} funding round of $${amountRaised.toLocaleString()}`,
+    currency: cur,
+    description: `CapitalReach Success Fee (2%) — ${startupName} funding round of ${currency.toUpperCase()} ${amountRaised.toLocaleString()}`,
   });
 
   const invoice = await stripe.invoices.create({

@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createSuccessFeeInvoice } from "@/lib/stripe";
 import { sendDealClosedEmail } from "@/lib/resend";
+import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { dealId, amount } = await req.json();
+  const { dealId, amount, currency } = await req.json();
+  const dealCurrency = isCurrencyCode(currency) ? currency : DEFAULT_CURRENCY;
 
   const adminClient = createAdminClient();
 
@@ -43,7 +45,7 @@ export async function POST(req: NextRequest) {
   // Mark deal as closed
   await adminClient
     .from("deals")
-    .update({ status: "closed", amount: amount || deal.amount })
+    .update({ status: "closed", amount: amount || deal.amount, currency: dealCurrency })
     .eq("id", dealId);
 
   let invoiceUrl = "";
@@ -53,7 +55,8 @@ export async function POST(req: NextRequest) {
       const invoice = await createSuccessFeeInvoice(
         startupProfile.stripe_customer_id,
         amount,
-        deal.startup.name
+        deal.startup.name,
+        dealCurrency
       );
       await adminClient
         .from("deals")

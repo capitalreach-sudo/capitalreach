@@ -209,6 +209,7 @@ export interface Deal {
   startup_id: string;
   investor_id: string;
   amount: number | null;
+  currency: string | null;
   status: DealStatus;
   success_fee_invoiced: boolean;
   stripe_invoice_id: string | null;

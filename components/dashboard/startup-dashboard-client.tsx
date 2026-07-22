@@ -11,6 +11,7 @@ import {
   FileText, AlertCircle, Lock, Zap, LayoutGrid,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatMoney } from "@/lib/currency";
 import type { Profile, Startup, Deal, DealStatus } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -130,11 +131,11 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
     if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else router.refresh();
   }
 
-  async function handleDealClose(dealId: string, amount: number) {
-    const res = await fetch("/api/deals/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, amount }) });
+  async function handleDealClose(dealId: string, amount: number, currency: string) {
+    const res = await fetch("/api/deals/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, amount, currency }) });
     const data = await res.json();
     if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); }
-    else { notify.success(amount ? t("dashboard.dealClosedAt", { amount: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount) }) : t("dashboard.dealClosed")); router.refresh(); }
+    else { notify.success(amount ? t("dashboard.dealClosedAt", { amount: formatMoney(amount, currency) }) : t("dashboard.dealClosed")); router.refresh(); }
   }
 
   async function generatePitchFeedback() {
