@@ -219,6 +219,26 @@ export interface Deal {
   investor?: Investor;
 }
 
+export type ContractType   = "term_sheet" | "safe" | "convertible_note" | "nda" | "custom";
+export type ContractStatus = "draft" | "sent" | "signed" | "void";
+
+export interface Contract {
+  id: string;
+  deal_id: string;
+  startup_id: string;
+  investor_id: string;
+  created_by: string;
+  title: string;
+  contract_type: ContractType;
+  amount: number | null;
+  currency: string | null;
+  equity_percent: number | null;
+  terms: string | null;
+  status: ContractStatus;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface NdaRecord {
   id: string;
   startup_id: string;
