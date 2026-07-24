@@ -47,6 +47,27 @@ export async function POST(req: NextRequest) {
     .update({ signed_at: new Date().toISOString() })
     .eq("id", nda.id);
 
+  // nda_records has no deal_id of its own — attribute this signature to the
+  // most-recently-updated open deal for this pair, falling back to the most
+  // recent deal overall if none is currently open (best-effort attribution).
+  const { data: dealsForPair } = await adminClient
+    .from("deals")
+    .select("id, status")
+    .eq("startup_id", nda.startup_id)
+    .eq("investor_id", nda.investor_id)
+    .order("updated_at", { ascending: false });
+  const targetDeal = dealsForPair?.find(d => d.status !== "closed" && d.status !== "passed") ?? dealsForPair?.[0];
+  if (targetDeal) {
+    await adminClient.from("deal_activity").insert({
+      deal_id: targetDeal.id,
+      startup_id: nda.startup_id,
+      investor_id: nda.investor_id,
+      actor_id: null,
+      type: "nda_signed",
+      body: null,
+    });
+  }
+
   // Get email addresses for both parties
   const { data: startup } = await adminClient
     .from("startups")

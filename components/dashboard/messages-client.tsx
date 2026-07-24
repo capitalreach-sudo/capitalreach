@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import {
@@ -58,6 +58,7 @@ const labelStyle: React.CSSProperties = {
 
 export function MessagesClient({ profile, threads: initialThreads, myStartupId }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const [selectedThread, setSelectedThread] = useState<Thread | null>(initialThreads[0] || null);
   const [messages, setMessages]             = useState<Message[]>([]);
@@ -104,6 +105,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
   }, [selectedThread?.id]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
+  // Deep link from a deal card (?startupId=&investorId=) — select the matching
+  // thread once on mount. Fails silently if no thread exists for that pair yet.
+  useEffect(() => {
+    const startupId = searchParams.get("startupId");
+    const investorId = searchParams.get("investorId");
+    if (!startupId || !investorId) return;
+    const match = initialThreads.find(th => th.startup_id === startupId && th.investor_id === investorId);
+    if (match) setSelectedThread(match);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Account search — also runs with an empty query so the dropdown shows a
   // browsable list of available accounts immediately, not just after typing.

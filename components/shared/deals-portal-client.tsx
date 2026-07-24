@@ -13,14 +13,15 @@ interface Props {
   revealIdentity?: boolean;
   equityOffered?: number | null;
   ownProfile?: OwnProfile;
+  canExport?: boolean;
 }
 
-export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equityOffered = null, ownProfile }: Props) {
+export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
 
-  async function handleDealStatusChange(dealId: string, status: DealStatus) {
-    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status }) });
+  async function handleDealStatusChange(dealId: string, status: DealStatus, reason?: string) {
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status, reason }) });
     if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else router.refresh();
   }
 
@@ -40,6 +41,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       revealIdentity={revealIdentity}
       equityOffered={equityOffered}
       ownProfile={ownProfile}
+      canExport={canExport}
     />
   );
 }

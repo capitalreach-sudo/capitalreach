@@ -239,6 +239,16 @@ export interface Contract {
   updated_at: string;
 }
 
+export type DealActivityType = "note" | "status_change" | "contract_status" | "nda_signed";
+
+export interface DealActivity {
+  id: string;
+  type: DealActivityType;
+  body: string | null;
+  created_at: string;
+  actor: { full_name: string | null } | null;
+}
+
 export interface NdaRecord {
   id: string;
   startup_id: string;

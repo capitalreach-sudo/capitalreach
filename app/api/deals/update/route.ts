@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { dealId, status } = await req.json();
+  const { dealId, status, reason } = await req.json();
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
 
@@ -31,5 +31,18 @@ export async function POST(req: NextRequest) {
   }
 
   await supabase.from("deals").update({ status }).eq("id", dealId);
+
+  // deal_activity has no admin RLS policy (unlike deals), so use the admin
+  // client here to make sure admin-initiated changes still get logged.
+  const admin = createAdminClient();
+  await admin.from("deal_activity").insert({
+    deal_id: dealId,
+    startup_id: deal.startup_id,
+    investor_id: deal.investor_id,
+    actor_id: user.id,
+    type: "status_change",
+    body: status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
+  });
+
   return NextResponse.json({ success: true });
 }

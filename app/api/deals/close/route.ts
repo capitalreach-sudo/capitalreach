@@ -49,6 +49,15 @@ export async function POST(req: NextRequest) {
     .update({ status: "closed", amount: amount || deal.amount, currency: dealCurrency })
     .eq("id", dealId);
 
+  await adminClient.from("deal_activity").insert({
+    deal_id: dealId,
+    startup_id: deal.startup_id,
+    investor_id: deal.investor_id,
+    actor_id: user.id,
+    type: "status_change",
+    body: null,
+  });
+
   let invoiceUrl = "";
   // Create success fee invoice if we have a customer ID and amount
   if (startupProfile?.stripe_customer_id && amount > 0) {

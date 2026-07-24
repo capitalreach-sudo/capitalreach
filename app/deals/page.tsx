@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getLaunchStatus } from "@/lib/launchMode";
+import { buildAccessContext, canExportData } from "@/lib/access";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { DealsPortalClient } from "@/components/shared/deals-portal-client";
@@ -81,6 +82,9 @@ export default async function DealsPage() {
       .eq("investor_id", investor.id)
       .order("updated_at", { ascending: false });
 
+    const { isLaunch } = await getLaunchStatus();
+    const canExport = canExportData(buildAccessContext(profile, isLaunch));
+
     return (
       <>
         <Navbar />
@@ -93,6 +97,7 @@ export default async function DealsPage() {
             <DealsPortalClient
               deals={deals ?? []}
               viewAs="investor"
+              canExport={canExport}
               ownProfile={{
                 kind: "investor",
                 minCheck: investor.min_check,
@@ -126,7 +131,7 @@ export default async function DealsPage() {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
               Platform-wide oversight — every deal across every startup and investor.
             </p>
-            <DealsPortalClient deals={deals ?? []} viewAs="admin" />
+            <DealsPortalClient deals={deals ?? []} viewAs="admin" canExport />
           </div>
         </main>
         <Footer />

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   const { data: contract } = await admin
     .from("contracts")
-    .select("id, startup_id, investor_id, title")
+    .select("id, deal_id, startup_id, investor_id, title")
     .eq("id", contractId)
     .maybeSingle();
   if (!contract) return NextResponse.json({ error: "Contract not found" }, { status: 404 });
@@ -39,6 +39,15 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
   if (error || !updated) return NextResponse.json({ error: "Failed to update contract" }, { status: 500 });
+
+  await admin.from("deal_activity").insert({
+    deal_id: contract.deal_id,
+    startup_id: contract.startup_id,
+    investor_id: contract.investor_id,
+    actor_id: user.id,
+    type: "contract_status",
+    body: status,
+  });
 
   if (status === "sent" || status === "signed") {
     const [{ data: startupOwner }, { data: investorOwner }] = await Promise.all([

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2 } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
-import type { Deal, DealStatus, Contract, ContractType } from "@/types";
+import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const CONTRACT_TYPES: ContractType[] = ["term_sheet", "safe", "convertible_note", "nda", "custom"];
@@ -54,7 +54,7 @@ const QUICK_MOVE: DealStatus[] = ["due_diligence", "term_sheet", "passed"];
 
 interface DealKanbanProps {
   deals: Deal[];
-  onStatusChange?: (dealId: string, status: DealStatus) => void;
+  onStatusChange?: (dealId: string, status: DealStatus, reason?: string) => void;
   onDealClose?: (dealId: string, amount: number, currency: string) => void;
   viewAs: "startup" | "investor" | "admin";
   // When false and viewAs === "startup", the investor's identity is masked
@@ -67,6 +67,17 @@ interface DealKanbanProps {
   // The caller's own startup/investor profile facts, used to show
   // compatibility context in the New Deal modal.
   ownProfile?: OwnProfile;
+  // Whether to show the CSV export button — computed server-side (admin
+  // always, investors gated by canExportData(), never shown for startups).
+  canExport?: boolean;
+}
+
+// A deal's counterpart display names, computed from its joined startup/investor
+// rows. Shared between DealCard and the filter/search/export logic below.
+function dealNames(deal: Deal, t: (key: string) => string): { investorName: string; startupName: string } {
+  const investorName = (deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || t("deals.investorFallback");
+  const startupName  = (deal as any).startup?.name || t("deals.startupFallback");
+  return { investorName, startupName };
 }
 
 // ── Column header badge ───────────────────────────────────────────────────────
@@ -722,12 +733,166 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
   );
 }
 
+// ── Activity section (inside a deal card) ──────────────────────────────────────
+
+const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
+  note:            "deals.activityNote",
+  status_change:   "deals.activityStatusChange",
+  contract_status: "deals.activityContractStatus",
+  nda_signed:      "deals.activityNdaSigned",
+};
+
+function ActivitySection({ dealId }: { dealId: string }) {
+  const { t } = useTranslation();
+  const [open, setOpen]         = useState(false);
+  const [loaded, setLoaded]     = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [activity, setActivity] = useState<DealActivity[]>([]);
+  const [note, setNote]         = useState("");
+  const [posting, setPosting]   = useState(false);
+
+  async function load() {
+    setLoading(true);
+    const res = await fetch(`/api/deals/activity?dealId=${dealId}`);
+    const data = await res.json();
+    if (res.ok) setActivity(data.activity || []);
+    setLoading(false);
+    setLoaded(true);
+  }
+
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (next && !loaded) load();
+  }
+
+  async function handleAddNote() {
+    if (!note.trim()) return;
+    setPosting(true);
+    const res = await fetch("/api/deals/activity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dealId, body: note.trim() }),
+    });
+    const data = await res.json();
+    setPosting(false);
+    if (!res.ok) { notify.error(data.error || t("deals.noteAddFailed")); return; }
+    setActivity(prev => [data.entry, ...prev]);
+    setNote("");
+  }
+
+  return (
+    <div style={{ marginTop: "10px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+      <button onClick={toggle}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          {t("deals.activity")}{loaded && activity.length > 0 ? ` (${activity.length})` : ""}
+        </span>
+        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }} />
+      </button>
+
+      {open && (
+        <div style={{ marginTop: "10px" }}>
+          {loading && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>}
+          {!loading && loaded && activity.length === 0 && (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noActivity")}</p>
+          )}
+          {!loading && activity.map(a => (
+            <div key={a.id} style={{ padding: "6px 0", borderBottom: "1px solid var(--cr-rule)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>
+                  {t(ACTIVITY_ICON_KEY[a.type])}
+                  {a.actor?.full_name ? ` · ${a.actor.full_name}` : ""}
+                </span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>
+                  {formatDate(a.created_at)}
+                </span>
+              </div>
+              {a.body && (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", marginTop: "2px" }}>{a.body}</p>
+              )}
+            </div>
+          ))}
+
+          <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
+            <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder={t("deals.addNotePlaceholder")}
+              onKeyDown={e => { if (e.key === "Enter") handleAddNote(); }}
+              style={{ flex: 1, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none", boxSizing: "border-box" }} />
+            <button onClick={handleAddNote} disabled={!note.trim() || posting}
+              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#fff", padding: "0 12px", cursor: !note.trim() || posting ? "default" : "pointer", opacity: !note.trim() || posting ? 0.5 : 1 }}>
+              {posting ? t("deals.posting") : t("deals.addNote")}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Passed-reason picker ────────────────────────────────────────────────────────
+
+const PASSED_REASONS = [
+  { key: "stage_mismatch", labelKey: "deals.passedReasonStage" },
+  { key: "valuation",      labelKey: "deals.passedReasonValuation" },
+  { key: "timing",         labelKey: "deals.passedReasonTiming" },
+  { key: "no_response",    labelKey: "deals.passedReasonNoResponse" },
+  { key: "other",          labelKey: "deals.passedReasonOther" },
+];
+
+function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: string) => void; onCancel: () => void }) {
+  const { t } = useTranslation();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [detail, setDetail]     = useState("");
+
+  const canConfirm = !!selected && (selected !== "other" || detail.trim().length > 0);
+
+  function handleConfirm() {
+    if (!canConfirm || !selected) return;
+    const label = t(PASSED_REASONS.find(r => r.key === selected)!.labelKey);
+    onConfirm(selected === "other" ? detail.trim() : label);
+  }
+
+  return (
+    <div style={{ marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-down)", marginBottom: "8px" }}>{t("deals.whyPassed")}</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "8px" }}>
+        {PASSED_REASONS.map(r => (
+          <button key={r.key} onClick={() => setSelected(r.key)}
+            style={{
+              background: selected === r.key ? "var(--cr-copper)" : "var(--cr-paper-2)",
+              border: `1px solid ${selected === r.key ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
+              borderRadius: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+              color: selected === r.key ? "#fff" : "var(--cr-ink-3)", padding: "5px 11px", cursor: "pointer",
+            }}>
+            {t(r.labelKey)}
+          </button>
+        ))}
+      </div>
+      {selected === "other" && (
+        <input type="text" value={detail} onChange={e => setDetail(e.target.value)} placeholder={t("deals.passedReasonOtherPlaceholder")}
+          autoFocus
+          style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none", boxSizing: "border-box", marginBottom: "8px" }} />
+      )}
+      <div style={{ display: "flex", gap: "6px" }}>
+        <button onClick={handleConfirm} disabled={!canConfirm}
+          style={{ flex: 1, height: "32px", background: "var(--cr-down)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", cursor: canConfirm ? "pointer" : "default", opacity: canConfirm ? 1 : 0.5 }}>
+          {t("deals.confirmPass")}
+        </button>
+        <button onClick={onCancel}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
+          <X style={{ width: 15, height: 15 }} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Deal card ─────────────────────────────────────────────────────────────────
 
 function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null }: {
   deal: Deal;
   viewAs: "startup" | "investor" | "admin";
-  onStatusChange?: (id: string, status: DealStatus) => void;
+  onStatusChange?: (id: string, status: DealStatus, reason?: string) => void;
   onDealClose?: (id: string, amount: number, currency: string) => void;
   revealIdentity?: boolean;
   equityOffered?: number | null;
@@ -738,9 +903,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [closeAmount, setCloseAmount]     = useState(deal.amount ? String(deal.amount) : "");
   const [closeCurrency, setCloseCurrency] = useState(deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
+  const [showPassedPicker, setShowPassedPicker] = useState(false);
 
-  const investorName = (deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || t("deals.investorFallback");
-  const startupName  = (deal as any).startup?.name || t("deals.startupFallback");
+  const { investorName, startupName } = dealNames(deal, t);
 
   const realName = viewAs === "admin" ? `${startupName} × ${investorName}`
     : viewAs === "startup" ? investorName
@@ -793,15 +958,22 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       </p>
 
       {/* Quick-move buttons */}
-      {onStatusChange && isActive && (
+      {onStatusChange && isActive && !showPassedPicker && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px" }}>
           {QUICK_MOVE.filter(s => s !== deal.status).map((s) => (
-            <button key={s} onClick={() => onStatusChange(deal.id, s)}
+            <button key={s} onClick={() => (s === "passed" ? setShowPassedPicker(true) : onStatusChange(deal.id, s))}
               style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
               → {columns.find(c => c.status === s)?.label}
             </button>
           ))}
         </div>
+      )}
+
+      {showPassedPicker && onStatusChange && (
+        <PassedReasonPicker
+          onConfirm={reason => { onStatusChange(deal.id, "passed", reason); setShowPassedPicker(false); }}
+          onCancel={() => setShowPassedPicker(false)}
+        />
       )}
 
       {/* Close deal */}
@@ -853,6 +1025,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </span>
       )}
 
+      {viewAs !== "admin" && (
+        <a href={`/dashboard/messages?startupId=${deal.startup_id}&investorId=${deal.investor_id}`}
+          style={{ display: "inline-block", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
+          {t("deals.messageCounterpart")}
+        </a>
+      )}
+
       <ResourcesSection dealId={deal.id} startupId={deal.startup_id} viewAs={viewAs} />
       <ContractsSection
         dealId={deal.id}
@@ -862,17 +1041,109 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         startupId={deal.startup_id}
         investorId={deal.investor_id}
       />
+      <ActivitySection dealId={deal.id} />
     </div>
   );
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile }: DealKanbanProps) {
+type SortKey = "updated_desc" | "amount_desc" | "amount_asc" | "created_desc";
+const SORT_OPTIONS: { key: SortKey; labelKey: string }[] = [
+  { key: "updated_desc", labelKey: "deals.sortRecent" },
+  { key: "amount_desc",  labelKey: "deals.sortAmountDesc" },
+  { key: "amount_asc",   labelKey: "deals.sortAmountAsc" },
+  { key: "created_desc", labelKey: "deals.sortNewest" },
+];
+
+function csvEscape(v: unknown): string {
+  return `"${String(v ?? "").replace(/"/g, '""')}"`;
+}
+
+export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false }: DealKanbanProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const columns = useColumns();
   const [showNewDeal, setShowNewDeal] = useState(false);
+  const [search, setSearch]           = useState("");
+  const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
+  const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
+
+  // Pipeline stats reflect the full, unfiltered deal list — a stable snapshot,
+  // not scoped to whatever the filter bar currently shows.
+  const stats = useMemo(() => {
+    const active = deals.filter(d => d.status !== "closed" && d.status !== "passed");
+    const closedCount = deals.filter(d => d.status === "closed").length;
+    const passedCount = deals.filter(d => d.status === "passed").length;
+    const closeRate = closedCount + passedCount > 0 ? closedCount / (closedCount + passedCount) : null;
+    const byCurrency = new Map<string, number>();
+    for (const d of active) {
+      if (d.amount != null) {
+        const cur = d.currency || DEFAULT_CURRENCY;
+        byCurrency.set(cur, (byCurrency.get(cur) || 0) + d.amount);
+      }
+    }
+    return { activeCount: active.length, totalCount: deals.length, byCurrency, closeRate };
+  }, [deals]);
+
+  // The dimension available to filter by depends on which side is viewing:
+  // startups filter by the investor's type, investors/admin filter by the
+  // startup's stage (both already present via the joins in app/deals/page.tsx).
+  const filterOptions = useMemo(() => {
+    const values = new Set<string>();
+    deals.forEach(d => {
+      const v = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
+      if (v) values.add(v);
+    });
+    return Array.from(values);
+  }, [deals, viewAs]);
+
+  const filteredDeals = useMemo(() => {
+    let list = deals;
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(d => {
+        const { investorName, startupName } = dealNames(d, t);
+        const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} ${investorName}`;
+        return String(name).toLowerCase().includes(q);
+      });
+    }
+    if (activeFilters.size > 0) {
+      list = list.filter(d => {
+        const v = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
+        return v && activeFilters.has(v);
+      });
+    }
+    const sorted = [...list];
+    if (sortKey === "amount_desc") sorted.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+    else if (sortKey === "amount_asc") sorted.sort((a, b) => (a.amount || 0) - (b.amount || 0));
+    else if (sortKey === "created_desc") sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    else sorted.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+    return sorted;
+  }, [deals, search, activeFilters, sortKey, viewAs, t]);
+
+  function toggleFilter(v: string) {
+    setActiveFilters(prev => {
+      const next = new Set(prev);
+      if (next.has(v)) next.delete(v); else next.add(v);
+      return next;
+    });
+  }
+
+  function handleExportCsv() {
+    const header = [t("deals.csvCounterpart"), t("deals.csvAmount"), t("deals.csvCurrency"), t("deals.csvStatus"), t("deals.csvUpdated")];
+    const rows = filteredDeals.map(d => {
+      const { investorName, startupName } = dealNames(d, t);
+      const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} x ${investorName}`;
+      return [name, d.amount ?? "", d.currency ?? "", d.status, d.updated_at];
+    });
+    const csv = [header, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "deals.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
 
   const newDealButton = (
     <button onClick={() => setShowNewDeal(true)}
@@ -901,13 +1172,66 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
+      {/* Pipeline stats */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "16px" }}>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statActivePipeline")}</p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
+            {stats.byCurrency.size === 0 ? "—" : Array.from(stats.byCurrency.entries()).map(([cur, amt]) => formatMoney(amt, cur, { compact: true })).join(" + ")}
+          </p>
+        </div>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statActiveDeals")}</p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{stats.activeCount}</p>
+        </div>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statCloseRate")}</p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
+            {stats.closeRate == null ? "—" : `${Math.round(stats.closeRate * 100)}%`}
+          </p>
+        </div>
+      </div>
+
+      {/* Filter / sort / actions */}
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder={t("deals.filterSearchPlaceholder")}
+          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", width: "180px" }} />
+        {filterOptions.map(v => (
+          <button key={v} onClick={() => toggleFilter(v)}
+            style={{
+              background: activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-paper-2)",
+              border: `1px solid ${activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
+              borderRadius: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+              color: activeFilters.has(v) ? "#fff" : "var(--cr-ink-3)", padding: "6px 12px", cursor: "pointer", textTransform: "capitalize",
+            }}>
+            {v.replace(/_/g, " ")}
+          </button>
+        ))}
+        {activeFilters.size > 0 && (
+          <button onClick={() => setActiveFilters(new Set())}
+            style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textDecoration: "underline" }}>
+            {t("deals.clearFilters")}
+          </button>
+        )}
+        <select value={sortKey} onChange={e => setSortKey(e.target.value as SortKey)}
+          aria-label={t("deals.sortBy")}
+          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", cursor: "pointer" }}>
+          {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{t(o.labelKey)}</option>)}
+        </select>
+        {canExport && (
+          <button onClick={handleExportCsv}
+            style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", cursor: "pointer" }}>
+            {t("deals.exportCsv")}
+          </button>
+        )}
+        <div style={{ flex: 1 }} />
         {newDealButton}
       </div>
+
       <div style={{ overflowX: "auto" }}>
         <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
           {columns.map(col => {
-            const colDeals = deals.filter(d => d.status === col.status);
+            const colDeals = filteredDeals.filter(d => d.status === col.status);
             return (
               <div key={col.status} style={{ width: "264px", flexShrink: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
