@@ -105,10 +105,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  // Account search
+  // Account search — also runs with an empty query so the dropdown shows a
+  // browsable list of available accounts immediately, not just after typing.
   useEffect(() => {
     if (!accountDropOpen) return;
-    if (!accountSearch.trim()) { setAccountResults([]); return; }
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     searchTimeoutRef.current = setTimeout(async () => {
       setAccountSearching(true);
@@ -117,8 +117,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
       try {
         if (targetRole === "startup" && profile.role === "investor") {
           const [profileRes, startupRes] = await Promise.all([
-            supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","startup").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(6),
-            supabase.from("startups").select("owner_id,name,slug").or(`status.eq.active,status.eq.pending_review`).ilike("name",`%${q}%`).limit(6),
+            supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","startup").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(10),
+            supabase.from("startups").select("owner_id,name,slug").or(`status.eq.active,status.eq.pending_review`).ilike("name",`%${q}%`).limit(10),
           ]);
           const merged = new Map<string, SearchAccount>();
           (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount), kind: "startup" }));
@@ -130,14 +130,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
               merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug, kind: "startup" });
             });
           }
-          setAccountResults(Array.from(merged.values()).slice(0, 8));
+          setAccountResults(Array.from(merged.values()).slice(0, 10));
         } else if (targetRole === "startup" && profile.role === "startup") {
           // Startup searching for another startup (peer messaging)
           const { data: startupRes } = await supabase
             .from("startups").select("owner_id,name,slug")
             .neq("owner_id", profile.id)
             .or(`status.eq.active,status.eq.pending_review`)
-            .ilike("name", `%${q}%`).limit(8);
+            .ilike("name", `%${q}%`).limit(10);
           const ownerIds = (startupRes || []).map(s => s.owner_id).filter(Boolean);
           const merged = new Map<string, SearchAccount>();
           if (ownerIds.length > 0) {
@@ -147,11 +147,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
               merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug, kind: "startup" });
             });
           }
-          setAccountResults(Array.from(merged.values()).slice(0, 8));
+          setAccountResults(Array.from(merged.values()).slice(0, 10));
         } else {
           const [profileRes, investorRes] = await Promise.all([
-            supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","investor").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(6),
-            supabase.from("investors").select("owner_id,slug,type,display_name,firm_name").or(`display_name.ilike.%${q}%,firm_name.ilike.%${q}%`).limit(6),
+            supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","investor").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(10),
+            supabase.from("investors").select("owner_id,slug,type,display_name,firm_name").or(`display_name.ilike.%${q}%,firm_name.ilike.%${q}%`).limit(10),
           ]);
           const merged = new Map<string, SearchAccount>();
           (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount), kind: "investor" }));
@@ -171,7 +171,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
               if (ex && !ex.entity_name) merged.set(inv.owner_id, { ...ex, entity_name: inv.firm_name || inv.display_name || undefined, entity_slug: inv.slug, entity_type: inv.type, kind: "investor" });
             });
           }
-          setAccountResults(Array.from(merged.values()).slice(0, 8));
+          setAccountResults(Array.from(merged.values()).slice(0, 10));
         }
       } finally { setAccountSearching(false); }
     }, 300);
@@ -593,13 +593,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", gap: "8px", color: "var(--cr-ink-4)" }}>
                           <Loader2 style={{ width: 14, height: 14 }} /> <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.searching")}</span>
                         </div>
-                      ) : !accountSearch.trim() ? (
-                        <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-                          {profile.role === "investor" ? t("dashboard.startTypingToSearchStartups") : targetKind === "investor" ? t("dashboard.startTypingToSearchInvestors") : t("dashboard.startTypingToSearchStartups")}
-                        </p>
                       ) : accountResults.length === 0 ? (
                         <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noResultsFound")}</p>
-                      ) : accountResults.map(a => (
+                      ) : (
+                        <>
+                          {!accountSearch.trim() && (
+                            <p style={{ padding: "8px 12px 4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                              {t("dashboard.suggestedAccounts")}
+                            </p>
+                          )}
+                          {accountResults.map(a => (
                         <button key={a.id} onClick={() => { setSelectedAccount(a); setAccountDropOpen(false); setAccountSearch(""); }}
                           style={{ width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px", textAlign: "left" }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
@@ -622,7 +625,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
                             </div>
                           )}
                         </button>
-                      ))}
+                          ))}
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
