@@ -183,10 +183,8 @@ export default function SignupPage() {
               {t("auth.tryDifferentEmail")}
             </button>
           </p>
-          <Link href="/auth/login">
-            <button style={{ width: "100%", height: "40px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", background: "transparent", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
-              {t("auth.goToSignIn")}
-            </button>
+          <Link href="/auth/login" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "40px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", background: "transparent", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer", textDecoration: "none", boxSizing: "border-box" }}>
+            {t("auth.goToSignIn")}
           </Link>
         </div>
       </div>

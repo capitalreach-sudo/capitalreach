@@ -201,21 +201,21 @@ export function HomepageClient({ stats, listings }: Props) {
 
           {/* CTAs */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", marginTop: "40px", flexWrap: "wrap" }}>
-            <Link href="/auth/signup?role=startup" style={{ textDecoration: "none" }}>
-              <MagneticButton
-                className="btn-copper-shimmer"
-                style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-              >
-                {t("hero.ctaPrimary")}
-              </MagneticButton>
-            </Link>
-            <Link href="/startups" style={{ textDecoration: "none" }}>
-              <MagneticButton
-                style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
-              >
-                {t("hero.ctaSecondary")} →
-              </MagneticButton>
-            </Link>
+            <MagneticButton
+              as="a"
+              href="/auth/signup?role=startup"
+              className="btn-copper-shimmer"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "4px", border: "none", cursor: "pointer" }}
+            >
+              {t("hero.ctaPrimary")}
+            </MagneticButton>
+            <MagneticButton
+              as="a"
+              href="/startups"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
+            >
+              {t("hero.ctaSecondary")} →
+            </MagneticButton>
           </div>
 
           {/* Trust indicators */}
@@ -322,13 +322,11 @@ export function HomepageClient({ stats, listings }: Props) {
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "#9C8E82", marginBottom: "16px" }}>
                 {t("listings.noListings")}
               </p>
-              <Link href="/auth/signup?role=startup">
-                <button
-                  className="btn-copper-shimmer"
-                  style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "10px 20px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-                >
-                  {t("listings.listNow")} →
-                </button>
+              <Link href="/auth/signup?role=startup"
+                className="btn-copper-shimmer"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "10px 20px", borderRadius: "4px", border: "none", cursor: "pointer" }}
+              >
+                {t("listings.listNow")} →
               </Link>
             </div>
           ) : (
@@ -689,21 +687,21 @@ export function HomepageClient({ stats, listings }: Props) {
                         borderLeft: featured ? "1px solid rgba(181,101,29,0.2)" : "1px solid rgba(26,22,18,0.08)",
                         borderRight: featured ? "1px solid rgba(181,101,29,0.2)" : "none",
                       }}>
-                        <Link href={`/pricing#${isFounder ? "founders" : "investors"}`} style={{ textDecoration: "none" }}>
-                          <button
-                            className={featured ? "btn-copper-shimmer" : ""}
-                            style={{
-                              background: featured ? "#B5651D" : "transparent",
-                              color: featured ? "#fff" : "#6B6056",
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontWeight: featured ? 600 : 400,
-                              fontSize: "13px", padding: "9px 20px", borderRadius: "4px",
-                              border: featured ? "none" : "1px solid #D8D0C4",
-                              cursor: "pointer", width: "100%",
-                            }}
-                          >
-                            {plan.price === 0 ? t("pricing.getStartedFree") : t("pricing.getStarted")}
-                          </button>
+                        <Link href={`/pricing#${isFounder ? "founders" : "investors"}`}
+                          className={featured ? "btn-copper-shimmer" : ""}
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            textDecoration: "none",
+                            background: featured ? "#B5651D" : "transparent",
+                            color: featured ? "#fff" : "#6B6056",
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontWeight: featured ? 600 : 400,
+                            fontSize: "13px", padding: "9px 20px", borderRadius: "4px",
+                            border: featured ? "none" : "1px solid #D8D0C4",
+                            cursor: "pointer", width: "100%", boxSizing: "border-box",
+                          }}
+                        >
+                          {plan.price === 0 ? t("pricing.getStartedFree") : t("pricing.getStarted")}
                         </Link>
                       </td>
                     );
@@ -744,13 +742,11 @@ export function HomepageClient({ stats, listings }: Props) {
                       </div>
                     );
                   })}
-                  <Link href="/pricing" style={{ textDecoration: "none", display: "block", marginTop: "16px" }}>
-                    <button
-                      className={featured ? "btn-copper-shimmer" : ""}
-                      style={{ width: "100%", height: "40px", background: featured ? "#B5651D" : "transparent", color: featured ? "#fff" : "#6B6056", fontFamily: "'DM Sans', sans-serif", fontWeight: featured ? 600 : 400, fontSize: "13px", borderRadius: "4px", border: featured ? "none" : "1px solid #D8D0C4", cursor: "pointer" }}
-                    >
-                      {plan.price === 0 ? t("pricing.getStartedFree") : t("pricing.getStarted")}
-                    </button>
+                  <Link href="/pricing"
+                    className={featured ? "btn-copper-shimmer" : ""}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", marginTop: "16px", width: "100%", height: "40px", background: featured ? "#B5651D" : "transparent", color: featured ? "#fff" : "#6B6056", fontFamily: "'DM Sans', sans-serif", fontWeight: featured ? 600 : 400, fontSize: "13px", borderRadius: "4px", border: featured ? "none" : "1px solid #D8D0C4", cursor: "pointer", boxSizing: "border-box" }}
+                  >
+                    {plan.price === 0 ? t("pricing.getStartedFree") : t("pricing.getStarted")}
                   </Link>
                 </div>
               );
@@ -759,18 +755,14 @@ export function HomepageClient({ stats, listings }: Props) {
 
           {/* Below-table actions */}
           <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "32px", flexWrap: "wrap" }}>
-            <Link href="/pricing" style={{ textDecoration: "none" }}>
-              <button style={{ height: "40px", padding: "0 20px", background: "transparent", color: "#6B6056", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}>
-                {t("pricing.seeFull")}
-              </button>
+            <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", height: "40px", padding: "0 20px", background: "transparent", color: "#6B6056", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}>
+              {t("pricing.seeFull")}
             </Link>
-            <Link href="/auth/signup" style={{ textDecoration: "none" }}>
-              <button
-                className="btn-copper-shimmer"
-                style={{ height: "40px", padding: "0 20px", background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-              >
-                {t("pricing.getStarted")}
-              </button>
+            <Link href="/auth/signup"
+              className="btn-copper-shimmer"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", height: "40px", padding: "0 20px", background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", border: "none", cursor: "pointer" }}
+            >
+              {t("pricing.getStarted")}
             </Link>
           </div>
         </div>
@@ -789,21 +781,21 @@ export function HomepageClient({ stats, listings }: Props) {
               {t("cta.sub")}
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
-              <Link href="/auth/signup?role=startup" style={{ textDecoration: "none" }}>
-                <MagneticButton
-                  className="btn-copper-shimmer"
-                  style={{ background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 32px", borderRadius: "4px", border: "none", cursor: "pointer" }}
-                >
-                  {t("cta.listStartup")}
-                </MagneticButton>
-              </Link>
-              <Link href="/auth/signup?role=investor" style={{ textDecoration: "none" }}>
-                <MagneticButton
-                  style={{ background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 32px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
-                >
-                  {t("cta.exploreInvestor")} →
-                </MagneticButton>
-              </Link>
+              <MagneticButton
+                as="a"
+                href="/auth/signup?role=startup"
+                className="btn-copper-shimmer"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 32px", borderRadius: "4px", border: "none", cursor: "pointer" }}
+              >
+                {t("cta.listStartup")}
+              </MagneticButton>
+              <MagneticButton
+                as="a"
+                href="/auth/signup?role=investor"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 32px", borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer" }}
+              >
+                {t("cta.exploreInvestor")} →
+              </MagneticButton>
             </div>
           </div>
         </div>

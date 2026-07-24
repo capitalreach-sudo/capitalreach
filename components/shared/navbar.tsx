@@ -233,8 +233,9 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/auth/login" style={{ textDecoration: "none" }}>
-                  <button style={{
+                <Link href="/auth/login" style={{
+                    display:     "inline-block",
+                    textDecoration: "none",
                     fontFamily:  "'DM Sans', sans-serif",
                     fontWeight:  400,
                     fontSize:    "14px",
@@ -249,10 +250,10 @@ export function Navbar() {
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#6B6056")}
                   >
                     {t("nav.signIn")}
-                  </button>
                 </Link>
-                <Link href="/auth/signup" style={{ textDecoration: "none" }}>
-                  <button style={{
+                <Link href="/auth/signup" style={{
+                    display:      "inline-block",
+                    textDecoration: "none",
                     background:   "#B5651D",
                     color:        "#fff",
                     fontFamily:   "'DM Sans', sans-serif",
@@ -269,7 +270,6 @@ export function Navbar() {
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#B5651D")}
                   >
                     {t("nav.listStartup")}
-                  </button>
                 </Link>
               </>
             )}
@@ -380,23 +380,21 @@ export function Navbar() {
             {/* Drawer footer */}
             {!profile ? (
               <div className="px-5 py-5 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>
-                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
-                  <button className="w-full" style={{
+                <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
                     height: "44px", background: "#B5651D", color: "#fff",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
-                    borderRadius: "4px", border: "none", cursor: "pointer",
+                    borderRadius: "4px", border: "none", cursor: "pointer", textDecoration: "none",
                   }}>
                     {t("nav.listStartup")}
-                  </button>
                 </Link>
-                <Link href="/auth/login" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
-                  <button className="w-full" style={{
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="w-full" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
                     height: "44px", background: "transparent", color: "#3D3630",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
-                    borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer",
+                    borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer", textDecoration: "none",
                   }}>
                     {t("nav.signIn")}
-                  </button>
                 </Link>
               </div>
             ) : (
