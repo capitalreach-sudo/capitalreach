@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
       deal.startup.name,
       investorProfile.full_name || "the investor",
       amount || 0,
-      invoiceUrl
+      invoiceUrl,
+      dealCurrency
     ).catch(() => {});
   }
 

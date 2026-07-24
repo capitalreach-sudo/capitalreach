@@ -103,21 +103,41 @@ export async function sendDealClosedEmail(
   startupName: string,
   investorName: string,
   amount: number,
-  invoiceUrl: string
+  invoiceUrl: string,
+  currency: string = "USD"
 ) {
+  const { formatMoney } = await import("@/lib/currency");
   const congrats = (name: string, counterparty: string) =>
     `<h2>🎉 Deal Closed — ${startupName}</h2>
     <p>Congratulations <strong>${name}</strong>! A deal between <strong>${startupName}</strong> and <strong>${counterparty}</strong> has been marked as closed.</p>
-    <p><strong>Amount Raised:</strong> $${amount.toLocaleString()}</p>
+    <p><strong>Amount Raised:</strong> ${formatMoney(amount, currency)}</p>
     <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">View Dashboard →</a></p>`;
 
   await Promise.all([
     send(startupEmail, `Deal Closed — Success fee invoice`,
       congrats(startupName, investorName) +
-      `<p>A 2% success fee invoice of <strong>$${(amount * 0.02).toLocaleString()}</strong> has been generated. <a href="${invoiceUrl}">View Invoice →</a></p>`),
+      `<p>A 2% success fee invoice of <strong>${formatMoney(amount * 0.02, currency)}</strong> has been generated. <a href="${invoiceUrl}">View Invoice →</a></p>`),
     send(investorEmail, `Deal Closed — ${startupName}`,
       congrats(investorName, startupName)),
   ]);
+}
+
+export async function sendContractStatusEmail(
+  to: string,
+  recipientName: string,
+  contractTitle: string,
+  status: "sent" | "signed",
+  dealUrl: string
+) {
+  const verb = status === "sent" ? "sent for signature" : "signed";
+  return send(
+    to,
+    `Contract ${status === "sent" ? "Sent" : "Signed"} — ${contractTitle}`,
+    `<h2>Contract ${verb}</h2>
+    <p>Hi ${recipientName},</p>
+    <p><strong>${contractTitle}</strong> has been ${verb}.</p>
+    <p><a href="${dealUrl}" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">View Deal →</a></p>`
+  );
 }
 
 export async function sendNdaSignedEmail(

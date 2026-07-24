@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { DealKanban } from "@/components/shared/deal-kanban";
+import { DealKanban, type OwnProfile } from "@/components/shared/deal-kanban";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
 import type { Deal, DealStatus } from "@/types";
@@ -11,9 +11,11 @@ interface Props {
   deals: Deal[];
   viewAs: "startup" | "investor" | "admin";
   revealIdentity?: boolean;
+  equityOffered?: number | null;
+  ownProfile?: OwnProfile;
 }
 
-export function DealsPortalClient({ deals, viewAs, revealIdentity = true }: Props) {
+export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equityOffered = null, ownProfile }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -36,6 +38,8 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true }: Prop
       onDealClose={handleDealClose}
       viewAs={viewAs}
       revealIdentity={revealIdentity}
+      equityOffered={equityOffered}
+      ownProfile={ownProfile}
     />
   );
 }

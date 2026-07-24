@@ -20,7 +20,11 @@ export default async function DealsPage() {
   if (!profile) redirect("/auth/login?redirect=/deals");
 
   if (profile.role === "startup") {
-    const { data: startup } = await supabase.from("startups").select("id, subscription_tier").eq("owner_id", user.id).maybeSingle();
+    const { data: startup } = await supabase
+      .from("startups")
+      .select("id, subscription_tier, funding_target, equity_offered, stage, industry, mrr, arr")
+      .eq("owner_id", user.id)
+      .maybeSingle();
     if (!startup) redirect("/onboarding/startup");
 
     const { data: deals } = await supabase
@@ -42,7 +46,20 @@ export default async function DealsPage() {
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
               Your deals
             </h1>
-            <DealsPortalClient deals={deals ?? []} viewAs="startup" revealIdentity={revealIdentity} />
+            <DealsPortalClient
+              deals={deals ?? []}
+              viewAs="startup"
+              revealIdentity={revealIdentity}
+              equityOffered={startup.equity_offered}
+              ownProfile={{
+                kind: "startup",
+                fundingTarget: startup.funding_target,
+                stage: startup.stage,
+                industry: startup.industry,
+                mrr: startup.mrr,
+                arr: startup.arr,
+              }}
+            />
           </div>
         </main>
         <Footer />
@@ -51,12 +68,16 @@ export default async function DealsPage() {
   }
 
   if (profile.role === "investor") {
-    const { data: investor } = await supabase.from("investors").select("id").eq("owner_id", user.id).maybeSingle();
+    const { data: investor } = await supabase
+      .from("investors")
+      .select("id, min_check, max_check, stages, industries")
+      .eq("owner_id", user.id)
+      .maybeSingle();
     if (!investor) redirect("/onboarding/investor");
 
     const { data: deals } = await supabase
       .from("deals")
-      .select("*, startup:startups(name, slug)")
+      .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr)")
       .eq("investor_id", investor.id)
       .order("updated_at", { ascending: false });
 
@@ -69,7 +90,17 @@ export default async function DealsPage() {
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
               Your deals
             </h1>
-            <DealsPortalClient deals={deals ?? []} viewAs="investor" />
+            <DealsPortalClient
+              deals={deals ?? []}
+              viewAs="investor"
+              ownProfile={{
+                kind: "investor",
+                minCheck: investor.min_check,
+                maxCheck: investor.max_check,
+                stages: investor.stages,
+                industries: investor.industries,
+              }}
+            />
           </div>
         </main>
         <Footer />
@@ -80,7 +111,7 @@ export default async function DealsPage() {
   if (profile.role === "admin") {
     const { data: deals } = await supabase
       .from("deals")
-      .select("*, startup:startups(name, slug), investor:investors(slug, type, display_name, firm_name)")
+      .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name)")
       .order("updated_at", { ascending: false });
 
     return (
