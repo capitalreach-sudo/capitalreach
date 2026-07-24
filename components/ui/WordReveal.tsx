@@ -34,11 +34,17 @@ export function WordReveal({
   const words = text.split(" ");
 
   return (
+    // `className` (e.g. the copper-foil gradient-text effect) is applied to
+    // each word span individually, not this wrapper — background-clip:text
+    // doesn't paint through into a descendant that establishes its own box
+    // (like the inline-block word spans below), so it would otherwise render
+    // invisible on the outer element.
     // @ts-expect-error dynamic tag
-    <Tag ref={ref} className={className} aria-label={text} style={{ display: "inline" }}>
+    <Tag ref={ref} aria-label={text} style={{ display: "inline" }}>
       {words.map((word, i) => (
         <span
           key={i}
+          className={className}
           style={{
             display: "inline-block",
             opacity: visible ? 1 : 0,

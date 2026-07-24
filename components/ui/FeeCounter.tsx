@@ -47,8 +47,12 @@ export function FeeCounter({ from = 10, to = 2, duration = 1800, className = "" 
   }, [from, to, duration]);
 
   return (
-    <span ref={ref} className={className}>
-      <span style={{
+    // `className` (e.g. the copper-foil gradient-text effect) is applied to each
+    // leaf span individually, not this wrapper — background-clip:text doesn't
+    // paint through into a descendant that establishes its own box (like the
+    // inline-block digit span below), so it would otherwise render invisible.
+    <span ref={ref}>
+      <span className={className} style={{
         fontVariantNumeric: "tabular-nums",
         display: "inline-block",
         minWidth: "2.5ch",
@@ -56,7 +60,7 @@ export function FeeCounter({ from = 10, to = 2, duration = 1800, className = "" 
       }}>
         {value % 1 === 0 ? value.toFixed(0) : value.toFixed(1)}
       </span>
-      <span>%</span>
+      <span className={className}>%</span>
     </span>
   );
 }
