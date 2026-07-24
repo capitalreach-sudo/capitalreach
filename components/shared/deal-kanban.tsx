@@ -101,39 +101,34 @@ interface Counterpart {
   fundingTarget?: number | null; minCheck?: number | null; maxCheck?: number | null;
 }
 
+// Whether a funding target falls inside a check-size range. Returns null when
+// there isn't enough data on either side to compare.
+function checkSizeFit(fundingTarget?: number | null, minCheck?: number | null, maxCheck?: number | null): boolean | null {
+  if (fundingTarget == null || minCheck == null || maxCheck == null) return null;
+  return fundingTarget >= minCheck && fundingTarget <= maxCheck;
+}
+
 // A short, data-driven compatibility note comparing the caller's own profile
 // (fundingTarget for startups, check-size range for investors) against the
 // selected counterpart. Returns null when there isn't enough data to compare.
 function compatNote(viewAs: "startup" | "investor", own: OwnProfile | undefined, candidate: Counterpart): string | null {
   if (!own) return null;
   if (viewAs === "startup" && own.kind === "startup") {
-    if (candidate.minCheck != null && candidate.maxCheck != null && own.fundingTarget) {
-      const fits = own.fundingTarget >= candidate.minCheck && own.fundingTarget <= candidate.maxCheck;
-      return fits ? "Fits their check size range" : "Outside their typical check size";
-    }
+    const fits = checkSizeFit(own.fundingTarget, candidate.minCheck, candidate.maxCheck);
+    if (fits != null) return fits ? "Fits their check size range" : "Outside their typical check size";
   } else if (viewAs === "investor" && own.kind === "investor") {
-    if (own.minCheck != null && own.maxCheck != null && candidate.fundingTarget) {
-      const fits = candidate.fundingTarget >= own.minCheck && candidate.fundingTarget <= own.maxCheck;
-      return fits ? "Fits your check size range" : "Outside your typical check size";
-    }
+    const fits = checkSizeFit(candidate.fundingTarget, own.minCheck, own.maxCheck);
+    if (fits != null) return fits ? "Fits your check size range" : "Outside your typical check size";
   }
   return null;
 }
 
-function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
-  viewAs: "startup" | "investor";
-  ownProfile?: OwnProfile;
-  onClose: () => void;
-  onCreated: () => void;
-}) {
-  const { t } = useTranslation();
+// Debounced name search for one side of a deal (startups or investors).
+function useCounterpartSearch(kind: "startup" | "investor") {
   const [query, setQuery]         = useState("");
   const [results, setResults]     = useState<Counterpart[]>([]);
   const [searching, setSearching] = useState(false);
   const [selected, setSelected]   = useState<Counterpart | null>(null);
-  const [amount, setAmount]       = useState("");
-  const [currency, setCurrency]   = useState(DEFAULT_CURRENCY);
-  const [creating, setCreating]   = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -143,7 +138,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
       setSearching(true);
       const supabase = createClient();
       const q = query.trim();
-      if (viewAs === "startup") {
+      if (kind === "investor") {
         const { data } = await supabase
           .from("investors")
           .select("id, slug, type, display_name, firm_name, min_check, max_check")
@@ -172,19 +167,122 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
       setSearching(false);
     }, 300);
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
-  }, [query, selected, viewAs]);
+  }, [query, selected, kind]);
+
+  return { query, setQuery, results, searching, selected, setSelected };
+}
+
+type CounterpartSearch = ReturnType<typeof useCounterpartSearch>;
+
+// One side of the New Deal picker: a search box + results, or the selected chip.
+function CounterpartPicker({ search, placeholder, note, autoFocus = false }: {
+  search: CounterpartSearch;
+  placeholder: string;
+  note: (c: Counterpart) => string | null;
+  autoFocus?: boolean;
+}) {
+  const { t } = useTranslation();
+  const { query, setQuery, results, searching, selected, setSelected } = search;
+
+  if (selected) {
+    return (
+      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 12px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{selected.name}</p>
+          {selected.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{selected.sub}</p>}
+          {selected.fundingTarget != null && (
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "2px" }}>
+              Target {formatMoney(selected.fundingTarget, "USD", { compact: true })}
+            </p>
+          )}
+          {selected.minCheck != null && selected.maxCheck != null && (
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "2px" }}>
+              Check {formatMoney(selected.minCheck, "USD", { compact: true })}–{formatMoney(selected.maxCheck, "USD", { compact: true })}
+            </p>
+          )}
+          {(() => {
+            const n = note(selected);
+            return n ? <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginTop: "3px" }}>{n}</p> : null;
+          })()}
+        </div>
+        <button onClick={() => { setSelected(null); setQuery(""); }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+          <X style={{ width: 14, height: 14 }} />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginBottom: "14px" }}>
+      <input
+        autoFocus={autoFocus}
+        type="text"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder={placeholder}
+        style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", boxSizing: "border-box" }}
+      />
+      <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px", maxHeight: "180px", overflowY: "auto" }}>
+        {searching && (
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("dashboard.searching")}</p>
+        )}
+        {!searching && query.trim() && results.length === 0 && (
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("deals.noResults")}</p>
+        )}
+        {!searching && !query.trim() && (
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("deals.startTyping")}</p>
+        )}
+        {results.map(r => (
+          <button key={r.id} onClick={() => setSelected(r)}
+            style={{ textAlign: "left", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "8px 10px", cursor: "pointer" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{r.name}</p>
+            {r.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{r.sub}</p>}
+            {(() => {
+              const n = note(r);
+              return n ? <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", marginTop: "2px" }}>{n}</p> : null;
+            })()}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
+  viewAs: "startup" | "investor" | "admin";
+  ownProfile?: OwnProfile;
+  onClose: () => void;
+  onCreated: () => void;
+}) {
+  const { t } = useTranslation();
+  const isAdmin = viewAs === "admin";
+  // Both hooks are always called (rules of hooks); non-admin callers only
+  // render and use the one representing "the other side" of the deal.
+  const startupSearch  = useCounterpartSearch("startup");
+  const investorSearch = useCounterpartSearch("investor");
+  const counterpartSearch = viewAs === "startup" ? investorSearch : startupSearch;
+  const [amount, setAmount]     = useState("");
+  const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
+  const [creating, setCreating] = useState(false);
+
+  const canSubmit = isAdmin
+    ? !!startupSearch.selected && !!investorSearch.selected
+    : !!counterpartSearch.selected;
 
   async function handleCreate() {
-    if (!selected) return;
+    if (!canSubmit) return;
     setCreating(true);
+    const body: Record<string, unknown> = { amount: amount ? parseFloat(amount) : null, currency };
+    if (isAdmin) {
+      body.startupId  = startupSearch.selected!.id;
+      body.investorId = investorSearch.selected!.id;
+    } else {
+      body.counterpartId = counterpartSearch.selected!.id;
+    }
     const res = await fetch("/api/deals/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        counterpartId: selected.id,
-        amount: amount ? parseFloat(amount) : null,
-        currency,
-      }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     setCreating(false);
@@ -209,67 +307,33 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
           <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}><X style={{ width: 16, height: 16 }} /></button>
         </div>
 
-        {selected ? (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 12px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{selected.name}</p>
-              {selected.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{selected.sub}</p>}
-              {selected.fundingTarget != null && (
-                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "2px" }}>
-                  Target {formatMoney(selected.fundingTarget, "USD", { compact: true })}
-                </p>
-              )}
-              {selected.minCheck != null && selected.maxCheck != null && (
-                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "2px" }}>
-                  Check {formatMoney(selected.minCheck, "USD", { compact: true })}–{formatMoney(selected.maxCheck, "USD", { compact: true })}
-                </p>
-              )}
-              {(() => {
-                const note = compatNote(viewAs, ownProfile, selected);
-                return note ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginTop: "3px" }}>{note}</p>
-                ) : null;
-              })()}
-            </div>
-            <button onClick={() => { setSelected(null); setQuery(""); }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
-              <X style={{ width: 14, height: 14 }} />
-            </button>
-          </div>
-        ) : (
-          <div style={{ marginBottom: "14px" }}>
-            <input
+        {isAdmin ? (
+          <>
+            <CounterpartPicker
+              search={startupSearch}
+              placeholder={t("deals.searchStartupPlaceholder")}
               autoFocus
-              type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder={viewAs === "startup" ? t("deals.searchInvestorPlaceholder") : t("deals.searchStartupPlaceholder")}
-              style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", boxSizing: "border-box" }}
+              note={c => {
+                const fits = checkSizeFit(c.fundingTarget, investorSearch.selected?.minCheck, investorSearch.selected?.maxCheck);
+                return fits == null ? null : fits ? "Fits selected investor's check size" : "Outside selected investor's check size";
+              }}
             />
-            <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px", maxHeight: "180px", overflowY: "auto" }}>
-              {searching && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("dashboard.searching")}</p>
-              )}
-              {!searching && query.trim() && results.length === 0 && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("deals.noResults")}</p>
-              )}
-              {!searching && !query.trim() && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("deals.startTyping")}</p>
-              )}
-              {results.map(r => (
-                <button key={r.id} onClick={() => setSelected(r)}
-                  style={{ textAlign: "left", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "8px 10px", cursor: "pointer" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{r.name}</p>
-                  {r.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{r.sub}</p>}
-                  {(() => {
-                    const note = compatNote(viewAs, ownProfile, r);
-                    return note ? (
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", marginTop: "2px" }}>{note}</p>
-                    ) : null;
-                  })()}
-                </button>
-              ))}
-            </div>
-          </div>
+            <CounterpartPicker
+              search={investorSearch}
+              placeholder={t("deals.searchInvestorPlaceholder")}
+              note={c => {
+                const fits = checkSizeFit(startupSearch.selected?.fundingTarget, c.minCheck, c.maxCheck);
+                return fits == null ? null : fits ? "Fits selected startup's funding target" : "Outside selected startup's funding target";
+              }}
+            />
+          </>
+        ) : (
+          <CounterpartPicker
+            search={counterpartSearch}
+            placeholder={viewAs === "startup" ? t("deals.searchInvestorPlaceholder") : t("deals.searchStartupPlaceholder")}
+            autoFocus
+            note={c => compatNote(viewAs, ownProfile, c)}
+          />
         )}
 
         <div style={{ display: "flex", gap: "6px", marginBottom: "16px" }}>
@@ -289,8 +353,8 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
         </div>
 
         <div style={{ display: "flex", gap: "8px" }}>
-          <button onClick={handleCreate} disabled={!selected || creating}
-            style={{ flex: 1, height: "38px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: !selected || creating ? "default" : "pointer", opacity: !selected || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+          <button onClick={handleCreate} disabled={!canSubmit || creating}
+            style={{ flex: 1, height: "38px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
             {creating && <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" />}
             {creating ? t("deals.creating") : t("deals.createDeal")}
           </button>
@@ -810,19 +874,15 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const columns = useColumns();
   const [showNewDeal, setShowNewDeal] = useState(false);
 
-  // Admin isn't inherently one side of a deal, so the single-counterpart
-  // picker below doesn't apply — admin only views and manages existing deals.
-  const canCreateDeal = viewAs !== "admin";
-
-  const newDealButton = canCreateDeal && (
+  const newDealButton = (
     <button onClick={() => setShowNewDeal(true)}
       style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 16px", cursor: "pointer" }}>
       <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
     </button>
   );
 
-  const modal = canCreateDeal && showNewDeal && (
-    <NewDealModal viewAs={viewAs as "startup" | "investor"} ownProfile={ownProfile} onClose={() => setShowNewDeal(false)} onCreated={() => router.refresh()} />
+  const modal = showNewDeal && (
+    <NewDealModal viewAs={viewAs} ownProfile={ownProfile} onClose={() => setShowNewDeal(false)} onCreated={() => router.refresh()} />
   );
 
   if (deals.length === 0) {

@@ -2,44 +2,57 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 
-// Creates a deal between the caller's startup/investor profile and a chosen
-// counterpart. The caller's own side is derived from their profile — never
-// trusted from the request body.
+// Creates a deal. Startups/investors pick a single counterpart and their own
+// side is derived from their profile — never trusted from the request body.
+// Admin isn't a participant on either side, so it explicitly names both.
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { counterpartId, amount, currency } = await req.json();
-  if (!counterpartId || typeof counterpartId !== "string") {
-    return NextResponse.json({ error: "Missing counterpart" }, { status: 400 });
-  }
+  const { counterpartId, startupId, investorId, amount, currency } = await req.json();
   const dealCurrency = isCurrencyCode(currency) ? currency : DEFAULT_CURRENCY;
   const parsedAmount = typeof amount === "number" && amount > 0 ? Math.round(amount) : null;
 
   const admin = createAdminClient();
 
-  // Which side is the caller on?
-  const [{ data: myStartup }, { data: myInvestor }] = await Promise.all([
-    admin.from("startups").select("id").eq("owner_id", user.id).limit(1).maybeSingle(),
-    admin.from("investors").select("id").eq("owner_id", user.id).limit(1).maybeSingle(),
-  ]);
-
   let startup_id: string;
   let investor_id: string;
 
-  if (myStartup) {
-    const { data: inv } = await admin.from("investors").select("id").eq("id", counterpartId).maybeSingle();
-    if (!inv) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
-    startup_id  = myStartup.id;
-    investor_id = inv.id;
-  } else if (myInvestor) {
-    const { data: st } = await admin.from("startups").select("id, status").eq("id", counterpartId).maybeSingle();
+  if (startupId && investorId) {
+    const { data: profile } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    const [{ data: st }, { data: inv }] = await Promise.all([
+      admin.from("startups").select("id").eq("id", startupId).maybeSingle(),
+      admin.from("investors").select("id").eq("id", investorId).maybeSingle(),
+    ]);
     if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+    if (!inv) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
     startup_id  = st.id;
-    investor_id = myInvestor.id;
+    investor_id = inv.id;
+  } else if (counterpartId && typeof counterpartId === "string") {
+    // Which side is the caller on?
+    const [{ data: myStartup }, { data: myInvestor }] = await Promise.all([
+      admin.from("startups").select("id").eq("owner_id", user.id).limit(1).maybeSingle(),
+      admin.from("investors").select("id").eq("owner_id", user.id).limit(1).maybeSingle(),
+    ]);
+
+    if (myStartup) {
+      const { data: inv } = await admin.from("investors").select("id").eq("id", counterpartId).maybeSingle();
+      if (!inv) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
+      startup_id  = myStartup.id;
+      investor_id = inv.id;
+    } else if (myInvestor) {
+      const { data: st } = await admin.from("startups").select("id, status").eq("id", counterpartId).maybeSingle();
+      if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+      startup_id  = st.id;
+      investor_id = myInvestor.id;
+    } else {
+      return NextResponse.json({ error: "Complete onboarding first" }, { status: 403 });
+    }
   } else {
-    return NextResponse.json({ error: "Complete onboarding first" }, { status: 403 });
+    return NextResponse.json({ error: "Missing counterpart" }, { status: 400 });
   }
 
   // One open deal per pair — closed/passed pairs may start a fresh one.
