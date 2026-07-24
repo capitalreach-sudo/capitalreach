@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { DealKanban } from "@/components/shared/deal-kanban";
-import { notify } from "@/components/ui/toast-notify";
 import {
   Eye, Bookmark, MessageSquare, TrendingUp, Brain,
   CheckCircle2, Circle, ExternalLink, Settings, CreditCard,
   FileText, AlertCircle, Lock, Zap, LayoutGrid,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { formatMoney } from "@/lib/currency";
-import type { Profile, Startup, Deal, DealStatus } from "@/types";
+import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -21,11 +17,10 @@ interface Props {
   profile:      Profile;
   startup:      Startup | null;
   analytics:    { views: number; saves: number; deals: number };
-  deals:        Deal[];
   isLaunchMode: boolean;
 }
 
-type StartupTab = "overview" | "deals" | "documents" | "ai" | "billing";
+type StartupTab = "overview" | "documents" | "ai" | "billing";
 
 // ── Profile completion ────────────────────────────────────────────────────────
 
@@ -103,8 +98,7 @@ const VIS_ROWS = [
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function StartupDashboardClient({ profile, startup, analytics, deals, isLaunchMode }: Props) {
-  const router       = useRouter();
+export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode }: Props) {
   const { t }        = useTranslation();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
@@ -112,7 +106,6 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
 
   const TABS: { value: StartupTab; label: string }[] = [
     { value: "overview",  label: t("dashboard.overview")    },
-    { value: "deals",     label: t("dashboard.dealPipeline") },
     { value: "documents", label: t("dashboard.documents")   },
     { value: "ai",        label: t("dashboard.aiFeedback")  },
     { value: "billing",   label: t("dashboard.billing")     },
@@ -125,18 +118,6 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
   const tier             = startup?.subscription_tier || "free";
   const canDocs          = isLaunchMode || tier === "starter" || tier === "growth";
   const canGrowth        = isLaunchMode || tier === "growth";
-
-  async function handleDealStatusChange(dealId: string, status: DealStatus) {
-    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status }) });
-    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else router.refresh();
-  }
-
-  async function handleDealClose(dealId: string, amount: number, currency: string) {
-    const res = await fetch("/api/deals/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, amount, currency }) });
-    const data = await res.json();
-    if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); }
-    else { notify.success(amount ? t("dashboard.dealClosedAt", { amount: formatMoney(amount, currency) }) : t("dashboard.dealClosed")); router.refresh(); }
-  }
 
   async function generatePitchFeedback() {
     if (!startup) return;
@@ -339,11 +320,6 @@ export function StartupDashboardClient({ profile, startup, analytics, deals, isL
               </div>
             </div>
           </div>
-        )}
-
-        {/* ── Deals ── */}
-        {activeTab === "deals" && (
-          <DealKanban deals={deals} onStatusChange={handleDealStatusChange} onDealClose={handleDealClose} viewAs="startup" revealIdentity={canDocs} />
         )}
 
         {/* ── Documents ── */}

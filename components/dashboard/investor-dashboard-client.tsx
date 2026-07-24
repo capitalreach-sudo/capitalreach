@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StartupCard } from "@/components/startup/startup-card";
-import { DealKanban } from "@/components/shared/deal-kanban";
 import { notify } from "@/components/ui/toast-notify";
 import {
   Brain, CreditCard, Download, Bookmark, MessageSquare,
@@ -15,7 +14,7 @@ import {
 } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { formatMoney } from "@/lib/currency";
-import type { Profile, Investor, Watchlist, Deal, AiReport, DealStatus } from "@/types";
+import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
@@ -26,7 +25,7 @@ interface Props {
   aiReports:  AiReport[];
 }
 
-type InvestorTab = "watchlist" | "deals" | "reports" | "billing";
+type InvestorTab = "watchlist" | "reports" | "billing";
 
 // ── Shared button styles ──────────────────────────────────────────────────────
 
@@ -70,7 +69,6 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
   const TABS: { value: InvestorTab; label: string; Icon: React.ElementType }[] = [
     { value: "watchlist", label: t("dashboard.watchlist"), Icon: Bookmark   },
-    { value: "deals",     label: t("dashboard.dealFlow"),  Icon: TrendingUp },
     { value: "reports",   label: t("dashboard.aiReports"), Icon: Brain      },
     { value: "billing",   label: t("dashboard.billing"),   Icon: CreditCard },
   ];
@@ -94,30 +92,6 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   const tierLabel = investor.subscription_tier === "free"
     ? "Explorer"
     : investor.subscription_tier.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-
-  async function handleDealStatusChange(dealId: string, status: DealStatus) {
-    const res = await fetch("/api/deals/update", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dealId, status }),
-    });
-    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed"));
-    else router.refresh();
-  }
-
-  async function handleDealClose(dealId: string, amount: number, currency: string) {
-    const res = await fetch("/api/deals/close", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dealId, amount, currency }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      notify.error(data.error || t("dashboard.dealCloseFailed"));
-    } else {
-      const fmt = amount ? formatMoney(amount, currency) : null;
-      notify.success(fmt ? t("dashboard.dealClosedAt", { amount: fmt }) : t("dashboard.dealClosed"));
-      router.refresh();
-    }
-  }
 
   async function exportWatchlist() {
     if (!watchlist.length) return;
@@ -243,11 +217,6 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               </div>
             )}
           </div>
-        )}
-
-        {/* ── Deal flow ── */}
-        {activeTab === "deals" && (
-          <DealKanban deals={deals} onStatusChange={handleDealStatusChange} onDealClose={handleDealClose} viewAs="investor" />
         )}
 
         {/* ── AI Reports ── */}

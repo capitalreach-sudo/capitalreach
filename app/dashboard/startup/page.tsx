@@ -54,15 +54,6 @@ export default async function StartupDashboardPage() {
     dealsCount = deals || 0;
   }
 
-  // Deal pipeline
-  const { data: deals } = startup
-    ? await supabase
-        .from("deals")
-        .select("*, investor:investors(slug, display_name, firm_name)")
-        .eq("startup_id", startup.id)
-        .order("updated_at", { ascending: false })
-    : { data: [] };
-
   const { isLaunch } = await getLaunchStatus();
 
   return (
@@ -72,7 +63,6 @@ export default async function StartupDashboardPage() {
         profile={profile as any}
         startup={startup as any}
         analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount }}
-        deals={(deals as any) || []}
         isLaunchMode={isLaunch}
       />
     </>
