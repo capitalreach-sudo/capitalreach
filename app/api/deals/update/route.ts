@@ -8,7 +8,9 @@ export async function POST(req: NextRequest) {
 
   const { dealId, status } = await req.json();
 
-  // Verify participant
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+
+  // Verify participant (or admin, who can manage any deal for oversight)
   const { data: deal } = await supabase
     .from("deals")
     .select("startup_id, investor_id, startup:startups(owner_id), investor:investors(owner_id)")
@@ -21,7 +23,7 @@ export async function POST(req: NextRequest) {
     (deal.startup as any)?.owner_id === user.id ||
     (deal.investor as any)?.owner_id === user.id;
 
-  if (!isParticipant) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   // Use close endpoint for closed status (triggers invoice)
   if (status === "closed") {

@@ -34,7 +34,7 @@ export function Navbar() {
     { href: "/ai",        label: t("nav.aiTools")   },
     { href: "/pricing",   label: t("nav.pricing")   },
     { href: "/data",      label: t("nav.data")      },
-    ...(profile?.role === "startup" || profile?.role === "investor"
+    ...(profile?.role === "startup" || profile?.role === "investor" || profile?.role === "admin"
       ? [{ href: "/deals", label: t("nav.deals") }]
       : []),
   ];

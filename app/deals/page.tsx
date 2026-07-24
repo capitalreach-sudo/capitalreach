@@ -77,12 +77,38 @@ export default async function DealsPage() {
     );
   }
 
+  if (profile.role === "admin") {
+    const { data: deals } = await supabase
+      .from("deals")
+      .select("*, startup:startups(name, slug), investor:investors(slug, type, display_name, firm_name)")
+      .order("updated_at", { ascending: false });
+
+    return (
+      <>
+        <Navbar />
+        <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>Deal Portal</div>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "8px" }}>
+              All deals
+            </h1>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
+              Platform-wide oversight — every deal across every startup and investor.
+            </p>
+            <DealsPortalClient deals={deals ?? []} viewAs="admin" />
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <Navbar />
       <main style={{ background: "var(--cr-paper)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", padding: "100px 24px" }}>
-          The Deal Portal is available to startup and investor accounts.
+          The Deal Portal is available to startup, investor, and admin accounts.
         </p>
       </main>
       <Footer />

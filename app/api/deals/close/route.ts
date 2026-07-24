@@ -22,11 +22,12 @@ export async function POST(req: NextRequest) {
 
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
-  // Verify user is a participant
+  // Verify user is a participant (or admin, who can manage any deal for oversight)
   const isStartupOwner = deal.startup?.owner_id === user.id;
   const isInvestorOwner = deal.investor?.owner_id === user.id;
   if (!isStartupOwner && !isInvestorOwner) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // Get startup owner's Stripe customer ID

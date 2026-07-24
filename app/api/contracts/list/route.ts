@@ -18,12 +18,13 @@ export async function GET(req: NextRequest) {
     .maybeSingle();
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
-  const [{ data: startup }, { data: investor }] = await Promise.all([
+  const [{ data: startup }, { data: investor }, { data: profile }] = await Promise.all([
     admin.from("startups").select("id, owner_id").eq("id", deal.startup_id).maybeSingle(),
     admin.from("investors").select("id, owner_id").eq("id", deal.investor_id).maybeSingle(),
+    admin.from("profiles").select("role").eq("id", user.id).maybeSingle(),
   ]);
   const isParticipant = startup?.owner_id === user.id || investor?.owner_id === user.id;
-  if (!isParticipant) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { data: contracts, error } = await admin
     .from("contracts")

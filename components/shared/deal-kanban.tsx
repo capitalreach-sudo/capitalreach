@@ -38,7 +38,7 @@ interface DealKanbanProps {
   deals: Deal[];
   onStatusChange?: (dealId: string, status: DealStatus) => void;
   onDealClose?: (dealId: string, amount: number, currency: string) => void;
-  viewAs: "startup" | "investor";
+  viewAs: "startup" | "investor" | "admin";
   // When false and viewAs === "startup", the investor's identity is masked
   // behind an upgrade prompt (Free founders don't see who's interested).
   revealIdentity?: boolean;
@@ -378,7 +378,7 @@ function ContractsSection({ dealId }: { dealId: string }) {
 
 function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true }: {
   deal: Deal;
-  viewAs: "startup" | "investor";
+  viewAs: "startup" | "investor" | "admin";
   onStatusChange?: (id: string, status: DealStatus) => void;
   onDealClose?: (id: string, amount: number, currency: string) => void;
   revealIdentity?: boolean;
@@ -390,9 +390,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [closeCurrency, setCloseCurrency] = useState(deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
 
-  const realName = viewAs === "startup"
-    ? ((deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || t("deals.investorFallback"))
-    : ((deal as any).startup?.name || t("deals.startupFallback"));
+  const investorName = (deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || t("deals.investorFallback");
+  const startupName  = (deal as any).startup?.name || t("deals.startupFallback");
+
+  const realName = viewAs === "admin" ? `${startupName} × ${investorName}`
+    : viewAs === "startup" ? investorName
+    : startupName;
 
   const masked = viewAs === "startup" && !revealIdentity;
   const name   = masked ? t("deals.interestedInvestor") : realName;
@@ -514,15 +517,19 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const columns = useColumns();
   const [showNewDeal, setShowNewDeal] = useState(false);
 
-  const newDealButton = (
+  // Admin isn't inherently one side of a deal, so the single-counterpart
+  // picker below doesn't apply — admin only views and manages existing deals.
+  const canCreateDeal = viewAs !== "admin";
+
+  const newDealButton = canCreateDeal && (
     <button onClick={() => setShowNewDeal(true)}
       style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 16px", cursor: "pointer" }}>
       <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
     </button>
   );
 
-  const modal = showNewDeal && (
-    <NewDealModal viewAs={viewAs} onClose={() => setShowNewDeal(false)} onCreated={() => router.refresh()} />
+  const modal = canCreateDeal && showNewDeal && (
+    <NewDealModal viewAs={viewAs as "startup" | "investor"} onClose={() => setShowNewDeal(false)} onCreated={() => router.refresh()} />
   );
 
   if (deals.length === 0) {

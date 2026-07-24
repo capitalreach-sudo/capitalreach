@@ -9,7 +9,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   deals: Deal[];
-  viewAs: "startup" | "investor";
+  viewAs: "startup" | "investor" | "admin";
   revealIdentity?: boolean;
 }
 
