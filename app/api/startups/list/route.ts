@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
 
+// Without this the route is prerendered once at build time, so a startup
+// that is suspended (or newly approved) keeps showing the build-time list
+// until the next deploy.
+export const revalidate = 60;
+
 export async function GET() {
   const supabase = createAdminClient();
   const { data, error } = await supabase

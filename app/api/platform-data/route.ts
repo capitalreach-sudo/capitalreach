@@ -7,6 +7,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
+// Same reason as /api/startups/list — without this the Data Centre serves
+// analytics frozen at build time rather than current platform activity.
+export const revalidate = 60;
+
 export async function GET() {
   try {
     const [startups, investors, deals] = await Promise.all([
