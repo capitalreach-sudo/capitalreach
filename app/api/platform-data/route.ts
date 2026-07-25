@@ -24,13 +24,13 @@ export async function GET() {
         .eq("role", "investor"),
       supabase
         .from("deals")
-        .select("closed_amount")
-        .eq("stage", "closed"),
+        .select("amount")
+        .eq("status", "closed"),
     ]);
 
     const startupData = startups.data ?? [];
     const totalRaised = (deals.data ?? [])
-      .reduce((sum, d) => sum + (d.closed_amount ?? 0), 0);
+      .reduce((sum, d) => sum + (d.amount ?? 0), 0);
 
     // Industry breakdown
     const byIndustry: Record<string, number> = {};
