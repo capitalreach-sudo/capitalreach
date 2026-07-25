@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { dealId, status, reason } = await req.json();
+  const { dealId, status, reason, nextFollowUp } = await req.json();
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
 
@@ -30,19 +30,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Use /api/deals/close for closing deals" }, { status: 400 });
   }
 
-  await supabase.from("deals").update({ status }).eq("id", dealId);
+  const updates: Record<string, unknown> = {};
+  if (status) updates.status = status;
+  if (nextFollowUp !== undefined) updates.next_follow_up = nextFollowUp;
 
-  // deal_activity has no admin RLS policy (unlike deals), so use the admin
-  // client here to make sure admin-initiated changes still get logged.
-  const admin = createAdminClient();
-  await admin.from("deal_activity").insert({
-    deal_id: dealId,
-    startup_id: deal.startup_id,
-    investor_id: deal.investor_id,
-    actor_id: user.id,
-    type: "status_change",
-    body: status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
-  });
+  if (Object.keys(updates).length > 0) {
+    await supabase.from("deals").update(updates).eq("id", dealId);
+  }
+
+  if (status) {
+    // deal_activity has no admin RLS policy (unlike deals), so use the admin
+    // client here to make sure admin-initiated changes still get logged.
+    const admin = createAdminClient();
+    await admin.from("deal_activity").insert({
+      deal_id: dealId,
+      startup_id: deal.startup_id,
+      investor_id: deal.investor_id,
+      actor_id: user.id,
+      type: "status_change",
+      body: status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
+    });
+  }
 
   return NextResponse.json({ success: true });
 }

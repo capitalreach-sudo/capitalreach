@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { formatDate } from "@/lib/utils";
+import { formatDate, daysSince } from "@/lib/utils";
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
-import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2 } from "lucide-react";
+import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -70,6 +70,7 @@ interface DealKanbanProps {
   // Whether to show the CSV export button — computed server-side (admin
   // always, investors gated by canExportData(), never shown for startups).
   canExport?: boolean;
+  onSetFollowUp?: (dealId: string, date: string | null) => void;
 }
 
 // A deal's counterpart display names, computed from its joined startup/investor
@@ -362,6 +363,10 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
             {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
           </select>
         </div>
+
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
+          {t("deals.circumventionNotice")}
+        </p>
 
         <div style={{ display: "flex", gap: "8px" }}>
           <button onClick={handleCreate} disabled={!canSubmit || creating}
@@ -889,17 +894,20 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
 
 // ── Deal card ─────────────────────────────────────────────────────────────────
 
-function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null }: {
+function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null, onSetFollowUp }: {
   deal: Deal;
   viewAs: "startup" | "investor" | "admin";
   onStatusChange?: (id: string, status: DealStatus, reason?: string) => void;
   onDealClose?: (id: string, amount: number, currency: string) => void;
   revealIdentity?: boolean;
   equityOffered?: number | null;
+  onSetFollowUp?: (id: string, date: string | null) => void;
 }) {
   const { t } = useTranslation();
   const columns = useColumns();
   const [showCloseForm, setShowCloseForm] = useState(false);
+  const [editingFollowUp, setEditingFollowUp] = useState(false);
+  const [followUpDraft, setFollowUpDraft] = useState(deal.next_follow_up || "");
   const [closeAmount, setCloseAmount]     = useState(deal.amount ? String(deal.amount) : "");
   const [closeCurrency, setCloseCurrency] = useState(deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
@@ -953,8 +961,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           <span style={{ fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
         </p>
       )}
-      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
         {formatDate(deal.updated_at)}
+        {isActive && daysSince(deal.updated_at) > 21 && (
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", borderRadius: "3px", padding: "1px 6px" }}>
+            {t("deals.staleBadge", { n: daysSince(deal.updated_at) })}
+          </span>
+        )}
       </p>
 
       {/* Quick-move buttons */}
@@ -974,6 +987,38 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           onConfirm={reason => { onStatusChange(deal.id, "passed", reason); setShowPassedPicker(false); }}
           onCancel={() => setShowPassedPicker(false)}
         />
+      )}
+
+      {/* Follow-up date */}
+      {onSetFollowUp && (
+        <div style={{ marginTop: "6px" }}>
+          {editingFollowUp ? (
+            <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              <input type="date" value={followUpDraft} onChange={e => setFollowUpDraft(e.target.value)}
+                style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 6px", outline: "none" }} />
+              <button onClick={() => { onSetFollowUp(deal.id, followUpDraft || null); setEditingFollowUp(false); }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
+                {t("deals.save")}
+              </button>
+              {deal.next_follow_up && (
+                <button onClick={() => { onSetFollowUp(deal.id, null); setFollowUpDraft(""); setEditingFollowUp(false); }}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
+                  <X style={{ width: 12, height: 12 }} />
+                </button>
+              )}
+            </div>
+          ) : deal.next_follow_up ? (
+            <button onClick={() => setEditingFollowUp(true)}
+              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: new Date(deal.next_follow_up) < new Date() ? "var(--cr-down)" : "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
+              {t("deals.followUpLabel", { date: formatDate(deal.next_follow_up) })}
+            </button>
+          ) : (
+            <button onClick={() => setEditingFollowUp(true)}
+              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "0", textDecoration: "underline" }}>
+              {t("deals.setFollowUp")}
+            </button>
+          )}
+        </div>
       )}
 
       {/* Close deal */}
@@ -1048,19 +1093,20 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-type SortKey = "updated_desc" | "amount_desc" | "amount_asc" | "created_desc";
+type SortKey = "updated_desc" | "amount_desc" | "amount_asc" | "created_desc" | "follow_up_due";
 const SORT_OPTIONS: { key: SortKey; labelKey: string }[] = [
   { key: "updated_desc", labelKey: "deals.sortRecent" },
   { key: "amount_desc",  labelKey: "deals.sortAmountDesc" },
   { key: "amount_asc",   labelKey: "deals.sortAmountAsc" },
   { key: "created_desc", labelKey: "deals.sortNewest" },
+  { key: "follow_up_due", labelKey: "deals.sortFollowUp" },
 ];
 
 function csvEscape(v: unknown): string {
   return `"${String(v ?? "").replace(/"/g, '""')}"`;
 }
 
-export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false }: DealKanbanProps) {
+export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp }: DealKanbanProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const columns = useColumns();
@@ -1068,6 +1114,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const [search, setSearch]           = useState("");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
+  const [viewMode, setViewMode]       = useState<"kanban" | "list">("kanban");
 
   // Pipeline stats reflect the full, unfiltered deal list — a stable snapshot,
   // not scoped to whatever the filter bar currently shows.
@@ -1118,6 +1165,12 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     if (sortKey === "amount_desc") sorted.sort((a, b) => (b.amount || 0) - (a.amount || 0));
     else if (sortKey === "amount_asc") sorted.sort((a, b) => (a.amount || 0) - (b.amount || 0));
     else if (sortKey === "created_desc") sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    else if (sortKey === "follow_up_due") sorted.sort((a, b) => {
+      if (!a.next_follow_up && !b.next_follow_up) return 0;
+      if (!a.next_follow_up) return 1;
+      if (!b.next_follow_up) return -1;
+      return new Date(a.next_follow_up).getTime() - new Date(b.next_follow_up).getTime();
+    });
     else sorted.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     return sorted;
   }, [deals, search, activeFilters, sortKey, viewAs, t]);
@@ -1224,33 +1277,73 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             {t("deals.exportCsv")}
           </button>
         )}
+        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
+          {(["kanban", "list"] as const).map(v => (
+            <button key={v} onClick={() => setViewMode(v)} aria-label={v}
+              style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
+              {v === "kanban" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
+            </button>
+          ))}
+        </div>
         <div style={{ flex: 1 }} />
         {newDealButton}
       </div>
 
-      <div style={{ overflowX: "auto" }}>
-        <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
-          {columns.map(col => {
-            const colDeals = filteredDeals.filter(d => d.status === col.status);
-            return (
-              <div key={col.status} style={{ width: "264px", flexShrink: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                  <span style={colBadgeStyle(col.status, colDeals.length)}>{col.label}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
-                    {colDeals.length}
-                  </span>
+      {viewMode === "kanban" ? (
+        <div style={{ overflowX: "auto" }}>
+          <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
+            {columns.map(col => {
+              const colDeals = filteredDeals.filter(d => d.status === col.status);
+              return (
+                <div key={col.status} style={{ width: "264px", flexShrink: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                    <span style={colBadgeStyle(col.status, colDeals.length)}>{col.label}</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                      {colDeals.length}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    {colDeals.length === 0 ? <EmptySlot /> : colDeals.map(deal => (
+                      <DealCard key={deal.id} deal={deal} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
+                        onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} />
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  {colDeals.length === 0 ? <EmptySlot /> : colDeals.map(deal => (
-                    <DealCard key={deal.id} deal={deal} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
-                      onStatusChange={onStatusChange} onDealClose={onDealClose} />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'DM Sans', sans-serif", fontSize: "12px" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                {[t("deals.csvCounterpart"), t("deals.listStageOrType"), t("deals.csvAmount"), t("deals.csvStatus"), t("deals.sortFollowUp"), t("deals.csvUpdated")].map(h => (
+                  <th key={h} style={{ textAlign: "left", padding: "8px 10px", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredDeals.map(d => {
+                const { investorName, startupName } = dealNames(d, t);
+                const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} × ${investorName}`;
+                const stageOrType = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
+                return (
+                  <tr key={d.id} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
+                    <td style={{ padding: "8px 10px", color: "var(--cr-ink)" }}>{name}</td>
+                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)", textTransform: "capitalize" }}>{stageOrType ? String(stageOrType).replace(/_/g, " ") : "—"}</td>
+                    <td style={{ padding: "8px 10px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>
+                    <td style={{ padding: "8px 10px" }}><span style={colBadgeStyle(d.status, 0)}>{columns.find(c => c.status === d.status)?.label}</span></td>
+                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)", fontFamily: "'JetBrains Mono', monospace" }}>{d.next_follow_up ? formatDate(d.next_follow_up) : "—"}</td>
+                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(d.updated_at)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {filteredDeals.length === 0 && <EmptySlot />}
+        </div>
+      )}
       {modal}
     </div>
   );

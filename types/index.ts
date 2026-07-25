@@ -213,6 +213,7 @@ export interface Deal {
   status: DealStatus;
   success_fee_invoiced: boolean;
   stripe_invoice_id: string | null;
+  next_follow_up: string | null;
   created_at: string;
   updated_at: string;
   startup?: Startup;

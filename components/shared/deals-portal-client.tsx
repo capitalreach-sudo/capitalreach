@@ -32,6 +32,11 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     else { notify.success(amount ? t("dashboard.dealClosedAt", { amount: formatMoney(amount, currency) }) : t("dashboard.dealClosed")); router.refresh(); }
   }
 
+  async function handleSetFollowUp(dealId: string, date: string | null) {
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, nextFollowUp: date }) });
+    if (!res.ok) notify.error(t("deals.followUpSaveFailed")); else router.refresh();
+  }
+
   return (
     <DealKanban
       deals={deals}
@@ -42,6 +47,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       equityOffered={equityOffered}
       ownProfile={ownProfile}
       canExport={canExport}
+      onSetFollowUp={handleSetFollowUp}
     />
   );
 }

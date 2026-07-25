@@ -127,6 +127,7 @@ export default async function TermsPage() {
               <li>{t("terms.s6l6")}</li>
               <li>{t("terms.s6l7")}</li>
               <li>{t("terms.s6l8")}</li>
+              <li>{t("terms.s6l9")}</li>
             </ul>
           </Section>
 

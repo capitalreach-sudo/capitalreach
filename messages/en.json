@@ -1468,7 +1468,7 @@
     "confirmClose": "Confirm Close",
     "amountRaisedPlaceholder": "Amount raised",
     "currency": "Currency",
-    "feeNotice": "A 2% success fee invoice will be generated automatically.",
+    "feeNotice": "A 2% success fee invoice will be generated automatically. This fee applies per our Terms of Service regardless of where the deal is finalized.",
     "closing": "Closing…",
     "confirm": "Confirm",
     "invoiceSent": "Invoice sent",
@@ -1565,7 +1565,15 @@
     "csvAmount": "Amount",
     "csvCurrency": "Currency",
     "csvStatus": "Status",
-    "csvUpdated": "Updated"
+    "csvUpdated": "Updated",
+    "staleBadge": "No status change in {n}d",
+    "followUpLabel": "Follow-up: {date}",
+    "setFollowUp": "+ Set follow-up",
+    "save": "Save",
+    "followUpSaveFailed": "Failed to save follow-up date",
+    "sortFollowUp": "Follow-up due",
+    "circumventionNotice": "This introduction is made through CapitalReach. Per our Terms of Service, the 2% success fee applies to deals with parties you meet here, even if finalized elsewhere.",
+    "listStageOrType": "Stage / Type"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -1866,6 +1874,7 @@
     "s6l6": "Impersonate any person or entity, or misrepresent your affiliation with any person or entity.",
     "s6l7": "Use the Service for any unlawful purpose or in violation of any applicable regulation.",
     "s6l8": "Reverse-engineer, decompile, or attempt to extract source code from the platform.",
+    "s6l9": "Circumvent the platform's success-fee arrangement by contacting, negotiating with, or completing an investment with a party you were introduced to through the Service outside of CapitalReach, within 24 months of that introduction.",
     "s7Title": "7. Investment Disclaimer",
     "s7p1Bold": "CapitalReach is not a registered broker-dealer, investment adviser, or crowdfunding portal under the JOBS Act or any other securities regulation.",
     "s7p1Rest": "Nothing on this platform constitutes investment advice, a solicitation to buy or sell securities, or a recommendation of any investment.",
