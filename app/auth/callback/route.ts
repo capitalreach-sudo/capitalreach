@@ -21,9 +21,20 @@ export async function GET(request: Request) {
 
   const { data: existing } = await supabase
     .from("profiles")
-    .select("id, role, preferred_locale")
+    .select("id, role, preferred_locale, suspended, account_status")
     .eq("id", data.user.id)
     .single();
+
+  // Suspended accounts get an explanation, not a working session. Middleware
+  // enforces this too, but catching it at the login moment avoids a pointless
+  // bounce through the dashboard first.
+  if (
+    existing?.suspended ||
+    existing?.account_status === "suspended" ||
+    existing?.account_status === "banned"
+  ) {
+    return NextResponse.redirect(new URL("/suspended", requestUrl.origin));
+  }
 
   const roleFromQuery = requestUrl.searchParams.get("role");
   const role =
@@ -44,6 +55,10 @@ export async function GET(request: Request) {
       avatar_url: data.user.user_metadata?.avatar_url,
       role,
       subscription_tier: "free",
+      // Captured at signup; OAuth users accept via the same checkbox before
+      // the provider redirect, so fall back to now rather than leaving it null.
+      terms_accepted_at:
+        data.user.user_metadata?.terms_accepted_at || new Date().toISOString(),
     });
     sendWelcomeEmail(data.user.email!, fullName, role).catch(() => {});
   }

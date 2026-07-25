@@ -97,6 +97,8 @@ export default async function TermsPage() {
 
             <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h2")}</h3>
             <p>{t("terms.s4h2p1")}</p>
+            <p className="mt-3">{t("terms.s4h2p2")}</p>
+            <p className="mt-3">{t("terms.s4h2p3")}</p>
 
             <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h3")}</h3>
             <p>

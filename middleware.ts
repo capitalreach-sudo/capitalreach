@@ -49,15 +49,29 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Admin guard
-    if (pathname.startsWith("/admin")) {
+    // Suspension + admin guard — one profile read covers both.
+    // /suspended and /auth are exempt so a suspended user can still reach the
+    // explanation page and sign out instead of bouncing in a redirect loop.
+    const exemptFromSuspensionCheck =
+      pathname.startsWith("/suspended") || pathname.startsWith("/auth");
+
+    if (user && !exemptFromSuspensionCheck) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
-        .eq("id", user?.id)
+        .select("role, suspended, account_status")
+        .eq("id", user.id)
         .single();
 
-      if (profile?.role !== "admin") {
+      const suspended = profile?.suspended
+        || profile?.account_status === "suspended"
+        || profile?.account_status === "banned";
+
+      // Gated areas only — a suspended user may still read public pages.
+      if (suspended && (isProtected || pathname.startsWith("/deals"))) {
+        return NextResponse.redirect(new URL("/suspended", request.url));
+      }
+
+      if (pathname.startsWith("/admin") && profile?.role !== "admin") {
         return NextResponse.redirect(new URL("/", request.url));
       }
     }

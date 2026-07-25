@@ -224,3 +224,38 @@ export async function sendViewsDigestEmail(
     <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/startup">View Full Analytics →</a></p>`
   );
 }
+
+export async function sendSuspensionEmail(
+  to: string,
+  name: string,
+  reason: string,
+  suspendedUntil: string | null
+) {
+  const until = suspendedUntil
+    ? `<p><strong>Scheduled to lift:</strong> ${new Date(suspendedUntil).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" })}</p>`
+    : `<p>This suspension does not have a scheduled end date.</p>`;
+
+  return send(
+    to,
+    "Your CapitalReach account has been suspended",
+    `<h2>Account suspended</h2>
+    <p>Hi ${name},</p>
+    <p>Access to your CapitalReach account has been restricted.</p>
+    <blockquote style="border-left:3px solid #9B2335;padding-left:16px;color:#374151"><strong>Reason:</strong> ${reason}</blockquote>
+    ${until}
+    <p>If you believe this is an error, reply to this email or contact <a href="mailto:support@capitalreach.com">support@capitalreach.com</a>.</p>
+    <p>The CapitalReach Team</p>`
+  );
+}
+
+export async function sendUnsuspensionEmail(to: string, name: string) {
+  return send(
+    to,
+    "Your CapitalReach account has been restored",
+    `<h2>Account restored</h2>
+    <p>Hi ${name},</p>
+    <p>Your CapitalReach account has been reinstated and you now have full access again.</p>
+    <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">Go to dashboard →</a></p>
+    <p>The CapitalReach Team</p>`
+  );
+}

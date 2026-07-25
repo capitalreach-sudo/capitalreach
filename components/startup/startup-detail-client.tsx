@@ -13,7 +13,8 @@ import {
   formatCurrency, formatNumber, formatDate, formatPercent,
   STAGE_LABELS, getInitials,
 } from "@/lib/utils";
-import { canViewFinancials, canSendMessages as canSendMessagesAccess, canAiDueDiligence } from "@/lib/access";
+import { investorCan } from "@/lib/access";
+import { AiReportDisclaimer } from "@/components/shared/legal-disclaimer";
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
@@ -31,6 +32,7 @@ interface Props {
   ndaSigned:      boolean;
   relatedStartups: Startup[];
   isLaunchMode:   boolean;
+  viewerSuspended?: boolean;
 }
 
 const TABS = ["overview", "team", "financials", "documents", "traction"] as const;
@@ -63,7 +65,7 @@ function MetricCell({ label, value, copper }: { label: string; value: string | n
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, ndaSigned, relatedStartups, isLaunchMode,
+  startup, investorTier, investorId, ndaSigned, relatedStartups, isLaunchMode, viewerSuspended = false,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -77,10 +79,13 @@ export function StartupDetailClient({
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
 
-  const accessCtx = { userId: investorId, role: investorId ? "investor" as const : null, tier: investorTier, isLaunchMode };
-  const canFinancials = canViewFinancials(accessCtx);
-  const canMessage    = canSendMessagesAccess(accessCtx);
-  const canAi          = canAiDueDiligence(accessCtx);
+  const accessCtx = { userId: investorId, role: investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
+  const caps          = investorCan(accessCtx);
+  const canFinancials = caps.viewFinancials;
+  const canMessage    = caps.message;
+  const canAi         = caps.aiDiligence === "included";
+  const canDocuments  = caps.viewDocuments;
+  const canTeam       = caps.viewTeam;
 
   // Live viewer presence
   useEffect(() => {
@@ -347,6 +352,7 @@ export function StartupDetailClient({
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("startupDetail.aiDiligenceTitle")}</h3>
               <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Claude</span>
             </div>
+            <AiReportDisclaimer />
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{aiReport}</p>
           </div>
         )}
@@ -446,7 +452,25 @@ export function StartupDetailClient({
         )}
 
         {/* ── Tab: Team ── */}
-        {activeTab === "team" && (
+        {activeTab === "team" && !canTeam && startup.founders && startup.founders.length > 0 && (
+          <GateBlur
+            title={t("startupDetail.angelTierRequired")}
+            description={t("startupDetail.upgradeFinancialsDesc")}
+            ctaLabel={t("dashboard.viewPlans")}
+          >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+              {startup.founders.slice(0, 2).map((f) => (
+                <div key={f.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", marginBottom: "14px" }} />
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>Founder name</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>Role</p>
+                </div>
+              ))}
+            </div>
+          </GateBlur>
+        )}
+
+        {activeTab === "team" && canTeam && (
           startup.founders && startup.founders.length > 0 ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
               {startup.founders.map((f) => (
@@ -537,7 +561,7 @@ export function StartupDetailClient({
             {startup.documents && startup.documents.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {startup.documents.map((doc) => {
-                  const requiresUpgrade = !canFinancials;
+                  const requiresUpgrade = !canDocuments;
                   const requiresNda     = doc.requires_nda && startup.require_nda && !ndaSigned;
 
                   return (

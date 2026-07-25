@@ -29,8 +29,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  // Suspension lives on the profile, not the investor row — read it, or a
+  // suspended investor keeps messaging (buildAccessContext would default to
+  // suspended: false).
+  const { data: senderStatus } = await adminClient
+    .from("profiles")
+    .select("suspended, account_status")
+    .eq("id", user.id)
+    .maybeSingle();
+
   const { isLaunch } = await getLaunchStatus();
-  const ctx = buildAccessContext({ id: user.id, role: "investor", subscription_tier: investor.subscription_tier }, isLaunch);
+  const ctx = buildAccessContext({
+    id: user.id,
+    role: "investor",
+    subscription_tier: investor.subscription_tier,
+    suspended: senderStatus?.suspended,
+    account_status: senderStatus?.account_status,
+  }, isLaunch);
+
+  if (ctx.suspended) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   if (!canSendMessages(ctx)) {
     return NextResponse.json({ error: "Angel tier required to send messages" }, { status: 403 });

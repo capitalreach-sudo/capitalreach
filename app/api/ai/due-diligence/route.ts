@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   const { startupId } = await req.json();
 
   const [profileRes, startupRes, { isLaunch }] = await Promise.all([
-    supabase.from("profiles").select("id, role, subscription_tier").eq("id", user.id).single(),
+    supabase.from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", user.id).single(),
     supabase
       .from("startups")
       .select("*, founders:startup_founders(*), documents:startup_documents(*)")

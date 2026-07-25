@@ -513,7 +513,8 @@
     "strength1": "Weak",
     "strength2": "Fair",
     "strength3": "Good",
-    "strength4": "Strong"
+    "strength4": "Strong",
+    "mustAcceptTerms": "You must accept the Terms of Service and Privacy Policy to continue."
   },
   "dashboard": {
     "overview": "Overview",
@@ -1468,7 +1469,7 @@
     "confirmClose": "Confirm Close",
     "amountRaisedPlaceholder": "Amount raised",
     "currency": "Currency",
-    "feeNotice": "A 2% success fee invoice will be generated automatically. This fee applies per our Terms of Service regardless of where the deal is finalized.",
+    "feeNotice": "A 2% success fee invoice will be generated automatically, due within 14 days. This fee applies per our Terms of Service regardless of where the deal is finalized. Disputes must be raised within 30 days of the invoice date.",
     "closing": "Closing…",
     "confirm": "Confirm",
     "invoiceSent": "Invoice sent",
@@ -1897,7 +1898,7 @@
     "s13Title": "13. Indemnification",
     "s13p1": "You agree to indemnify, defend, and hold harmless CapitalReach and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, costs, and expenses (including reasonable legal fees) arising out of or related to: (a) your use of the Service; (b) your User Content; (c) your violation of these Terms; or (d) your violation of any rights of a third party.",
     "s14Title": "14. Termination",
-    "s14p1": "We may suspend or terminate your access to the Service at any time, with or without cause, and with or without notice. Upon termination, your right to use the Service ceases immediately. Provisions of these Terms that by their nature should survive termination will survive, including Sections 5, 7, 9, 12, 13, and 16.",
+    "s14p1": "We may suspend or terminate your access to the Service at any time, with or without cause, and with or without notice. Upon termination, your right to use the Service ceases immediately. Provisions of these Terms that by their nature should survive termination will survive, including Sections 4, 5, 7, 9, 12, 13, and 16. In particular, any success fee incurred before termination remains payable.",
     "s14p2": "You may terminate your account at any time by contacting us at {link} or through your account settings.",
     "s15Title": "15. Modifications to Terms",
     "s15p1": "We may update these Terms from time to time. If we make material changes, we will notify you by email or by displaying a prominent notice on the platform at least 14 days before the changes take effect. Your continued use of the Service after the effective date constitutes acceptance of the updated Terms.",
@@ -1906,9 +1907,11 @@
     "s16p2": "You agree to resolve disputes with CapitalReach on an individual basis and waive any right to participate in a class action lawsuit or class-wide arbitration.",
     "s17Title": "17. Contact",
     "s17p1": "If you have any questions about these Terms, please contact us at:",
-    "contactBrand": "CapitalReach, Inc.",
+    "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "Email:",
     "supportLabel": "Support:",
-    "footerAck": "By using CapitalReach, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service."
+    "footerAck": "By using CapitalReach, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
+    "s4h2p2": "For the purposes of this section, an investor is \"connected through the platform\" if they viewed your listing while signed in to CapitalReach, contacted you through the platform, or were introduced to you via a CapitalReach deal record, in each case within 24 months before the round closed. CapitalReach maintains records of these events and determines connection in good faith based on them.",
+    "s4h2p3": "If you believe a success fee has been invoiced in error, you may dispute it in writing to billing@capitalreach.com within 30 days of the invoice date. We will review the connection records and respond within 30 days. Fees under active dispute are not considered overdue."
   }
 }

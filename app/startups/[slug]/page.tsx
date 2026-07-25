@@ -77,13 +77,18 @@ export default async function StartupDetailPage({ params }: Props) {
   let investorTier: string | null = null;
   let investorId: string | null = null;
   let ndaSigned = false;
+  let viewerSuspended = false;
 
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role, subscription_tier")
+      .select("role, subscription_tier, suspended, account_status")
       .eq("id", user.id)
       .single();
+
+    viewerSuspended = !!profile?.suspended
+      || profile?.account_status === "suspended"
+      || profile?.account_status === "banned";
 
     if (profile?.role === "investor") {
       investorTier = profile.subscription_tier;
@@ -101,6 +106,19 @@ export default async function StartupDetailPage({ params }: Props) {
           .match({ startup_id: startup.id, investor_id: investorId })
           .single();
         ndaSigned = !!nda?.signed_at;
+      }
+
+      // Terms §3 defines a "CapitalReach connection" as the investor finding
+      // the startup here — this is the record that proves it for fee purposes.
+      // One row per pair per day (unique index); conflicts are expected.
+      if (investorId) {
+        try {
+          const admin = createAdminClient();
+          await admin.from("startup_views").insert({
+            startup_id: startup.id,
+            investor_id: investorId,
+          });
+        } catch { /* duplicate view for today — nothing to record */ }
       }
     }
   }
@@ -125,6 +143,7 @@ export default async function StartupDetailPage({ params }: Props) {
         ndaSigned={ndaSigned}
         relatedStartups={(related as any) || []}
         isLaunchMode={isLaunch}
+        viewerSuspended={viewerSuspended}
       />
       <Footer />
     </>

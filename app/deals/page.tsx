@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getLaunchStatus } from "@/lib/launchMode";
-import { buildAccessContext, canExportData } from "@/lib/access";
+import { buildAccessContext, canExportData, founderCan, isSuspended } from "@/lib/access";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { DealsPortalClient } from "@/components/shared/deals-portal-client";
+import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -20,6 +21,13 @@ export default async function DealsPage() {
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
   if (!profile) redirect("/auth/login?redirect=/deals");
 
+  const { isLaunch } = await getLaunchStatus();
+  const ctx = buildAccessContext(profile, isLaunch);
+
+  // Suspended accounts cannot transact. RLS also blocks the writes, but bounce
+  // them here so they get an explanation rather than silent failures.
+  if (isSuspended(ctx)) redirect("/suspended");
+
   if (profile.role === "startup") {
     const { data: startup } = await supabase
       .from("startups")
@@ -34,9 +42,13 @@ export default async function DealsPage() {
       .eq("startup_id", startup.id)
       .order("updated_at", { ascending: false });
 
-    const { isLaunch } = await getLaunchStatus();
-    const tier = startup.subscription_tier || "free";
-    const revealIdentity = isLaunch || tier === "starter" || tier === "growth";
+    // Identity reveal is a plan feature, so read it from the founder's plan
+    // rather than re-deriving the tier list here (it drifts otherwise).
+    // The startup's own tier governs, not the owner profile's.
+    const revealIdentity = founderCan({
+      ...ctx,
+      tier: startup.subscription_tier,
+    }).seeInvestorIdentity;
 
     return (
       <>
@@ -61,6 +73,7 @@ export default async function DealsPage() {
                 arr: startup.arr,
               }}
             />
+            <LegalDisclaimer />
           </div>
         </main>
         <Footer />
@@ -82,8 +95,7 @@ export default async function DealsPage() {
       .eq("investor_id", investor.id)
       .order("updated_at", { ascending: false });
 
-    const { isLaunch } = await getLaunchStatus();
-    const canExport = canExportData(buildAccessContext(profile, isLaunch));
+    const canExport = canExportData(ctx);
 
     return (
       <>
@@ -106,6 +118,7 @@ export default async function DealsPage() {
                 industries: investor.industries,
               }}
             />
+            <LegalDisclaimer />
           </div>
         </main>
         <Footer />
@@ -132,6 +145,7 @@ export default async function DealsPage() {
               Platform-wide oversight — every deal across every startup and investor.
             </p>
             <DealsPortalClient deals={deals ?? []} viewAs="admin" canExport />
+            <LegalDisclaimer />
           </div>
         </main>
         <Footer />

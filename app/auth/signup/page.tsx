@@ -60,17 +60,24 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading]   = useState(false);
   const [signupError, setSignupError] = useState("");
+  // Terms §1 says use constitutes acceptance, which is weak. Require an
+  // explicit act and record when it happened.
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     if (!role) return;
+    if (!termsAccepted) { setSignupError(t("auth.mustAcceptTerms")); return; }
     setLoading(true); setSignupError("");
     try {
       const { data, error } = await supabase.auth.signUp({
         email, password,
-        options: { data: { full_name: fullName, role }, emailRedirectTo: `${window.location.origin}/auth/callback` },
+        options: {
+          data: { full_name: fullName, role, terms_accepted_at: new Date().toISOString() },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (error) { setSignupError(error.message); setLoading(false); return; }
       if (!data.user) { setSignupError(t("auth.signupFailed")); setLoading(false); return; }
@@ -274,8 +281,19 @@ export default function SignupPage() {
                 onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
             </div>
           ))}
-          <button type="submit" disabled={loading || !isSupabaseConfigured} className="btn-copper-shimmer"
-            style={{ ...primaryBtn, opacity: loading || !isSupabaseConfigured ? 0.5 : 1, cursor: loading || !isSupabaseConfigured ? "not-allowed" : "pointer", marginTop: "4px" }}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", cursor: "pointer", marginTop: "2px" }}>
+            <input type="checkbox" checked={termsAccepted} required
+              onChange={e => setTermsAccepted(e.target.checked)}
+              style={{ marginTop: "2px", accentColor: "var(--cr-copper)", cursor: "pointer", flexShrink: 0 }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
+              {t("auth.termsAgreement")}{" "}
+              <Link href="/terms" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.terms")}</Link>{" "}
+              {t("auth.and")}{" "}
+              <Link href="/privacy" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.privacy")}</Link>.
+            </span>
+          </label>
+          <button type="submit" disabled={loading || !isSupabaseConfigured || !termsAccepted} className="btn-copper-shimmer"
+            style={{ ...primaryBtn, opacity: loading || !isSupabaseConfigured || !termsAccepted ? 0.5 : 1, cursor: loading || !isSupabaseConfigured || !termsAccepted ? "not-allowed" : "pointer", marginTop: "4px" }}>
             {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
           </button>
         </form>
@@ -284,10 +302,6 @@ export default function SignupPage() {
         <GoogleButton onClick={handleGoogleSignup} disabled={!isSupabaseConfigured} />
 
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center", marginTop: "16px", lineHeight: 1.6 }}>
-          {t("auth.termsAgreement")}{" "}
-          <Link href="/terms" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.terms")}</Link>{" "}
-          {t("auth.and")}{" "}
-          <Link href="/privacy" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.privacy")}</Link>.{" "}
           {t("auth.feeNote")}
         </p>
       </div>
