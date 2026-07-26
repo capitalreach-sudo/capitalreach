@@ -19,11 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase
     .from("investors")
-    .select("slug, type, bio, display_name, firm_name, owner:profiles(full_name)")
+    .select("slug, type, bio, display_name, firm_name")
     .eq("slug", params.slug)
     .single();
   if (!data) return {};
-  const name = data.display_name || (data.owner as any)?.full_name || data.slug;
+  const name = data.display_name || data.slug;
   const firm = data.firm_name ? ` · ${data.firm_name}` : "";
   return {
     title: `${name}${firm} — Investor on CapitalReach`,
@@ -42,21 +42,21 @@ export default async function InvestorProfilePage({ params }: Props) {
     corporate: t("investorProfile.corporateInvestor"),
   };
 
+  // Reads `investors` only. This page is public, and `profiles` is not: it
+  // holds emails, subscription tiers and Stripe ids, and is now restricted to
+  // authenticated sessions (migration 019). Everything below already lived on
+  // `investors` under its own column names -- the old owner:profiles(...) join
+  // was reading a duplicate copy of the same data, and pulling `email` onto a
+  // public page while it was at it.
   const { data: investor } = await supabase
     .from("investors")
-    .select(`*, owner:profiles(
-      full_name, avatar_url, email,
-      investment_thesis, check_size_min, check_size_max,
-      preferred_stages, preferred_industries, preferred_countries,
-      investor_type, portfolio_count, lead_investor, languages
-    )`)
+    .select("*")
     .eq("slug", params.slug)
     .single();
 
   if (!investor) notFound();
 
-  const ownerProfile = investor.owner as any;
-  const displayName = investor.display_name || ownerProfile?.full_name || investor.slug;
+  const displayName = investor.display_name || investor.slug;
   const portfolio: Array<{ name: string; stage?: string; outcome?: string }> =
     Array.isArray(investor.portfolio_json) ? investor.portfolio_json.filter((c: any) => c?.name) : [];
 
@@ -91,16 +91,12 @@ export default async function InvestorProfilePage({ params }: Props) {
                    investor.subscription_tier}
                 </Badge>
               )}
+              {/* One badge per fact. lead_rounds and the profiles copy
+                  (lead_investor) are the same flag, and investor_type was
+                  rendering the raw enum ("family_office") directly beneath the
+                  label-mapped version above. */}
               {investor.lead_rounds && (
                 <Badge className="bg-emerald-100 text-emerald-700 border-0">{t("investors.leadsRounds")}</Badge>
-              )}
-              {ownerProfile?.lead_investor && (
-                <Badge style={{ background: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
-                  {t("investors.leadsRounds")}
-                </Badge>
-              )}
-              {ownerProfile?.investor_type && (
-                <Badge variant="outline">{ownerProfile.investor_type}</Badge>
               )}
             </div>
             {investor.bio && (
@@ -166,32 +162,28 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* ── New profile detail stats ───────────────────────────────────── */}
-        {(ownerProfile?.check_size_min || ownerProfile?.check_size_max || ownerProfile?.portfolio_count || ownerProfile?.languages?.length) && (
+        {/* ── Investor detail ───────────────────────────────────────────── */}
+        {/* portfolio_count is deliberately not repeated here: it is the same
+            number as number_of_investments, already shown in the stats row. */}
+        {(investor.min_check || investor.max_check || investor.languages?.length) && (
           <div className="bg-cr-paper border rounded-xl p-6 mb-6">
             <h2 className="font-semibold text-cr-ink mb-4">{t("investorProfile.investorDetail")}</h2>
             <div className="grid grid-cols-2 gap-4">
-              {(ownerProfile?.check_size_min || ownerProfile?.check_size_max) && (
+              {(investor.min_check || investor.max_check) && (
                 <div>
                   <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investors.checkSize")}</p>
                   <p className="font-mono font-semibold text-cr-ink">
-                    {ownerProfile.check_size_min ? formatCurrency(ownerProfile.check_size_min, true) : "—"}
+                    {investor.min_check ? formatCurrency(investor.min_check, true) : "—"}
                     {" – "}
-                    {ownerProfile.check_size_max ? formatCurrency(ownerProfile.check_size_max, true) : t("common.open")}
+                    {investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}
                   </p>
                 </div>
               )}
-              {ownerProfile?.portfolio_count != null && (
-                <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.portfolioLabel")}</p>
-                  <p className="font-mono font-semibold text-cr-ink">{t("investors.investments", { count: ownerProfile.portfolio_count })}</p>
-                </div>
-              )}
-              {ownerProfile?.languages?.length > 0 && (
+              {investor.languages?.length > 0 && (
                 <div className="col-span-2">
                   <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.languagesLabel")}</p>
                   <div className="flex flex-wrap gap-2">
-                    {ownerProfile.languages.map((lang: string) => (
+                    {investor.languages.map((lang: string) => (
                       <span key={lang} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{lang}</span>
                     ))}
                   </div>
