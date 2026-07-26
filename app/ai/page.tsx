@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { AiToolsHub } from "@/components/shared/ai-tools-hub";
+import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,6 +15,9 @@ export default function AiPage() {
     <>
       <Navbar />
       <AiToolsHub />
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
+        <LegalDisclaimer variant="ai" />
+      </div>
       <Footer />
     </>
   );

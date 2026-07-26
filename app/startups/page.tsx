@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupsSearch } from "@/components/startup/startups-search";
+import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,9 @@ export default function StartupsPage() {
       >
         <StartupsSearch />
       </Suspense>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
+        <LegalDisclaimer />
+      </div>
       <Footer />
     </>
   );

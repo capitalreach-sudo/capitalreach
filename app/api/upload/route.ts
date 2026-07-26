@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { getLaunchStatus } from "@/lib/launchMode";
+import { buildAccessContext, getFounderDocumentsLimit } from "@/lib/access";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -29,14 +31,37 @@ export async function POST(req: NextRequest) {
 
   if (!startup) return NextResponse.json({ error: "Startup not found or not owned by you" }, { status: 403 });
 
-  // Starter plan: max 3 documents
-  if (startup.subscription_tier === "starter") {
+  const { data: ownerProfile } = await adminClient
+    .from("profiles")
+    .select("id, role, subscription_tier, suspended, account_status")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const { isLaunch } = await getLaunchStatus();
+  // The startup's own tier governs listing features, not the owner profile's.
+  const ctx = buildAccessContext(
+    { ...(ownerProfile ?? { id: user.id, role: "startup" }), subscription_tier: startup.subscription_tier },
+    isLaunch,
+  );
+
+  if (ctx.suspended) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
+
+  // Enforce the plan's document allowance. This previously only checked the
+  // starter tier, so free accounts (allowance 0) could upload without limit.
+  const docLimit = getFounderDocumentsLimit(ctx);
+  if (docLimit !== Infinity) {
     const { count } = await adminClient
       .from("startup_documents")
       .select("*", { count: "exact", head: true })
       .eq("startup_id", startupId);
-    if ((count || 0) >= 3) {
-      return NextResponse.json({ error: "Starter plan allows up to 3 documents. Upgrade to Growth for unlimited." }, { status: 403 });
+    if ((count || 0) >= docLimit) {
+      return NextResponse.json({
+        error: docLimit === 0
+          ? "Document uploads require a paid plan. Upgrade to Starter to add documents."
+          : `Your plan allows up to ${docLimit} documents. Upgrade to Growth for unlimited.`,
+      }, { status: 403 });
     }
   }
 
