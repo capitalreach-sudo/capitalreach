@@ -1,8 +1,39 @@
 import { Resend } from "resend";
+import { isResendConfigured, env } from "@/lib/env";
 
-export const resend = new Resend(process.env.RESEND_API_KEY!);
+const FROM = env.resend.fromEmail;
 
-const FROM = process.env.RESEND_FROM_EMAIL || "noreply@capitalreach.com";
+// The Resend constructor throws when handed no API key, and this module is
+// imported by the auth callback, deal close, contract updates and admin
+// suspension. Constructing it eagerly therefore meant a missing or placeholder
+// RESEND_API_KEY took down sign-in itself, not just email. Build it on first
+// use instead, and only when a real key is present.
+let _client: Resend | null = null;
+
+function getClient(): Resend | null {
+  if (!isResendConfigured) return null;
+  if (!_client) _client = new Resend(env.resend.apiKey!);
+  return _client;
+}
+
+/**
+ * Resend client for the few callers that need it directly (contact form, admin
+ * blast). Returns a stub whose send resolves to null when email is not
+ * configured, so preview and staging degrade to "no email" rather than 500.
+ */
+export const resend = {
+  emails: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    send: async (payload: any) => {
+      const client = getClient();
+      if (!client) {
+        console.warn("[Resend] Not configured — skipping email:", payload?.subject ?? "(no subject)");
+        return null;
+      }
+      return client.emails.send(payload);
+    },
+  },
+};
 
 async function send(
   to: string,
@@ -10,9 +41,13 @@ async function send(
   html: string,
   tags?: Array<{ name: string; value: string }>
 ) {
+  const client = getClient();
+  if (!client) {
+    console.warn(`[Resend] Not configured — skipping "${subject}" to ${to}`);
+    return null;
+  }
   try {
-    const result = await resend.emails.send({ from: FROM, to, subject, html, tags });
-    return result;
+    return await client.emails.send({ from: FROM, to, subject, html, tags });
   } catch (err) {
     console.error("[Resend] Email send failed:", err);
     throw err;
