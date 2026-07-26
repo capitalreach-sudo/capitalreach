@@ -1396,7 +1396,11 @@
       "if4": "SLA & compliance support",
       "if5": "Custom reporting",
       "errorCreating": "Error creating profile:",
-      "created": "Profile created! Start discovering startups on CapitalReach."
+      "created": "Profile created! Start discovering startups on CapitalReach.",
+      "ageTitle": "I am 18 years or older",
+      "ageBody": "CapitalReach is available only to adults. You confirm you meet the minimum age requirement set out in our Terms of Service.",
+      "lossTitle": "I understand the risk of total loss",
+      "lossBody": "Early-stage investments are illiquid and speculative. You may lose the entire amount invested. CapitalReach does not guarantee any outcome."
     }
   },
   "errors": {

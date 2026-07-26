@@ -129,6 +129,10 @@ export default function InvestorOnboardingPage() {
   // Step 5
   const [accredited, setAccredited]                     = useState(false);
   const [accreditedDeclaration, setAccreditedDeclaration] = useState(false);
+  // Terms §1 requires 18+, and §7 warns of total loss. Both were asserted in
+  // the Terms but never actually collected — record them explicitly.
+  const [ageConfirmed, setAgeConfirmed]     = useState(false);
+  const [riskAcknowledged, setRiskAcknowledged] = useState(false);
 
   function toggleIndustry(val: string) {
     setIndustries(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]);
@@ -175,6 +179,15 @@ export default function InvestorOnboardingPage() {
     }
     await supabase.from("profiles").update({
       accreditation_certified: accredited && accreditedDeclaration,
+      // Timestamped record of what was actually asserted, so the Terms §1/§6
+      // representations are evidenced rather than merely claimed.
+      investor_declarations: {
+        age_18_or_over: ageConfirmed,
+        qualified_investor: accredited,
+        own_due_diligence: accreditedDeclaration,
+        risk_of_total_loss: riskAcknowledged,
+        declared_at: new Date().toISOString(),
+      },
       ...(displayName ? { full_name: displayName } : {}),
     }).eq("id", user.id);
 
@@ -190,7 +203,7 @@ export default function InvestorOnboardingPage() {
   const canNext = () => {
     if (step === 1) return !!investorType;
     if (step === 3) return !!bio;
-    if (step === 5) return accredited && accreditedDeclaration;
+    if (step === 5) return accredited && accreditedDeclaration && ageConfirmed && riskAcknowledged;
     return true;
   };
 
@@ -607,6 +620,38 @@ export default function InvestorOnboardingPage() {
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.riskTitle")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           {t("onboarding.inv.riskBody")}
+                        </p>
+                      </div>
+                    </label>
+
+                    <label style={{
+                      display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px",
+                      border: `2px solid ${ageConfirmed ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
+                      borderRadius: "4px", cursor: "pointer", background: ageConfirmed ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                      transition: "all 120ms",
+                    }}>
+                      <input type="checkbox" checked={ageConfirmed} onChange={e => setAgeConfirmed(e.target.checked)}
+                        style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
+                      <div>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.ageTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
+                          {t("onboarding.inv.ageBody")}
+                        </p>
+                      </div>
+                    </label>
+
+                    <label style={{
+                      display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px",
+                      border: `2px solid ${riskAcknowledged ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
+                      borderRadius: "4px", cursor: "pointer", background: riskAcknowledged ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                      transition: "all 120ms",
+                    }}>
+                      <input type="checkbox" checked={riskAcknowledged} onChange={e => setRiskAcknowledged(e.target.checked)}
+                        style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
+                      <div>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.lossTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
+                          {t("onboarding.inv.lossBody")}
                         </p>
                       </div>
                     </label>
