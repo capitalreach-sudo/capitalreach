@@ -5,6 +5,7 @@ import { ToastNotifyProvider } from "@/components/ui/toast-notify";
 import { LaunchBanner } from "@/components/ui/LaunchBanner";
 import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
 import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
+import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
 
@@ -12,6 +13,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  // Tints the browser chrome on Android and the status bar in the installed
+  // app, so the shell reads as part of the product rather than a web view.
+  themeColor: "#B5651D", // --cr-copper
 };
 
 export const metadata: Metadata = {
@@ -34,6 +38,20 @@ export const metadata: Metadata = {
     site: "@capitalreach",
   },
   robots: { index: true, follow: true },
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    // iOS ignores the manifest entirely and reads this instead.
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "CapitalReach",
+    statusBarStyle: "default",
+  },
 };
 
 export default function RootLayout({
@@ -62,6 +80,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <ToastNotifyProvider />
+        <ServiceWorkerRegistrar />
       </body>
     </html>
   );

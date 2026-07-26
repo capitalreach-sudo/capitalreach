@@ -34,6 +34,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Refuse rather than fall back. See the note on env.resend.contactInbox:
+    // the previous hardcoded recipient was a domain we do not own.
+    if (!env.resend.contactInbox) {
+      console.error("[contact] CONTACT_INBOX_EMAIL is not set — refusing to send.");
+      return NextResponse.json(
+        { error: "The contact form is unavailable right now." },
+        { status: 503 }
+      );
+    }
+
     const { name, email, subject, message, company } = await req.json();
 
     if (!name || !email || !message) {
@@ -73,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     await resend.emails.send({
       from: env.resend.fromEmail,
-      to: "support@capitalreach.com",
+      to: env.resend.contactInbox,
       replyTo: email,
       subject: `[CapitalReach Contact] ${subjectLabel} — ${headerName}`,
       html: `

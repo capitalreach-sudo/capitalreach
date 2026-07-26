@@ -58,6 +58,12 @@ export const env = {
   resend: {
     apiKey:    optionalEnv("RESEND_API_KEY"),
     fromEmail: process.env.RESEND_FROM_EMAIL || "noreply@capitalreach.com",
+    // Deliberately has no default. capitalreach.com is not ours yet and has
+    // live Zoho MX records, so a hardcoded support@capitalreach.com sent every
+    // contact submission -- name, email, company, message -- to a mailbox
+    // belonging to whoever owns that domain. A fallback here would silently
+    // reintroduce that, so the route refuses to send when this is unset.
+    contactInbox: optionalEnv("CONTACT_INBOX_EMAIL"),
   },
 
   openai: {
