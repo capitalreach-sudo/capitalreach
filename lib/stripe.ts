@@ -75,7 +75,8 @@ export async function createSuccessFeeInvoice(
   customerId: string,
   amountRaised: number,
   startupName: string,
-  currency: string = "USD"
+  currency: string = "USD",
+  dealId?: string
 ): Promise<Stripe.Invoice> {
   const cur = currency.toLowerCase();
   const minorUnitFactor = ZERO_DECIMAL_CURRENCIES.has(cur) ? 1 : 100;
@@ -88,11 +89,17 @@ export async function createSuccessFeeInvoice(
     description: `CapitalReach Success Fee (2%) — ${startupName} funding round of ${currency.toUpperCase()} ${amountRaised.toLocaleString()}`,
   });
 
+  // The metadata is load-bearing, not decoration. invoice.paid and
+  // invoice.payment_failed fire for every invoice on the account, and the
+  // webhook used to treat all of them as subscription events -- so paying a
+  // success fee reactivated a listing that had been suspended for an unpaid
+  // subscription. The webhook keys off this marker to tell the two apart.
   const invoice = await stripe.invoices.create({
     customer: customerId,
     auto_advance: true,
     collection_method: "send_invoice",
     days_until_due: 14,
+    metadata: { type: "success_fee", ...(dealId ? { dealId } : {}) },
   });
 
   return stripe.invoices.finalizeInvoice(invoice.id);

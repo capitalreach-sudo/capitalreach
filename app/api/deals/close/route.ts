@@ -43,11 +43,25 @@ export async function POST(req: NextRequest) {
     .eq("id", deal.investor.owner_id)
     .single();
 
-  // Mark deal as closed
-  await adminClient
+  // Mark deal as closed.
+  //
+  // The `.neq("status", "closed")` is the idempotency gate, and it has to live
+  // in the UPDATE rather than in an if-statement above it. Closing raises a
+  // success-fee invoice, so a double-submit -- an impatient second click, a
+  // retried request -- previously billed the founder twice. Two concurrent
+  // requests both read the deal as open; only one can win this statement,
+  // because the loser re-evaluates the qualifier after the row lock clears and
+  // matches nothing. The invoice below only runs for the winner.
+  const { data: closedRows } = await adminClient
     .from("deals")
     .update({ status: "closed", amount: amount || deal.amount, currency: dealCurrency })
-    .eq("id", dealId);
+    .eq("id", dealId)
+    .neq("status", "closed")
+    .select("id");
+
+  if (!closedRows || closedRows.length === 0) {
+    return NextResponse.json({ success: true, alreadyClosed: true, invoiceUrl: "" });
+  }
 
   await adminClient.from("deal_activity").insert({
     deal_id: dealId,
@@ -60,13 +74,14 @@ export async function POST(req: NextRequest) {
 
   let invoiceUrl = "";
   // Create success fee invoice if we have a customer ID and amount
-  if (startupProfile?.stripe_customer_id && amount > 0) {
+  if (startupProfile?.stripe_customer_id && amount > 0 && !deal.success_fee_invoiced) {
     try {
       const invoice = await createSuccessFeeInvoice(
         startupProfile.stripe_customer_id,
         amount,
         deal.startup.name,
-        dealCurrency
+        dealCurrency,
+        dealId
       );
       await adminClient
         .from("deals")

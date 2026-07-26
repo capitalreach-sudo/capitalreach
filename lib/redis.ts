@@ -57,6 +57,17 @@ export const apiRatelimit: Pick<Ratelimit, "limit"> = _redis
     })
   : MOCK_LIMITER;
 
+// Public contact form: 3 submissions per hour per IP. This one is unauthenticated
+// and sends two emails per call, so it is the cheapest endpoint on the site to
+// abuse as a mailer.
+export const contactRatelimit: Pick<Ratelimit, "limit"> = _redis
+  ? new Ratelimit({
+      redis: _redis,
+      limiter: Ratelimit.fixedWindow(3, "1 h"),
+      prefix: "capitalreach:contact",
+    })
+  : MOCK_LIMITER;
+
 // AI endpoints: 20 per hour
 export const aiRatelimit: Pick<Ratelimit, "limit"> = _redis
   ? new Ratelimit({

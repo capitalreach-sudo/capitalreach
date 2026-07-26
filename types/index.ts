@@ -212,6 +212,7 @@ export interface Deal {
   currency: string | null;
   status: DealStatus;
   success_fee_invoiced: boolean;
+  success_fee_paid_at: string | null;
   stripe_invoice_id: string | null;
   next_follow_up: string | null;
   created_at: string;

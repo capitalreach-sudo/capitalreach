@@ -21,6 +21,14 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient();
 
+  // invoice.* fires for every invoice on the account, and this app raises two
+  // very different kinds: recurring subscription invoices, and one-off 2%
+  // success-fee invoices from /api/deals/close. Treating them alike meant
+  // paying a success fee flipped subscription_status to "active" and
+  // un-suspended a listing that was suspended for an unpaid subscription.
+  const isSuccessFeeInvoice = (inv: Stripe.Invoice) =>
+    inv.metadata?.type === "success_fee" || !inv.subscription;
+
   try {
     switch (event.type) {
 
@@ -109,6 +117,16 @@ export async function POST(req: NextRequest) {
         const invoice      = event.data.object as Stripe.Invoice;
         const attemptCount = invoice.attempt_count as 1 | 2 | 3;
 
+        // An unpaid success fee is a collections matter, not a lapsed
+        // subscription. It must not send the subscription-dunning email and
+        // must not suspend the founder's listing.
+        if (isSuccessFeeInvoice(invoice)) {
+          console.warn(
+            `[stripe] success-fee invoice ${invoice.id} unpaid (attempt ${attemptCount}) — needs manual follow-up`
+          );
+          break;
+        }
+
         const { data: profile } = await supabase
           .from("profiles")
           .select("id, email, full_name")
@@ -135,6 +153,17 @@ export async function POST(req: NextRequest) {
       // ── Payment succeeded ────────────────────────────────────────────────────
       case "invoice.paid": {
         const invoice = event.data.object as Stripe.Invoice;
+
+        // Record the success fee against its deal and stop. Crediting it as a
+        // subscription payment is what let a founder pay a success fee to
+        // restore a listing suspended for an unpaid subscription.
+        if (isSuccessFeeInvoice(invoice)) {
+          await supabase
+            .from("deals")
+            .update({ success_fee_paid_at: new Date().toISOString() })
+            .eq("stripe_invoice_id", invoice.id);
+          break;
+        }
 
         const { data: profile } = await supabase
           .from("profiles")
