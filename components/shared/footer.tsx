@@ -148,7 +148,7 @@ export function Footer() {
             color:      "#9C8E82",
             flexShrink: 0,
           }}>
-            © {new Date().getFullYear()} CapitalReach Ltd.
+            © {new Date().getFullYear()} CapitalReach, Inc.
           </p>
 
           <p style={{
