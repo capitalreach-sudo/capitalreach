@@ -36,3 +36,4 @@ yarn-error.log*
 # Trigger.dev
 .trigger/
 .env.staging
+.env.local.production-backup
