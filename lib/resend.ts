@@ -175,6 +175,22 @@ export async function sendContractStatusEmail(
   );
 }
 
+export async function sendDealOpenedEmail(
+  to: string,
+  recipientName: string,
+  counterpartName: string
+) {
+  const dealUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/deals`;
+  return send(
+    to,
+    `${counterpartName} opened a deal with you — CapitalReach`,
+    `<h2>A new deal is in your pipeline</h2>
+    <p>Hi ${recipientName},</p>
+    <p><strong>${counterpartName}</strong> has opened a deal with you on CapitalReach.</p>
+    <p><a href="${dealUrl}" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">View Deal →</a></p>`
+  );
+}
+
 export async function sendNdaSignedEmail(
   startupEmail: string,
   investorEmail: string,

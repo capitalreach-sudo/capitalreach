@@ -1460,6 +1460,9 @@
     "languageSaved": "Language updated"
   },
   "deals": {
+    "startingStage": "Starting stage",
+    "followUpOptional": "Follow-up (optional)",
+    "openingNotePlaceholder": "Opening note — how this conversation started (optional)",
     "colIntro": "Intro",
     "colTermSheet": "Term Sheet",
     "colClosed": "Closed",

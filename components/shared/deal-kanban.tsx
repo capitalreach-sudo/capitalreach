@@ -276,6 +276,12 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
   const [amount, setAmount]     = useState("");
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
   const [creating, setCreating] = useState(false);
+  // Not every deal starts at intro -- plenty are already in conversation by the
+  // time someone records them here. Closed/passed are excluded on the server
+  // too; closing has to go through the success-fee flow.
+  const [startStatus, setStartStatus] = useState<DealStatus>("intro");
+  const [note, setNote]               = useState("");
+  const [followUp, setFollowUp]       = useState("");
 
   const canSubmit = isAdmin
     ? !!startupSearch.selected && !!investorSearch.selected
@@ -284,7 +290,13 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
   async function handleCreate() {
     if (!canSubmit) return;
     setCreating(true);
-    const body: Record<string, unknown> = { amount: amount ? parseFloat(amount) : null, currency };
+    const body: Record<string, unknown> = {
+      amount: amount ? parseFloat(amount) : null,
+      currency,
+      status: startStatus,
+      note: note.trim() || null,
+      nextFollowUp: followUp || null,
+    };
     if (isAdmin) {
       body.startupId  = startupSearch.selected!.id;
       body.investorId = investorSearch.selected!.id;
@@ -363,6 +375,36 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
             {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
           </select>
         </div>
+
+        {/* Starting stage + follow-up date */}
+        <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
+              {t("deals.startingStage")}
+            </label>
+            <select value={startStatus} onChange={e => setStartStatus(e.target.value as DealStatus)}
+              style={{ width: "100%", height: "36px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "0 8px", outline: "none", cursor: "pointer", boxSizing: "border-box" }}>
+              <option value="intro">{t("deals.colIntro")}</option>
+              {/* Same key the board's own column header uses, so the dropdown
+                  and the column a new deal lands in always read identically. */}
+              <option value="due_diligence">{t("dashboard.dueDiligence")}</option>
+              <option value="term_sheet">{t("deals.colTermSheet")}</option>
+            </select>
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
+              {t("deals.followUpOptional")}
+            </label>
+            <input type="date" value={followUp} onChange={e => setFollowUp(e.target.value)}
+              style={{ width: "100%", height: "36px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", padding: "0 8px", outline: "none", boxSizing: "border-box" }} />
+          </div>
+        </div>
+
+        {/* Opening note — seeds the deal's activity timeline, which otherwise
+            starts empty and gives no record of why the deal was opened. */}
+        <textarea value={note} onChange={e => setNote(e.target.value)}
+          placeholder={t("deals.openingNotePlaceholder")} rows={2} maxLength={2000}
+          style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", marginBottom: "12px", resize: "vertical", boxSizing: "border-box" }} />
 
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
           {t("deals.circumventionNotice")}
