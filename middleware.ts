@@ -76,9 +76,16 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Redirect authenticated users away from auth pages
+    // Redirect authenticated users away from auth pages.
+    //
+    // This used to send them to "/", which made every "List your startup"
+    // button on the site look broken to anyone already signed in: the links
+    // point at /auth/signup, so clicking one bounced straight back to the
+    // marketing homepage with nothing to show for it. /dashboard resolves by
+    // role and forwards to onboarding when there is no listing yet, which is
+    // where someone clicking that button actually wants to end up.
     if (user && (pathname === "/auth/login" || pathname === "/auth/signup")) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
   } catch (e) {
