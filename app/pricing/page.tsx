@@ -242,7 +242,7 @@ export default function PricingPage() {
         {/* Hero */}
         <section style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)", marginTop: "64px", padding: "80px 0 72px" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "48px", alignItems: "flex-end" }}>
+            <div className="pricing-hero-grid">
               <div>
                 <div className="ruled-label" style={{ marginBottom: "24px" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>

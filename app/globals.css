@@ -764,6 +764,26 @@ body::before {
   .fee-floating-badge { bottom: 16px; right: 16px; font-size: 12px; padding: 10px 14px; }
 }
 
+/* ── Pricing hero ─────────────────────────────────────────
+   Was an inline `grid-template-columns: 1fr auto`. The second column holds a
+   fixed-size stat card, so on a phone the card claimed its intrinsic width and
+   the 1fr column collapsed to 89px -- leaving the 48px headline to wrap one
+   word per line down the whole screen. Stack the two below the tablet
+   breakpoint instead. */
+.pricing-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px;
+  align-items: flex-end;
+}
+@media (max-width: 768px) {
+  .pricing-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: stretch;
+  }
+}
+
 /* ── FEATURE 21: Scroll-linked ambient background ────────── */
 .ambient-bg {
   position: absolute;
