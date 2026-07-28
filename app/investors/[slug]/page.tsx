@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Linkedin, MapPin, DollarSign, Globe, Twitter,
-  Briefcase, TrendingUp, BookOpen, Users, Clock,
+  Briefcase, BookOpen, Eye, Pencil,
 } from "lucide-react";
 import { formatCurrency, getInitials } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";
@@ -56,7 +56,17 @@ export default async function InvestorProfilePage({ params }: Props) {
 
   if (!investor) notFound();
 
+  // Who is looking? Investors had no way to see their own listing as a founder
+  // sees it -- the only view of their profile was the settings form, which
+  // shows fields rather than the result. Knowing the viewer also lets the CTA
+  // stop inviting people to do things that make no sense for them.
+  const { data: { user } } = await supabase.auth.getUser();
+  const isOwnProfile = !!user && user.id === investor.owner_id;
+
   const displayName = investor.display_name || investor.slug;
+  const memberSince = investor.created_at
+    ? new Date(investor.created_at).toLocaleDateString(getLocale(), { month: "long", year: "numeric" })
+    : null;
   const portfolio: Array<{ name: string; stage?: string; outcome?: string }> =
     Array.isArray(investor.portfolio_json) ? investor.portfolio_json.filter((c: any) => c?.name) : [];
 
@@ -69,6 +79,24 @@ export default async function InvestorProfilePage({ params }: Props) {
         <Link href="/investors" className="inline-flex items-center gap-1.5 text-sm text-cr-i4 hover:text-cr-i2 mb-6 transition-colors">
           ← {t("investorProfile.back")}
         </Link>
+
+        {/* ── Self-preview ──────────────────────────────────────────────────
+            An investor's only previous view of their own listing was the
+            settings form. This is the page founders actually judge them on. */}
+        {isOwnProfile && (
+          <div className="flex items-center justify-between gap-4 bg-cr-copper/10 border border-cr-copper/20 rounded-xl px-4 py-3 mb-6">
+            <div className="flex items-center gap-2 min-w-0">
+              <Eye className="h-4 w-4 text-cr-copper flex-shrink-0" />
+              <p className="text-sm text-cr-cu-l">{t("investorProfile.selfPreview")}</p>
+            </div>
+            <Link
+              href="/dashboard/investor/settings"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-cr-copper hover:underline flex-shrink-0"
+            >
+              <Pencil className="h-3.5 w-3.5" /> {t("investorProfile.editProfile")}
+            </Link>
+          </div>
+        )}
 
         {/* ── Profile header ─────────────────────────────────────────────── */}
         <div className="flex items-start gap-6 mb-8">
@@ -162,6 +190,16 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         )}
 
+        {/* A founder deciding whether to spend an intro on someone wants to
+            know they are a real, established account. This is the only such
+            signal the schema currently supports -- there is no last-active
+            column, so it is not claimed. */}
+        {memberSince && (
+          <p className="text-xs text-cr-i4 mb-6 text-center">
+            {t("investorProfile.memberSince", { date: memberSince })}
+          </p>
+        )}
+
         {/* ── Investor detail ───────────────────────────────────────────── */}
         {/* portfolio_count is deliberately not repeated here: it is the same
             number as number_of_investments, already shown in the stats row. */}
@@ -221,15 +259,9 @@ export default async function InvestorProfilePage({ params }: Props) {
             </div>
           )}
 
-          {(investor.min_check || investor.max_check) && (
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-cr-i4" />
-              <span className="text-sm text-cr-i2">
-                {investor.min_check ? formatCurrency(investor.min_check, true) : t("common.open")}{" "}–{" "}
-                {investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")} {t("investorProfile.checkSizeSuffix")}
-              </span>
-            </div>
-          )}
+          {/* Check size is deliberately not repeated here. It is already shown,
+              better formatted, in the Investor Detail block above -- this was a
+              second rendering of the same two columns. */}
 
           {investor.geography?.length > 0 && (
             <div className="flex items-start gap-2">
@@ -285,15 +317,20 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* ── CTA ───────────────────────────────────────────────────────── */}
-        <div className="mt-4 text-center">
-          <p className="text-cr-i3 text-sm mb-4">
-            {t("investorProfile.founderCta", { name: displayName })}
-          </p>
-          <a href="/auth/signup?role=startup" className="text-cr-copper font-medium hover:underline">
-            {t("investors.listYourStartup")} →
-          </a>
-        </div>
+        {/* ── CTA ───────────────────────────────────────────────────────────
+            Only shown to signed-out visitors. It previously invited everyone to
+            sign up as a startup, including the investor viewing their own page
+            and founders who already have a listing. */}
+        {!user && (
+          <div className="mt-4 text-center">
+            <p className="text-cr-i3 text-sm mb-4">
+              {t("investorProfile.founderCta", { name: displayName })}
+            </p>
+            <a href="/auth/signup?role=startup" className="text-cr-copper font-medium hover:underline">
+              {t("investors.listYourStartup")} →
+            </a>
+          </div>
+        )}
       </main>
       <Footer />
     </>

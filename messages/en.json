@@ -1582,6 +1582,9 @@
   },
   "investorProfile": {
     "back": "Back to investors",
+    "selfPreview": "This is your public profile — how founders see you.",
+    "editProfile": "Edit profile",
+    "memberSince": "On CapitalReach since {date}",
     "tierProInvestor": "Pro Investor",
     "tierInstitutional": "Institutional",
     "aumFundSize": "AUM / Fund Size",
