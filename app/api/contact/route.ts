@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
 import { contactRatelimit } from "@/lib/redis";
-import { env } from "@/lib/env";
+import { env, isResendConfigured } from "@/lib/env";
 
 // Every value below is attacker-controlled and lands in an HTML email body.
 // Without escaping, a message containing markup is rendered as markup in the
@@ -36,8 +36,17 @@ export async function POST(req: NextRequest) {
 
     // Refuse rather than fall back. See the note on env.resend.contactInbox:
     // the previous hardcoded recipient was a domain we do not own.
-    if (!env.resend.contactInbox) {
-      console.error("[contact] CONTACT_INBOX_EMAIL is not set — refusing to send.");
+    //
+    // isResendConfigured is checked here too, and it matters: lib/resend's
+    // wrapper deliberately no-ops when there is no API key, so without this the
+    // route would run to completion and return {success:true} for a message
+    // that was never sent. Telling someone their enquiry was received when it
+    // went nowhere is worse than telling them the form is down.
+    if (!env.resend.contactInbox || !isResendConfigured) {
+      console.error(
+        "[contact] refusing to send —",
+        !env.resend.contactInbox ? "CONTACT_INBOX_EMAIL is not set" : "RESEND_API_KEY is not set"
+      );
       return NextResponse.json(
         { error: "The contact form is unavailable right now." },
         { status: 503 }
