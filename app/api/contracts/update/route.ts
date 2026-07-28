@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendContractStatusEmail } from "@/lib/resend";
 import type { ContractStatus } from "@/types";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 const CONTRACT_STATUSES: ContractStatus[] = ["draft", "sent", "signed", "void"];
 
@@ -9,6 +10,13 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // A suspended account must not be able to write. The RESTRICTIVE policies in
+  // 017 don't cover this route because the write goes through the service role.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
+
 
   const { contractId, status } = await req.json();
   if (!contractId || !CONTRACT_STATUSES.includes(status)) {

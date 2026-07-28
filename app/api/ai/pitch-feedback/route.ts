@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { generatePitchFeedback, isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 export async function POST(req: NextRequest) {
   if (!isOpenAIConfigured) {
@@ -14,6 +15,13 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // A suspended account must not be able to write. The RESTRICTIVE policies in
+  // 017 don't cover this route because the write goes through the service role.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
+
 
   const { success } = await aiRatelimit.limit(user.id);
   if (!success) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });

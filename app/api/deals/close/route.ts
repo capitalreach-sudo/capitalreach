@@ -3,11 +3,19 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { createSuccessFeeInvoice } from "@/lib/stripe";
 import { sendDealClosedEmail } from "@/lib/resend";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // A suspended account must not be able to write. The RESTRICTIVE policies in
+  // 017 don't cover this route because the write goes through the service role.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
+
 
   const { dealId, amount, currency } = await req.json();
   const dealCurrency = isCurrencyCode(currency) ? currency : DEFAULT_CURRENCY;

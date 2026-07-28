@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { apiRatelimit } from "@/lib/redis";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -41,6 +42,12 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Guards the write only. The GET above stays open to suspended users so they
+  // can still read the history of their own deals from the /suspended page.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   try {
     const { success } = await apiRatelimit.limit(user.id);

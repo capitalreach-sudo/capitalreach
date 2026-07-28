@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 // Creates a deal. Startups/investors pick a single counterpart and their own
 // side is derived from their profile — never trusted from the request body.
@@ -9,6 +10,13 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // A suspended account must not be able to write. The RESTRICTIVE policies in
+  // 017 don't cover this route because the write goes through the service role.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
+
 
   const { counterpartId, startupId, investorId, amount, currency } = await req.json();
   const dealCurrency = isCurrencyCode(currency) ? currency : DEFAULT_CURRENCY;
@@ -46,6 +54,13 @@ export async function POST(req: NextRequest) {
     } else if (myInvestor) {
       const { data: st } = await admin.from("startups").select("id, status").eq("id", counterpartId).maybeSingle();
       if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+      // `status` was already being selected here but never tested, so an
+      // investor holding a draft/suspended/rejected listing's id could open a
+      // deal against a company that isn't listed. Only active ones are open
+      // for business.
+      if (st.status !== "active") {
+        return NextResponse.json({ error: "That startup is not currently listed" }, { status: 409 });
+      }
       startup_id  = st.id;
       investor_id = myInvestor.id;
     } else {
