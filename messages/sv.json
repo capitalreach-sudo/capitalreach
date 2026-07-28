@@ -1642,9 +1642,9 @@
     "sendMessage": "Skicka meddelande",
     "agreeToPrivacy": "Genom att skicka detta formulär godkänner du vår",
     "toastFailedTitle": "Det gick inte att skicka meddelandet",
-    "toastFailedDescFallback": "Maila oss direkt på support@capitalreach.com",
+    "toastFailedDescFallback": "Maila oss direkt på {email}",
     "toastNetworkErrorTitle": "Nätverksfel",
-    "toastNetworkErrorDesc": "Kunde inte nå servern. Maila oss på support@capitalreach.com"
+    "toastNetworkErrorDesc": "Kunde inte nå servern. Maila oss på {email}"
   },
   "about": {
     "metaTitle": "Om oss",

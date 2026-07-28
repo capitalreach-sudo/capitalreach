@@ -2,6 +2,7 @@ import {
   Body, Button, Container, Head, Heading, Html, Preview,
   Section, Text, Hr,
 } from "@react-email/components";
+import { brand } from "@/lib/brand";
 
 interface ListingLiveEmailProps {
   startupName: string;
@@ -49,7 +50,7 @@ export default function ListingLiveEmail({ startupName, slug, appUrl }: ListingL
 ListingLiveEmail.PreviewProps = {
   startupName: "Acme Corp",
   slug: "acme-corp-x4f2",
-  appUrl: "https://capitalreach.com",
+  appUrl: brand.url,
 } as ListingLiveEmailProps;
 
 const main = { backgroundColor: "#f6f9fc", fontFamily: "'Inter', sans-serif" };

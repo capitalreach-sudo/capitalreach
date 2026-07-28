@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, Clock, Zap, Globe, Handshake } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
+import { brand } from "@/lib/brand";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
@@ -102,7 +103,7 @@ export default async function CareersPage() {
                     </span>
                   </div>
                 </div>
-                <a href={`mailto:careers@capitalreach.com?subject=Application: ${role.title}`}>
+                <a href={`mailto:?subject=Application: `}>
                   <Button size="sm" variant="outline" className="flex-shrink-0 border-cr-p4 text-cr-i2 hover:text-cr-ink hover:bg-cr-paper/5">
                     {t("careers.applyNow")}
                   </Button>
@@ -116,7 +117,7 @@ export default async function CareersPage() {
             <p className="text-sm text-cr-i3 mb-5 max-w-md mx-auto">
               {t("careers.noRoleDesc")}
             </p>
-            <a href="mailto:careers@capitalreach.com">
+            <a href={`mailto:${brand.careers}`}>
               <Button className="bg-cr-copper hover:bg-cr-cu-l text-white">{t("careers.getInTouch")}</Button>
             </a>
           </div>

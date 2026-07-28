@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { resend } from "@/lib/resend";
+import { env } from "@/lib/env";
 
 // Admin: blast email about a specific startup to all matching investors
 export async function POST(req: NextRequest) {
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
     await Promise.all(
       batch.map(email =>
         resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "noreply@capitalreach.com",
+          from: env.resend.fromEmail,
           to: email,
           subject: subject || `[CapitalReach] New startup: ${startup.name}`,
           html: emailBody,

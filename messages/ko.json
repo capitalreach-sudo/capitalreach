@@ -1642,9 +1642,9 @@
     "sendMessage": "메시지 보내기",
     "agreeToPrivacy": "이 양식을 제출하면 다음에 동의하게 됩니다:",
     "toastFailedTitle": "메시지 전송 실패",
-    "toastFailedDescFallback": "support@capitalreach.com으로 직접 이메일을 보내주세요",
+    "toastFailedDescFallback": "{email}으로 직접 이메일을 보내주세요",
     "toastNetworkErrorTitle": "네트워크 오류",
-    "toastNetworkErrorDesc": "서버에 연결할 수 없습니다. support@capitalreach.com으로 이메일을 보내주세요"
+    "toastNetworkErrorDesc": "서버에 연결할 수 없습니다. {email}으로 이메일을 보내주세요"
   },
   "about": {
     "metaTitle": "회사 소개",

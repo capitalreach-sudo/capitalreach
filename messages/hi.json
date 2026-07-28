@@ -1642,9 +1642,9 @@
     "sendMessage": "संदेश भेजें",
     "agreeToPrivacy": "यह फ़ॉर्म सबमिट करके आप हमारी सहमति देते हैं",
     "toastFailedTitle": "संदेश भेजने में विफल",
-    "toastFailedDescFallback": "कृपया सीधे support@capitalreach.com पर ईमेल करें",
+    "toastFailedDescFallback": "कृपया सीधे {email} पर ईमेल करें",
     "toastNetworkErrorTitle": "नेटवर्क त्रुटि",
-    "toastNetworkErrorDesc": "सर्वर तक नहीं पहुंच सका। कृपया support@capitalreach.com पर ईमेल करें"
+    "toastNetworkErrorDesc": "सर्वर तक नहीं पहुंच सका। कृपया {email} पर ईमेल करें"
   },
   "about": {
     "metaTitle": "हमारे बारे में",

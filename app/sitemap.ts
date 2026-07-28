@@ -1,10 +1,11 @@
 import { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase-server";
+import { brand } from "@/lib/brand";
 
 export const revalidate = 3600; // Regenerate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://capitalreach.com";
+  const baseUrl = brand.url;
   const supabase = createAdminClient();
 
   const { data: startups } = await supabase

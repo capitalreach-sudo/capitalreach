@@ -2,6 +2,7 @@ import {
   Body, Button, Container, Head, Heading, Html, Preview,
   Section, Text, Hr,
 } from "@react-email/components";
+import { brand } from "@/lib/brand";
 
 interface NewMessageEmailProps {
   recipientName: string;
@@ -37,7 +38,7 @@ export default function NewMessageEmail({
             </Button>
           </Section>
           <Hr style={hr} />
-          <Text style={footer}>CapitalReach · <a href="https://capitalreach.com" style={{ color: "#9ca3af" }}>capitalreach.com</a></Text>
+          <Text style={footer}>CapitalReach · <a href={brand.url} style={{ color: "#9ca3af" }}>{brand.domain}</a></Text>
         </Container>
       </Body>
     </Html>
@@ -49,7 +50,7 @@ NewMessageEmail.PreviewProps = {
   senderName: "John Investor",
   startupName: "Acme Corp",
   messagePreview: "Hi! I came across your profile on CapitalReach and I'm very interested in learning more about your Series A round. I've been investing in B2B SaaS for 8 years...",
-  dashboardUrl: "https://capitalreach.com/dashboard/messages",
+  dashboardUrl: `/dashboard/messages`,
 } as NewMessageEmailProps;
 
 const main = { backgroundColor: "#f6f9fc", fontFamily: "'Inter', sans-serif" };

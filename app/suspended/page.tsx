@@ -5,6 +5,7 @@ import { Footer } from "@/components/shared/footer";
 import { SuspendedActions } from "@/components/shared/suspended-actions";
 import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";
+import { brand } from "@/lib/brand";
 
 export const metadata: Metadata = {
   title: "Account suspended — CapitalReach",
@@ -98,10 +99,10 @@ export default async function SuspendedPage() {
           }}>
             If you believe this is an error, contact us:
           </p>
-          <a href="mailto:support@capitalreach.com" style={{
+          <a href={`mailto:${brand.support}`} style={{
             fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px",
             color: "var(--cr-copper)", textDecoration: "none",
-          }}>support@capitalreach.com</a>
+          }}>{brand.support}</a>
 
           <SuspendedActions />
         </div>

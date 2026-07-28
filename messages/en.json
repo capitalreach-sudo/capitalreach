@@ -1664,9 +1664,9 @@
     "sendMessage": "Send Message",
     "agreeToPrivacy": "By submitting this form you agree to our",
     "toastFailedTitle": "Failed to send message",
-    "toastFailedDescFallback": "Please email us directly at support@capitalreach.com",
+    "toastFailedDescFallback": "Please email us directly at {email}",
     "toastNetworkErrorTitle": "Network error",
-    "toastNetworkErrorDesc": "Could not reach the server. Please email us at support@capitalreach.com"
+    "toastNetworkErrorDesc": "Could not reach the server. Please email us at {email}"
   },
   "about": {
     "metaTitle": "About",
@@ -1922,6 +1922,6 @@
     "supportLabel": "Support:",
     "footerAck": "By using CapitalReach, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
     "s4h2p2": "For the purposes of this section, an investor is \"connected through the platform\" if they viewed your listing while signed in to CapitalReach, contacted you through the platform, or were introduced to you via a CapitalReach deal record, in each case within 24 months before the round closed. CapitalReach maintains records of these events and determines connection in good faith based on them.",
-    "s4h2p3": "If you believe a success fee has been invoiced in error, you may dispute it in writing to billing@capitalreach.com within 30 days of the invoice date. We will review the connection records and respond within 30 days. Fees under active dispute are not considered overdue."
+    "s4h2p3": "If you believe a success fee has been invoiced in error, you may dispute it in writing to {email} within 30 days of the invoice date. We will review the connection records and respond within 30 days. Fees under active dispute are not considered overdue."
   }
 }

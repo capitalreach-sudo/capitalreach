@@ -1642,9 +1642,9 @@
     "sendMessage": "Bericht verzenden",
     "agreeToPrivacy": "Door dit formulier in te dienen gaat u akkoord met ons",
     "toastFailedTitle": "Verzenden van bericht mislukt",
-    "toastFailedDescFallback": "Mail ons rechtstreeks op support@capitalreach.com",
+    "toastFailedDescFallback": "Mail ons rechtstreeks op {email}",
     "toastNetworkErrorTitle": "Netwerkfout",
-    "toastNetworkErrorDesc": "Kon de server niet bereiken. Mail ons op support@capitalreach.com"
+    "toastNetworkErrorDesc": "Kon de server niet bereiken. Mail ons op {email}"
   },
   "about": {
     "metaTitle": "Over ons",

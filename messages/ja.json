@@ -1546,9 +1546,9 @@
     "sendMessage": "メッセージを送信",
     "agreeToPrivacy": "このフォームを送信すると、以下に同意したものとみなされます：",
     "toastFailedTitle": "メッセージの送信に失敗しました",
-    "toastFailedDescFallback": "support@capitalreach.com まで直接メールでお問い合わせください",
+    "toastFailedDescFallback": "{email} まで直接メールでお問い合わせください",
     "toastNetworkErrorTitle": "ネットワークエラー",
-    "toastNetworkErrorDesc": "サーバーに接続できませんでした。support@capitalreach.com までメールでお問い合わせください"
+    "toastNetworkErrorDesc": "サーバーに接続できませんでした。{email} までメールでお問い合わせください"
   },
   "about": {
     "metaTitle": "会社概要",

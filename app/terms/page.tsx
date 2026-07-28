@@ -5,6 +5,7 @@ import { Footer } from "@/components/shared/footer";
 import { TrendingUp } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { ServerT } from "@/lib/locale-server";
+import { brand } from "@/lib/brand";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
@@ -82,7 +83,7 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s3Title")}>
             <p>
-              <InlineLink t={t} k="s3p1" href="mailto:support@capitalreach.com" label="support@capitalreach.com" />
+              <InlineLink t={t} k="s3p1" href={`mailto:${brand.support}`} label={brand.support} />
             </p>
             <p className="mt-3">{t("terms.s3p2")}</p>
           </Section>
@@ -98,11 +99,11 @@ export default async function TermsPage() {
             <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h2")}</h3>
             <p>{t("terms.s4h2p1")}</p>
             <p className="mt-3">{t("terms.s4h2p2")}</p>
-            <p className="mt-3">{t("terms.s4h2p3")}</p>
+            <p className="mt-3">{t("terms.s4h2p3", { email: brand.billing })}</p>
 
             <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h3")}</h3>
             <p>
-              <InlineLink t={t} k="s4h3p1" href="mailto:billing@capitalreach.com" label="billing@capitalreach.com" />
+              <InlineLink t={t} k="s4h3p1" href={`mailto:${brand.billing}`} label={brand.billing} />
             </p>
           </Section>
 
@@ -174,7 +175,7 @@ export default async function TermsPage() {
           <Section title={t("terms.s14Title")}>
             <p>{t("terms.s14p1")}</p>
             <p className="mt-3">
-              <InlineLink t={t} k="s14p2" href="mailto:support@capitalreach.com" label="support@capitalreach.com" />
+              <InlineLink t={t} k="s14p2" href={`mailto:${brand.support}`} label={brand.support} />
             </p>
           </Section>
 
@@ -193,15 +194,11 @@ export default async function TermsPage() {
               <p className="font-semibold">{t("terms.contactBrand")}</p>
               <p>
                 {t("terms.emailLabel")}{" "}
-                <a href="mailto:legal@capitalreach.com" className="text-cr-copper hover:underline">
-                  legal@capitalreach.com
-                </a>
+                <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline">{brand.legal}</a>
               </p>
               <p>
                 {t("terms.supportLabel")}{" "}
-                <a href="mailto:support@capitalreach.com" className="text-cr-copper hover:underline">
-                  support@capitalreach.com
-                </a>
+                <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline">{brand.support}</a>
               </p>
             </div>
           </Section>

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, MessageSquare, Building2, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { brand } from "@/lib/brand";
 
 export default function ContactPage() {
   const { t } = useTranslation();
@@ -47,7 +48,7 @@ export default function ContactPage() {
       if (!res.ok) {
         toast({
           title: t("contact.toastFailedTitle"),
-          description: data.error || t("contact.toastFailedDescFallback"),
+          description: data.error || t("contact.toastFailedDescFallback", { email: brand.support }),
           variant: "destructive",
         });
       } else {
@@ -56,7 +57,7 @@ export default function ContactPage() {
     } catch {
       toast({
         title: t("contact.toastNetworkErrorTitle"),
-        description: t("contact.toastNetworkErrorDesc"),
+        description: t("contact.toastNetworkErrorDesc", { email: brand.support }),
         variant: "destructive",
       });
     }
@@ -84,7 +85,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="font-medium text-cr-ink text-sm">{t("contact.emailUs")}</p>
-                  <a href="mailto:support@capitalreach.com" className="text-sm text-cr-copper hover:text-cr-cu-l transition-colors">support@capitalreach.com</a>
+                  <a href={`mailto:${brand.support}`} className="text-sm text-cr-copper hover:text-cr-cu-l transition-colors">{brand.support}</a>
                 </div>
               </div>
 

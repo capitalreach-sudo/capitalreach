@@ -1546,9 +1546,9 @@
     "sendMessage": "Nachricht senden",
     "agreeToPrivacy": "Mit dem Absenden dieses Formulars stimmst du unserer",
     "toastFailedTitle": "Nachricht konnte nicht gesendet werden",
-    "toastFailedDescFallback": "Bitte schreibe uns direkt an support@capitalreach.com",
+    "toastFailedDescFallback": "Bitte schreibe uns direkt an {email}",
     "toastNetworkErrorTitle": "Netzwerkfehler",
-    "toastNetworkErrorDesc": "Server konnte nicht erreicht werden. Bitte schreibe uns an support@capitalreach.com"
+    "toastNetworkErrorDesc": "Server konnte nicht erreicht werden. Bitte schreibe uns an {email}"
   },
   "about": {
     "metaTitle": "Über uns",

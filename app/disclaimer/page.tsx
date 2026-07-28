@@ -2,6 +2,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { ShieldCheck } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
+import { brand } from "@/lib/brand";
 
 export async function generateMetadata() {
   const t = await getTranslator(getLocale());
@@ -101,7 +102,7 @@ export default async function DisclaimerPage() {
               <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s8Title")}</h2>
               <p className="text-cr-i3 leading-relaxed text-sm">
                 {t("disclaimer.s8Text").split("{link}")[0]}
-                <a href="mailto:legal@capitalreach.com" className="text-cr-copper hover:underline">legal@capitalreach.com</a>
+                <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline">{brand.legal}</a>
                 {t("disclaimer.s8Text").split("{link}")[1]}
               </p>
             </section>

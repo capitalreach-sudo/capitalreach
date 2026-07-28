@@ -1642,9 +1642,9 @@
     "sendMessage": "Отправить сообщение",
     "agreeToPrivacy": "Отправляя эту форму, вы соглашаетесь с нашей",
     "toastFailedTitle": "Не удалось отправить сообщение",
-    "toastFailedDescFallback": "Пожалуйста, напишите нам напрямую на support@capitalreach.com",
+    "toastFailedDescFallback": "Пожалуйста, напишите нам напрямую на {email}",
     "toastNetworkErrorTitle": "Ошибка сети",
-    "toastNetworkErrorDesc": "Не удалось связаться с сервером. Напишите нам на support@capitalreach.com"
+    "toastNetworkErrorDesc": "Не удалось связаться с сервером. Напишите нам на {email}"
   },
   "about": {
     "metaTitle": "О нас",

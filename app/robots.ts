@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next";
+import { brand } from "@/lib/brand";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://capitalreach.com";
+  const baseUrl = brand.url;
   return {
     rules: [
       {

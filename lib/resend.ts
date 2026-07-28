@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { isResendConfigured, env } from "@/lib/env";
+import { brand } from "@/lib/brand";
 
 const FROM = env.resend.fromEmail;
 
@@ -294,7 +295,7 @@ export async function sendSuspensionEmail(
     <p>Access to your CapitalReach account has been restricted.</p>
     <blockquote style="border-left:3px solid #9B2335;padding-left:16px;color:#374151"><strong>Reason:</strong> ${reason}</blockquote>
     ${until}
-    <p>If you believe this is an error, reply to this email or contact <a href="mailto:support@capitalreach.com">support@capitalreach.com</a>.</p>
+    <p>If you believe this is an error, reply to this email or contact <a href="mailto:${brand.support}">${brand.support}</a>.</p>
     <p>The CapitalReach Team</p>`
   );
 }

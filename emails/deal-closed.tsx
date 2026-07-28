@@ -1,6 +1,7 @@
 import {
   Body, Button, Container, Head, Heading, Hr, Html, Preview, Section, Text,
 } from "@react-email/components";
+import { brand } from "@/lib/brand";
 
 interface DealClosedEmailProps {
   recipientName: string;
@@ -21,7 +22,7 @@ export default function DealClosedEmail({
   invoiceUrl,
   isStartup,
 }: DealClosedEmailProps) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://capitalreach.com";
+  const appUrl = brand.url;
 
   return (
     <Html>
@@ -77,7 +78,7 @@ export default function DealClosedEmail({
           </Section>
 
           <Text style={footer}>
-            CapitalReach · <a href={`${appUrl}`} style={footerLink}>capitalreach.com</a>
+            CapitalReach · <a href={appUrl} style={footerLink}>{brand.domain}</a>
           </Text>
         </Container>
       </Body>

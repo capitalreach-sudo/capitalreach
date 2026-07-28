@@ -1546,9 +1546,9 @@
     "sendMessage": "إرسال الرسالة",
     "agreeToPrivacy": "بإرسال هذا النموذج، فإنك توافق على",
     "toastFailedTitle": "فشل إرسال الرسالة",
-    "toastFailedDescFallback": "يرجى مراسلتنا مباشرة على support@capitalreach.com",
+    "toastFailedDescFallback": "يرجى مراسلتنا مباشرة على {email}",
     "toastNetworkErrorTitle": "خطأ في الشبكة",
-    "toastNetworkErrorDesc": "تعذر الوصول إلى الخادم. يرجى مراسلتنا على support@capitalreach.com"
+    "toastNetworkErrorDesc": "تعذر الوصول إلى الخادم. يرجى مراسلتنا على {email}"
   },
   "about": {
     "metaTitle": "من نحن",

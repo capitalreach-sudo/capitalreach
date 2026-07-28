@@ -2,6 +2,7 @@ import {
   Body, Button, Container, Head, Heading, Html, Preview,
   Section, Text, Hr,
 } from "@react-email/components";
+import { brand } from "@/lib/brand";
 
 interface PaymentFailedEmailProps {
   name: string;
@@ -56,7 +57,7 @@ export default function PaymentFailedEmail({ name, attempt, updateUrl }: Payment
           </Section>
           <Hr style={hr} />
           <Text style={footer}>
-            CapitalReach · If you believe this is an error, please contact <a href="mailto:billing@capitalreach.com" style={{ color: "#4f46e5" }}>billing@capitalreach.com</a>
+            CapitalReach · If you believe this is an error, please contact <a href={`mailto:`} style={{ color: "#4f46e5" }}>{brand.billing}</a>
           </Text>
         </Container>
       </Body>

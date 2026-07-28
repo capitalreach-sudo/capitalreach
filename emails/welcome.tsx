@@ -2,6 +2,7 @@ import {
   Body, Button, Container, Head, Heading, Hr, Html,
   Img, Link, Preview, Section, Text,
 } from "@react-email/components";
+import { brand } from "@/lib/brand";
 
 interface WelcomeEmailProps {
   name: string;
@@ -10,7 +11,7 @@ interface WelcomeEmailProps {
 
 export default function WelcomeEmail({ name, role }: WelcomeEmailProps) {
   const isStartup = role === "startup";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://capitalreach.com";
+  const appUrl = brand.url;
 
   return (
     <Html>

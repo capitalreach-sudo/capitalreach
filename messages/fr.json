@@ -1546,9 +1546,9 @@
     "sendMessage": "Envoyer le message",
     "agreeToPrivacy": "En soumettant ce formulaire, vous acceptez notre",
     "toastFailedTitle": "Échec de l'envoi du message",
-    "toastFailedDescFallback": "Merci de nous écrire directement à support@capitalreach.com",
+    "toastFailedDescFallback": "Merci de nous écrire directement à {email}",
     "toastNetworkErrorTitle": "Erreur réseau",
-    "toastNetworkErrorDesc": "Impossible de joindre le serveur. Merci de nous écrire à support@capitalreach.com"
+    "toastNetworkErrorDesc": "Impossible de joindre le serveur. Merci de nous écrire à {email}"
   },
   "about": {
     "metaTitle": "À propos",

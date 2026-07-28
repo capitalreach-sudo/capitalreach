@@ -4,6 +4,7 @@ import { Footer } from "@/components/shared/footer";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 import type { ServerT } from "@/lib/locale-server";
+import { brand } from "@/lib/brand";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
@@ -53,7 +54,7 @@ export default async function PrivacyPage() {
 
           <section>
             <p>
-              <InlineLink t={t} k="introP1" href="https://capitalreach.com" label="capitalreach.com" />
+              <InlineLink t={t} k="introP1" href={brand.url} label={brand.domain} />
             </p>
           </section>
 
@@ -115,13 +116,13 @@ export default async function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-1 text-sm">
               <Bullet t={t} k="s5l1" />
               <Bullet t={t} k="s5l2" />
-              <li><InlineLink t={t} k="s5l3" href="mailto:support@capitalreach.com" label="support@capitalreach.com" /></li>
+              <li><InlineLink t={t} k="s5l3" href={`mailto:${brand.support}`} label={brand.support} /></li>
               <Bullet t={t} k="s5l4" />
               <Bullet t={t} k="s5l5" />
               <Bullet t={t} k="s5l6" />
             </ul>
             <p className="text-sm mt-3">
-              <InlineLink t={t} k="s5Footer" href="mailto:support@capitalreach.com" label="support@capitalreach.com" />
+              <InlineLink t={t} k="s5Footer" href={`mailto:${brand.support}`} label={brand.support} />
             </p>
           </section>
 
@@ -148,7 +149,7 @@ export default async function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s8Title")}</h2>
             <p className="text-sm">
-              <InlineLink t={t} k="s8Text" href="mailto:support@capitalreach.com" label="support@capitalreach.com" />
+              <InlineLink t={t} k="s8Text" href={`mailto:${brand.support}`} label={brand.support} />
             </p>
           </section>
 
@@ -180,7 +181,7 @@ export default async function PrivacyPage() {
             </p>
             <div className="mt-3 bg-cr-paper border rounded-xl p-4 text-sm">
               <p className="font-semibold text-cr-ink">CapitalReach</p>
-              <p className="text-cr-i3">{t("privacy.contactBoxEmailLabel")} <a href="mailto:support@capitalreach.com" className="text-cr-copper hover:underline">support@capitalreach.com</a></p>
+              <p className="text-cr-i3">{t("privacy.contactBoxEmailLabel")} <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline">{brand.support}</a></p>
               <p className="text-cr-i3 mt-1">
                 <Link href="/contact" className="text-cr-copper hover:underline">{t("privacy.contactFormLink")}</Link>
               </p>

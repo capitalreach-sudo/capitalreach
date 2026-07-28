@@ -8,6 +8,7 @@ import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
+import { brand } from "@/lib/brand";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   },
   description:
     "Connect vetted early-stage startups with investors. Browse, filter, and fund the next generation of companies on CapitalReach.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://capitalreach.com"),
+  metadataBase: new URL(brand.url),
   openGraph: {
     type: "website",
     locale: "en_US",

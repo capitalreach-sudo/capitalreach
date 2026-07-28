@@ -2,6 +2,7 @@ import { schedules } from "@trigger.dev/sdk/v3";
 import { createAdminClient } from "@/lib/supabase-server";
 import { matchStartupsToInvestor } from "@/lib/openai";
 import { resend } from "@/lib/resend";
+import { env } from "@/lib/env";
 
 // Runs every day at 9am UTC — refresh recommendations for Pro+ investors
 export const investorRecommendations = schedules.task({
@@ -58,7 +59,7 @@ export const investorRecommendations = schedules.task({
             .join("");
 
           await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || "noreply@capitalreach.com",
+            from: env.resend.fromEmail,
             to: ownerEmail,
             subject: `Today's recommended startups for you`,
             html: `

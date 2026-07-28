@@ -5,6 +5,8 @@
 // real value?" check (docusign.ts, openai.ts, redis.ts, stats.ts). This is the
 // canonical version — new code should use it rather than adding a fifth.
 
+import { brand } from "@/lib/brand";
+
 const PLACEHOLDER_MARKERS = ["REPLACE_ME", "placeholder", "your-", "xxx", "changeme"];
 
 /** True when the value is present and is not an obvious placeholder. */
@@ -57,7 +59,8 @@ export const env = {
 
   resend: {
     apiKey:    optionalEnv("RESEND_API_KEY"),
-    fromEmail: process.env.RESEND_FROM_EMAIL || "noreply@capitalreach.com",
+    // Must be on a domain verified in Resend, or every send is rejected.
+    fromEmail: process.env.RESEND_FROM_EMAIL || brand.noreply,
     // Deliberately has no default. capitalreach.com is not ours yet and has
     // live Zoho MX records, so a hardcoded support@capitalreach.com sent every
     // contact submission -- name, email, company, message -- to a mailbox

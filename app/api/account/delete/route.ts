@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { brand } from "@/lib/brand";
+
+// Omitted entirely when no support address is configured, rather than telling
+// the user to "please contact " with nothing after it.
+const supportSuffix = brand.support ? ` Please contact ${brand.support}.` : "";
 
 export async function DELETE(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -36,12 +41,12 @@ export async function DELETE(req: NextRequest) {
 
     if (error) {
       console.error("[account/delete] deleteUser error:", error);
-      return NextResponse.json({ error: "Failed to delete account. Please contact support@capitalreach.com." }, { status: 500 });
+      return NextResponse.json({ error: `Failed to delete account.${supportSuffix}` }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[account/delete]", err);
-    return NextResponse.json({ error: "Deletion failed. Please contact support@capitalreach.com." }, { status: 500 });
+    return NextResponse.json({ error: `Deletion failed.${supportSuffix}` }, { status: 500 });
   }
 }

@@ -1546,9 +1546,9 @@
     "sendMessage": "发送消息",
     "agreeToPrivacy": "提交此表单即表示您同意我们的",
     "toastFailedTitle": "消息发送失败",
-    "toastFailedDescFallback": "请直接发邮件至 support@capitalreach.com",
+    "toastFailedDescFallback": "请直接发邮件至 {email}",
     "toastNetworkErrorTitle": "网络错误",
-    "toastNetworkErrorDesc": "无法连接到服务器。请发邮件至 support@capitalreach.com"
+    "toastNetworkErrorDesc": "无法连接到服务器。请发邮件至 {email}"
   },
   "about": {
     "metaTitle": "关于我们",
