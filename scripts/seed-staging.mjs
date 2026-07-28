@@ -35,15 +35,34 @@ function loadEnv(file) {
   return out;
 }
 
-const env = { ...loadEnv(".env.local"), ...loadEnv(".env.staging") };
+// With --production, read the production env explicitly instead of relying on
+// whatever .env.local happens to point at. Swapping env files around by hand to
+// aim this script is exactly how you seed the wrong database.
+const env = process.argv.includes("--production")
+  ? loadEnv(".env.local.production-backup")
+  : { ...loadEnv(".env.local"), ...loadEnv(".env.staging") };
 export const URL_ = process.env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL;
 export const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY;
 export const ANON = process.env.SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!URL_ || !KEY) { console.error("Missing Supabase URL / service role key."); process.exit(2); }
-if (URL_.includes(PRODUCTION_REF)) {
-  console.error(`\nRefusing to run: ${URL_} is production. This creates fake users.\n`);
+// Production requires an explicit flag rather than no guard at all. Seeding
+// production creates real auth users and publicly visible listings; that should
+// never be something a stray `npm run seed` can do by accident.
+//
+// Every account created here uses an @staging.test address, which is what
+// scripts/unseed.mjs keys off to remove them again. Do not change that suffix
+// without changing the teardown to match.
+const ALLOW_PRODUCTION = process.argv.includes("--production");
+if (URL_.includes(PRODUCTION_REF) && !ALLOW_PRODUCTION) {
+  console.error(`\nRefusing to run: ${URL_} is production. This creates fake users.`);
+  console.error(`If that is genuinely what you want, re-run with --production.\n`);
   process.exit(1);
+}
+if (URL_.includes(PRODUCTION_REF)) {
+  console.warn(`\n!!  Seeding PRODUCTION with demo data.`);
+  console.warn(`!!  These listings will be publicly visible on the live site.`);
+  console.warn(`!!  Remove them with: node scripts/unseed.mjs --production\n`);
 }
 
 const H = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
