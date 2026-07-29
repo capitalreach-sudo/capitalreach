@@ -22,15 +22,44 @@ export async function GET() {
         .from("profiles")
         .select("id", { count: "exact", head: true })
         .eq("role", "investor"),
+      // Every deal, not just closed ones -- the pipeline breakdown below needs
+      // the open stages too. Deliberately selects nothing that identifies a
+      // party: no startup_id, no investor_id, no names. Deals are private
+      // between their two participants and this is a public endpoint; only
+      // aggregate counts leave here.
       supabase
         .from("deals")
-        .select("amount")
-        .eq("status", "closed"),
+        .select("status, amount, currency"),
     ]);
 
     const startupData = startups.data ?? [];
-    const totalRaised = (deals.data ?? [])
-      .reduce((sum, d) => sum + (d.amount ?? 0), 0);
+    const allDeals = deals.data ?? [];
+    const closedDeals = allDeals.filter((d) => d.status === "closed");
+    const totalRaised = closedDeals.reduce((sum, d) => sum + (d.amount ?? 0), 0);
+
+    // Pipeline funnel: how many deals sit at each stage right now.
+    const PIPELINE_STAGES = ["intro", "due_diligence", "term_sheet", "closed", "passed"] as const;
+    const byDealStage: Record<string, number> = {};
+    for (const s of PIPELINE_STAGES) {
+      byDealStage[s] = allDeals.filter((d) => d.status === s).length;
+    }
+
+    // Deals that are live rather than concluded -- the number that says whether
+    // anything is actually happening on the platform.
+    const activeDeals = allDeals.filter(
+      (d) => d.status !== "closed" && d.status !== "passed"
+    ).length;
+
+    // Closed vs (closed + passed). Excludes open deals, which have no outcome
+    // yet and would otherwise drag the rate down for no reason.
+    const concluded = closedDeals.length + byDealStage.passed;
+    const closeRate = concluded > 0 ? Math.round((closedDeals.length / concluded) * 100) : null;
+
+    // Amounts span EUR/USD/GBP and summing them would be arithmetically wrong,
+    // so report the mix rather than a single misleading total.
+    const currencies = Array.from(
+      new Set(closedDeals.map((d) => d.currency).filter(Boolean))
+    );
 
     // Industry breakdown
     const byIndustry: Record<string, number> = {};
@@ -80,7 +109,13 @@ export async function GET() {
         startupCount: startupData.length,
         investorCount: investors.count ?? 0,
         totalRaised,
-        dealsCount: deals.data?.length ?? 0,
+        // Unchanged meaning: closed deals only. The Data Centre's existing stat
+        // card reads this, so it keeps counting what it always counted.
+        dealsCount: closedDeals.length,
+        byDealStage,
+        activeDeals,
+        closeRate,
+        closedCurrencies: currencies,
         byIndustry,
         byStage,
         topStartups,

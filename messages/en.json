@@ -1053,7 +1053,16 @@
     "featuredHere": "Want your startup featured here?",
     "featuredHereSub": "List on CapitalReach to appear in platform charts and get discovered by investors.",
     "listFree": "List your startup free",
-    "preRev": "Pre-rev"
+    "preRev": "Pre-rev",
+    "dealFlow": "Deal flow",
+    "liveDeals": "Live deals",
+    "closeRate": "Close rate",
+    "stage_intro": "Intro",
+    "stage_due_diligence": "Diligence",
+    "stage_term_sheet": "Term sheet",
+    "stage_closed": "Closed",
+    "stage_passed": "Passed",
+    "multiCurrencyNote": "Closed rounds span {list}; figures are not converted to a single currency."
   },
   "filters": {
     "industry": "Industry",

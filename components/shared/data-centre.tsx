@@ -28,6 +28,10 @@ interface PlatformData {
   investorCount: number;
   totalRaised: number;
   dealsCount: number;
+  byDealStage: Record<string, number>;
+  activeDeals: number;
+  closeRate: number | null;
+  closedCurrencies: string[];
   byIndustry: Record<string, number>;
   byStage: Record<string, number>;
   topStartups: TopStartup[];
@@ -36,6 +40,17 @@ interface PlatformData {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+
+// Order matters: this is the funnel, left to right, ending in the two terminal
+// outcomes. Colours match the Deal Portal's own columns so the public view and
+// the signed-in board read as the same object.
+const DEAL_STAGES = [
+  { key: "intro",         color: "#8A8178" },
+  { key: "due_diligence", color: "#3B82F6" },
+  { key: "term_sheet",    color: "#B5651D" },
+  { key: "closed",        color: "#2D6A4F" },
+  { key: "passed",        color: "#B43232" },
+] as const;
 
 const STAGE_LABELS: Record<string, string> = {
   pre_seed: "Pre-Seed",
@@ -321,6 +336,61 @@ export function DataCentre() {
               <StatCard label={t("data.raised")}    value={data.totalRaised}   prefix="$" Icon={DollarSign} color="#2D6A4F" />
               <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="#B45309" />
             </div>
+
+            {/* ── Deal flow ────────────────────────────────────────────────
+                The pipeline is the part of this product that isn't a
+                directory, and until now it was invisible to anyone who hadn't
+                signed in. Aggregate counts only -- the API deliberately sends
+                no startup, investor or per-deal amount, because deals are
+                private between their two participants. */}
+            {data.byDealStage && (
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <TrendingUp style={{ width: 13, height: 13, color: "#B45309" }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+                      {t("data.dealFlow")}
+                    </h3>
+                  </div>
+                  <div style={{ display: "flex", gap: "20px" }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                      {t("data.liveDeals")}{" "}
+                      <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-ink)" }}>{data.activeDeals}</strong>
+                    </span>
+                    {data.closeRate != null && (
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                        {t("data.closeRate")}{" "}
+                        <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-up)" }}>{data.closeRate}%</strong>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "10px" }}>
+                  {DEAL_STAGES.map(({ key, color }) => {
+                    const n = data.byDealStage[key] ?? 0;
+                    const max = Math.max(...Object.values(data.byDealStage), 1);
+                    return (
+                      <div key={key} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 12px" }}>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
+                          {t(`data.stage_${key}`)}
+                        </p>
+                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink)", marginBottom: "10px" }}>{n}</p>
+                        <div style={{ height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
+                          <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {data.closedCurrencies?.length > 1 && (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "14px" }}>
+                    {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Charts */}
             <div ref={barsRef} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "28px" }}>
