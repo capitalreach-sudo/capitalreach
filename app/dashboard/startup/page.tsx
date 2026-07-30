@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { StartupDashboardClient } from "@/components/dashboard/startup-dashboard-client";
 import { Navbar } from "@/components/shared/navbar";
 import { getLaunchStatus } from "@/lib/launchMode";
@@ -33,14 +33,23 @@ export default async function StartupDashboardPage() {
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
 
   if (startup) {
-    const { count: views } = await supabase
+    // These three counts are about the founder's own listing, but two of them
+    // read tables whose RLS is scoped to the *other* party: watchlists is keyed
+    // on investor_id and pageviews on the viewer. Through the RLS client a
+    // founder therefore counted zero of their own saves and views no matter how
+    // many existed -- the metrics were permanently stuck at 0 rather than
+    // merely empty. Counting through the service role fixes that; only
+    // aggregates are read, never who saved or who viewed.
+    const metrics = createAdminClient();
+
+    const { count: views } = await metrics
       .from("pageviews")
       .select("*", { count: "exact", head: true })
       .eq("startup_id", startup.id)
       .gte("created_at", thirtyDaysAgo);
     viewsCount = views || 0;
 
-    const { count: saves } = await supabase
+    const { count: saves } = await metrics
       .from("watchlists")
       .select("*", { count: "exact", head: true })
       .eq("startup_id", startup.id);

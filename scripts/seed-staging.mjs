@@ -69,6 +69,17 @@ const H = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "applic
 const rest = (path, opts = {}) =>
   fetch(`${URL_}/rest/v1/${path}`, { ...opts, headers: { ...H, ...(opts.headers || {}) } });
 
+// Writes used to be fire-and-forget, which hid a real bug for several runs: the
+// upserts below were 409-ing on the unique slug every time and nobody noticed,
+// so re-running the seed silently refused to update any row that already
+// existed. Surface failures instead of assuming success.
+const failures = [];
+async function write(path, opts, label) {
+  const res = await rest(path, opts);
+  if (!res.ok) failures.push(`${label}: ${res.status} ${(await res.text()).slice(0, 120)}`);
+  return res;
+}
+
 // ── People ──────────────────────────────────────────────────────────────────
 // Founder tiers: free | starter | growth.  Investor tiers: free | angel | pro_investor | institutional.
 
@@ -249,7 +260,11 @@ for (let i = 0; i < FOUNDERS.length; i++) {
   const [name, tier] = FOUNDERS[i];
   const email = emailFor(name, "founder");
   const company = COMPANIES[i];
-  await rest("startups", { method: "POST",
+  // on_conflict=slug is load-bearing. Without naming the conflict target
+  // PostgREST upserts against the primary key, and since no id is supplied
+  // that degrades to a plain insert which 409s on the unique slug -- meaning
+  // re-running the seed never refreshed an existing listing.
+  await write(`startups?on_conflict=slug`, { method: "POST",
     headers: { Prefer: "return=representation,resolution=merge-duplicates" },
     body: JSON.stringify({
       owner_id: ids[email], name: company, slug: slugify(company),
@@ -269,7 +284,13 @@ for (let i = 0; i < FOUNDERS.length; i++) {
       problem: "Incumbent workflows depend on manual steps that do not scale past a certain volume.",
       solution: "We automate the highest-friction step and settle the rest inside the platform.",
       market: "Mid-market European operators; a fragmented segment with no dominant vendor.",
-    }) });
+      // Without these two the profile-completion meter sits at 45% and the
+      // dashboard nags about them, which reads as a half-finished listing.
+      competitive_advantage:
+        "Deploys against existing systems rather than replacing them, so time-to-value is weeks rather than quarters.",
+      use_of_funds:
+        "60% engineering, 25% go-to-market in DACH and Benelux, 15% working capital.",
+    }) }, `startup ${company}`);
 }
 console.log(`  ${FOUNDERS.length} startups (${STATUSES.slice(0, FOUNDERS.length).filter(s => s === "active").length} active, 1 pending_review, 1 draft, 1 suspended)`);
 
@@ -278,7 +299,7 @@ const INV_TYPES = ["angel", "vc", "family_office", "corporate"];
 for (let i = 0; i < INVESTORS.length; i++) {
   const [name, tier] = INVESTORS[i];
   const email = emailFor(name, "investor");
-  await rest("investors", { method: "POST",
+  await write(`investors?on_conflict=slug`, { method: "POST",
     headers: { Prefer: "return=representation,resolution=merge-duplicates" },
     body: JSON.stringify({
       owner_id: ids[email], slug: slugify(name), type: INV_TYPES[i % 4],
@@ -297,7 +318,7 @@ for (let i = 0; i < INVESTORS.length; i++) {
       avg_hold_period: ["3-5 years", "5-7 years", "7+ years"][i % 3],
       follow_on_policy: i % 2 === 0 ? "Reserves for follow-on" : "Single cheque",
       board_seat_pref: i % 3 === 0 ? "Observer" : "No seat",
-    }) });
+    }) }, `investor ${name}`);
 }
 console.log(`  ${INVESTORS.length} investor profiles`);
 
@@ -341,6 +362,100 @@ for (let inv = 0; inv < Math.min(3, iList.length); inv++) {
   }
 }
 console.log(`  ${dealCount} deals across all 5 stages\n`);
+
+// ── Founders, saves and conversations ───────────────────────────────────────
+// Without these, a startup page shows "Team information not provided" and
+// "No documents uploaded yet" on two of its five tabs, the founder dashboard
+// reads 0 views and 0 saves, and the inbox is empty -- so three of the
+// product's features look broken rather than unused.
+
+const FOUNDER_ROLES = ["Co-founder & CEO", "Co-founder & CTO", "Co-founder & COO"];
+const FIRST = ["Elin", "Marcus", "Yara", "Tomas", "Ada", "Nils", "Rosa", "Hugo", "Iris", "Petr"];
+const LAST  = ["Sandberg", "Okonkwo", "Ferreira", "Novak", "Lindgren", "Bauer", "Costa", "Meier"];
+
+let founderRows = 0;
+for (let i = 0; i < sList.length; i++) {
+  const s = sList[i];
+  const existing = await (await rest(`startup_founders?select=id&startup_id=eq.${s.id}`)).json();
+  if (Array.isArray(existing) && existing.length > 0) continue;   // idempotent
+  const n = 2 + (i % 2);                                          // two or three founders
+  for (let k = 0; k < n; k++) {
+    const name = `${FIRST[(i + k * 3) % FIRST.length]} ${LAST[(i + k * 5) % LAST.length]}`;
+    const r = await write("startup_founders", { method: "POST", headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        startup_id: s.id, name, role: FOUNDER_ROLES[k],
+        linkedin_url: `https://linkedin.com/in/${slugify(name)}`,
+      }) }, `founder ${name}`);
+    if (r.ok) founderRows++;
+  }
+}
+console.log(`  ${founderRows} founders across ${sList.length} startups`);
+
+// Watchlist saves — makes the investor's watchlist and the founder's "investor
+// saves" counter non-zero. Unique(investor_id, startup_id) makes this safe to
+// re-run.
+let saves = 0;
+for (let i = 0; i < iList.length; i++) {
+  for (let k = 0; k < 4; k++) {
+    const s = sList[(i * 3 + k * 5) % sList.length];
+    const r = await rest("watchlists?on_conflict=investor_id,startup_id", { method: "POST",
+      headers: { Prefer: "return=minimal,resolution=merge-duplicates" },
+      body: JSON.stringify({ investor_id: iList[i].id, startup_id: s.id }) });
+    if (r.ok) saves++;
+  }
+}
+console.log(`  ${saves} watchlist saves`);
+
+// Conversations. One per deal for the first handful, with a short exchange so
+// the inbox has something to open rather than an empty state.
+const OPENERS = [
+  "Saw the listing — the retrofit angle is what caught my eye. Are you replacing or augmenting existing WMS?",
+  "Interesting traction for the stage. What does churn look like on the mid-market accounts?",
+  "We've looked at two companies in this space this quarter. What's your wedge against the incumbents?",
+  "Happy to take a closer look. Do you have a data room we can access under NDA?",
+];
+const REPLIES = [
+  "Augmenting — we sit on top of the existing WMS, which is why deployment is weeks not quarters. Happy to walk you through it.",
+  "Logo churn is under 3% annually; net revenue retention is 118% on the accounts past twelve months.",
+  "Deployment time, mostly. Incumbents need a rip-and-replace; we don't. That's the whole pitch.",
+  "Yes — I can share it once the NDA is signed. Want me to send it through the platform?",
+];
+
+let threads = 0, msgs = 0;
+for (let i = 0; i < Math.min(8, iList.length); i++) {
+  const s = sList[(i * 3) % sList.length];
+  const inv = iList[i];
+  const tRes = await rest("threads?on_conflict=startup_id,investor_id", { method: "POST",
+    headers: { Prefer: "return=representation,resolution=merge-duplicates" },
+    body: JSON.stringify({ startup_id: s.id, investor_id: inv.id, status: i % 3 === 0 ? "due_diligence" : "active" }) });
+  if (!tRes.ok) continue;
+  const [thread] = await tRes.json();
+  threads++;
+
+  const existingMsgs = await (await rest(`messages?select=id&thread_id=eq.${thread.id}`)).json();
+  if (Array.isArray(existingMsgs) && existingMsgs.length > 0) continue;
+
+  const startupOwner = await (await rest(`startups?select=owner_id&id=eq.${s.id}`)).json();
+  const invOwner = await (await rest(`investors?select=owner_id&id=eq.${inv.id}`)).json();
+  const pairs = [
+    { sender: invOwner[0]?.owner_id,     body: OPENERS[i % OPENERS.length] },
+    { sender: startupOwner[0]?.owner_id, body: REPLIES[i % REPLIES.length] },
+  ];
+  for (const m of pairs) {
+    if (!m.sender) continue;
+    const r = await write("messages", { method: "POST", headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ thread_id: thread.id, sender_id: m.sender, body: m.body }) }, "message");
+    if (r.ok) msgs++;
+  }
+}
+console.log(`  ${threads} conversations, ${msgs} messages\n`);
+
+if (failures.length) {
+  console.error(`\n!!  ${failures.length} write(s) failed — the data is incomplete:`);
+  for (const f of failures.slice(0, 10)) console.error(`      ${f}`);
+  if (failures.length > 10) console.error(`      ...and ${failures.length - 10} more`);
+  console.error("");
+}
 
 console.log(`Password for every seeded account: ${SEED_PASSWORD}`);
 console.log(`  founder.aria@staging.test      free tier`);

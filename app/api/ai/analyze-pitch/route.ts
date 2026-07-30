@@ -9,7 +9,11 @@ export async function POST(req: NextRequest) {
   try {
     if (!isOpenAIConfigured) {
       return NextResponse.json(
-        { error: "AI features are not yet configured. Add your OPENAI_API_KEY to the environment variables." },
+        // Was "Add your OPENAI_API_KEY to the environment variables" -- a
+        // message for whoever deployed the app, rendered to whoever is using
+        // it. The page above sells this as "real GPT-4o, no templates", so the
+        // failure needs to read as a service problem, not a config note.
+        { error: "AI analysis is temporarily unavailable. Please try again later." },
         { status: 503 }
       );
     }
