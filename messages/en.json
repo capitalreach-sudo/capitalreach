@@ -817,7 +817,8 @@
     "startupLabel": "Startup",
     "tabsLabel": "Dashboard tabs",
     "errSendMessageFailed": "Failed to send message. Please try again.",
-    "errLoadMessagesFailed": "Failed to load messages. Please refresh."
+    "errLoadMessagesFailed": "Failed to load messages. Please refresh.",
+    "viewPublicProfile": "View public profile"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1590,7 +1591,11 @@
     "followUpSaveFailed": "Failed to save follow-up date",
     "sortFollowUp": "Follow-up due",
     "circumventionNotice": "This introduction is made through CapitalReach. Per our Terms of Service, the 2% success fee applies to deals with parties you meet here, even if finalized elsewhere.",
-    "listStageOrType": "Stage / Type"
+    "listStageOrType": "Stage / Type",
+    "reopen": "Reopen",
+    "closedOn": "Closed {date}",
+    "passedOn": "Passed {date}",
+    "feeBilled": "{amount} fee"
   },
   "investorProfile": {
     "back": "Back to investors",

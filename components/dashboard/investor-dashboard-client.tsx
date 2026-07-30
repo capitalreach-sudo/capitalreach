@@ -154,20 +154,30 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {/* Stats strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
+          {/* The deal counts were plain divs, so the two most important numbers
+              on an investor's home screen -- how many deals are live, how many
+              closed -- led nowhere, and the Deal Portal was reachable only
+              through the top nav. They link now; the other two stay inert
+              because their content is on this page already. */}
           {[
-            { label: t("dashboard.watchlist"),   val: watchlist.length,  Icon: Bookmark    },
-            { label: t("dashboard.activeDeals"), val: activeDeals,       Icon: TrendingUp  },
-            { label: t("dashboard.closedDeals"), val: closedDeals,       Icon: CheckCircle2 },
-            { label: t("dashboard.aiReports"),   val: aiReports.length,  Icon: Brain       },
-          ].map(({ label, val, Icon }) => (
-            <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
-                <Icon style={{ width: 14, height: 14, color: "var(--cr-paper-4)" }} />
+            { label: t("dashboard.watchlist"),   val: watchlist.length,  Icon: Bookmark,    href: null },
+            { label: t("dashboard.activeDeals"), val: activeDeals,       Icon: TrendingUp,  href: "/deals" },
+            { label: t("dashboard.closedDeals"), val: closedDeals,       Icon: CheckCircle2, href: "/deals" },
+            { label: t("dashboard.aiReports"),   val: aiReports.length,  Icon: Brain,       href: null },
+          ].map(({ label, val, Icon, href }) => {
+            const card = (
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px", height: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
+                  <Icon style={{ width: 14, height: 14, color: "var(--cr-paper-4)" }} />
+                </div>
+                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{val}</p>
               </div>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{val}</p>
-            </div>
-          ))}
+            );
+            return href
+              ? <Link key={label} href={href} style={{ textDecoration: "none", display: "block" }}>{card}</Link>
+              : <div key={label}>{card}</div>;
+          })}
         </div>
 
         {/* Tab bar */}

@@ -1024,6 +1024,33 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </div>
       )}
 
+      {/* Reopen. A passed deal was previously terminal, but counterparties
+          re-engage all the time and the only way back was to create a second
+          deal against the same pair -- which the one-open-deal rule then had to
+          allow, muddying the history. Closed stays terminal on purpose: it has
+          raised an invoice. */}
+      {onStatusChange && deal.status === "passed" && (
+        <div style={{ marginTop: "10px" }}>
+          <button onClick={() => onStatusChange(deal.id, "intro")}
+            style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
+            ↺ {t("deals.reopen")}
+          </button>
+        </div>
+      )}
+
+      {/* Outcome dates. closed_at / passed_at are written now, so a concluded
+          deal can say when rather than just that. */}
+      {(deal.closed_at || deal.passed_at) && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
+          {deal.closed_at
+            ? t("deals.closedOn", { date: formatDate(deal.closed_at) })
+            : t("deals.passedOn", { date: formatDate(deal.passed_at as string) })}
+          {deal.success_fee_amount
+            ? ` · ${t("deals.feeBilled", { amount: formatMoney(deal.success_fee_amount / 100, deal.currency || DEFAULT_CURRENCY) })}`
+            : ""}
+        </p>
+      )}
+
       {showPassedPicker && onStatusChange && (
         <PassedReasonPicker
           onConfirm={reason => { onStatusChange(deal.id, "passed", reason); setShowPassedPicker(false); }}

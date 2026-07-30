@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { isCurrencyCode } from "@/lib/currency";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { dealId, status, reason, nextFollowUp } = await req.json();
+  const { dealId, status, reason, nextFollowUp, amount, currency } = await req.json();
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
 
@@ -41,6 +42,23 @@ export async function POST(req: NextRequest) {
   const updates: Record<string, unknown> = {};
   if (status) updates.status = status;
   if (nextFollowUp !== undefined) updates.next_follow_up = nextFollowUp;
+
+  // passed_at, like closed_at, existed since 017 and was never written. Without
+  // it there is no way to tell a deal that died last week from one that died
+  // last year -- both just read "passed".
+  if (status === "passed") updates.passed_at = new Date().toISOString();
+
+  // Reopening. A passed deal could previously never come back, but "they
+  // re-engaged in Q3" is an ordinary thing to happen. Clearing passed_at keeps
+  // the column meaning "when this deal died", not "when it last died".
+  if (status && status !== "passed") updates.passed_at = null;
+
+  // Rounds resize mid-negotiation. The amount was previously fixed at creation
+  // and only changeable by closing, which forced people to close at a number
+  // they knew was wrong.
+  if (typeof amount === "number" && amount > 0) updates.amount = Math.round(amount);
+  if (amount === null) updates.amount = null;
+  if (typeof currency === "string" && isCurrencyCode(currency)) updates.currency = currency;
 
   if (Object.keys(updates).length > 0) {
     await supabase.from("deals").update(updates).eq("id", dealId);

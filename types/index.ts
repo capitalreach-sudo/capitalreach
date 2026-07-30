@@ -215,6 +215,9 @@ export interface Deal {
   success_fee_paid_at: string | null;
   stripe_invoice_id: string | null;
   next_follow_up: string | null;
+  closed_at: string | null;
+  passed_at: string | null;
+  success_fee_amount: number | null;
   created_at: string;
   updated_at: string;
   startup?: Startup;

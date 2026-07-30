@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Save, X, Plus, Globe } from "lucide-react";
+import { ArrowLeft, Save, X, Plus, Globe, Eye } from "lucide-react";
 import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelector";
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
@@ -263,6 +263,18 @@ export default function InvestorSettingsPage() {
             <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
           </Link>
           <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.investorSettings")}</h1>
+
+          {/* The profile page can preview itself, but nothing led there from
+              the editor -- so the only view of these fields was the form, which
+              shows inputs rather than the result founders actually judge. */}
+          {investor.slug && (
+            <Link
+              href={`/investors/${investor.slug}`}
+              className="ml-auto inline-flex items-center gap-1.5 text-sm text-cr-copper hover:underline"
+            >
+              <Eye className="h-3.5 w-3.5" /> {t("dashboard.viewPublicProfile")}
+            </Link>
+          )}
         </div>
 
         <form onSubmit={handleSave} className="space-y-6">

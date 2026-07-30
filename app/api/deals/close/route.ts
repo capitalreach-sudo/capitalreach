@@ -60,9 +60,24 @@ export async function POST(req: NextRequest) {
   // requests both read the deal as open; only one can win this statement,
   // because the loser re-evaluates the qualifier after the row lock clears and
   // matches nothing. The invoice below only runs for the winner.
+  const finalAmount = amount || deal.amount;
+
   const { data: closedRows } = await adminClient
     .from("deals")
-    .update({ status: "closed", amount: amount || deal.amount, currency: dealCurrency })
+    .update({
+      status: "closed",
+      amount: finalAmount,
+      currency: dealCurrency,
+      // closed_at has existed since 017 and nothing ever wrote it, so no deal
+      // in production carried a close date. That is not a gap you can backfill
+      // later -- the moment passes and the timestamp is gone -- and without it
+      // there is no time-to-close, no "closed this quarter", no cohort view.
+      closed_at: new Date().toISOString(),
+      // Likewise the fee: it was computed inside Stripe and never stored, so
+      // answering "how much have we billed?" meant querying Stripe rather than
+      // our own database. Recorded in minor units to match Stripe.
+      success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
+    })
     .eq("id", dealId)
     .neq("status", "closed")
     .select("id");
