@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { startupId } = await req.json() as { startupId: string };
+  const { startupId, note } = await req.json() as { startupId: string; note?: string | null };
   if (!startupId) return NextResponse.json({ error: "startupId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);
@@ -36,9 +36,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // A saved startup with no reason attached stops being a shortlist and becomes
+  // a pile. `note` is optional, and only written when the caller sends the key
+  // -- so re-saving without a note doesn't wipe one already there.
+  const row: Record<string, unknown> = { investor_id: investorId, startup_id: startupId };
+  if (note !== undefined) {
+    row.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
+  }
+
   const { error } = await supabase
     .from("watchlists")
-    .upsert({ investor_id: investorId, startup_id: startupId }, { onConflict: "investor_id,startup_id" });
+    .upsert(row, { onConflict: "investor_id,startup_id" });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

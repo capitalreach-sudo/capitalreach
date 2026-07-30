@@ -62,25 +62,41 @@ export async function POST(req: NextRequest) {
   // matches nothing. The invoice below only runs for the winner.
   const finalAmount = amount || deal.amount;
 
-  const { data: closedRows } = await adminClient
-    .from("deals")
-    .update({
-      status: "closed",
-      amount: finalAmount,
-      currency: dealCurrency,
-      // closed_at has existed since 017 and nothing ever wrote it, so no deal
-      // in production carried a close date. That is not a gap you can backfill
-      // later -- the moment passes and the timestamp is gone -- and without it
-      // there is no time-to-close, no "closed this quarter", no cohort view.
-      closed_at: new Date().toISOString(),
-      // Likewise the fee: it was computed inside Stripe and never stored, so
-      // answering "how much have we billed?" meant querying Stripe rather than
-      // our own database. Recorded in minor units to match Stripe.
-      success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
-    })
-    .eq("id", dealId)
-    .neq("status", "closed")
-    .select("id");
+  const closePayload: Record<string, unknown> = {
+    status: "closed",
+    amount: finalAmount,
+    currency: dealCurrency,
+    // closed_at has existed since 017 and nothing ever wrote it, so no deal
+    // in production carried a close date. That is not a gap you can backfill
+    // later -- the moment passes and the timestamp is gone -- and without it
+    // there is no time-to-close, no "closed this quarter", no cohort view.
+    closed_at: new Date().toISOString(),
+    stage_entered_at: new Date().toISOString(),
+    // Likewise the fee: it was computed inside Stripe and never stored, so
+    // answering "how much have we billed?" meant querying Stripe rather than
+    // our own database. Recorded in minor units to match Stripe.
+    success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
+  };
+
+  const runClose = (payload: Record<string, unknown>) =>
+    adminClient
+      .from("deals")
+      .update(payload)
+      .eq("id", dealId)
+      .neq("status", "closed")
+      .select("id");
+
+  let { data: closedRows, error: closeError } = await runClose(closePayload);
+
+  // Same deploy-order guard as deals/update, and it matters more here: a
+  // rejected statement would mean the deal never closes and no success-fee
+  // invoice is ever raised. Retry without the 020 column so the close still
+  // happens. Delete once 020 is applied everywhere.
+  if (closeError?.code === "PGRST204" || closeError?.code === "42703") {
+    const { stage_entered_at: _dropped, ...legacy } = closePayload;
+    console.warn("[deals/close] stage_entered_at missing — apply migration 020");
+    ({ data: closedRows } = await runClose(legacy));
+  }
 
   if (!closedRows || closedRows.length === 0) {
     return NextResponse.json({ success: true, alreadyClosed: true, invoiceUrl: "" });
@@ -111,6 +127,18 @@ export async function POST(req: NextRequest) {
         .update({ success_fee_invoiced: true, stripe_invoice_id: invoice.id })
         .eq("id", dealId);
       invoiceUrl = invoice.hosted_invoice_url || "";
+
+      // The invoice is the only event on this timeline where money moves, and
+      // it was the one event the timeline didn't record. Both participants can
+      // now see what was billed and when, without going to Stripe.
+      await adminClient.from("deal_activity").insert({
+        deal_id: dealId,
+        startup_id: deal.startup_id,
+        investor_id: deal.investor_id,
+        actor_id: user.id,
+        type: "success_fee",
+        body: `${dealCurrency} ${(finalAmount * 0.02).toLocaleString()}`,
+      }).then(undefined, () => {});
     } catch (err) {
       console.error("Failed to create success fee invoice:", err);
     }

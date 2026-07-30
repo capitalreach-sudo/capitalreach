@@ -40,7 +40,13 @@ export async function POST(req: NextRequest) {
   }
 
   const updates: Record<string, unknown> = {};
-  if (status) updates.status = status;
+  if (status) {
+    updates.status = status;
+    // Only a genuine stage move resets the clock. updated_at can't stand in for
+    // this -- notes and contracts bump that without the stage changing, so a
+    // deal stuck in Diligence for months looks freshly touched.
+    updates.stage_entered_at = new Date().toISOString();
+  }
   if (nextFollowUp !== undefined) updates.next_follow_up = nextFollowUp;
 
   // passed_at, like closed_at, existed since 017 and was never written. Without
@@ -61,7 +67,28 @@ export async function POST(req: NextRequest) {
   if (typeof currency === "string" && isCurrencyCode(currency)) updates.currency = currency;
 
   if (Object.keys(updates).length > 0) {
-    await supabase.from("deals").update(updates).eq("id", dealId);
+    const { error } = await supabase.from("deals").update(updates).eq("id", dealId);
+
+    // Deploy-order guard, and deliberately temporary. stage_entered_at arrives
+    // in migration 020; if this code reaches an environment where that has not
+    // been applied yet, the whole statement is rejected and moving a deal
+    // between stages -- the core interaction of this product -- would fail.
+    // Retry without the new column so the stage change still lands, and only
+    // the aging figure is missing until the migration runs.
+    //
+    // PGRST204 is the code that actually occurs: PostgREST validates the
+    // payload against its own schema cache and refuses before Postgres sees
+    // the statement, so 42703 never surfaces. Both are matched because a
+    // stale-but-present cache can produce the Postgres code instead.
+    //
+    // Delete this branch once 020 is applied everywhere.
+    if ((error?.code === "PGRST204" || error?.code === "42703") && "stage_entered_at" in updates) {
+      const { stage_entered_at: _dropped, ...withoutNewColumn } = updates;
+      console.warn("[deals/update] stage_entered_at missing — apply migration 020");
+      await supabase.from("deals").update(withoutNewColumn).eq("id", dealId);
+    } else if (error) {
+      return NextResponse.json({ error: "Failed to update deal" }, { status: 500 });
+    }
   }
 
   if (status) {

@@ -1003,8 +1003,19 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           <span style={{ fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
         </p>
       )}
-      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
+      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
         {formatDate(deal.updated_at)}
+
+        {/* Time in the current stage, which is the question a pipeline review
+            actually asks -- not "what stage" but "how long has it been there".
+            updated_at can't answer it: a note or a contract bumps that without
+            the stage moving, so a deal stuck for months looks freshly touched. */}
+        {isActive && deal.stage_entered_at && (
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-3)", background: "var(--cr-paper-3)", borderRadius: "3px", padding: "1px 6px" }}>
+            {t("deals.inStageFor", { n: daysSince(deal.stage_entered_at) })}
+          </span>
+        )}
+
         {isActive && daysSince(deal.updated_at) > 21 && (
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", borderRadius: "3px", padding: "1px 6px" }}>
             {t("deals.staleBadge", { n: daysSince(deal.updated_at) })}
@@ -1162,13 +1173,16 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-type SortKey = "updated_desc" | "amount_desc" | "amount_asc" | "created_desc" | "follow_up_due";
+type SortKey = "updated_desc" | "amount_desc" | "amount_asc" | "created_desc" | "follow_up_due" | "stage_age";
 const SORT_OPTIONS: { key: SortKey; labelKey: string }[] = [
   { key: "updated_desc", labelKey: "deals.sortRecent" },
   { key: "amount_desc",  labelKey: "deals.sortAmountDesc" },
   { key: "amount_asc",   labelKey: "deals.sortAmountAsc" },
   { key: "created_desc", labelKey: "deals.sortNewest" },
   { key: "follow_up_due", labelKey: "deals.sortFollowUp" },
+  // Surfaces whatever has been sitting untouched the longest, which is the
+  // thing a pipeline review is trying to find.
+  { key: "stage_age",    labelKey: "deals.sortStageAge" },
 ];
 
 function csvEscape(v: unknown): string {
@@ -1239,6 +1253,13 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
       if (!a.next_follow_up) return 1;
       if (!b.next_follow_up) return -1;
       return new Date(a.next_follow_up).getTime() - new Date(b.next_follow_up).getTime();
+    });
+    else if (sortKey === "stage_age") sorted.sort((a, b) => {
+      // Oldest stage entry first. Deals with no stamp (pre-020 rows the
+      // backfill somehow missed) sort last rather than pretending to be ancient.
+      const at = a.stage_entered_at ? new Date(a.stage_entered_at).getTime() : Infinity;
+      const bt = b.stage_entered_at ? new Date(b.stage_entered_at).getTime() : Infinity;
+      return at - bt;
     });
     else sorted.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     return sorted;

@@ -218,6 +218,7 @@ export interface Deal {
   closed_at: string | null;
   passed_at: string | null;
   success_fee_amount: number | null;
+  stage_entered_at: string | null;
   created_at: string;
   updated_at: string;
   startup?: Startup;

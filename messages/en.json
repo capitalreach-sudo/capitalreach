@@ -818,7 +818,10 @@
     "tabsLabel": "Dashboard tabs",
     "errSendMessageFailed": "Failed to send message. Please try again.",
     "errLoadMessagesFailed": "Failed to load messages. Please refresh.",
-    "viewPublicProfile": "View public profile"
+    "viewPublicProfile": "View public profile",
+    "whoSaved": "Investors who saved you",
+    "savedOn": "saved {date}",
+    "noSaversYet": "No investors have saved your listing yet."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1595,7 +1598,9 @@
     "reopen": "Reopen",
     "closedOn": "Closed {date}",
     "passedOn": "Passed {date}",
-    "feeBilled": "{amount} fee"
+    "feeBilled": "{amount} fee",
+    "inStageFor": "{n}d in stage",
+    "sortStageAge": "Longest in stage"
   },
   "investorProfile": {
     "back": "Back to investors",
