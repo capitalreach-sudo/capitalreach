@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import en from "../messages/en.json";
 import de from "../messages/de.json";
 import fr from "../messages/fr.json";
@@ -16,29 +16,21 @@ import ja from "../messages/ja.json";
 import ko from "../messages/ko.json";
 import ru from "../messages/ru.json";
 import hi from "../messages/hi.json";
-import { LOCALES } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
+import { useLocale } from "@/components/providers/locale-provider";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MESSAGES: Record<Locale, Record<string, any>> = {
   en, de, fr, es, it, nl, pt, pl, sv, zh, ar, ja, ko, ru, hi,
 };
 
-function readLocaleCookie(): Locale {
-  const m = document.cookie.match(/(?:^|;\s*)cr_locale=([^;]+)/);
-  const raw = m?.[1] as Locale | undefined;
-  return raw && (LOCALES as string[]).includes(raw) ? raw : "en";
-}
-
 export function useTranslation() {
-  const [locale, setLocale] = useState<Locale>("en");
-
-  useEffect(() => {
-    setLocale(readLocaleCookie());
-    const handler = () => setLocale(readLocaleCookie());
-    window.addEventListener("localechange", handler);
-    return () => window.removeEventListener("localechange", handler);
-  }, []);
+  // Comes from the server via LocaleProvider, so the first render -- including
+  // the SSR pass -- is already in the right language. This used to start at
+  // "en" and correct itself in an effect, which meant every client component
+  // shipped English HTML regardless of the cookie and only caught up once
+  // hydration ran.
+  const locale = useLocale();
 
   const messages = MESSAGES[locale];
 

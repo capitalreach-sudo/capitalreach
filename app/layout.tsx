@@ -6,6 +6,7 @@ import { LaunchBanner } from "@/components/ui/LaunchBanner";
 import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
 import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
+import { LocaleProvider } from "@/components/providers/locale-provider";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
 import { brand } from "@/lib/brand";
@@ -75,6 +76,9 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans">
+        {/* Seeds every client component with the server-resolved locale, so the
+            first paint is already correct rather than English-then-swap. */}
+        <LocaleProvider initialLocale={locale}>
         <RuleLabelAnimator />
         <LaunchBanner />
         <LocaleChangeToast />
@@ -82,6 +86,7 @@ export default function RootLayout({
         <Toaster />
         <ToastNotifyProvider />
         <ServiceWorkerRegistrar />
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -664,12 +664,20 @@ export function HomepageClient({ stats, listings }: Props) {
                           borderLeft: featured ? "1px solid rgba(181,101,29,0.2)" : "1px solid rgba(26,22,18,0.08)",
                           borderRight: featured ? "1px solid rgba(181,101,29,0.2)" : "none",
                         }}>
+                          {/* The "no" state was a 10x1px line in #D8D0C4 on
+                              #F5F0E8 paper -- about 4% contrast on a single
+                              pixel, which reads as an empty cell rather than as
+                              "not included". Both states are now legible marks:
+                              a real tick, and a dash with enough weight and
+                              contrast to be seen as deliberate. */}
                           {isCheck ? (
-                            <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "rgba(45,106,79,0.1)", border: "1px solid rgba(45,106,79,0.25)", alignItems: "center", justifyContent: "center" }}>
-                              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2D6A4F" }} />
+                            <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "rgba(45,106,79,0.1)", border: "1px solid rgba(45,106,79,0.3)", alignItems: "center", justifyContent: "center" }}>
+                              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+                                <path d="M1.5 5.2L3.8 7.5L8.5 2.5" stroke="#2D6A4F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
                             </span>
                           ) : isDash ? (
-                            <span style={{ display: "inline-block", width: 10, height: 1, background: "#D8D0C4" }} />
+                            <span aria-label="Not included" style={{ display: "inline-block", width: 12, height: 2, borderRadius: "1px", background: "#A79B8D" }} />
                           ) : v}
                         </td>
                       );
