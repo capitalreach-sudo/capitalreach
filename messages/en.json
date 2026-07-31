@@ -1956,5 +1956,10 @@
     "footerAck": "By using CapitalReach, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
     "s4h2p2": "For the purposes of this section, an investor is \"connected through the platform\" if they viewed your listing while signed in to CapitalReach, contacted you through the platform, or were introduced to you via a CapitalReach deal record, in each case within 24 months before the round closed. CapitalReach maintains records of these events and determines connection in good faith based on them.",
     "s4h2p3": "If you believe a success fee has been invoiced in error, you may dispute it in writing to {email} within 30 days of the invoice date. We will review the connection records and respond within 30 days. Fees under active dispute are not considered overdue."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "Nothing new."
   }
 }

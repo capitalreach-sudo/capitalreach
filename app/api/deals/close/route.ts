@@ -4,6 +4,7 @@ import { createSuccessFeeInvoice } from "@/lib/stripe";
 import { sendDealClosedEmail } from "@/lib/resend";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { notifyUsers } from "@/lib/notify-user";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -129,6 +130,15 @@ export async function POST(req: NextRequest) {
       console.error("Failed to create success fee invoice:", err);
     }
   }
+
+  // Both sides, including whoever pressed the button -- a closed round is worth
+  // seeing confirmed rather than assumed.
+  await notifyUsers([deal.startup?.owner_id, deal.investor?.owner_id], {
+    type:  "deal_closed",
+    title: `Deal closed — ${deal.startup?.name ?? "a startup"}`,
+    body:  finalAmount ? `${dealCurrency} ${finalAmount.toLocaleString()} · 2% success fee invoiced` : null,
+    href:  "/deals",
+  });
 
   // Send congratulations emails
   if (startupProfile && investorProfile) {

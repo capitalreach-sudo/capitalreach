@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { sendDealOpenedEmail } from "@/lib/resend";
+import { notifyUser } from "@/lib/notify-user";
 
 // Creates a deal. Startups/investors pick a single counterpart and their own
 // side is derived from their profile — never trusted from the request body.
@@ -166,6 +167,17 @@ async function notifyCounterpart(
   for (const p of profiles ?? []) {
     const isFounder = p.id === st.owner_id;
     const otherName = isFounder ? (inv.display_name || "An investor") : (st.name || "A startup");
+
+    // In-app first: it works today. The email below needs a verified sending
+    // domain the project does not have yet, so it currently no-ops -- without
+    // this the counterpart still learns nothing.
+    await notifyUser({
+      userId: p.id,
+      type:   "deal_opened",
+      title:  `${otherName} opened a deal with you`,
+      href:   "/deals",
+    });
+
     await sendDealOpenedEmail(p.email, p.full_name || "there", otherName).catch(() => {});
   }
 }

@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { isCurrencyCode } from "@/lib/currency";
+import { notifyUsers } from "@/lib/notify-user";
+
+// Human-readable stage names for notification copy. Kept here rather than
+// imported from the kanban because that is a client component and this is a
+// route handler.
+const STAGE_LABEL: Record<string, string> = {
+  intro:         "Intro",
+  due_diligence: "Due Diligence",
+  term_sheet:    "Term Sheet",
+  passed:        "Passed",
+};
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -85,6 +96,22 @@ export async function POST(req: NextRequest) {
       actor_id: user.id,
       type: "status_change",
       body: status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
+    });
+
+    // Tell the other side. A deal moving stage -- especially to passed -- is
+    // the thing a counterparty most wants to hear about and previously the
+    // thing they were least likely to notice.
+    const other = [
+      (deal.startup as any)?.owner_id,
+      (deal.investor as any)?.owner_id,
+    ].filter((id) => id && id !== user.id);
+
+    const label = STAGE_LABEL[status as string] ?? status;
+    await notifyUsers(other, {
+      type:  status === "passed" ? "deal_passed" : "deal_stage",
+      title: status === "passed" ? "A deal was marked passed" : `A deal moved to ${label}`,
+      body:  status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
+      href:  "/deals",
     });
   }
 

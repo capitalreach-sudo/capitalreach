@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendNewMessageEmail } from "@/lib/resend";
+import { notifyUser } from "@/lib/notify-user";
 import { messageRatelimit } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, canSendMessages, getMessageLimit } from "@/lib/access";
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
   // Notify startup owner by email
   const { data: startup } = await adminClient
     .from("startups")
-    .select("name, owner:profiles(email, full_name)")
+    .select("name, owner_id, owner:profiles(email, full_name)")
     .eq("id", startupId)
     .single();
 
@@ -119,6 +120,19 @@ export async function POST(req: NextRequest) {
     .select("full_name, email")
     .eq("id", user.id)
     .single();
+
+  // The recipient sees this on their next page load, which is the only way an
+  // unread message currently reaches anyone -- the email below no-ops until a
+  // sending domain exists.
+  if (startup?.owner_id && startup.owner_id !== user.id) {
+    await notifyUser({
+      userId: startup.owner_id,
+      type:   "message",
+      title:  `New message from ${senderProfile?.full_name || "an investor"}`,
+      body:   messageBody.slice(0, 140),
+      href:   "/dashboard/messages",
+    });
+  }
 
   const startupOwnerEmail = (startup?.owner as any)?.email;
   if (startupOwnerEmail) {

@@ -8,6 +8,7 @@ import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown 
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
+import { NotificationBell } from "@/components/shared/notification-bell";
 import type { Profile } from "@/types";
 
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
@@ -150,6 +151,7 @@ export function Navbar() {
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (
               <>
+                <NotificationBell />
                 <Link href="/dashboard/messages"
                   style={{ color: "#9C8E82", transition: "color 150ms ease", lineHeight: 1 }}
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
