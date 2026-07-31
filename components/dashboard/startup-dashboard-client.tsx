@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Eye, Bookmark, MessageSquare, TrendingUp, Brain,
@@ -97,6 +97,80 @@ const VIS_ROWS = [
 ] as const;
 
 // ── Main ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Which investors have saved this listing.
+ *
+ * The dashboard could already show *how many* saves a listing had, which tells a
+ * founder that interest exists but nothing they can act on. `seeInvestorIdentity`
+ * has been a plan capability from the start and "Upgrade to see who" has sat in
+ * all fifteen locale files -- with no feature behind either. This is it.
+ *
+ * Locked plans still see the count and the names blurred out: the point of the
+ * gate is to make the upgrade legible, not to pretend nobody is interested.
+ */
+function SaversPanel() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{
+    savers: Array<{ slug: string; name: string | null; firm: string | null; savedAt: string }>;
+    count: number;
+    locked: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/startups/savers")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  // Nothing to say until it loads, and nothing worth a panel if no one has saved.
+  if (!data || data.count === 0) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+        <Bookmark style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          {t("dashboard.whoSaved")}
+        </h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{data.count}</span>
+      </div>
+
+      {data.locked ? (
+        <>
+          {/* Real shape, unreadable content -- the count is honest, the names
+              are what the plan buys. */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
+            {Array.from({ length: Math.min(data.count, 3) }).map((_, i) => (
+              <div key={i} style={{ height: "14px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+            ))}
+          </div>
+          <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "14px", width: "100%", boxSizing: "border-box" }}>
+            {t("dashboard.upgradeSeeWho")}
+          </Link>
+        </>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {data.savers.map((s) => (
+            <Link key={s.slug} href={`/investors/${s.slug}`}
+              style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", textDecoration: "none" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
+                {s.name}
+                {s.firm && s.firm !== s.name && (
+                  <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {s.firm}</span>
+                )}
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                {t("dashboard.savedOn", { date: formatDate(s.savedAt) })}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode }: Props) {
   const { t }        = useTranslation();
@@ -319,6 +393,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 )}
               </div>
             </div>
+
+            <SaversPanel />
           </div>
         )}
 

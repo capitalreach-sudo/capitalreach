@@ -787,6 +787,10 @@ const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
   status_change:   "deals.activityStatusChange",
   contract_status: "deals.activityContractStatus",
   nda_signed:      "deals.activityNdaSigned",
+  // The success-fee invoice. Typed as a Record over the union deliberately --
+  // adding the variant to DealActivityType made the compiler point straight at
+  // this map, which is how it should work.
+  success_fee:     "deals.activitySuccessFee",
 };
 
 function ActivitySection({ dealId }: { dealId: string }) {

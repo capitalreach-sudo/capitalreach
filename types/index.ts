@@ -245,7 +245,7 @@ export interface Contract {
   updated_at: string;
 }
 
-export type DealActivityType = "note" | "status_change" | "contract_status" | "nda_signed";
+export type DealActivityType = "note" | "status_change" | "contract_status" | "nda_signed" | "success_fee";
 
 export interface DealActivity {
   id: string;
@@ -277,6 +277,8 @@ export interface Watchlist {
   id: string;
   investor_id: string;
   startup_id: string;
+  /** Why this was saved. Added in migration 020. */
+  note: string | null;
   created_at: string;
   startup?: Startup;
 }

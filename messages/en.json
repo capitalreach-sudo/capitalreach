@@ -821,7 +821,12 @@
     "viewPublicProfile": "View public profile",
     "whoSaved": "Investors who saved you",
     "savedOn": "saved {date}",
-    "noSaversYet": "No investors have saved your listing yet."
+    "noSaversYet": "No investors have saved your listing yet.",
+    "addNote": "Add a note",
+    "editNote": "Click to edit",
+    "notePlaceholder": "Why you saved this — thesis fit, who to intro, when to revisit",
+    "noteSaveFailed": "Could not save that note.",
+    "upgradeSeeWho": "Upgrade to see who"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1600,7 +1605,8 @@
     "passedOn": "Passed {date}",
     "feeBilled": "{amount} fee",
     "inStageFor": "{n}d in stage",
-    "sortStageAge": "Longest in stage"
+    "sortStageAge": "Longest in stage",
+    "activitySuccessFee": "Success fee invoiced"
   },
   "investorProfile": {
     "back": "Back to investors",

@@ -59,6 +59,85 @@ const FEATURE_ROWS = [
   { labelKey: "dashboard.fr9", tier: "Pro",   key: "ai" },
 ] as const;
 
+// ── Watchlist note ────────────────────────────────────────────────────────────
+
+/**
+ * Why a startup was saved, attached to the save.
+ *
+ * A watchlist of twenty bookmarks with no reasons is a pile, not a shortlist --
+ * you end up re-reading profiles to remember what caught your eye. The note
+ * column landed in migration 020 and the API accepted it; this is the only way
+ * a human can actually write one.
+ *
+ * Saves on blur rather than behind a button: this is a scratchpad, and asking
+ * someone to press Save on a one-line thought is how the field goes unused.
+ */
+function WatchlistNote({ startupId, initial }: { startupId: string; initial: string | null }) {
+  const { t } = useTranslation();
+  const [value, setValue]     = useState(initial ?? "");
+  const [saved, setSaved]     = useState(initial ?? "");
+  const [busy, setBusy]       = useState(false);
+  const [editing, setEditing] = useState(false);
+
+  async function persist() {
+    const next = value.trim();
+    setEditing(false);
+    if (next === saved) return;          // nothing changed -- don't write
+    setBusy(true);
+    const res = await fetch("/api/watchlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId, note: next || null }),
+    });
+    setBusy(false);
+    if (!res.ok) { notify.error(t("dashboard.noteSaveFailed")); setValue(saved); return; }
+    setSaved(next);
+  }
+
+  if (!editing && !saved) {
+    return (
+      <button
+        onClick={() => setEditing(true)}
+        style={{ background: "none", border: "none", padding: "6px 2px 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}
+      >
+        + {t("dashboard.addNote")}
+      </button>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <p
+        onClick={() => setEditing(true)}
+        title={t("dashboard.editNote")}
+        style={{ margin: "6px 2px 0", cursor: "text", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", lineHeight: 1.5, color: "var(--cr-ink-3)", whiteSpace: "pre-wrap" }}
+      >
+        {saved}
+      </p>
+    );
+  }
+
+  return (
+    <textarea
+      autoFocus
+      value={value}
+      disabled={busy}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={persist}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") { setValue(saved); setEditing(false); }
+        // Enter commits; Shift+Enter keeps the newline, since these run to a
+        // couple of lines often enough to be worth allowing.
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); (e.target as HTMLTextAreaElement).blur(); }
+      }}
+      maxLength={1000}
+      rows={2}
+      placeholder={t("dashboard.notePlaceholder")}
+      style={{ width: "100%", marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "6px 8px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+    />
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports }: Props) {
@@ -222,7 +301,10 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
                 {watchlist.map((w) => w.startup && (
-                  <StartupCard key={w.id} startup={w.startup as any} investorTier={investor.subscription_tier} />
+                  <div key={w.id}>
+                    <StartupCard startup={w.startup as any} investorTier={investor.subscription_tier} />
+                    <WatchlistNote startupId={w.startup.id} initial={w.note ?? null} />
+                  </div>
                 ))}
               </div>
             )}
