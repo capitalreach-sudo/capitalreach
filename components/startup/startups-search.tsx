@@ -56,6 +56,124 @@ const DEFAULT_FILTERS: Filters = {
   mrrMin: 0, aiScoreMin: 0, sort: "score", country: "",
 };
 
+// ── Saved searches ────────────────────────────────────────────────────────────
+
+interface SavedSearch { id: string; name: string; filters: Partial<Filters>; }
+
+/**
+ * Save the current filter set and come back to it.
+ *
+ * canUseSavedSearches() has been a plan capability and a pricing-page bullet
+ * since the tier system existed, with no table behind it until migration 021.
+ *
+ * Renders nothing at all for signed-out visitors and for founders -- this is an
+ * investor tool, and an empty bar on a public page is just noise. The plan gate
+ * lives on the server; a 403 here surfaces as an upgrade prompt rather than a
+ * hidden button, because a feature you cannot see is a feature you will not buy.
+ */
+function SavedSearches({ filters, onApply, isDefault }: {
+  filters: Filters;
+  onApply: (f: Partial<Filters>) => void;
+  isDefault: boolean;
+}) {
+  const { t } = useTranslation();
+  const [searches, setSearches] = useState<SavedSearch[] | null>(null);
+  const [naming, setNaming]     = useState(false);
+  const [name, setName]         = useState("");
+  const [busy, setBusy]         = useState(false);
+
+  useEffect(() => {
+    fetch("/api/saved-searches")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setSearches(d?.searches ?? null))
+      .catch(() => setSearches(null));
+  }, []);
+
+  // null means "not an investor, or not signed in" -- render nothing.
+  if (searches === null) return null;
+
+  async function save() {
+    const trimmed = name.trim();
+    if (!trimmed) { setNaming(false); return; }
+    setBusy(true);
+    const res = await fetch("/api/saved-searches", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: trimmed, filters }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setBusy(false);
+    setNaming(false);
+    setName("");
+    if (!res.ok) {
+      notify.error(body.upgrade ? t("startups.savedSearchUpgrade") : (body.error || t("startups.savedSearchFailed")));
+      return;
+    }
+    // Replace an entry of the same name rather than appending a duplicate --
+    // the server upserts on (investor_id, name), so the list must too.
+    setSearches((prev) => [body.search, ...(prev ?? []).filter((s) => s.id !== body.search.id)]);
+    notify.success(t("startups.savedSearchSaved"));
+  }
+
+  async function remove(id: string) {
+    setSearches((prev) => (prev ?? []).filter((s) => s.id !== id));   // optimistic
+    const res = await fetch("/api/saved-searches", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (!res.ok) notify.error(t("startups.savedSearchDeleteFailed"));
+  }
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule)" }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "8px 80px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>
+          {t("startups.savedSearches")}
+        </span>
+
+        {searches.map((s) => (
+          <span key={s.id} style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "20px", padding: "3px 4px 3px 11px" }}>
+            <button onClick={() => onApply(s.filters)}
+              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: 0 }}>
+              {s.name}
+            </button>
+            <button onClick={() => remove(s.id)} aria-label={t("startups.savedSearchDelete", { name: s.name })}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: "2px" }}>
+              <X style={{ width: 11, height: 11 }} />
+            </button>
+          </span>
+        ))}
+
+        {naming ? (
+          <input
+            autoFocus value={name} disabled={busy}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={save}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+              if (e.key === "Escape") { setName(""); setNaming(false); }
+            }}
+            maxLength={80}
+            placeholder={t("startups.savedSearchNamePlaceholder")}
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-copper)", borderRadius: "20px", padding: "4px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none", width: "180px" }}
+          />
+        ) : (
+          // Saving the default, empty filter set would just create an entry
+          // that does nothing, so the affordance only appears once something
+          // is actually filtered.
+          !isDefault && (
+            <button onClick={() => setNaming(true)}
+              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", padding: 0 }}>
+              + {t("startups.saveThisSearch")}
+            </button>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Primitives ────────────────────────────────────────────────────────────────
 
 function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -376,6 +494,13 @@ export function StartupsSearch() {
           </div>
         </div>
       </div>
+
+      {/* ── Saved searches ── */}
+      <SavedSearches
+        filters={filters}
+        onApply={(f) => setFilters({ ...DEFAULT_FILTERS, ...f })}
+        isDefault={JSON.stringify(filters) === JSON.stringify({ ...DEFAULT_FILTERS, query: filters.query }) && !filters.query}
+      />
 
       {/* ── Sticky filter bar ── */}
       <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>

@@ -892,7 +892,15 @@
     "raising": "Raising",
     "aiScore": "AI Score",
     "runway": "{months}mo runway",
-    "noScore": "Pending"
+    "noScore": "Pending",
+    "savedSearches": "Saved searches",
+    "saveThisSearch": "Save this search",
+    "savedSearchNamePlaceholder": "Name it — e.g. Seed FinTech DE",
+    "savedSearchSaved": "Search saved.",
+    "savedSearchFailed": "Could not save that search.",
+    "savedSearchDeleteFailed": "Could not remove that search.",
+    "savedSearchDelete": "Remove {name}",
+    "savedSearchUpgrade": "Saved searches are available on paid investor plans."
   },
   "startup": {
     "back": "Back to directory",
