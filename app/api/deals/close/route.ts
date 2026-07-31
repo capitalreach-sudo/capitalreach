@@ -62,41 +62,27 @@ export async function POST(req: NextRequest) {
   // matches nothing. The invoice below only runs for the winner.
   const finalAmount = amount || deal.amount;
 
-  const closePayload: Record<string, unknown> = {
-    status: "closed",
-    amount: finalAmount,
-    currency: dealCurrency,
-    // closed_at has existed since 017 and nothing ever wrote it, so no deal
-    // in production carried a close date. That is not a gap you can backfill
-    // later -- the moment passes and the timestamp is gone -- and without it
-    // there is no time-to-close, no "closed this quarter", no cohort view.
-    closed_at: new Date().toISOString(),
-    stage_entered_at: new Date().toISOString(),
-    // Likewise the fee: it was computed inside Stripe and never stored, so
-    // answering "how much have we billed?" meant querying Stripe rather than
-    // our own database. Recorded in minor units to match Stripe.
-    success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
-  };
-
-  const runClose = (payload: Record<string, unknown>) =>
-    adminClient
-      .from("deals")
-      .update(payload)
-      .eq("id", dealId)
-      .neq("status", "closed")
-      .select("id");
-
-  let { data: closedRows, error: closeError } = await runClose(closePayload);
-
-  // Same deploy-order guard as deals/update, and it matters more here: a
-  // rejected statement would mean the deal never closes and no success-fee
-  // invoice is ever raised. Retry without the 020 column so the close still
-  // happens. Delete once 020 is applied everywhere.
-  if (closeError?.code === "PGRST204" || closeError?.code === "42703") {
-    const { stage_entered_at: _dropped, ...legacy } = closePayload;
-    console.warn("[deals/close] stage_entered_at missing — apply migration 020");
-    ({ data: closedRows } = await runClose(legacy));
-  }
+  const { data: closedRows } = await adminClient
+    .from("deals")
+    .update({
+      status: "closed",
+      amount: finalAmount,
+      currency: dealCurrency,
+      // closed_at has existed since 017 and nothing ever wrote it, so no deal
+      // in production carried a close date. That is not a gap you can backfill
+      // later -- the moment passes and the timestamp is gone -- and without it
+      // there is no time-to-close, no "closed this quarter", no cohort view.
+      closed_at: new Date().toISOString(),
+      // Closing is a stage move like any other, so the aging clock resets.
+      stage_entered_at: new Date().toISOString(),
+      // Likewise the fee: it was computed inside Stripe and never stored, so
+      // answering "how much have we billed?" meant querying Stripe rather than
+      // our own database. Recorded in minor units to match Stripe.
+      success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
+    })
+    .eq("id", dealId)
+    .neq("status", "closed")
+    .select("id");
 
   if (!closedRows || closedRows.length === 0) {
     return NextResponse.json({ success: true, alreadyClosed: true, invoiceUrl: "" });
