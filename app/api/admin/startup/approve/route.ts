@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendListingLiveEmail } from "@/lib/resend";
+import { notifyUser } from "@/lib/notify-user";
 import { scoreStartup, isOpenAIConfigured } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
@@ -63,6 +64,18 @@ export async function POST(req: NextRequest) {
     }).then(score =>
       adminClient.from("startups").update({ vaultrise_score: score }).eq("id", startupId)
     ).catch(() => {});
+  }
+
+  // Going live is the moment a founder has been waiting on since they
+  // submitted, and until now the only word of it was an email that never sent.
+  if (startup.owner_id) {
+    await notifyUser({
+      userId: startup.owner_id,
+      type:   "listing_approved",
+      title:  `${startup.name} is live`,
+      body:   "Your listing is now visible to investors.",
+      href:   `/startups/${startup.slug}`,
+    });
   }
 
   // Send approval email

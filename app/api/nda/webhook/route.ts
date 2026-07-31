@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
 import { sendNdaSignedEmail } from "@/lib/resend";
+import { notifyUsers } from "@/lib/notify-user";
 
 // DocuSign Connect webhook — fires when envelope status changes
 // Configure in DocuSign Admin > Connect > Add Configuration
@@ -71,18 +72,27 @@ export async function POST(req: NextRequest) {
   // Get email addresses for both parties
   const { data: startup } = await adminClient
     .from("startups")
-    .select("name, owner:profiles(email)")
+    .select("name, owner_id, owner:profiles(email)")
     .eq("id", nda.startup_id)
     .single();
 
   const { data: investor } = await adminClient
     .from("investors")
-    .select("owner:profiles(email)")
+    .select("owner_id, owner:profiles(email)")
     .eq("id", nda.investor_id)
     .single();
 
   const startupEmail = (startup?.owner as any)?.email;
   const investorEmail = (investor?.owner as any)?.email;
+
+  // An NDA coming back signed unlocks gated material on the listing, so both
+  // sides need to know it happened -- the investor to go read it, the founder
+  // to know it was read.
+  await notifyUsers([startup?.owner_id, investor?.owner_id], {
+    type:  "nda_signed",
+    title: `NDA signed — ${startup?.name ?? "a startup"}`,
+    href:  "/deals",
+  });
 
   if (startupEmail && investorEmail && startup?.name) {
     await sendNdaSignedEmail(startupEmail, investorEmail, startup.name).catch(() => {});

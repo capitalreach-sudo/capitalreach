@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendListingRejectedEmail } from "@/lib/resend";
+import { notifyUser } from "@/lib/notify-user";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   const { data: startup } = await adminClient
     .from("startups")
-    .select("name, slug, owner:profiles(email)")
+    .select("name, slug, owner_id, owner:profiles(email)")
     .eq("id", startupId)
     .single();
 
@@ -42,6 +43,19 @@ export async function POST(req: NextRequest) {
     action: "reject",
     note: reason,
   });
+
+  // A rejection with no reason reaching the founder is the worst version of
+  // this: they see the listing is not live and have nothing to act on. The
+  // reason travels with the notification.
+  if (startup.owner_id) {
+    await notifyUser({
+      userId: startup.owner_id,
+      type:   "listing_rejected",
+      title:  `${startup.name} needs changes before it can go live`,
+      body:   reason,
+      href:   "/dashboard/startup",
+    });
+  }
 
   const ownerEmail = (startup.owner as any)?.email;
   if (ownerEmail) {

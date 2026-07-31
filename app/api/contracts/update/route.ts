@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendContractStatusEmail } from "@/lib/resend";
+import { notifyUsers } from "@/lib/notify-user";
 import type { ContractStatus } from "@/types";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 
@@ -63,6 +64,18 @@ export async function POST(req: NextRequest) {
       admin.from("profiles").select("email, full_name").eq("id", investor?.owner_id).maybeSingle(),
     ]);
     const dealUrl = `${process.env.NEXT_PUBLIC_APP_URL}/deals`;
+
+    // A contract going out for signature, or coming back signed, is something
+    // both sides act on. Both owners get it -- including whoever triggered the
+    // change, since a signature confirmation is worth seeing.
+    await notifyUsers([startup?.owner_id, investor?.owner_id], {
+      type:  "contract_status",
+      title: status === "sent"
+        ? `Contract sent for signature — ${contract.title}`
+        : `Contract signed — ${contract.title}`,
+      href:  "/deals",
+    });
+
     const notifications: Promise<unknown>[] = [];
     if (startupOwner?.email) {
       notifications.push(sendContractStatusEmail(startupOwner.email, startupOwner.full_name || "there", contract.title, status, dealUrl));
