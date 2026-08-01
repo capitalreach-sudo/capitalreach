@@ -29,6 +29,23 @@ export function createAdminClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
+    {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: {
+        // Next patches global fetch and caches GET responses. supabase-js uses
+        // fetch underneath, so without this a query issued from a route handler
+        // can be answered from Next's cache rather than the database -- and
+        // stays answered that way for the life of the server process.
+        //
+        // Found via the follow-up cron: it returned an identical row count on
+        // every call regardless of the data, changing only when the server
+        // restarted. `export const dynamic = "force-dynamic"` does not cover
+        // this; it governs rendering, not the fetches underneath.
+        //
+        // This client is the service-role one used for reads and writes that
+        // must reflect current state, so caching is never what we want here.
+        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      },
+    }
   );
 }

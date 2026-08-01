@@ -4,9 +4,12 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "regions": ["iad1"],
-  "env": {
-    "NEXT_PUBLIC_APP_URL": "https://vaultrise.com"
-  },
+  "crons": [
+    {
+      "path": "/api/cron/follow-ups",
+      "schedule": "0 8 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
