@@ -9,6 +9,7 @@ import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
 import { NotificationBell } from "@/components/shared/notification-bell";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import type { Profile } from "@/types";
 
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
@@ -151,7 +152,7 @@ export function Navbar() {
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (
               <>
-                <NotificationBell />
+                <ErrorBoundary fallback={null}><NotificationBell /></ErrorBoundary>
                 <Link href="/dashboard/messages"
                   style={{ color: "#9C8E82", transition: "color 150ms ease", lineHeight: 1 }}
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}

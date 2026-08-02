@@ -10,6 +10,7 @@ import {
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -394,7 +395,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </div>
             </div>
 
-            <SaversPanel />
+            <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
           </div>
         )}
 
