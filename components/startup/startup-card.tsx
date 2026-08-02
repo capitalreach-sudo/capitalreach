@@ -88,7 +88,21 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
   }
 
   return (
-    <Link href={`/startups/${startup.slug}`} style={{ display: "block", textDecoration: "none" }}>
+    // The card used to BE the link, with the upgrade hint nested inside it --
+    // an <a> inside an <a>, which is invalid HTML. The browser parser closes
+    // the outer anchor early, so the DOM stops matching what the server sent
+    // and React fails to hydrate this subtree (three warnings per card).
+    //
+    // The link is now a stretched overlay covering the card instead of
+    // wrapping it. The whole surface is still clickable and still a real
+    // anchor -- middle-click and "open in new tab" keep working -- but it
+    // contains nothing, so nothing can nest inside it.
+    <div style={{ position: "relative" }}>
+      <Link
+        href={`/startups/${startup.slug}`}
+        aria-label={startup.name}
+        style={{ position: "absolute", inset: 0, zIndex: 1, textDecoration: "none" }}
+      />
       <div
         style={{
           position:     "relative",
@@ -119,6 +133,8 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               position:   "absolute",
               top:        "16px",
               right:      "16px",
+              // Above the stretched card link, or the overlay swallows the click.
+              zIndex:     2,
               background: "none",
               border:     "none",
               cursor:     "pointer",
@@ -289,6 +305,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
                 fontSize:       "11px",
                 color:          "var(--cr-copper)",
                 textDecoration: "none",
+                // Same reason as the bookmark: sit above the card-wide link.
+                position:       "relative",
+                zIndex:         2,
               }}
             >
               <Lock style={{ width: 10, height: 10 }} />
@@ -297,6 +316,6 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
