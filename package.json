@@ -11,7 +11,8 @@
     "email:dev": "email dev --dir emails --port 3001",
     "db:bootstrap": "node scripts/build-bootstrap.mjs",
     "db:verify": "node scripts/verify-schema.mjs",
-    "db:seed": "node scripts/seed-staging.mjs"
+    "db:seed": "node scripts/seed-staging.mjs",
+    "check:env": "node scripts/check-env.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
