@@ -87,6 +87,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
   // Load + subscribe to messages when thread changes
   useEffect(() => {
     if (!selectedThread) return;
+    // Opening a thread is reading it: clears these messages from the navbar
+    // badge. Fire-and-forget is fine client-side.
+    fetch("/api/messages/unread", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId: selectedThread.id }),
+    }).catch(() => {});
     supabase.from("messages").select("*").eq("thread_id", selectedThread.id)
       .order("created_at", { ascending: true })
       .then(({ data, error }) => {

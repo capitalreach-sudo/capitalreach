@@ -10,6 +10,7 @@ import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
 import { NotificationBell } from "@/components/shared/notification-bell";
 import { GlobalSearch } from "@/components/shared/global-search";
+import { MessagesIcon } from "@/components/shared/messages-icon";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import type { Profile } from "@/types";
 
@@ -155,13 +156,7 @@ export function Navbar() {
             {profile ? (
               <>
                 <ErrorBoundary fallback={null}><NotificationBell /></ErrorBoundary>
-                <Link href="/dashboard/messages"
-                  style={{ color: "#9C8E82", transition: "color 150ms ease", lineHeight: 1 }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
-                >
-                  <MessageSquare className="h-4 w-4" />
-                </Link>
+                <ErrorBoundary fallback={null}><MessagesIcon /></ErrorBoundary>
                 <div className="relative group">
                   <button
                     className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] transition-colors"
