@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { formatDate, daysSince } from "@/lib/utils";
@@ -988,7 +988,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   }
 
   return (
-    <div style={{
+    <div id={`deal-${deal.id}`} style={{
       background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
       borderRadius: "4px", padding: "14px 16px",
       transition: "border-color 120ms ease",
@@ -1229,6 +1229,35 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     if (w > 0 && w < 640) setViewMode("list");
   }, []);
 
+  // /deals?deal=<id> -- the address a notification carries. Every bell entry
+  // used to land on the bare board, leaving the reader to hunt through the
+  // columns for whichever deal the notification was about. Scroll it into
+  // view and pulse a copper ring; done through the DOM rather than prop
+  // threading because the same element id exists in both the kanban and the
+  // list rendering.
+  const focusDealId = useSearchParams().get("deal");
+  useEffect(() => {
+    if (!focusDealId) return;
+    // The deals arrive from an async fetch after mount, so a one-shot delay
+    // races the data. Poll briefly until the card exists; give up after ~6s,
+    // which also covers "filtered out" and "not this user's deal".
+    let tries = 0;
+    const iv = setInterval(() => {
+      const el = document.getElementById(`deal-${focusDealId}`);
+      if (!el) { if (++tries > 20) clearInterval(iv); return; }
+      clearInterval(iv);
+      // behavior "auto", not "smooth": with nested scrollable ancestors
+      // (the kanban column scrolls vertically inside the page) Chrome only
+      // animates the nearest one, so the column scrolled internally and the
+      // window never moved. Instant scroll walks every ancestor reliably.
+      el.scrollIntoView({ behavior: "auto", block: "center", inline: "center" });
+      el.style.transition = "box-shadow 300ms ease";
+      el.style.boxShadow = "0 0 0 2px var(--cr-copper)";
+      setTimeout(() => { el.style.boxShadow = ""; }, 2600);
+    }, 300);
+    return () => clearInterval(iv);
+  }, [focusDealId]);
+
   // Pipeline stats reflect the full, unfiltered deal list — a stable snapshot,
   // not scoped to whatever the filter bar currently shows.
   const stats = useMemo(() => {
@@ -1449,7 +1478,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                 const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} × ${investorName}`;
                 const stageOrType = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
                 return (
-                  <tr key={d.id} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
+                  <tr key={d.id} id={`deal-${d.id}`} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
                     <td style={{ padding: "8px 10px", color: "var(--cr-ink)" }}>{name}</td>
                     <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)", textTransform: "capitalize" }}>{stageOrType ? String(stageOrType).replace(/_/g, " ") : "—"}</td>
                     <td style={{ padding: "8px 10px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>

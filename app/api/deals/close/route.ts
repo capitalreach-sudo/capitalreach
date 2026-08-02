@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
     type:  "deal_closed",
     title: `Deal closed — ${deal.startup?.name ?? "a startup"}`,
     body:  finalAmount ? `${dealCurrency} ${finalAmount.toLocaleString()} · 2% success fee invoiced` : null,
-    href:  "/deals",
+    href:  `/deals?deal=${dealId}`,
   });
 
   // Send congratulations emails

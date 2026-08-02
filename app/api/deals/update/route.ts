@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       type:  status === "passed" ? "deal_passed" : "deal_stage",
       title: status === "passed" ? "A deal was marked passed" : `A deal moved to ${label}`,
       body:  status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
-      href:  "/deals",
+      href:  `/deals?deal=${dealId}`,
     });
   }
 

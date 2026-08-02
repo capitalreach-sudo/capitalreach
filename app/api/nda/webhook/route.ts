@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
   // Get email addresses for both parties
   const { data: startup } = await adminClient
     .from("startups")
-    .select("name, owner_id, owner:profiles(email)")
+    .select("name, slug, owner_id, owner:profiles(email)")
     .eq("id", nda.startup_id)
     .single();
 
@@ -91,7 +91,9 @@ export async function POST(req: NextRequest) {
   await notifyUsers([startup?.owner_id, investor?.owner_id], {
     type:  "nda_signed",
     title: `NDA signed — ${startup?.name ?? "a startup"}`,
-    href:  "/deals",
+    // The NDA is pair-level -- there may be no deal yet. What it unlocks is
+    // the gated documents on the listing, so that is where this points.
+    href:  startup?.slug ? `/startups/${startup.slug}` : "/deals",
   });
 
   if (startupEmail && investorEmail && startup?.name) {

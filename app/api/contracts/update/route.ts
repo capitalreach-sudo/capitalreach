@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       title: status === "sent"
         ? `Contract sent for signature — ${contract.title}`
         : `Contract signed — ${contract.title}`,
-      href:  "/deals",
+      href:  `/deals?deal=${contract.deal_id}`,
     });
 
     const notifications: Promise<unknown>[] = [];

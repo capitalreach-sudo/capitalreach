@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
   // production: deals were created and the counterpart's bell stayed silent
   // (observed live -- create returned 200, notifications table stayed empty).
   // Failures are still swallowed; a deal without its notification beats a 500.
-  await notifyCounterpart(admin, { startup_id, investor_id, actorId: user.id }).catch(() => {});
+  await notifyCounterpart(admin, { dealId: deal.id, startup_id, investor_id, actorId: user.id }).catch(() => {});
 
   return NextResponse.json({ success: true, deal });
 }
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
 async function notifyCounterpart(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   admin: any,
-  { startup_id, investor_id, actorId }: { startup_id: string; investor_id: string; actorId: string }
+  { dealId, startup_id, investor_id, actorId }: { dealId: string; startup_id: string; investor_id: string; actorId: string }
 ) {
   const [{ data: st }, { data: inv }] = await Promise.all([
     admin.from("startups").select("name, owner_id").eq("id", startup_id).maybeSingle(),
@@ -184,7 +184,7 @@ async function notifyCounterpart(
       userId: p.id,
       type:   "deal_opened",
       title:  `${otherName} opened a deal with you`,
-      href:   "/deals",
+      href:   `/deals?deal=${dealId}`,
     });
 
     await sendDealOpenedEmail(p.email, p.full_name || "there", otherName).catch(() => {});

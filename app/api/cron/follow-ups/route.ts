@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       type:  "follow_up_due",
       title: `Follow-up due — ${counterpart}`,
       body:  `You set a reminder for ${deal.next_follow_up}.`,
-      href:  "/deals",
+      href:  `/deals?deal=${deal.id}`,
     });
 
     // Permanent record, so clearing the date below loses nothing.
