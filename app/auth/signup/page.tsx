@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -59,6 +59,11 @@ export default function SignupPage() {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading]   = useState(false);
+  const [resending, setResending] = useState(false);
+  // Seconds until the resend link re-enables. Supabase rate limits resends
+  // server-side; the countdown makes that visible rather than letting someone
+  // click into an opaque error.
+  const [resendIn, setResendIn]   = useState(0);
   const [signupError, setSignupError] = useState("");
   // Terms §1 says use constitutes acceptance, which is weak. Require an
   // explicit act and record when it happened.
@@ -91,6 +96,26 @@ export default function SignupPage() {
       setSignupError(msg.includes("fetch") ? t("auth.serverUnreachable") : msg);
     }
     setLoading(false);
+  }
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = setTimeout(() => setResendIn((n) => n - 1), 1000);
+    return () => clearTimeout(id);
+  }, [resendIn]);
+
+  async function handleResend() {
+    if (resendIn > 0 || resending) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+    setResending(false);
+    if (error) { notify.error(error.message); return; }
+    notify.success(t("auth.resendSent"));
+    setResendIn(60);
   }
 
   async function handleGoogleSignup() {
@@ -183,8 +208,31 @@ export default function SignupPage() {
             ))}
           </div>
 
+          {/* Resend. Verification mail currently goes out through Supabase's
+              built-in sender, which is capped at a few per hour and lands in
+              spam often enough that "I never got the email" is the single most
+              likely reason someone stalls here. Without this the only way
+              forward was to start signup again. */}
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
             {t("auth.didntReceive")}{" "}
+            <button
+              onClick={handleResend}
+              disabled={resendIn > 0 || resending}
+              style={{
+                background: "none", border: "none",
+                cursor: resendIn > 0 || resending ? "default" : "pointer",
+                fontFamily: "'DM Sans', sans-serif", fontSize: "12px",
+                color: resendIn > 0 || resending ? "var(--cr-ink-4)" : "var(--cr-copper)",
+                textDecoration: resendIn > 0 || resending ? "none" : "underline",
+              }}
+            >
+              {resending
+                ? t("auth.resending")
+                : resendIn > 0
+                  ? t("auth.resendIn", { n: resendIn })
+                  : t("auth.resendEmail")}
+            </button>
+            {" · "}
             <button onClick={() => { setStep("details"); setSignupError(""); }}
               style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline" }}>
               {t("auth.tryDifferentEmail")}

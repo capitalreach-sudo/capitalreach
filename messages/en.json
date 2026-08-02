@@ -514,7 +514,11 @@
     "strength2": "Fair",
     "strength3": "Good",
     "strength4": "Strong",
-    "mustAcceptTerms": "You must accept the Terms of Service and Privacy Policy to continue."
+    "mustAcceptTerms": "You must accept the Terms of Service and Privacy Policy to continue.",
+    "resendEmail": "Resend it",
+    "resending": "Sending…",
+    "resendIn": "Resend in {n}s",
+    "resendSent": "Verification email sent again."
   },
   "dashboard": {
     "overview": "Overview",
