@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Building2, User, Mail, AlertTriangle, ExternalLink, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { authErrorMessage } from "@/lib/auth-errors";
 
 type Role = "startup" | "investor";
 
@@ -114,7 +115,7 @@ function SignupForm() {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
-      if (error) { setSignupError(error.message); setLoading(false); return; }
+      if (error) { setSignupError(authErrorMessage(error, t)); setLoading(false); return; }
       if (!data.user) { setSignupError(t("auth.signupFailed")); setLoading(false); return; }
       if (data.session) {
         fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
@@ -122,8 +123,9 @@ function SignupForm() {
         router.push(`/onboarding/${role}`);
       } else { setStep("confirm"); }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : t("auth.unexpectedError");
-      setSignupError(msg.includes("fetch") ? t("auth.serverUnreachable") : msg);
+      // The mapper covers the unreachable-host case that used to be sniffed
+      // for here by hand.
+      setSignupError(authErrorMessage(err, t));
     }
     setLoading(false);
   }
@@ -143,7 +145,7 @@ function SignupForm() {
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setResending(false);
-    if (error) { notify.error(error.message); return; }
+    if (error) { notify.error(authErrorMessage(error, t)); return; }
     notify.success(t("auth.resendSent"));
     setResendIn(60);
   }

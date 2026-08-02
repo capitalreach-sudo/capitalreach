@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Eye, EyeOff, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { authErrorMessage } from "@/lib/auth-errors";
 
 const iStyle: React.CSSProperties = {
   width: "100%", height: "44px", borderRadius: "3px",
@@ -52,7 +53,7 @@ function LoginForm() {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      notify.error(error.message);
+      notify.error(authErrorMessage(error, t));
     } else {
       notify.success(t("auth.welcomeRedirect"));
       if (redirect && redirect !== "/") {

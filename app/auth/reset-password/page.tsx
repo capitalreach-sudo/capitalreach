@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Mail, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { authErrorMessage } from "@/lib/auth-errors";
 
 const iStyle: React.CSSProperties = {
   width: "100%", height: "44px", borderRadius: "3px",
@@ -34,7 +35,7 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/update-password`,
     });
-    if (error) { notify.error(error.message); }
+    if (error) { notify.error(authErrorMessage(error, t)); }
     else { setSent(true); }
     setLoading(false);
   }

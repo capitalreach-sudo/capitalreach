@@ -1967,5 +1967,21 @@
     "title": "Notifications",
     "markAllRead": "Mark all read",
     "empty": "Nothing new."
+  },
+  "authErrors": {
+    "generic": "Something went wrong. Please try again.",
+    "rateLimitSeconds": "Please wait {n} seconds before trying again.",
+    "emailRateLimit": "We've sent too many emails in a short time. Wait a few minutes and try again.",
+    "tooManyRequests": "Too many attempts. Wait a moment and try again.",
+    "alreadyRegistered": "An account with this email already exists. Try signing in instead.",
+    "invalidCredentials": "That email and password don't match. Check both and try again.",
+    "emailNotConfirmed": "Confirm your email first — check your inbox for the link we sent.",
+    "passwordTooShort": "Your password needs at least {n} characters.",
+    "passwordWeak": "Choose a stronger password — this one is too easy to guess.",
+    "invalidEmail": "That email address doesn't look valid.",
+    "signupsDisabled": "New signups are paused right now. Please check back shortly.",
+    "linkExpired": "That link has expired. Request a new one.",
+    "samePassword": "Your new password must be different from the current one.",
+    "unreachable": "Can't reach the server. Check your connection and try again."
   }
 }

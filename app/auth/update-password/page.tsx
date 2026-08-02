@@ -7,6 +7,7 @@ import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
 import { Lock, Eye, EyeOff, TrendingUp, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { authErrorMessage } from "@/lib/auth-errors";
 
 const iStyle: React.CSSProperties = {
   width: "100%", height: "44px", borderRadius: "3px",
@@ -46,7 +47,7 @@ export default function UpdatePasswordPage() {
     if (password.length < 8) { notify.error(t("auth.passwordMin")); return; }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
-    if (error) { notify.error(error.message); }
+    if (error) { notify.error(authErrorMessage(error, t)); }
     else {
       setDone(true);
       notify.success(t("auth.passwordUpdated"));
