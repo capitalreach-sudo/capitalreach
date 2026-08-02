@@ -136,7 +136,13 @@ export async function POST(req: NextRequest) {
 
   // Tell the other side. A deal appearing silently in someone's pipeline is
   // the kind of thing that gets noticed a week late.
-  notifyCounterpart(admin, { startup_id, investor_id, actorId: user.id }).catch(() => {});
+  //
+  // Awaited, not fire-and-forget. On Vercel the lambda is frozen the moment
+  // the response is sent, so an un-awaited promise here simply never ran in
+  // production: deals were created and the counterpart's bell stayed silent
+  // (observed live -- create returned 200, notifications table stayed empty).
+  // Failures are still swallowed; a deal without its notification beats a 500.
+  await notifyCounterpart(admin, { startup_id, investor_id, actorId: user.id }).catch(() => {});
 
   return NextResponse.json({ success: true, deal });
 }

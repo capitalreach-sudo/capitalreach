@@ -45,9 +45,13 @@ export async function POST(req: NextRequest) {
     action: "approve",
   });
 
-  // Kick off AI scoring in background (best-effort — skipped if OpenAI not configured)
+  // Score on approval (best-effort — skipped if OpenAI not configured).
+  // Awaited: "kick off in background" does not exist on Vercel -- the lambda
+  // freezes when the response returns, so the un-awaited score write never
+  // landed. A few seconds of extra latency on an admin action is the honest
+  // price of the score actually being saved.
   if (isOpenAIConfigured) {
-    scoreStartup({
+    await scoreStartup({
       name: startup.name,
       problem: startup.problem,
       solution: startup.solution,
