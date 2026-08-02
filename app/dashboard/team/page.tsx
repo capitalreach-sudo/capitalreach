@@ -36,6 +36,10 @@ export default function TeamPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [myRole, setMyRole] = useState<string | null>(null);
   const [entityId, setEntityId] = useState<string | null>(null);
+  // True when the database has no team_members table yet (migration 023 not
+  // applied). The page ships ahead of the migration, so say so plainly rather
+  // than showing a broken roster.
+  const [unavailable, setUnavailable] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [email, setEmail] = useState("");
@@ -46,6 +50,7 @@ export default function TeamPage() {
     const res = await fetch(`/api/team?type=${entityType}`);
     const data = await res.json();
     if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
+    setUnavailable(Boolean(data.unavailable));
     setMembers(data.members ?? []);
     setMyRole(data.myRole);
     setEntityId(data.entityId);
@@ -127,6 +132,11 @@ export default function TeamPage() {
 
         {loading ? (
           <p className="text-sm text-cr-i4">{t("common.loading")}</p>
+        ) : unavailable ? (
+          <div className="bg-cr-paper border rounded-2xl p-8 text-center">
+            <Users className="h-8 w-8 text-cr-p4 mx-auto mb-3" />
+            <p className="text-sm text-cr-i3">{t("team.unavailable")}</p>
+          </div>
         ) : !entityId ? (
           <div className="bg-cr-paper border rounded-2xl p-8 text-center">
             <Users className="h-8 w-8 text-cr-p4 mx-auto mb-3" />

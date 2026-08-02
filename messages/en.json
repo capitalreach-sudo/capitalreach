@@ -2010,6 +2010,7 @@
     "role_member": "Member",
     "removeAria": "Remove {name} from the team",
     "readOnlyNote": "Only the owner and admins can change who is on this team.",
-    "noEntity": "Finish setting up your profile before inviting anyone."
+    "noEntity": "Finish setting up your profile before inviting anyone.",
+    "unavailable": "Team accounts aren't switched on yet. Check back shortly."
   }
 }

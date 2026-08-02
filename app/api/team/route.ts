@@ -50,8 +50,16 @@ export async function GET(req: NextRequest) {
       .order("created_at", { ascending: true }),
   ]);
 
-  // Fail loudly. Swallowing this is what let the broken embed above ship: a
-  // roster missing every member looks identical to a team of one.
+  // PGRST205 means migration 023 has not been applied to this database yet.
+  // That is a deployment state, not a fault: the code can ship ahead of the
+  // migration, and until it lands the honest answer is "teams aren't available
+  // here", not a 500.
+  if (rowsError?.code === "PGRST205") {
+    return NextResponse.json({ members: [], entityId: null, myRole: null, unavailable: true });
+  }
+
+  // Anything else fails loudly. Swallowing this is what let the broken embed
+  // above ship: a roster missing every member looks identical to a team of one.
   if (rowsError) {
     console.error("[team] roster query failed:", rowsError);
     return NextResponse.json({ error: "Could not load the team" }, { status: 500 });
