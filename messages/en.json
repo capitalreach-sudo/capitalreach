@@ -2022,6 +2022,7 @@
     "placeholder": "Search startups & investors…",
     "noResults": "Nothing matches that.",
     "startups": "Startups",
-    "investors": "Investors"
+    "investors": "Investors",
+    "seeAll": "See all results for \"{q}\""
   }
 }

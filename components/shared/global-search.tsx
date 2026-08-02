@@ -62,10 +62,17 @@ export function GlobalSearch() {
     router.push(href);
   }
 
-  const first =
-    results?.startups[0] ? `/startups/${results.startups[0].slug}`
-    : results?.investors[0] ? `/investors/${results.investors[0].slug}`
-    : null;
+  // Ordered hrefs for keyboard navigation: startups, then investors, then the
+  // see-all row. `active` indexes into this list; -1 means nothing chosen and
+  // Enter falls back to the first entry.
+  const hrefs: string[] = [
+    ...(results?.startups ?? []).map((s) => `/startups/${s.slug}`),
+    ...(results?.investors ?? []).map((i) => `/investors/${i.slug}`),
+    ...(q.trim().length >= 2 ? [`/startups?q=${encodeURIComponent(q.trim())}`] : []),
+  ];
+  const [active, setActive] = useState(-1);
+  useEffect(() => { setActive(-1); }, [results]);
+  const first = hrefs[0] ?? null;
 
   const hasHits = !!results && (results.startups.length > 0 || results.investors.length > 0);
 
@@ -95,7 +102,12 @@ export function GlobalSearch() {
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setOpen(false);
-              if (e.key === "Enter" && first) go(first);
+              if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, hrefs.length - 1)); }
+              if (e.key === "ArrowUp")   { e.preventDefault(); setActive((a) => Math.max(a - 1, -1)); }
+              if (e.key === "Enter") {
+                const target = active >= 0 ? hrefs[active] : first;
+                if (target) go(target);
+              }
             }}
             placeholder={t("search.placeholder")}
             style={{ width: "100%", height: "38px", padding: "0 12px", border: "none", borderBottom: hasHits || (q.trim().length >= 2 && results) ? "1px solid var(--cr-rule)" : "none", background: "transparent", outline: "none", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", boxSizing: "border-box" }}
@@ -114,8 +126,11 @@ export function GlobalSearch() {
                   <p style={{ padding: "8px 12px 3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {t("search.startups")}
                   </p>
-                  {results!.startups.map((s) => (
-                    <button key={s.slug} type="button" style={rowStyle} onClick={() => go(`/startups/${s.slug}`)}>
+                  {results!.startups.map((s, idx) => (
+                    <button key={s.slug} type="button"
+                      style={{ ...rowStyle, background: active === idx ? "var(--cr-copper-bg)" : "none" }}
+                      onMouseEnter={() => setActive(idx)}
+                      onClick={() => go(`/startups/${s.slug}`)}>
                       <Building2 style={{ width: 13, height: 13, color: "var(--cr-copper)", flexShrink: 0 }} />
                       <span style={{ minWidth: 0 }}>
                         <span style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
@@ -130,14 +145,28 @@ export function GlobalSearch() {
                   <p style={{ padding: "8px 12px 3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {t("search.investors")}
                   </p>
-                  {results!.investors.map((i) => (
-                    <button key={i.slug} type="button" style={rowStyle} onClick={() => go(`/investors/${i.slug}`)}>
+                  {results!.investors.map((i, idx) => {
+                    const gi = results!.startups.length + idx;
+                    return (
+                    <button key={i.slug} type="button"
+                      style={{ ...rowStyle, background: active === gi ? "var(--cr-copper-bg)" : "none" }}
+                      onMouseEnter={() => setActive(gi)}
+                      onClick={() => go(`/investors/${i.slug}`)}>
                       <Briefcase style={{ width: 13, height: 13, color: "var(--cr-ink-3)", flexShrink: 0 }} />
                       <span style={{ display: "block", minWidth: 0, fontSize: "13px", fontWeight: 500, color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.name}</span>
                     </button>
-                  ))}
+                  );})}
                 </>
               )}
+
+              {/* The dropdown caps at five per side; the full directory search
+                  is one keypress further. /startups already reads ?q=. */}
+              <button type="button"
+                style={{ ...rowStyle, borderTop: "1px solid var(--cr-rule)", background: active === hrefs.length - 1 ? "var(--cr-copper-bg)" : "none", justifyContent: "center" }}
+                onMouseEnter={() => setActive(hrefs.length - 1)}
+                onClick={() => go(`/startups?q=${encodeURIComponent(q.trim())}`)}>
+                <span style={{ fontSize: "12px", fontWeight: 500, color: "var(--cr-copper)" }}>{t("search.seeAll", { q: q.trim() })}</span>
+              </button>
             </div>
           )}
         </div>
