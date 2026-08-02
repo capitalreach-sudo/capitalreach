@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { INDUSTRIES, STAGES } from "@/types";
+import { FOUNDER_PLANS } from "@/lib/plans";
 import { slugify } from "@/lib/utils";
 import {
   TrendingUp, ChevronRight, ChevronLeft, Plus, Trash2, Upload,
@@ -786,19 +787,19 @@ export default function StartupOnboardingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                     {[
                       {
-                        tier: "free", name: "Free", price: t("common.free"), highlight: false,
+                        tier: "free", name: FOUNDER_PLANS.free.name, price: t("common.free"), highlight: false,
                         desc: t("onboarding.su.planFreeDesc"),
                         features: [t("onboarding.su.ff1"), t("onboarding.su.ff2"), t("onboarding.su.ff3"), t("onboarding.su.ff4")],
                         locked: [t("onboarding.su.fl1"), t("onboarding.su.fl2"), t("onboarding.su.fl3"), t("onboarding.su.fl4")],
                       },
                       {
-                        tier: "starter", name: "Starter", price: "$19/mo", highlight: false,
+                        tier: "starter", name: FOUNDER_PLANS.starter.name, price: `$${FOUNDER_PLANS.starter.price}/mo`, highlight: false,
                         desc: t("onboarding.su.planStarterDesc"),
                         features: [t("onboarding.su.sf1"), t("onboarding.su.sf2"), t("onboarding.su.sf3"), t("onboarding.su.sf4"), t("onboarding.su.sf5")],
                         locked: [t("onboarding.su.sl1"), t("onboarding.su.sl2"), t("onboarding.su.sl3"), t("onboarding.su.sl4")],
                       },
                       {
-                        tier: "growth", name: "Growth", price: "$49/mo", highlight: true,
+                        tier: "growth", name: FOUNDER_PLANS.growth.name, price: `$${FOUNDER_PLANS.growth.price}/mo`, highlight: true,
                         desc: t("onboarding.su.planGrowthDesc"),
                         features: [t("onboarding.su.gf1"), t("onboarding.su.gf2"), t("onboarding.su.gf3"), t("onboarding.su.gf4"), t("onboarding.su.gf5"), t("onboarding.su.gf6"), t("onboarding.su.gf7")],
                         locked: [],

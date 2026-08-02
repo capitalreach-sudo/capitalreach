@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { INDUSTRIES, STAGES } from "@/types";
+import { INVESTOR_PLANS } from "@/lib/plans";
 import { slugify } from "@/lib/utils";
 import {
   TrendingUp, ChevronRight, ChevronLeft, CheckCircle2,
@@ -689,25 +690,25 @@ export default function InvestorOnboardingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                     {[
                       {
-                        tier: "free", name: "Explorer", price: t("common.free"), highlight: false,
+                        tier: "free", name: INVESTOR_PLANS.free.name, price: t("common.free"), highlight: false,
                         desc: t("onboarding.inv.planExplorerDesc"),
                         features: [t("onboarding.inv.ef1"), t("onboarding.inv.ef2"), t("onboarding.inv.ef3")],
                         locked: [t("onboarding.inv.el1"), t("onboarding.inv.el2"), t("onboarding.inv.el3"), t("onboarding.inv.el4")],
                       },
                       {
-                        tier: "angel", name: "Angel", price: "$99/mo", highlight: false,
+                        tier: "angel", name: INVESTOR_PLANS.angel.name, price: `$${INVESTOR_PLANS.angel.price}/mo`, highlight: false,
                         desc: t("onboarding.inv.planAngelDesc"),
                         features: [t("onboarding.inv.af1"), t("onboarding.inv.af2"), t("onboarding.inv.af3"), t("onboarding.inv.af4"), t("onboarding.inv.af5")],
                         locked: [t("onboarding.inv.al1"), t("onboarding.inv.al2"), t("onboarding.inv.al3"), t("onboarding.inv.al4")],
                       },
                       {
-                        tier: "pro_investor", name: "Pro", price: "$299/mo", highlight: true,
+                        tier: "pro_investor", name: INVESTOR_PLANS.pro.name, price: `$${INVESTOR_PLANS.pro.price}/mo`, highlight: true,
                         desc: t("onboarding.inv.planProDesc"),
                         features: [t("onboarding.inv.pf1"), t("onboarding.inv.pf2"), t("onboarding.inv.pf3"), t("onboarding.inv.pf4"), t("onboarding.inv.pf5"), t("onboarding.inv.pf6")],
                         locked: [],
                       },
                       {
-                        tier: "institutional", name: "Institutional", price: t("onboarding.inv.custom"), highlight: false,
+                        tier: "institutional", name: INVESTOR_PLANS.institution.name, price: t("onboarding.inv.custom"), highlight: false,
                         desc: t("onboarding.inv.planInstDesc"),
                         features: [t("onboarding.inv.if1"), t("onboarding.inv.if2"), t("onboarding.inv.if3"), t("onboarding.inv.if4"), t("onboarding.inv.if5")],
                         locked: [],
