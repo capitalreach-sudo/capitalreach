@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { formatDate, daysSince } from "@/lib/utils";
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
@@ -968,6 +969,14 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const masked = viewAs === "startup" && !revealIdentity;
   const name   = masked ? t("deals.interestedInvestor") : realName;
 
+  // Pipeline -> profile, the return leg of the profile's "in your pipeline"
+  // pill. Both slugs are already in the query; the name was just dead text.
+  // No link while masked (the whole point is not knowing who), none for the
+  // admin composite name.
+  const counterpartHref = masked || viewAs === "admin" ? null
+    : viewAs === "startup" ? ((deal as any).investor?.slug ? `/investors/${(deal as any).investor.slug}` : null)
+    : ((deal as any).startup?.slug ? `/startups/${(deal as any).startup.slug}` : null);
+
   const isActive = deal.status !== "closed" && deal.status !== "passed";
 
   async function handleClose() {
@@ -994,7 +1003,11 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         display: "flex", alignItems: "center", gap: "5px",
       }}>
         {masked && <Lock style={{ width: 11, height: 11, flexShrink: 0 }} />}
-        {name}
+        {counterpartHref ? (
+          <Link href={counterpartHref} style={{ color: "inherit", textDecoration: "none", borderBottom: "1px dotted var(--cr-ink-4)" }}>
+            {name}
+          </Link>
+        ) : name}
       </p>
       {masked && (
         <a href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>

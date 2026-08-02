@@ -26,6 +26,21 @@ const STAGES = [
   { value: "series_b_plus", label: "Series B+"  },
 ];
 
+
+// mrrMin, aiScoreMin and country have been in the filter state and applied by
+// the filter logic since this component was written -- but nothing ever
+// rendered a control for them, so they were dead depth. Preset chips rather
+// than sliders/inputs to stay inside the page's single control convention.
+const MRR_PRESETS = [
+  { value: 5_000,   label: "MRR $5k+"   },
+  { value: 25_000,  label: "MRR $25k+"  },
+  { value: 100_000, label: "MRR $100k+" },
+];
+const SCORE_PRESETS = [
+  { value: 60, label: "Score 60+" },
+  { value: 80, label: "Score 80+" },
+];
+
 const SORT_OPTIONS = [
   { value: "score",   label: "AI Score"      },
   { value: "recent",  label: "Newest"         },
@@ -544,6 +559,22 @@ export function StartupsSearch() {
             </FilterChip>
           ))}
 
+          {/* Threshold chips — one active per group; clicking the active one clears it */}
+          {MRR_PRESETS.map((m) => (
+            <FilterChip key={m.value}
+              active={filters.mrrMin === m.value}
+              onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
+              {m.label}
+            </FilterChip>
+          ))}
+          {SCORE_PRESETS.map((sc) => (
+            <FilterChip key={sc.value}
+              active={filters.aiScoreMin === sc.value}
+              onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
+              {sc.label}
+            </FilterChip>
+          ))}
+
           {/* Mobile filter btn */}
           <button
             onClick={() => setSidebarOpen(true)}
@@ -640,6 +671,23 @@ export function StartupsSearch() {
                     </FilterChip>
                   ))}
                 </div>
+              </div>
+            </div>
+            <div style={{ padding: "0 20px 20px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>{t("filters.thresholds")}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                {MRR_PRESETS.map((m) => (
+                  <FilterChip key={m.value} active={filters.mrrMin === m.value}
+                    onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
+                    {m.label}
+                  </FilterChip>
+                ))}
+                {SCORE_PRESETS.map((sc) => (
+                  <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value}
+                    onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
+                    {sc.label}
+                  </FilterChip>
+                ))}
               </div>
             </div>
             <div style={{ position: "sticky", bottom: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "14px 20px", display: "flex", gap: "10px" }}>

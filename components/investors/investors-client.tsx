@@ -80,13 +80,14 @@ interface InvestorFilters {
   stages: string[];
   minCheck: number;
   maxCheck: number;
+  geographies: string[];
   leadOnly: boolean;
   sort: "recent" | "check_asc" | "check_desc";
 }
 
 const DEFAULT: InvestorFilters = {
   query: "", types: [], industries: [], stages: [],
-  minCheck: 0, maxCheck: 100_000_000, leadOnly: false, sort: "recent",
+  minCheck: 0, maxCheck: 100_000_000, geographies: [], leadOnly: false, sort: "recent",
 };
 
 export function InvestorsClient() {
@@ -136,13 +137,19 @@ export function InvestorsClient() {
     fetchInvestors();
   }, []);
 
-  function toggle<K extends "types" | "industries" | "stages">(key: K, val: string) {
+  function toggle<K extends "types" | "industries" | "stages" | "geographies">(key: K, val: string) {
     const arr = f[key] as string[];
     setF(prev => ({ ...prev, [key]: arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val] }));
   }
 
+  // Every country any loaded investor covers, deduped and sorted.
+  const allGeographies = useMemo(
+    () => Array.from(new Set(investors.flatMap(i => i.geography || []))).sort(),
+    [investors]
+  );
+
   const activeCount =
-    f.types.length + f.industries.length + f.stages.length +
+    f.types.length + f.industries.length + f.stages.length + f.geographies.length +
     (f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0);
 
   const results = useMemo(() => {
@@ -156,9 +163,13 @@ export function InvestorsClient() {
       const matchType = f.types.length === 0 || f.types.includes(inv.type);
       const matchInd = f.industries.length === 0 || f.industries.some(i => (inv.industries || []).includes(i));
       const matchStage = f.stages.length === 0 || f.stages.some(s => (inv.stages || []).includes(s));
+      // Geography was fetched for every investor and shown on cards, but not
+      // filterable -- the one axis a founder actually starts from ("who
+      // invests where I am?").
+      const matchGeo = f.geographies.length === 0 || f.geographies.some(g => (inv.geography || []).includes(g));
       const minCheckOk = !inv.max_check || inv.max_check >= f.minCheck;
       const maxCheckOk = !inv.min_check || inv.min_check <= f.maxCheck;
-      return matchQ && matchType && matchInd && matchStage && minCheckOk && maxCheckOk;
+      return matchQ && matchType && matchInd && matchStage && matchGeo && minCheckOk && maxCheckOk;
     });
 
     if (f.sort === "check_desc") list = [...list].sort((a, b) => (b.max_check || 0) - (a.max_check || 0));
@@ -264,6 +275,24 @@ export function InvestorsClient() {
             )}>
               <Checkbox checked={f.industries.includes(ind)} onCheckedChange={() => toggle("industries", ind)} />
               <span className="text-sm text-cr-i2">{ind}</span>
+            </label>
+          ))}
+        </div>
+      </Section>
+
+      <div className="h-px bg-border-dark" />
+
+      {/* Geography — options come from the loaded investors, so the list never
+          offers a country with zero investors behind it. */}
+      <Section title={t("investors.geography")} defaultOpen={false}>
+        <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
+          {allGeographies.map(geo => (
+            <label key={geo} className={cn(
+              "flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors",
+              f.geographies.includes(geo) ? "bg-cr-copper/10" : "hover:bg-cr-p2"
+            )}>
+              <Checkbox checked={f.geographies.includes(geo)} onCheckedChange={() => toggle("geographies", geo)} />
+              <span className="text-sm text-cr-i2">{geo}</span>
             </label>
           ))}
         </div>

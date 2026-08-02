@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Linkedin, MapPin, DollarSign, Globe, Twitter,
-  Briefcase, BookOpen, Eye, Pencil,
+  Briefcase, BookOpen, Eye, Pencil, Handshake,
 } from "lucide-react";
 import { formatCurrency, getInitials } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";
@@ -63,6 +63,26 @@ export default async function InvestorProfilePage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   const isOwnProfile = !!user && user.id === investor.owner_id;
 
+  // If the viewer is a founder, their own deal with this investor. Same rule
+  // as the startup profile: fetched with the caller's client so RLS decides,
+  // only the viewer's own deal, never shown to the public.
+  type ViewerDeal = { id: string; status: string };
+  let viewerDeal: ViewerDeal | null = null;
+  if (user && !isOwnProfile) {
+    const { data: myStartup } = await supabase
+      .from("startups").select("id").eq("owner_id", user.id).maybeSingle();
+    if (myStartup) {
+      const { data: deal } = await supabase
+        .from("deals")
+        .select("id, status")
+        .match({ startup_id: myStartup.id, investor_id: investor.id })
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      viewerDeal = (deal as ViewerDeal | null) ?? null;
+    }
+  }
+
   const displayName = investor.display_name || investor.slug;
   const memberSince = investor.created_at
     ? new Date(investor.created_at).toLocaleDateString(getLocale(), { month: "long", year: "numeric" })
@@ -111,6 +131,23 @@ export default async function InvestorProfilePage({ params }: Props) {
               <p className="text-cr-copper font-semibold text-sm mb-2">{investor.firm_name}</p>
             )}
             <div className="flex items-center gap-2 flex-wrap mb-3">
+              {viewerDeal && (
+                // Same pill as the startup profile: the two ends of a deal
+                // should both show it. Wording reuses the kanban's own column
+                // labels so profile and pipeline never disagree.
+                <Link
+                  href="/deals"
+                  className="inline-flex items-center gap-1.5 bg-cr-copper/10 border border-cr-copper/25 text-cr-copper rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider no-underline"
+                >
+                  <Handshake className="h-3 w-3" />
+                  {t("startupDetail.inYourPipeline")}{" — "}
+                  {viewerDeal.status === "intro" ? t("deals.colIntro")
+                    : viewerDeal.status === "due_diligence" ? t("dashboard.dueDiligence")
+                    : viewerDeal.status === "term_sheet" ? t("deals.colTermSheet")
+                    : viewerDeal.status === "closed" ? t("deals.colClosed")
+                    : t("deals.colPassed")}
+                </Link>
+              )}
               <Badge variant="outline">{INVESTOR_TYPE_LABELS[investor.type] || investor.type}</Badge>
               {investor.subscription_tier !== "free" && (
                 <Badge className="bg-cr-copper/15 text-cr-cu-l border-0">

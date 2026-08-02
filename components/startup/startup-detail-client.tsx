@@ -4,11 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StartupCard } from "./startup-card";
-import {
-  Globe, Share2, Eye, FileText,
-  MessageSquare, Brain, Lock, ExternalLink,
-  ChevronLeft, Bookmark, X,
-} from "lucide-react";
+import { Globe, Share2, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake } from "lucide-react";
 import {
   formatCurrency, formatNumber, formatDate, formatPercent,
   STAGE_LABELS, getInitials,
@@ -29,6 +25,8 @@ interface Props {
   startup:        Startup;
   investorTier:   SubscriptionTier | null;
   investorId:     string | null;
+  /** The viewer's own deal with this startup, if one exists. Never anyone else's. */
+  viewerDeal:     { id: string; status: string } | null;
   ndaSigned:      boolean;
   relatedStartups: Startup[];
   isLaunchMode:   boolean;
@@ -65,7 +63,7 @@ function MetricCell({ label, value, copper }: { label: string; value: string | n
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, ndaSigned, relatedStartups, isLaunchMode, viewerSuspended = false,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, isLaunchMode, viewerSuspended = false,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -235,6 +233,31 @@ export function StartupDetailClient({
 
                 {/* Badge row */}
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+                  {viewerDeal && (
+                    // The profile and the Deal Portal previously didn't know
+                    // about each other: an investor could be mid-diligence on
+                    // a startup and its profile gave no hint. Links into the
+                    // pipeline rather than restating deal details here.
+                    <Link
+                      href="/deals"
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: "5px",
+                        background: viewerDeal.status === "closed" ? "var(--cr-up-bg, var(--cr-copper-bg))" : "var(--cr-copper-bg)",
+                        border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)",
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px",
+                        borderRadius: "3px", padding: "3px 9px",
+                        textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none",
+                      }}
+                    >
+                      <Handshake style={{ width: 11, height: 11 }} />
+                      {t("startupDetail.inYourPipeline")}{" — "}
+                      {viewerDeal.status === "intro" ? t("deals.colIntro")
+                        : viewerDeal.status === "due_diligence" ? t("dashboard.dueDiligence")
+                        : viewerDeal.status === "term_sheet" ? t("deals.colTermSheet")
+                        : viewerDeal.status === "closed" ? t("deals.colClosed")
+                        : t("deals.colPassed")}
+                    </Link>
+                  )}
                   <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     {startup.industry}
                   </span>

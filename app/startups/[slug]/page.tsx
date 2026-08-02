@@ -123,6 +123,25 @@ export default async function StartupDetailPage({ params }: Props) {
     }
   }
 
+  // Any existing deal between this viewer and this startup. Read with the
+  // caller's own client, not the admin one -- RLS already scopes deals to the
+  // two sides, so if this returns a row the viewer is entitled to see it.
+  //
+  // Only the viewer's own deal is ever fetched. A startup's other conversations
+  // are nobody else's business, and nothing here is rendered to the public.
+  type ViewerDeal = { id: string; status: string };
+  let viewerDeal: ViewerDeal | null = null;
+  if (investorId) {
+    const { data: deal } = await supabase
+      .from("deals")
+      .select("id, status")
+      .match({ startup_id: startup.id, investor_id: investorId })
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    viewerDeal = (deal as ViewerDeal | null) ?? null;
+  }
+
   // Related startups
   const { data: related } = await supabase
     .from("startups")
@@ -140,6 +159,7 @@ export default async function StartupDetailPage({ params }: Props) {
         startup={startup as any}
         investorTier={investorTier as any}
         investorId={investorId}
+        viewerDeal={viewerDeal}
         ndaSigned={ndaSigned}
         relatedStartups={(related as any) || []}
         isLaunchMode={isLaunch}
