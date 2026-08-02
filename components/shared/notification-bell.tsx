@@ -156,7 +156,23 @@ export function NotificationBell() {
                   {inner}
                 </Link>
               ) : (
-                <div key={n.id} onClick={() => markOne(n.id)} style={style}>{inner}</div>
+                // A button, not a div: this is the only interactive element in
+                // the panel that is not a Link, and as a div it could not be
+                // tabbed to or activated with the keyboard at all. The style
+                // resets undo the browser's default button chrome so it stays
+                // visually identical to the Link rows above.
+                <button
+                  key={n.id}
+                  type="button"
+                  onClick={() => markOne(n.id)}
+                  style={{
+                    ...style,
+                    width: "100%", textAlign: "left", font: "inherit",
+                    background: "none", border: "none", cursor: "pointer",
+                  }}
+                >
+                  {inner}
+                </button>
               );
             })
           )}

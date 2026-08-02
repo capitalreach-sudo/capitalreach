@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { notify } from "@/components/ui/toast-notify";
 import { formatDate } from "@/lib/utils";
@@ -351,6 +351,15 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
 // ── Shared modal shell ────────────────────────────────────────────────────────
 
 function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+  // Clicking the backdrop closed this, but nothing on the keyboard did. A
+  // dialog that can only be dismissed with a mouse traps anyone navigating by
+  // keyboard -- and Escape is what everyone reaches for first regardless.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div role="dialog" aria-modal="true" onClick={onClose}
       style={{
