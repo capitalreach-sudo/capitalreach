@@ -2016,5 +2016,12 @@
     "readOnlyNote": "Only the owner and admins can change who is on this team.",
     "noEntity": "Finish setting up your profile before inviting anyone.",
     "unavailable": "Team accounts aren't switched on yet. Check back shortly."
+  },
+  "search": {
+    "aria": "Search startups and investors",
+    "placeholder": "Search startups & investors…",
+    "noResults": "Nothing matches that.",
+    "startups": "Startups",
+    "investors": "Investors"
   }
 }

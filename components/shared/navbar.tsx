@@ -9,6 +9,7 @@ import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
 import { NotificationBell } from "@/components/shared/notification-bell";
+import { GlobalSearch } from "@/components/shared/global-search";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import type { Profile } from "@/types";
 
@@ -149,6 +150,7 @@ export function Navbar() {
 
           {/* Right — auth */}
           <div className="hidden lg:flex items-center gap-5">
+            <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (
               <>
@@ -276,6 +278,12 @@ export function Navbar() {
                 </Link>
               </>
             )}
+          </div>
+
+          {/* Mobile: search sits beside the hamburger, since the desktop
+              cluster above is hidden entirely below lg. */}
+          <div className="lg:hidden flex items-center">
+            <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
           </div>
 
           {/* Mobile hamburger — 24px icon, 44px touch target */}
