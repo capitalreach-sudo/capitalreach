@@ -89,7 +89,18 @@ function PlanCard({
 
   function handleClick() {
     if (isInstitution) { window.location.href = "/contact?type=institutional"; return; }
-    if (free) { window.location.href = "/auth/signup"; return; }
+
+    // Carry the chosen plan into signup. It used to be dropped entirely --
+    // clicking a plan landed you on a bare signup form with no sign that a
+    // choice had been made, which reads as the click not having worked.
+    //
+    // Launch mode is routed here too. The button already says "Get started
+    // free" for every plan during launch, but the old code still sent paid
+    // plans to Stripe -- with price IDs that are placeholders. Free during
+    // launch has to mean free at the checkout as well as on the label.
+    const signupUrl = `/auth/signup?plan=${encodeURIComponent(plan.id)}&role=${userType === "founder" ? "startup" : "investor"}`;
+    if (free || isLaunch) { window.location.href = signupUrl; return; }
+
     startCheckout(plan.id, userType, t("errors.generic"));
   }
 

@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  FOUNDER_PLANS, INVESTOR_PLANS,
+  type FounderPlanId, type InvestorPlanId,
+} from "@/lib/plans";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Building2, User, Mail, AlertTriangle, ExternalLink, TrendingUp } from "lucide-react";
@@ -51,10 +55,28 @@ const Logo = () => (
   </Link>
 );
 
-export default function SignupPage() {
+function SignupForm() {
   const { t } = useTranslation();
-  const [step, setStep]         = useState<"role" | "details" | "confirm">("role");
-  const [role, setRole]         = useState<Role | null>(null);
+  const searchParams = useSearchParams();
+
+  // /pricing sends ?plan=growth&role=startup. Both are untrusted URL input, so
+  // neither is used for anything but display and a pre-selection the user can
+  // still change -- entitlement comes from the DB, never from a query string.
+  const planParam = searchParams.get("plan");
+  const roleParam = searchParams.get("role");
+  const presetRole: Role | null =
+    roleParam === "startup" || roleParam === "investor" ? roleParam : null;
+  const presetPlan =
+    presetRole === "startup"
+      ? FOUNDER_PLANS[planParam as FounderPlanId] ?? null
+      : presetRole === "investor"
+        ? INVESTOR_PLANS[planParam as InvestorPlanId] ?? null
+        : null;
+
+  // Arriving from a plan card means the role question is already answered --
+  // asking it again makes the click look like it did nothing.
+  const [step, setStep]         = useState<"role" | "details" | "confirm">(presetRole ? "details" : "role");
+  const [role, setRole]         = useState<Role | null>(presetRole);
   const [fullName, setFullName] = useState("");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -80,7 +102,15 @@ export default function SignupPage() {
       const { data, error } = await supabase.auth.signUp({
         email, password,
         options: {
-          data: { full_name: fullName, role, terms_accepted_at: new Date().toISOString() },
+          data: {
+            full_name: fullName, role,
+            terms_accepted_at: new Date().toISOString(),
+            // Which plan they clicked, so the intent survives signup and is
+            // there when launch pricing ends. Deliberately in user_metadata
+            // rather than a profiles column: it is a record of what they
+            // *wanted*, not an entitlement, and it needs no migration.
+            ...(presetPlan ? { intended_plan: presetPlan.id } : {}),
+          },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
@@ -309,6 +339,19 @@ export default function SignupPage() {
           </p>
         </div>
 
+        {/* Confirms the plan click actually registered. Without this the form
+            is identical whether you picked a plan or not. */}
+        {presetPlan && (
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
+              {t("auth.selectedPlan", { plan: presetPlan.name })}
+            </p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+              {t("auth.selectedPlanLaunch")}
+            </p>
+          </div>
+        )}
+
         {signupError && (
           <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid rgba(185,28,28,0.2)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
             <AlertTriangle style={{ width: 14, height: 14, color: "var(--cr-down)", flexShrink: 0, marginTop: 1 }} />
@@ -354,5 +397,31 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+/**
+ * useSearchParams opts the subtree out of static rendering, so it has to sit
+ * inside a Suspense boundary or the build fails on this route.
+ */
+export default function SignupPage() {
+  return (
+    <Suspense
+      // Not `null`: this boundary covers the entire page, so an empty fallback
+      // renders a blank screen on the server and holds it until hydration.
+      // The shell keeps the background, top rule and logo in place so only the
+      // form itself pops in.
+      fallback={
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-paper)", padding: "24px 16px", position: "relative" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "var(--cr-copper)" }} />
+          <div style={{ width: "100%", maxWidth: "400px" }}>
+            <Logo />
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", height: "420px" }} />
+          </div>
+        </div>
+      }
+    >
+      <SignupForm />
+    </Suspense>
   );
 }

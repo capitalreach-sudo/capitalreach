@@ -456,7 +456,7 @@
     "welcomeBack": "Welcome back",
     "joinTitle": "Join CapitalReach",
     "joiningAs": "I'm joining as a…",
-    "joiningAsRole": "Joining as a",
+    "joiningAsRole": "Joining as",
     "startupFounder": "Startup Founder",
     "investor": "Investor",
     "startupDesc": "List and raise capital",
@@ -518,7 +518,9 @@
     "resendEmail": "Resend it",
     "resending": "Sending…",
     "resendIn": "Resend in {n}s",
-    "resendSent": "Verification email sent again."
+    "resendSent": "Verification email sent again.",
+    "selectedPlan": "You're signing up for the {plan} plan.",
+    "selectedPlanLaunch": "During launch, every plan is free — you won't be charged."
   },
   "dashboard": {
     "overview": "Overview",
