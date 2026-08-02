@@ -1,11 +1,14 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase-server";
 
-// Service role bypasses RLS — safe on server only
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+// createAdminClient, not a raw @supabase/supabase-js client: Next patches
+// global fetch and caches GET responses, so a raw client's reads can be
+// served from the fetch cache for the life of the server process --
+// `revalidate = 60` re-runs this route but the stale cached DB response
+// comes back anyway. That is exactly how the Data Centre kept reporting an
+// empty platform after production was seeded. createAdminClient pins
+// cache: "no-store" on every request.
+const supabase = createAdminClient();
 
 // Same reason as /api/startups/list — without this the Data Centre serves
 // analytics frozen at build time rather than current platform activity.
