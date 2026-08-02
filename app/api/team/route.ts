@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
 
   await notifyUser({
     userId: invitee.id,
-    type:   "deal_opened",   // closest existing type; 022's CHECK doesn't allow a team one
+    type:   "team_added",
     title:  "You were added to a team on CapitalReach",
     body:   `You now have access to a ${type === "startup" ? "startup" : "investor"} account.`,
     href:   type === "startup" ? "/dashboard/startup" : "/dashboard/investor",

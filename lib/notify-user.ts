@@ -10,7 +10,11 @@ export type NotificationType =
   | "contract_status"
   | "nda_signed"
   | "listing_approved"
-  | "listing_rejected";
+  | "listing_rejected"
+  // Added by migration 024. Keep this union in step with that CHECK
+  // constraint: a value here that the constraint rejects fails the insert at
+  // runtime, and notifyUser deliberately never throws, so it would vanish.
+  | "team_added";
 
 interface NotifyInput {
   userId: string;
@@ -35,13 +39,21 @@ interface NotifyInput {
 export async function notifyUser(input: NotifyInput): Promise<void> {
   try {
     const admin = createAdminClient();
-    await admin.from("notifications").insert({
+    const { error } = await admin.from("notifications").insert({
       user_id: input.userId,
       type:    input.type,
       title:   input.title.slice(0, 200),
       body:    input.body ? input.body.slice(0, 500) : null,
       href:    input.href ?? null,
     });
+    // supabase-js resolves with an { error } object rather than throwing, so
+    // the catch below never saw a database failure. A rejected insert -- a
+    // type outside the CHECK constraint, a missing table on a database that
+    // has not run 022 -- disappeared without even a warning. Still not
+    // rethrown, per the contract above; just no longer invisible.
+    if (error) {
+      console.warn(`[notify] insert rejected (type=${input.type}):`, error.message);
+    }
   } catch (err) {
     console.warn("[notify] could not record notification:", err);
   }
