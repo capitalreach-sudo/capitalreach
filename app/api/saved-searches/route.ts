@@ -56,11 +56,19 @@ export async function POST(req: NextRequest) {
   if (!investor) {
     return NextResponse.json({ error: "Complete your investor profile first." }, { status: 403 });
   }
+  // Guarding this lets the `as any` below go away, and closes the gap it hid:
+  // spreading a null profile produces a truthy object, which skips
+  // buildAccessContext's own null branch and yields suspended: false. Every
+  // signed-up user has a profile row, so this is belt-and-braces -- but the
+  // cast was what made it invisible.
+  if (!profile) {
+    return NextResponse.json({ error: "Profile not found." }, { status: 403 });
+  }
 
   // The investor's own tier governs, matching how the rest of the app reads
   // investor capabilities.
   const { isLaunch } = await getLaunchStatus();
-  const ctx = buildAccessContext({ ...profile, subscription_tier: investor.subscription_tier } as any, isLaunch);
+  const ctx = buildAccessContext({ ...profile, subscription_tier: investor.subscription_tier }, isLaunch);
   if (!canUseSavedSearches(ctx)) {
     return NextResponse.json({ error: "Saved searches are not available on your plan.", upgrade: true }, { status: 403 });
   }
