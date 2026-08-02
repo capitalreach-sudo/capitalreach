@@ -1970,7 +1970,8 @@
   "notifications": {
     "title": "Notifications",
     "markAllRead": "Mark all read",
-    "empty": "Nothing new."
+    "empty": "Nothing new.",
+    "viewAll": "View all notifications"
   },
   "authErrors": {
     "generic": "Something went wrong. Please try again.",

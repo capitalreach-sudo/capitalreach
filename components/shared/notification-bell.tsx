@@ -19,7 +19,7 @@ import { useTranslation } from "@/hooks/useTranslation";
  * Colour is carried by the icon alone: the row background is already doing
  * unread/read, and a second colour axis on the row would fight it.
  */
-const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
+export const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
   deal_opened:      { Icon: Handshake,      color: "var(--cr-copper)" },
   deal_stage:       { Icon: ArrowRightLeft, color: "var(--cr-ink-3)"  },
   deal_closed:      { Icon: CheckCircle2,   color: "var(--cr-up)"     },
@@ -35,7 +35,7 @@ const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
 
 // Unknown types still render. A notification raised by a newer deploy than the
 // one serving this bundle should look plain, not disappear.
-const FALLBACK_ICON = { Icon: Bell, color: "var(--cr-ink-4)" };
+export const FALLBACK_ICON = { Icon: Bell, color: "var(--cr-ink-4)" };
 
 interface Notification {
   id: string;
@@ -212,6 +212,16 @@ export function NotificationBell() {
               );
             })
           )}
+
+          {/* The dropdown truncates and disappears on click-away; history
+              lives on its own page. */}
+          <Link
+            href="/dashboard/notifications"
+            onClick={() => setOpen(false)}
+            style={{ display: "block", textAlign: "center", padding: "9px 12px", borderTop: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 500, color: "var(--cr-copper)", textDecoration: "none" }}
+          >
+            {t("notifications.viewAll")}
+          </Link>
         </div>
       )}
     </div>
