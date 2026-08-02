@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
+import { getFounderPlan } from "@/lib/plans";
 
-const TIER_PRICES: Record<string, string> = {
-  starter: process.env.STRIPE_STARTUP_STARTER_PRICE_ID!,
-  growth: process.env.STRIPE_STARTUP_GROWTH_PRICE_ID!,
-};
+// Prices come from the plan definitions rather than a second set of env vars.
+// This route used to read STRIPE_STARTUP_*_PRICE_ID while /api/checkout read
+// the STRIPE_PRICE_FOUNDER_*_MONTHLY names for the same plans, so whichever
+// scheme was left unset produced a broken checkout on one path only.
 
 /** Platform is free until this many users have joined */
 const FREE_UNTIL_USER_COUNT = 100;
@@ -16,7 +17,10 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.redirect(new URL("/auth/login", req.url));
 
   const tier = req.nextUrl.searchParams.get("tier");
-  if (!tier || !TIER_PRICES[tier]) {
+  // getFounderPlan falls back to the free plan for anything unrecognised, so a
+  // null envKey covers free and garbage input in one check.
+  const plan = getFounderPlan(tier);
+  if (!tier || plan.envKey === null) {
     return NextResponse.redirect(new URL("/pricing", req.url));
   }
 
@@ -48,7 +52,13 @@ export async function GET(req: NextRequest) {
   }
   // ─────────────────────────────────────────────────────────────────────
 
-  const priceId = TIER_PRICES[tier];
+  const priceId = process.env[plan.envKey];
+  if (!priceId) {
+    // Previously this passed undefined straight to Stripe, which failed with
+    // an opaque API error. Say what is actually wrong instead.
+    console.error(`Stripe price not configured: ${plan.envKey}`);
+    return NextResponse.redirect(new URL("/pricing?error=price_unavailable", req.url));
+  }
 
   const { data: profile } = await supabase
     .from("profiles")

@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
@@ -128,15 +129,24 @@ export function constructWebhookEvent(payload: Buffer, sig: string) {
   );
 }
 
-export const TIER_MAP: Record<string, string> = {
-  // new env var names (v2 pricing)
-  [process.env.STRIPE_PRICE_FOUNDER_STARTER_MONTHLY || ""]: "starter",
-  [process.env.STRIPE_PRICE_FOUNDER_GROWTH_MONTHLY  || ""]: "growth",
-  [process.env.STRIPE_PRICE_INVESTOR_ANGEL_MONTHLY  || ""]: "angel",
-  [process.env.STRIPE_PRICE_INVESTOR_PRO_MONTHLY    || ""]: "pro",
-  // legacy env var names (kept for backwards compat during transition)
-  [process.env.STRIPE_STARTUP_STARTER_PRICE_ID || ""]: "starter",
-  [process.env.STRIPE_STARTUP_GROWTH_PRICE_ID  || ""]: "growth",
-  [process.env.STRIPE_INVESTOR_ANGEL_PRICE_ID  || ""]: "angel",
-  [process.env.STRIPE_INVESTOR_PRO_PRICE_ID    || ""]: "pro",
-};
+/**
+ * Stripe price ID -> tier slug, for the subscription webhook.
+ *
+ * Built from the plan definitions so there is exactly one place that knows
+ * which env var holds which price. This previously listed two parallel naming
+ * schemes for the same four prices -- the _MONTHLY names read by the pricing
+ * checkout and the _PRICE_ID names read by the onboarding checkout -- which
+ * meant configuring one scheme left the other checkout broken.
+ *
+ * Unset prices are filtered out. The old version spread `env || ""` into the
+ * object literal, so every unconfigured price collapsed onto the same ""
+ * key and the last one won -- with nothing configured, TIER_MAP[""] was "pro".
+ * The webhook guards on `priceId ?` before looking up, so that never granted
+ * anyone a tier; it was a trap waiting for a second caller, not a live bug.
+ */
+export const TIER_MAP: Record<string, string> = Object.fromEntries(
+  [...FOUNDER_PLANS_LIST, ...INVESTOR_PLANS_LIST]
+    .filter((plan) => plan.envKey !== null)
+    .map((plan) => [process.env[plan.envKey!], plan.id as string] as const)
+    .filter((entry): entry is readonly [string, string] => Boolean(entry[0]))
+);

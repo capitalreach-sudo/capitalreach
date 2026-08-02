@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
+import { getInvestorPlan } from "@/lib/plans";
 
-const TIER_PRICES: Record<string, string> = {
-  angel:        process.env.STRIPE_INVESTOR_ANGEL_PRICE_ID!,
-  pro_investor: process.env.STRIPE_INVESTOR_PRO_PRICE_ID!,
-  institutional: process.env.STRIPE_INVESTOR_INSTITUTIONAL_PRICE_ID ?? process.env.STRIPE_PRICE_INVESTOR_PRO_MONTHLY ?? "",
-};
+// Prices come from the plan definitions rather than a second set of env vars.
+// This route used to read STRIPE_INVESTOR_*_PRICE_ID while /api/checkout read
+// the STRIPE_PRICE_INVESTOR_*_MONTHLY names for the same plans, so whichever
+// scheme was left unset produced a broken checkout on one path only.
+//
+// The institution entry is deliberately gone. It used to fall back to the Pro
+// price when the institution price was unset, which billed institutional
+// customers -- the most expensive tier, and the one sold via "contact sales"
+// -- at the Pro rate. Institution has no envKey precisely because it is not
+// self-serve, so it now falls through to the redirect below.
 
 /** Platform is free until this many users have joined */
 const FREE_UNTIL_USER_COUNT = 100;
@@ -17,7 +23,12 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.redirect(new URL("/auth/login", req.url));
 
   const tier = req.nextUrl.searchParams.get("tier");
-  if (!tier || !TIER_PRICES[tier]) {
+  // getInvestorPlan normalises both slug spellings this app uses
+  // ("pro"/"pro_investor", "institution"/"institutional") and falls back to
+  // the free plan for anything unrecognised. A null envKey therefore covers
+  // free, institution and garbage input in one check.
+  const plan = getInvestorPlan(tier);
+  if (!tier || plan.envKey === null) {
     return NextResponse.redirect(new URL("/pricing", req.url));
   }
 
@@ -49,7 +60,13 @@ export async function GET(req: NextRequest) {
   }
   // ─────────────────────────────────────────────────────────────────────
 
-  const priceId = TIER_PRICES[tier];
+  const priceId = process.env[plan.envKey];
+  if (!priceId) {
+    // Previously this passed undefined straight to Stripe, which failed with
+    // an opaque API error. Say what is actually wrong instead.
+    console.error(`Stripe price not configured: ${plan.envKey}`);
+    return NextResponse.redirect(new URL("/pricing?error=price_unavailable", req.url));
+  }
 
   const { data: profile } = await supabase
     .from("profiles")

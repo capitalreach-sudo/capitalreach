@@ -336,19 +336,7 @@ export const STAGES: { value: StartupStage; label: string }[] = [
   { value: "series_b_plus", label: "Series B+" },
 ];
 
-export const STARTUP_TIERS = {
-  free:    { name: "Free",    price: 0,  priceId: null },
-  starter: { name: "Starter", price: 19, priceId: process.env.STRIPE_STARTUP_STARTER_PRICE_ID },
-  growth:  { name: "Growth",  price: 49, priceId: process.env.STRIPE_STARTUP_GROWTH_PRICE_ID },
-  // legacy kept for DB compatibility
-  listed:  { name: "Starter", price: 19, priceId: process.env.STRIPE_STARTUP_STARTER_PRICE_ID },
-  pro:     { name: "Growth",  price: 49, priceId: process.env.STRIPE_STARTUP_GROWTH_PRICE_ID },
-  premium: { name: "Growth",  price: 49, priceId: process.env.STRIPE_STARTUP_GROWTH_PRICE_ID },
-} as const;
-
-export const INVESTOR_TIERS = {
-  free:         { name: "Explorer",     price: 0,   priceId: null },
-  angel:        { name: "Angel",        price: 49,  priceId: process.env.STRIPE_INVESTOR_ANGEL_PRICE_ID },
-  pro_investor: { name: "Pro",          price: 149, priceId: process.env.STRIPE_INVESTOR_PRO_PRICE_ID },
-  institutional: { name: "Institutional", price: 0,  priceId: null },
-} as const;
+// STARTUP_TIERS / INVESTOR_TIERS lived here: a third copy of the plan tables,
+// unreferenced by any code, still quoting $19/$49 and $49/$149 against the
+// real $29/$79 and $99/$249, and still naming the removed STRIPE_STARTUP_* /
+// STRIPE_INVESTOR_*_PRICE_ID vars. lib/plans.ts is the single source of truth.

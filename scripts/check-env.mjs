@@ -89,7 +89,7 @@ const GROUPS = [
     breaks: "Checkout and subscription webhooks.",
   },
   {
-    name: "Stripe prices — _MONTHLY scheme (lib/plans.ts)",
+    name: "Stripe prices",
     mode: "all",
     keys: [
       "STRIPE_PRICE_FOUNDER_STARTER_MONTHLY",
@@ -97,19 +97,8 @@ const GROUPS = [
       "STRIPE_PRICE_INVESTOR_ANGEL_MONTHLY",
       "STRIPE_PRICE_INVESTOR_PRO_MONTHLY",
     ],
-    breaks: "Plan-to-price mapping in lib/plans.ts.",
-  },
-  {
-    name: "Stripe prices — _PRICE_ID scheme (checkout routes)",
-    mode: "all",
-    keys: [
-      "STRIPE_STARTUP_STARTER_PRICE_ID",
-      "STRIPE_STARTUP_GROWTH_PRICE_ID",
-      "STRIPE_INVESTOR_ANGEL_PRICE_ID",
-      "STRIPE_INVESTOR_PRO_PRICE_ID",
-    ],
-    breaks: "app/api/checkout/* — a DIFFERENT set of names for the same four " +
-            "prices. Both schemes must be set until they are unified.",
+    breaks: "Every paid checkout path. These are each plan's envKey in " +
+            "lib/plans.ts and are the only price names the app reads.",
   },
   {
     name: "AI (OpenAI)",
