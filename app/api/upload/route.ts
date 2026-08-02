@@ -2,22 +2,37 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, getFounderDocumentsLimit } from "@/lib/access";
+import { uploadRatelimit } from "@/lib/redis";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // 20/hour per user. See lib/redis.ts for why this exists separately from the
+  // per-plan document allowance below.
+  const { success: withinRate } = await uploadRatelimit.limit(`upload:${user.id}`);
+  if (!withinRate) {
+    return NextResponse.json({ error: "Too many uploads. Try again shortly." }, { status: 429 });
+  }
+
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
   const startupId = formData.get("startupId") as string;
-  const docType = formData.get("type") as string;
+  const docTypeRaw = formData.get("type") as string;
   const label = formData.get("label") as string;
   const requiresNda = formData.get("requiresNda") === "true";
 
   if (!file || !startupId) {
     return NextResponse.json({ error: "File and startupId required" }, { status: 400 });
   }
+
+  // Must match the CHECK constraint on startup_documents.type. It was taken
+  // straight from the form and interpolated into the storage path below, so a
+  // type of "../../x" wrote outside the startup's own prefix -- and then the
+  // insert failed the constraint, leaving the file orphaned in the bucket.
+  const DOC_TYPES = ["pitch_deck", "financial_model", "cap_table", "other"] as const;
+  const docType = (DOC_TYPES as readonly string[]).includes(docTypeRaw) ? docTypeRaw : "other";
 
   const adminClient = createAdminClient();
 
@@ -76,7 +91,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "File size exceeds 50MB limit" }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop();
+  // Also from the client, and also interpolated into the path. Restrict it to
+  // a short alphanumeric run so a crafted filename cannot steer the key.
+  const rawExt = file.name.split(".").pop() ?? "";
+  const ext = /^[a-zA-Z0-9]{1,8}$/.test(rawExt) ? rawExt.toLowerCase() : "bin";
   const filePath = `${startupId}/${docType}-${Date.now()}.${ext}`;
 
   const arrayBuffer = await file.arrayBuffer();
@@ -99,18 +117,27 @@ export async function POST(req: NextRequest) {
 
   const fileUrl = signedUrlData?.signedUrl || uploadData.path;
 
-  // Save document record
-  const { data: doc } = await adminClient
+  // Save document record. The error was previously discarded, so a failed
+  // insert still returned { success: true, document: undefined } while the
+  // file sat in the bucket with no row pointing at it. Report the failure and
+  // take the orphan back out.
+  const { data: doc, error: insertError } = await adminClient
     .from("startup_documents")
     .insert({
       startup_id: startupId,
-      type: docType || "other",
+      type: docType,
       file_url: fileUrl,
       label: label || file.name,
       requires_nda: requiresNda,
     })
     .select()
     .single();
+
+  if (insertError || !doc) {
+    console.error("Document record insert failed:", insertError);
+    await adminClient.storage.from("startup-assets").remove([filePath]);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  }
 
   return NextResponse.json({ success: true, document: doc });
 }

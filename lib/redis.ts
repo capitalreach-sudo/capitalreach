@@ -68,6 +68,19 @@ export const contactRatelimit: Pick<Ratelimit, "limit"> = _redis
     })
   : MOCK_LIMITER;
 
+// Document uploads: 20 per hour per user. Separate from apiRatelimit because
+// 100/min is meaningless here -- at the 50MB ceiling that is 5GB a minute. The
+// per-plan document allowance is the real limit, but it is Infinity on the
+// growth tier and launch mode puts every founder on growth, so this is the
+// only ceiling currently in force.
+export const uploadRatelimit: Pick<Ratelimit, "limit"> = _redis
+  ? new Ratelimit({
+      redis: _redis,
+      limiter: Ratelimit.fixedWindow(20, "1 h"),
+      prefix: "capitalreach:upload",
+    })
+  : MOCK_LIMITER;
+
 // AI endpoints: 20 per hour
 export const aiRatelimit: Pick<Ratelimit, "limit"> = _redis
   ? new Ratelimit({
