@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Eye, Bookmark, MessageSquare, TrendingUp, Brain,
-  CheckCircle2, Circle, ExternalLink, Settings, CreditCard,
-  FileText, AlertCircle, Lock, Zap, LayoutGrid,
-} from "lucide-react";
+import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, ExternalLink, Eye, FileText, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -336,6 +332,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   {[
                     { href: "/dashboard/messages",       Icon: MessageSquare, label: t("dashboard.messages")    },
                     { href: "/dashboard/startup/edit",   Icon: Settings,      label: t("dashboard.editProfile") },
+                    { href: "/dashboard/team",           Icon: Users,         label: t("team.navLabel")        },
                     { href: "/pricing",                  Icon: TrendingUp,    label: t("dashboard.upgradePlan") },
                     { href: `/startups/${startup.slug}`, Icon: ExternalLink,  label: t("dashboard.publicView"), ext: true },
                   ].map(({ href, Icon, label, ext }) => (

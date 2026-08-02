@@ -35,15 +35,27 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
   const table = type === "startup" ? "startups" : "investors";
 
-  const [{ data: entity }, { data: rows }] = await Promise.all([
+  const [{ data: entity }, { data: rows, error: rowsError }] = await Promise.all([
     admin.from(table).select("owner_id").eq("id", me.entityId).maybeSingle(),
     admin
       .from("team_members")
-      .select("id, user_id, role, created_at, profile:profiles(full_name, email)")
+      // The FK must be named. team_members points at profiles twice -- user_id
+      // and invited_by -- so a bare `profiles(...)` embed is ambiguous and
+      // PostgREST rejects the whole query with PGRST201. The error was
+      // discarded, so rows came back null and every roster silently rendered
+      // as "owner only", however many members had been added.
+      .select("id, user_id, role, created_at, profile:profiles!team_members_user_id_fkey(full_name, email)")
       .eq("entity_type", type)
       .eq("entity_id", me.entityId)
       .order("created_at", { ascending: true }),
   ]);
+
+  // Fail loudly. Swallowing this is what let the broken embed above ship: a
+  // roster missing every member looks identical to a team of one.
+  if (rowsError) {
+    console.error("[team] roster query failed:", rowsError);
+    return NextResponse.json({ error: "Could not load the team" }, { status: 500 });
+  }
 
   // The owner isn't a team_members row -- ownership lives on the entity -- so
   // they'd be missing from their own roster without this.

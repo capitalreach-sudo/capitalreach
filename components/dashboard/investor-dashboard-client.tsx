@@ -5,10 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StartupCard } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
-import {
-  Brain, CreditCard, Download, Bookmark, MessageSquare,
-  Settings, TrendingUp, Lock, CheckCircle2, Zap,
-} from "lucide-react";
+import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import {
   canExportData, canGetAiDueDiligence, canAccessFinancials, canSendMessages,
 } from "@/types";
@@ -221,6 +218,9 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <Link href="/dashboard/messages" style={outlineBtn}>
               <MessageSquare style={{ width: 13, height: 13 }} /> {t("dashboard.messages")}
+            </Link>
+            <Link href="/dashboard/team" style={outlineBtn}>
+              <Users style={{ width: 13, height: 13 }} /> {t("team.navLabel")}
             </Link>
             <Link href="/dashboard/investor/settings" style={outlineBtn}>
               <Settings style={{ width: 13, height: 13 }} /> {t("dashboard.settings")}

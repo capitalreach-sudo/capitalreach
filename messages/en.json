@@ -1984,5 +1984,32 @@
     "linkExpired": "That link has expired. Request a new one.",
     "samePassword": "Your new password must be different from the current one.",
     "unreachable": "Can't reach the server. Check your connection and try again."
+  },
+  "team": {
+    "title": "Team",
+    "navLabel": "Team",
+    "accessTitle": "Everyone on this team shares the account",
+    "accessBody": "Members see the same deals, contracts, documents and activity as you, and can work them alongside you. They cannot see your billing, and only owners and admins can change who is on the team.",
+    "inviteHeading": "Add someone to the team",
+    "emailLabel": "Their email address",
+    "emailHint": "They need a CapitalReach account already — we can't email an invite yet.",
+    "roleLabel": "Role",
+    "roleMember": "Member",
+    "roleAdmin": "Admin",
+    "roleMemberHint": "Can view and work the account's deals.",
+    "roleAdminHint": "Can also add and remove team members.",
+    "addButton": "Add to team",
+    "adding": "Adding…",
+    "added": "Added to the team.",
+    "removed": "Removed from the team.",
+    "rosterHeading": "Who has access",
+    "count": "{n} with access",
+    "unnamed": "(no name set)",
+    "role_owner": "Owner",
+    "role_admin": "Admin",
+    "role_member": "Member",
+    "removeAria": "Remove {name} from the team",
+    "readOnlyNote": "Only the owner and admins can change who is on this team.",
+    "noEntity": "Finish setting up your profile before inviting anyone."
   }
 }
