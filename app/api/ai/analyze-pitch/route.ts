@@ -2,28 +2,54 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "sk-not-configured" });
 
 export async function POST(req: NextRequest) {
   try {
-    if (!isOpenAIConfigured) {
+    // This route was reachable by anyone: no session required, rate limited
+    // only by IP. Every call bills a GPT-4o completion to our account, and IPs
+    // are cheap enough that an IP-keyed bucket is not a spend control -- it is
+    // a speed bump. A signed-in identity is the thing that can actually be
+    // held to a quota.
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Sign in to use AI tools." }, { status: 401 });
+    }
+    if (!user.email_confirmed_at) {
       return NextResponse.json(
-        // Was "Add your OPENAI_API_KEY to the environment variables" -- a
-        // message for whoever deployed the app, rendered to whoever is using
-        // it. The page above sells this as "real GPT-4o, no templates", so the
-        // failure needs to read as a service problem, not a config note.
-        { error: "AI analysis is temporarily unavailable. Please try again later." },
-        { status: 503 }
+        { error: "Verify your email address to use AI tools." },
+        { status: 403 }
+      );
+    }
+    if (await isAccountSuspended(user.id)) {
+      return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+    }
+
+    // Keyed by user now, not IP -- a quota someone cannot escape by changing
+    // network. The IP bucket stays as a second ceiling on top.
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+    const [byUser, byIp] = await Promise.all([
+      aiRatelimit.limit(`user:${user.id}`),
+      aiRatelimit.limit(`ip:${ip}`),
+    ]);
+    if (!byUser.success || !byIp.success) {
+      return NextResponse.json(
+        { error: "Rate limit reached. Try again in an hour." },
+        { status: 429 }
       );
     }
 
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-    const { success } = await aiRatelimit.limit(ip);
-    if (!success) {
+    // Config is checked after auth deliberately: an anonymous caller should
+    // learn nothing about how this deployment is configured, and a 401 is the
+    // honest answer to them regardless of whether the key is set.
+    if (!isOpenAIConfigured) {
       return NextResponse.json(
-        { error: "Rate limit reached (5/hour). Try again soon." },
-        { status: 429 }
+        { error: "AI analysis is temporarily unavailable. Please try again later." },
+        { status: 503 }
       );
     }
 
