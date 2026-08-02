@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { isTeamMemberOfEither } from "@/lib/membership";
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -23,7 +24,8 @@ export async function GET(req: NextRequest) {
     admin.from("investors").select("id, owner_id").eq("id", deal.investor_id).maybeSingle(),
     admin.from("profiles").select("role").eq("id", user.id).maybeSingle(),
   ]);
-  const isParticipant = startup?.owner_id === user.id || investorRow?.owner_id === user.id;
+  const isParticipant = startup?.owner_id === user.id || investorRow?.owner_id === user.id
+    || await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
   const isAdmin = profile?.role === "admin";
   if (!isParticipant && !isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 

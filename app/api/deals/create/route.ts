@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { resolveEntity } from "@/lib/membership";
 import { sendDealOpenedEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
 
@@ -59,16 +60,18 @@ export async function POST(req: NextRequest) {
     startup_id  = st.id;
     investor_id = inv.id;
   } else if (counterpartId && typeof counterpartId === "string") {
-    // Which side is the caller on?
-    const [{ data: myStartup }, { data: myInvestor }] = await Promise.all([
-      admin.from("startups").select("id").eq("owner_id", user.id).limit(1).maybeSingle(),
-      admin.from("investors").select("id").eq("owner_id", user.id).limit(1).maybeSingle(),
+    // Which side is the caller on? resolveEntity checks ownership first and
+    // team membership second, so an associate opens deals for the firm rather
+    // than being told to "complete onboarding" they already completed.
+    const [myStartup, myInvestor] = await Promise.all([
+      resolveEntity(user.id, "startup"),
+      resolveEntity(user.id, "investor"),
     ]);
 
     if (myStartup) {
       const { data: inv } = await admin.from("investors").select("id").eq("id", counterpartId).maybeSingle();
       if (!inv) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
-      startup_id  = myStartup.id;
+      startup_id  = myStartup.entityId;
       investor_id = inv.id;
     } else if (myInvestor) {
       const { data: st } = await admin.from("startups").select("id, status").eq("id", counterpartId).maybeSingle();
@@ -81,7 +84,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "That startup is not currently listed" }, { status: 409 });
       }
       startup_id  = st.id;
-      investor_id = myInvestor.id;
+      investor_id = myInvestor.entityId;
     } else {
       return NextResponse.json({ error: "Complete onboarding first" }, { status: 403 });
     }

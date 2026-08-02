@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { isTeamMemberOfEither } from "@/lib/membership";
 import { createSuccessFeeInvoice } from "@/lib/stripe";
 import { sendDealClosedEmail } from "@/lib/resend";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
@@ -35,8 +36,14 @@ export async function POST(req: NextRequest) {
   const isStartupOwner = deal.startup?.owner_id === user.id;
   const isInvestorOwner = deal.investor?.owner_id === user.id;
   if (!isStartupOwner && !isInvestorOwner) {
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // Team members may close too -- the Team page promises members can "work
+    // the account's deals", and the fee below is unaffected by who clicks:
+    // the invoice always targets the startup owner's Stripe customer.
+    const isMember = await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
+    if (!isMember) {
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+      if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   // Get startup owner's Stripe customer ID

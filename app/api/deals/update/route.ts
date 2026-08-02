@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { isTeamMemberOfEither } from "@/lib/membership";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { isCurrencyCode } from "@/lib/currency";
 import { notifyUsers } from "@/lib/notify-user";
@@ -41,7 +42,8 @@ export async function POST(req: NextRequest) {
 
   const isParticipant =
     (deal.startup as any)?.owner_id === user.id ||
-    (deal.investor as any)?.owner_id === user.id;
+    (deal.investor as any)?.owner_id === user.id ||
+    await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
 
   if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
