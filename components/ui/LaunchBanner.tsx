@@ -15,6 +15,7 @@ export function LaunchBanner() {
 
   return (
     <div
+      className="launch-banner"
       style={{
         background: "var(--cr-copper)",
         borderBottom: "1px solid var(--cr-copper-d)",
@@ -23,9 +24,13 @@ export function LaunchBanner() {
         flexWrap: "wrap", textAlign: "center",
       }}
     >
-      <Sparkles style={{ width: 14, height: 14, color: "#fff", flexShrink: 0 }} />
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff" }}>
+      <Sparkles className="launch-banner-icon" style={{ width: 14, height: 14, color: "#fff", flexShrink: 0 }} />
+      {/* Long and short copy both render; globals.css shows one per breakpoint. */}
+      <span className="launch-banner-full" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff" }}>
         {t("banner.text", { target, memberCount, spotsLeft })}
+      </span>
+      <span className="launch-banner-short" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff" }}>
+        {t("banner.textShort", { target, spotsLeft })}
       </span>
       <Link
         href="/pricing"

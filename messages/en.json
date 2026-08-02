@@ -1480,7 +1480,8 @@
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
-    "cta": "Claim your spot"
+    "cta": "Claim your spot",
+    "textShort": "Free for our first {target} — {spotsLeft} spots left."
   },
   "locale": {
     "changedTo": "Language changed to {name}",

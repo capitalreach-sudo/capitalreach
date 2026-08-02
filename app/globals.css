@@ -764,6 +764,23 @@ body::before {
   .fee-floating-badge { bottom: 16px; right: 16px; font-size: 12px; padding: 10px 14px; }
 }
 
+/* ── Launch banner ────────────────────────────────────────
+   Three flex children with flex-wrap. On a 375px screen the full sentence
+   wrapped to two lines and pushed the CTA onto a third, so the banner took
+   210px -- a quarter of the viewport -- before the logo, nav or hero appeared.
+   Below 640px: drop the icon, tighten the padding, and swap in shorter copy
+   (the long version says "0/100 joined" and "100 spots left", which are the
+   same fact twice). Both strings are rendered and one is hidden, rather than
+   measuring width in JS, so the server and client markup always agree. */
+.launch-banner-short { display: none; }
+@media (max-width: 640px) {
+  .launch-banner { padding: 7px 14px !important; gap: 6px !important; }
+  .launch-banner-icon { display: none; }
+  .launch-banner-full { display: none; }
+  .launch-banner-short { display: inline; }
+  .launch-banner span, .launch-banner a { font-size: 12px !important; }
+}
+
 /* ── Pricing hero ─────────────────────────────────────────
    Was an inline `grid-template-columns: 1fr auto`. The second column holds a
    fixed-size stat card, so on a phone the card claimed its intrinsic width and
