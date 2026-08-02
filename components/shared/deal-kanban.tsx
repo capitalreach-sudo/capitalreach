@@ -1216,6 +1216,19 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
   const [viewMode, setViewMode]       = useState<"kanban" | "list">("kanban");
 
+  // On a phone the kanban is ~1400px of horizontal scroll for five columns;
+  // the list view was built for exactly this shape. Default narrow screens to
+  // it once on mount -- an effect rather than a state initializer so the
+  // server and client first render identically (no hydration mismatch), and
+  // only ever flipping the initial default, never a choice the user has made.
+  useEffect(() => {
+    // innerWidth reads 0 in hidden/prerendered tabs, and 0 < 640 would flip
+    // a desktop that merely started in the background. Only trust a real
+    // positive width.
+    const w = window.innerWidth;
+    if (w > 0 && w < 640) setViewMode("list");
+  }, []);
+
   // Pipeline stats reflect the full, unfiltered deal list — a stable snapshot,
   // not scoped to whatever the filter bar currently shows.
   const stats = useMemo(() => {
