@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { Search, Building2, Briefcase } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
+// When only investors matched, "see all" should land on the investors
+// directory (which now also reads ?q=), not dump the query on /startups.
+function seeAllHref(q: string, r: Results | null): string {
+  const dir = r && r.startups.length === 0 && r.investors.length > 0 ? "/investors" : "/startups";
+  return `${dir}?q=${encodeURIComponent(q.trim())}`;
+}
+
 interface Results {
   startups: Array<{ name: string; slug: string; tagline: string | null; industry: string | null }>;
   investors: Array<{ slug: string; name: string; firm: string | null; type: string | null }>;
@@ -68,7 +75,7 @@ export function GlobalSearch() {
   const hrefs: string[] = [
     ...(results?.startups ?? []).map((s) => `/startups/${s.slug}`),
     ...(results?.investors ?? []).map((i) => `/investors/${i.slug}`),
-    ...(q.trim().length >= 2 ? [`/startups?q=${encodeURIComponent(q.trim())}`] : []),
+    ...(q.trim().length >= 2 ? [seeAllHref(q, results)] : []),
   ];
   const [active, setActive] = useState(-1);
   useEffect(() => { setActive(-1); }, [results]);
@@ -164,7 +171,7 @@ export function GlobalSearch() {
               <button type="button"
                 style={{ ...rowStyle, borderTop: "1px solid var(--cr-rule)", background: active === hrefs.length - 1 ? "var(--cr-copper-bg)" : "none", justifyContent: "center" }}
                 onMouseEnter={() => setActive(hrefs.length - 1)}
-                onClick={() => go(`/startups?q=${encodeURIComponent(q.trim())}`)}>
+                onClick={() => go(seeAllHref(q, results))}>
                 <span style={{ fontSize: "12px", fontWeight: 500, color: "var(--cr-copper)" }}>{t("search.seeAll", { q: q.trim() })}</span>
               </button>
             </div>

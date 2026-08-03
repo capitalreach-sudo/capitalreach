@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import {
@@ -92,7 +93,10 @@ const DEFAULT: InvestorFilters = {
 
 export function InvestorsClient() {
   const { t } = useTranslation();
-  const [f, setF] = useState<InvestorFilters>(DEFAULT);
+  // /investors?q= mirrors /startups?q= so the global search's "see all" can
+  // land on either directory pre-filtered.
+  const initialQuery = useSearchParams().get("q") ?? "";
+  const [f, setF] = useState<InvestorFilters>({ ...DEFAULT, query: initialQuery });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [investors, setInvestors] = useState<Investor[]>([]);
   const [loading, setLoading] = useState(true);
