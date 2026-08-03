@@ -334,7 +334,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
                         {(report as any).startup?.name}
                       </span>
-                      <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         {report.type.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -397,7 +397,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                           </span>
                         </div>
                         {!unlocked && (item as any).tier && (
-                          <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", whiteSpace: "nowrap" }}>
+                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", whiteSpace: "nowrap" }}>
                             {(item as any).tier}+
                           </span>
                         )}
