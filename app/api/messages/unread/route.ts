@@ -5,18 +5,27 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
  * GET  -> { unread } : messages in my threads, sent by the other side, unread.
  * POST { threadId }  : mark the other side's messages in that thread read.
  *
- * "My threads" resolves through entity ownership. Team members are not
- * counted yet -- the badge understating for an associate beats a schema of
- * per-user read markers; noted as the follow-up when teams get messaging.
+ * "My threads" resolves through entity ownership plus team membership, so
+ * an associate sees the firm's unread mail. Read state stays one-per-side
+ * (a member reading counts as the side having read), consistent with the
+ * team model everywhere else.
  */
 async function myThreadIds(userId: string): Promise<string[]> {
   const admin = createAdminClient();
-  const [{ data: st }, { data: inv }] = await Promise.all([
+  const [{ data: st }, { data: inv }, { data: memberships }] = await Promise.all([
     admin.from("startups").select("id").eq("owner_id", userId),
     admin.from("investors").select("id").eq("owner_id", userId),
+    // Team members count too: an associate watching the firm's pipeline
+    // should see the firm's unread mail, not a hardcoded zero. Errors (023
+    // not applied) degrade to owner-only, like everywhere else.
+    admin.from("team_members").select("entity_type, entity_id").eq("user_id", userId),
   ]);
   const sIds = (st ?? []).map((r) => r.id);
   const iIds = (inv ?? []).map((r) => r.id);
+  for (const m of memberships ?? []) {
+    if (m.entity_type === "startup" && !sIds.includes(m.entity_id)) sIds.push(m.entity_id);
+    if (m.entity_type === "investor" && !iIds.includes(m.entity_id)) iIds.push(m.entity_id);
+  }
   if (!sIds.length && !iIds.length) return [];
   const ors: string[] = [];
   if (sIds.length) ors.push(`startup_id.in.(${sIds.join(",")})`);
