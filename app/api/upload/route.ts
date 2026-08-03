@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, getFounderDocumentsLimit } from "@/lib/access";
 import { uploadRatelimit } from "@/lib/redis";
+import { sanitizeDocType, buildStoragePath } from "@/lib/upload-validation";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -27,12 +28,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "File and startupId required" }, { status: 400 });
   }
 
-  // Must match the CHECK constraint on startup_documents.type. It was taken
-  // straight from the form and interpolated into the storage path below, so a
-  // type of "../../x" wrote outside the startup's own prefix -- and then the
-  // insert failed the constraint, leaving the file orphaned in the bucket.
-  const DOC_TYPES = ["pitch_deck", "financial_model", "cap_table", "other"] as const;
-  const docType = (DOC_TYPES as readonly string[]).includes(docTypeRaw) ? docTypeRaw : "other";
+  // Sanitised in lib/upload-validation (unit-tested there): a type of
+  // "../../x" once wrote outside the startup's own prefix.
+  const docType = sanitizeDocType(docTypeRaw);
 
   const adminClient = createAdminClient();
 
@@ -91,11 +89,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "File size exceeds 50MB limit" }, { status: 400 });
   }
 
-  // Also from the client, and also interpolated into the path. Restrict it to
-  // a short alphanumeric run so a crafted filename cannot steer the key.
-  const rawExt = file.name.split(".").pop() ?? "";
-  const ext = /^[a-zA-Z0-9]{1,8}$/.test(rawExt) ? rawExt.toLowerCase() : "bin";
-  const filePath = `${startupId}/${docType}-${Date.now()}.${ext}`;
+  const filePath = buildStoragePath(startupId, docType, file.name);
 
   const arrayBuffer = await file.arrayBuffer();
   const { data: uploadData, error: uploadError } = await adminClient.storage
