@@ -27,7 +27,10 @@ export async function GET() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.role !== "startup") {
+  // Doubles as the null guard: a missing profile fails the role check, so
+  // profile is non-null below and the buildAccessContext cast can go -- the
+  // same cast hid a suspended-flag gap in saved-searches.
+  if (!profile || profile.role !== "startup") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -44,7 +47,7 @@ export async function GET() {
   // The startup's own tier governs this, not the owner profile's -- the same
   // rule the deals page uses for identity reveal.
   const { isLaunch } = await getLaunchStatus();
-  const ctx = buildAccessContext({ ...profile, subscription_tier: startup.subscription_tier } as any, isLaunch);
+  const ctx = buildAccessContext({ ...profile, subscription_tier: startup.subscription_tier }, isLaunch);
   const canSeeWho = founderCan(ctx).seeInvestorIdentity;
 
   const { data: rows, count } = await admin
