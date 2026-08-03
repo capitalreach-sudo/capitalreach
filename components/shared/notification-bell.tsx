@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Bell, Handshake, ArrowRightLeft, CheckCircle2, XCircle, MessageSquare,
-  CalendarClock, FileSignature, ShieldCheck, BadgeCheck, Ban, Users, Crown,
+  CalendarClock, FileSignature, ShieldCheck, BadgeCheck, Ban, Users, Crown, SearchCheck,
   type LucideIcon,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -32,6 +32,7 @@ export const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
   listing_rejected: { Icon: Ban,            color: "var(--cr-down)"   },
   team_added:       { Icon: Users,          color: "var(--cr-copper)" },
   tier_changed:     { Icon: Crown,          color: "var(--cr-copper)" },
+  search_match:     { Icon: SearchCheck,    color: "var(--cr-copper)" },
 };
 
 // Unknown types still render. A notification raised by a newer deploy than the

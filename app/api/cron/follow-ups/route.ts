@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
-import { notifyUsers } from "@/lib/notify-user";
+import { notifyUser, notifyUsers } from "@/lib/notify-user";
 
 export const dynamic = "force-dynamic";
 
@@ -82,5 +82,64 @@ export async function GET(req: NextRequest) {
     notified++;
   }
 
-  return NextResponse.json({ ok: true, checked: due?.length ?? 0, notified });
+  // ── Saved-search matches ────────────────────────────────────────────────
+  // The alert half of saved searches: compare startups listed since the last
+  // daily run against every saved search and tell each search's owner. The
+  // 25-hour window overlaps the 24-hour cadence slightly so a slow run can't
+  // open a gap; the overlap can at worst repeat a notification, and a repeat
+  // beats a silent miss.
+  const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString();
+  const [{ data: fresh }, { data: searches }] = await Promise.all([
+    admin
+      .from("startups")
+      .select("id, name, tagline, industry, stage, country, mrr, vaultrise_score")
+      .eq("status", "active")
+      .gte("created_at", since),
+    admin
+      .from("saved_searches")
+      .select("id, name, filters, investor:investors(owner_id)"),
+  ]);
+
+  let searchNotified = 0;
+  if ((fresh ?? []).length > 0) {
+    for (const search of searches ?? []) {
+      const ownerId = search.investor?.owner_id;
+      if (!ownerId) continue;
+      const f = (search.filters ?? {}) as {
+        query?: string; industries?: string[]; stages?: string[];
+        mrrMin?: number; aiScoreMin?: number; country?: string;
+      };
+      const q = (f.query ?? "").trim().toLowerCase();
+      const matches = (fresh ?? []).filter((st) =>
+        (!f.industries?.length || f.industries.includes(st.industry)) &&
+        (!f.stages?.length     || f.stages.includes(st.stage)) &&
+        (!f.country            || f.country === st.country) &&
+        ((st.mrr ?? 0)             >= (f.mrrMin ?? 0)) &&
+        ((st.vaultrise_score ?? 0) >= (f.aiScoreMin ?? 0)) &&
+        (!q || st.name.toLowerCase().includes(q) || (st.tagline ?? "").toLowerCase().includes(q))
+      );
+      if (!matches.length) continue;
+
+      await notifyUser({
+        userId: ownerId,
+        type:   "search_match",
+        title:  matches.length === 1
+          ? `New match for "${search.name}": ${matches[0].name}`
+          : `${matches.length} new matches for "${search.name}"`,
+        body:   matches.slice(0, 3).map((m) => m.name).join(", ") + (matches.length > 3 ? "…" : ""),
+        href:   matches.length === 1
+          ? `/startups?q=${encodeURIComponent(matches[0].name)}`
+          : `/startups?q=${encodeURIComponent(f.query ?? "")}`,
+      });
+      searchNotified++;
+    }
+  }
+
+  return NextResponse.json({
+    ok: true,
+    checked: due?.length ?? 0,
+    notified,
+    freshStartups: fresh?.length ?? 0,
+    searchAlerts: searchNotified,
+  });
 }

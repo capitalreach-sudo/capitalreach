@@ -16,7 +16,9 @@ export type NotificationType =
   // runtime, and notifyUser deliberately never throws, so it would vanish.
   | "team_added"
   // Added by migration 026.
-  | "tier_changed";
+  | "tier_changed"
+  // Added by migration 027.
+  | "search_match";
 
 interface NotifyInput {
   userId: string;
