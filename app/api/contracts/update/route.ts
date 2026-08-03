@@ -61,9 +61,16 @@ export async function POST(req: NextRequest) {
   });
 
   if (status === "sent" || status === "signed") {
+    // Fetched conditionally: on the admin path either side's row can be
+    // missing, and .eq("id", undefined) is a query that silently matches
+    // nothing -- the generated DB types are what surfaced this.
     const [{ data: startupOwner }, { data: investorOwner }] = await Promise.all([
-      admin.from("profiles").select("email, full_name").eq("id", startup?.owner_id).maybeSingle(),
-      admin.from("profiles").select("email, full_name").eq("id", investor?.owner_id).maybeSingle(),
+      startup?.owner_id
+        ? admin.from("profiles").select("email, full_name").eq("id", startup.owner_id).maybeSingle()
+        : Promise.resolve({ data: null }),
+      investor?.owner_id
+        ? admin.from("profiles").select("email, full_name").eq("id", investor.owner_id).maybeSingle()
+        : Promise.resolve({ data: null }),
     ]);
     const dealUrl = `${process.env.NEXT_PUBLIC_APP_URL}/deals`;
 

@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
   // A saved startup with no reason attached stops being a shortlist and becomes
   // a pile. `note` is optional, and only written when the caller sends the key
   // -- so re-saving without a note doesn't wipe one already there.
-  const row: Record<string, unknown> = { investor_id: investorId, startup_id: startupId };
+  const row: import("@/types/supabase").Database["public"]["Tables"]["watchlists"]["Insert"] =
+    { investor_id: investorId, startup_id: startupId };
   if (note !== undefined) {
     row.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
   }

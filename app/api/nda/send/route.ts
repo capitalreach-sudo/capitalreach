@@ -43,10 +43,11 @@ export async function POST(req: NextRequest) {
     .eq("id", investorId)
     .single();
 
+  if (!investor) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
   const { data: investorOwner } = await adminClient
     .from("profiles")
     .select("email, full_name")
-    .eq("id", investor?.owner_id)
+    .eq("id", investor.owner_id)
     .single();
 
   if (!startupOwner || !investorOwner) {

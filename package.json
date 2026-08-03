@@ -14,7 +14,8 @@
     "db:seed": "node scripts/seed-staging.mjs",
     "check:env": "node scripts/check-env.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "gen:types": "supabase gen types typescript --project-id wwkhnlxewahsggtqenvp --schema public > types/supabase.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",

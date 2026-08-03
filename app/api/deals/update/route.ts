@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Use /api/deals/close for closing deals" }, { status: 400 });
   }
 
-  const updates: Record<string, unknown> = {};
+  const updates: import("@/types/supabase").Database["public"]["Tables"]["deals"]["Update"] = {};
   if (status) {
     updates.status = status;
     // Only a genuine stage move resets the clock. updated_at can't stand in for

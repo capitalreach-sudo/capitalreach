@@ -88,7 +88,9 @@ export default async function InvestorProfilePage({ params }: Props) {
     ? new Date(investor.created_at).toLocaleDateString(getLocale(), { month: "long", year: "numeric" })
     : null;
   const portfolio: Array<{ name: string; stage?: string; outcome?: string }> =
-    Array.isArray(investor.portfolio_json) ? investor.portfolio_json.filter((c: any) => c?.name) : [];
+    Array.isArray(investor.portfolio_json)
+      ? (investor.portfolio_json as Array<{ name: string; stage?: string; outcome?: string }>).filter((c) => c?.name)
+      : [];
 
   return (
     <>
@@ -254,11 +256,11 @@ export default async function InvestorProfilePage({ params }: Props) {
                   </p>
                 </div>
               )}
-              {investor.languages?.length > 0 && (
+              {(investor.languages ?? []).length > 0 && (
                 <div className="col-span-2">
                   <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.languagesLabel")}</p>
                   <div className="flex flex-wrap gap-2">
-                    {investor.languages.map((lang: string) => (
+                    {(investor.languages ?? []).map((lang: string) => (
                       <span key={lang} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{lang}</span>
                     ))}
                   </div>
