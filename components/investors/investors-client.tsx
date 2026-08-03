@@ -423,14 +423,14 @@ export function InvestorsClient() {
                         {/* Top */}
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${grad} flex items-center justify-center font-extrabold text-white text-lg flex-shrink-0 shadow-md`}>
+                            <div className="w-12 h-12 rounded bg-cr-copper flex items-center justify-center font-bold text-white text-lg flex-shrink-0">
                               {displayName[0].toUpperCase()}
                             </div>
                             <div>
-                              <p className="font-bold text-cr-ink text-sm leading-tight group-hover:text-cr-copper transition-colors">{displayName}</p>
+                              <p className="text-cr-ink leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px" }}>{displayName}</p>
                               {inv.firm && <p className="text-xs text-cr-i4 mt-0.5">{inv.firm}</p>}
                               <div className="flex items-center gap-1.5 mt-1">
-                                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full border", meta.bg, meta.color, meta.border)}>
+                                <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-sm border bg-transparent uppercase tracking-wide", meta.color, meta.border)}>
                                   {t(meta.labelKey)}
                                 </span>
                               </div>
@@ -445,9 +445,9 @@ export function InvestorsClient() {
 
                         {/* Check size */}
                         {(inv.min_check || inv.max_check) && (
-                          <div className="bg-cr-p2 rounded-xl px-3 py-2 mb-3 border border-cr-p4">
-                            <p className="text-[10px] text-cr-i4 font-medium mb-0.5">{t("investors.checkSize")}</p>
-                            <p className="text-xs font-bold text-cr-ink">
+                          <div className="border-t border-b border-cr-p4 px-0.5 py-2 mb-3">
+                            <p className="text-[10px] text-cr-i4 font-medium mb-0.5 uppercase tracking-wide">{t("investors.checkSize")}</p>
+                            <p className="text-xs text-cr-copper" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
                               {inv.min_check ? formatCheck(inv.min_check) : t("investors.any")} – {inv.max_check ? formatCheck(inv.max_check) : t("investors.any")}
                             </p>
                           </div>
@@ -457,7 +457,7 @@ export function InvestorsClient() {
                         {inv.stages && inv.stages.length > 0 && (
                           <div className="flex flex-wrap gap-1 mb-3">
                             {inv.stages.map(s => (
-                              <span key={s} className="text-[10px] font-medium px-2 py-0.5 bg-cr-copper/10 text-cr-copper border border-cr-copper/20 rounded-full">
+                              <span key={s} className="text-[10px] font-medium px-2 py-0.5 bg-transparent text-cr-i3 border border-cr-p4 rounded-sm uppercase tracking-wide">
                                 {STAGE_LABELS[s] ?? s}
                               </span>
                             ))}
@@ -468,10 +468,10 @@ export function InvestorsClient() {
                         {inv.industries && inv.industries.length > 0 && (
                           <div className="flex flex-wrap gap-1 mb-3">
                             {inv.industries.slice(0, 3).map(ind => (
-                              <span key={ind} className="text-[10px] font-medium px-2 py-0.5 bg-cr-p2 text-cr-i4 border border-cr-p4 rounded-full">{ind}</span>
+                              <span key={ind} className="text-[10px] font-medium px-2 py-0.5 bg-transparent text-cr-i4 border border-cr-p4 rounded-sm">{ind}</span>
                             ))}
                             {inv.industries.length > 3 && (
-                              <span className="text-[10px] font-medium px-2 py-0.5 bg-cr-p2 text-cr-i4 border border-cr-p4 rounded-full">+{inv.industries.length - 3}</span>
+                              <span className="text-[10px] font-medium px-2 py-0.5 bg-transparent text-cr-i4 border border-cr-p4 rounded-sm">+{inv.industries.length - 3}</span>
                             )}
                           </div>
                         )}
@@ -502,7 +502,7 @@ export function InvestorsClient() {
 
           {/* Bottom CTA */}
           {!loading && (
-            <div className="mt-16 bg-gradient-to-r from-cr-cu-d to-emerald-700 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-5 text-white">
+            <div className="mt-16 bg-cr-copper rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-5 text-white">
               <div>
                 <h2 className="text-xl font-bold mb-1">{t("investors.readyFunded")}</h2>
                 <p className="text-white/70 text-sm">{t("investors.readyFundedSub")}</p>
