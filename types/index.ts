@@ -66,62 +66,20 @@ export interface Profile {
   languages:            string[] | null;
 }
 
-export interface Startup {
-  id: string;
-  owner_id: string;
-  slug: string;
-  name: string;
-  website: string | null;
-  tagline: string;
-  description: string | null;
-  problem: string | null;
-  solution: string | null;
-  market: string | null;
-  competitive_advantage: string | null;
+// Generated Row as the base (same treatment as Deal/Contract): the field
+// list and nullability come from the schema and cannot drift. Narrowed on
+// top: stage/status are DB CHECK-guaranteed unions; subscription_tier's
+// CHECK was updated by migration 005 to exactly this union (verified live);
+// the two jsonb columns get the shapes the app writes. Joined arrays stay
+// optional -- they exist only when the query selects them.
+type StartupRow = import("@/types/supabase").Database["public"]["Tables"]["startups"]["Row"];
+export interface Startup extends Omit<StartupRow,
+  "stage" | "status" | "subscription_tier" | "competitors_json" | "social_proof"> {
   stage: StartupStage;
-  industry: string;
-  country: string;
-  funding_target: number;
-  equity_offered: number | null;
-  min_check_size: number | null;
-  use_of_funds: string | null;
-  mrr: number | null;
-  arr: number | null;
-  user_count: number | null;
-  growth_rate: number | null;
   status: StartupStatus;
   subscription_tier: SubscriptionTier;
-  vaultrise_score: number | null;
-  pageviews: number;
-  featured: boolean;
-  require_nda: boolean;
-  demo_video_url: string | null;
-  created_at: string;
-  updated_at: string;
-  // Extended fields (added in migration 004)
-  founded_date: string | null;
-  city: string | null;
-  business_model: string | null;
-  revenue_model: string | null;
-  team_size: string | null;
-  company_type: string | null;
-  churn_rate: number | null;
-  paying_customers: number | null;
-  pitch_deck_url: string | null;
-  product_hunt_url: string | null;
-  twitter_url: string | null;
-  runway_months: number | null;
   competitors_json: Array<{ name: string; differentiator: string }>;
-  // Feature 3: rich profile fields (migration 008)
-  target_markets:   string[] | null;
-  languages:        string[] | null;
-  previous_funding: number | null;
-  lead_investor:    string | null;
-  deck_language:    string | null;
-  video_pitch_url:  string | null;
-  social_proof:     Array<{ type: string; value: string }> | null;
-  looking_for:      string[] | null;
-  // joined
+  social_proof: Array<{ type: string; value: string }> | null;
   founders?: StartupFounder[];
   documents?: StartupDocument[];
   milestones?: StartupMilestone[];
@@ -154,33 +112,13 @@ export interface StartupMilestone {
   description: string;
 }
 
-export interface Investor {
-  id: string;
-  owner_id: string;
-  slug: string;
+type InvestorRow = import("@/types/supabase").Database["public"]["Tables"]["investors"]["Row"];
+export interface Investor extends Omit<InvestorRow,
+  "type" | "stages" | "subscription_tier" | "portfolio_json"> {
   type: InvestorType;
-  bio: string | null;
-  linkedin_url: string | null;
-  industries: string[];
   stages: StartupStage[];
-  min_check: number | null;
-  max_check: number | null;
-  geography: string[];
   subscription_tier: SubscriptionTier;
-  created_at: string;
-  // Extended fields (added in migration 004)
-  display_name: string | null;
-  firm_name: string | null;
-  website: string | null;
-  twitter_url: string | null;
-  investment_thesis: string | null;
-  aum: string | null;
   portfolio_json: Array<{ name: string; stage: string; year: string }>;
-  follow_on_policy: string | null;
-  board_seat_pref: string | null;
-  lead_rounds: boolean;
-  number_of_investments: number | null;
-  avg_hold_period: string | null;
 }
 
 export interface Thread {
