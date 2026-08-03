@@ -44,6 +44,7 @@ interface Props {
   profile: Profile;
   threads: Thread[];
   myStartupId?: string | null;
+  unreadThreadIds?: string[];
 }
 
 // ── Shared element styles ─────────────────────────────────────────────────────
@@ -56,7 +57,7 @@ const labelStyle: React.CSSProperties = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function MessagesClient({ profile, threads: initialThreads, myStartupId }: Props) {
+export function MessagesClient({ profile, threads: initialThreads, myStartupId, unreadThreadIds = [] }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -229,7 +230,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
-  function selectThread(t: Thread) { setSelectedThread(t); setMobileShowChat(true); }
+  // Opening a thread reads it (the effect above marks read server-side), so
+  // the dot clears locally at the same moment.
+  const [unreadSet, setUnreadSet] = useState<Set<string>>(() => new Set(unreadThreadIds));
+  function selectThread(t: Thread) {
+    setSelectedThread(t);
+    setMobileShowChat(true);
+    setUnreadSet((prev) => { if (!prev.has(t.id)) return prev; const n = new Set(prev); n.delete(t.id); return n; });
+  }
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
@@ -404,7 +412,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId }
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{getLabel(thread)}</p>
+                          <p style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: unreadSet.has(thread.id) ? 700 : 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{getLabel(thread)}</span>
+                            {unreadSet.has(thread.id) && (
+                              <span aria-label="unread" style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
+                            )}
+                          </p>
                           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{timeAgo(thread.updated_at, t)}</span>
                         </div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px", textTransform: "capitalize" }}>{getSubLabel(thread)}</p>

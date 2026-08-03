@@ -62,10 +62,26 @@ export default async function MessagesPage() {
     redirect("/auth/login?redirect=/dashboard/messages");
   }
 
+  // Which threads hold messages the other side sent that this user hasn't
+  // read -- the dot on the thread list. One grouped query, not per-thread.
+  let unreadThreadIds: string[] = [];
+  if (threads.length && profile) {
+    try {
+      const supabase = await createServerSupabaseClient();
+      const { data: unreadRows } = await supabase
+        .from("messages")
+        .select("thread_id")
+        .in("thread_id", threads.map((th) => th.id))
+        .neq("sender_id", profile.id)
+        .is("read_at", null);
+      unreadThreadIds = Array.from(new Set((unreadRows ?? []).map((r) => r.thread_id)));
+    } catch { /* dot-less list beats a broken page */ }
+  }
+
   return (
     <>
       <Navbar />
-      <MessagesClient profile={profile} threads={threads} myStartupId={myStartupId} />
+      <MessagesClient profile={profile} threads={threads} myStartupId={myStartupId} unreadThreadIds={unreadThreadIds} />
     </>
   );
 }
