@@ -61,7 +61,7 @@ export default async function DealsPage() {
               Your deals
             </h1>
             <DealsPortalClient
-              deals={(deals ?? []) as unknown as Deal[]}
+              deals={(deals ?? []) as Deal[]}
               viewAs="startup"
               revealIdentity={revealIdentity}
               equityOffered={startup.equity_offered}
@@ -108,7 +108,7 @@ export default async function DealsPage() {
               Your deals
             </h1>
             <DealsPortalClient
-              deals={(deals ?? []) as unknown as Deal[]}
+              deals={(deals ?? []) as Deal[]}
               viewAs="investor"
               canExport={canExport}
               ownProfile={{
@@ -145,7 +145,7 @@ export default async function DealsPage() {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
               Platform-wide oversight — every deal across every startup and investor.
             </p>
-            <DealsPortalClient deals={(deals ?? []) as unknown as Deal[]} viewAs="admin" canExport />
+            <DealsPortalClient deals={(deals ?? []) as Deal[]} viewAs="admin" canExport />
             <LegalDisclaimer />
           </div>
         </main>

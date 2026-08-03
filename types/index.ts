@@ -204,23 +204,14 @@ export interface Message {
   created_at: string;
 }
 
-export interface Deal {
-  id: string;
-  startup_id: string;
-  investor_id: string;
-  amount: number | null;
-  currency: string | null;
+// Based on the generated Row so the field list and nullability can never
+// drift from the real schema again -- the hand-written version had already
+// diverged (currency nullability, a missing notes column). The one narrowing
+// is status: the DB CHECK constrains it to exactly the DealStatus union, so
+// this is the database's own guarantee, not a hope.
+type DealRow = import("@/types/supabase").Database["public"]["Tables"]["deals"]["Row"];
+export interface Deal extends Omit<DealRow, "status"> {
   status: DealStatus;
-  success_fee_invoiced: boolean;
-  success_fee_paid_at: string | null;
-  stripe_invoice_id: string | null;
-  next_follow_up: string | null;
-  closed_at: string | null;
-  passed_at: string | null;
-  success_fee_amount: number | null;
-  stage_entered_at: string | null;
-  created_at: string;
-  updated_at: string;
   startup?: Startup;
   investor?: Investor;
 }
@@ -228,21 +219,12 @@ export interface Deal {
 export type ContractType   = "term_sheet" | "safe" | "convertible_note" | "nda" | "custom";
 export type ContractStatus = "draft" | "sent" | "signed" | "void";
 
-export interface Contract {
-  id: string;
-  deal_id: string;
-  startup_id: string;
-  investor_id: string;
-  created_by: string;
-  title: string;
-  contract_type: ContractType;
-  amount: number | null;
-  currency: string | null;
-  equity_percent: number | null;
-  terms: string | null;
+// Same treatment as Deal: generated Row as the base, with the two unions the
+// DB CHECK constraints already guarantee narrowed on top.
+type ContractRow = import("@/types/supabase").Database["public"]["Tables"]["contracts"]["Row"];
+export interface Contract extends Omit<ContractRow, "status" | "contract_type"> {
   status: ContractStatus;
-  created_at: string;
-  updated_at: string;
+  contract_type: ContractType;
 }
 
 export type DealActivityType = "note" | "status_change" | "contract_status" | "nda_signed" | "success_fee";
