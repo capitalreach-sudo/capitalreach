@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BellOff } from "lucide-react";
-import { TYPE_ICON, FALLBACK_ICON } from "@/components/shared/notification-bell";
+import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 
