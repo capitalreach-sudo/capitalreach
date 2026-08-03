@@ -12,7 +12,9 @@
     "db:bootstrap": "node scripts/build-bootstrap.mjs",
     "db:verify": "node scripts/verify-schema.mjs",
     "db:seed": "node scripts/seed-staging.mjs",
-    "check:env": "node scripts/check-env.mjs"
+    "check:env": "node scripts/check-env.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
@@ -64,6 +66,7 @@
     "autoprefixer": "^10.5.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
