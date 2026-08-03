@@ -81,6 +81,17 @@ export const uploadRatelimit: Pick<Ratelimit, "limit"> = _redis
     })
   : MOCK_LIMITER;
 
+// Public search: 30/min per IP. The box debounces at 250ms, so a human tops
+// out around 4/sec in bursts; this only bites scripted scraping of the
+// directories through the search endpoint.
+export const searchRatelimit: Pick<Ratelimit, "limit"> = _redis
+  ? new Ratelimit({
+      redis: _redis,
+      limiter: Ratelimit.slidingWindow(30, "1 m"),
+      prefix: "capitalreach:search",
+    })
+  : MOCK_LIMITER;
+
 // AI endpoints: 20 per hour
 export const aiRatelimit: Pick<Ratelimit, "limit"> = _redis
   ? new Ratelimit({

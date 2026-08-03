@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
+import { searchRatelimit } from "@/lib/redis";
 
 export const revalidate = 0;
 
@@ -14,6 +15,15 @@ export const revalidate = 0;
 export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim().slice(0, 80);
   if (q.length < 2) return NextResponse.json({ startups: [], investors: [] });
+
+  // Public endpoint over the whole directory -- without this it is the
+  // cheapest way to scrape both listings. Degrades open when Redis is
+  // unconfigured, like every other limiter here.
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const { success } = await searchRatelimit.limit(`ip:${ip}`);
+  if (!success) {
+    return NextResponse.json({ startups: [], investors: [], limited: true }, { status: 429 });
+  }
 
   // Escape the LIKE metacharacters so a query of "50%" matches the text
   // "50%" rather than acting as a wildcard.
