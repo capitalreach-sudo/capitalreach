@@ -174,7 +174,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
             {getInitials(startup.name)}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {startup.name}
             </p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -187,13 +187,13 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
         {/* Row 2 — Badges */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "14px", flexWrap: "wrap" }}>
           <span style={{
-            background:    "var(--cr-copper-bg)",
-            border:        "1px solid var(--cr-copper-br)",
-            color:         "var(--cr-copper)",
+            background:    "transparent",
+            border:        "1px solid var(--cr-rule-dark)",
+            color:         "var(--cr-ink-3)",
             fontFamily:    "'DM Sans', sans-serif",
             fontWeight:    500,
             fontSize:      "10px",
-            borderRadius:  "3px",
+            borderRadius:  "2px",
             padding:       "2px 8px",
             textTransform: "uppercase",
             letterSpacing: "0.05em",
@@ -201,13 +201,13 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
             {startup.industry}
           </span>
           <span style={{
-            background:    "var(--cr-paper-4)",
+            background:    "transparent",
             border:        "1px solid var(--cr-rule)",
-            color:         "var(--cr-ink-3)",
+            color:         "var(--cr-ink-4)",
             fontFamily:    "'DM Sans', sans-serif",
             fontWeight:    400,
             fontSize:      "10px",
-            borderRadius:  "3px",
+            borderRadius:  "2px",
             padding:       "2px 8px",
             textTransform: "uppercase",
             letterSpacing: "0.04em",
@@ -216,8 +216,8 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           </span>
           {isNew && (
             <span style={{
-              background:    "var(--cr-up-bg)",
-              border:        "1px solid rgba(45,106,79,0.25)",
+              background:    "transparent",
+              border:        "1px solid rgba(45,106,79,0.35)",
               color:         "var(--cr-up)",
               fontFamily:    "'DM Sans', sans-serif",
               fontWeight:    500,
