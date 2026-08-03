@@ -1674,7 +1674,12 @@
     "toastApproveFailed": "Genehmigung fehlgeschlagen",
     "toastRejectReasonRequired": "Bitte einen Ablehnungsgrund angeben",
     "toastRejected": "Startup abgelehnt, E-Mail gesendet",
-    "toastRejectFailed": "Ablehnung fehlgeschlagen"
+    "toastRejectFailed": "Ablehnung fehlgeschlagen",
+    "launchTitle": "Launch-Modus",
+    "launchOnSub": "Aktiv — jedes Konto hat kostenlosen Top-Tier-Zugriff ({memberCount}/{target} Mitglieder). Beim Abschalten greifen die bezahlten Tarife.",
+    "launchOffSub": "Aus — die Tarife greifen. Kostenlose Konten sehen gesperrte Funktionen.",
+    "launchTurnOff": "Launch-Phase beenden",
+    "launchTurnOn": "Launch-Modus reaktivieren"
   },
   "contact": {
     "title": "Kontaktieren Sie uns",

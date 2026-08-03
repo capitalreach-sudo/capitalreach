@@ -29,12 +29,17 @@ export interface AccessContext {
 
 function founderTier(ctx: AccessContext): FounderPlanId | "suspended" {
   if (ctx.suspended) return "suspended";
+  // Admins hold the top tier on every surface. Suspension still wins above:
+  // a suspended admin is a deliberately locked account, and the lock should
+  // hold for them too.
+  if (ctx.role === "admin") return "growth";
   if (ctx.isLaunchMode) return "growth";
   return getFounderPlan(ctx.tier).id;
 }
 
 function investorTier(ctx: AccessContext): InvestorPlanId | "suspended" {
   if (ctx.suspended) return "suspended";
+  if (ctx.role === "admin") return "pro";
   if (ctx.isLaunchMode) return "pro";
   return getInvestorPlan(ctx.tier).id;
 }

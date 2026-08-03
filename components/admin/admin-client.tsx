@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,21 @@ interface Props {
 }
 
 export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats }: Props) {
+  // Launch mode: the everyone-gets-top-tier state. null until loaded.
+  const [launch, setLaunch] = useState<{ isLaunch: boolean; memberCount: number; target: number } | null>(null);
+  const [savingLaunch, setSavingLaunch] = useState(false);
+  useEffect(() => {
+    fetch("/api/admin/launch-mode").then(r => r.ok ? r.json() : null).then(setLaunch).catch(() => {});
+  }, []);
+  async function setLaunchMode(enabled: boolean) {
+    setSavingLaunch(true);
+    const res = await fetch("/api/admin/launch-mode", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabled }),
+    });
+    setSavingLaunch(false);
+    if (res.ok) setLaunch(await res.json());
+  }
   const { t } = useTranslation();
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -74,6 +89,30 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <p className="text-cr-i3 text-sm">{t("admin.panelSub")}</p>
         </div>
       </div>
+
+      {launch !== null && (
+        <div className="bg-cr-paper border rounded-2xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-sm font-medium text-cr-ink">{t("admin.launchTitle")}</p>
+            <p className="text-xs text-cr-i3 mt-0.5">
+              {launch.isLaunch
+                ? t("admin.launchOnSub", { memberCount: launch.memberCount, target: launch.target })
+                : t("admin.launchOffSub")}
+            </p>
+          </div>
+          <button
+            onClick={() => setLaunchMode(!launch.isLaunch)}
+            disabled={savingLaunch}
+            className={`text-xs font-medium px-4 py-2 rounded-lg border transition-colors ${
+              launch.isLaunch
+                ? "border-cr-copper text-cr-copper hover:bg-cr-copper/10"
+                : "bg-cr-copper text-white border-cr-copper"
+            }`}
+          >
+            {savingLaunch ? t("common.loading") : launch.isLaunch ? t("admin.launchTurnOff") : t("admin.launchTurnOn")}
+          </button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

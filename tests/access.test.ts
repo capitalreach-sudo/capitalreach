@@ -41,3 +41,17 @@ describe("outside launch, tiers bind", () => {
     expect(founderCan(ctx({ role: "startup", tier: "growth" })).docLimit).toBe(Infinity);
   });
 });
+
+describe("admin bypasses tier gates", () => {
+  it("an admin gets top-tier capabilities on both sides, outside launch, on the free tier", () => {
+    const inv = investorCan(ctx({ role: "admin", tier: "free", isLaunchMode: false }));
+    expect(inv.viewFinancials).toBe(true);
+    expect(inv.messageLimit).toBe(Infinity);
+    const fdr = founderCan(ctx({ role: "admin", tier: "free", isLaunchMode: false }));
+    expect(fdr.docLimit).toBe(Infinity);
+  });
+  it("suspension still beats admin", () => {
+    const c = investorCan(ctx({ role: "admin", suspended: true, isLaunchMode: true }));
+    expect(c.browse).toBe(false);
+  });
+});

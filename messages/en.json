@@ -1678,7 +1678,12 @@
     "toastApproveFailed": "Failed to approve",
     "toastRejectReasonRequired": "Please add a rejection reason",
     "toastRejected": "Startup rejected, email sent",
-    "toastRejectFailed": "Failed to reject"
+    "toastRejectFailed": "Failed to reject",
+    "launchTitle": "Launch mode",
+    "launchOnSub": "Active — every account has top-tier access free ({memberCount}/{target} members). Turning it off makes the paid tiers bind.",
+    "launchOffSub": "Off — tiers are binding. Free accounts see gated features locked.",
+    "launchTurnOff": "End launch period",
+    "launchTurnOn": "Re-enable launch mode"
   },
   "contact": {
     "title": "Get in Touch",
