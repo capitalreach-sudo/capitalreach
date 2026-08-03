@@ -14,6 +14,7 @@ import { AiReportDisclaimer } from "@/components/shared/legal-disclaimer";
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
+import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -110,6 +111,26 @@ export function StartupDetailClient({
       .single()
       .then(({ data }) => setIsSaved(!!data));
   }, [investorId, startup.id, supabase]);
+
+  const router = useRouter();
+  const [startingDeal, setStartingDeal] = useState(false);
+  // The reverse of the pipeline pill: when there is no deal yet, the profile
+  // is where an investor decides to start one -- sending them to the portal
+  // to re-find this startup by name was the long way round.
+  async function startDeal() {
+    if (!investorId || startingDeal) return;
+    setStartingDeal(true);
+    const res = await fetch("/api/deals/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ counterpartId: startup.id }),
+    });
+    const data = await res.json();
+    setStartingDeal(false);
+    if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
+    router.push(`/deals?deal=${data.deal.id}`);
+  }
+
 
   async function toggleSave() {
     if (!investorId) { notify.info(t("startupDetail.signInToSave")); return; }
@@ -257,6 +278,24 @@ export function StartupDetailClient({
                         : viewerDeal.status === "closed" ? t("deals.colClosed")
                         : t("deals.colPassed")}
                     </Link>
+                  )}
+                  {!viewerDeal && investorId && !viewerSuspended && (
+                    <button
+                      onClick={startDeal}
+                      disabled={startingDeal}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: "5px",
+                        background: "transparent", border: "1px solid var(--cr-copper-br)",
+                        color: "var(--cr-copper)", cursor: "pointer",
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px",
+                        borderRadius: "2px", padding: "3px 9px",
+                        textTransform: "uppercase", letterSpacing: "0.05em",
+                        opacity: startingDeal ? 0.5 : 1,
+                      }}
+                    >
+                      <Handshake style={{ width: 11, height: 11 }} />
+                      {startingDeal ? t("deals.creating") : t("startupDetail.startDeal")}
+                    </button>
                   )}
                   <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     {startup.industry}

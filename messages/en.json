@@ -991,7 +991,8 @@
     "createFreeAccount": "Create free account",
     "upgradeTractionTitle": "Upgrade to see traction data",
     "upgradeTractionDesc": "Angel members see MRR, ARR, user counts, and growth rates.",
-    "inYourPipeline": "In your pipeline"
+    "inYourPipeline": "In your pipeline",
+    "startDeal": "Start a deal"
   },
   "investors": {
     "pageTitle": "Verified investors",

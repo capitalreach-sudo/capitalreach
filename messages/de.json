@@ -987,7 +987,8 @@
     "createFreeAccount": "Kostenloses Konto erstellen",
     "upgradeTractionTitle": "Upgrade, um Traktionsdaten zu sehen",
     "upgradeTractionDesc": "Angel-Mitglieder sehen MRR, ARR, Nutzerzahlen und Wachstumsraten.",
-    "inYourPipeline": "In Ihrer Pipeline"
+    "inYourPipeline": "In Ihrer Pipeline",
+    "startDeal": "Deal starten"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
