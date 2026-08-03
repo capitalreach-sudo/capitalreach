@@ -1971,7 +1971,8 @@
     "title": "Benachrichtigungen",
     "markAllRead": "Alle als gelesen markieren",
     "empty": "Nichts Neues.",
-    "viewAll": "Alle Benachrichtigungen ansehen"
+    "viewAll": "Alle Benachrichtigungen ansehen",
+    "loadMore": "Ältere anzeigen"
   },
   "authErrors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",

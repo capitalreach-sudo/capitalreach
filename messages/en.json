@@ -1971,7 +1971,8 @@
     "title": "Notifications",
     "markAllRead": "Mark all read",
     "empty": "Nothing new.",
-    "viewAll": "View all notifications"
+    "viewAll": "View all notifications",
+    "loadMore": "Show older"
   },
   "authErrors": {
     "generic": "Something went wrong. Please try again.",

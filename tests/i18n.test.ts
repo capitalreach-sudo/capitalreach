@@ -16,7 +16,7 @@ function flat(d: Record<string, unknown>, p = ""): Record<string, string> {
   return o;
 }
 const fe = flat(en);
-const vars = (s: string) => new Set([...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]));
+const vars = (s: string) => new Set(Array.from(s.matchAll(/\{(\w+)\}/g), (m) => m[1]));
 
 describe("locale files", () => {
   for (const f of files) {
@@ -36,7 +36,7 @@ describe("locale files", () => {
       const bad = Object.keys(fl).filter((k) => {
         if (!(k in fe)) return false;
         const a = vars(fe[k]), b = vars(fl[k]);
-        return a.size !== b.size || [...a].some((v) => !b.has(v));
+        return a.size !== b.size || Array.from(a).some((v) => !b.has(v));
       });
       expect(bad).toEqual([]);
     });

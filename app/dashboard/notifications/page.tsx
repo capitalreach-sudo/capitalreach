@@ -24,14 +24,34 @@ export default function NotificationsPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [unread, setUnread] = useState(0);
 
+  // True while a full page came back last time -- i.e. there may be more.
+  const [more, setMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   async function load() {
     const res = await fetch("/api/notifications");
     if (!res.ok) { setRows([]); return; }
     const d = await res.json();
     setRows(d.notifications ?? []);
     setUnread(d.unread ?? 0);
+    setMore((d.notifications ?? []).length === 30);
   }
   useEffect(() => { load(); }, []);
+
+  async function loadMore() {
+    if (!rows?.length) return;
+    setLoadingMore(true);
+    const last = rows[rows.length - 1];
+    const res = await fetch(
+      `/api/notifications?before=${encodeURIComponent(last.created_at)}&beforeId=${encodeURIComponent(last.id)}`
+    );
+    setLoadingMore(false);
+    if (!res.ok) return;
+    const d = await res.json();
+    const next: Row[] = d.notifications ?? [];
+    setRows([...rows, ...next]);
+    setMore(next.length === 30);
+  }
 
   async function markAll() {
     await fetch("/api/notifications", {
@@ -107,6 +127,14 @@ export default function NotificationsPage() {
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {more && rows && rows.length > 0 && (
+          <div className="mt-4 text-center">
+            <Button variant="outline" size="sm" onClick={loadMore} disabled={loadingMore}>
+              {loadingMore ? t("common.loading") : t("notifications.loadMore")}
+            </Button>
           </div>
         )}
       </main>

@@ -17,14 +17,35 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const unreadOnly = req.nextUrl.searchParams.get("unread") === "1";
+  // Cursor pagination: pass the created_at AND id of the last row you have.
+  // The cursor must be composite -- rows inserted in one transaction share a
+  // created_at (Postgres now() is per-transaction), so a timestamp-only
+  // `lt` skips every tied row and the page after a batch comes back empty.
+  // Both parts are user input, so they are validated before being embedded
+  // in the or() filter string.
+  const before = req.nextUrl.searchParams.get("before");
+  const beforeId = req.nextUrl.searchParams.get("beforeId");
+  const validBefore = before && !Number.isNaN(Date.parse(before)) ? before : null;
+  const validBeforeId =
+    beforeId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(beforeId)
+      ? beforeId
+      : null;
 
   let query = supabase
     .from("notifications")
     .select("id, type, title, body, href, read_at, created_at")
     .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
     .limit(30);
 
   if (unreadOnly) query = query.is("read_at", null);
+  if (validBefore && validBeforeId) {
+    query = query.or(
+      `created_at.lt.${validBefore},and(created_at.eq.${validBefore},id.lt.${validBeforeId})`
+    );
+  } else if (validBefore) {
+    query = query.lt("created_at", validBefore);
+  }
 
   const [{ data: rows }, { count }] = await Promise.all([
     query,
