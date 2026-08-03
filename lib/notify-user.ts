@@ -14,7 +14,9 @@ export type NotificationType =
   // Added by migration 024. Keep this union in step with that CHECK
   // constraint: a value here that the constraint rejects fails the insert at
   // runtime, and notifyUser deliberately never throws, so it would vanish.
-  | "team_added";
+  | "team_added"
+  // Added by migration 026.
+  | "tier_changed";
 
 interface NotifyInput {
   userId: string;

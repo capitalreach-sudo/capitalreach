@@ -68,6 +68,9 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
 
   // Suspend modal
   const [target, setTarget] = useState<AdminUser | null>(null);
+  // Tier editor: which user, and the tier chosen in the modal.
+  const [tierTarget, setTierTarget] = useState<AdminUser | null>(null);
+  const [tierChoice, setTierChoice] = useState("free");
   const [reason, setReason] = useState("");
   const [duration, setDuration] = useState("indefinite");
 
@@ -113,6 +116,21 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
     if (!res.ok) { notify.error(data.error || "Failed to suspend"); return; }
     notify.success(`${target.full_name || target.email} suspended`);
     setTarget(null); setReason(""); setDuration("indefinite");
+  }
+
+  async function applyTier() {
+    if (!tierTarget) return;
+    setBusy(tierTarget.id);
+    const res = await fetch("/api/admin/set-tier", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: tierTarget.id, tier: tierChoice }),
+    });
+    const data = await res.json();
+    setBusy(null);
+    if (!res.ok) { notify.error(data.error || "Failed to set tier"); return; }
+    notify.success("Tier updated");
+    setTierTarget(null);
     router.refresh();
   }
 
@@ -205,7 +223,19 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                     <div style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>{u.email}</div>
                   </td>
                   <td style={{ ...cellStyle, textTransform: "capitalize" }}>{u.role}</td>
-                  <td style={{ ...cellStyle, textTransform: "capitalize" }}>{u.subscription_tier || "free"}</td>
+                  <td style={{ ...cellStyle, textTransform: "capitalize" }}>
+                    {u.role === "admin" ? (
+                      u.subscription_tier || "free"
+                    ) : (
+                      <button
+                        onClick={() => { setTierTarget(u); setTierChoice(u.subscription_tier || "free"); }}
+                        title="Change tier"
+                        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit", textTransform: "capitalize", color: "var(--cr-copper)", textDecoration: "underline dotted" }}
+                      >
+                        {u.subscription_tier || "free"}
+                      </button>
+                    )}
+                  </td>
                   <td style={{ ...cellStyle, fontFamily: "'JetBrains Mono', monospace", fontSize: "11px" }}>{formatDate(u.created_at)}</td>
                   <td style={cellStyle}>
                     <span style={statusStyle(u.account_status || "active")}>
@@ -273,6 +303,31 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
       </div>
 
       {/* Suspend modal */}
+      {tierTarget && (
+        <Modal onClose={() => setTierTarget(null)} title={`Set tier for ${tierTarget.full_name || tierTarget.email}`}>
+          <p style={{ fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
+            Applies immediately and notifies the user. Role: <b style={{ textTransform: "capitalize" }}>{tierTarget.role}</b>
+          </p>
+          <select
+            value={tierChoice}
+            onChange={e => setTierChoice(e.target.value)}
+            style={{ width: "100%", height: "38px", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "0 10px", marginBottom: "16px", background: "var(--cr-paper-3)", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}
+          >
+            {(tierTarget.role === "startup"
+              ? ["free", "starter", "growth"]
+              : ["free", "angel", "pro", "institution"]
+            ).map(t2 => <option key={t2} value={t2} style={{ textTransform: "capitalize" }}>{t2}</option>)}
+          </select>
+          <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+            <button onClick={() => setTierTarget(null)} style={ghostBtn}>Cancel</button>
+            <button onClick={applyTier} disabled={busy === tierTarget.id}
+              style={{ background: "var(--cr-copper)", color: "#fff", border: "none", borderRadius: "4px", padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", cursor: "pointer", opacity: busy === tierTarget.id ? 0.5 : 1 }}>
+              {busy === tierTarget.id ? "Saving…" : "Apply tier"}
+            </button>
+          </div>
+        </Modal>
+      )}
+
       {target && (
         <Modal onClose={() => setTarget(null)} title={`Suspend ${target.full_name || target.email}?`}>
           <label style={labelStyle}>Reason (shown to the user)</label>
