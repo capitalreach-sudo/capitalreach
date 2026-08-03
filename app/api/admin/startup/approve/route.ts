@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Send approval email
-  const ownerEmail = (startup.owner as any)?.email;
+  const ownerEmail = startup.owner?.email;
   if (ownerEmail) {
     await sendListingLiveEmail(
       ownerEmail,

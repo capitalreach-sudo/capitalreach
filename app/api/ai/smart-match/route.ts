@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ matches: [], message: "No investors in the database yet." });
     }
 
-    const investorList = investors.map((inv: any) => ({
+    const investorList = investors.map((inv) => ({
       id: inv.id,
       slug: inv.slug,
       type: inv.type || "angel",
@@ -119,12 +119,12 @@ Rules:
     const rawMatches: Array<{ investorId: string; matchScore: number; matchReason: string }> =
       Array.isArray(result.matches) ? result.matches : [];
 
-    const investorMap = new Map(investorList.map((inv: any) => [inv.id, inv]));
+    const investorMap = new Map(investorList.map((inv) => [inv.id, inv]));
     const validatedMatches = rawMatches
       .filter(m => investorMap.has(m.investorId))
       .slice(0, 6)
       .map(m => {
-        const inv = investorMap.get(m.investorId) as any;
+        const inv = investorMap.get(m.investorId)!;  // has() checked in the filter above
         return {
           id: inv.id,
           slug: inv.slug,

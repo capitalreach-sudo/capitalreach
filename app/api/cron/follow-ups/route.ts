@@ -57,8 +57,8 @@ export async function GET(req: NextRequest) {
   let notified = 0;
 
   for (const deal of due ?? []) {
-    const startup  = deal.startup as any;
-    const investor = deal.investor as any;
+    const startup  = deal.startup;
+    const investor = deal.investor;
     const counterpart = startup?.name ?? investor?.display_name ?? "a deal";
 
     await notifyUsers([startup?.owner_id, investor?.owner_id], {
@@ -71,8 +71,8 @@ export async function GET(req: NextRequest) {
     // Permanent record, so clearing the date below loses nothing.
     await admin.from("deal_activity").insert({
       deal_id:     deal.id,
-      startup_id:  (deal as any).startup_id,
-      investor_id: (deal as any).investor_id,
+      startup_id:  deal.startup_id,
+      investor_id: deal.investor_id,
       actor_id:    null,
       type:        "note",
       body:        `Follow-up reminder sent (was due ${deal.next_follow_up}).`,

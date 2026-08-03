@@ -41,8 +41,8 @@ export async function POST(req: NextRequest) {
   if (!deal) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const isParticipant =
-    (deal.startup as any)?.owner_id === user.id ||
-    (deal.investor as any)?.owner_id === user.id ||
+    deal.startup?.owner_id === user.id ||
+    deal.investor?.owner_id === user.id ||
     await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
 
   if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -104,8 +104,8 @@ export async function POST(req: NextRequest) {
     // the thing a counterparty most wants to hear about and previously the
     // thing they were least likely to notice.
     const other = [
-      (deal.startup as any)?.owner_id,
-      (deal.investor as any)?.owner_id,
+      deal.startup?.owner_id,
+      deal.investor?.owner_id,
     ].filter((id) => id && id !== user.id);
 
     const label = STAGE_LABEL[status as string] ?? status;

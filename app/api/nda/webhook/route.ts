@@ -82,8 +82,8 @@ export async function POST(req: NextRequest) {
     .eq("id", nda.investor_id)
     .single();
 
-  const startupEmail = (startup?.owner as any)?.email;
-  const investorEmail = (investor?.owner as any)?.email;
+  const startupEmail = startup?.owner?.email;
+  const investorEmail = investor?.owner?.email;
 
   // An NDA coming back signed unlocks gated material on the listing, so both
   // sides need to know it happened -- the investor to go read it, the founder

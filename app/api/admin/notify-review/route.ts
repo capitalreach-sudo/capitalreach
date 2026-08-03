@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const ownerEmail = (startup.owner as any)?.email;
+  const ownerEmail = startup.owner?.email;
   if (ownerEmail) {
     await sendProfileUnderReviewEmail(ownerEmail, startup.name).catch(() => {});
   }

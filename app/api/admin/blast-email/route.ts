@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   });
 
   const emails = matchingInvestors
-    .map(inv => (inv.owner as any)?.email)
+    .map(inv => inv.owner?.email)
     .filter(Boolean);
 
   if (emails.length === 0) {

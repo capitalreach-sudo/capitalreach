@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const startupOwnerEmail = (startup?.owner as any)?.email;
+  const startupOwnerEmail = startup?.owner?.email;
   if (startupOwnerEmail) {
     await sendNewMessageEmail(
       startupOwnerEmail,
