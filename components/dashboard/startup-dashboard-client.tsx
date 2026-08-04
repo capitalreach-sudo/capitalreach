@@ -13,7 +13,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 interface Props {
   profile:      Profile;
   startup:      Startup | null;
-  analytics:    { views: number; saves: number; deals: number };
+  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[] };
   isLaunchMode: boolean;
 }
 
@@ -235,6 +235,28 @@ function ViewersPanel() {
   );
 }
 
+/**
+ * 30 hairline bars, one per day, oldest left. Pure presentation: no axis, no
+ * numbers -- the count above it is the number; this is its shape. Flat-zero
+ * histories render nothing rather than an empty ruler.
+ */
+function ViewsSparkline({ series }: { series: number[] }) {
+  const max = Math.max(...series);
+  if (max === 0) return null;
+  const W = 120, H = 22, bw = W / series.length;
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden style={{ display: "block", marginTop: "8px" }}>
+      {series.map((v, i) => {
+        const h = v === 0 ? 1 : Math.max(2, (v / max) * H);
+        return (
+          <rect key={i} x={i * bw + 0.5} y={H - h} width={bw - 1} height={h}
+            fill={v === 0 ? "var(--cr-paper-4)" : "var(--cr-copper)"} opacity={v === 0 ? 0.6 : 0.75} rx={0.5} />
+        );
+      })}
+    </svg>
+  );
+}
+
 /** The raise's other direction: investors this startup is pursuing. */
 function TargetsPanel() {
   const { t } = useTranslation();
@@ -374,17 +396,18 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
         {/* Stats strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
           {[
-            { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye           },
+            { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye,           series: analytics.viewSeries },
             { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark      },
             { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: MessageSquare },
             { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp   },
-          ].map(({ label, val, Icon }) => (
+          ].map(({ label, val, Icon, series }: { label: string; val: number | string; Icon: typeof Eye; series?: number[] }) => (
             <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
                 <Icon style={{ width: 13, height: 13, color: "var(--cr-paper-4)" }} />
               </div>
               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{val}</p>
+              {series && <ViewsSparkline series={series} />}
             </div>
           ))}
         </div>

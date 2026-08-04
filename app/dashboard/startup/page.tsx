@@ -35,6 +35,7 @@ export default async function StartupDashboardPage() {
   // Analytics: pageviews last 30 days
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
+  const viewSeries: number[] = Array(30).fill(0);
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -46,12 +47,21 @@ export default async function StartupDashboardPage() {
     // aggregates are read, never who saved or who viewed.
     const metrics = createAdminClient();
 
-    const { count: views } = await metrics
+    // Timestamps rather than a head-count: the same rows also feed the
+    // per-day sparkline, so one query serves both numbers.
+    const { data: viewRows } = await metrics
       .from("pageviews")
-      .select("*", { count: "exact", head: true })
+      .select("created_at")
       .eq("startup_id", startup.id)
-      .gte("created_at", thirtyDaysAgo);
-    viewsCount = views || 0;
+      .gte("created_at", thirtyDaysAgo)
+      .limit(10000);
+    viewsCount = viewRows?.length || 0;
+    const DAY = 24 * 60 * 60 * 1000;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    for (const r of viewRows ?? []) {
+      const idx = 29 - Math.floor((today.getTime() - new Date(r.created_at).setHours(0, 0, 0, 0)) / DAY);
+      if (idx >= 0 && idx < 30) viewSeries[idx] += 1;
+    }
 
     const { count: saves } = await metrics
       .from("watchlists")
@@ -75,7 +85,7 @@ export default async function StartupDashboardPage() {
       <StartupDashboardClient
         profile={profile}
         startup={startup}
-        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount }}
+        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries }}
         isLaunchMode={isLaunch}
       />
     </>
