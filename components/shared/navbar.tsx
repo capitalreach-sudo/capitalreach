@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
-import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown } from "lucide-react";
+import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -339,48 +339,77 @@ export function Navbar() {
               </button>
             </div>
 
-            {/* Language switcher */}
-            <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: "1px solid rgba(26,22,18,0.08)" }}>
-              <LanguageSwitcher currentLocale={locale} />
+            {/* Signed-in identity — who you are and where your work lives,
+                before any navigation. */}
+            {profile && (
+              <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-5 py-4 flex-shrink-0"
+                style={{ borderBottom: "1px solid rgba(26,22,18,0.1)", textDecoration: "none" }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(181,101,29,0.12)", border: "1px solid rgba(181,101,29,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#B5651D", flexShrink: 0 }}>
+                  {getInitials(profile.full_name || profile.email)}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A1612", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {profile.full_name || profile.email}
+                  </p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "#B5651D", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    {profile.role}
+                  </p>
+                </div>
+              </Link>
+            )}
+
+            {/* Sectioned navigation: icon left, copper inset when active. */}
+            <div className="flex-1 overflow-y-auto py-2">
+              {([
+                { header: t("nav.secExplore"), items: [
+                  { href: "/startups",  label: t("nav.startups"),  Icon: Rocket    },
+                  { href: "/investors", label: t("nav.investors"), Icon: Users     },
+                  { href: "/data",      label: t("nav.data"),      Icon: BarChart3 },
+                ] },
+                { header: t("nav.secTools"), items: [
+                  { href: "/ai",      label: t("nav.aiTools"), Icon: Brain },
+                  { href: "/pricing", label: t("nav.pricing"), Icon: Tag   },
+                ] },
+                ...(profile ? [{ header: t("nav.secWorkspace"), items: [
+                  { href: dashboardPath,              label: t("nav.dashboard"),       Icon: LayoutDashboard },
+                  { href: "/deals",                   label: t("nav.deals"),           Icon: Handshake       },
+                  { href: "/dashboard/messages",      label: t("nav.messages"),        Icon: MessageSquare   },
+                  { href: "/dashboard/notifications", label: t("notifications.title"), Icon: Bell            },
+                  { href: "/dashboard/settings",      label: t("nav.settings"),        Icon: Settings        },
+                ] }] : []),
+              ]).map(({ header, items }) => (
+                <div key={header} style={{ paddingBottom: "6px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.1em", padding: "14px 20px 6px" }}>
+                    {header}
+                  </p>
+                  {items.map(({ href, label, Icon }) => {
+                    const active = isActive(href);
+                    return (
+                      <Link key={href} href={href} onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-3 px-5"
+                        style={{
+                          height:         "46px",
+                          fontFamily:     "'DM Sans', sans-serif",
+                          fontWeight:     active ? 600 : 400,
+                          fontSize:       "15px",
+                          color:          active ? "#B5651D" : "#1A1612",
+                          boxShadow:      active ? "inset 2px 0 0 #B5651D" : "none",
+                          background:     active ? "rgba(181,101,29,0.06)" : "transparent",
+                          textDecoration: "none",
+                        }}>
+                        <Icon size={16} style={{ color: active ? "#B5651D" : "#9C8E82", flexShrink: 0 }} />
+                        {label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
 
-            {/* Nav items */}
-            <div className="flex-1 overflow-y-auto">
-              {NAV_LINKS.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center px-5"
-                  style={{
-                    height:         "52px",
-                    fontFamily:     "'DM Sans', sans-serif",
-                    fontWeight:     600,
-                    fontSize:       "15px",
-                    color:          isActive(href) ? "#B5651D" : "#1A1612",
-                    borderBottom:   "1px solid rgba(26,22,18,0.08)",
-                    textDecoration: "none",
-                  }}
-                >
-                  {label}
-                </Link>
-              ))}
-              {profile && (
-                <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
-                  className="flex items-center px-5"
-                  style={{
-                    height:         "52px",
-                    fontFamily:     "'DM Sans', sans-serif",
-                    fontWeight:     600,
-                    fontSize:       "15px",
-                    color:          "#1A1612",
-                    borderBottom:   "1px solid rgba(26,22,18,0.08)",
-                    textDecoration: "none",
-                  }}
-                >
-                  {t("nav.dashboard")}
-                </Link>
-              )}
+            {/* Language, demoted from prime position to just above the footer. */}
+            <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.08)" }}>
+              <LanguageSwitcher currentLocale={locale} />
             </div>
 
             {/* Drawer footer */}
@@ -402,6 +431,13 @@ export function Navbar() {
                   }}>
                     {t("nav.signIn")}
                 </Link>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "#9C8E82", textAlign: "center" }}>
+                  <Link href="/terms" onClick={() => setMobileOpen(false)} style={{ color: "inherit" }}>{t("footer.terms")}</Link>
+                  {" · "}
+                  <Link href="/privacy" onClick={() => setMobileOpen(false)} style={{ color: "inherit" }}>{t("footer.privacy")}</Link>
+                  {" · "}
+                  <Link href="/contact" onClick={() => setMobileOpen(false)} style={{ color: "inherit" }}>{t("footer.contact")}</Link>
+                </p>
               </div>
             ) : (
               <div className="px-5 py-5 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>

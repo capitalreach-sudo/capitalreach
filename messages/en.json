@@ -23,6 +23,9 @@
     "settings": "Settings",
     "account": "Account",
     "openMenu": "Open menu",
+    "secExplore": "Explore",
+    "secTools": "Tools",
+    "secWorkspace": "Your workspace",
     "closeMenu": "Close menu"
   },
   "hero": {
