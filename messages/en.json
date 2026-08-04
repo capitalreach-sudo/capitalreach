@@ -928,7 +928,8 @@
     "savedSearchFailed": "Could not save that search.",
     "savedSearchDeleteFailed": "Could not remove that search.",
     "savedSearchDelete": "Remove {name}",
-    "savedSearchUpgrade": "Saved searches are available on paid investor plans."
+    "savedSearchUpgrade": "Saved searches are available on paid investor plans.",
+    "newThisWeek": "New this week"
   },
   "startup": {
     "back": "Back to directory",
@@ -1069,7 +1070,9 @@
     "readyFunded": "Ready to get funded?",
     "readyFundedSub": "List your startup and get discovered by investors on CapitalReach.",
     "listYourStartup": "List Your Startup",
-    "geography": "Geography"
+    "geography": "Geography",
+    "verifiedOnly": "Verified members only",
+    "sortName": "Name A–Z"
   },
   "data": {
     "eyebrow": "Live Platform Data",

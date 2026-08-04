@@ -2,7 +2,7 @@
   "targets": {
     "target": "Investor anvisieren",
     "targeted": "Auf Ihrer Zielliste",
-    "added": "Zur Zielliste hinzugef\u00fcgt",
+    "added": "Zur Zielliste hinzugefügt",
     "removed": "Von der Zielliste entfernt",
     "failed": "Zielliste konnte nicht aktualisiert werden"
   },
@@ -924,7 +924,8 @@
     "savedSearchFailed": "Suche konnte nicht gespeichert werden.",
     "savedSearchDeleteFailed": "Suche konnte nicht entfernt werden.",
     "savedSearchDelete": "{name} entfernen",
-    "savedSearchUpgrade": "Gespeicherte Suchen sind in den bezahlten Investoren-Tarifen enthalten."
+    "savedSearchUpgrade": "Gespeicherte Suchen sind in den bezahlten Investoren-Tarifen enthalten.",
+    "newThisWeek": "Neu diese Woche"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",
@@ -1065,7 +1066,9 @@
     "readyFunded": "Bereit für deine Finanzierung?",
     "readyFundedSub": "Liste dein Startup und werde von Investoren auf CapitalReach entdeckt.",
     "listYourStartup": "Startup listen",
-    "geography": "Region"
+    "geography": "Region",
+    "verifiedOnly": "Nur verifizierte Mitglieder",
+    "sortName": "Name A–Z"
   },
   "data": {
     "eyebrow": "Live-Plattformdaten",

@@ -83,12 +83,13 @@ interface InvestorFilters {
   maxCheck: number;
   geographies: string[];
   leadOnly: boolean;
-  sort: "recent" | "check_asc" | "check_desc";
+  verifiedOnly: boolean;
+  sort: "recent" | "check_asc" | "check_desc" | "name";
 }
 
 const DEFAULT: InvestorFilters = {
   query: "", types: [], industries: [], stages: [],
-  minCheck: 0, maxCheck: 100_000_000, geographies: [], leadOnly: false, sort: "recent",
+  minCheck: 0, maxCheck: 100_000_000, geographies: [], leadOnly: false, verifiedOnly: false, sort: "recent",
 };
 
 export function InvestorsClient() {
@@ -99,6 +100,8 @@ export function InvestorsClient() {
   const [f, setF] = useState<InvestorFilters>({ ...DEFAULT, query: initialQuery });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [investors, setInvestors] = useState<Investor[]>([]);
+  // Typeahead over the already-loaded list -- instant, no round trip.
+  const [suggestOpen, setSuggestOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const supabaseRef = useRef(createClient());
@@ -155,7 +158,7 @@ export function InvestorsClient() {
 
   const activeCount =
     f.types.length + f.industries.length + f.stages.length + f.geographies.length +
-    (f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0) + (f.leadOnly ? 1 : 0);
+    (f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0) + (f.leadOnly ? 1 : 0) + (f.verifiedOnly ? 1 : 0);
 
   const results = useMemo(() => {
     let list = investors.filter(inv => {
@@ -173,13 +176,15 @@ export function InvestorsClient() {
       // invests where I am?").
       const matchGeo = f.geographies.length === 0 || f.geographies.some(g => (inv.geography || []).includes(g));
       const matchLead = !f.leadOnly || !!inv.lead_rounds;
+      const matchVerified = !f.verifiedOnly || (!!inv.subscription_tier && inv.subscription_tier !== "free");
       const minCheckOk = !inv.max_check || inv.max_check >= f.minCheck;
       const maxCheckOk = !inv.min_check || inv.min_check <= f.maxCheck;
-      return matchQ && matchType && matchInd && matchStage && matchGeo && matchLead && minCheckOk && maxCheckOk;
+      return matchQ && matchType && matchInd && matchStage && matchGeo && matchLead && matchVerified && minCheckOk && maxCheckOk;
     });
 
     if (f.sort === "check_desc") list = [...list].sort((a, b) => (b.max_check || 0) - (a.max_check || 0));
     else if (f.sort === "check_asc") list = [...list].sort((a, b) => (a.min_check || 0) - (b.min_check || 0));
+    else if (f.sort === "name") list = [...list].sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
 
     return list;
   }, [f, investors]);
@@ -210,6 +215,7 @@ export function InvestorsClient() {
             ["recent",       t("investors.sortRecent")],
             ["check_desc",   t("investors.sortLargest")],
             ["check_asc",    t("investors.sortSmallest")],
+            ["name",         t("investors.sortName")],
           ] as const).map(([val, label]) => (
             <button key={val} onClick={() => setF(p => ({ ...p, sort: val }))}
               className={cn("w-full text-left text-sm px-3 py-1.5 rounded-lg transition-colors",
@@ -222,6 +228,10 @@ export function InvestorsClient() {
       <label className="flex items-center gap-2 cursor-pointer select-none py-1">
         <Checkbox checked={f.leadOnly} onCheckedChange={(v) => setF(p => ({ ...p, leadOnly: v === true }))} />
         <span className="text-sm text-cr-i2">{t("investors.leadOnly")}</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+        <Checkbox checked={f.verifiedOnly} onCheckedChange={(v) => setF(p => ({ ...p, verifiedOnly: v === true }))} />
+        <span className="text-sm text-cr-i2">{t("investors.verifiedOnly")}</span>
       </label>
 
       <div className="h-px bg-border-dark" />
@@ -343,10 +353,29 @@ export function InvestorsClient() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-cr-i4" />
               <input
                 value={f.query}
-                onChange={e => setF(p => ({ ...p, query: e.target.value }))}
+                onChange={e => { setF(p => ({ ...p, query: e.target.value })); setSuggestOpen(true); }}
+                onFocus={() => setSuggestOpen(true)}
+                onBlur={() => setTimeout(() => setSuggestOpen(false), 150)}
+                onKeyDown={e => { if (e.key === "Escape") setSuggestOpen(false); }}
                 placeholder={t("investors.searchPlaceholder")}
                 className="w-full h-11 pl-10 pr-4 rounded-xl border border-cr-p4 bg-cr-paper text-cr-ink text-sm placeholder:text-cr-i4 focus:outline-none focus:ring-2 focus:ring-cr-copper/40 focus:border-cr-copper/50"
               />
+              {suggestOpen && f.query.trim().length >= 2 && (() => {
+                const hits = investors
+                  .filter(i => (i.full_name || "").toLowerCase().includes(f.query.trim().toLowerCase()))
+                  .slice(0, 6);
+                return hits.length > 0 ? (
+                  <div className="absolute top-full mt-1.5 left-0 w-full max-w-sm bg-cr-paper border border-cr-p4 rounded-xl shadow-lg overflow-hidden z-50">
+                    {hits.map(i => (
+                      <Link key={i.id} href={`/investors/${i.slug}`}
+                        className="flex flex-col gap-0.5 px-4 py-2.5 border-b border-cr-p4/50 last:border-0 hover:bg-cr-p2 no-underline">
+                        <span className="text-sm font-semibold text-cr-ink" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>{i.full_name}</span>
+                        <span className="text-xs text-cr-i4">{t((TYPE_META[i.type] ?? TYPE_META.angel).labelKey)}{i.firm ? ` · ${i.firm}` : ""}</span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
               {f.query && (
                 <button onClick={() => setF(p => ({ ...p, query: "" }))}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-cr-i4 hover:text-cr-i2">

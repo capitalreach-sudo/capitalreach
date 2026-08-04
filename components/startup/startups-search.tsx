@@ -64,11 +64,12 @@ interface Startup {
 interface Filters {
   query: string; industries: string[]; stages: string[];
   mrrMin: number; aiScoreMin: number; sort: string; country: string;
+  newOnly?: boolean;
 }
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
-  mrrMin: 0, aiScoreMin: 0, sort: "score", country: "",
+  mrrMin: 0, aiScoreMin: 0, sort: "score", country: "", newOnly: false,
 };
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -387,6 +388,14 @@ export function StartupsSearch() {
   const [page, setPage]               = useState(1);
   const [savedIds, setSavedIds]       = useState<Set<string>>(new Set());
   const [sortOpen, setSortOpen]       = useState(false);
+  // Typeahead: name matches from the already-loaded list, so suggestions are
+  // instant and need no network round trip or debounce.
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const suggestions = filters.query.trim().length >= 2
+    ? allStartups
+        .filter(s => s.name.toLowerCase().includes(filters.query.trim().toLowerCase()))
+        .slice(0, 6)
+    : [];
   const supabase = useRef(createClient()).current;
 
   useEffect(() => {
@@ -414,6 +423,7 @@ export function StartupsSearch() {
       if (filters.mrrMin > 0 && (s.mrr ?? 0) < filters.mrrMin) return false;
       if (filters.aiScoreMin > 0 && score < filters.aiScoreMin) return false;
       if (filters.country && !(s.country ?? "").toLowerCase().includes(filters.country.toLowerCase())) return false;
+      if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
       return true;
     });
 
@@ -432,6 +442,7 @@ export function StartupsSearch() {
     filters.industries.length, filters.stages.length,
     filters.mrrMin > 0 ? 1 : 0, filters.aiScoreMin > 0 ? 1 : 0,
     filters.country ? 1 : 0,
+    filters.newOnly ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   const patch = useCallback((delta: Partial<Filters>) => {
@@ -526,7 +537,8 @@ export function StartupsSearch() {
             <input
               type="text"
               value={filters.query}
-              onChange={(e) => patch({ query: e.target.value })}
+              onChange={(e) => { patch({ query: e.target.value }); setSuggestOpen(true); }}
+              onKeyDown={(e) => { if (e.key === "Escape") setSuggestOpen(false); }}
               placeholder={t("startups.search")}
               style={{
                 background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
@@ -534,9 +546,22 @@ export function StartupsSearch() {
                 fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "32px", paddingRight: "12px",
                 paddingTop: "7px", paddingBottom: "7px", width: "200px", outline: "none",
               }}
-              onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
-              onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
+              onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; setSuggestOpen(true); }}
+              onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
             />
+            {suggestOpen && suggestions.length > 0 && (
+              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", overflow: "hidden", zIndex: 50 }}>
+                {suggestions.map((s) => (
+                  <Link key={s.id} href={`/startups/${s.slug}`}
+                    style={{ display: "flex", flexDirection: "column", gap: "1px", padding: "9px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)" }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
+                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
+                    <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)" }}>{s.name}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.tagline}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           <div style={{ width: 1, height: 20, background: "var(--cr-rule-dark)", flexShrink: 0 }} />
@@ -574,6 +599,11 @@ export function StartupsSearch() {
               {sc.label}
             </FilterChip>
           ))}
+
+          <FilterChip active={!!filters.newOnly}
+            onClick={() => patch({ newOnly: !filters.newOnly })}>
+            {t("startups.newThisWeek")}
+          </FilterChip>
 
           {/* Mobile filter btn */}
           <button
