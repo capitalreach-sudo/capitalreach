@@ -3,6 +3,8 @@ import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { TargetButton } from "@/components/investors/target-button";
+import { resolveEntity } from "@/lib/membership";
+import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -74,22 +76,28 @@ export default async function InvestorProfilePage({ params }: Props) {
   let viewerIsFounder = false;
   let viewerTargeted = false;
   if (user && !isOwnProfile) {
-    const { data: myStartup } = await supabase
-      .from("startups").select("id").eq("owner_id", user.id).maybeSingle();
-    if (myStartup) {
+    // resolveEntity rather than an owner_id lookup: team members managing the
+    // raise get the same button and the same initial state as the owner --
+    // /api/targets already treats them alike, and an owner-only check here
+    // made the button lie to (or hide from) exactly the people invited to
+    // help run the round. The target lookup goes through the service role for
+    // the same reason; RLS on investor_targets covers only the owner.
+    const membership = await resolveEntity(user.id, "startup");
+    if (membership) {
       viewerIsFounder = true;
+      const admin = createAdminClient();
       const [{ data: deal }, { data: target }] = await Promise.all([
         supabase
           .from("deals")
           .select("id, status")
-          .match({ startup_id: myStartup.id, investor_id: investor.id })
+          .match({ startup_id: membership.entityId, investor_id: investor.id })
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle(),
-        supabase
+        admin
           .from("investor_targets")
           .select("id")
-          .match({ startup_id: myStartup.id, investor_id: investor.id })
+          .match({ startup_id: membership.entityId, investor_id: investor.id })
           .maybeSingle(),
       ]);
       viewerDeal = (deal as ViewerDeal | null) ?? null;
