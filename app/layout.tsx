@@ -33,7 +33,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "CapitalReach",
-    images: [{ url: "/og-default.png", width: 1200, height: 630 }],
+    // og:image comes from the app/opengraph-image.tsx file convention; the
+    // explicit entry here used to point at /og-default.png, which never existed.
   },
   twitter: {
     card: "summary_large_image",

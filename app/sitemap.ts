@@ -18,7 +18,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select("slug, created_at");
 
   // Every publicly reachable route. Middleware gates only /dashboard,
-  // /onboarding and /admin, so everything below is crawlable.
+  // /onboarding and /admin, so everything below is crawlable. /deals is
+  // excluded even though middleware leaves it alone: the page itself
+  // redirects anonymous visitors to login, and a sitemap URL that answers
+  // with a redirect just erodes crawl trust.
   //
   // This previously listed four URLs and omitted ten, including /startups and
   // /investors -- the two browse pages, and the most valuable indexable pages
@@ -33,7 +36,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/startups`,    changeFrequency: "daily",   priority: 0.9 },
     { url: `${baseUrl}/investors`,   changeFrequency: "daily",   priority: 0.8 },
     { url: `${baseUrl}/pricing`,     changeFrequency: "weekly",  priority: 0.8 },
-    { url: `${baseUrl}/deals`,       changeFrequency: "weekly",  priority: 0.7 },
     { url: `${baseUrl}/ai`,          changeFrequency: "weekly",  priority: 0.7 },
     { url: `${baseUrl}/data`,        changeFrequency: "weekly",  priority: 0.6 },
     { url: `${baseUrl}/about`,       changeFrequency: "monthly", priority: 0.6 },
