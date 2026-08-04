@@ -1233,12 +1233,20 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   // server and client first render identically (no hydration mismatch), and
   // only ever flipping the initial default, never a choice the user has made.
   useEffect(() => {
+    // An explicit choice, once made, outranks the width heuristic entirely.
+    const saved = localStorage.getItem("cr-deals-view");
+    if (saved === "kanban" || saved === "list") { setViewMode(saved); return; }
     // innerWidth reads 0 in hidden/prerendered tabs, and 0 < 640 would flip
     // a desktop that merely started in the background. Only trust a real
     // positive width.
     const w = window.innerWidth;
     if (w > 0 && w < 640) setViewMode("list");
   }, []);
+
+  function chooseView(v: "kanban" | "list") {
+    setViewMode(v);
+    try { localStorage.setItem("cr-deals-view", v); } catch { /* private mode */ }
+  }
 
   // /deals?deal=<id> -- the address a notification carries. Every bell entry
   // used to land on the bare board, leaving the reader to hunt through the
@@ -1444,7 +1452,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
         )}
         <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
           {(["kanban", "list"] as const).map(v => (
-            <button key={v} onClick={() => setViewMode(v)} aria-label={v}
+            <button key={v} onClick={() => chooseView(v)} aria-label={v}
               style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
               {v === "kanban" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
             </button>

@@ -1025,6 +1025,7 @@
     "preferredStages": "Preferred stages",
     "memberSince": "Member since {date}",
     "leadsRounds": "Leads rounds",
+    "leadOnly": "Leads rounds only",
     "investments": "{count} investments",
     "noInvestors": "No investors match your filters.",
     "allTypes": "All types",

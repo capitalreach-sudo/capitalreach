@@ -66,6 +66,7 @@ interface Investor {
   industries: string[];
   stages: string[];
   min_check: number | null;
+  lead_rounds?: boolean;
   max_check: number | null;
   geography: string[];
   subscription_tier: string | null;
@@ -110,7 +111,7 @@ export function InvestorsClient() {
         const { data } = await supabase
           .from("investors")
           .select(`
-            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier,
+            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, lead_rounds,
             profiles:owner_id ( full_name, email )
           `)
           .order("created_at", { ascending: false });
@@ -124,6 +125,7 @@ export function InvestorsClient() {
             industries: inv.industries || [],
             stages: inv.stages || [],
             min_check: inv.min_check,
+            lead_rounds: !!inv.lead_rounds,
             max_check: inv.max_check,
             geography: inv.geography || [],
             subscription_tier: inv.subscription_tier,
@@ -153,7 +155,7 @@ export function InvestorsClient() {
 
   const activeCount =
     f.types.length + f.industries.length + f.stages.length + f.geographies.length +
-    (f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0);
+    (f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0) + (f.leadOnly ? 1 : 0);
 
   const results = useMemo(() => {
     let list = investors.filter(inv => {
@@ -170,9 +172,10 @@ export function InvestorsClient() {
       // filterable -- the one axis a founder actually starts from ("who
       // invests where I am?").
       const matchGeo = f.geographies.length === 0 || f.geographies.some(g => (inv.geography || []).includes(g));
+      const matchLead = !f.leadOnly || !!inv.lead_rounds;
       const minCheckOk = !inv.max_check || inv.max_check >= f.minCheck;
       const maxCheckOk = !inv.min_check || inv.min_check <= f.maxCheck;
-      return matchQ && matchType && matchInd && matchStage && matchGeo && minCheckOk && maxCheckOk;
+      return matchQ && matchType && matchInd && matchStage && matchGeo && matchLead && minCheckOk && maxCheckOk;
     });
 
     if (f.sort === "check_desc") list = [...list].sort((a, b) => (b.max_check || 0) - (a.max_check || 0));
@@ -215,6 +218,11 @@ export function InvestorsClient() {
           ))}
         </div>
       </Section>
+
+      <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+        <Checkbox checked={f.leadOnly} onCheckedChange={(v) => setF(p => ({ ...p, leadOnly: v === true }))} />
+        <span className="text-sm text-cr-i2">{t("investors.leadOnly")}</span>
+      </label>
 
       <div className="h-px bg-border-dark" />
 
@@ -432,6 +440,11 @@ export function InvestorsClient() {
                                 <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-sm border bg-transparent uppercase tracking-wide", meta.color, meta.border)}>
                                   {t(meta.labelKey)}
                                 </span>
+                                {inv.lead_rounds && (
+                                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-sm border border-cr-copper-br text-cr-copper bg-transparent uppercase tracking-wide">
+                                    {t("investors.leadsRounds")}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>

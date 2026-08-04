@@ -1021,6 +1021,7 @@
     "preferredStages": "Bevorzugte Phasen",
     "memberSince": "Mitglied seit {date}",
     "leadsRounds": "Leitet Runden",
+    "leadOnly": "Nur Lead-Investoren",
     "investments": "{count} Investitionen",
     "noInvestors": "Keine Investoren entsprechen Ihren Filtern.",
     "allTypes": "Alle Typen",

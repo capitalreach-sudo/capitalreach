@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
@@ -8,6 +8,7 @@ import { Zap, TrendingUp, Info, Building2, ArrowRight, Brain, X, Sparkles } from
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
+import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -71,7 +72,7 @@ async function startCheckout(planId: string, userType: "founder" | "investor", e
 // ── Plan Card ──────────────────────────────────────────────────
 
 function PlanCard({
-  plan, features, annual, isLaunch, isInstitution, userType,
+  plan, features, annual, isLaunch, isInstitution, userType, isCurrent,
 }: {
   plan: FounderPlan | InvestorPlan;
   features: FeatureRow[];
@@ -79,6 +80,7 @@ function PlanCard({
   isLaunch: boolean;
   isInstitution: boolean;
   userType: "founder" | "investor";
+  isCurrent?: boolean;
 }) {
   const { t } = useTranslation();
   const hi = plan.highlight !== undefined;
@@ -87,7 +89,17 @@ function PlanCard({
   const saved   = monthly && annual ? monthly * 0.2 * 12 : 0;
   const free    = monthly === 0;
 
-  function handleClick() {
+  async function handleClick() {
+    // The viewer already has this plan: the only sensible action is managing
+    // it, not buying it again. Free current plans have nothing to manage.
+    if (isCurrent) {
+      if (free) return;
+      const res = await fetch("/api/checkout/portal", { method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (data?.url) window.location.href = data.url;
+      else notify.error(t("errors.generic"));
+      return;
+    }
     if (isInstitution) { window.location.href = "/contact?type=institutional"; return; }
 
     // Carry the chosen plan into signup. It used to be dropped entirely --
@@ -104,7 +116,9 @@ function PlanCard({
     startCheckout(plan.id, userType, t("errors.generic"));
   }
 
-  const ctaLabel = isInstitution
+  const ctaLabel = isCurrent
+    ? (free ? t("dashboard.currentPlan") : t("dashboard.manageBilling"))
+    : isInstitution
     ? t("pricing.contactSales")
     : isLaunch
       ? t("pricing.getStartedFree")
@@ -124,7 +138,14 @@ function PlanCard({
       onMouseLeave={e => { if (!hi) (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; }}>
       {hi && <div style={{ height: "3px", background: "var(--cr-copper)" }} />}
 
-      {hi && (
+      {isCurrent && (
+        <div style={{ position: "absolute", top: "18px", right: "18px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            {t("dashboard.currentPlan")}
+          </span>
+        </div>
+      )}
+      {hi && !isCurrent && (
         <div style={{ position: "absolute", top: "18px", right: "18px" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
             <Zap style={{ width: 10, height: 10 }} /> {plan.highlight}
@@ -233,6 +254,37 @@ export default function PricingPage() {
   const [annual,    setAnnual]    = useState(false);
   const [activeTab, setActiveTab] = useState<"startup" | "investor">("startup");
   const { isLaunch, memberCount, target, loading } = useLaunchMode();
+
+  // Who is looking, and what do they already pay for? Signed-in viewers get
+  // their own plan marked and its CTA routed to the billing portal instead of
+  // a second checkout -- and land on the tab for their own role.
+  const [viewer, setViewer] = useState<{ role: string; tier: string | null } | null>(null);
+  const supabaseRef = useRef(createClient());
+  useEffect(() => {
+    const supabase = supabaseRef.current;
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: p } = await supabase
+        .from("profiles").select("role, subscription_tier").eq("id", data.user.id).maybeSingle();
+      if (!p) return;
+      setViewer({ role: p.role, tier: p.subscription_tier });
+      if (p.role === "investor") setActiveTab("investor");
+    });
+  }, []);
+
+  // profiles.subscription_tier -> plan id (the set-tier route writes
+  // pro_investor/institutional; the plan list says pro/institution).
+  const currentPlanId =
+    viewer === null ? null
+    : viewer.role === "startup"
+      ? (viewer.tier === "starter" || viewer.tier === "growth" ? viewer.tier : "free")
+      : viewer.role === "investor"
+        ? (viewer.tier === "angel" ? "angel"
+          : viewer.tier === "pro_investor" ? "pro"
+          : viewer.tier === "institutional" ? "institution"
+          : "free")
+        : null;
+  const currentTabForViewer = viewer?.role === "startup" ? "startup" : viewer?.role === "investor" ? "investor" : null;
 
   const userType = activeTab === "startup" ? "founder" : "investor";
 
@@ -398,14 +450,14 @@ export default function PricingPage() {
             {activeTab === "startup" && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", maxWidth: "900px", marginBottom: "24px" }}>
                 {FOUNDER_PLANS_LIST.map((p) => (
-                  <PlanCard key={p.id} plan={p} features={founderFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" />
+                  <PlanCard key={p.id} plan={p} features={founderFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
                 ))}
               </div>
             )}
             {activeTab === "investor" && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "24px" }}>
                 {INVESTOR_PLANS_LIST.map((p) => (
-                  <PlanCard key={p.id} plan={p} features={investorFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" />
+                  <PlanCard key={p.id} plan={p} features={investorFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
                 ))}
               </div>
             )}
