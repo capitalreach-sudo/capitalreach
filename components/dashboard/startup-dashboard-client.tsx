@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, ExternalLink, Eye, FileText, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crosshair, ExternalLink, Eye, FileText, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -235,6 +235,49 @@ function ViewersPanel() {
   );
 }
 
+/** The raise's other direction: investors this startup is pursuing. */
+function TargetsPanel() {
+  const { t } = useTranslation();
+  const [targets, setTargets] = useState<Array<{ id: string; slug: string; name: string | null; firm: string | null; note: string | null }> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/targets")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setTargets(j?.targets ?? null))
+      .catch(() => setTargets(null));
+  }, []);
+
+  if (!targets || targets.length === 0) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+        <Crosshair style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          {t("dashboard.yourTargets")}
+        </h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{targets.length}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {targets.map((tg) => (
+          <Link key={tg.id} href={`/investors/${tg.slug}`}
+            style={{ display: "flex", flexDirection: "column", gap: "2px", textDecoration: "none" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
+              {tg.name}
+              {tg.firm && tg.firm !== tg.name && (
+                <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {tg.firm}</span>
+              )}
+            </span>
+            {tg.note && (
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{tg.note}</span>
+            )}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode }: Props) {
   const { t }        = useTranslation();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
@@ -460,6 +503,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
             <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary label="Profile viewers"><ViewersPanel /></ErrorBoundary>
+            <ErrorBoundary label="Target investors"><TargetsPanel /></ErrorBoundary>
           </div>
         )}
 

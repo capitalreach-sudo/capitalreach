@@ -162,6 +162,76 @@ function Field({ label, children, hint }: { label: string; children: React.React
   );
 }
 
+// ── Milestones ────────────────────────────────────────────────────────────────
+//
+// Onboarding could create milestones; until this section nothing after it
+// could, even though the dashboard checklist asks for one. Self-contained:
+// reads via the RLS client (milestones are public on the profile anyway),
+// writes through /api/milestones so adding one also notifies savers.
+function MilestonesSection({ startupId, supabase }: { startupId: string; supabase: ReturnType<typeof createClient> }) {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<Array<{ id: string; date: string; description: string }>>([]);
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    supabase.from("startup_milestones").select("id, date, description")
+      .eq("startup_id", startupId).order("date", { ascending: false })
+      .then(({ data }) => setRows(data ?? []));
+  }, [startupId, supabase]);
+
+  async function add() {
+    if (!date || !description.trim() || busy) return;
+    setBusy(true);
+    const res = await fetch("/api/milestones", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date, description: description.trim() }),
+    });
+    const json = await res.json().catch(() => null);
+    setBusy(false);
+    if (!res.ok || !json?.milestone) { notify.error(json?.error || t("dashboard.msAddFailed")); return; }
+    setRows((r) => [json.milestone, ...r]);
+    setDate(""); setDescription("");
+    notify.success(t("dashboard.msAdded"));
+  }
+
+  async function remove(id: string) {
+    const res = await fetch("/api/milestones", {
+      method: "DELETE", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) setRows((r) => r.filter((m) => m.id !== id));
+  }
+
+  return (
+    <section style={sectionStyle}>
+      <h2 style={sectionHeadStyle}>{t("dashboard.secMilestones")}</h2>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>
+        {t("dashboard.msBroadcastHint")}
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: rows.length ? "16px" : 0 }}>
+        {rows.map((m) => (
+          <div key={m.id} style={{ display: "flex", alignItems: "baseline", gap: "10px", borderBottom: "1px solid var(--cr-rule)", paddingBottom: "8px" }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{m.date}</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", flex: 1 }}>{m.description}</span>
+            <button type="button" onClick={() => remove(m.id)} aria-label={t("dashboard.msRemove")}
+              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "14px", lineHeight: 1 }}>×</button>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "150px 1fr auto", gap: "10px", alignItems: "end" }}>
+        <Field label={t("dashboard.msDate")}><WarmInput type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+        <Field label={t("dashboard.msWhat")}><WarmInput value={description} maxLength={500} onChange={(e) => setDescription(e.target.value)} placeholder={t("dashboard.msPlaceholder")} /></Field>
+        <button type="button" onClick={add} disabled={busy || !date || !description.trim()}
+          style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "10px 16px", cursor: busy ? "wait" : "pointer", height: "fit-content" }}>
+          {busy ? "…" : t("dashboard.msAdd")}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function EditStartupPage() {
@@ -361,6 +431,8 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.runwayMonths")}><WarmInput type="number" value={startup.runway_months || ""} onChange={e => update("runway_months", e.target.value)} /></Field>
               </div>
             </section>
+
+            <MilestonesSection startupId={startup.id} supabase={supabase} />
 
             {/* The Ask */}
             <section style={sectionStyle}>

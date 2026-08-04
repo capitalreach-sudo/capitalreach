@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
+import { TargetButton } from "@/components/investors/target-button";
 import { Footer } from "@/components/shared/footer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -68,18 +69,31 @@ export default async function InvestorProfilePage({ params }: Props) {
   // only the viewer's own deal, never shown to the public.
   type ViewerDeal = { id: string; status: string };
   let viewerDeal: ViewerDeal | null = null;
+  // Founder viewers also get the target-list button (migration 031); RLS
+  // scopes the lookup to the caller's own startup.
+  let viewerIsFounder = false;
+  let viewerTargeted = false;
   if (user && !isOwnProfile) {
     const { data: myStartup } = await supabase
       .from("startups").select("id").eq("owner_id", user.id).maybeSingle();
     if (myStartup) {
-      const { data: deal } = await supabase
-        .from("deals")
-        .select("id, status")
-        .match({ startup_id: myStartup.id, investor_id: investor.id })
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      viewerIsFounder = true;
+      const [{ data: deal }, { data: target }] = await Promise.all([
+        supabase
+          .from("deals")
+          .select("id, status")
+          .match({ startup_id: myStartup.id, investor_id: investor.id })
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("investor_targets")
+          .select("id")
+          .match({ startup_id: myStartup.id, investor_id: investor.id })
+          .maybeSingle(),
+      ]);
       viewerDeal = (deal as ViewerDeal | null) ?? null;
+      viewerTargeted = !!target;
     }
   }
 
@@ -149,6 +163,9 @@ export default async function InvestorProfilePage({ params }: Props) {
                     : viewerDeal.status === "closed" ? t("deals.colClosed")
                     : t("deals.colPassed")}
                 </Link>
+              )}
+              {viewerIsFounder && (
+                <TargetButton investorId={investor.id} initiallyTargeted={viewerTargeted} />
               )}
               <Badge variant="outline">{INVESTOR_TYPE_LABELS[investor.type] || investor.type}</Badge>
               {investor.subscription_tier !== "free" && (

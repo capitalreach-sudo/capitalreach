@@ -1,7 +1,7 @@
 import {
   Bell, Handshake, ArrowRightLeft, CheckCircle2, XCircle, MessageSquare,
   CalendarClock, FileSignature, ShieldCheck, BadgeCheck, Ban, Users, Crown,
-  SearchCheck, Bookmark, type LucideIcon,
+  SearchCheck, Bookmark, Megaphone, type LucideIcon,
 } from "lucide-react";
 
 /**
@@ -24,6 +24,7 @@ export const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
   tier_changed:     { Icon: Crown,          color: "var(--cr-copper)" },
   search_match:     { Icon: SearchCheck,    color: "var(--cr-copper)" },
   listing_saved:    { Icon: Bookmark,       color: "var(--cr-copper)" },
+  listing_update:   { Icon: Megaphone,      color: "var(--cr-copper)" },
 };
 
 // Unknown types still render plainly rather than disappearing -- a

@@ -1,4 +1,11 @@
 {
+  "targets": {
+    "target": "Investor anvisieren",
+    "targeted": "Auf Ihrer Zielliste",
+    "added": "Zur Zielliste hinzugef\u00fcgt",
+    "removed": "Von der Zielliste entfernt",
+    "failed": "Zielliste konnte nicht aktualisiert werden"
+  },
   "nav": {
     "startups": "Startups",
     "investors": "Investoren",
@@ -823,6 +830,16 @@
     "viewPublicProfile": "Öffentliches Profil ansehen",
     "whoSaved": "Investoren, die Sie gespeichert haben",
     "whoViewed": "Investoren, die Ihr Profil angesehen haben (30 T.)",
+    "yourTargets": "Ihre Ziel-Investoren",
+    "secMilestones": "Meilensteine & Updates",
+    "msBroadcastHint": "Neue Meilensteine werden als Update an alle Investoren gesendet, die Ihr Listing gespeichert haben.",
+    "msAdded": "Meilenstein hinzugefügt — gespeicherte Investoren wurden benachrichtigt",
+    "msAddFailed": "Meilenstein konnte nicht hinzugefügt werden",
+    "msAdd": "Hinzufügen",
+    "msDate": "Datum",
+    "msWhat": "Was ist passiert",
+    "msPlaceholder": "Ersten Enterprise-Kunden gewonnen, v2 veröffentlicht, …",
+    "msRemove": "Meilenstein entfernen",
     "viewedOn": "angesehen am {date}",
     "savedOn": "gespeichert am {date}",
     "noSaversYet": "Noch hat kein Investor Ihr Listing gespeichert.",

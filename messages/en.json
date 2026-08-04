@@ -1,4 +1,11 @@
 {
+  "targets": {
+    "target": "Target this investor",
+    "targeted": "On your target list",
+    "added": "Added to your target list",
+    "removed": "Removed from your target list",
+    "failed": "Could not update target list"
+  },
   "nav": {
     "startups": "Startups",
     "investors": "Investors",
@@ -827,6 +834,16 @@
     "viewPublicProfile": "View public profile",
     "whoSaved": "Investors who saved you",
     "whoViewed": "Investors who viewed you (30d)",
+    "yourTargets": "Your target investors",
+    "secMilestones": "Milestones & Updates",
+    "msBroadcastHint": "New milestones are sent as an update to every investor who saved your listing.",
+    "msAdded": "Milestone added — savers have been notified",
+    "msAddFailed": "Could not add milestone",
+    "msAdd": "Add",
+    "msDate": "Date",
+    "msWhat": "What happened",
+    "msPlaceholder": "Closed first enterprise customer, shipped v2, …",
+    "msRemove": "Remove milestone",
     "viewedOn": "viewed {date}",
     "savedOn": "saved {date}",
     "noSaversYet": "No investors have saved your listing yet.",

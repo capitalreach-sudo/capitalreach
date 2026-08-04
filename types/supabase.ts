@@ -352,6 +352,45 @@ export type Database = {
           },
         ]
       }
+      investor_targets: {
+        Row: {
+          created_at: string
+          id: string
+          investor_id: string
+          note: string | null
+          startup_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_id: string
+          note?: string | null
+          startup_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_id?: string
+          note?: string | null
+          startup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_targets_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "investor_targets_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investors: {
         Row: {
           aum: string | null
