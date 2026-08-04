@@ -77,8 +77,8 @@ interface DealKanbanProps {
 // A deal's counterpart display names, computed from its joined startup/investor
 // rows. Shared between DealCard and the filter/search/export logic below.
 function dealNames(deal: Deal, t: (key: string) => string): { investorName: string; startupName: string } {
-  const investorName = (deal as any).investor?.display_name || (deal as any).investor?.firm_name || (deal as any).investor?.slug || t("deals.investorFallback");
-  const startupName  = (deal as any).startup?.name || t("deals.startupFallback");
+  const investorName = deal.investor?.display_name || deal.investor?.firm_name || deal.investor?.slug || t("deals.investorFallback");
+  const startupName  = deal.startup?.name || t("deals.startupFallback");
   return { investorName, startupName };
 }
 
@@ -974,8 +974,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   // No link while masked (the whole point is not knowing who), none for the
   // admin composite name.
   const counterpartHref = masked || viewAs === "admin" ? null
-    : viewAs === "startup" ? ((deal as any).investor?.slug ? `/investors/${(deal as any).investor.slug}` : null)
-    : ((deal as any).startup?.slug ? `/startups/${(deal as any).startup.slug}` : null);
+    : viewAs === "startup" ? (deal.investor?.slug ? `/investors/${deal.investor.slug}` : null)
+    : (deal.startup?.slug ? `/startups/${deal.startup.slug}` : null);
 
   const isActive = deal.status !== "closed" && deal.status !== "passed";
 
@@ -1161,7 +1161,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </div>
       )}
 
-      {(deal as any).success_fee_invoiced && (
+      {deal.success_fee_invoiced && (
         <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
           {t("deals.invoiceSent")}
         </span>
@@ -1179,7 +1179,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         dealId={deal.id}
         dealAmount={deal.amount}
         dealCurrency={deal.currency}
-        equityOffered={viewAs === "startup" ? equityOffered : (deal as any).startup?.equity_offered ?? null}
+        equityOffered={viewAs === "startup" ? equityOffered : deal.startup?.equity_offered ?? null}
         startupId={deal.startup_id}
         investorId={deal.investor_id}
       />
@@ -1281,7 +1281,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const filterOptions = useMemo(() => {
     const values = new Set<string>();
     deals.forEach(d => {
-      const v = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
+      const v = viewAs === "startup" ? d.investor?.type : d.startup?.stage;
       if (v) values.add(v);
     });
     return Array.from(values);
@@ -1299,7 +1299,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     }
     if (activeFilters.size > 0) {
       list = list.filter(d => {
-        const v = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
+        const v = viewAs === "startup" ? d.investor?.type : d.startup?.stage;
         return v && activeFilters.has(v);
       });
     }
@@ -1476,7 +1476,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
               {filteredDeals.map(d => {
                 const { investorName, startupName } = dealNames(d, t);
                 const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} × ${investorName}`;
-                const stageOrType = viewAs === "startup" ? (d as any).investor?.type : (d as any).startup?.stage;
+                const stageOrType = viewAs === "startup" ? d.investor?.type : d.startup?.stage;
                 return (
                   <tr key={d.id} id={`deal-${d.id}`} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
                     <td style={{ padding: "8px 10px", color: "var(--cr-ink)" }}>{name}</td>

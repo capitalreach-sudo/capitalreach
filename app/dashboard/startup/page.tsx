@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import type { Profile, Startup } from "@/types";
 import { StartupDashboardClient } from "@/components/dashboard/startup-dashboard-client";
 import { Navbar } from "@/components/shared/navbar";
 import { getLaunchStatus } from "@/lib/launchMode";
@@ -13,7 +14,9 @@ export default async function StartupDashboardPage() {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .single()
+    // Union narrowings below are licensed by the DB CHECK constraints.
+    .returns<Profile>();
 
   if (profile?.role !== "startup") redirect("/dashboard/investor");
 
@@ -26,7 +29,8 @@ export default async function StartupDashboardPage() {
       milestones:startup_milestones(*)
     `)
     .eq("owner_id", user.id)
-    .single();
+    .single()
+    .returns<Startup>();
 
   // Analytics: pageviews last 30 days
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -69,8 +73,8 @@ export default async function StartupDashboardPage() {
     <>
       <Navbar />
       <StartupDashboardClient
-        profile={profile as any}
-        startup={startup as any}
+        profile={profile}
+        startup={startup}
         analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount }}
         isLaunchMode={isLaunch}
       />

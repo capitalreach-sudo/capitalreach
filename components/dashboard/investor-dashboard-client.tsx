@@ -302,7 +302,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
                 {watchlist.map((w) => w.startup && (
                   <div key={w.id}>
-                    <StartupCard startup={w.startup as any} investorTier={investor.subscription_tier} />
+                    <StartupCard startup={w.startup} investorTier={investor.subscription_tier} />
                     <WatchlistNote startupId={w.startup.id} initial={w.note ?? null} />
                   </div>
                 ))}
@@ -332,7 +332,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                       <Brain style={{ width: 15, height: 15, color: "var(--cr-copper)" }} />
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
-                        {(report as any).startup?.name}
+                        {report.startup?.name}
                       </span>
                       <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         {report.type.replace(/_/g, " ")}
@@ -345,7 +345,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {report.content}
                   </p>
-                  <Link href={`/startups/${(report as any).startup?.slug}`}
+                  <Link href={`/startups/${report.startup?.slug}`}
                     style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", display: "block", marginTop: "12px" }}>
                     {t("dashboard.viewStartup")} →
                   </Link>
@@ -385,7 +385,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {FEATURE_ROWS.map((item) => {
-                    const unlocked = "unlocked" in item ? item.unlocked : isUnlocked((item as any).key);
+                    const unlocked = "unlocked" in item ? item.unlocked : isUnlocked(item.key);
                     return (
                       <div key={item.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -396,9 +396,9 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                             {t(item.labelKey)}
                           </span>
                         </div>
-                        {!unlocked && (item as any).tier && (
+                        {!unlocked && "tier" in item && (
                           <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", whiteSpace: "nowrap" }}>
-                            {(item as any).tier}+
+                            {item.tier}+
                           </span>
                         )}
                       </div>

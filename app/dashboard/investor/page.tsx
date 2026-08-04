@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboard-client";
+import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 
 export default async function InvestorDashboardPage() {
@@ -12,7 +13,9 @@ export default async function InvestorDashboardPage() {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .single()
+    // Union narrowings below are licensed by the DB CHECK constraints.
+    .returns<Profile>();
 
   if (profile?.role !== "investor") redirect("/dashboard/startup");
 
@@ -20,7 +23,8 @@ export default async function InvestorDashboardPage() {
     .from("investors")
     .select("*")
     .eq("owner_id", user.id)
-    .single();
+    .single()
+    .returns<Investor>();
 
   if (!investor) redirect("/onboarding/investor");
 
@@ -30,14 +34,16 @@ export default async function InvestorDashboardPage() {
     .select("*, startup:startups(*)")
     .eq("investor_id", investor.id)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(20)
+    .returns<Watchlist[]>();
 
   // Deals
   const { data: deals } = await supabase
     .from("deals")
     .select("*, startup:startups(name, slug, tagline, industry, stage)")
     .eq("investor_id", investor.id)
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .returns<Deal[]>();
 
   // AI reports
   const { data: aiReports } = await supabase
@@ -45,17 +51,18 @@ export default async function InvestorDashboardPage() {
     .select("*, startup:startups(name, slug)")
     .eq("investor_id", investor.id)
     .order("created_at", { ascending: false })
-    .limit(10);
+    .limit(10)
+    .returns<AiReport[]>();
 
   return (
     <>
       <Navbar />
       <InvestorDashboardClient
-        profile={profile as any}
-        investor={investor as any}
-        watchlist={(watchlist as any) || []}
-        deals={(deals as any) || []}
-        aiReports={(aiReports as any) || []}
+        profile={profile}
+        investor={investor}
+        watchlist={watchlist ?? []}
+        deals={deals ?? []}
+        aiReports={aiReports ?? []}
       />
     </>
   );

@@ -13,6 +13,7 @@ import { investorCan } from "@/lib/access";
 import { AiReportDisclaimer } from "@/components/shared/legal-disclaimer";
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
+import type { StartupCardData } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
@@ -29,7 +30,7 @@ interface Props {
   /** The viewer's own deal with this startup, if one exists. Never anyone else's. */
   viewerDeal:     { id: string; status: string } | null;
   ndaSigned:      boolean;
-  relatedStartups: Startup[];
+  relatedStartups: StartupCardData[];
   isLaunchMode:   boolean;
   viewerSuspended?: boolean;
 }
@@ -322,21 +323,21 @@ export function StartupDetailClient({
               </div>
 
               {/* New profile fields: looking_for, social_proof, languages */}
-              {((startup as any).looking_for?.length || (startup as any).social_proof?.length || (startup as any).languages?.length) && (
+              {(startup.looking_for?.length || startup.social_proof?.length || startup.languages?.length) && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
-                  {((startup as any).looking_for as string[] | null)?.map((item: string) => (
+                  {(startup.looking_for as string[] | null)?.map((item: string) => (
                     <span key={item} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
                       {item}
                     </span>
                   ))}
-                  {((startup as any).social_proof as Array<{ type: string; value: string }> | null)?.map((sp, i) => (
+                  {(startup.social_proof as Array<{ type: string; value: string }> | null)?.map((sp, i) => (
                     <span key={i} style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
                       {sp.value}
                     </span>
                   ))}
-                  {((startup as any).deck_language && (startup as any).deck_language !== "English") && (
+                  {(startup.deck_language && startup.deck_language !== "English") && (
                     <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
-                      Deck: {(startup as any).deck_language}
+                      Deck: {startup.deck_language}
                     </span>
                   )}
                 </div>
@@ -471,12 +472,12 @@ export function StartupDetailClient({
             )}
 
             {/* Video pitch (new field) */}
-            {(startup as any).video_pitch_url && (
+            {startup.video_pitch_url && (
               <div>
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.pitchVideo")}</div>
                 <div style={{ aspectRatio: "16/9", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
                   <iframe
-                    src={((startup as any).video_pitch_url as string)
+                    src={(startup.video_pitch_url as string)
                       .replace("watch?v=", "embed/")
                       .replace("youtu.be/", "youtube.com/embed/")
                       .replace("loom.com/share/", "loom.com/embed/")}
@@ -488,13 +489,13 @@ export function StartupDetailClient({
             )}
 
             {/* Demo video */}
-            {(startup as any).demo_video_url && startup.subscription_tier === "growth" && (
+            {startup.demo_video_url && startup.subscription_tier === "growth" && (
               <div>
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.productDemo")}</div>
                 {canFinancials ? (
                   <div style={{ aspectRatio: "16/9", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
                     <iframe
-                      src={(startup as any).demo_video_url
+                      src={startup.demo_video_url
                         .replace("watch?v=", "embed/")
                         .replace("youtu.be/", "youtube.com/embed/")}
                       style={{ width: "100%", height: "100%" }}
@@ -551,16 +552,16 @@ export function StartupDetailClient({
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{f.role}</p>
                     </div>
                   </div>
-                  {(f as any).bio && (
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "14px" }}>{(f as any).bio}</p>
+                  {f.bio && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "14px" }}>{f.bio}</p>
                   )}
                   <div style={{ display: "flex", gap: "14px" }}>
                     {f.linkedin_url && (
                       <a href={f.linkedin_url} target="_blank" rel="noopener noreferrer"
                         style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>LinkedIn</a>
                     )}
-                    {(f as any).twitter_url && (
-                      <a href={(f as any).twitter_url.startsWith("http") ? (f as any).twitter_url : `https://x.com/${(f as any).twitter_url.replace("@", "")}`}
+                    {f.twitter_url && (
+                      <a href={f.twitter_url.startsWith("http") ? f.twitter_url : `https://x.com/${f.twitter_url.replace("@", "")}`}
                         target="_blank" rel="noopener noreferrer"
                         style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>X / Twitter</a>
                     )}
@@ -694,7 +695,7 @@ export function StartupDetailClient({
             <div className="ruled-label" style={{ marginBottom: "20px" }}>{t("startupDetail.similarStartups")}</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "14px" }}>
               {relatedStartups.map((s) => (
-                <StartupCard key={s.id} startup={s as any} investorTier={null} />
+                <StartupCard key={s.id} startup={s} investorTier={null} />
               ))}
             </div>
           </section>

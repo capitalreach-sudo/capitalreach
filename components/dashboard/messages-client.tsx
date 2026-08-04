@@ -9,7 +9,7 @@ import {
   CheckCheck, Building2, Loader2, Users, AlertCircle,
 } from "lucide-react";
 import { getInitials } from "@/lib/utils";
-import type { Profile, Thread, Message } from "@/types";
+import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -197,33 +197,33 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     }, 300);
   }, [accountSearch, accountDropOpen, targetKind]);
 
-  const otherStartup = (th: Thread) => th.startup_id === myStartupId ? (th as any).recipient_startup : (th as any).startup;
+  const otherStartup = (th: Thread) => th.startup_id === myStartupId ? th.recipient_startup : th.startup;
 
   const getLabel = (th: Thread) => {
     if (th.recipient_startup_id) {
       return otherStartup(th)?.name || t("dashboard.startupLabel");
     }
     if (profile.role === "startup") {
-      const inv = (th as any).investor;
+      const inv = th.investor;
       return inv?.display_name || inv?.firm_name || inv?.slug?.replace(/-/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase()) || t("dashboard.investorLabel");
     }
-    return (th as any).startup?.name || t("dashboard.startupLabel");
+    return th.startup?.name || t("dashboard.startupLabel");
   };
   const getSubLabel = (th: Thread) => {
     if (th.recipient_startup_id) {
       return otherStartup(th)?.slug || "";
     }
     if (profile.role === "startup") {
-      const type = (th as any).investor?.type || "";
+      const type = th.investor?.type || "";
       return type.replace(/_/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase());
     }
-    return (th as any).startup?.slug || "";
+    return th.startup?.slug || "";
   };
 
   const filteredThreads = initialThreads.filter(t => {
     const label = getLabel(t);
     const searchMatch = !search || label.toLowerCase().includes(search.toLowerCase());
-    const statusMatch = statusFilter === "all" || (t as any).status === statusFilter;
+    const statusMatch = statusFilter === "all" || t.status === statusFilter;
     return searchMatch && statusMatch;
   }).sort((a, b) => {
     if (sortBy === "name") return getLabel(a).localeCompare(getLabel(b));
@@ -239,7 +239,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setUnreadSet((prev) => { if (!prev.has(t.id)) return prev; const n = new Set(prev); n.delete(t.id); return n; });
   }
 
-  async function sendMessage(e: React.FormEvent) {
+  async function sendMessage(e: { preventDefault(): void }) {
     e.preventDefault();
     if (!newMessage.trim() || !selectedThread) return;
     setSending(true);
@@ -260,10 +260,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setSending(false);
   }
 
-  async function updateStatus(status: string) {
+  async function updateStatus(status: ThreadStatus) {
     if (!selectedThread) return;
     await supabase.from("threads").update({ status }).eq("id", selectedThread.id);
-    setSelectedThread({ ...selectedThread, status: status as any });
+    setSelectedThread({ ...selectedThread, status });
   }
 
   function closeNewModal() {
@@ -340,7 +340,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setSendingNew(false);
   }
 
-  const selectedStatusKey = STATUS_KEYS[(selectedThread as any)?.status || "active"] || STATUS_KEYS.active;
+  const selectedStatusKey = STATUS_KEYS[selectedThread?.status || "active"] || STATUS_KEYS.active;
   const selectedStatusInfo = { ...selectedStatusKey, label: t(selectedStatusKey.labelKey) };
 
   return (
@@ -402,7 +402,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 </div>
               ) : filteredThreads.map(thread => {
                 const isSelected = selectedThread?.id === thread.id;
-                const st = (thread as any).status || "active";
+                const st = thread.status || "active";
                 return (
                   <button key={thread.id} onClick={() => selectThread(thread)}
                     style={{ width: "100%", textAlign: "left", padding: "14px 16px", borderBottom: "1px solid var(--cr-rule)", background: isSelected ? "var(--cr-paper-3)" : "transparent", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent", cursor: "pointer" }}>
@@ -457,20 +457,20 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                  {profile.role === "startup" && (selectedThread as any).status === "active" && (
+                  {profile.role === "startup" && selectedThread.status === "active" && (
                     <button onClick={() => updateStatus("due_diligence")}
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
                       {t("dashboard.moveToDueDiligence")}
                     </button>
                   )}
-                  {profile.role === "startup" && (selectedThread as any).status === "due_diligence" && (
+                  {profile.role === "startup" && selectedThread.status === "due_diligence" && (
                     <button onClick={() => updateStatus("active")}
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
                       {t("dashboard.backToActive")}
                     </button>
                   )}
-                  {(selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : (selectedThread as any).startup?.slug) && (
-                    <a href={`/startups/${selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : (selectedThread as any).startup.slug}`}
+                  {(selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : selectedThread.startup?.slug) && (
+                    <a href={`/startups/${selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : selectedThread.startup?.slug}`}
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
                       {t("dashboard.viewStartup2")} →
                     </a>
@@ -526,7 +526,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   placeholder={t("dashboard.composePlaceholder")}
                   rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", resize: "none", minHeight: "38px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
                   onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim()) sendMessage(e as any); } }}
+                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim()) sendMessage(e); } }}
                   onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                   onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
                 />

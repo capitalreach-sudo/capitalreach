@@ -42,28 +42,14 @@ export type InvestorType =
 
 export type ThreadStatus = "active" | "due_diligence" | "archived";
 
-export interface Profile {
-  id: string;
-  email: string;
-  full_name: string | null;
-  avatar_url: string | null;
+// Generated Row as the base (same treatment as Deal/Contract/Startup): the
+// hand-written version had already drifted -- it was missing account_status
+// and the whole suspension column family. role and subscription_tier are the
+// DB CHECK-guaranteed unions.
+type ProfileRow = import("@/types/supabase").Database["public"]["Tables"]["profiles"]["Row"];
+export interface Profile extends Omit<ProfileRow, "role" | "subscription_tier"> {
   role: Role;
-  stripe_customer_id: string | null;
   subscription_tier: SubscriptionTier | null;
-  subscription_status: string | null;
-  accreditation_certified: boolean;
-  created_at: string;
-  // Feature 3: investor profile fields (migration 008)
-  investment_thesis:    string | null;
-  check_size_min:       number | null;
-  check_size_max:       number | null;
-  preferred_stages:     string[] | null;
-  preferred_industries: string[] | null;
-  preferred_countries:  string[] | null;
-  investor_type:        string | null;
-  portfolio_count:      number | null;
-  lead_investor:        boolean | null;
-  languages:            string[] | null;
 }
 
 // Generated Row as the base (same treatment as Deal/Contract): the field
@@ -191,6 +177,8 @@ export interface AiReport {
   content: string;
   stripe_charge_id: string | null;
   created_at: string;
+  /** Embedded by the investor dashboard's `startup:startups(name, slug)` select. */
+  startup?: Pick<Startup, "name" | "slug"> | null;
 }
 
 export interface Watchlist {

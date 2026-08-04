@@ -4,7 +4,9 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupDetailClient } from "@/components/startup/startup-detail-client";
 import { getLaunchStatus } from "@/lib/launchMode";
+import type { Startup, SubscriptionTier } from "@/types";
 import type { Metadata } from "next";
+import type { StartupCardData } from "@/components/startup/startup-card";
 
 export const revalidate = 120; // ISR — revalidate every 2 minutes
 
@@ -64,7 +66,9 @@ export default async function StartupDetailPage({ params }: Props) {
       milestones:startup_milestones(*)
     `)
     .eq("slug", params.slug)
-    .single();
+    .single()
+    // Union narrowings below are licensed by the DB CHECK constraints.
+    .returns<Startup>();
 
   if (!startup || startup.status !== "active") notFound();
 
@@ -74,7 +78,7 @@ export default async function StartupDetailPage({ params }: Props) {
   // Get current user tier
   const { data: { user } } = await supabase.auth.getUser();
   const { isLaunch } = await getLaunchStatus();
-  let investorTier: string | null = null;
+  let investorTier: SubscriptionTier | null = null;
   let investorId: string | null = null;
   let ndaSigned = false;
   let viewerSuspended = false;
@@ -84,7 +88,9 @@ export default async function StartupDetailPage({ params }: Props) {
       .from("profiles")
       .select("role, subscription_tier, suspended, account_status")
       .eq("id", user.id)
-      .single();
+      .single()
+      // tier's narrowing from string to the union is licensed by the DB CHECK.
+      .returns<Pick<import("@/types").Profile, "role" | "subscription_tier" | "suspended" | "account_status">>();
 
     viewerSuspended = !!profile?.suspended
       || profile?.account_status === "suspended"
@@ -145,23 +151,25 @@ export default async function StartupDetailPage({ params }: Props) {
   // Related startups
   const { data: related } = await supabase
     .from("startups")
-    .select("id, slug, name, tagline, industry, stage, funding_target, mrr, pageviews, featured, created_at, subscription_tier")
+    .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score")
     .eq("status", "active")
     .eq("industry", startup.industry)
     .neq("id", startup.id)
-    .limit(4);
+    .limit(4)
+    // stage's narrowing from string to the union is licensed by the DB CHECK.
+    .returns<StartupCardData[]>();
 
   // Live viewer count placeholder (handled client-side via Supabase Presence)
   return (
     <>
       <Navbar />
       <StartupDetailClient
-        startup={startup as any}
-        investorTier={investorTier as any}
+        startup={startup}
+        investorTier={investorTier}
         investorId={investorId}
         viewerDeal={viewerDeal}
         ndaSigned={ndaSigned}
-        relatedStartups={(related as any) || []}
+        relatedStartups={related ?? []}
         isLaunchMode={isLaunch}
         viewerSuspended={viewerSuspended}
       />

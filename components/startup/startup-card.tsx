@@ -65,8 +65,18 @@ function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionT
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
+/**
+ * The exact fields the card renders. Surfaces that fetch narrow projections
+ * (related startups, search) must select all of these -- a full Startup
+ * satisfies it too. Fields missing from a query fail the build now instead of
+ * silently blanking parts of the card.
+ */
+export type StartupCardData = Pick<Startup,
+  "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
+  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score">;
+
 interface StartupCardProps {
-  startup:     Startup;
+  startup:     StartupCardData;
   investorTier?: SubscriptionTier | null;
   isSaved?:    boolean;
   onSave?:     (startupId: string) => void;
