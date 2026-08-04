@@ -826,6 +826,8 @@
     "errLoadMessagesFailed": "Failed to load messages. Please refresh.",
     "viewPublicProfile": "View public profile",
     "whoSaved": "Investors who saved you",
+    "whoViewed": "Investors who viewed you (30d)",
+    "viewedOn": "viewed {date}",
     "savedOn": "saved {date}",
     "noSaversYet": "No investors have saved your listing yet.",
     "addNote": "Add a note",

@@ -169,6 +169,72 @@ function SaversPanel() {
   );
 }
 
+/**
+ * Same idea as SaversPanel for profile *views*: startup_views has recorded
+ * which investor looked at the listing since the Terms's §3 connection-proof
+ * work, but founders only ever saw an aggregate count. Distinct investors,
+ * last 30 days, identical gate and teaser treatment.
+ */
+function ViewersPanel() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{
+    viewers: Array<{ slug: string; name: string | null; firm: string | null; lastViewedAt: string }>;
+    count: number;
+    locked: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/startups/viewers")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  if (!data || data.count === 0) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+        <Eye style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          {t("dashboard.whoViewed")}
+        </h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{data.count}</span>
+      </div>
+
+      {data.locked ? (
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
+            {Array.from({ length: Math.min(data.count, 3) }).map((_, i) => (
+              <div key={i} style={{ height: "14px", width: `${60 + i * 10}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+            ))}
+          </div>
+          <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "14px", width: "100%", boxSizing: "border-box" }}>
+            {t("dashboard.upgradeSeeWho")}
+          </Link>
+        </>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {data.viewers.map((v) => (
+            <Link key={v.slug} href={`/investors/${v.slug}`}
+              style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", textDecoration: "none" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
+                {v.name}
+                {v.firm && v.firm !== v.name && (
+                  <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {v.firm}</span>
+                )}
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                {t("dashboard.viewedOn", { date: formatDate(v.lastViewedAt) })}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode }: Props) {
   const { t }        = useTranslation();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
@@ -393,6 +459,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             </div>
 
             <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
+            <ErrorBoundary label="Profile viewers"><ViewersPanel /></ErrorBoundary>
           </div>
         )}
 

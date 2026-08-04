@@ -18,7 +18,9 @@ export type NotificationType =
   // Added by migration 026.
   | "tier_changed"
   // Added by migration 027.
-  | "search_match";
+  | "search_match"
+  // Added by migration 029.
+  | "listing_saved";
 
 interface NotifyInput {
   userId: string;

@@ -822,6 +822,8 @@
     "suggestedAccounts": "Vorschläge",
     "viewPublicProfile": "Öffentliches Profil ansehen",
     "whoSaved": "Investoren, die Sie gespeichert haben",
+    "whoViewed": "Investoren, die Ihr Profil angesehen haben (30 T.)",
+    "viewedOn": "angesehen am {date}",
     "savedOn": "gespeichert am {date}",
     "noSaversYet": "Noch hat kein Investor Ihr Listing gespeichert.",
     "addNote": "Notiz hinzufügen",

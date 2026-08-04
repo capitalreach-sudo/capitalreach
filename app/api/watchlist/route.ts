@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
+import { notifyUser } from "@/lib/notify-user";
 
 // watchlists.investor_id references investors(id), NOT profiles(id).
 //
@@ -46,6 +47,15 @@ export async function POST(req: NextRequest) {
     row.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
   }
 
+  // Was this pair already saved? Only a genuinely new save should notify the
+  // founder -- re-saving to edit a note must stay silent.
+  const { data: prior } = await supabase
+    .from("watchlists")
+    .select("investor_id")
+    .eq("investor_id", investorId)
+    .eq("startup_id", startupId)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("watchlists")
     .upsert(row, { onConflict: "investor_id,startup_id" });
@@ -54,6 +64,34 @@ export async function POST(req: NextRequest) {
   if (error) {
     console.error("watchlist upsert failed:", error);
     return NextResponse.json({ error: "Could not save" }, { status: 500 });
+  }
+
+  // Tell the founder someone saved their listing -- but never who. The name is
+  // what the Who-saved-you panel sells; the notification just says interest
+  // exists and links to that panel. Awaited (never detached on serverless) and
+  // best-effort: notifyUser swallows its own errors, and a failure here must
+  // not fail the save. Resolve the founder's user id via the service role,
+  // since watchlists RLS can't read the startup's owner.
+  if (!prior) {
+    try {
+      const admin = createAdminClient();
+      const { data: st } = await admin
+        .from("startups")
+        .select("owner_id")
+        .eq("id", startupId)
+        .maybeSingle();
+      if (st?.owner_id && st.owner_id !== user.id) {
+        await notifyUser({
+          userId: st.owner_id,
+          type: "listing_saved",
+          title: "An investor saved your listing",
+          body: "Open your dashboard to see how many investors have saved you.",
+          href: "/dashboard/startup",
+        });
+      }
+    } catch (e) {
+      console.error("listing_saved notify failed:", e);
+    }
   }
 
   return NextResponse.json({ saved: true });
