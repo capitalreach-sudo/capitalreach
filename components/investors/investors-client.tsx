@@ -9,7 +9,7 @@ import {
   Users, Globe, Filter, Loader2,
 } from "lucide-react";
 import { INDUSTRIES, STAGES } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn, STAGE_LABELS } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -21,9 +21,8 @@ const TYPE_META: Record<string, { labelKey: string; color: string; bg: string; b
   corporate:     { labelKey: "investors.typeCorporate",    color: "text-rose-300",   bg: "bg-rose-500/10",   border: "border-rose-500/30"   },
 };
 
-const STAGE_LABELS: Record<string, string> = {
-  pre_seed: "Pre-Seed", seed: "Seed", series_a: "Series A", series_b: "Series B",
-};
+// Canonical stage labels from lib/utils -- the local copy had the wrong
+// keys and rendered raw enums for pre-seed and series_b_plus.
 
 const GRAD_COLORS = [
   "from-cr-cu-l to-blue-600",

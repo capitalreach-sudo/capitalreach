@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { STAGE_LABELS } from "@/lib/utils";
 import {
   TrendingUp, BarChart3, Users, DollarSign,
   Zap, Activity, Building2, Brain,
@@ -52,12 +53,10 @@ const DEAL_STAGES = [
   { key: "passed",        color: "#B43232" },
 ] as const;
 
-const STAGE_LABELS: Record<string, string> = {
-  pre_seed: "Pre-Seed",
-  seed:     "Seed",
-  series_a: "Series A",
-  series_b: "Series B+",
-};
+// The canonical map lives in lib/utils. A local copy here had the wrong
+// keys (pre_seed / series_b vs the DB's pre-seed / series_b_plus), so the
+// stage breakdown and recent listings showed raw enum values for half the
+// stages.
 
 function fmtMrr(n: number | null, preRevLabel = "Pre-rev") {
   if (!n) return preRevLabel;
