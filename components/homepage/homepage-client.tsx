@@ -17,6 +17,7 @@ import { FeeFloatingBadge } from "@/components/ui/FeeFloatingBadge";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { PullQuote } from "@/components/ui/PullQuote";
 import { formatCurrency } from "@/lib/format";
+import { STAGE_LABELS } from "@/lib/utils";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
 import type { PlatformStats } from "@/lib/stats";
 import type { ListingSnippet } from "@/app/page";
@@ -39,7 +40,7 @@ function StageBadge({ stage }: { stage: string }) {
       fontSize: "11px", color: "#6B6056", textTransform: "uppercase", letterSpacing: "0.06em",
       whiteSpace: "nowrap",
     }}>
-      {stage}
+      {STAGE_LABELS[stage] ?? stage}
     </span>
   );
 }

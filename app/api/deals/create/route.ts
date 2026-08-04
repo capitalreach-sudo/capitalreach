@@ -118,6 +118,13 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
   if (error || !deal) {
+    // The pre-insert check above has a race window; migration 028's partial
+    // unique index (deals_one_open_per_pair) is the backstop. When two
+    // requests race, the loser lands here with 23505 -- same answer as the
+    // check would have given.
+    if (error?.code === "23505") {
+      return NextResponse.json({ error: "An open deal with this partner already exists" }, { status: 409 });
+    }
     return NextResponse.json({ error: "Failed to create deal" }, { status: 500 });
   }
 

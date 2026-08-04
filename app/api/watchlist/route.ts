@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { isUuid } from "@/lib/utils";
 
 // watchlists.investor_id references investors(id), NOT profiles(id).
 //
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { startupId, note } = await req.json() as { startupId: string; note?: string | null };
-  if (!startupId) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);
   if (!investorId) {
@@ -49,7 +50,11 @@ export async function POST(req: NextRequest) {
     .from("watchlists")
     .upsert(row, { onConflict: "investor_id,startup_id" });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // Raw Postgres messages leak schema details; log them, return a plain error.
+  if (error) {
+    console.error("watchlist upsert failed:", error);
+    return NextResponse.json({ error: "Could not save" }, { status: 500 });
+  }
 
   return NextResponse.json({ saved: true });
 }
@@ -60,7 +65,7 @@ export async function DELETE(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { startupId } = await req.json() as { startupId: string };
-  if (!startupId) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);
   if (!investorId) return NextResponse.json({ saved: false });
@@ -71,7 +76,10 @@ export async function DELETE(req: NextRequest) {
     .eq("investor_id", investorId)
     .eq("startup_id", startupId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("watchlist delete failed:", error);
+    return NextResponse.json({ error: "Could not remove" }, { status: 500 });
+  }
 
   return NextResponse.json({ saved: false });
 }

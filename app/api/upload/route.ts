@@ -17,7 +17,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many uploads. Try again shortly." }, { status: 429 });
   }
 
-  const formData = await req.formData();
+  // A JSON or otherwise non-multipart body makes formData() throw, which
+  // surfaced as a bare 500; answer 400 like any other malformed request.
+  let formData: FormData;
+  try {
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "multipart/form-data body required" }, { status: 400 });
+  }
   const file = formData.get("file") as File | null;
   const startupId = formData.get("startupId") as string;
   const docTypeRaw = formData.get("type") as string;

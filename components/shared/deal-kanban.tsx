@@ -4,7 +4,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
-import { formatDate, daysSince } from "@/lib/utils";
+import { formatDate, daysSince, STAGE_LABELS } from "@/lib/utils";
+
+// The filter chips and list view show either an investor type or a startup
+// stage. Rendered raw with text-transform:capitalize, "vc" became "Vc" and
+// "family_office" became "Family office"; route both through the same labels
+// the directories use.
+const INVESTOR_TYPE_KEYS: Record<string, string> = {
+  angel: "investors.typeAngel",
+  vc: "investors.typeVc",
+  family_office: "investors.typeFamilyOffice",
+  corporate: "investors.typeCorporate",
+};
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
@@ -1287,6 +1298,11 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     return Array.from(values);
   }, [deals, viewAs]);
 
+  const chipLabel = (v: string) =>
+    viewAs === "startup"
+      ? (INVESTOR_TYPE_KEYS[v] ? t(INVESTOR_TYPE_KEYS[v]) : v.replace(/_/g, " "))
+      : (STAGE_LABELS[v] ?? v.replace(/_/g, " "));
+
   const filteredDeals = useMemo(() => {
     let list = deals;
     if (search.trim()) {
@@ -1404,9 +1420,9 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
               background: activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-paper-2)",
               border: `1px solid ${activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
               borderRadius: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-              color: activeFilters.has(v) ? "#fff" : "var(--cr-ink-3)", padding: "6px 12px", cursor: "pointer", textTransform: "capitalize",
+              color: activeFilters.has(v) ? "#fff" : "var(--cr-ink-3)", padding: "6px 12px", cursor: "pointer",
             }}>
-            {v.replace(/_/g, " ")}
+            {chipLabel(v)}
           </button>
         ))}
         {activeFilters.size > 0 && (
@@ -1480,7 +1496,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                 return (
                   <tr key={d.id} id={`deal-${d.id}`} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
                     <td style={{ padding: "8px 10px", color: "var(--cr-ink)" }}>{name}</td>
-                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)", textTransform: "capitalize" }}>{stageOrType ? String(stageOrType).replace(/_/g, " ") : "—"}</td>
+                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)" }}>{stageOrType ? chipLabel(String(stageOrType)) : "—"}</td>
                     <td style={{ padding: "8px 10px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>
                     <td style={{ padding: "8px 10px" }}><span style={colBadgeStyle(d.status, 0)}>{columns.find(c => c.status === d.status)?.label}</span></td>
                     <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)", fontFamily: "'JetBrains Mono', monospace" }}>{d.next_follow_up ? formatDate(d.next_follow_up) : "—"}</td>

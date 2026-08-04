@@ -82,3 +82,13 @@ export const STATUS_COLORS: Record<string, string> = {
   archived: "bg-cr-p3 text-cr-i4 border border-cr-p4",
   draft: "bg-cr-p3 text-cr-i4 border border-cr-p4",
 };
+
+/**
+ * Strict v4-ish UUID check for user-supplied ids. Postgres raises 22P02 on a
+ * malformed uuid, which used to surface as a raw 500 from routes that
+ * interpolated ids straight into queries; validate first and 400 instead.
+ */
+export function isUuid(v: unknown): v is string {
+  return typeof v === "string"
+    && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+}
