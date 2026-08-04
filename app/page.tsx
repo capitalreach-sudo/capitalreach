@@ -5,7 +5,17 @@ import { Footer }            from "@/components/shared/footer";
 import { HomepageClient }    from "@/components/homepage/homepage-client";
 import type { Metadata }     from "next";
 
-export const dynamic = "force-dynamic";
+// force-dynamic here dated to the initial commit: every visitor paid a full
+// SSR pass (stats + listings queries) on the most-visited page. Nothing on it
+// is caller-specific -- the admin client reads no cookies and translation
+// happens client-side. revalidate alone doesn't flip it because the root
+// layout's locale-cookie read marks every non-SSG route dynamic; force-static
+// overrides that the same way generateStaticParams already does for
+// /startups/[slug], whose pages prove the whole layout chain renders fine
+// statically (the cookie read falls back to the default locale and the
+// client hydrates the real one).
+export const dynamic = "force-static";
+export const revalidate = 120;
 
 export const metadata: Metadata = {
   title: "CapitalReach — Private Capital Marketplace",
