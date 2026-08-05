@@ -15,7 +15,16 @@
     "settings": "Inställningar",
     "account": "Konto",
     "openMenu": "Öppna meny",
-    "closeMenu": "Stäng meny"
+    "closeMenu": "Stäng meny",
+    "deals": "Affärer",
+    "secExplore": "Utforska",
+    "secTools": "Verktyg",
+    "secWorkspace": "Din arbetsyta",
+    "home": "Hem",
+    "browse": "Bläddra",
+    "alerts": "Aviseringar",
+    "primaryMobile": "Huvudmeny",
+    "unreadCount": "{count} olästa"
   },
   "hero": {
     "eyebrow": "Privat kapital · Est. 2024",
@@ -35,7 +44,16 @@
     "beFirst": "Var bland de första granskade listingarna.",
     "applyToList": "Ansök om att listas",
     "feeNoteSuffix": "faktureras endast efter att din affär stängts. Noll förskottskostnad.",
-    "feeNoteLabel": "2% framgångsavgift"
+    "feeNoteLabel": "2% framgångsavgift",
+    "launchPill": "Gratis under lanseringen · {count}/{target} medlemmar",
+    "oneLiner": "En privat marknadsplats för grundare som reser kapital och investerare som placerar det.",
+    "ctaBrowse": "Se noteringar",
+    "trustVetted": "Granskade noteringar",
+    "trustFee": "Endast 2 % vid stängning",
+    "trustLaunch": "Gratis under lanseringen",
+    "proofFee": "successavgift vid stängning",
+    "proofUpfront": "kostnad i förskott",
+    "proofVetted": "noteringar granskade"
   },
   "trustIndicators": {
     "startupsListed": "startups listade",
@@ -867,7 +885,39 @@
     "raising": "Söker",
     "aiScore": "AI-poäng",
     "runway": "{months} månaders runway",
-    "noScore": "Ingen poäng"
+    "noScore": "Ingen poäng",
+    "savedSearches": "Sparade sökningar",
+    "saveThisSearch": "Spara sökningen",
+    "savedSearchNamePlaceholder": "Ge den ett namn — t.ex. Seed FinTech DE",
+    "savedSearchSaved": "Sökningen sparades.",
+    "savedSearchFailed": "Kunde inte spara sökningen.",
+    "savedSearchDeleteFailed": "Kunde inte ta bort sökningen.",
+    "savedSearchDelete": "Ta bort {name}",
+    "savedSearchUpgrade": "Sparade sökningar ingår i betalda investerarplaner.",
+    "newThisWeek": "Nytt denna vecka",
+    "industry": "Bransch",
+    "stageGroup": "Fas",
+    "traction": "Traktion",
+    "hidden": "Dolda",
+    "showHidden": "Visa dolda ({count})",
+    "hide": "Dölj notering",
+    "unhide": "Visa igen",
+    "viewed": "Visad",
+    "hideNeedsAccount": "Logga in som investerare för att dölja noteringar",
+    "runway12": "Runway 12 mån+",
+    "growth20": "Tillväxt 20 %+",
+    "region": "Region",
+    "copyLink": "Kopiera länk",
+    "linkCopied2": "Söklänk kopierad",
+    "sumRaising": "{count} rundor · {sum} sökes",
+    "hiddenUndo": "Ångra",
+    "compare": "Jämför",
+    "compareTitle": "Jämför startups",
+    "compareClear": "Rensa",
+    "runwayLabel": "Runway",
+    "recentSearches": "Senaste sökningar",
+    "noResultsFor": "Inga noteringar matchar ”{query}”",
+    "noResultsBody": "Prova att ta bort ett filter, bredda fas eller bransch, eller söka på ett mer allmänt ord."
   },
   "startupDetail": {
     "overview": "Översikt",
@@ -934,7 +984,10 @@
     "sort": "Sortera",
     "sortScore": "Efter AI-poäng",
     "sortRecent": "Nyaste först",
-    "sortRaising": "Efter insamlingsbelopp"
+    "sortRaising": "Efter insamlingsbelopp",
+    "thresholds": "Traktion",
+    "bestMatch": "Bäst matchning för mig",
+    "matchPct": "{pct}% matchning"
   },
   "common": {
     "loading": "Laddar...",
@@ -972,7 +1025,8 @@
     "custom": "Anpassad",
     "open": "Öppet",
     "printTagline": "CapitalReach — Marknadsplats för privat kapital",
-    "view": "Visa"
+    "view": "Visa",
+    "done": "Klar"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",
@@ -1015,7 +1069,8 @@
     "careers": "Karriär",
     "contact": "Kontakt",
     "terms": "Villkor",
-    "privacy": "Integritetspolicy"
+    "privacy": "Integritetspolicy",
+    "aiDisclosure": "AI-funktioner använder OpenAI-modeller. Resultaten är endast informativa och utgör inte investeringsrådgivning."
   },
   "feeStrip": {
     "tagline": "framgångsavgift — endast efter avslut. Branschsnitt: 5–7% i förskott.",
@@ -1437,7 +1492,8 @@
   },
   "banner": {
     "text": "Gratis för våra första {target} medlemmar — {memberCount}/{target} har gått med, {spotsLeft} platser kvar.",
-    "cta": "Säkra din plats"
+    "cta": "Säkra din plats",
+    "textShort": "Gratis för våra första {target} — {spotsLeft} platser kvar."
   },
   "locale": {
     "changedTo": "Språk ändrat till {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "E-post:",
     "supportLabel": "Support:",
     "footerAck": "Genom att använda CapitalReach bekräftar du att du har läst, förstått, och godkänner att vara bunden av dessa Användarvillkor."
+  },
+  "search": {
+    "aria": "Sök startups och investerare",
+    "placeholder": "Sök startups och investerare…",
+    "noResults": "Inga träffar.",
+    "startups": "Startups",
+    "investors": "Investerare",
+    "seeAll": "Se alla resultat för \"{q}\""
+  },
+  "presets": {
+    "preseedAi": "Pre-seed AI",
+    "revenueStage": "Med intäkter",
+    "germany": "Tyskland",
+    "highScore": "Poäng 80+",
+    "newThisWeek": "Nytt denna vecka",
+    "bigRaise": "Reser €2M+",
+    "leadInvestors": "Lead-investerare",
+    "preseedAngels": "Pre-seed-änglar",
+    "verifiedOnly": "Endast verifierade",
+    "seriesAVcs": "Series A-VC",
+    "newThisMonth": "Nytt denna månad"
+  },
+  "a11y": {
+    "skipToContent": "Hoppa till innehåll",
+    "backToTop": "Till toppen"
+  },
+  "palette": {
+    "title": "Kommandopalett",
+    "placeholder": "Sök eller gå till…",
+    "results": "Resultat",
+    "noResults": "Inget matchar ”{q}”",
+    "hint": "Sök noteringar och investerare, eller gå till valfri sida."
+  },
+  "shortcuts": {
+    "title": "Kortkommandon",
+    "palette": "Öppna kommandopaletten",
+    "search": "Fokusera sökrutan",
+    "move": "Bläddra i resultaten",
+    "open": "Öppna markerat resultat",
+    "close": "Stäng dialogen",
+    "help": "Visa listan"
   }
 }

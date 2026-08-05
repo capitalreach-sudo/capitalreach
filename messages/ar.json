@@ -15,7 +15,16 @@
     "settings": "الإعدادات",
     "account": "الحساب",
     "openMenu": "فتح القائمة",
-    "closeMenu": "إغلاق القائمة"
+    "closeMenu": "إغلاق القائمة",
+    "deals": "الصفقات",
+    "secExplore": "استكشاف",
+    "secTools": "الأدوات",
+    "secWorkspace": "مساحة عملك",
+    "home": "الرئيسية",
+    "browse": "تصفح",
+    "alerts": "التنبيهات",
+    "primaryMobile": "التنقل الرئيسي",
+    "unreadCount": "{count} غير مقروءة"
   },
   "hero": {
     "eyebrow": "رأس المال الخاص · تأسست 2024",
@@ -35,7 +44,16 @@
     "beFirst": "كن من بين أوائل القوائم المدققة.",
     "applyToList": "التقدم للإدراج",
     "feeNoteSuffix": "تُفوتر فقط بعد إغلاق صفقتك. بدون أي تكلفة مقدمة.",
-    "feeNoteLabel": "رسوم نجاح 2%"
+    "feeNoteLabel": "رسوم نجاح 2%",
+    "launchPill": "مجاني أثناء الإطلاق · {count}/{target} عضو",
+    "oneLiner": "سوق خاص لمؤسسين يجمعون رأس المال ومستثمرين يوظفونه.",
+    "ctaBrowse": "تصفح القوائم",
+    "trustVetted": "قوائم مُدققة من الإدارة",
+    "trustFee": "2% عند الإغلاق فقط",
+    "trustLaunch": "مجاني أثناء الإطلاق",
+    "proofFee": "رسوم نجاح عند الإغلاق",
+    "proofUpfront": "تكلفة مقدمة",
+    "proofVetted": "من القوائم مُدققة"
   },
   "feeStrip": {
     "tagline": "رسوم نجاح — فقط بعد الإغلاق. المتوسط في الصناعة: 5–7% مقدمًا.",
@@ -876,7 +894,39 @@
     "raising": "يجمع",
     "aiScore": "تقييم الذكاء الاصطناعي",
     "runway": "مدفوعية {months} شهراً",
-    "noScore": "قيد التقييم"
+    "noScore": "قيد التقييم",
+    "savedSearches": "عمليات البحث المحفوظة",
+    "saveThisSearch": "احفظ هذا البحث",
+    "savedSearchNamePlaceholder": "سمِّه — مثل: Seed FinTech DE",
+    "savedSearchSaved": "تم حفظ البحث.",
+    "savedSearchFailed": "تعذّر حفظ هذا البحث.",
+    "savedSearchDeleteFailed": "تعذّرت إزالة هذا البحث.",
+    "savedSearchDelete": "إزالة {name}",
+    "savedSearchUpgrade": "عمليات البحث المحفوظة متاحة في خطط المستثمرين المدفوعة.",
+    "newThisWeek": "جديد هذا الأسبوع",
+    "industry": "القطاع",
+    "stageGroup": "المرحلة",
+    "traction": "الجذب",
+    "hidden": "مخفية",
+    "showHidden": "إظهار المخفية ({count})",
+    "hide": "إخفاء القائمة",
+    "unhide": "إظهار",
+    "viewed": "تمت المشاهدة",
+    "hideNeedsAccount": "سجّل الدخول كمستثمر لإخفاء القوائم",
+    "runway12": "مدرج مالي 12 شهرًا+",
+    "growth20": "نمو 20%+",
+    "region": "المنطقة",
+    "copyLink": "نسخ الرابط",
+    "linkCopied2": "تم نسخ رابط البحث",
+    "sumRaising": "{count} جولة · مطلوب {sum}",
+    "hiddenUndo": "تراجع",
+    "compare": "قارن",
+    "compareTitle": "مقارنة الشركات",
+    "compareClear": "مسح",
+    "runwayLabel": "المدرج المالي",
+    "recentSearches": "عمليات بحث حديثة",
+    "noResultsFor": "لا توجد قوائم تطابق «{query}»",
+    "noResultsBody": "جرّب إزالة مرشّح، أو توسيع المرحلة أو القطاع، أو البحث بمصطلح أعم."
   },
   "startup": {
     "back": "العودة إلى الدليل",
@@ -1058,7 +1108,10 @@
     "sort": "ترتيب حسب",
     "sortScore": "تقييم الذكاء الاصطناعي",
     "sortRecent": "الأحدث أولاً",
-    "sortRaising": "مبلغ التمويل"
+    "sortRaising": "مبلغ التمويل",
+    "thresholds": "الجذب",
+    "bestMatch": "الأنسب لي",
+    "matchPct": "تطابق {pct}%"
   },
   "common": {
     "loading": "جاري التحميل...",
@@ -1096,7 +1149,8 @@
     "custom": "مخصص",
     "open": "مفتوح",
     "printTagline": "CapitalReach — سوق رأس المال الخاص",
-    "view": "عرض"
+    "view": "عرض",
+    "done": "تم"
   },
   "onboarding": {
     "welcomeTitle": "مرحباً بك في CapitalReach",
@@ -1433,11 +1487,13 @@
     "careers": "وظائف",
     "contact": "اتصل بنا",
     "terms": "الشروط",
-    "privacy": "الخصوصية"
+    "privacy": "الخصوصية",
+    "aiDisclosure": "تستخدم الميزات المدعومة بالذكاء الاصطناعي نماذج OpenAI. المخرجات لأغراض إعلامية فقط وليست نصيحة استثمارية."
   },
   "banner": {
     "text": "مجاني لأول {target} عضو — انضم {memberCount}/{target}، تبقى {spotsLeft} مقعد.",
-    "cta": "احجز مكانك"
+    "cta": "احجز مكانك",
+    "textShort": "مجاني لأول {target} — بقي {spotsLeft} مقعد."
   },
   "locale": {
     "changedTo": "تم تغيير اللغة إلى {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "البريد الإلكتروني:",
     "supportLabel": "الدعم:",
     "footerAck": "باستخدامك لـ CapitalReach، فإنك تقر بأنك قرأت وفهمت ووافقت على الالتزام بشروط الخدمة هذه."
+  },
+  "search": {
+    "aria": "ابحث عن شركات ومستثمرين",
+    "placeholder": "ابحث عن شركات ومستثمرين…",
+    "noResults": "لا يوجد ما يطابق ذلك.",
+    "startups": "الشركات الناشئة",
+    "investors": "المستثمرون",
+    "seeAll": "عرض كل النتائج عن \"{q}\""
+  },
+  "presets": {
+    "preseedAi": "ذكاء اصطناعي ما قبل التأسيس",
+    "revenueStage": "مرحلة الإيرادات",
+    "germany": "ألمانيا",
+    "highScore": "تقييم 80+",
+    "newThisWeek": "جديد هذا الأسبوع",
+    "bigRaise": "يجمع 2M€+",
+    "leadInvestors": "مستثمرون قياديون",
+    "preseedAngels": "ملائكة ما قبل التأسيس",
+    "verifiedOnly": "المُوثّقون فقط",
+    "seriesAVcs": "صناديق السلسلة A",
+    "newThisMonth": "جديد هذا الشهر"
+  },
+  "a11y": {
+    "skipToContent": "تخطَّ إلى المحتوى",
+    "backToTop": "العودة إلى الأعلى"
+  },
+  "palette": {
+    "title": "لوحة الأوامر",
+    "placeholder": "ابحث أو انتقل إلى…",
+    "results": "النتائج",
+    "noResults": "لا يوجد ما يطابق «{q}»",
+    "hint": "ابحث في القوائم والمستثمرين، أو انتقل إلى أي صفحة."
+  },
+  "shortcuts": {
+    "title": "اختصارات لوحة المفاتيح",
+    "palette": "فتح لوحة الأوامر",
+    "search": "التركيز على مربع البحث",
+    "move": "التنقل بين النتائج",
+    "open": "فتح النتيجة المحددة",
+    "close": "إغلاق هذا المربع",
+    "help": "عرض هذه القائمة"
   }
 }

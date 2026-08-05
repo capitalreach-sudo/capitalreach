@@ -15,7 +15,16 @@
     "settings": "设置",
     "account": "账户",
     "openMenu": "打开菜单",
-    "closeMenu": "关闭菜单"
+    "closeMenu": "关闭菜单",
+    "deals": "交易",
+    "secExplore": "探索",
+    "secTools": "工具",
+    "secWorkspace": "我的工作区",
+    "home": "首页",
+    "browse": "浏览",
+    "alerts": "提醒",
+    "primaryMobile": "主导航",
+    "unreadCount": "{count} 条未读"
   },
   "hero": {
     "eyebrow": "私募资本 · 成立于 2024",
@@ -35,7 +44,16 @@
     "beFirst": "成为第一批经过审核的列表之一。",
     "applyToList": "申请列出",
     "feeNoteSuffix": "仅在交易完成后收取，无需任何前期费用。",
-    "feeNoteLabel": "2% 成功费"
+    "feeNoteLabel": "2% 成功费",
+    "launchPill": "上线期间免费 · {count}/{target} 位成员",
+    "oneLiner": "面向融资创始人与出资投资人的私密市场。",
+    "ctaBrowse": "浏览项目",
+    "trustVetted": "经审核的项目",
+    "trustFee": "仅在成交时收取 2%",
+    "trustLaunch": "上线期间免费",
+    "proofFee": "成交时的成功费",
+    "proofUpfront": "前期费用",
+    "proofVetted": "项目已审核"
   },
   "feeStrip": {
     "tagline": "成功费——仅在交割完成后收取。行业平均水平：预先收取 5–7%。",
@@ -876,7 +894,39 @@
     "raising": "融资金额",
     "aiScore": "AI 评分",
     "runway": "{months} 个月资金储备",
-    "noScore": "待评分"
+    "noScore": "待评分",
+    "savedSearches": "已保存的搜索",
+    "saveThisSearch": "保存此搜索",
+    "savedSearchNamePlaceholder": "命名 — 例如 Seed FinTech DE",
+    "savedSearchSaved": "搜索已保存。",
+    "savedSearchFailed": "无法保存该搜索。",
+    "savedSearchDeleteFailed": "无法删除该搜索。",
+    "savedSearchDelete": "删除 {name}",
+    "savedSearchUpgrade": "已保存的搜索适用于付费投资人方案。",
+    "newThisWeek": "本周新增",
+    "industry": "行业",
+    "stageGroup": "阶段",
+    "traction": "业务进展",
+    "hidden": "已隐藏",
+    "showHidden": "显示已隐藏 ({count})",
+    "hide": "隐藏该项目",
+    "unhide": "取消隐藏",
+    "viewed": "已查看",
+    "hideNeedsAccount": "以投资人身份登录后可隐藏项目",
+    "runway12": "资金可用 12 个月以上",
+    "growth20": "增长 20% 以上",
+    "region": "地区",
+    "copyLink": "复制链接",
+    "linkCopied2": "已复制搜索链接",
+    "sumRaising": "{count} 轮融资 · 募集 {sum}",
+    "hiddenUndo": "撤销",
+    "compare": "对比",
+    "compareTitle": "对比初创公司",
+    "compareClear": "清除",
+    "runwayLabel": "资金可用期",
+    "recentSearches": "最近搜索",
+    "noResultsFor": "没有与“{query}”匹配的项目",
+    "noResultsBody": "试着移除一个筛选条件、放宽阶段或行业，或使用更宽泛的关键词。"
   },
   "startup": {
     "back": "返回目录",
@@ -1058,7 +1108,10 @@
     "sort": "排序方式",
     "sortScore": "AI评分",
     "sortRecent": "最新优先",
-    "sortRaising": "融资金额"
+    "sortRaising": "融资金额",
+    "thresholds": "业务进展",
+    "bestMatch": "最匹配我的",
+    "matchPct": "匹配度 {pct}%"
   },
   "common": {
     "loading": "加载中...",
@@ -1096,7 +1149,8 @@
     "custom": "定制",
     "open": "不限",
     "printTagline": "CapitalReach — 私募资本交易平台",
-    "view": "查看"
+    "view": "查看",
+    "done": "完成"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
@@ -1433,11 +1487,13 @@
     "careers": "招聘",
     "contact": "联系",
     "terms": "条款",
-    "privacy": "隐私政策"
+    "privacy": "隐私政策",
+    "aiDisclosure": "AI 功能使用 OpenAI 模型。输出仅供参考，不构成投资建议。"
   },
   "banner": {
     "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",
-    "cta": "抢占名额"
+    "cta": "抢占名额",
+    "textShort": "前 {target} 位免费 — 剩余 {spotsLeft} 个名额。"
   },
   "locale": {
     "changedTo": "语言已切换为 {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "电子邮箱：",
     "supportLabel": "支持：",
     "footerAck": "使用 CapitalReach 即表示您确认已阅读、理解并同意受本服务条款的约束。"
+  },
+  "search": {
+    "aria": "搜索初创公司与投资人",
+    "placeholder": "搜索初创公司与投资人…",
+    "noResults": "没有匹配结果。",
+    "startups": "初创公司",
+    "investors": "投资人",
+    "seeAll": "查看“{q}”的全部结果"
+  },
+  "presets": {
+    "preseedAi": "种子前 AI",
+    "revenueStage": "已有营收",
+    "germany": "德国",
+    "highScore": "评分 80 以上",
+    "newThisWeek": "本周新增",
+    "bigRaise": "募集 200 万欧元以上",
+    "leadInvestors": "领投方",
+    "preseedAngels": "种子前天使投资人",
+    "verifiedOnly": "仅已验证",
+    "seriesAVcs": "A 轮风投",
+    "newThisMonth": "本月新增"
+  },
+  "a11y": {
+    "skipToContent": "跳到主要内容",
+    "backToTop": "回到顶部"
+  },
+  "palette": {
+    "title": "命令面板",
+    "placeholder": "搜索或跳转到…",
+    "results": "结果",
+    "noResults": "没有与“{q}”匹配的结果",
+    "hint": "搜索项目与投资人，或跳转到任意页面。"
+  },
+  "shortcuts": {
+    "title": "键盘快捷键",
+    "palette": "打开命令面板",
+    "search": "聚焦搜索框",
+    "move": "在结果间移动",
+    "open": "打开选中的结果",
+    "close": "关闭此对话框",
+    "help": "显示此列表"
   }
 }

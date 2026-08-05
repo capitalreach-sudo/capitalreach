@@ -15,7 +15,16 @@
     "settings": "설정",
     "account": "계정",
     "openMenu": "메뉴 열기",
-    "closeMenu": "메뉴 닫기"
+    "closeMenu": "메뉴 닫기",
+    "deals": "딜",
+    "secExplore": "탐색",
+    "secTools": "도구",
+    "secWorkspace": "내 작업공간",
+    "home": "홈",
+    "browse": "둘러보기",
+    "alerts": "알림",
+    "primaryMobile": "기본 메뉴",
+    "unreadCount": "읽지 않음 {count}개"
   },
   "hero": {
     "eyebrow": "프라이빗 캐피탈 · 2024년 설립",
@@ -35,7 +44,16 @@
     "beFirst": "최초 검증 등록 중 하나가 되세요.",
     "applyToList": "등록 신청",
     "feeNoteSuffix": "딜이 성사된 후에만 청구됩니다. 선불 비용은 없습니다.",
-    "feeNoteLabel": "2% 성공 수수료"
+    "feeNoteLabel": "2% 성공 수수료",
+    "launchPill": "출시 기간 무료 · {count}/{target}명",
+    "oneLiner": "자본을 조달하는 창업자와 이를 집행하는 투자자를 위한 비공개 마켓플레이스입니다.",
+    "ctaBrowse": "목록 둘러보기",
+    "trustVetted": "운영진 검증 목록",
+    "trustFee": "클로징 시 2%만",
+    "trustLaunch": "출시 기간 무료",
+    "proofFee": "클로징 성공 보수",
+    "proofUpfront": "초기 비용",
+    "proofVetted": "목록 검증 완료"
   },
   "trustIndicators": {
     "startupsListed": "개 스타트업 등록",
@@ -867,7 +885,39 @@
     "raising": "조달 중",
     "aiScore": "AI 점수",
     "runway": "런웨이 {months}개월",
-    "noScore": "점수 없음"
+    "noScore": "점수 없음",
+    "savedSearches": "저장한 검색",
+    "saveThisSearch": "이 검색 저장",
+    "savedSearchNamePlaceholder": "이름 지정 — 예: Seed FinTech DE",
+    "savedSearchSaved": "검색을 저장했습니다.",
+    "savedSearchFailed": "검색을 저장하지 못했습니다.",
+    "savedSearchDeleteFailed": "검색을 삭제하지 못했습니다.",
+    "savedSearchDelete": "{name} 삭제",
+    "savedSearchUpgrade": "저장한 검색은 유료 투자자 플랜에서 사용할 수 있습니다.",
+    "newThisWeek": "이번 주 신규",
+    "industry": "산업",
+    "stageGroup": "단계",
+    "traction": "트랙션",
+    "hidden": "숨김",
+    "showHidden": "숨긴 항목 보기 ({count})",
+    "hide": "목록 숨기기",
+    "unhide": "다시 표시",
+    "viewed": "열람함",
+    "hideNeedsAccount": "목록을 숨기려면 투자자로 로그인하세요",
+    "runway12": "런웨이 12개월+",
+    "growth20": "성장률 20%+",
+    "region": "지역",
+    "copyLink": "링크 복사",
+    "linkCopied2": "검색 링크를 복사했습니다",
+    "sumRaising": "{count}개 라운드 · {sum} 모집",
+    "hiddenUndo": "실행 취소",
+    "compare": "비교",
+    "compareTitle": "스타트업 비교",
+    "compareClear": "지우기",
+    "runwayLabel": "런웨이",
+    "recentSearches": "최근 검색",
+    "noResultsFor": "“{query}”와 일치하는 목록이 없습니다",
+    "noResultsBody": "필터를 제거하거나 단계·산업 범위를 넓히거나 더 일반적인 검색어를 사용해 보세요."
   },
   "startupDetail": {
     "overview": "개요",
@@ -934,7 +984,10 @@
     "sort": "정렬",
     "sortScore": "AI 점수순",
     "sortRecent": "최신순",
-    "sortRaising": "조달금액순"
+    "sortRaising": "조달금액순",
+    "thresholds": "트랙션",
+    "bestMatch": "내게 가장 잘 맞는 순",
+    "matchPct": "{pct}% 일치"
   },
   "common": {
     "loading": "로딩 중...",
@@ -972,7 +1025,8 @@
     "custom": "맞춤형",
     "open": "제한 없음",
     "printTagline": "CapitalReach — 사모 자본 마켓플레이스",
-    "view": "보기"
+    "view": "보기",
+    "done": "완료"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1015,7 +1069,8 @@
     "careers": "채용",
     "contact": "문의",
     "terms": "이용약관",
-    "privacy": "개인정보처리방침"
+    "privacy": "개인정보처리방침",
+    "aiDisclosure": "AI 기능은 OpenAI 모델을 사용합니다. 결과는 정보 제공용이며 투자 자문이 아닙니다."
   },
   "feeStrip": {
     "tagline": "성공 수수료 — 클로징 후에만 청구. 업계 평균: 선불 5–7%.",
@@ -1437,7 +1492,8 @@
   },
   "banner": {
     "text": "첫 {target}명 회원 무료 — {memberCount}/{target}명 가입, {spotsLeft}자리 남음.",
-    "cta": "자리 확보하기"
+    "cta": "자리 확보하기",
+    "textShort": "선착순 {target}명 무료 — {spotsLeft}자리 남음."
   },
   "locale": {
     "changedTo": "언어가 {name}(으)로 변경되었습니다",
@@ -1802,5 +1858,46 @@
     "emailLabel": "이메일:",
     "supportLabel": "지원:",
     "footerAck": "CapitalReach를 이용함으로써 귀하는 본 서비스 약관을 읽고, 이해했으며, 이에 구속되는 데 동의함을 인정하는 것입니다."
+  },
+  "search": {
+    "aria": "스타트업과 투자자 검색",
+    "placeholder": "스타트업·투자자 검색…",
+    "noResults": "일치하는 항목이 없습니다.",
+    "startups": "스타트업",
+    "investors": "투자자",
+    "seeAll": "\"{q}\" 전체 결과 보기"
+  },
+  "presets": {
+    "preseedAi": "프리시드 AI",
+    "revenueStage": "매출 단계",
+    "germany": "독일",
+    "highScore": "점수 80+",
+    "newThisWeek": "이번 주 신규",
+    "bigRaise": "€2M+ 조달",
+    "leadInvestors": "리드 투자자",
+    "preseedAngels": "프리시드 엔젤",
+    "verifiedOnly": "인증된 곳만",
+    "seriesAVcs": "시리즈 A VC",
+    "newThisMonth": "이번 달 신규"
+  },
+  "a11y": {
+    "skipToContent": "본문으로 건너뛰기",
+    "backToTop": "맨 위로"
+  },
+  "palette": {
+    "title": "명령 팔레트",
+    "placeholder": "검색하거나 이동…",
+    "results": "결과",
+    "noResults": "“{q}”와 일치하는 항목이 없습니다",
+    "hint": "목록과 투자자를 검색하거나 원하는 페이지로 이동하세요."
+  },
+  "shortcuts": {
+    "title": "키보드 단축키",
+    "palette": "명령 팔레트 열기",
+    "search": "검색창으로 이동",
+    "move": "결과 이동",
+    "open": "선택한 결과 열기",
+    "close": "이 대화상자 닫기",
+    "help": "이 목록 보기"
   }
 }

@@ -15,7 +15,16 @@
     "settings": "Ustawienia",
     "account": "Konto",
     "openMenu": "Otwórz menu",
-    "closeMenu": "Zamknij menu"
+    "closeMenu": "Zamknij menu",
+    "deals": "Transakcje",
+    "secExplore": "Odkrywaj",
+    "secTools": "Narzędzia",
+    "secWorkspace": "Twoja przestrzeń",
+    "home": "Start",
+    "browse": "Przeglądaj",
+    "alerts": "Alerty",
+    "primaryMobile": "Główna",
+    "unreadCount": "{count} nieprzeczytanych"
   },
   "hero": {
     "eyebrow": "Prywatny kapitał · Est. 2024",
@@ -35,7 +44,16 @@
     "beFirst": "Bądź wśród pierwszych zweryfikowanych listingów.",
     "applyToList": "Zgłoś się do listingu",
     "feeNoteSuffix": "naliczana dopiero po zamknięciu Twojej transakcji. Zero kosztów z góry.",
-    "feeNoteLabel": "2% opłata za sukces"
+    "feeNoteLabel": "2% opłata za sukces",
+    "launchPill": "Bezpłatnie w czasie startu · {count}/{target} członków",
+    "oneLiner": "Prywatny marketplace dla założycieli pozyskujących kapitał i inwestorów, którzy go lokują.",
+    "ctaBrowse": "Przeglądaj oferty",
+    "trustVetted": "Zweryfikowane oferty",
+    "trustFee": "Tylko 2% przy zamknięciu",
+    "trustLaunch": "Bezpłatnie w czasie startu",
+    "proofFee": "prowizja od sukcesu przy zamknięciu",
+    "proofUpfront": "kosztów na start",
+    "proofVetted": "ofert zweryfikowanych"
   },
   "trustIndicators": {
     "startupsListed": "startupów na liście",
@@ -867,7 +885,39 @@
     "raising": "Pozyskuje",
     "aiScore": "Wynik AI",
     "runway": "{months} miesięcy runway",
-    "noScore": "Brak wyniku"
+    "noScore": "Brak wyniku",
+    "savedSearches": "Zapisane wyszukiwania",
+    "saveThisSearch": "Zapisz to wyszukiwanie",
+    "savedSearchNamePlaceholder": "Nazwij je — np. Seed FinTech DE",
+    "savedSearchSaved": "Wyszukiwanie zapisane.",
+    "savedSearchFailed": "Nie udało się zapisać wyszukiwania.",
+    "savedSearchDeleteFailed": "Nie udało się usunąć wyszukiwania.",
+    "savedSearchDelete": "Usuń {name}",
+    "savedSearchUpgrade": "Zapisane wyszukiwania są dostępne w płatnych planach inwestora.",
+    "newThisWeek": "Nowe w tym tygodniu",
+    "industry": "Branża",
+    "stageGroup": "Etap",
+    "traction": "Trakcja",
+    "hidden": "Ukryte",
+    "showHidden": "Pokaż ukryte ({count})",
+    "hide": "Ukryj ofertę",
+    "unhide": "Pokaż",
+    "viewed": "Obejrzane",
+    "hideNeedsAccount": "Zaloguj się jako inwestor, aby ukrywać oferty",
+    "runway12": "Runway 12 mies.+",
+    "growth20": "Wzrost 20%+",
+    "region": "Region",
+    "copyLink": "Kopiuj link",
+    "linkCopied2": "Skopiowano link wyszukiwania",
+    "sumRaising": "{count} rund · poszukiwane {sum}",
+    "hiddenUndo": "Cofnij",
+    "compare": "Porównaj",
+    "compareTitle": "Porównaj startupy",
+    "compareClear": "Wyczyść",
+    "runwayLabel": "Runway",
+    "recentSearches": "Ostatnie wyszukiwania",
+    "noResultsFor": "Żadna oferta nie pasuje do „{query}”",
+    "noResultsBody": "Spróbuj usunąć filtr, poszerzyć etap lub branżę albo wyszukać ogólniejsze hasło."
   },
   "startupDetail": {
     "overview": "Przegląd",
@@ -934,7 +984,10 @@
     "sort": "Sortuj",
     "sortScore": "Według wyniku AI",
     "sortRecent": "Najnowsze",
-    "sortRaising": "Według kwoty pozyskania"
+    "sortRaising": "Według kwoty pozyskania",
+    "thresholds": "Trakcja",
+    "bestMatch": "Najlepiej dopasowane",
+    "matchPct": "{pct}% dopasowania"
   },
   "common": {
     "loading": "Ładowanie...",
@@ -972,7 +1025,8 @@
     "custom": "Niestandardowy",
     "open": "Otwarte",
     "printTagline": "CapitalReach — Rynek kapitału prywatnego",
-    "view": "Zobacz"
+    "view": "Zobacz",
+    "done": "Gotowe"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -1015,7 +1069,8 @@
     "careers": "Kariera",
     "contact": "Kontakt",
     "terms": "Warunki",
-    "privacy": "Prywatność"
+    "privacy": "Prywatność",
+    "aiDisclosure": "Funkcje oparte na AI korzystają z modeli OpenAI. Wyniki mają charakter wyłącznie informacyjny i nie stanowią porady inwestycyjnej."
   },
   "feeStrip": {
     "tagline": "opłata za sukces — tylko po zamknięciu. Średnia branżowa: 5–7% z góry.",
@@ -1437,7 +1492,8 @@
   },
   "banner": {
     "text": "Bezpłatnie dla pierwszych {target} członków — dołączyło {memberCount}/{target}, pozostało {spotsLeft} miejsc.",
-    "cta": "Zajmij swoje miejsce"
+    "cta": "Zajmij swoje miejsce",
+    "textShort": "Bezpłatnie dla pierwszych {target} — zostało {spotsLeft} miejsc."
   },
   "locale": {
     "changedTo": "Zmieniono język na {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "E-mail:",
     "supportLabel": "Wsparcie:",
     "footerAck": "Korzystając z CapitalReach, przyjmujesz do wiadomości, że przeczytałeś, zrozumiałeś, i zgadzasz się przestrzegać niniejszego Regulaminu."
+  },
+  "search": {
+    "aria": "Szukaj startupów i inwestorów",
+    "placeholder": "Szukaj startupów i inwestorów…",
+    "noResults": "Brak wyników.",
+    "startups": "Startupy",
+    "investors": "Inwestorzy",
+    "seeAll": "Zobacz wszystkie wyniki dla \"{q}\""
+  },
+  "presets": {
+    "preseedAi": "AI pre-seed",
+    "revenueStage": "Z przychodem",
+    "germany": "Niemcy",
+    "highScore": "Wynik 80+",
+    "newThisWeek": "Nowe w tym tygodniu",
+    "bigRaise": "Zbiera 2 mln €+",
+    "leadInvestors": "Inwestorzy wiodący",
+    "preseedAngels": "Aniołowie pre-seed",
+    "verifiedOnly": "Tylko zweryfikowani",
+    "seriesAVcs": "VC serii A",
+    "newThisMonth": "Nowe w tym miesiącu"
+  },
+  "a11y": {
+    "skipToContent": "Przejdź do treści",
+    "backToTop": "Wróć na górę"
+  },
+  "palette": {
+    "title": "Paleta poleceń",
+    "placeholder": "Szukaj lub przejdź do…",
+    "results": "Wyniki",
+    "noResults": "Nic nie pasuje do „{q}”",
+    "hint": "Szukaj ofert i inwestorów albo przejdź do dowolnej strony."
+  },
+  "shortcuts": {
+    "title": "Skróty klawiszowe",
+    "palette": "Otwórz paletę poleceń",
+    "search": "Ustaw kursor w wyszukiwarce",
+    "move": "Poruszaj się po wynikach",
+    "open": "Otwórz zaznaczony wynik",
+    "close": "Zamknij to okno",
+    "help": "Pokaż tę listę"
   }
 }

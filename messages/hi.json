@@ -15,7 +15,16 @@
     "settings": "सेटिंग्स",
     "account": "खाता",
     "openMenu": "मेनू खोलें",
-    "closeMenu": "मेनू बंद करें"
+    "closeMenu": "मेनू बंद करें",
+    "deals": "डील",
+    "secExplore": "एक्सप्लोर",
+    "secTools": "टूल",
+    "secWorkspace": "आपका वर्कस्पेस",
+    "home": "होम",
+    "browse": "ब्राउज़",
+    "alerts": "अलर्ट",
+    "primaryMobile": "मुख्य",
+    "unreadCount": "{count} अपठित"
   },
   "hero": {
     "eyebrow": "प्राइवेट कैपिटल · 2024 में स्थापित",
@@ -35,7 +44,16 @@
     "beFirst": "पहले सत्यापित लिस्टिंग में से एक बनें।",
     "applyToList": "सूचीबद्ध होने के लिए आवेदन करें",
     "feeNoteSuffix": "केवल आपकी डील बंद होने के बाद बिल किया जाता है। शून्य अग्रिम लागत।",
-    "feeNoteLabel": "2% सफलता शुल्क"
+    "feeNoteLabel": "2% सफलता शुल्क",
+    "launchPill": "लॉन्च के दौरान मुफ़्त · {count}/{target} सदस्य",
+    "oneLiner": "संस्थापकों के लिए एक निजी मार्केटप्लेस जो पूंजी जुटाते हैं, और निवेशकों के लिए जो उसे लगाते हैं।",
+    "ctaBrowse": "लिस्टिंग देखें",
+    "trustVetted": "जाँची गई लिस्टिंग",
+    "trustFee": "केवल क्लोज़ पर 2%",
+    "trustLaunch": "लॉन्च के दौरान मुफ़्त",
+    "proofFee": "क्लोज़ पर सफलता शुल्क",
+    "proofUpfront": "अग्रिम लागत",
+    "proofVetted": "लिस्टिंग जाँची गईं"
   },
   "trustIndicators": {
     "startupsListed": "स्टार्टअप सूचीबद्ध",
@@ -867,7 +885,39 @@
     "raising": "जुटा रहे हैं",
     "aiScore": "AI स्कोर",
     "runway": "{months} महीने का रनवे",
-    "noScore": "कोई स्कोर नहीं"
+    "noScore": "कोई स्कोर नहीं",
+    "savedSearches": "सहेजी गई खोजें",
+    "saveThisSearch": "यह खोज सहेजें",
+    "savedSearchNamePlaceholder": "नाम दें — जैसे Seed FinTech DE",
+    "savedSearchSaved": "खोज सहेजी गई।",
+    "savedSearchFailed": "वह खोज सहेजी नहीं जा सकी।",
+    "savedSearchDeleteFailed": "वह खोज हटाई नहीं जा सकी।",
+    "savedSearchDelete": "{name} हटाएँ",
+    "savedSearchUpgrade": "सहेजी गई खोजें सशुल्क निवेशक प्लान में उपलब्ध हैं।",
+    "newThisWeek": "इस सप्ताह नया",
+    "industry": "उद्योग",
+    "stageGroup": "चरण",
+    "traction": "ट्रैक्शन",
+    "hidden": "छिपी हुई",
+    "showHidden": "छिपी हुई दिखाएँ ({count})",
+    "hide": "लिस्टिंग छिपाएँ",
+    "unhide": "दिखाएँ",
+    "viewed": "देखा गया",
+    "hideNeedsAccount": "लिस्टिंग छिपाने के लिए निवेशक के रूप में साइन इन करें",
+    "runway12": "रनवे 12 माह+",
+    "growth20": "वृद्धि 20%+",
+    "region": "क्षेत्र",
+    "copyLink": "लिंक कॉपी करें",
+    "linkCopied2": "खोज लिंक कॉपी हुआ",
+    "sumRaising": "{count} राउंड · {sum} मांगे गए",
+    "hiddenUndo": "पूर्ववत करें",
+    "compare": "तुलना करें",
+    "compareTitle": "स्टार्टअप की तुलना करें",
+    "compareClear": "साफ़ करें",
+    "runwayLabel": "रनवे",
+    "recentSearches": "हाल की खोजें",
+    "noResultsFor": "“{query}” से मेल खाती कोई लिस्टिंग नहीं",
+    "noResultsBody": "कोई फ़िल्टर हटाएँ, चरण या उद्योग को व्यापक करें, या अधिक सामान्य शब्द खोजें।"
   },
   "startupDetail": {
     "overview": "अवलोकन",
@@ -934,7 +984,10 @@
     "sort": "क्रमबद्ध करें",
     "sortScore": "AI स्कोर से",
     "sortRecent": "नवीनतम पहले",
-    "sortRaising": "राशि से"
+    "sortRaising": "राशि से",
+    "thresholds": "ट्रैक्शन",
+    "bestMatch": "मेरे लिए सर्वोत्तम मिलान",
+    "matchPct": "{pct}% मिलान"
   },
   "common": {
     "loading": "लोड हो रहा है...",
@@ -972,7 +1025,8 @@
     "custom": "कस्टम",
     "open": "खुला",
     "printTagline": "CapitalReach — निजी पूंजी बाज़ार",
-    "view": "देखें"
+    "view": "देखें",
+    "done": "हो गया"
   },
   "errors": {
     "required": "यह फ़ील्ड आवश्यक है",
@@ -1015,7 +1069,8 @@
     "careers": "करियर",
     "contact": "संपर्क",
     "terms": "शर्तें",
-    "privacy": "गोपनीयता"
+    "privacy": "गोपनीयता",
+    "aiDisclosure": "AI-आधारित सुविधाएँ OpenAI मॉडल का उपयोग करती हैं। परिणाम केवल सूचनात्मक हैं और निवेश सलाह नहीं हैं।"
   },
   "feeStrip": {
     "tagline": "सफलता शुल्क — केवल क्लोजिंग के बाद। उद्योग औसत: 5–7% अग्रिम।",
@@ -1437,7 +1492,8 @@
   },
   "banner": {
     "text": "हमारे पहले {target} सदस्यों के लिए मुफ्त — {memberCount}/{target} शामिल हुए, {spotsLeft} स्थान शेष।",
-    "cta": "अपना स्थान सुरक्षित करें"
+    "cta": "अपना स्थान सुरक्षित करें",
+    "textShort": "हमारे पहले {target} के लिए मुफ़्त — {spotsLeft} स्थान शेष।"
   },
   "locale": {
     "changedTo": "भाषा {name} में बदल दी गई",
@@ -1802,5 +1858,46 @@
     "emailLabel": "ईमेल:",
     "supportLabel": "सहायता:",
     "footerAck": "CapitalReach का उपयोग करके, आप स्वीकार करते हैं कि आपने इन सेवा की शर्तों को पढ़ा, समझा है, और इनसे बंधे होने के लिए सहमत हैं।"
+  },
+  "search": {
+    "aria": "स्टार्टअप और निवेशक खोजें",
+    "placeholder": "स्टार्टअप और निवेशक खोजें…",
+    "noResults": "कुछ भी मेल नहीं खाता।",
+    "startups": "स्टार्टअप",
+    "investors": "निवेशक",
+    "seeAll": "\"{q}\" के सभी परिणाम देखें"
+  },
+  "presets": {
+    "preseedAi": "प्री-सीड AI",
+    "revenueStage": "राजस्व चरण",
+    "germany": "जर्मनी",
+    "highScore": "स्कोर 80+",
+    "newThisWeek": "इस सप्ताह नया",
+    "bigRaise": "€2M+ जुटा रहे",
+    "leadInvestors": "लीड निवेशक",
+    "preseedAngels": "प्री-सीड एंजेल",
+    "verifiedOnly": "केवल सत्यापित",
+    "seriesAVcs": "सीरीज़ A VC",
+    "newThisMonth": "इस माह नया"
+  },
+  "a11y": {
+    "skipToContent": "सामग्री पर जाएँ",
+    "backToTop": "शीर्ष पर जाएँ"
+  },
+  "palette": {
+    "title": "कमांड पैलेट",
+    "placeholder": "खोजें या जाएँ…",
+    "results": "परिणाम",
+    "noResults": "“{q}” से कुछ मेल नहीं खाता",
+    "hint": "लिस्टिंग और निवेशक खोजें, या किसी भी पेज पर जाएँ।"
+  },
+  "shortcuts": {
+    "title": "कीबोर्ड शॉर्टकट",
+    "palette": "कमांड पैलेट खोलें",
+    "search": "खोज बॉक्स पर फ़ोकस करें",
+    "move": "परिणामों में जाएँ",
+    "open": "चयनित परिणाम खोलें",
+    "close": "यह डायलॉग बंद करें",
+    "help": "यह सूची दिखाएँ"
   }
 }

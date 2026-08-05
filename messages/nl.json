@@ -15,7 +15,16 @@
     "settings": "Instellingen",
     "account": "Account",
     "openMenu": "Menu openen",
-    "closeMenu": "Menu sluiten"
+    "closeMenu": "Menu sluiten",
+    "deals": "Deals",
+    "secExplore": "Ontdekken",
+    "secTools": "Tools",
+    "secWorkspace": "Jouw werkruimte",
+    "home": "Home",
+    "browse": "Bladeren",
+    "alerts": "Meldingen",
+    "primaryMobile": "Hoofdnavigatie",
+    "unreadCount": "{count} ongelezen"
   },
   "hero": {
     "eyebrow": "Privaat kapitaal · Est. 2024",
@@ -35,7 +44,16 @@
     "beFirst": "Wees een van de eerste geverifieerde listings.",
     "applyToList": "Aanmelden voor listing",
     "feeNoteSuffix": "alleen gefactureerd nadat uw deal is gesloten. Nul kosten vooraf.",
-    "feeNoteLabel": "2% succesvergoeding"
+    "feeNoteLabel": "2% succesvergoeding",
+    "launchPill": "Gratis tijdens de lancering · {count}/{target} leden",
+    "oneLiner": "Een besloten marktplaats voor oprichters die kapitaal ophalen en investeerders die het inzetten.",
+    "ctaBrowse": "Bekijk aanbod",
+    "trustVetted": "Gecontroleerd aanbod",
+    "trustFee": "Alleen 2% bij closing",
+    "trustLaunch": "Gratis tijdens de lancering",
+    "proofFee": "successfee bij closing",
+    "proofUpfront": "kosten vooraf",
+    "proofVetted": "aanbod gecontroleerd"
   },
   "trustIndicators": {
     "startupsListed": "startups geplaatst",
@@ -867,7 +885,39 @@
     "raising": "Haalt op",
     "aiScore": "AI-score",
     "runway": "{months} maanden runway",
-    "noScore": "Geen score"
+    "noScore": "Geen score",
+    "savedSearches": "Opgeslagen zoekopdrachten",
+    "saveThisSearch": "Deze zoekopdracht opslaan",
+    "savedSearchNamePlaceholder": "Geef het een naam — bijv. Seed FinTech DE",
+    "savedSearchSaved": "Zoekopdracht opgeslagen.",
+    "savedSearchFailed": "Kon die zoekopdracht niet opslaan.",
+    "savedSearchDeleteFailed": "Kon die zoekopdracht niet verwijderen.",
+    "savedSearchDelete": "{name} verwijderen",
+    "savedSearchUpgrade": "Opgeslagen zoekopdrachten zijn beschikbaar in betaalde investeerdersplannen.",
+    "newThisWeek": "Nieuw deze week",
+    "industry": "Sector",
+    "stageGroup": "Fase",
+    "traction": "Tractie",
+    "hidden": "Verborgen",
+    "showHidden": "Verborgen tonen ({count})",
+    "hide": "Aanbod verbergen",
+    "unhide": "Weer tonen",
+    "viewed": "Bekeken",
+    "hideNeedsAccount": "Log in als investeerder om aanbod te verbergen",
+    "runway12": "Runway 12 mnd+",
+    "growth20": "Groei 20%+",
+    "region": "Regio",
+    "copyLink": "Link kopiëren",
+    "linkCopied2": "Zoeklink gekopieerd",
+    "sumRaising": "{count} rondes · {sum} gezocht",
+    "hiddenUndo": "Ongedaan maken",
+    "compare": "Vergelijken",
+    "compareTitle": "Startups vergelijken",
+    "compareClear": "Wissen",
+    "runwayLabel": "Runway",
+    "recentSearches": "Recente zoekopdrachten",
+    "noResultsFor": "Geen aanbod komt overeen met “{query}”",
+    "noResultsBody": "Probeer een filter te verwijderen, de fase of sector te verbreden, of een algemenere term te zoeken."
   },
   "startupDetail": {
     "overview": "Overzicht",
@@ -934,7 +984,10 @@
     "sort": "Sorteren",
     "sortScore": "Op AI-score",
     "sortRecent": "Nieuwste eerst",
-    "sortRaising": "Op ophaalbedrag"
+    "sortRaising": "Op ophaalbedrag",
+    "thresholds": "Tractie",
+    "bestMatch": "Beste match voor mij",
+    "matchPct": "{pct}% match"
   },
   "common": {
     "loading": "Laden...",
@@ -972,7 +1025,8 @@
     "custom": "Op maat",
     "open": "Open",
     "printTagline": "CapitalReach — Marktplaats voor privékapitaal",
-    "view": "Bekijken"
+    "view": "Bekijken",
+    "done": "Klaar"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1015,7 +1069,8 @@
     "careers": "Carrière",
     "contact": "Contact",
     "terms": "Voorwaarden",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "aiDisclosure": "AI-functies gebruiken OpenAI-modellen. Uitkomsten zijn uitsluitend informatief en vormen geen beleggingsadvies."
   },
   "feeStrip": {
     "tagline": "succesvergoeding — alleen na sluiting. Sectorgemiddelde: 5–7% vooraf.",
@@ -1437,7 +1492,8 @@
   },
   "banner": {
     "text": "Gratis voor onze eerste {target} leden — {memberCount}/{target} aangesloten, nog {spotsLeft} plekken vrij.",
-    "cta": "Claim uw plek"
+    "cta": "Claim uw plek",
+    "textShort": "Gratis voor onze eerste {target} — nog {spotsLeft} plekken."
   },
   "locale": {
     "changedTo": "Taal gewijzigd naar {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "E-mail:",
     "supportLabel": "Ondersteuning:",
     "footerAck": "Door CapitalReach te gebruiken, erkent u dat u deze Servicevoorwaarden heeft gelezen, begrepen, en ermee akkoord gaat eraan gebonden te zijn."
+  },
+  "search": {
+    "aria": "Zoek startups en investeerders",
+    "placeholder": "Zoek startups en investeerders…",
+    "noResults": "Geen resultaten.",
+    "startups": "Startups",
+    "investors": "Investeerders",
+    "seeAll": "Alle resultaten voor \"{q}\" bekijken"
+  },
+  "presets": {
+    "preseedAi": "Pre-seed AI",
+    "revenueStage": "Met omzet",
+    "germany": "Duitsland",
+    "highScore": "Score 80+",
+    "newThisWeek": "Nieuw deze week",
+    "bigRaise": "Haalt €2M+ op",
+    "leadInvestors": "Lead-investeerders",
+    "preseedAngels": "Pre-seed angels",
+    "verifiedOnly": "Alleen geverifieerd",
+    "seriesAVcs": "Serie A-VC's",
+    "newThisMonth": "Nieuw deze maand"
+  },
+  "a11y": {
+    "skipToContent": "Naar inhoud springen",
+    "backToTop": "Terug naar boven"
+  },
+  "palette": {
+    "title": "Opdrachtenpalet",
+    "placeholder": "Zoeken of ga naar…",
+    "results": "Resultaten",
+    "noResults": "Niets komt overeen met “{q}”",
+    "hint": "Zoek aanbod en investeerders, of ga naar een willekeurige pagina."
+  },
+  "shortcuts": {
+    "title": "Sneltoetsen",
+    "palette": "Opdrachtenpalet openen",
+    "search": "Focus op het zoekveld",
+    "move": "Door resultaten bewegen",
+    "open": "Gemarkeerd resultaat openen",
+    "close": "Dit venster sluiten",
+    "help": "Deze lijst tonen"
   }
 }

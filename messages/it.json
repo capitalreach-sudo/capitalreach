@@ -15,7 +15,16 @@
     "settings": "Impostazioni",
     "account": "Account",
     "openMenu": "Apri menu",
-    "closeMenu": "Chiudi menu"
+    "closeMenu": "Chiudi menu",
+    "deals": "Operazioni",
+    "secExplore": "Esplora",
+    "secTools": "Strumenti",
+    "secWorkspace": "Il tuo spazio",
+    "home": "Home",
+    "browse": "Sfoglia",
+    "alerts": "Avvisi",
+    "primaryMobile": "Principale",
+    "unreadCount": "{count} non letti"
   },
   "hero": {
     "eyebrow": "Capitale privato · Est. 2024",
@@ -35,7 +44,16 @@
     "beFirst": "Sii tra i primi listing verificati.",
     "applyToList": "Candidati per elencarti",
     "feeNoteSuffix": "fatturata solo dopo la chiusura del tuo affare. Zero costi anticipati.",
-    "feeNoteLabel": "2% di commissione di successo"
+    "feeNoteLabel": "2% di commissione di successo",
+    "launchPill": "Gratis durante il lancio · {count}/{target} membri",
+    "oneLiner": "Un marketplace privato per fondatori che raccolgono capitale e investitori che lo impiegano.",
+    "ctaBrowse": "Sfoglia le opportunità",
+    "trustVetted": "Opportunità verificate",
+    "trustFee": "Solo 2% alla chiusura",
+    "trustLaunch": "Gratis durante il lancio",
+    "proofFee": "commissione di successo alla chiusura",
+    "proofUpfront": "costo iniziale",
+    "proofVetted": "opportunità verificate"
   },
   "trustIndicators": {
     "startupsListed": "startup elencate",
@@ -867,7 +885,39 @@
     "raising": "Raccoglie",
     "aiScore": "Punteggio AI",
     "runway": "{months} mesi di runway",
-    "noScore": "Nessun punteggio"
+    "noScore": "Nessun punteggio",
+    "savedSearches": "Ricerche salvate",
+    "saveThisSearch": "Salva questa ricerca",
+    "savedSearchNamePlaceholder": "Dagli un nome — es. Seed FinTech DE",
+    "savedSearchSaved": "Ricerca salvata.",
+    "savedSearchFailed": "Impossibile salvare la ricerca.",
+    "savedSearchDeleteFailed": "Impossibile rimuovere la ricerca.",
+    "savedSearchDelete": "Rimuovi {name}",
+    "savedSearchUpgrade": "Le ricerche salvate sono disponibili nei piani investitore a pagamento.",
+    "newThisWeek": "Nuovi questa settimana",
+    "industry": "Settore",
+    "stageGroup": "Fase",
+    "traction": "Trazione",
+    "hidden": "Nascoste",
+    "showHidden": "Mostra nascoste ({count})",
+    "hide": "Nascondi opportunità",
+    "unhide": "Mostra",
+    "viewed": "Visto",
+    "hideNeedsAccount": "Accedi come investitore per nascondere le opportunità",
+    "runway12": "Autonomia 12 mesi+",
+    "growth20": "Crescita 20%+",
+    "region": "Regione",
+    "copyLink": "Copia link",
+    "linkCopied2": "Link della ricerca copiato",
+    "sumRaising": "{count} round · {sum} richiesti",
+    "hiddenUndo": "Annulla",
+    "compare": "Confronta",
+    "compareTitle": "Confronta le startup",
+    "compareClear": "Cancella",
+    "runwayLabel": "Autonomia",
+    "recentSearches": "Ricerche recenti",
+    "noResultsFor": "Nessuna opportunità corrisponde a «{query}»",
+    "noResultsBody": "Prova a rimuovere un filtro, ad ampliare la fase o il settore, o a cercare un termine più generico."
   },
   "startupDetail": {
     "overview": "Panoramica",
@@ -934,7 +984,10 @@
     "sort": "Ordina",
     "sortScore": "Per punteggio AI",
     "sortRecent": "Più recenti",
-    "sortRaising": "Per importo raccolto"
+    "sortRaising": "Per importo raccolto",
+    "thresholds": "Trazione",
+    "bestMatch": "Più adatti a me",
+    "matchPct": "{pct}% di affinità"
   },
   "common": {
     "loading": "Caricamento...",
@@ -972,7 +1025,8 @@
     "custom": "Personalizzato",
     "open": "Aperto",
     "printTagline": "CapitalReach — Mercato del capitale privato",
-    "view": "Visualizza"
+    "view": "Visualizza",
+    "done": "Fatto"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -1015,7 +1069,8 @@
     "careers": "Carriere",
     "contact": "Contatto",
     "terms": "Termini",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "aiDisclosure": "Le funzionalità basate su IA usano modelli OpenAI. I risultati sono solo informativi e non costituiscono consulenza finanziaria."
   },
   "feeStrip": {
     "tagline": "commissione di successo — solo dopo la chiusura. Media del settore: 5–7% anticipato.",
@@ -1437,7 +1492,8 @@
   },
   "banner": {
     "text": "Gratis per i primi {target} membri — {memberCount}/{target} iscritti, restano {spotsLeft} posti.",
-    "cta": "Prenota il tuo posto"
+    "cta": "Prenota il tuo posto",
+    "textShort": "Gratis per i primi {target} — restano {spotsLeft} posti."
   },
   "locale": {
     "changedTo": "Lingua cambiata in {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "E-mail:",
     "supportLabel": "Supporto:",
     "footerAck": "Utilizzando CapitalReach, riconosci di aver letto, compreso, e accettato di essere vincolato da questi Termini di servizio."
+  },
+  "search": {
+    "aria": "Cerca startup e investitori",
+    "placeholder": "Cerca startup e investitori…",
+    "noResults": "Nessun risultato.",
+    "startups": "Startup",
+    "investors": "Investitori",
+    "seeAll": "Vedi tutti i risultati per \"{q}\""
+  },
+  "presets": {
+    "preseedAi": "IA pre-seed",
+    "revenueStage": "Con ricavi",
+    "germany": "Germania",
+    "highScore": "Punteggio 80+",
+    "newThisWeek": "Nuovi questa settimana",
+    "bigRaise": "Raccolgono 2M€+",
+    "leadInvestors": "Investitori lead",
+    "preseedAngels": "Angel pre-seed",
+    "verifiedOnly": "Solo verificati",
+    "seriesAVcs": "VC Serie A",
+    "newThisMonth": "Nuovi questo mese"
+  },
+  "a11y": {
+    "skipToContent": "Vai al contenuto",
+    "backToTop": "Torna su"
+  },
+  "palette": {
+    "title": "Palette dei comandi",
+    "placeholder": "Cerca o vai a…",
+    "results": "Risultati",
+    "noResults": "Nessun risultato per «{q}»",
+    "hint": "Cerca opportunità e investitori, o vai a qualsiasi pagina."
+  },
+  "shortcuts": {
+    "title": "Scorciatoie da tastiera",
+    "palette": "Apri la palette dei comandi",
+    "search": "Vai al campo di ricerca",
+    "move": "Scorri i risultati",
+    "open": "Apri il risultato evidenziato",
+    "close": "Chiudi questa finestra",
+    "help": "Mostra questo elenco"
   }
 }

@@ -15,7 +15,16 @@
     "settings": "Configuración",
     "account": "Cuenta",
     "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "deals": "Operaciones",
+    "secExplore": "Explorar",
+    "secTools": "Herramientas",
+    "secWorkspace": "Tu espacio",
+    "home": "Inicio",
+    "browse": "Explorar",
+    "alerts": "Avisos",
+    "primaryMobile": "Principal",
+    "unreadCount": "{count} sin leer"
   },
   "hero": {
     "eyebrow": "Capital privado · Est. 2024",
@@ -35,7 +44,16 @@
     "beFirst": "Sé uno de los primeros listings verificados.",
     "applyToList": "Solicitar listing",
     "feeNoteSuffix": "facturado solo tras el cierre de tu operación. Cero coste inicial.",
-    "feeNoteLabel": "2% de comisión de éxito"
+    "feeNoteLabel": "2% de comisión de éxito",
+    "launchPill": "Gratis durante el lanzamiento · {count}/{target} miembros",
+    "oneLiner": "Un mercado privado para fundadores que levantan capital e inversores que lo despliegan.",
+    "ctaBrowse": "Ver oportunidades",
+    "trustVetted": "Oportunidades verificadas",
+    "trustFee": "Solo 2% al cierre",
+    "trustLaunch": "Gratis durante el lanzamiento",
+    "proofFee": "comisión de éxito al cierre",
+    "proofUpfront": "coste inicial",
+    "proofVetted": "oportunidades verificadas"
   },
   "feeStrip": {
     "tagline": "comisión de éxito — solo después del cierre. Media del sector: 5–7% por adelantado.",
@@ -876,7 +894,39 @@
     "raising": "Buscando",
     "aiScore": "Puntuación IA",
     "runway": "{months} meses de runway",
-    "noScore": "Pendiente"
+    "noScore": "Pendiente",
+    "savedSearches": "Búsquedas guardadas",
+    "saveThisSearch": "Guardar esta búsqueda",
+    "savedSearchNamePlaceholder": "Ponle nombre — p. ej. Seed FinTech DE",
+    "savedSearchSaved": "Búsqueda guardada.",
+    "savedSearchFailed": "No se pudo guardar la búsqueda.",
+    "savedSearchDeleteFailed": "No se pudo eliminar la búsqueda.",
+    "savedSearchDelete": "Eliminar {name}",
+    "savedSearchUpgrade": "Las búsquedas guardadas están disponibles en los planes de inversor de pago.",
+    "newThisWeek": "Nuevo esta semana",
+    "industry": "Sector",
+    "stageGroup": "Etapa",
+    "traction": "Tracción",
+    "hidden": "Ocultas",
+    "showHidden": "Mostrar ocultas ({count})",
+    "hide": "Ocultar oportunidad",
+    "unhide": "Mostrar",
+    "viewed": "Visto",
+    "hideNeedsAccount": "Inicia sesión como inversor para ocultar oportunidades",
+    "runway12": "Pista 12 meses+",
+    "growth20": "Crecimiento 20%+",
+    "region": "Región",
+    "copyLink": "Copiar enlace",
+    "linkCopied2": "Enlace de búsqueda copiado",
+    "sumRaising": "{count} rondas · {sum} buscados",
+    "hiddenUndo": "Deshacer",
+    "compare": "Comparar",
+    "compareTitle": "Comparar startups",
+    "compareClear": "Limpiar",
+    "runwayLabel": "Pista",
+    "recentSearches": "Búsquedas recientes",
+    "noResultsFor": "Ninguna oportunidad coincide con «{query}»",
+    "noResultsBody": "Prueba a quitar un filtro, ampliar la etapa o el sector, o buscar un término más general."
   },
   "startup": {
     "back": "Volver al directorio",
@@ -1058,7 +1108,10 @@
     "sort": "Ordenar por",
     "sortScore": "Puntuación IA",
     "sortRecent": "Más reciente",
-    "sortRaising": "Importe de financiación"
+    "sortRaising": "Importe de financiación",
+    "thresholds": "Tracción",
+    "bestMatch": "Mejor coincidencia para mí",
+    "matchPct": "{pct}% de coincidencia"
   },
   "common": {
     "loading": "Cargando...",
@@ -1096,7 +1149,8 @@
     "custom": "Personalizado",
     "open": "Abierto",
     "printTagline": "CapitalReach — Mercado de capital privado",
-    "view": "Ver"
+    "view": "Ver",
+    "done": "Hecho"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",
@@ -1433,11 +1487,13 @@
     "careers": "Empleo",
     "contact": "Contacto",
     "terms": "Términos",
-    "privacy": "Privacidad"
+    "privacy": "Privacidad",
+    "aiDisclosure": "Las funciones con IA usan modelos de OpenAI. Los resultados son solo informativos y no constituyen asesoramiento de inversión."
   },
   "banner": {
     "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",
-    "cta": "Reserva tu lugar"
+    "cta": "Reserva tu lugar",
+    "textShort": "Gratis para nuestros primeros {target} — quedan {spotsLeft} plazas."
   },
   "locale": {
     "changedTo": "Idioma cambiado a {name}",
@@ -1802,5 +1858,46 @@
     "emailLabel": "Correo electrónico:",
     "supportLabel": "Soporte:",
     "footerAck": "Al usar CapitalReach, reconoces que has leído, entendido, y aceptas quedar vinculado por estos Términos de servicio."
+  },
+  "search": {
+    "aria": "Buscar startups e inversores",
+    "placeholder": "Buscar startups e inversores…",
+    "noResults": "No hay coincidencias.",
+    "startups": "Startups",
+    "investors": "Inversores",
+    "seeAll": "Ver todos los resultados de \"{q}\""
+  },
+  "presets": {
+    "preseedAi": "IA pre-seed",
+    "revenueStage": "Con ingresos",
+    "germany": "Alemania",
+    "highScore": "Puntuación 80+",
+    "newThisWeek": "Nuevo esta semana",
+    "bigRaise": "Levanta 2M€+",
+    "leadInvestors": "Inversores líder",
+    "preseedAngels": "Ángeles pre-seed",
+    "verifiedOnly": "Solo verificados",
+    "seriesAVcs": "VC de Serie A",
+    "newThisMonth": "Nuevo este mes"
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido",
+    "backToTop": "Volver arriba"
+  },
+  "palette": {
+    "title": "Paleta de comandos",
+    "placeholder": "Buscar o ir a…",
+    "results": "Resultados",
+    "noResults": "Nada coincide con «{q}»",
+    "hint": "Busca oportunidades e inversores, o ve a cualquier página."
+  },
+  "shortcuts": {
+    "title": "Atajos de teclado",
+    "palette": "Abrir la paleta de comandos",
+    "search": "Enfocar el buscador",
+    "move": "Moverse por los resultados",
+    "open": "Abrir el resultado seleccionado",
+    "close": "Cerrar este diálogo",
+    "help": "Mostrar esta lista"
   }
 }

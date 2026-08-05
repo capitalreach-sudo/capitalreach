@@ -15,7 +15,16 @@
     "settings": "設定",
     "account": "アカウント",
     "openMenu": "メニューを開く",
-    "closeMenu": "メニューを閉じる"
+    "closeMenu": "メニューを閉じる",
+    "deals": "ディール",
+    "secExplore": "探す",
+    "secTools": "ツール",
+    "secWorkspace": "ワークスペース",
+    "home": "ホーム",
+    "browse": "さがす",
+    "alerts": "通知",
+    "primaryMobile": "メインナビ",
+    "unreadCount": "未読 {count} 件"
   },
   "hero": {
     "eyebrow": "プライベートキャピタル · 2024年設立",
@@ -35,7 +44,16 @@
     "beFirst": "最初の検証済み掲載のひとつになりましょう。",
     "applyToList": "掲載を申請",
     "feeNoteSuffix": "ディールが成立した後にのみ請求されます。前払い費用はゼロです。",
-    "feeNoteLabel": "2%成功報酬"
+    "feeNoteLabel": "2%成功報酬",
+    "launchPill": "ローンチ期間は無料 · {count}/{target} 名",
+    "oneLiner": "資金を調達する創業者と、資金を投じる投資家のためのプライベートマーケットプレイス。",
+    "ctaBrowse": "掲載企業を見る",
+    "trustVetted": "運営が審査した掲載",
+    "trustFee": "成約時に2%のみ",
+    "trustLaunch": "ローンチ期間は無料",
+    "proofFee": "成約時の成功報酬",
+    "proofUpfront": "初期費用",
+    "proofVetted": "掲載はすべて審査済み"
   },
   "feeStrip": {
     "tagline": "サクセスフィー — クロージング後のみ。業界平均：前払い5〜7%。",
@@ -876,7 +894,39 @@
     "raising": "調達中",
     "aiScore": "AIスコア",
     "runway": "ランウェイ{months}ヶ月",
-    "noScore": "審査待ち"
+    "noScore": "審査待ち",
+    "savedSearches": "保存した検索",
+    "saveThisSearch": "この検索を保存",
+    "savedSearchNamePlaceholder": "名前を付ける — 例: Seed FinTech DE",
+    "savedSearchSaved": "検索を保存しました。",
+    "savedSearchFailed": "検索を保存できませんでした。",
+    "savedSearchDeleteFailed": "検索を削除できませんでした。",
+    "savedSearchDelete": "{name} を削除",
+    "savedSearchUpgrade": "保存した検索は有料の投資家プランでご利用いただけます。",
+    "newThisWeek": "今週の新着",
+    "industry": "業種",
+    "stageGroup": "ステージ",
+    "traction": "トラクション",
+    "hidden": "非表示",
+    "showHidden": "非表示を表示 ({count})",
+    "hide": "この掲載を非表示",
+    "unhide": "再表示",
+    "viewed": "閲覧済み",
+    "hideNeedsAccount": "掲載を非表示にするには投資家としてログインしてください",
+    "runway12": "ランウェイ12か月以上",
+    "growth20": "成長率20%以上",
+    "region": "地域",
+    "copyLink": "リンクをコピー",
+    "linkCopied2": "検索リンクをコピーしました",
+    "sumRaising": "{count} 件のラウンド · {sum} を募集",
+    "hiddenUndo": "元に戻す",
+    "compare": "比較",
+    "compareTitle": "スタートアップを比較",
+    "compareClear": "クリア",
+    "runwayLabel": "ランウェイ",
+    "recentSearches": "最近の検索",
+    "noResultsFor": "「{query}」に一致する掲載はありません",
+    "noResultsBody": "フィルターを外すか、ステージや業種を広げるか、より一般的な語で検索してみてください。"
   },
   "startup": {
     "back": "ディレクトリに戻る",
@@ -1058,7 +1108,10 @@
     "sort": "並び替え",
     "sortScore": "AIスコア",
     "sortRecent": "最新順",
-    "sortRaising": "調達額"
+    "sortRaising": "調達額",
+    "thresholds": "トラクション",
+    "bestMatch": "自分に最適な順",
+    "matchPct": "{pct}% 一致"
   },
   "common": {
     "loading": "読み込み中...",
@@ -1096,7 +1149,8 @@
     "custom": "カスタム",
     "open": "制限なし",
     "printTagline": "CapitalReach — プライベートキャピタル市場",
-    "view": "表示"
+    "view": "表示",
+    "done": "完了"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",
@@ -1433,11 +1487,13 @@
     "careers": "採用情報",
     "contact": "お問い合わせ",
     "terms": "利用規約",
-    "privacy": "プライバシーポリシー"
+    "privacy": "プライバシーポリシー",
+    "aiDisclosure": "AI機能はOpenAIのモデルを使用しています。出力は情報提供のみを目的としており、投資助言ではありません。"
   },
   "banner": {
     "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",
-    "cta": "今すぐ確保する"
+    "cta": "今すぐ確保する",
+    "textShort": "先着 {target} 名は無料 — 残り {spotsLeft} 枠。"
   },
   "locale": {
     "changedTo": "言語を{name}に変更しました",
@@ -1802,5 +1858,46 @@
     "emailLabel": "メール：",
     "supportLabel": "サポート：",
     "footerAck": "CapitalReachを利用することにより、お客様は本利用規約を読み、理解し、これに拘束されることに同意したことを認めるものとします。"
+  },
+  "search": {
+    "aria": "スタートアップと投資家を検索",
+    "placeholder": "スタートアップ・投資家を検索…",
+    "noResults": "該当するものはありません。",
+    "startups": "スタートアップ",
+    "investors": "投資家",
+    "seeAll": "「{q}」のすべての結果を見る"
+  },
+  "presets": {
+    "preseedAi": "プレシードAI",
+    "revenueStage": "売上あり",
+    "germany": "ドイツ",
+    "highScore": "スコア80以上",
+    "newThisWeek": "今週の新着",
+    "bigRaise": "€2M以上を調達",
+    "leadInvestors": "リード投資家",
+    "preseedAngels": "プレシードのエンジェル",
+    "verifiedOnly": "認証済みのみ",
+    "seriesAVcs": "シリーズAのVC",
+    "newThisMonth": "今月の新着"
+  },
+  "a11y": {
+    "skipToContent": "本文へスキップ",
+    "backToTop": "上に戻る"
+  },
+  "palette": {
+    "title": "コマンドパレット",
+    "placeholder": "検索、またはページへ移動…",
+    "results": "結果",
+    "noResults": "「{q}」に一致するものはありません",
+    "hint": "掲載企業や投資家を検索、または任意のページへ移動できます。"
+  },
+  "shortcuts": {
+    "title": "キーボードショートカット",
+    "palette": "コマンドパレットを開く",
+    "search": "検索ボックスにフォーカス",
+    "move": "結果を移動",
+    "open": "選択中の結果を開く",
+    "close": "このダイアログを閉じる",
+    "help": "この一覧を表示"
   }
 }
