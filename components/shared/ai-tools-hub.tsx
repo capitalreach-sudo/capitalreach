@@ -721,8 +721,15 @@ export function AiToolsHub() {
   // stops signed-out visitors from typing a pitch into a tool that can only
   // refuse them. null = still checking (render nothing gated yet).
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  // Today's allowance, so the limit is visible before a pitch is written
+  // rather than discovered as a 429 afterwards.
+  const [usage, setUsage] = useState<{ unlimited: boolean; used: number; limit: number; remaining: number } | null>(null);
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => setIsAuthed(!!data.user));
+    fetch("/api/ai/usage")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (j?.signedIn) setUsage(j); })
+      .catch(() => setUsage(null));
   }, []);
 
   const TABS: { id: Tab; label: string; icon: ElementType; desc: string }[] = [
@@ -796,6 +803,26 @@ export function AiToolsHub() {
 
       {/* Content */}
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px" }}>
+        {usage && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 16px", marginBottom: "20px" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>
+              {usage.unlimited
+                ? t("ai.usageUnlimited")
+                : t("ai.usageRemaining", { remaining: usage.remaining, limit: usage.limit })}
+            </span>
+            {!usage.unlimited && (
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ width: "120px", height: "5px", background: "var(--cr-paper-4)", borderRadius: "3px", overflow: "hidden" }}>
+                  <div style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100)}%`, height: "100%", background: usage.remaining === 0 ? "var(--cr-down)" : "var(--cr-copper)" }} />
+                </div>
+                <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>
+                  {t("ai.usageUpgrade")}
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+
         {isAuthed === false ? (
           <div style={{ textAlign: "center", padding: "80px 24px" }}>
             <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>

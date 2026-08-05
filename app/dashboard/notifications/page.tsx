@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BellOff } from "lucide-react";
+import { ArrowLeft, BellOff, X } from "lucide-react";
 import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -74,6 +74,24 @@ export default function NotificationsPage() {
     load();
   }
 
+  async function removeOne(id: string) {
+    setRows((prev) => prev?.filter((r) => r.id !== id) ?? prev);
+    await fetch("/api/notifications", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  async function clearRead() {
+    setRows((prev) => prev?.filter((r) => !r.read_at) ?? prev);
+    await fetch("/api/notifications", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ allRead: true }),
+    });
+  }
+
   async function markOne(id: string) {
     await fetch("/api/notifications", {
       method: "PATCH",
@@ -96,11 +114,18 @@ export default function NotificationsPage() {
             </Link>
             <h1 className="text-2xl font-bold text-cr-ink">{t("notifications.title")}</h1>
           </div>
-          {unread > 0 && (
-            <Button variant="outline" size="sm" onClick={markAll}>
-              {t("notifications.markAllRead")}
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {unread > 0 && (
+              <Button variant="outline" size="sm" onClick={markAll}>
+                {t("notifications.markAllRead")}
+              </Button>
+            )}
+            {(rows?.some((r) => r.read_at) ?? false) && (
+              <Button variant="ghost" size="sm" onClick={clearRead}>
+                {t("notifications.clearRead")}
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-1 mb-4 border-b border-cr-p4">
@@ -123,7 +148,11 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <div className="bg-cr-paper border rounded-2xl divide-y">
-            {rows.map((n) => {
+            {rows.map((n, idx) => {
+              // A date rule whenever the day changes: a long feed reads as
+              // "today / yesterday / last week", not one undifferentiated wall.
+              const dayOf = (iso: string) => new Date(iso).toDateString();
+              const newDay = idx === 0 || dayOf(rows[idx - 1].created_at) !== dayOf(n.created_at);
               const { Icon, color } = TYPE_ICON[n.type] ?? FALLBACK_ICON;
               const inner = (
                 <div className="flex items-start gap-3 p-4">
@@ -138,16 +167,36 @@ export default function NotificationsPage() {
                   {!n.read_at && <span className="h-2 w-2 rounded-full bg-cr-copper shrink-0 mt-1.5" />}
                 </div>
               );
-              return n.href ? (
-                <Link key={n.id} href={n.href} onClick={() => markOne(n.id)}
+              const row = n.href ? (
+                <Link href={n.href} onClick={() => markOne(n.id)}
                   className={`block hover:bg-cr-p2 transition-colors ${n.read_at ? "" : "bg-cr-copper/5"}`}>
                   {inner}
                 </Link>
               ) : (
-                <button key={n.id} type="button" onClick={() => markOne(n.id)}
+                <button type="button" onClick={() => markOne(n.id)}
                   className={`block w-full text-left hover:bg-cr-p2 transition-colors ${n.read_at ? "" : "bg-cr-copper/5"}`}>
                   {inner}
                 </button>
+              );
+
+              return (
+                <div key={n.id}>
+                  {newDay && (
+                    <p className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-cr-i4 bg-cr-p2/40">
+                      {formatDate(n.created_at)}
+                    </p>
+                  )}
+                  <div className="relative group/row">
+                    {row}
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeOne(n.id); }}
+                      aria-label={`dismiss ${n.title}`}
+                      className="absolute top-3 right-3 text-cr-i4 hover:text-cr-ink opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
               );
             })}
           </div>

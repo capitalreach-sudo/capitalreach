@@ -316,7 +316,10 @@
     },
     "signInTitle": "Sign in to use AI tools",
     "signInSub": "Create a free account to access pitch scoring, investor matching, and due diligence reports.",
-    "createAccount": "Create account"
+    "createAccount": "Create account",
+    "usageRemaining": "{remaining} of {limit} AI runs left today",
+    "usageUnlimited": "Unlimited AI runs on your plan",
+    "usageUpgrade": "Get more →"
   },
   "pricing": {
     "sectionLabel": "Plans & pricing",
@@ -1211,7 +1214,8 @@
     "stage_term_sheet": "Term sheet",
     "stage_closed": "Closed",
     "stage_passed": "Passed",
-    "multiCurrencyNote": "Closed rounds span {list}; figures are not converted to a single currency."
+    "multiCurrencyNote": "Closed rounds span {list}; figures are not converted to a single currency.",
+    "exportCsv": "Export CSV"
   },
   "filters": {
     "industry": "Industry",
@@ -1756,7 +1760,12 @@
     "activitySuccessFee": "Success fee invoiced",
     "checklist": "Due-diligence checklist",
     "addItem": "Add item…",
-    "checkAdd": "Add"
+    "checkAdd": "Add",
+    "statCycle": "Median cycle",
+    "statCycleHint": "Median days from opening a deal to closing or passing it",
+    "statAge": "Median age open",
+    "statAgeHint": "Median days the still-open deals have been running",
+    "days": "{n}d"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -2113,7 +2122,8 @@
     "tab_all": "All",
     "tab_deals": "Deals",
     "tab_interest": "Interest",
-    "tab_account": "Account"
+    "tab_account": "Account",
+    "clearRead": "Clear read"
   },
   "authErrors": {
     "generic": "Something went wrong. Please try again.",

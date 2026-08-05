@@ -599,6 +599,22 @@ export function StartupsSearch() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // How many listings each option would return, computed from the loaded
+  // set. Counts ignore the dimension they belong to (picking a second
+  // industry should widen, not zero out) but respect the visible universe.
+  const facets = useMemo(() => {
+    const pool = allStartups.filter((s) => showHidden ? dismissedIds.has(s.id) : !dismissedIds.has(s.id));
+    const industry: Record<string, number> = {};
+    const stage: Record<string, number> = {};
+    const country: Record<string, number> = {};
+    for (const s of pool) {
+      industry[s.industry] = (industry[s.industry] ?? 0) + 1;
+      stage[s.stage] = (stage[s.stage] ?? 0) + 1;
+      if (s.country) country[s.country] = (country[s.country] ?? 0) + 1;
+    }
+    return { industry, stage, country };
+  }, [allStartups, dismissedIds, showHidden]);
+
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
       const q     = filters.query.toLowerCase();
@@ -851,11 +867,11 @@ export function StartupsSearch() {
               ever had room for the first six. */}
           <FilterGroup label={t("startups.industry")} count={filters.industries.length}
             open={openGroup === "industry"} onToggle={() => setOpenGroup(openGroup === "industry" ? null : "industry")}>
-            {INDUSTRIES.map((ind) => (
+            {INDUSTRIES.filter((ind) => facets.industry[ind] || filters.industries.includes(ind)).map((ind) => (
               <FilterChip key={ind}
                 active={filters.industries.includes(ind)}
                 onClick={() => patch({ industries: filters.industries.includes(ind) ? filters.industries.filter(i => i !== ind) : [...filters.industries, ind] })}>
-                {ind}
+                {ind}{facets.industry[ind] ? ` (${facets.industry[ind]})` : ""}
               </FilterChip>
             ))}
           </FilterGroup>
@@ -865,7 +881,7 @@ export function StartupsSearch() {
               <FilterChip key={s.value}
                 active={filters.stages.includes(s.value)}
                 onClick={() => patch({ stages: filters.stages.includes(s.value) ? filters.stages.filter(x => x !== s.value) : [...filters.stages, s.value] })}>
-                {s.label}
+                {s.label}{facets.stage[s.value] ? ` (${facets.stage[s.value]})` : ""}
               </FilterChip>
             ))}
           </FilterGroup>
@@ -912,7 +928,7 @@ export function StartupsSearch() {
               <FilterChip key={c}
                 active={filters.country === c}
                 onClick={() => patch({ country: filters.country === c ? "" : c })}>
-                {c}
+                {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
               </FilterChip>
             ))}
           </FilterGroup>

@@ -5,7 +5,7 @@ import { STAGE_LABELS } from "@/lib/utils";
 import {
   TrendingUp, BarChart3, Users, DollarSign,
   Zap, Activity, Building2, Brain,
-  Loader2, RefreshCw, AlertTriangle,
+  Loader2, RefreshCw, AlertTriangle, Download,
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -41,6 +41,35 @@ interface PlatformData {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+
+/**
+ * The whole public dashboard as one CSV: headline counts, the deal funnel,
+ * and both breakdowns, each row tagged by section so a spreadsheet can pivot
+ * it. What is on screen is what lands in the file -- no second query, no
+ * chance of the export disagreeing with the page.
+ */
+function exportPlatformCsv(d: PlatformData) {
+  const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows: Array<[string, string, string | number]> = [
+    ["headline", "Active startups", d.startupCount],
+    ["headline", "Verified investors", d.investorCount],
+    ["headline", "Total raised", d.totalRaised],
+    ["headline", "Deals closed", d.dealsCount],
+    ["headline", "Active deals", d.activeDeals],
+    ["headline", "Close rate", d.closeRate == null ? "" : `${Math.round(d.closeRate * 100)}%`],
+    ...Object.entries(d.byDealStage).map(([k, v]) => ["deal_stage", k, v] as [string, string, number]),
+    ...Object.entries(d.byIndustry).map(([k, v]) => ["industry", k, v] as [string, string, number]),
+    ...Object.entries(d.byStage).map(([k, v]) => ["startup_stage", k, v] as [string, string, number]),
+  ];
+  const csv = [["section", "label", "value"], ...rows].map((r) => r.map(esc).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `capitalreach-platform-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 // Order matters: this is the funnel, left to right, ending in the two terminal
 // outcomes. Colours match the Deal Portal's own columns so the public view and
@@ -270,6 +299,15 @@ export function DataCentre() {
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "#6B6056" }}>
                 {t("data.updated", { time: timeAgo(data.lastUpdated) })}
               </span>
+            )}
+            {data && (
+              <button
+                onClick={() => exportPlatformCsv(data)}
+                style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: "pointer", color: "#6B6056", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", padding: 0 }}
+              >
+                <Download style={{ width: 11, height: 11 }} />
+                {t("data.exportCsv")}
+              </button>
             )}
             <button
               onClick={fetchData}

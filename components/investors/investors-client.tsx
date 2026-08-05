@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import {
   Search, SlidersHorizontal, X, ChevronDown, ChevronUp,
-  Users, Globe, Filter, Loader2, Crosshair, GitCompareArrows,
+  Users, Globe, Filter, Loader2, Crosshair, GitCompareArrows, Clock,
 } from "lucide-react";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn, STAGE_LABELS } from "@/lib/utils";
@@ -138,6 +138,28 @@ export function InvestorsClient() {
   // Typeahead over the already-loaded list -- instant, no round trip.
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggestIdx, setSuggestIdx] = useState(-1);
+  // Recent queries, mirroring the startups directory (localStorage, FIFO 10).
+  const RECENT_KEY = "cr_recent_investor_searches";
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    try { setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]")); } catch { /* corrupt */ }
+  }, []);
+  function rememberQuery(qq: string) {
+    const term = qq.trim();
+    if (term.length < 2) return;
+    setRecent((prev) => {
+      const next = [term, ...prev.filter((x) => x !== term)].slice(0, 10);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
+  }
+  function forgetQuery(term: string) {
+    setRecent((prev) => {
+      const next = prev.filter((x) => x !== term);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
+  }
   const [loading, setLoading] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
   // If a founder is browsing, their own stage and industry mark which
@@ -508,11 +530,31 @@ export function InvestorsClient() {
                   if (!f.query.trim() || hits.length === 0) return;
                   if (e.key === "ArrowDown") { e.preventDefault(); setSuggestIdx(i => Math.min(i + 1, hits.length - 1)); }
                   else if (e.key === "ArrowUp") { e.preventDefault(); setSuggestIdx(i => Math.max(i - 1, -1)); }
-                  else if (e.key === "Enter" && suggestIdx >= 0) { e.preventDefault(); window.location.href = `/investors/${hits[suggestIdx].slug}`; }
+                  else if (e.key === "Enter") {
+                    rememberQuery(f.query);
+                    if (suggestIdx >= 0) { e.preventDefault(); window.location.href = `/investors/${hits[suggestIdx].slug}`; }
+                  }
                 }}
                 placeholder={t("investors.searchPlaceholder")}
                 className="w-full h-11 pl-10 pr-4 rounded-xl border border-cr-p4 bg-cr-paper text-cr-ink text-sm placeholder:text-cr-i4 focus:outline-none focus:ring-2 focus:ring-cr-copper/40 focus:border-cr-copper/50"
               />
+              {suggestOpen && f.query.trim().length < 2 && recent.length > 0 && (
+                <div className="absolute top-full mt-1.5 left-0 w-full max-w-sm bg-cr-paper border border-cr-p4 rounded-xl shadow-lg overflow-hidden z-50">
+                  <p className="px-4 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-cr-i4">
+                    {t("startups.recentSearches")}
+                  </p>
+                  {recent.slice(0, 5).map((term) => (
+                    <div key={term} className="flex items-center justify-between gap-2 px-4 py-2">
+                      <button onMouseDown={(e) => { e.preventDefault(); setF(p => ({ ...p, query: term })); }}
+                        className="flex items-center gap-2 text-sm text-cr-i2 flex-1 text-left">
+                        <Clock className="h-3 w-3 text-cr-i4 shrink-0" /> {term}
+                      </button>
+                      <button onMouseDown={(e) => { e.preventDefault(); forgetQuery(term); }} aria-label={`remove ${term}`}
+                        className="text-cr-i4 text-sm leading-none">×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
               {suggestOpen && f.query.trim().length >= 2 && (() => {
                 const hits = investors
                   .filter(i => (i.full_name || "").toLowerCase().includes(f.query.trim().toLowerCase()))

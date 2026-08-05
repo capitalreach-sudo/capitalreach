@@ -1352,7 +1352,30 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
         byCurrency.set(cur, (byCurrency.get(cur) || 0) + d.amount);
       }
     }
-    return { activeCount: active.length, totalCount: deals.length, byCurrency, closeRate };
+    // Velocity: median days from open to conclusion, and how long the
+    // still-open deals have been sitting. Median rather than mean so one
+    // forgotten deal from March doesn't define the number.
+    const median = (xs: number[]) => {
+      if (xs.length === 0) return null;
+      const s = [...xs].sort((a, b) => a - b);
+      const m = Math.floor(s.length / 2);
+      return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
+    };
+    const DAY = 86_400_000;
+    const concludedDays = deals
+      .filter(d => d.closed_at || d.passed_at)
+      .map(d => Math.round((new Date((d.closed_at ?? d.passed_at)!).getTime() - new Date(d.created_at).getTime()) / DAY))
+      .filter(n => n >= 0);
+    const openDays = active.map(d => Math.round((Date.now() - new Date(d.created_at).getTime()) / DAY));
+
+    return {
+      activeCount: active.length,
+      totalCount: deals.length,
+      byCurrency,
+      closeRate,
+      medianCycle: median(concludedDays),
+      medianAge: median(openDays),
+    };
   }, [deals]);
 
   // The dimension available to filter by depends on which side is viewing:
@@ -1475,6 +1498,18 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statCloseRate")}</p>
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
             {stats.closeRate == null ? "—" : `${Math.round(stats.closeRate * 100)}%`}
+          </p>
+        </div>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }} title={t("deals.statCycleHint")}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statCycle")}</p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
+            {stats.medianCycle == null ? "—" : t("deals.days", { n: stats.medianCycle })}
+          </p>
+        </div>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }} title={t("deals.statAgeHint")}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statAge")}</p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: stats.medianAge != null && stats.medianAge > 30 ? "var(--cr-copper)" : "var(--cr-ink)" }}>
+            {stats.medianAge == null ? "—" : t("deals.days", { n: stats.medianAge })}
           </p>
         </div>
       </div>

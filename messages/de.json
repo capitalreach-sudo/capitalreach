@@ -312,7 +312,10 @@
     },
     "signInTitle": "Anmelden, um KI-Tools zu nutzen",
     "signInSub": "Erstellen Sie ein kostenloses Konto für Pitch-Scoring, Investoren-Matching und Due-Diligence-Berichte.",
-    "createAccount": "Konto erstellen"
+    "createAccount": "Konto erstellen",
+    "usageRemaining": "Noch {remaining} von {limit} KI-Durchläufen heute",
+    "usageUnlimited": "Unbegrenzte KI-Durchläufe in Ihrem Tarif",
+    "usageUpgrade": "Mehr erhalten →"
   },
   "pricing": {
     "sectionLabel": "Pläne & Preise",
@@ -1207,7 +1210,8 @@
     "stage_term_sheet": "Term Sheet",
     "stage_closed": "Abgeschlossen",
     "stage_passed": "Abgelehnt",
-    "multiCurrencyNote": "Abgeschlossene Runden umfassen {list}; die Beträge werden nicht in eine Einheitswährung umgerechnet."
+    "multiCurrencyNote": "Abgeschlossene Runden umfassen {list}; die Beträge werden nicht in eine Einheitswährung umgerechnet.",
+    "exportCsv": "CSV exportieren"
   },
   "filters": {
     "industry": "Branche",
@@ -1752,7 +1756,12 @@
     "activitySuccessFee": "Erfolgsgebühr in Rechnung gestellt",
     "checklist": "Due-Diligence-Checkliste",
     "addItem": "Punkt hinzufügen…",
-    "checkAdd": "Hinzufügen"
+    "checkAdd": "Hinzufügen",
+    "statCycle": "Median-Zyklus",
+    "statCycleHint": "Median-Tage vom Öffnen bis zum Abschluss oder Absagen",
+    "statAge": "Median-Alter offen",
+    "statAgeHint": "Median-Tage, die offene Deals bereits laufen",
+    "days": "{n} T."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -2113,7 +2122,8 @@
     "tab_all": "Alle",
     "tab_deals": "Deals",
     "tab_interest": "Interesse",
-    "tab_account": "Konto"
+    "tab_account": "Konto",
+    "clearRead": "Gelesene entfernen"
   },
   "authErrors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",

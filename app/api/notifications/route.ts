@@ -70,6 +70,33 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ notifications: rows ?? [], unread: count ?? 0 });
 }
 
+/**
+ * Remove notifications: one by id, or every already-read row ("clear read").
+ * RLS scopes the delete to the caller; the user_id filter states it anyway.
+ */
+export async function DELETE(req: NextRequest) {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id, allRead } = await req.json().catch(() => ({}));
+
+  if (allRead === true) {
+    const { error } = await supabase
+      .from("notifications").delete().eq("user_id", user.id).not("read_at", "is", null);
+    if (error) return NextResponse.json({ error: "Could not clear" }, { status: 500 });
+    return NextResponse.json({ cleared: true });
+  }
+
+  if (typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return NextResponse.json({ error: "id required" }, { status: 400 });
+  }
+  const { error } = await supabase
+    .from("notifications").delete().eq("id", id).eq("user_id", user.id);
+  if (error) return NextResponse.json({ error: "Could not delete" }, { status: 500 });
+  return NextResponse.json({ deleted: true });
+}
+
 export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
