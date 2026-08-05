@@ -1090,7 +1090,17 @@
     "geography": "Region",
     "verifiedOnly": "Nur verifizierte Mitglieder",
     "sortName": "Name A–Z",
-    "fitsYourRaise": "Passt zu Ihrer Runde"
+    "fitsYourRaise": "Passt zu Ihrer Runde",
+    "fitOnly": "Passt zu meiner Runde",
+    "newMonth": "Neu diesen Monat",
+    "sortFit": "Beste Passung zuerst",
+    "checkPresets": "Schnellbereiche",
+    "combinedCapacity": "{count} Investoren · {sum} kombinierter Max-Check",
+    "copyLink": "Link kopieren",
+    "exportCsv2": "CSV exportieren",
+    "compare2": "Vergleichen",
+    "compareInvestors": "Investoren vergleichen",
+    "target2": "Anvisieren"
   },
   "data": {
     "eyebrow": "Live-Plattformdaten",

@@ -1094,7 +1094,17 @@
     "geography": "Geography",
     "verifiedOnly": "Verified members only",
     "sortName": "Name A–Z",
-    "fitsYourRaise": "Fits your raise"
+    "fitsYourRaise": "Fits your raise",
+    "fitOnly": "Fits my raise",
+    "newMonth": "New this month",
+    "sortFit": "Best fit first",
+    "checkPresets": "Quick ranges",
+    "combinedCapacity": "{count} investors · {sum} combined max check",
+    "copyLink": "Copy link",
+    "exportCsv2": "Export CSV",
+    "compare2": "Compare",
+    "compareInvestors": "Compare investors",
+    "target2": "Target"
   },
   "data": {
     "eyebrow": "Live Platform Data",
