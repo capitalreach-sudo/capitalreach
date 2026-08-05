@@ -2224,5 +2224,14 @@
     "open": "Open the highlighted result",
     "close": "Close this dialog",
     "help": "Show this list"
+  },
+  "completeness": {
+    "nextBest": "Do this next",
+    "worth": "+{points} points",
+    "andMore": "and {count} more",
+    "traction": "Add a traction figure (MRR, ARR or users)",
+    "website": "Add your website",
+    "equity": "State the equity on offer",
+    "booking": "Add a booking link for calls"
   }
 }

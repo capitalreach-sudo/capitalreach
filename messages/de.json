@@ -2224,5 +2224,14 @@
     "open": "Markiertes Ergebnis öffnen",
     "close": "Dialog schließen",
     "help": "Diese Liste anzeigen"
+  },
+  "completeness": {
+    "nextBest": "Als Nächstes",
+    "worth": "+{points} Punkte",
+    "andMore": "und {count} weitere",
+    "traction": "Traktionszahl ergänzen (MRR, ARR oder Nutzer)",
+    "website": "Website ergänzen",
+    "equity": "Angebotene Anteile angeben",
+    "booking": "Buchungslink für Calls ergänzen"
   }
 }

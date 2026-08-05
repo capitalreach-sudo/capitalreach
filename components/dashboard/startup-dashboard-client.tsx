@@ -8,6 +8,7 @@ import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
+import { listingCompleteness } from "@/lib/listing-completeness";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -20,25 +21,7 @@ interface Props {
 
 type StartupTab = "overview" | "documents" | "ai" | "billing";
 
-// ── Profile completion ────────────────────────────────────────────────────────
 
-function getProfileCompletion(s: Startup) {
-  const checks: [boolean, string][] = [
-    [!!s.tagline,                                     "dashboard.ckTagline"    ],
-    [!!s.problem,                                     "dashboard.ckProblem"    ],
-    [!!s.solution,                                    "dashboard.ckSolution"   ],
-    [!!s.market,                                      "dashboard.ckMarket"     ],
-    [!!s.competitive_advantage,                       "dashboard.ckAdvantage"  ],
-    [!!s.funding_target,                              "dashboard.ckFunding"    ],
-    [!!s.use_of_funds,                                "dashboard.ckUseOfFunds" ],
-    [(s.founders?.length ?? 0) > 0,                  "dashboard.ckFounder"    ],
-    [(s.founders ?? []).some((f) => f.linkedin_url), "dashboard.ckLinkedin"   ],
-    [(s.documents?.length ?? 0) > 0,                 "dashboard.ckDeck"       ],
-    [(s.milestones?.length ?? 0) > 0,                "dashboard.ckMilestone"  ],
-  ];
-  const missing = checks.filter(([ok]) => !ok).map(([, msg]) => msg);
-  return { score: Math.round(((checks.length - missing.length) / checks.length) * 100), missing };
-}
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 
@@ -469,9 +452,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
     { value: "billing",   label: t("dashboard.billing")     },
   ];
 
-  const { score, missing } = startup
-    ? getProfileCompletion(startup)
-    : { score: 0, missing: ["dashboard.ckOnboarding"] };
+  // Weighted, so the number reflects how finished the listing looks to an
+  // investor rather than how many boxes happen to be ticked, and `next` is
+  // always the single heaviest thing still missing.
+  const { percent: score, items: completenessItems, next: nextAction } = listingCompleteness(startup ?? {});
+  const missing = startup
+    ? completenessItems.filter((i) => !i.done)
+    : [{ key: "onboarding", labelKey: "dashboard.ckOnboarding", weight: 100, done: false }];
 
   const tier             = startup?.subscription_tier || "free";
   const canDocs          = isLaunchMode || tier === "starter" || tier === "growth";
@@ -597,14 +584,36 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   <CheckCircle2 style={{ width: 14, height: 14 }} /> {t("dashboard.profileComplete")}
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
-                  {missing.slice(0, 5).map((m) => (
-                    <div key={m} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <Circle style={{ width: 10, height: 10, color: "var(--cr-paper-4)", flexShrink: 0 }} />
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t(m)}</span>
+                <>
+                  {/* One instruction, not a list of eleven. The heaviest miss
+                      is the one worth doing, and it says what it is worth. */}
+                  {nextAction && (
+                    <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "10px 12px", marginBottom: "12px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "3px" }}>
+                        {t("completeness.nextBest")}
+                      </p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.4 }}>
+                        {t(nextAction.labelKey)}
+                      </p>
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginTop: "3px" }}>
+                        {t("completeness.worth", { points: nextAction.weight })}
+                      </p>
                     </div>
-                  ))}
-                </div>
+                  )}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+                    {missing.slice(0, 5).map((m) => (
+                      <div key={m.key} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <Circle style={{ width: 10, height: 10, color: "var(--cr-paper-4)", flexShrink: 0 }} />
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t(m.labelKey)}</span>
+                      </div>
+                    ))}
+                    {missing.length > 5 && (
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                        {t("completeness.andMore", { count: missing.length - 5 })}
+                      </span>
+                    )}
+                  </div>
+                </>
               )}
               <Link href="/dashboard/startup/edit" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "36px", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", textDecoration: "none", marginTop: "8px" }}>
                 {t("dashboard.completeProfile")}
