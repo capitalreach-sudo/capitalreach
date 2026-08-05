@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { COUNTRIES, normalizeCountry } from "@/lib/countries";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
@@ -388,8 +389,20 @@ export default function StartupOnboardingPage() {
 
                     <div>
                       <label style={labelSt}>{t("onboarding.su.country")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
-                      <input type="text" value={country} onChange={e => setCountry(e.target.value)}
-                        placeholder="United States" onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                      {/* Free text with a suggestion list, not a hard select:
+                          steering new entries to one canonical spelling stops
+                          the Region facet fragmenting, while a founder in a
+                          country not on the list can still type their own.
+                          Normalised on blur so "germany" is stored as
+                          "Germany" from the moment it is entered. */}
+                      <input type="text" list="cr-countries" value={country}
+                        onChange={e => setCountry(e.target.value)}
+                        placeholder="United States" onFocus={onFocusCopper}
+                        onBlur={e => { setCountry(normalizeCountry(country)); onBlurRule(e); }}
+                        style={iStyle} />
+                      <datalist id="cr-countries">
+                        {COUNTRIES.map(c => <option key={c} value={c} />)}
+                      </datalist>
                     </div>
 
                     <div>

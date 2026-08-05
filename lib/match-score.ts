@@ -1,3 +1,5 @@
+import { sameCountry } from "./countries";
+
 /**
  * How well a listing fits an investor's stated thesis, 0–100.
  *
@@ -48,11 +50,16 @@ export function computeMatchScore(
   if (industry) score += 25;
 
   // Either the listing's home country or any market it targets.
+  //
+  // Compared through normalizeCountry, not by string equality: `country` is a
+  // free-text field, so an investor whose thesis says "Germany" would never
+  // have matched a listing that says "germany" or "Deutschland", and the
+  // geography component would silently score 0 for a perfect fit.
   const geography =
     !!investor.geography?.length &&
     (
-      (!!startup.country && investor.geography.includes(startup.country)) ||
-      (startup.target_markets ?? []).some((m) => investor.geography!.includes(m))
+      (!!startup.country && investor.geography.some((g) => sameCountry(g, startup.country))) ||
+      (startup.target_markets ?? []).some((m) => investor.geography!.some((g) => sameCountry(g, m)))
     );
   if (geography) score += 15;
 

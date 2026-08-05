@@ -11,6 +11,7 @@ import { STARTUP_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
 import { notify } from "@/components/ui/toast-notify";
 import { announce } from "@/lib/announce";
+import { normalizeCountry, sameCountry } from "@/lib/countries";
 import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -674,7 +675,11 @@ export function StartupsSearch() {
     for (const s of pool) {
       industry[s.industry] = (industry[s.industry] ?? 0) + 1;
       stage[s.stage] = (stage[s.stage] ?? 0) + 1;
-      if (s.country) country[s.country] = (country[s.country] ?? 0) + 1;
+      // Keyed on the canonical name, so "germany", "Germany" and
+      // "Deutschland" are one region with one combined count instead of
+      // three facets that each hide the others' listings.
+      const c = normalizeCountry(s.country);
+      if (c) country[c] = (country[c] ?? 0) + 1;
     }
     return { industry, stage, country };
   }, [allStartups, dismissedIds, showHidden]);
@@ -688,7 +693,8 @@ export function StartupsSearch() {
       if (filters.stages.length && !filters.stages.includes(s.stage)) return false;
       if (filters.mrrMin > 0 && (s.mrr ?? 0) < filters.mrrMin) return false;
       if (filters.aiScoreMin > 0 && score < filters.aiScoreMin) return false;
-      if (filters.country && !(s.country ?? "").toLowerCase().includes(filters.country.toLowerCase())) return false;
+      // Compared canonically for the same reason the facet is keyed that way.
+      if (filters.country && !sameCountry(s.country, filters.country)) return false;
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
       if ((filters.raisingMin ?? 0) > 0 && s.funding_target < filters.raisingMin!) return false;
       if ((filters.runwayMin ?? 0) > 0 && (s.runway_months ?? 0) < filters.runwayMin!) return false;

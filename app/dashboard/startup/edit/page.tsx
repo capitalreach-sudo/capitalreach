@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { COUNTRIES, normalizeCountry } from "@/lib/countries";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
@@ -363,7 +364,16 @@ export default function EditStartupPage() {
                   </Field>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                  <Field label={t("onboarding.su.country")}><WarmInput value={startup.country || ""} onChange={e => update("country", e.target.value)} /></Field>
+                  <Field label={t("onboarding.su.country")}>
+                    {/* See lib/countries: canonical spelling keeps the
+                        Region facet and thesis-fit geography working. */}
+                    <WarmInput list="cr-countries" value={startup.country || ""}
+                      onChange={e => update("country", e.target.value)}
+                      onBlur={() => update("country", normalizeCountry(startup.country))} />
+                    <datalist id="cr-countries">
+                      {COUNTRIES.map(c => <option key={c} value={c} />)}
+                    </datalist>
+                  </Field>
                   <Field label={t("onboarding.su.city")}><WarmInput value={startup.city || ""} onChange={e => update("city", e.target.value)} placeholder="San Francisco" /></Field>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
