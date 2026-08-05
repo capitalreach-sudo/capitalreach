@@ -79,7 +79,72 @@ function Delta({ now, prev }: { now: number; prev: number }) {
   );
 }
 
-export function AdminPulse({ metrics, listings }: { metrics: PulseMetric[]; listings: HealthListing[] }) {
+export type AdminAction = {
+  id: string;
+  action: string;
+  target_type: string;
+  note: string | null;
+  created_at: string;
+  admin: { email: string; full_name: string | null } | null;
+};
+
+/**
+ * The admin audit trail, which has been written on every approve, reject and
+ * suspend since the app's first week and read by nothing. Three rows sat in
+ * production with no screen able to show them.
+ */
+function ActivityFeed({ actions }: { actions: AdminAction[] }) {
+  const { t } = useTranslation();
+  if (actions.length === 0) return null;
+
+  const verb = (a: string) => {
+    const known: Record<string, string> = {
+      approve: "pulse.actApprove",
+      reject: "pulse.actReject",
+      suspend: "pulse.actSuspend",
+      unsuspend: "pulse.actUnsuspend",
+      set_tier: "pulse.actSetTier",
+    };
+    // Unknown actions render their raw verb rather than a blank row -- a new
+    // action type added to a route should still show up here immediately.
+    return known[a] ? t(known[a]) : a.replace(/_/g, " ");
+  };
+
+  return (
+    <div>
+      <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "10px" }}>
+        {t("pulse.activityTitle")}
+      </h2>
+      <div style={{ ...card, padding: "6px 0" }}>
+        {actions.map((a) => (
+          <div key={a.id} style={{ display: "flex", alignItems: "baseline", gap: "10px", padding: "9px 18px", flexWrap: "wrap" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textTransform: "capitalize" }}>
+              {verb(a.action)}
+            </span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+              {a.target_type}
+            </span>
+            {a.note && (
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", fontStyle: "italic" }}>
+                “{a.note}”
+              </span>
+            )}
+            <span style={{ marginInlineStart: "auto", display: "flex", gap: "10px", alignItems: "baseline" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                {a.admin?.full_name || a.admin?.email || t("pulse.unknownAdmin")}
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                {t("pulse.daysAgo", { count: daysSince(a.created_at) })}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetric[]; listings: HealthListing[]; actions: AdminAction[] }) {
   const { t } = useTranslation();
 
   // Weakest listings first: that is the whole point of the panel, and it means
@@ -171,6 +236,8 @@ export function AdminPulse({ metrics, listings }: { metrics: PulseMetric[]; list
           )}
         </div>
       </div>
+
+      <ActivityFeed actions={actions} />
     </div>
   );
 }

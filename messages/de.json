@@ -2255,6 +2255,13 @@
     "colNext": "Als Nächstes",
     "colUpdated": "Aktualisiert",
     "colViews": "Aufrufe",
-    "daysAgo": "vor {count} T."
+    "daysAgo": "vor {count} T.",
+    "activityTitle": "Letzte Admin-Aktivität",
+    "actApprove": "Freigegeben",
+    "actReject": "Abgelehnt",
+    "actSuspend": "Gesperrt",
+    "actUnsuspend": "Entsperrt",
+    "actSetTier": "Plan geändert",
+    "unknownAdmin": "Unbekannter Admin"
   }
 }

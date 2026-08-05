@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { AdminClient } from "@/components/admin/admin-client";
 import type { Profile, Startup, Investor, Deal } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
-import { AdminPulse, type PulseMetric, type HealthListing } from "@/components/admin/admin-pulse";
+import { AdminPulse, type PulseMetric, type HealthListing, type AdminAction } from "@/components/admin/admin-pulse";
 
 // The exact embed shapes AdminClient's props declare; asserting them here is
 // licensed by the DB CHECK constraints (unions) and NOT NULL owner FKs (embeds).
@@ -56,6 +56,7 @@ export default async function AdminPage() {
     { count: dealsNow }, { count: dealsPrev },
     { count: closedNow }, { count: closedPrev },
     { data: healthRows },
+    { data: adminActions },
   ] = await Promise.all([
     countIn("profiles", "created_at", weekAgo),
     countIn("profiles", "created_at", twoWeeksAgo, weekAgo),
@@ -82,6 +83,16 @@ export default async function AdminPage() {
       .order("updated_at", { ascending: true })
       .limit(50)
       .returns<HealthListing[]>(),
+    // The audit trail these routes have been writing since week one, finally
+    // read by something. admin is a nullable embed: an action whose admin was
+    // later deleted must still appear, attributed to nobody, rather than
+    // vanish from the log it exists to preserve.
+    supabase
+      .from("admin_actions")
+      .select("id, action, target_type, note, created_at, admin:profiles!admin_actions_admin_id_fkey(email, full_name)")
+      .order("created_at", { ascending: false })
+      .limit(12)
+      .returns<AdminAction[]>(),
   ]);
 
   const pulse: PulseMetric[] = [
@@ -108,7 +119,7 @@ export default async function AdminPage() {
     <>
       <Navbar />
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 24px 0" }}>
-        <AdminPulse metrics={pulse} listings={healthRows ?? []} />
+        <AdminPulse metrics={pulse} listings={healthRows ?? []} actions={adminActions ?? []} />
       </div>
       <AdminClient
         pendingStartups={pendingStartups ?? []}

@@ -2255,6 +2255,13 @@
     "colNext": "Do this next",
     "colUpdated": "Updated",
     "colViews": "Views",
-    "daysAgo": "{count}d ago"
+    "daysAgo": "{count}d ago",
+    "activityTitle": "Recent admin activity",
+    "actApprove": "Approved",
+    "actReject": "Rejected",
+    "actSuspend": "Suspended",
+    "actUnsuspend": "Unsuspended",
+    "actSetTier": "Changed plan",
+    "unknownAdmin": "Unknown admin"
   }
 }
