@@ -645,12 +645,17 @@ body::before {
     0 0 0 1px rgba(181,101,29,0.1);
 }
 
-/* ── FEATURE 16: Word reveal (WordReveal component) ──────── */
-.word-reveal-word {
-  display: inline-block;
-  margin-right: 0.22em;
-  transition: opacity 300ms ease, transform 300ms ease;
+/* ── fadeUp: the one entrance animation. CSS-only, so the headline can
+      never fail into concatenated words the way the JS reveal could. ──── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+.animate-fade-up   { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) both; }
+.animate-fade-up-1 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 100ms both; }
+.animate-fade-up-2 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 200ms both; }
+.animate-fade-up-3 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 350ms both; }
+.animate-fade-up-4 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 500ms both; }
 
 /* ── FEATURE 17: Scroll progress bar ─────────────────────── */
 .scroll-progress-track {

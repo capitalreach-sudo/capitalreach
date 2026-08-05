@@ -44,13 +44,17 @@ export async function GET(req: NextRequest) {
       .limit(5),
   ]);
 
-  return NextResponse.json({
-    startups: startups ?? [],
-    investors: (investors ?? []).map((i) => ({
-      slug: i.slug,
-      name: i.display_name || i.firm_name || i.slug,
-      firm: i.firm_name,
-      type: i.type,
-    })),
-  });
+  return NextResponse.json(
+    {
+      startups: startups ?? [],
+      investors: (investors ?? []).map((i) => ({
+        slug: i.slug,
+        name: i.display_name || i.firm_name || i.slug,
+        firm: i.firm_name,
+        type: i.type,
+      })),
+    },
+    // Public data over a hot path: let the edge absorb repeat queries.
+    { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60" } },
+  );
 }

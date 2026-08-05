@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { checkAiAllowance, logAiUsage } from "@/lib/ai-limits";
 import { generateDueDiligenceReport, isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
@@ -16,6 +17,21 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // Daily allowance (migration 042): counts in the database, so it holds
+    // even where the Upstash limiter is unconfigured. Tier read is cheap and
+    // the profile is fetched by every one of these routes anyway.
+    {
+      const { data: prof } = await supabase.from("profiles").select("subscription_tier").eq("id", user.id).maybeSingle();
+      const allowance = await checkAiAllowance(user.id, "due-diligence", prof?.subscription_tier);
+      if (!allowance.ok) {
+        return NextResponse.json(
+          { error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` },
+          { status: 429 },
+        );
+      }
+      await logAiUsage(user.id, "due-diligence");
+    }
 
   try {
     const { success } = await aiRatelimit.limit(user.id);

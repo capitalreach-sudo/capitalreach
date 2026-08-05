@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Bookmark, Lock } from "lucide-react";
 import { formatCurrency, daysSince, getInitials, STAGE_LABELS } from "@/lib/utils";
+import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import { canAccessFinancials } from "@/types";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
@@ -245,8 +246,8 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
         {/* Row 3 — Metrics */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
           {[
-            { key: "mrr",    label: t("startupDetail.mrr"),    value: startup.mrr         ? formatCurrency(startup.mrr, true)                                              : null, gated: true  },
-            { key: "arr",    label: t("startupDetail.arr"),    value: startup.arr         ? formatCurrency(startup.arr, true)                                              : null, gated: true  },
+            { key: "mrr",    label: t("startupDetail.mrr"),    value: startup.mrr         ? safeFormatMRR(startup.mrr)                                              : null, gated: true  },
+            { key: "arr",    label: t("startupDetail.arr"),    value: startup.arr         ? safeFormatMRR(startup.arr)                                              : null, gated: true  },
             { key: "growth", label: t("startupDetail.growth"), value: startup.growth_rate != null ? `${startup.growth_rate >= 0 ? "+" : ""}${startup.growth_rate}%`        : null, gated: false },
           ].map(({ key, label, value, gated }) => (
             <div key={key} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "10px 10px 8px" }}>
@@ -289,7 +290,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               {t("startupDetail.raising")}
             </div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
-              {formatCurrency(startup.funding_target, true)}
+              {safeFormatCurrencyAmount(startup.funding_target)}
             </div>
           </div>
           {startup.runway_months != null && (

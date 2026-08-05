@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { checkAiAllowance, logAiUsage } from "@/lib/ai-limits";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "sk-not-configured" });
@@ -18,6 +19,21 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Sign in to use AI tools." }, { status: 401 });
+    }
+
+    // Daily allowance (migration 042): counts in the database, so it holds
+    // even where the Upstash limiter is unconfigured. Tier read is cheap and
+    // the profile is fetched by every one of these routes anyway.
+    {
+      const { data: prof } = await supabase.from("profiles").select("subscription_tier").eq("id", user.id).maybeSingle();
+      const allowance = await checkAiAllowance(user.id, "pitch-score", prof?.subscription_tier);
+      if (!allowance.ok) {
+        return NextResponse.json(
+          { error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` },
+          { status: 429 },
+        );
+      }
+      await logAiUsage(user.id, "pitch-score");
     }
     if (!user.email_confirmed_at) {
       return NextResponse.json(

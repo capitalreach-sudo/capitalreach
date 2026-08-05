@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
+import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget } from "@/lib/validators";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -415,8 +416,8 @@ function ResultCard({ s, saved, viewed, hidden, comparing, onSave, onHide, onCom
         {/* Metrics */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
           {[
-            { label: t("startupDetail.mrr"),    val: s.mrr         ? formatCurrency(s.mrr, true)                                : null },
-            { label: t("startupDetail.arr"),    val: s.arr         ? formatCurrency(s.arr, true)                                : null },
+            { label: t("startupDetail.mrr"),    val: s.mrr         ? safeFormatMRR(s.mrr)                                       : null },
+            { label: t("startupDetail.arr"),    val: s.arr         ? safeFormatMRR(s.arr)                                       : null },
             { label: t("startupDetail.growth"), val: s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : null, isGrowth: true, positiveGrowth: (s.growth_rate ?? 0) > 0 },
           ].map(({ label, val, isGrowth, positiveGrowth }) => (
             <div key={label} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "8px 10px 7px" }}>
@@ -436,7 +437,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, onSave, onHide, onCom
           <div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("listings.raising")}</div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
-              {formatCurrency(s.funding_target, true)}
+              {safeFormatCurrencyAmount(s.funding_target)}
             </div>
           </div>
           {s.runway_months != null && (
@@ -925,7 +926,7 @@ export function StartupsSearch() {
             {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
             {!loading && filtered.length > 0 && (
               <span style={{ marginLeft: "10px", color: "var(--cr-ink-4)" }}>
-                · {t("startups.sumRaising", { count: filtered.length, sum: formatCurrency(filtered.reduce((a, s) => a + (s.funding_target || 0), 0), true) })}
+                · {t("startups.sumRaising", { count: filtered.length, sum: formatCurrency(filtered.reduce((a, s) => a + (isValidFundingTarget(s.funding_target) ? s.funding_target : 0), 0), true) })}
               </span>
             )}
             {activeCount > 0 && (
@@ -1011,11 +1012,11 @@ export function StartupsSearch() {
         const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
           { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage },
           { label: t("onboarding.su.industry"),  get: (s) => s.industry },
-          { label: t("startupDetail.mrr"),       get: (s) => s.mrr ? formatCurrency(s.mrr, true) : "—" },
-          { label: t("startupDetail.arr"),       get: (s) => s.arr ? formatCurrency(s.arr, true) : "—" },
+          { label: t("startupDetail.mrr"),       get: (s) => safeFormatMRR(s.mrr) },
+          { label: t("startupDetail.arr"),       get: (s) => safeFormatMRR(s.arr) },
           { label: t("startupDetail.growth"),    get: (s) => s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : "—" },
           { label: t("startups.runwayLabel"),    get: (s) => s.runway_months != null ? `${s.runway_months}mo` : "—" },
-          { label: t("listings.raising"),        get: (s) => formatCurrency(s.funding_target, true) },
+          { label: t("listings.raising"),        get: (s) => safeFormatCurrencyAmount(s.funding_target) },
           { label: t("dashboard.aiScore"),       get: (s) => s.vaultrise_score != null ? String(s.vaultrise_score) : "—" },
         ];
         return (

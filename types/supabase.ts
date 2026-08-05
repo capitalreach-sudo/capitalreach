@@ -100,6 +100,27 @@ export type Database = {
           },
         ]
       }
+      ai_usage: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       contracts: {
         Row: {
           amount: number | null

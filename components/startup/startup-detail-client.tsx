@@ -13,6 +13,7 @@ import { investorCan } from "@/lib/access";
 import { AiReportDisclaimer } from "@/components/shared/legal-disclaimer";
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
+import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
@@ -591,7 +592,7 @@ export function StartupDetailClient({
 
             {/* Key metrics strip */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "10px" }}>
-              <MetricCell label={t("startupDetail.raising")}  value={formatCurrency(startup.funding_target, true)} copper />
+              <MetricCell label={t("startupDetail.raising")}  value={safeFormatCurrencyAmount(startup.funding_target)} copper />
               <MetricCell label={t("startupDetail.equity")}   value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
               <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />
               <MetricCell label={t("startupDetail.pageViews")} value={formatNumber(startup.pageviews ?? 0)} />
@@ -835,8 +836,8 @@ export function StartupDetailClient({
         {activeTab === "financials" && (
           canFinancials ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-              <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? formatCurrency(startup.mrr)        : null} />
-              <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? formatCurrency(startup.arr)        : null} />
+              <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? safeFormatMRR(startup.mrr)        : null} />
+              <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? safeFormatMRR(startup.arr)        : null} />
               <MetricCell label={t("startupDetail.totalUsers")} value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
               <MetricCell label={t("startupDetail.growth")} value={startup.growth_rate  ? formatPercent(startup.growth_rate) : null} />
             </div>
@@ -955,8 +956,8 @@ export function StartupDetailClient({
         {activeTab === "traction" && (
           canFinancials ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
-              <MetricCell label={t("startupDetail.monthlyRevenue")} value={startup.mrr        ? formatCurrency(startup.mrr)        : null} copper />
-              <MetricCell label={t("startupDetail.annualRevenue")}  value={startup.arr        ? formatCurrency(startup.arr)        : null} />
+              <MetricCell label={t("startupDetail.monthlyRevenue")} value={startup.mrr        ? safeFormatMRR(startup.mrr)        : null} copper />
+              <MetricCell label={t("startupDetail.annualRevenue")}  value={startup.arr        ? safeFormatMRR(startup.arr)        : null} />
               <MetricCell label={t("startupDetail.totalUsers")}     value={startup.user_count ? formatNumber(startup.user_count)   : null} />
               <MetricCell label={t("startupDetail.momGrowth")}      value={startup.growth_rate ? formatPercent(startup.growth_rate) : null} />
             </div>

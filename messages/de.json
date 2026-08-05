@@ -46,7 +46,16 @@
     "beFirst": "Seien Sie unter den ersten geprüften Listings.",
     "applyToList": "Jetzt bewerben",
     "feeNoteSuffix": "abgerechnet nur nach Abschluss Ihres Deals. Keine Vorabkosten.",
-    "feeNoteLabel": "2% Erfolgsgebühr"
+    "feeNoteLabel": "2% Erfolgsgebühr",
+    "launchPill": "Während des Launches kostenlos · {count}/{target} Mitglieder",
+    "oneLiner": "Ein privater Marktplatz für Gründer, die Kapital aufnehmen, und Investoren, die es einsetzen.",
+    "ctaBrowse": "Listings ansehen",
+    "trustVetted": "Geprüfte Listings",
+    "trustFee": "Nur 2% bei Abschluss",
+    "trustLaunch": "Während des Launches kostenlos",
+    "proofFee": "Erfolgsgebühr bei Abschluss",
+    "proofUpfront": "Vorabkosten",
+    "proofVetted": "geprüfte Listings"
   },
   "feeStrip": {
     "tagline": "Erfolgsgebühr — nur nach Abschluss. Branchendurchschnitt: 5–7% im Voraus.",
@@ -300,7 +309,10 @@
       "savedReports": "Gespeicherte Berichte",
       "exportPdf": "Berichte exportieren (PDF)",
       "viewOnly": "Nur ansehen"
-    }
+    },
+    "signInTitle": "Anmelden, um KI-Tools zu nutzen",
+    "signInSub": "Erstellen Sie ein kostenloses Konto für Pitch-Scoring, Investoren-Matching und Due-Diligence-Berichte.",
+    "createAccount": "Konto erstellen"
   },
   "pricing": {
     "sectionLabel": "Pläne & Preise",
@@ -1570,7 +1582,7 @@
     "investors": "Investoren",
     "company": "Unternehmen",
     "legal": "Kein registrierter Broker-Dealer oder Anlageberater. Die 2%-Erfolgsgebühr wird erst nach Abschluss einer Finanzierungsrunde berechnet.",
-    "copyright": "© 2026 CapitalReach, Inc.",
+    "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "Startups durchsuchen",
     "findInvestors": "Investoren finden",
     "aiTools": "KI-Tools",
@@ -1588,7 +1600,8 @@
     "careers": "Karriere",
     "contact": "Kontakt",
     "terms": "AGB",
-    "privacy": "Datenschutz"
+    "privacy": "Datenschutz",
+    "aiDisclosure": "KI-Funktionen nutzen OpenAI-Modelle. Ausgaben dienen nur zur Information und sind keine Anlageberatung."
   },
   "banner": {
     "text": "Kostenlos für unsere ersten {target} Mitglieder — {memberCount}/{target} beigetreten, noch {spotsLeft} Plätze übrig.",
@@ -1977,7 +1990,7 @@
     "noticeLabel": "Wichtiger Hinweis",
     "noticeText": "Die Investition in private Frühphasenunternehmen birgt ein hohes Risiko. Du könntest deine gesamte Investition verlieren. Bitte lies diesen Haftungsausschluss sorgfältig, bevor du die CapitalReach-Plattform nutzt.",
     "s1Title": "1. Keine Anlageberatung",
-    "s1Text": "CapitalReach, Inc. („CapitalReach“) ist kein registrierter Anlageberater, Broker-Dealer oder Finanzplaner. Die auf der CapitalReach-Plattform verfügbaren Informationen, Materialien und Tools dienen nur zu Informationszwecken und stellen keine Anlage-, Finanz-, Rechts- oder sonstige professionelle Beratung dar. Nichts auf dieser Plattform sollte als Empfehlung zum Kauf, Verkauf oder Halten von Wertpapieren oder Investitionen ausgelegt werden.",
+    "s1Text": "CapitalReach Ltd. („CapitalReach“) ist kein registrierter Anlageberater, Broker-Dealer oder Finanzplaner. Die auf der CapitalReach-Plattform verfügbaren Informationen, Materialien und Tools dienen nur zu Informationszwecken und stellen keine Anlage-, Finanz-, Rechts- oder sonstige professionelle Beratung dar. Nichts auf dieser Plattform sollte als Empfehlung zum Kauf, Verkauf oder Halten von Wertpapieren oder Investitionen ausgelegt werden.",
     "s2Title": "2. Verlustrisiko",
     "s2Intro": "Investitionen in Startups und Frühphasenunternehmen sind spekulativ und hochriskant. Du solltest darauf vorbereitet sein, deine gesamte Investition zu verlieren. Zu den Risiken gehören unter anderem:",
     "s2l1": "Geschäftsscheitern — die meisten Startups scheitern",
@@ -2005,7 +2018,7 @@
     "title": "Nutzungsbedingungen",
     "lastUpdatedPrefix": "Zuletzt aktualisiert:",
     "lastUpdated": "25. Mai 2026",
-    "introText": "Willkommen bei CapitalReach. Diese Nutzungsbedingungen („Bedingungen“) regeln deinen Zugang zu und die Nutzung der CapitalReach-Plattform, -Website und -Dienste (zusammen der „Dienst“), betrieben von CapitalReach, Inc. („CapitalReach“, „wir“, „uns“ oder „unser“). Durch die Erstellung eines Kontos oder die Nutzung des Dienstes stimmst du zu, an diese Bedingungen gebunden zu sein. Wenn du diesen Bedingungen nicht zustimmst, nutze den Dienst nicht.",
+    "introText": "Willkommen bei CapitalReach. Diese Nutzungsbedingungen („Bedingungen“) regeln deinen Zugang zu und die Nutzung der CapitalReach-Plattform, -Website und -Dienste (zusammen der „Dienst“), betrieben von CapitalReach Ltd. („CapitalReach“, „wir“, „uns“ oder „unser“). Durch die Erstellung eines Kontos oder die Nutzung des Dienstes stimmst du zu, an diese Bedingungen gebunden zu sein. Wenn du diesen Bedingungen nicht zustimmst, nutze den Dienst nicht.",
     "s1Title": "1. Berechtigung",
     "s1p1": "Du musst mindestens 18 Jahre alt sein, um CapitalReach zu nutzen. Durch die Nutzung des Dienstes versicherst und garantierst du, dass du diese Anforderung erfüllst und die Rechtsfähigkeit besitzt, eine bindende Vereinbarung einzugehen. Wenn du im Namen eines Unternehmens oder einer Organisation auf den Dienst zugreifst, versicherst du, dass du befugt bist, diese Einheit an diese Bedingungen zu binden.",
     "s1p2": "Investitionsbezogene Informationen auf CapitalReach sind für die Nutzung durch erfahrene und akkreditierte Investoren gemäß den geltenden Wertpapiergesetzen (einschließlich Rule 501 der Regulation D des U.S. Securities Act von 1933) bestimmt. CapitalReach überprüft den Akkreditierungsstatus von Investoren nicht, und es liegt in deiner Verantwortung, die Einhaltung der geltenden Gesetze in deiner Rechtsordnung sicherzustellen.",
@@ -2054,7 +2067,7 @@
     "s8p1": "CapitalReach bietet KI-generierte Funktionen an, einschließlich Pitch-Bewertung, Due-Diligence-Berichte und Investoren-Matching. Diese Ergebnisse werden von großen Sprachmodellen generiert und dienen ausschließlich Informationszwecken. Sie stellen keine Anlageberatung, Rechtsberatung oder professionelle Finanzanalyse dar.",
     "s8p2": "KI-Ergebnisse können Fehler, Ungenauigkeiten oder veraltete Informationen enthalten. Du solltest dich bei geschäftlichen oder Anlageentscheidungen nicht ausschließlich auf KI-generierte Inhalte verlassen. CapitalReach haftet nicht für Entscheidungen, die auf KI-generierten Ergebnissen basieren.",
     "s9Title": "9. Geistiges Eigentum",
-    "s9p1": "Die CapitalReach-Plattform, einschließlich ihres Designs, ihrer Software, Marken und von CapitalReach erstellten Inhalte, ist Eigentum von CapitalReach, Inc. und durch Gesetze zum geistigen Eigentum geschützt. Du darfst die Marken, Logos oder das Branding von CapitalReach nicht ohne unsere vorherige schriftliche Zustimmung verwenden.",
+    "s9p1": "Die CapitalReach-Plattform, einschließlich ihres Designs, ihrer Software, Marken und von CapitalReach erstellten Inhalte, ist Eigentum von CapitalReach Ltd. und durch Gesetze zum geistigen Eigentum geschützt. Du darfst die Marken, Logos oder das Branding von CapitalReach nicht ohne unsere vorherige schriftliche Zustimmung verwenden.",
     "s9p2": "Vorbehaltlich deiner Einhaltung dieser Bedingungen gewähren wir dir eine beschränkte, nicht-exklusive, nicht übertragbare Lizenz zum Zugriff auf und zur Nutzung des Dienstes für seinen vorgesehenen Zweck.",
     "s10Title": "10. Datenschutz",
     "s10p1": "Deine Nutzung von CapitalReach unterliegt auch unserer {link}, die durch Verweis in diese Bedingungen einbezogen wird. Durch die Nutzung des Dienstes stimmst du der Erhebung und Verwendung deiner Informationen zu, wie in der Datenschutzrichtlinie beschrieben.",
@@ -2076,7 +2089,7 @@
     "s16p2": "Du stimmst zu, Streitigkeiten mit CapitalReach individuell beizulegen, und verzichtest auf jedes Recht, an einer Sammelklage oder einem klassenweiten Schiedsverfahren teilzunehmen.",
     "s17Title": "17. Kontakt",
     "s17p1": "Wenn du Fragen zu diesen Bedingungen hast, kontaktiere uns bitte unter:",
-    "contactBrand": "CapitalReach, Inc.",
+    "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "E-Mail:",
     "supportLabel": "Support:",
     "footerAck": "Durch die Nutzung von CapitalReach bestätigst du, dass du diese Nutzungsbedingungen gelesen und verstanden hast und ihnen zustimmst.",

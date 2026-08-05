@@ -1,65 +1,62 @@
 import { createAdminClient } from "@/lib/supabase-server";
-import { getPlatformStats }  from "@/lib/stats";
-import { Navbar }            from "@/components/shared/navbar";
-import { Footer }            from "@/components/shared/footer";
-import { HomepageClient }    from "@/components/homepage/homepage-client";
-import type { Metadata }     from "next";
+import { getLaunchStatus } from "@/lib/launchMode";
+import { Navbar } from "@/components/shared/navbar";
+import { Footer } from "@/components/shared/footer";
+import type { StartupCardData } from "@/components/startup/startup-card";
+import { HomeCopy } from "@/components/homepage/home-copy";
+import type { Metadata } from "next";
 
-// force-dynamic here dated to the initial commit: every visitor paid a full
-// SSR pass (stats + listings queries) on the most-visited page. Nothing on it
-// is caller-specific -- the admin client reads no cookies and translation
-// happens client-side. revalidate alone doesn't flip it because the root
-// layout's locale-cookie read marks every non-SSG route dynamic; force-static
-// overrides that the same way generateStaticParams already does for
-// /startups/[slug], whose pages prove the whole layout chain renders fine
-// statically (the cookie read falls back to the default locale and the
-// client hydrates the real one).
+// Static with 2-minute revalidation: nothing here is caller-specific, and the
+// root layout's locale-cookie read would otherwise mark the route dynamic.
+// Same proven arrangement as /startups/[slug].
 export const dynamic = "force-static";
 export const revalidate = 120;
 
 export const metadata: Metadata = {
   title: "CapitalReach — Private Capital Marketplace",
   description:
-    "The private marketplace for founders raising capital and investors deploying it. Vetted listings. AI-powered analysis. 2% fee only after close.",
+    "The private marketplace for founders raising capital and investors deploying it. Vetted listings. 2% fee only after close.",
 };
 
-export type ListingSnippet = {
-  id: string; name: string; slug: string;
-  industry: string; stage: string;
-  mrr: number | null; funding_target: number; vaultrise_score: number | null;
-};
-
+/**
+ * Four sections. One hook, one action:
+ *   1. Navbar (shared component)
+ *   2. Hero — headline, one sentence, two CTAs, trust row, one real listing
+ *   3. Proof strip — three product facts (never DB counts: those are only
+ *      credible once they're large, and a static fact can't read "0")
+ *   4. Footer (shared component)
+ *
+ * Everything the old ten-section page also said lives where it belongs:
+ * how-it-works on /about, AI on /ai, pricing on /pricing, data on /data.
+ */
 export default async function HomePage() {
-  let listings: ListingSnippet[] = [];
+  let hero: StartupCardData | null = null;
+  let launch = { isLaunch: false, memberCount: 0, target: 100 };
 
   try {
     const supabase = createAdminClient();
-    const stats    = await getPlatformStats(supabase);
-
-    const listingsRes = await supabase
-      .from("startups")
-      .select("id,name,slug,industry,stage,mrr,funding_target,vaultrise_score")
-      .eq("status", "active")
-      .order("vaultrise_score", { ascending: false })
-      .limit(8);
-
-    listings = listingsRes.data ?? [];
-
-    return (
-      <>
-        <Navbar />
-        <HomepageClient stats={stats} listings={listings} />
-        <Footer />
-      </>
-    );
+    const [heroRes, launchRes] = await Promise.all([
+      supabase
+        .from("startups")
+        .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score")
+        .eq("status", "active")
+        .order("vaultrise_score", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle()
+        // stage's narrowing from string to the union is licensed by the DB CHECK.
+        .returns<StartupCardData>(),
+      getLaunchStatus(),
+    ]);
+    hero = heroRes.data ?? null;
+    launch = launchRes;
   } catch {
-    /* DB not configured — render shell */
+    /* DB unreachable — the page still renders every static section */
   }
 
   return (
     <>
       <Navbar />
-      <HomepageClient stats={{ startupCount: 0, investorCount: 0, totalRaised: 0, dealsClosedCount: 0 }} listings={[]} />
+      <HomeCopy launch={launch} hero={hero} />
       <Footer />
     </>
   );

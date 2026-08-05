@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ElementType } from "react";
+import { useState, useEffect, type ElementType } from "react";
+import { createClient } from "@/lib/supabase";
 import Link from "next/link";
 import {
   Brain, Sparkles, FileSearch, ArrowRight, CheckCircle2,
@@ -716,6 +717,13 @@ type Tab = "pitch" | "matching" | "diligence";
 export function AiToolsHub() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>("pitch");
+  // The routes already answer 401 to anonymous calls; hiding the forms too
+  // stops signed-out visitors from typing a pitch into a tool that can only
+  // refuse them. null = still checking (render nothing gated yet).
+  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => setIsAuthed(!!data.user));
+  }, []);
 
   const TABS: { id: Tab; label: string; icon: ElementType; desc: string }[] = [
     { id: "pitch",     label: t("ai.tabs.pitchAnalyzer"), icon: Sparkles,   desc: t("ai.tabs.pitchDesc") },
@@ -788,9 +796,30 @@ export function AiToolsHub() {
 
       {/* Content */}
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px" }}>
-        {activeTab === "pitch"     && <PitchTab />}
-        {activeTab === "matching"  && <MatchingTab />}
-        {activeTab === "diligence" && <DiligenceTab />}
+        {isAuthed === false ? (
+          <div style={{ textAlign: "center", padding: "80px 24px" }}>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>
+              {t("ai.signInTitle")}
+            </p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px", maxWidth: "420px", marginLeft: "auto", marginRight: "auto" }}>
+              {t("ai.signInSub")}
+            </p>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <Link href="/auth/login" style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", borderRadius: "4px", padding: "10px 24px", textDecoration: "none" }}>
+                {t("nav.signIn")}
+              </Link>
+              <Link href="/auth/signup" style={{ border: "1px solid var(--cr-paper-4)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", borderRadius: "4px", padding: "10px 24px", textDecoration: "none" }}>
+                {t("ai.createAccount")}
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            {activeTab === "pitch"     && <PitchTab />}
+            {activeTab === "matching"  && <MatchingTab />}
+            {activeTab === "diligence" && <DiligenceTab />}
+          </>
+        )}
       </div>
 
       {/* Tier comparison */}

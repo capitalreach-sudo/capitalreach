@@ -69,6 +69,9 @@ export default function RootLayout({
   return (
     <html lang={locale} dir={rtl ? "rtl" : "ltr"} suppressHydrationWarning>
       <head>
+        {/* First in head: the connection is warm before any font CSS asks for it. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {extraFont && (
           <link
             rel="stylesheet"

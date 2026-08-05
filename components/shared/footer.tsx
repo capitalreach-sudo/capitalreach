@@ -148,7 +148,7 @@ export function Footer() {
             color:      "#9C8E82",
             flexShrink: 0,
           }}>
-            © {new Date().getFullYear()} CapitalReach, Inc.
+            © {new Date().getFullYear()} CapitalReach Ltd.
           </p>
 
           <p style={{
@@ -161,13 +161,14 @@ export function Footer() {
             lineHeight: 1.55,
           }}>
             {t("footer.legal")}
+            <br />
+            {t("footer.aiDisclosure")}
           </p>
 
           <div className="flex items-center gap-5 flex-shrink-0">
             {([
-              ["Twitter",   "https://twitter.com"],
-              ["LinkedIn",  "https://linkedin.com"],
-              ["AngelList", "https://angel.co"],
+              // Real profiles only; placeholders removed. Add entries here
+              // once the accounts exist.
             ] as [string, string][]).map(([label, href]) => (
               <a
                 key={label}

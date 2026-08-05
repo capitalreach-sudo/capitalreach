@@ -46,7 +46,16 @@
     "beFirst": "Be among the first vetted listings.",
     "applyToList": "Apply to list",
     "feeNoteSuffix": "invoiced only after your deal closes. Zero upfront cost.",
-    "feeNoteLabel": "2% success fee"
+    "feeNoteLabel": "2% success fee",
+    "launchPill": "Free during launch · {count}/{target} members",
+    "oneLiner": "A private marketplace for founders raising capital and investors deploying it.",
+    "ctaBrowse": "Browse listings",
+    "trustVetted": "Admin-vetted listings",
+    "trustFee": "2% at close only",
+    "trustLaunch": "Free during launch",
+    "proofFee": "success fee at close",
+    "proofUpfront": "upfront cost",
+    "proofVetted": "listings vetted"
   },
   "feeStrip": {
     "tagline": "success fee — only after you close. Industry average: 5–7% upfront.",
@@ -304,7 +313,10 @@
       "savedReports": "Saved Reports",
       "exportPdf": "Export Reports (PDF)",
       "viewOnly": "View only"
-    }
+    },
+    "signInTitle": "Sign in to use AI tools",
+    "signInSub": "Create a free account to access pitch scoring, investor matching, and due diligence reports.",
+    "createAccount": "Create account"
   },
   "pricing": {
     "sectionLabel": "Plans & pricing",
@@ -1574,7 +1586,7 @@
     "investors": "Investors",
     "company": "Company",
     "legal": "Not a registered broker-dealer or investment adviser. The 2% success fee is charged only after a funding round closes.",
-    "copyright": "© 2026 CapitalReach, Inc.",
+    "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "Browse startups",
     "findInvestors": "Find investors",
     "aiTools": "AI tools",
@@ -1592,7 +1604,8 @@
     "careers": "Careers",
     "contact": "Contact",
     "terms": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "aiDisclosure": "AI-powered features use OpenAI models. Outputs are informational only and not investment advice."
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
@@ -1981,7 +1994,7 @@
     "noticeLabel": "Important notice",
     "noticeText": "Investing in early-stage private companies involves a high degree of risk. You could lose your entire investment. Please read this disclaimer carefully before using the CapitalReach platform.",
     "s1Title": "1. Not investment advice",
-    "s1Text": "CapitalReach, Inc. (\"CapitalReach\") is not a registered investment advisor, broker-dealer, or financial planner. The information, materials, and tools available on the CapitalReach platform are provided for informational purposes only and do not constitute investment advice, financial advice, legal advice, or any other type of professional advice. Nothing on this platform should be construed as a recommendation to buy, sell, or hold any security or investment.",
+    "s1Text": "CapitalReach Ltd. (\"CapitalReach\") is not a registered investment advisor, broker-dealer, or financial planner. The information, materials, and tools available on the CapitalReach platform are provided for informational purposes only and do not constitute investment advice, financial advice, legal advice, or any other type of professional advice. Nothing on this platform should be construed as a recommendation to buy, sell, or hold any security or investment.",
     "s2Title": "2. Risk of loss",
     "s2Intro": "Investments in startups and early-stage companies are speculative and highly risky. You should be prepared to lose your entire investment. Risks include, but are not limited to:",
     "s2l1": "Business failure — most startups do not succeed",
@@ -2009,7 +2022,7 @@
     "title": "Terms of Service",
     "lastUpdatedPrefix": "Last updated:",
     "lastUpdated": "May 25, 2026",
-    "introText": "Welcome to CapitalReach. These Terms of Service (\"Terms\") govern your access to and use of the CapitalReach platform, website, and services (collectively, the \"Service\") operated by CapitalReach, Inc. (\"CapitalReach\", \"we\", \"us\", or \"our\"). By creating an account or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the Service.",
+    "introText": "Welcome to CapitalReach. These Terms of Service (\"Terms\") govern your access to and use of the CapitalReach platform, website, and services (collectively, the \"Service\") operated by CapitalReach Ltd. (\"CapitalReach\", \"we\", \"us\", or \"our\"). By creating an account or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the Service.",
     "s1Title": "1. Eligibility",
     "s1p1": "You must be at least 18 years old to use CapitalReach. By using the Service, you represent and warrant that you meet this requirement and have the legal capacity to enter into a binding agreement. If you are accessing the Service on behalf of a company or organisation, you represent that you have authority to bind that entity to these Terms.",
     "s1p2": "Investment-related information on CapitalReach is intended for use by sophisticated and accredited investors as defined under applicable securities laws (including Rule 501 of Regulation D under the U.S. Securities Act of 1933). CapitalReach does not verify investor accreditation status and it is your responsibility to ensure compliance with applicable laws in your jurisdiction.",
@@ -2059,7 +2072,7 @@
     "s8p1": "CapitalReach offers AI-generated features including pitch scoring, due diligence reports, and investor matching. These outputs are generated by large language models and are provided for informational purposes only. They do not constitute investment advice, legal advice, or professional financial analysis.",
     "s8p2": "AI outputs may contain errors, inaccuracies, or outdated information. You should not rely solely on AI-generated content when making business or investment decisions. CapitalReach is not liable for any decisions made based on AI-generated outputs.",
     "s9Title": "9. Intellectual Property",
-    "s9p1": "The CapitalReach platform, including its design, software, trademarks, and content created by CapitalReach, is owned by CapitalReach, Inc. and protected by intellectual property laws. You may not use CapitalReach's trademarks, logos, or branding without our prior written consent.",
+    "s9p1": "The CapitalReach platform, including its design, software, trademarks, and content created by CapitalReach, is owned by CapitalReach Ltd. and protected by intellectual property laws. You may not use CapitalReach's trademarks, logos, or branding without our prior written consent.",
     "s9p2": "Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable licence to access and use the Service for its intended purpose.",
     "s10Title": "10. Privacy",
     "s10p1": "Your use of CapitalReach is also governed by our {link}, which is incorporated into these Terms by reference. By using the Service, you consent to the collection and use of your information as described in the Privacy Policy.",
@@ -2081,7 +2094,7 @@
     "s16p2": "You agree to resolve disputes with CapitalReach on an individual basis and waive any right to participate in a class action lawsuit or class-wide arbitration.",
     "s17Title": "17. Contact",
     "s17p1": "If you have any questions about these Terms, please contact us at:",
-    "contactBrand": "CapitalReach, Inc.",
+    "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "Email:",
     "supportLabel": "Support:",
     "footerAck": "By using CapitalReach, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
