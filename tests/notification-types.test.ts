@@ -21,6 +21,7 @@ const UNION: NotificationType[] = [
   "message", "follow_up_due", "contract_status", "nda_signed",
   "listing_approved", "listing_rejected", "team_added",
   "tier_changed", "search_match", "listing_saved", "listing_update",
+  "doc_request", "deal_shared", "question_asked", "question_answered",
 ];
 // If the union gains a member this list lacks, the annotation above errors;
 // if the list gains one the union lacks, the same. Compile-time both ways.

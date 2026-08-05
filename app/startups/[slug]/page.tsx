@@ -148,6 +148,21 @@ export default async function StartupDetailPage({ params }: Props) {
     viewerDeal = (deal as ViewerDeal | null) ?? null;
   }
 
+  // Updates feed + Q&A (RLS: answered questions are public; the caller's own
+  // unanswered ones come back too when they asked them).
+  const [{ data: updates }, { data: questions }] = await Promise.all([
+    supabase.from("startup_updates")
+      .select("id, title, body, created_at")
+      .eq("startup_id", startup.id)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabase.from("listing_questions")
+      .select("id, question, answer, answered_at, created_at")
+      .eq("startup_id", startup.id)
+      .order("created_at", { ascending: false })
+      .limit(20),
+  ]);
+
   // Related startups
   const { data: related } = await supabase
     .from("startups")
@@ -170,6 +185,9 @@ export default async function StartupDetailPage({ params }: Props) {
         viewerDeal={viewerDeal}
         ndaSigned={ndaSigned}
         relatedStartups={related ?? []}
+        updates={updates ?? []}
+        isOwner={!!user && user.id === startup.owner_id}
+        questions={questions ?? []}
         isLaunchMode={isLaunch}
         viewerSuspended={viewerSuspended}
       />

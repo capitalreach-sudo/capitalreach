@@ -242,6 +242,41 @@ export type Database = {
           },
         ]
       }
+      deal_checklist_items: {
+        Row: {
+          created_at: string
+          deal_id: string
+          done: boolean
+          id: string
+          label: string
+          position: number
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          done?: boolean
+          id?: string
+          label: string
+          position?: number
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          done?: boolean
+          id?: string
+          label?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_checklist_items_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           amount: number | null
@@ -316,6 +351,42 @@ export type Database = {
             columns: ["startup_id"]
             isOneToOne: false
             referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_views: {
+        Row: {
+          document_id: string
+          id: string
+          investor_id: string
+          viewed_at: string
+        }
+        Insert: {
+          document_id: string
+          id?: string
+          investor_id: string
+          viewed_at?: string
+        }
+        Update: {
+          document_id?: string
+          id?: string
+          investor_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_views_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "startup_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_views_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
             referencedColumns: ["id"]
           },
         ]
@@ -401,6 +472,7 @@ export type Database = {
           avg_hold_period: string | null
           bio: string | null
           board_seat_pref: string | null
+          booking_url: string | null
           created_at: string
           display_name: string | null
           firm_name: string | null
@@ -430,6 +502,7 @@ export type Database = {
           avg_hold_period?: string | null
           bio?: string | null
           board_seat_pref?: string | null
+          booking_url?: string | null
           created_at?: string
           display_name?: string | null
           firm_name?: string | null
@@ -459,6 +532,7 @@ export type Database = {
           avg_hold_period?: string | null
           bio?: string | null
           board_seat_pref?: string | null
+          booking_url?: string | null
           created_at?: string
           display_name?: string | null
           firm_name?: string | null
@@ -488,6 +562,51 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          created_at: string
+          id: string
+          investor_id: string
+          question: string
+          startup_id: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          created_at?: string
+          id?: string
+          investor_id: string
+          question: string
+          startup_id: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          created_at?: string
+          id?: string
+          investor_id?: string
+          question?: string
+          startup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_questions_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_questions_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
             referencedColumns: ["id"]
           },
         ]
@@ -684,6 +803,7 @@ export type Database = {
           investor_type: string | null
           languages: string[] | null
           lead_investor: boolean | null
+          muted_notification_types: string[]
           portfolio_count: number | null
           preferred_countries: string[] | null
           preferred_industries: string[] | null
@@ -716,6 +836,7 @@ export type Database = {
           investor_type?: string | null
           languages?: string[] | null
           lead_investor?: boolean | null
+          muted_notification_types?: string[]
           portfolio_count?: number | null
           preferred_countries?: string[] | null
           preferred_industries?: string[] | null
@@ -748,6 +869,7 @@ export type Database = {
           investor_type?: string | null
           languages?: string[] | null
           lead_investor?: boolean | null
+          muted_notification_types?: string[]
           portfolio_count?: number | null
           preferred_countries?: string[] | null
           preferred_industries?: string[] | null
@@ -948,6 +1070,38 @@ export type Database = {
           },
         ]
       }
+      startup_updates: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          startup_id: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          startup_id: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          startup_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_updates_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       startup_views: {
         Row: {
           id: string
@@ -987,6 +1141,7 @@ export type Database = {
       startups: {
         Row: {
           arr: number | null
+          booking_url: string | null
           business_model: string | null
           churn_rate: number | null
           city: string | null
@@ -1041,6 +1196,7 @@ export type Database = {
         }
         Insert: {
           arr?: number | null
+          booking_url?: string | null
           business_model?: string | null
           churn_rate?: number | null
           city?: string | null
@@ -1095,6 +1251,7 @@ export type Database = {
         }
         Update: {
           arr?: number | null
+          booking_url?: string | null
           business_model?: string | null
           churn_rate?: number | null
           city?: string | null

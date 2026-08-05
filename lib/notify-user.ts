@@ -22,7 +22,12 @@ export type NotificationType =
   // Added by migration 029.
   | "listing_saved"
   // Added by migration 030.
-  | "listing_update";
+  | "listing_update"
+  // Added by migration 036.
+  | "doc_request"
+  | "deal_shared"
+  | "question_asked"
+  | "question_answered";
 
 interface NotifyInput {
   userId: string;
@@ -47,6 +52,15 @@ interface NotifyInput {
 export async function notifyUser(input: NotifyInput): Promise<void> {
   try {
     const admin = createAdminClient();
+    // Muting (migration 040) is enforced at the source, so every raiser --
+    // routes, crons, bulk broadcasts that insert directly -- should prefer
+    // notifyUser. A muted type is silently dropped for that user.
+    const { data: prefs } = await admin
+      .from("profiles")
+      .select("muted_notification_types")
+      .eq("id", input.userId)
+      .maybeSingle();
+    if (prefs?.muted_notification_types?.includes(input.type)) return;
     const { error } = await admin.from("notifications").insert({
       user_id: input.userId,
       type:    input.type,

@@ -805,6 +805,66 @@ const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
   success_fee:     "deals.activitySuccessFee",
 };
 
+/**
+ * Structured due diligence on the deal (migration 041): add items, tick them
+ * off. RLS inherits deal visibility, so both sides and team members share
+ * the same list.
+ */
+function ChecklistSection({ dealId }: { dealId: string }) {
+  const { t } = useTranslation();
+  const [items, setItems] = useState<Array<{ id: string; label: string; done: boolean }> | null>(null);
+  const [label, setLabel] = useState("");
+
+  useEffect(() => {
+    fetch(`/api/deals/checklist?dealId=${dealId}`).then(r => r.ok ? r.json() : null)
+      .then(j => setItems(j?.items ?? [])).catch(() => setItems([]));
+  }, [dealId]);
+
+  async function add() {
+    if (!label.trim()) return;
+    const res = await fetch("/api/deals/checklist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, label }) });
+    const j = await res.json().catch(() => null);
+    if (res.ok && j?.item) { setItems(prev => [...(prev ?? []), j.item]); setLabel(""); }
+  }
+  async function toggle(id: string, done: boolean) {
+    setItems(prev => prev?.map(i => i.id === id ? { ...i, done } : i) ?? prev);
+    await fetch("/api/deals/checklist", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, done }) });
+  }
+  async function remove(id: string) {
+    setItems(prev => prev?.filter(i => i.id !== id) ?? prev);
+    await fetch("/api/deals/checklist", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+  }
+
+  const doneCount = (items ?? []).filter(i => i.done).length;
+
+  return (
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "8px" }}>
+        {t("deals.checklist")}{items && items.length > 0 ? ` · ${doneCount}/${items.length}` : ""}
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {(items ?? []).map(i => (
+          <div key={i.id} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <input type="checkbox" checked={i.done} onChange={e => toggle(i.id, e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
+            <span style={{ flex: 1, fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: i.done ? "var(--cr-ink-4)" : "var(--cr-ink-2)", textDecoration: i.done ? "line-through" : "none" }}>{i.label}</span>
+            <button onClick={() => remove(i.id)} aria-label={`remove ${i.label}`}
+              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "12px", lineHeight: 1, padding: 0 }}>×</button>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: "6px", marginTop: "8px" }}>
+        <input value={label} onChange={e => setLabel(e.target.value)} maxLength={200} placeholder={t("deals.addItem")}
+          onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
+          style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "6px 9px", outline: "none" }} />
+        <button onClick={add} disabled={!label.trim()}
+          style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "6px 10px", cursor: "pointer", opacity: label.trim() ? 1 : 0.5 }}>
+          {t("deals.checkAdd")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ActivitySection({ dealId }: { dealId: string }) {
   const { t } = useTranslation();
   const [open, setOpen]         = useState(false);
@@ -1194,6 +1254,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         startupId={deal.startup_id}
         investorId={deal.investor_id}
       />
+      <ChecklistSection dealId={deal.id} />
       <ActivitySection dealId={deal.id} />
     </div>
   );

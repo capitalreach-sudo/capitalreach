@@ -869,7 +869,16 @@
     "totalDeployed": "Total deployed",
     "closedOn": "closed {date}",
     "noPortfolio": "No closed investments yet",
-    "noPortfolioSub": "Deals you close move here automatically."
+    "noPortfolioSub": "Deals you close move here automatically.",
+    "postUpdate": "Post an update",
+    "updTitle": "Title",
+    "updBody": "What's new? Investors who saved you will be notified.",
+    "updPost": "Publish update",
+    "updPosted": "Update published — savers notified",
+    "updFailed": "Could not publish",
+    "docAnalytics": "Document opens",
+    "docOpens": "{opens} opens · {viewers} investors",
+    "yourUpdates": "Your updates"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -917,7 +926,10 @@
     "accountDeleted": "Account deleted",
     "accountDeletedDesc": "Your account and all data have been permanently removed.",
     "networkError": "Network error",
-    "networkErrorDesc": "Could not reach server. Please try again."
+    "networkErrorDesc": "Could not reach server. Please try again.",
+    "exportData": "Export your data",
+    "exportDataSub": "Download a copy of everything CapitalReach stores about you — profile, listing, deals, messages, and notifications — as a JSON file.",
+    "exportDownload": "Download my data"
   },
   "startups": {
     "pageTitle": "Active fundraising rounds",
@@ -1051,7 +1063,19 @@
     "upgradeTractionDesc": "Angel members see MRR, ARR, user counts, and growth rates.",
     "inYourPipeline": "In your pipeline",
     "startDeal": "Start a deal",
-    "openNewTab": "Open in new tab"
+    "openNewTab": "Open in new tab",
+    "updates": "Updates",
+    "askQuestion": "Ask a question",
+    "questionPh": "What would you like to know? (min. 10 characters)",
+    "askSend": "Send question",
+    "questionSent": "Question sent to the founder",
+    "qa": "Q&A",
+    "answerPh": "Write a public answer…",
+    "answerSend": "Publish answer",
+    "answered": "Answer published",
+    "requestDoc": "Request a document",
+    "reqSent": "Request sent to the founder",
+    "bookCall": "Book a call"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1700,7 +1724,10 @@
     "feeBilled": "{amount} fee",
     "inStageFor": "{n}d in stage",
     "sortStageAge": "Longest in stage",
-    "activitySuccessFee": "Success fee invoiced"
+    "activitySuccessFee": "Success fee invoiced",
+    "checklist": "Due-diligence checklist",
+    "addItem": "Add item…",
+    "checkAdd": "Add"
   },
   "investorProfile": {
     "back": "Back to investors",

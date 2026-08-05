@@ -865,7 +865,16 @@
     "totalDeployed": "Investiert gesamt",
     "closedOn": "abgeschlossen am {date}",
     "noPortfolio": "Noch keine abgeschlossenen Investments",
-    "noPortfolioSub": "Abgeschlossene Deals erscheinen hier automatisch."
+    "noPortfolioSub": "Abgeschlossene Deals erscheinen hier automatisch.",
+    "postUpdate": "Update veröffentlichen",
+    "updTitle": "Titel",
+    "updBody": "Was gibt's Neues? Investoren, die Sie gespeichert haben, werden benachrichtigt.",
+    "updPost": "Update veröffentlichen",
+    "updPosted": "Update veröffentlicht — gespeicherte Investoren benachrichtigt",
+    "updFailed": "Veröffentlichen fehlgeschlagen",
+    "docAnalytics": "Dokument-Aufrufe",
+    "docOpens": "{opens} Aufrufe · {viewers} Investoren",
+    "yourUpdates": "Ihre Updates"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -913,7 +922,10 @@
     "accountDeleted": "Konto gelöscht",
     "accountDeletedDesc": "Dein Konto und alle Daten wurden dauerhaft entfernt.",
     "networkError": "Netzwerkfehler",
-    "networkErrorDesc": "Server konnte nicht erreicht werden. Bitte versuche es erneut."
+    "networkErrorDesc": "Server konnte nicht erreicht werden. Bitte versuche es erneut.",
+    "exportData": "Ihre Daten exportieren",
+    "exportDataSub": "Laden Sie eine Kopie aller Daten herunter, die CapitalReach über Sie speichert — Profil, Listing, Deals, Nachrichten und Benachrichtigungen — als JSON-Datei.",
+    "exportDownload": "Meine Daten herunterladen"
   },
   "startups": {
     "pageTitle": "Aktive Finanzierungsrunden",
@@ -1047,7 +1059,19 @@
     "upgradeTractionDesc": "Angel-Mitglieder sehen MRR, ARR, Nutzerzahlen und Wachstumsraten.",
     "inYourPipeline": "In Ihrer Pipeline",
     "startDeal": "Deal starten",
-    "openNewTab": "In neuem Tab öffnen"
+    "openNewTab": "In neuem Tab öffnen",
+    "updates": "Updates",
+    "askQuestion": "Frage stellen",
+    "questionPh": "Was möchten Sie wissen? (mind. 10 Zeichen)",
+    "askSend": "Frage senden",
+    "questionSent": "Frage an den Gründer gesendet",
+    "qa": "Q&A",
+    "answerPh": "Öffentliche Antwort schreiben…",
+    "answerSend": "Antwort veröffentlichen",
+    "answered": "Antwort veröffentlicht",
+    "requestDoc": "Dokument anfragen",
+    "reqSent": "Anfrage an den Gründer gesendet",
+    "bookCall": "Termin buchen"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1696,7 +1720,10 @@
     "feeBilled": "{amount} Gebühr",
     "inStageFor": "{n} T. in dieser Phase",
     "sortStageAge": "Am längsten in Phase",
-    "activitySuccessFee": "Erfolgsgebühr in Rechnung gestellt"
+    "activitySuccessFee": "Erfolgsgebühr in Rechnung gestellt",
+    "checklist": "Due-Diligence-Checkliste",
+    "addItem": "Punkt hinzufügen…",
+    "checkAdd": "Hinzufügen"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

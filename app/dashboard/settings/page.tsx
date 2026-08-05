@@ -223,6 +223,16 @@ export default function AccountSettingsPage() {
             <LanguageSettingsSelector />
           </section>
 
+          {/* Data export (GDPR) */}
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>
+            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("settings.exportData")}</h3>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>{t("settings.exportDataSub")}</p>
+            <a href="/api/account/export" download
+              style={{ display: "inline-flex", alignItems: "center", border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "9px 16px", textDecoration: "none" }}>
+              {t("settings.exportDownload")}
+            </a>
+          </div>
+
           {/* Danger zone */}
           <section className="bg-cr-paper border border-red-100 rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-2">

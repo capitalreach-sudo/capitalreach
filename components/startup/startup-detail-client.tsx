@@ -31,6 +31,9 @@ interface Props {
   viewerDeal:     { id: string; status: string } | null;
   ndaSigned:      boolean;
   relatedStartups: StartupCardData[];
+  updates?: Array<{ id: string; title: string; body: string; created_at: string }>;
+  isOwner?: boolean;
+  questions?: Array<{ id: string; question: string; answer: string | null; answered_at: string | null; created_at: string }>;
   isLaunchMode:   boolean;
   viewerSuspended?: boolean;
 }
@@ -64,8 +67,89 @@ function MetricCell({ label, value, copper }: { label: string; value: string | n
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+function DocRequestRow({ startupId }: { startupId: string }) {
+  const { t } = useTranslation();
+  const [docType, setDocType] = useState("pitch_deck");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  if (sent) return <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)", marginTop: "14px" }}>{t("startupDetail.reqSent")}</p>;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "16px" }}>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("startupDetail.requestDoc")}:</span>
+      <select value={docType} onChange={e => setDocType(e.target.value)}
+        style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink)", padding: "7px 10px", outline: "none" }}>
+        <option value="pitch_deck">Pitch deck</option>
+        <option value="financial_model">Financial model</option>
+        <option value="cap_table">Cap table</option>
+        <option value="other">Other</option>
+      </select>
+      <button disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          const res = await fetch("/api/documents/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, docType }) });
+          setBusy(false);
+          if (res.ok) { setSent(true); notify.success(t("startupDetail.reqSent")); }
+          else notify.error(t("errors.generic"));
+        }}
+        style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", cursor: "pointer" }}>
+        {busy ? "…" : t("startupDetail.askSend")}
+      </button>
+    </div>
+  );
+}
+
+function QAAskBox({ startupId }: { startupId: string }) {
+  const { t } = useTranslation();
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  if (sent) return <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)" }}>{t("startupDetail.questionSent")}</p>;
+  return (
+    <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+      <textarea value={q} onChange={e => setQ(e.target.value)} rows={2} maxLength={1000} placeholder={t("startupDetail.questionPh")}
+        style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+      <button disabled={busy || q.trim().length < 10}
+        onClick={async () => {
+          setBusy(true);
+          const res = await fetch("/api/questions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, question: q }) });
+          setBusy(false);
+          if (res.ok) { setSent(true); notify.success(t("startupDetail.questionSent")); }
+          else notify.error(t("errors.generic"));
+        }}
+        style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: q.trim().length < 10 ? 0.5 : 1, whiteSpace: "nowrap" }}>
+        {busy ? "…" : t("startupDetail.askSend")}
+      </button>
+    </div>
+  );
+}
+
+function QAAnswerBox({ questionId }: { questionId: string }) {
+  const { t } = useTranslation();
+  const [a, setA] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  if (done) return <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)" }}>{t("startupDetail.answered")}</p>;
+  return (
+    <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+      <textarea value={a} onChange={e => setA(e.target.value)} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
+        style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+      <button disabled={busy || !a.trim()}
+        onClick={async () => {
+          setBusy(true);
+          const res = await fetch("/api/questions", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: questionId, answer: a }) });
+          setBusy(false);
+          if (res.ok) { setDone(true); notify.success(t("startupDetail.answered")); }
+          else notify.error(t("errors.generic"));
+        }}
+        style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+        {busy ? "…" : t("startupDetail.answerSend")}
+      </button>
+    </div>
+  );
+}
+
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, isLaunchMode, viewerSuspended = false,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -117,6 +201,10 @@ export function StartupDetailClient({
   const [startingDeal, setStartingDeal] = useState(false);
   // Inline PDF viewer: keep the reader on the page instead of a new tab.
   const [viewerDoc, setViewerDoc] = useState<{ url: string; label: string } | null>(null);
+  // Best-effort view logging (migration 039); founders see the aggregate.
+  function trackDoc(documentId: string) {
+    fetch("/api/documents/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documentId }) }).catch(() => {});
+  }
   // The reverse of the pipeline pill: when there is no deal yet, the profile
   // is where an investor decides to start one -- sending them to the portal
   // to re-find this startup by name was the long way round.
@@ -513,6 +601,51 @@ export function StartupDetailClient({
                 )}
               </div>
             )}
+            {/* ── Updates feed ── */}
+            {updates.length > 0 && (
+              <div style={{ marginTop: "32px" }}>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.updates")}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {updates.map((u) => (
+                    <div key={u.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 20px" }}>
+                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "6px" }}>
+                        <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{u.title}</h4>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                          {new Date(u.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        </span>
+                      </div>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, whiteSpace: "pre-wrap" }}>{u.body}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Q&A ── */}
+            {(questions.length > 0 || (investorId && !viewerSuspended)) && (
+              <div style={{ marginTop: "32px" }}>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.qa")}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {questions.map((q) => (
+                    <div key={q.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: q.answer ? "8px" : 0 }}>
+                        <span style={{ color: "var(--cr-copper)", fontWeight: 700 }}>Q&nbsp;</span>{q.question}
+                      </p>
+                      {q.answer ? (
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
+                          <span style={{ color: "var(--cr-up)", fontWeight: 700 }}>A&nbsp;</span>{q.answer}
+                        </p>
+                      ) : isOwner ? (
+                        <QAAnswerBox questionId={q.id} />
+                      ) : (
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", fontStyle: "italic" }}>—</p>
+                      )}
+                    </div>
+                  ))}
+                  {investorId && !viewerSuspended && <QAAskBox startupId={startup.id} />}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -652,12 +785,12 @@ export function StartupDetailClient({
                         </Link>
                       ) : (
                         /\.pdf(\?|$)/i.test(doc.file_url) ? (
-                          <button onClick={() => setViewerDoc({ url: doc.file_url, label: doc.label })}
+                          <button onClick={() => { trackDoc(doc.id); setViewerDoc({ url: doc.file_url, label: doc.label }); }}
                             style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", cursor: "pointer" }}>
                             <Eye style={{ width: 11, height: 11 }} /> {t("common.view")}
                           </button>
                         ) : (
-                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer" onClick={() => trackDoc(doc.id)}
                           style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", textDecoration: "none" }}>
                           <ExternalLink style={{ width: 11, height: 11 }} /> {t("common.view")}
                         </a>
@@ -670,6 +803,7 @@ export function StartupDetailClient({
             ) : (
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noDocumentsUploaded")}</p>
             )}
+            {investorId && !viewerSuspended && <DocRequestRow startupId={startup.id} />}
           </>
         )}
 

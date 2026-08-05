@@ -7,6 +7,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { notify } from "@/components/ui/toast-notify";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -356,6 +357,105 @@ function TargetsPanel() {
   );
 }
 
+/**
+ * The update composer: title + body, publish notifies every saver (the API
+ * does the fan-out). The founder's periodic heartbeat to their audience.
+ */
+function UpdateComposer() {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function publish() {
+    if (busy || !title.trim() || !body.trim()) return;
+    setBusy(true);
+    const res = await fetch("/api/updates", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body }) });
+    setBusy(false);
+    if (!res.ok) { notify.error(t("dashboard.updFailed")); return; }
+    notify.success(t("dashboard.updPosted"));
+    setTitle(""); setBody(""); setOpen(false);
+  }
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Zap style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
+          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.postUpdate")}</h3>
+        </div>
+        {!open && (
+          <button onClick={() => setOpen(true)}
+            style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 14px", cursor: "pointer" }}>
+            {t("dashboard.postUpdate")}
+          </button>
+        )}
+      </div>
+      {open && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
+          <input value={title} onChange={e => setTitle(e.target.value)} maxLength={150} placeholder={t("dashboard.updTitle")}
+            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none" }} />
+          <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={5000} rows={4} placeholder={t("dashboard.updBody")}
+            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+          <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+            <button onClick={() => setOpen(false)}
+              style={{ border: "1px solid var(--cr-rule-dark)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", padding: "8px 14px", cursor: "pointer" }}>
+              {t("common.cancel")}
+            </button>
+            <button onClick={publish} disabled={busy || !title.trim() || !body.trim()}
+              style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "8px 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
+              {busy ? t("common.saving") : t("dashboard.updPost")}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Which documents get opened, by how many investors (identity gated). */
+function DocAnalyticsPanel() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{ docs: Array<{ id: string; label: string; opens: number; distinctViewers: number; viewers: Array<{ slug: string; name: string | null }> }>; locked: boolean } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/startups/doc-views").then(r => r.ok ? r.json() : null).then(setData).catch(() => setData(null));
+  }, []);
+
+  if (!data || data.docs.length === 0) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+        <FileText style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.docAnalytics")}</h3>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        {data.docs.map((d) => (
+          <div key={d.id}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{d.label}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                {t("dashboard.docOpens", { opens: d.opens, viewers: d.distinctViewers })}
+              </span>
+            </div>
+            {!data.locked && d.viewers.length > 0 && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                {d.viewers.map((v, i) => (
+                  <Link key={v.slug} href={`/investors/${v.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>
+                    {v.name}{i < d.viewers.length - 1 ? ", " : ""}
+                  </Link>
+                ))}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode }: Props) {
   const { t }        = useTranslation();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
@@ -580,6 +680,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </div>
             </div>
 
+            {startup && startup.status === "active" && <ErrorBoundary label="Update composer"><UpdateComposer /></ErrorBoundary>}
             {startup && analytics.raise && (
               <ErrorBoundary label="Raise progress">
                 <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
@@ -588,6 +689,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary label="Profile viewers"><ViewersPanel /></ErrorBoundary>
             <ErrorBoundary label="Target investors"><TargetsPanel /></ErrorBoundary>
+            <ErrorBoundary label="Document analytics"><DocAnalyticsPanel /></ErrorBoundary>
           </div>
         )}
 
