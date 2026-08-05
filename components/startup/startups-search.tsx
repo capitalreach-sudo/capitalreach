@@ -3,9 +3,12 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows } from "lucide-react";
+import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows, Clock } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget } from "@/lib/validators";
+import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
+import { STARTUP_PRESETS } from "@/lib/search-presets";
+import { FilterPresets } from "@/components/search/filter-presets";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -321,7 +324,7 @@ function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters:
 
 // ── Search result card ────────────────────────────────────────────────────────
 
-function ResultCard({ s, saved, viewed, hidden, comparing, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -398,6 +401,11 @@ function ResultCard({ s, saved, viewed, hidden, comparing, onSave, onHide, onCom
           {viewed && (
             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
               <Eye style={{ width: 11, height: 11 }} /> {t("startups.viewed")}
+            </span>
+          )}
+          {match !== undefined && match >= 40 && (
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "#fff", background: "var(--cr-copper)", borderRadius: "999px", padding: "2px 8px", letterSpacing: "0.03em" }}>
+              {t("filters.matchPct", { pct: match })}
             </span>
           )}
           <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "2px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -500,6 +508,9 @@ export function StartupsSearch() {
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [showHidden, setShowHidden]     = useState(false);
   const myInvestorId = useRef<string | null>(null);
+  // The viewer's own thesis powers the fit sort. Absent for founders and
+  // anonymous visitors, which is exactly when the sort option is hidden.
+  const [myThesis, setMyThesis] = useState<InvestorThesis | null>(null);
   const [lastHidden, setLastHidden] = useState<{ id: string; name: string } | null>(null);
   // Compare tray: up to three listings side by side. Pure client state.
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -514,6 +525,29 @@ export function StartupsSearch() {
   // instant and need no network round trip or debounce.
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggestIdx, setSuggestIdx] = useState(-1);
+  // Recent queries, newest first, capped at 10 (FIFO). Local only: a search
+  // history is the user's business, and nothing here needs a round trip.
+  const RECENT_KEY = "cr_recent_startup_searches";
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    try { setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]")); } catch { /* corrupt */ }
+  }, []);
+  function rememberQuery(qq: string) {
+    const term = qq.trim();
+    if (term.length < 2) return;
+    setRecent((prev) => {
+      const next = [term, ...prev.filter((x) => x !== term)].slice(0, 10);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
+  }
+  function forgetQuery(term: string) {
+    setRecent((prev) => {
+      const next = prev.filter((x) => x !== term);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* private mode */ }
+      return next;
+    });
+  }
   const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction" | "region">(null);
   const suggestions = filters.query.trim().length >= 2
     ? allStartups
@@ -545,8 +579,13 @@ export function StartupsSearch() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: inv } = await supabase.from("investors").select("id").eq("owner_id", user.id).maybeSingle();
+      const { data: inv } = await supabase
+        .from("investors")
+        .select("id, stages, industries, geography, min_check, max_check")
+        .eq("owner_id", user.id)
+        .maybeSingle();
       myInvestorId.current = inv?.id ?? null;
+      if (inv) setMyThesis({ stages: inv.stages, industries: inv.industries, geography: inv.geography, min_check: inv.min_check, max_check: inv.max_check });
     })();
     // "/" jumps to search from anywhere on the page, unless already typing.
     function onKey(e: KeyboardEvent) {
@@ -584,9 +623,10 @@ export function StartupsSearch() {
       case "mrr":     res = [...res].sort((a, b) => (b.mrr ?? 0) - (a.mrr ?? 0)); break;
       case "recent":  res = [...res].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
       case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;
+      case "fit":     res = myThesis ? [...res].sort((a, b) => computeMatchScore(myThesis, b).score - computeMatchScore(myThesis, a).score) : res; break;
     }
     return res;
-  }, [filters, allStartups, dismissedIds, showHidden]);
+  }, [filters, allStartups, dismissedIds, showHidden, myThesis]);
 
   const visible    = filtered.slice(0, page * PAGE_SIZE);
   const hasMore    = visible.length < filtered.length;
@@ -665,7 +705,11 @@ export function StartupsSearch() {
     }
   }
 
-  const sortLabel = SORT_OPTIONS.find((o) => o.value === filters.sort)?.label ?? t("filters.sort");
+  // "Best match for me" only exists for a viewer with a thesis to match on.
+  const sortOptions = myThesis
+    ? [...SORT_OPTIONS, { value: "fit", label: t("filters.bestMatch") }]
+    : SORT_OPTIONS;
+  const sortLabel = sortOptions.find((o) => o.value === filters.sort)?.label ?? t("filters.sort");
 
   return (
     <div style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
@@ -698,7 +742,7 @@ export function StartupsSearch() {
                 </button>
                 {sortOpen && (
                   <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
-                    {SORT_OPTIONS.map((o) => (
+                    {sortOptions.map((o) => (
                       <button key={o.value} onClick={() => { patch({ sort: o.value }); setSortOpen(false); }}
                         style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px" }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
@@ -750,9 +794,12 @@ export function StartupsSearch() {
                 if (!suggestions.length) return;
                 if (e.key === "ArrowDown") { e.preventDefault(); setSuggestIdx(i => Math.min(i + 1, suggestions.length - 1)); }
                 else if (e.key === "ArrowUp") { e.preventDefault(); setSuggestIdx(i => Math.max(i - 1, -1)); }
-                else if (e.key === "Enter" && suggestIdx >= 0) {
-                  e.preventDefault();
-                  window.location.href = `/startups/${suggestions[suggestIdx].slug}`;
+                else if (e.key === "Enter") {
+                  rememberQuery(filters.query);
+                  if (suggestIdx >= 0) {
+                    e.preventDefault();
+                    window.location.href = `/startups/${suggestions[suggestIdx].slug}`;
+                  }
                 }
               }}
               placeholder={t("startups.search")}
@@ -765,10 +812,27 @@ export function StartupsSearch() {
               onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; setSuggestOpen(true); }}
               onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
             />
+            {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
+              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", overflow: "hidden", zIndex: 50 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "10px 12px 6px" }}>
+                  {t("startups.recentSearches")}
+                </p>
+                {recent.slice(0, 5).map((term) => (
+                  <div key={term} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "7px 12px" }}>
+                    <button onMouseDown={(e) => { e.preventDefault(); patch({ query: term }); }}
+                      style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", padding: 0, textAlign: "left", flex: 1 }}>
+                      <Clock style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} /> {term}
+                    </button>
+                    <button onMouseDown={(e) => { e.preventDefault(); forgetQuery(term); }} aria-label={`remove ${term}`}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", fontSize: "13px", lineHeight: 1, padding: 0 }}>×</button>
+                  </div>
+                ))}
+              </div>
+            )}
             {suggestOpen && suggestions.length > 0 && (
               <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", overflow: "hidden", zIndex: 50 }}>
                 {suggestions.map((s, si) => (
-                  <Link key={s.id} href={`/startups/${s.slug}`}
+                  <Link key={s.id} href={`/startups/${s.slug}`} onClick={() => rememberQuery(filters.query)}
                     style={{ display: "flex", flexDirection: "column", gap: "1px", padding: "9px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
                     onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                     onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
@@ -872,6 +936,17 @@ export function StartupsSearch() {
           )}
         </div>
 
+        {/* One-click shortcuts. Above the applied chips so the relationship
+            reads top-down: pick a preset, see what it applied. */}
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 80px 10px" }}>
+          <FilterPresets
+            presets={STARTUP_PRESETS}
+            filters={filters as unknown as Record<string, unknown>}
+            defaults={DEFAULT_FILTERS as unknown as Record<string, unknown>}
+            onApply={(p) => patch(p as Partial<Filters>)}
+          />
+        </div>
+
         {/* Applied filters, each individually removable. Rendered only when
             something is applied, so the bar stays one quiet row by default. */}
         {activeCount > 0 && (
@@ -970,7 +1045,7 @@ export function StartupsSearch() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
             {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
+              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
             ))}
           </div>
         )}

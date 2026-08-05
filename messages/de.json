@@ -991,7 +991,8 @@
     "compare": "Vergleichen",
     "compareTitle": "Startups vergleichen",
     "compareClear": "Leeren",
-    "runwayLabel": "Runway"
+    "runwayLabel": "Runway",
+    "recentSearches": "Letzte Suchen"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",
@@ -1219,7 +1220,9 @@
     "sortScore": "KI-Score",
     "sortRecent": "Neueste zuerst",
     "sortRaising": "Finanzierungsbetrag",
-    "thresholds": "Traktion"
+    "thresholds": "Traktion",
+    "bestMatch": "Beste Übereinstimmung",
+    "matchPct": "{pct}% Übereinstimmung"
   },
   "common": {
     "loading": "Laden...",
@@ -2173,5 +2176,18 @@
     "tplMetrics": "Danke für den Überblick. Könnten Sie Ihre aktuellen Monatskennzahlen teilen — MRR, Wachstum, Churn und Runway — damit ich mir ein genaues Bild machen kann?",
     "tplCallLabel": "Call vorschlagen",
     "tplCall": "Das klingt vielversprechend. Hätten Sie diese oder nächste Woche Zeit für einen 30-minütigen Call? Ich richte mich gerne nach Ihrem Kalender."
+  },
+  "presets": {
+    "preseedAi": "Pre-Seed KI",
+    "revenueStage": "Mit Umsatz",
+    "germany": "Deutschland",
+    "highScore": "Score 80+",
+    "newThisWeek": "Neu diese Woche",
+    "bigRaise": "Sucht €2M+",
+    "leadInvestors": "Lead-Investoren",
+    "preseedAngels": "Pre-Seed Angels",
+    "verifiedOnly": "Nur verifiziert",
+    "seriesAVcs": "Series-A-VCs",
+    "newThisMonth": "Neu diesen Monat"
   }
 }

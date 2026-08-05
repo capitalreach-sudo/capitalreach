@@ -510,6 +510,7 @@ export type Database = {
           number_of_investments: number | null
           owner_id: string
           portfolio_json: Json
+          search_vector: unknown
           slug: string
           stages: string[]
           subscription_tier: string
@@ -540,6 +541,7 @@ export type Database = {
           number_of_investments?: number | null
           owner_id: string
           portfolio_json?: Json
+          search_vector?: unknown
           slug: string
           stages?: string[]
           subscription_tier?: string
@@ -570,6 +572,7 @@ export type Database = {
           number_of_investments?: number | null
           owner_id?: string
           portfolio_json?: Json
+          search_vector?: unknown
           slug?: string
           stages?: string[]
           subscription_tier?: string
@@ -920,25 +923,43 @@ export type Database = {
       }
       saved_searches: {
         Row: {
+          alert_enabled: boolean
           created_at: string
           filters: Json
           id: string
           investor_id: string
+          last_run_at: string | null
           name: string
+          query: string | null
+          result_count: number | null
+          search_type: string
+          user_id: string | null
         }
         Insert: {
+          alert_enabled?: boolean
           created_at?: string
           filters?: Json
           id?: string
           investor_id: string
+          last_run_at?: string | null
           name: string
+          query?: string | null
+          result_count?: number | null
+          search_type?: string
+          user_id?: string | null
         }
         Update: {
+          alert_enabled?: boolean
           created_at?: string
           filters?: Json
           id?: string
           investor_id?: string
+          last_run_at?: string | null
           name?: string
+          query?: string | null
+          result_count?: number | null
+          search_type?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -946,6 +967,13 @@ export type Database = {
             columns: ["investor_id"]
             isOneToOne: false
             referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_searches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1177,12 +1205,15 @@ export type Database = {
           equity_offered: number | null
           featured: boolean
           founded_date: string | null
+          founded_year: number | null
           funding_target: number
           growth_rate: number | null
           id: string
           industry: string
           languages: string[] | null
+          languages_spoken: string[] | null
           lead_investor: string | null
+          lead_investor_status: string | null
           looking_for: string[] | null
           market: string | null
           min_check_size: number | null
@@ -1198,6 +1229,7 @@ export type Database = {
           require_nda: boolean
           revenue_model: string | null
           runway_months: number | null
+          search_vector: unknown
           slug: string
           social_proof: Json | null
           solution: string | null
@@ -1205,6 +1237,7 @@ export type Database = {
           status: string
           subscription_tier: string
           tagline: string
+          tags: string[] | null
           target_markets: string[] | null
           team_size: string | null
           twitter_url: string | null
@@ -1232,12 +1265,15 @@ export type Database = {
           equity_offered?: number | null
           featured?: boolean
           founded_date?: string | null
+          founded_year?: number | null
           funding_target?: number
           growth_rate?: number | null
           id?: string
           industry: string
           languages?: string[] | null
+          languages_spoken?: string[] | null
           lead_investor?: string | null
+          lead_investor_status?: string | null
           looking_for?: string[] | null
           market?: string | null
           min_check_size?: number | null
@@ -1253,6 +1289,7 @@ export type Database = {
           require_nda?: boolean
           revenue_model?: string | null
           runway_months?: number | null
+          search_vector?: unknown
           slug: string
           social_proof?: Json | null
           solution?: string | null
@@ -1260,6 +1297,7 @@ export type Database = {
           status?: string
           subscription_tier?: string
           tagline: string
+          tags?: string[] | null
           target_markets?: string[] | null
           team_size?: string | null
           twitter_url?: string | null
@@ -1287,12 +1325,15 @@ export type Database = {
           equity_offered?: number | null
           featured?: boolean
           founded_date?: string | null
+          founded_year?: number | null
           funding_target?: number
           growth_rate?: number | null
           id?: string
           industry?: string
           languages?: string[] | null
+          languages_spoken?: string[] | null
           lead_investor?: string | null
+          lead_investor_status?: string | null
           looking_for?: string[] | null
           market?: string | null
           min_check_size?: number | null
@@ -1308,6 +1349,7 @@ export type Database = {
           require_nda?: boolean
           revenue_model?: string | null
           runway_months?: number | null
+          search_vector?: unknown
           slug?: string
           social_proof?: Json | null
           solution?: string | null
@@ -1315,6 +1357,7 @@ export type Database = {
           status?: string
           subscription_tier?: string
           tagline?: string
+          tags?: string[] | null
           target_markets?: string[] | null
           team_size?: string | null
           twitter_url?: string | null

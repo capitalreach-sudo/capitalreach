@@ -14,6 +14,8 @@ import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
+import { INVESTOR_PRESETS } from "@/lib/search-presets";
+import { FilterPresets } from "@/components/search/filter-presets";
 
 const TYPE_META: Record<string, { labelKey: string; color: string; bg: string; border: string }> = {
   angel:         { labelKey: "investors.typeAngel",        color: "text-blue-300",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
@@ -612,6 +614,16 @@ export function InvestorsClient() {
               </div>
             );
           })()}
+
+          {/* Same one-click shortcuts as the startups directory. */}
+          <div style={{ marginBottom: "14px" }}>
+            <FilterPresets
+              presets={INVESTOR_PRESETS}
+              filters={f as unknown as Record<string, unknown>}
+              defaults={DEFAULT as unknown as Record<string, unknown>}
+              onApply={(p) => setF((prev) => ({ ...prev, ...(p as Partial<InvestorFilters>) }))}
+            />
+          </div>
 
           {/* Applied filters, each individually removable -- mirrors the
               startups directory so the two search surfaces feel like one. */}
