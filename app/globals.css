@@ -733,7 +733,7 @@ body::before {
 /* ── FEATURE 20: Floating fee badge ──────────────────────── */
 .fee-floating-badge {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(24px + var(--cr-tabbar-h));
   right: 24px;
   z-index: 150;
   display: inline-flex;
@@ -766,7 +766,7 @@ body::before {
   font-size: 10px;
 }
 @media (max-width: 640px) {
-  .fee-floating-badge { bottom: 16px; right: 16px; font-size: 12px; padding: 10px 14px; }
+  .fee-floating-badge { bottom: calc(16px + var(--cr-tabbar-h)); right: 16px; font-size: 12px; padding: 10px 14px; }
 }
 
 /* ── Launch banner ────────────────────────────────────────
@@ -952,6 +952,61 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up, .animate-fade-up-1, .animate-fade-up-2,
   .animate-fade-up-3, .animate-fade-up-4 { animation: none !important; }
-  .cr-cta:hover, .cr-cta:active { transform: none !important; }
   * { scroll-behavior: auto !important; }
 }
+
+/* ── Mobile tab bar ──────────────────────────────────────────────────────
+   Fixed to the bottom of the viewport for signed-in members. The bar itself
+   is out of flow, so BottomNav also renders a spacer in normal flow; without
+   it the last row of any list sits permanently under the bar and cannot be
+   reached. Both heights are derived from the same expression so they can
+   never drift apart.
+   env(safe-area-inset-bottom) is what keeps the labels clear of the iPhone
+   home indicator -- it only reports a real value because the viewport is
+   declared viewportFit: "cover" in app/layout.tsx. */
+/* Everything else that floats above the page bottom -- the fee badge, the
+   compare tray -- offsets by this instead of hard-coding 53. It is 0 unless a
+   tab bar is actually on screen, which is only true for a signed-in member
+   below the lg breakpoint, so desktop and signed-out layouts are untouched.
+   BottomNav stamps the data attribute; the media query owns the breakpoint. */
+:root { --cr-tabbar-h: 0px; }
+@media (max-width: 1023px) {
+  :root[data-cr-tabbar="1"] { --cr-tabbar-h: calc(53px + env(safe-area-inset-bottom, 0px)); }
+}
+
+.cr-bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 90;
+  display: flex;
+  align-items: stretch;
+  background: var(--cr-paper-2);
+  border-top: 1px solid var(--cr-rule-dark);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* 52px of tab + the 1px top border, or the last pixel of content hides.
+   Same expression as --cr-tabbar-h, and it collapses to 0 at lg for free. */
+.cr-bottom-nav-spacer { height: var(--cr-tabbar-h); }
+
+/* ── Skip link ───────────────────────────────────────────────────────────
+   Off-screen until focused. A keyboard or screen-reader user landing on any
+   page had to tab through the whole navbar -- logo, six links, search,
+   language, three icons -- before reaching content, on every navigation. */
+.cr-skip {
+  position: fixed;
+  top: 8px;
+  inset-inline-start: 8px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: 4px;
+  background: var(--cr-copper);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transform: translateY(-250%);
+  transition: transform 120ms ease;
+}
+.cr-skip:focus { transform: translateY(0); }

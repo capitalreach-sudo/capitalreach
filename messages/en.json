@@ -26,7 +26,12 @@
     "secExplore": "Explore",
     "secTools": "Tools",
     "secWorkspace": "Your workspace",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "home": "Home",
+    "browse": "Browse",
+    "alerts": "Alerts",
+    "primaryMobile": "Primary",
+    "unreadCount": "{count} unread"
   },
   "hero": {
     "eyebrow": "Private Capital · Est. 2024",
@@ -2199,5 +2204,15 @@
     "verifiedOnly": "Verified only",
     "seriesAVcs": "Series A VCs",
     "newThisMonth": "New this month"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  },
+  "palette": {
+    "title": "Command palette",
+    "placeholder": "Search or jump to…",
+    "results": "Results",
+    "noResults": "Nothing matches “{q}”",
+    "hint": "Search listings and investors, or jump to any page."
   }
 }

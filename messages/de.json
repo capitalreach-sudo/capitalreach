@@ -26,7 +26,12 @@
     "secTools": "Werkzeuge",
     "secWorkspace": "Ihr Arbeitsbereich",
     "closeMenu": "Menü schließen",
-    "deals": "Deals"
+    "deals": "Deals",
+    "home": "Start",
+    "browse": "Entdecken",
+    "alerts": "Hinweise",
+    "primaryMobile": "Hauptnavigation",
+    "unreadCount": "{count} ungelesen"
   },
   "hero": {
     "eyebrow": "Privates Kapital · Gegr. 2024",
@@ -2199,5 +2204,15 @@
     "verifiedOnly": "Nur verifiziert",
     "seriesAVcs": "Series-A-VCs",
     "newThisMonth": "Neu diesen Monat"
+  },
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen"
+  },
+  "palette": {
+    "title": "Befehlspalette",
+    "placeholder": "Suchen oder springen zu…",
+    "results": "Ergebnisse",
+    "noResults": "Nichts passt zu „{q}“",
+    "hint": "Listings und Investoren durchsuchen oder zu einer Seite springen."
   }
 }

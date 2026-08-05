@@ -570,18 +570,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         )}
       </div>
 
-      {/* ── Mobile bottom nav ── */}
-      <nav style={{ display: "none" }} className="sm:hidden" aria-label={t("dashboard.tabsLabel")}>
-        <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule-dark)", display: "flex" }}>
-          {TABS.map(({ value, label, Icon }) => (
-            <button key={value} onClick={() => setActiveTab(value)}
-              style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "10px 0 12px", background: "none", border: "none", cursor: "pointer", color: activeTab === value ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>
-              <Icon style={{ width: 18, height: 18 }} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px" }}>{label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      {/* A second, dashboard-local bottom tab bar used to live here. It carried
+          an inline display:none alongside its sm:hidden class, so the inline
+          rule always won and it never rendered once -- the tab strip above,
+          which scrolls horizontally, has always been the real control on
+          every width. The global mobile tab bar (components/shared/bottom-nav)
+          now owns the bottom of the viewport, so a second one would collide
+          even if it were fixed. */}
     </main>
   );
 }

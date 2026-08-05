@@ -6,6 +6,9 @@ import { LaunchBanner } from "@/components/ui/LaunchBanner";
 import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
 import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
+import { SkipToContent } from "@/components/ui/SkipToContent";
+import { CommandPalette } from "@/components/shared/command-palette";
+import { BottomNav } from "@/components/shared/bottom-nav";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
@@ -15,6 +18,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  // Lets the page paint into the notch and home-indicator areas, which is what
+  // makes env(safe-area-inset-*) report real values -- the mobile tab bar pads
+  // itself with the bottom inset so its labels clear the home indicator.
+  viewportFit: "cover",
   // Tints the browser chrome on Android and the status bar in the installed
   // app, so the shell reads as part of the product rather than a web view.
   themeColor: "#B5651D", // --cr-copper
@@ -83,10 +90,15 @@ export default function RootLayout({
         {/* Seeds every client component with the server-resolved locale, so the
             first paint is already correct rather than English-then-swap. */}
         <LocaleProvider initialLocale={locale}>
+        <SkipToContent />
         <RuleLabelAnimator />
         <LaunchBanner />
         <LocaleChangeToast />
         {children}
+        {/* Global shell. The Navbar is mounted per page, but these three are
+            the same everywhere, so the layout is the one place they belong. */}
+        <CommandPalette />
+        <BottomNav />
         <Toaster />
         <ToastNotifyProvider />
         <ServiceWorkerRegistrar />
