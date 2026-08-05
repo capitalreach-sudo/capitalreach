@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import { announce } from "@/lib/announce";
 import {
   Search, SlidersHorizontal, X, ChevronDown, ChevronUp,
   Users, Globe, Filter, Loader2, Crosshair, GitCompareArrows, Clock,
@@ -331,6 +332,16 @@ export function InvestorsClient() {
 
     return list;
   }, [f, investors, myRaise]);
+
+  // Parity with the startups browse: filtering rewrites the grid with no
+  // navigation, so a screen reader is told nothing at all. Skips the first
+  // render, where a count read over the page title is noise rather than news.
+  const hasAnnounced = useRef(false);
+  useEffect(() => {
+    if (loading) return;
+    if (!hasAnnounced.current) { hasAnnounced.current = true; return; }
+    announce(t("investors.foundCount", { count: results.length }));
+  }, [results.length, loading, t]);
 
   const Sidebar = (
     <aside className="w-64 flex-shrink-0 bg-cr-paper rounded-2xl border border-cr-p4 p-5 space-y-4 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
