@@ -21,6 +21,7 @@ import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
+import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1025,6 +1026,74 @@ export function StartupDetailClient({
           </div>
         </div>
       )}
+
+      {/* The header's eight-button action row wraps into a block on a phone and
+          is gone the moment you scroll to the traction. These three follow you
+          down. Deliberately not the full set -- a sticky bar that carries
+          everything is just the same block pinned to the bottom. */}
+      <StickyActionBar>
+        <button
+          onClick={toggleSave}
+          aria-pressed={isSaved}
+          style={{
+            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+            height: "44px", paddingInline: "14px", flexShrink: 0,
+            border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
+            color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", cursor: "pointer",
+          }}
+        >
+          <Bookmark style={{ width: 15, height: 15, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
+          <span className="sr-only">{isSaved ? t("toast.saved") : t("common.saveWatchlist")}</span>
+        </button>
+
+        {!viewerDeal && investorId && !viewerSuspended && (
+          <button
+            onClick={startDeal}
+            disabled={startingDeal}
+            style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+              height: "44px", paddingInline: "14px", flexShrink: 0,
+              border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
+              color: "var(--cr-copper)", cursor: "pointer", opacity: startingDeal ? 0.5 : 1,
+            }}
+          >
+            <Handshake style={{ width: 15, height: 15 }} />
+            {startingDeal ? t("deals.creating") : t("startupDetail.startDeal")}
+          </button>
+        )}
+
+        {canMessage ? (
+          <button
+            onClick={() => setMessageOpen(true)}
+            style={{
+              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+              height: "44px", minWidth: 0,
+              background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer",
+            }}
+          >
+            <MessageSquare style={{ width: 15, height: 15, flexShrink: 0 }} />
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {t("startupDetail.requestIntro")}
+            </span>
+          </button>
+        ) : (
+          <Link
+            href="/pricing"
+            style={{
+              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+              height: "44px", minWidth: 0,
+              background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", textDecoration: "none",
+            }}
+          >
+            <Lock style={{ width: 15, height: 15, flexShrink: 0 }} />
+            {t("common.upgrade")}
+          </Link>
+        )}
+      </StickyActionBar>
     </main>
   );
 }
