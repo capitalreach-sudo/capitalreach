@@ -175,6 +175,12 @@ export default async function InvestorProfilePage({ params }: Props) {
               {viewerIsFounder && (
                 <TargetButton investorId={investor.id} initiallyTargeted={viewerTargeted} />
               )}
+              {investor.booking_url && user && (
+                <a href={investor.booking_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-cr-copper/10 border border-cr-copper/25 text-cr-copper rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider no-underline">
+                  {t("startupDetail.bookCall")}
+                </a>
+              )}
               <Badge variant="outline">{INVESTOR_TYPE_LABELS[investor.type] || investor.type}</Badge>
               {investor.subscription_tier !== "free" && (
                 <Badge className="bg-cr-copper/15 text-cr-cu-l border-0">

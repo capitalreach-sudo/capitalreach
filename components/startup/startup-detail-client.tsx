@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StartupCard } from "./startup-card";
-import { Globe, Share2, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake } from "lucide-react";
+import { Globe, Share2, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake, CalendarClock } from "lucide-react";
 import {
   formatCurrency, formatNumber, formatDate, formatPercent,
   STAGE_LABELS, getInitials,
@@ -66,6 +66,120 @@ function MetricCell({ label, value, copper }: { label: string; value: string | n
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Send this listing to another investor on the platform (deal_shared
+ * notification). Typeahead over /api/search, investors only.
+ */
+function SharePicker({ startupId }: { startupId: string }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [hits, setHits] = useState<Array<{ id?: string; slug: string; name: string }>>([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!open || q.trim().length < 2) { setHits([]); return; }
+    const ctl = new AbortController();
+    const id = setTimeout(async () => {
+      try {
+        const j = await (await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctl.signal })).json();
+        setHits((j.investors ?? []).slice(0, 5));
+      } catch { /* aborted */ }
+    }, 200);
+    return () => { clearTimeout(id); ctl.abort(); };
+  }, [q, open]);
+
+  async function share(inv: { slug: string; name: string; id?: string }) {
+    setBusy(true);
+    // /api/search returns slugs; resolve the id through the share API by slug?
+    // The share route wants an id -- fetch it from the public directory row.
+    let invId = inv.id;
+    if (!invId) {
+      const { createClient } = await import("@/lib/supabase");
+      const { data } = await createClient().from("investors").select("id").eq("slug", inv.slug).maybeSingle();
+      invId = data?.id;
+    }
+    const res = invId ? await fetch("/api/deals/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, toInvestorId: invId }) }) : null;
+    setBusy(false);
+    if (res?.ok) { notify.success(t("startupDetail.shared", { name: inv.name })); setOpen(false); setQ(""); }
+    else notify.error(t("errors.generic"));
+  }
+
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button onClick={() => setOpen(o => !o)}
+        style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
+        <Share2 style={{ width: 13, height: 13 }} /> {t("startupDetail.shareWith")}
+      </button>
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "260px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "10px", zIndex: 55 }}>
+          <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder={t("startupDetail.shareSearchPh")}
+            style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
+          <div style={{ marginTop: hits.length ? "8px" : 0, display: "flex", flexDirection: "column" }}>
+            {hits.map(h => (
+              <button key={h.slug} disabled={busy} onClick={() => share(h)}
+                style={{ textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", padding: "7px 6px", borderRadius: "3px" }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
+                {h.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The watchlist note, editable where the thought occurs. Loads the existing
+ * note via the caller's own RLS row; saves through the watchlist API's
+ * note-preserving upsert.
+ */
+function InlineWatchNote({ startupId }: { startupId: string }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { createClient } = await import("@/lib/supabase");
+      const { data } = await createClient().from("watchlists").select("note").eq("startup_id", startupId).maybeSingle();
+      setNote(data?.note ?? "");
+    })();
+  }, [startupId]);
+
+  if (note === null) return null;
+
+  return (
+    <div style={{ marginTop: "10px" }}>
+      {!open ? (
+        <button onClick={() => setOpen(true)}
+          style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", padding: 0 }}>
+          {note ? t("startupDetail.editNote") : t("startupDetail.addNote")}
+        </button>
+      ) : (
+        <div style={{ display: "flex", gap: "8px", alignItems: "flex-start", maxWidth: "480px" }}>
+          <textarea value={note} onChange={e => setNote(e.target.value)} rows={2} maxLength={1000} placeholder={t("startupDetail.notePh")}
+            style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
+          <button disabled={busy}
+            onClick={async () => {
+              setBusy(true);
+              const res = await fetch("/api/watchlist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, note }) });
+              setBusy(false);
+              if (res.ok) { notify.success(t("toast.saved")); setOpen(false); }
+              else notify.error(t("errors.generic"));
+            }}
+            style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 12px", cursor: "pointer" }}>
+            {busy ? "…" : t("common.save")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function DocRequestRow({ startupId }: { startupId: string }) {
   const { t } = useTranslation();
@@ -435,6 +549,12 @@ export function StartupDetailClient({
 
               {/* Action buttons */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                {startup.booking_url && (
+                  <a href={startup.booking_url} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 14px", textDecoration: "none" }}>
+                    <CalendarClock style={{ width: 13, height: 13 }} /> {t("startupDetail.bookCall")}
+                  </a>
+                )}
                 {startup.website && (
                   <a href={startup.website} target="_blank" rel="noopener noreferrer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
@@ -450,7 +570,9 @@ export function StartupDetailClient({
                   style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
                   <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")}
                 </button>
+                {investorId && !viewerSuspended && <SharePicker startupId={startup.id} />}
                 <PrintButton label={t("startupDetail.aiDiligenceTitle")} />
+                {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
                 {canMessage ? (
                   <button onClick={() => setMessageOpen(true)}
                     className="btn-copper-shimmer"

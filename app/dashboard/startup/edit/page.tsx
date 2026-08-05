@@ -259,6 +259,7 @@ export default function EditStartupPage() {
     setSaving(true);
     const { error } = await supabase.from("startups").update({
       name: startup.name, tagline: startup.tagline, website: startup.website || null,
+      booking_url: startup.booking_url || null,
       industry: startup.industry, stage: startup.stage, country: startup.country,
       problem: startup.problem, solution: startup.solution, market: startup.market,
       competitive_advantage: startup.competitive_advantage,
@@ -346,6 +347,7 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.companyName")}><WarmInput value={startup.name || ""} onChange={e => update("name", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.tagline")}><WarmInput value={startup.tagline || ""} onChange={e => update("tagline", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.website")}><WarmInput value={startup.website || ""} onChange={e => update("website", e.target.value)} placeholder="https://…" /></Field>
+                <Field label={t("settings.bookingUrl")}><WarmInput value={startup.booking_url || ""} onChange={e => update("booking_url", e.target.value)} placeholder="https://calendly.com/…" /></Field>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
                   <Field label={t("onboarding.su.industry")}>
                     <WarmSelect value={startup.industry || ""} onChange={e => update("industry", e.target.value)}>

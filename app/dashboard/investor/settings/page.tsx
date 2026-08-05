@@ -208,6 +208,7 @@ export default function InvestorSettingsPage() {
         firm_name: investor.firm_name || null,
         bio: investor.bio || null,
         website: investor.website || null,
+        booking_url: investor.booking_url || null,
         linkedin_url: investor.linkedin_url || null,
         twitter_url: investor.twitter_url || null,
         // Investment details
@@ -317,6 +318,14 @@ export default function InvestorSettingsPage() {
                     value={investor.website || ""}
                     onChange={e => set("website", e.target.value)}
                     placeholder="https://…"
+                  />
+                </div>
+                <div>
+                  <Label>{t("settings.bookingUrl")}</Label>
+                  <Input
+                    value={investor.booking_url || ""}
+                    onChange={e => set("booking_url", e.target.value)}
+                    placeholder="https://calendly.com/…"
                   />
                 </div>
                 <div>

@@ -533,6 +533,18 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
               {/* Compose */}
               <form onSubmit={sendMessage} style={{ padding: "12px 16px", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", display: "flex", gap: "8px", alignItems: "flex-end", flexShrink: 0 }}>
+                {/* Canned openers: three good first messages, one click each.
+                    Inserted, not sent -- the sender still edits and owns it. */}
+                {!newMessage && (
+                  <select value="" aria-label={t("messages.templates")}
+                    onChange={e => { if (e.target.value) setNewMessage(t(e.target.value)); }}
+                    style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "9px 6px", outline: "none", maxWidth: "90px" }}>
+                    <option value="">{t("messages.templates")}</option>
+                    <option value="messages.tplIntro">{t("messages.tplIntroLabel")}</option>
+                    <option value="messages.tplMetrics">{t("messages.tplMetricsLabel")}</option>
+                    <option value="messages.tplCall">{t("messages.tplCallLabel")}</option>
+                  </select>
+                )}
                 <textarea value={newMessage} onChange={e => setNewMessage(e.target.value)}
                   placeholder={t("dashboard.composePlaceholder")}
                   rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", resize: "none", minHeight: "38px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}

@@ -17,6 +17,62 @@ import { getInitials } from "@/lib/utils";
 import type { Profile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
+const NOTIF_GROUPS: Array<{ labelKey: string; types: string[] }> = [
+  { labelKey: "settings.ngDeals",    types: ["deal_opened", "deal_stage", "deal_closed", "deal_passed", "follow_up_due", "contract_status", "nda_signed"] },
+  { labelKey: "settings.ngInterest", types: ["listing_saved", "listing_update", "search_match", "deal_shared"] },
+  { labelKey: "settings.ngQa",       types: ["question_asked", "question_answered", "doc_request"] },
+  { labelKey: "settings.ngAccount",  types: ["listing_approved", "listing_rejected", "team_added", "tier_changed"] },
+];
+
+/**
+ * Mute whole groups of notification kinds. Stored as the flat type list on
+ * the profile (migration 040) and enforced inside notifyUser, so every
+ * raiser inherits the preference. Messages stay unmutable -- a platform
+ * where you can silence counterparties mid-deal invites disputes.
+ */
+function NotificationPrefs({ supabase }: { supabase: ReturnType<typeof createClient> }) {
+  const { t } = useTranslation();
+  const [muted, setMuted] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: p } = await supabase.from("profiles").select("muted_notification_types").eq("id", user.id).maybeSingle();
+      setMuted(new Set(p?.muted_notification_types ?? []));
+    })();
+  }, [supabase]);
+
+  async function toggleGroup(types: string[], mute: boolean) {
+    const next = new Set(muted);
+    for (const ty of types) { if (mute) next.add(ty); else next.delete(ty); }
+    setMuted(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("profiles").update({ muted_notification_types: Array.from(next) }).eq("id", user.id);
+  }
+
+  if (muted === null) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>
+      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("settings.notifPrefs")}</h3>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>{t("settings.notifPrefsSub")}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {NOTIF_GROUPS.map((g) => {
+          const allMuted = g.types.every(ty => muted.has(ty));
+          return (
+            <label key={g.labelKey} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
+              <input type="checkbox" checked={!allMuted} onChange={e => toggleGroup(g.types, !e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: allMuted ? "var(--cr-ink-4)" : "var(--cr-ink)" }}>{t(g.labelKey)}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function AccountSettingsPage() {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -222,6 +278,9 @@ export default function AccountSettingsPage() {
             </p>
             <LanguageSettingsSelector />
           </section>
+
+          {/* Notification preferences (migration 040) */}
+          <NotificationPrefs supabase={supabase} />
 
           {/* Data export (GDPR) */}
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>

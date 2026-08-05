@@ -925,7 +925,14 @@
     "networkErrorDesc": "Server konnte nicht erreicht werden. Bitte versuche es erneut.",
     "exportData": "Ihre Daten exportieren",
     "exportDataSub": "Laden Sie eine Kopie aller Daten herunter, die CapitalReach über Sie speichert — Profil, Listing, Deals, Nachrichten und Benachrichtigungen — als JSON-Datei.",
-    "exportDownload": "Meine Daten herunterladen"
+    "exportDownload": "Meine Daten herunterladen",
+    "bookingUrl": "Terminbuchungs-Link (Calendly, Cal.com, …)",
+    "notifPrefs": "Benachrichtigungseinstellungen",
+    "notifPrefsSub": "Deaktivieren Sie eine Gruppe, um diese Benachrichtigungen nicht mehr zu erhalten. Direktnachrichten können nicht stummgeschaltet werden.",
+    "ngDeals": "Deal-Aktivität (Phasen, Verträge, NDAs, Follow-ups)",
+    "ngInterest": "Interesse an Ihrem Listing (Speicherungen, Updates, Matches, Empfehlungen)",
+    "ngQa": "Fragen & Dokumentanfragen",
+    "ngAccount": "Konto & Team (Freigaben, Tarifänderungen, Team-Einladungen)"
   },
   "startups": {
     "pageTitle": "Aktive Finanzierungsrunden",
@@ -1071,7 +1078,13 @@
     "answered": "Antwort veröffentlicht",
     "requestDoc": "Dokument anfragen",
     "reqSent": "Anfrage an den Gründer gesendet",
-    "bookCall": "Termin buchen"
+    "bookCall": "Termin buchen",
+    "shareWith": "Mit Investor teilen",
+    "shareSearchPh": "Name eines Investors…",
+    "shared": "Mit {name} geteilt",
+    "editNote": "Notiz bearbeiten",
+    "addNote": "Notiz hinzufügen",
+    "notePh": "Warum ist das interessant? Nur Sie sehen das."
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -2139,6 +2152,13 @@
     "seeAll": "Alle Ergebnisse für „{q}“ anzeigen"
   },
   "messages": {
-    "seen": "Gelesen"
+    "seen": "Gelesen",
+    "templates": "Vorlagen",
+    "tplIntroLabel": "Vorstellung",
+    "tplIntro": "Hallo — ich bin auf CapitalReach auf Ihr Listing gestoßen und es passt zu meinem Investmentfokus. Ich würde gerne mehr über den Stand der Runde erfahren.",
+    "tplMetricsLabel": "Kennzahlen anfragen",
+    "tplMetrics": "Danke für den Überblick. Könnten Sie Ihre aktuellen Monatskennzahlen teilen — MRR, Wachstum, Churn und Runway — damit ich mir ein genaues Bild machen kann?",
+    "tplCallLabel": "Call vorschlagen",
+    "tplCall": "Das klingt vielversprechend. Hätten Sie diese oder nächste Woche Zeit für einen 30-minütigen Call? Ich richte mich gerne nach Ihrem Kalender."
   }
 }
