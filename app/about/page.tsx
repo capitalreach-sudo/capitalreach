@@ -4,6 +4,14 @@ import { Users, Target, Zap, Shield, Heart } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 
+// Pure content: nothing caller-specific is rendered on the server
+// (translation hydrates client-side). force-static opts out of the root
+// layout's locale-cookie dynamic marking -- the same proven arrangement as
+// the homepage and /startups/[slug].
+export const dynamic = "force-static";
+export const revalidate = 3600;
+
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
   return {

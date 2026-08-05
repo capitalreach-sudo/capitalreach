@@ -1370,7 +1370,9 @@
       "startFree": "Start Free",
       "selectPlan": "Select {name}",
       "errorSaving": "Error saving startup:",
-      "submitted": "Profile submitted! We'll review and approve your listing within 1–2 business days."
+      "submitted": "Profile submitted! We'll review and approve your listing within 1–2 business days.",
+      "pctOutOfRange": "{field} must be between 0 and {max}.",
+      "numberTooLarge": "One of the numbers is too large — percentages must be 100 or less."
     },
     "inv": {
       "forInvestors": "for investors",

@@ -25,7 +25,11 @@ const RULES: Array<{ match: RegExp; key: string }> = [
   { match: /email not confirmed|email_not_confirmed/i,              key: "authErrors.emailNotConfirmed" },
   { match: /password should be at least (\d+)/i,                    key: "authErrors.passwordTooShort" },
   { match: /password.*(weak|compromised|pwned)/i,                   key: "authErrors.passwordWeak" },
-  { match: /unable to validate email|invalid email|email_address_invalid/i, key: "authErrors.invalidEmail" },
+  // GoTrue's live message is 'Email address "x" is invalid' -- the code
+  // (email_address_invalid) never reaches the message string the caller
+  // passes, so the pattern must match the sentence too. Found when a fresh
+  // signup on staging fell through to the generic error.
+  { match: /unable to validate email|invalid email|email_address_invalid|email address.*is invalid/i, key: "authErrors.invalidEmail" },
   { match: /signups? not allowed|signup_disabled/i,                 key: "authErrors.signupsDisabled" },
   { match: /token has expired|otp_expired|invalid.*token/i,         key: "authErrors.linkExpired" },
   { match: /same.*password|new password should be different/i,      key: "authErrors.samePassword" },

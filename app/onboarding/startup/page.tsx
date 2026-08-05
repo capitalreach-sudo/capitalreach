@@ -153,10 +153,25 @@ export default function StartupOnboardingPage() {
     setCompetitors(c => c.map((ci, idx) => idx === i ? { ...ci, [field]: val } : ci));
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(): Promise<boolean> {
+    // Percent fields carry numeric(5,2)/(6,2) in the schema; a value past the
+    // precision made Postgres answer "numeric field overflow", which used to
+    // surface raw -- and the paid-plan buttons navigated to checkout anyway,
+    // discarding all seven steps. Validate here, in words, before any insert.
+    const pct = [
+      { v: equity,     max: 100,     label: t("onboarding.su.equityOffered") },
+      { v: growthRate, max: 1000,    label: t("onboarding.su.momGrowth") },
+      { v: churnRate,  max: 100,     label: t("onboarding.su.churn") },
+    ];
+    for (const { v, max, label } of pct) {
+      if (v && (Number.isNaN(parseFloat(v)) || parseFloat(v) > max || parseFloat(v) < 0)) {
+        notify.error(t("onboarding.su.pctOutOfRange", { field: label, max }));
+        return false;
+      }
+    }
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { router.push("/auth/login"); return; }
+    if (!user) { router.push("/auth/login"); return false; }
 
     const slug = slugify(name) + "-" + Math.random().toString(36).slice(2, 6);
 
@@ -188,8 +203,12 @@ export default function StartupOnboardingPage() {
     }).select().single();
 
     if (error || !startup) {
-      notify.error(t("onboarding.su.errorSaving") + " " + (error?.message || ""));
-      setLoading(false); return;
+      // Postgres messages are for logs, not founders.
+      const friendly = /numeric field overflow/i.test(error?.message || "")
+        ? t("onboarding.su.numberTooLarge")
+        : error?.message || "";
+      notify.error(t("onboarding.su.errorSaving") + " " + friendly);
+      setLoading(false); return false;
     }
 
     const validFounders = founders.filter(f => f.name && f.role);
@@ -215,6 +234,7 @@ export default function StartupOnboardingPage() {
     notify.success(t("onboarding.su.submitted"));
     router.push("/dashboard/startup");
     setLoading(false);
+    return true;
   }
 
   const canNext = () => {
@@ -827,8 +847,10 @@ export default function StartupOnboardingPage() {
                           <button
                             disabled={loading}
                             onClick={async () => {
-                              if (plan.tier === "free") { await handleSubmit(); }
-                              else { await handleSubmit(); router.push(`/api/checkout/startup?tier=${plan.tier}`); }
+                              // Only a saved listing may proceed to checkout;
+                              // a failed save stays here with the form intact.
+                              const ok = await handleSubmit();
+                              if (ok && plan.tier !== "free") router.push(`/api/checkout/startup?tier=${plan.tier}`);
                             }}
                             style={{ ...plan.highlight ? primaryBtn : outlineBtn, marginLeft: "16px", opacity: loading ? 0.5 : 1 }}>
                             {loading ? t("common.saving") : plan.tier === "free" ? t("onboarding.su.startFree") : t("onboarding.su.selectPlan", { name: plan.name })}

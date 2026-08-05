@@ -1366,7 +1366,9 @@
       "startFree": "Kostenlos starten",
       "selectPlan": "{name} wählen",
       "errorSaving": "Fehler beim Speichern des Startups:",
-      "submitted": "Profil eingereicht! Wir prüfen und genehmigen dein Listing innerhalb von 1–2 Werktagen."
+      "submitted": "Profil eingereicht! Wir prüfen und genehmigen dein Listing innerhalb von 1–2 Werktagen.",
+      "pctOutOfRange": "{field} muss zwischen 0 und {max} liegen.",
+      "numberTooLarge": "Eine der Zahlen ist zu groß — Prozentwerte dürfen höchstens 100 sein."
     },
     "inv": {
       "forInvestors": "für Investoren",
