@@ -15,8 +15,13 @@ export function slugify(text: string): string {
 
 export function formatCurrency(amount: number, compact = false): string {
   if (compact) {
-    if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
-    if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
+    // Every tier, not just K/M -- a $100B test listing once rendered as
+    // "$100000000000.0M" on production cards.
+    const tier = (v: number, d: number, s: string) => `$${(amount / v).toFixed(d).replace(/\.0$/, "")}${s}`;
+    if (amount >= 1_000_000_000_000) return tier(1_000_000_000_000, 1, "T");
+    if (amount >= 1_000_000_000)     return tier(1_000_000_000, 1, "B");
+    if (amount >= 1_000_000)         return tier(1_000_000, 1, "M");
+    if (amount >= 1_000)             return tier(1_000, 0, "K");
   }
   return new Intl.NumberFormat("en-US", {
     style: "currency",

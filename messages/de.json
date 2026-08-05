@@ -935,7 +935,18 @@
     "hide": "Listing ausblenden",
     "unhide": "Wieder einblenden",
     "viewed": "Angesehen",
-    "hideNeedsAccount": "Als Investor anmelden, um Listings auszublenden"
+    "hideNeedsAccount": "Als Investor anmelden, um Listings auszublenden",
+    "runway12": "Runway 12 Mon.+",
+    "growth20": "Wachstum 20 %+",
+    "region": "Region",
+    "copyLink": "Link kopieren",
+    "linkCopied2": "Suchlink kopiert",
+    "sumRaising": "{count} Runden · {sum} gesucht",
+    "hiddenUndo": "Rückgängig",
+    "compare": "Vergleichen",
+    "compareTitle": "Startups vergleichen",
+    "compareClear": "Leeren",
+    "runwayLabel": "Runway"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",

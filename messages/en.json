@@ -939,7 +939,18 @@
     "hide": "Hide listing",
     "unhide": "Unhide",
     "viewed": "Viewed",
-    "hideNeedsAccount": "Sign in as an investor to hide listings"
+    "hideNeedsAccount": "Sign in as an investor to hide listings",
+    "runway12": "Runway 12mo+",
+    "growth20": "Growth 20%+",
+    "region": "Region",
+    "copyLink": "Copy link",
+    "linkCopied2": "Search link copied",
+    "sumRaising": "{count} rounds · {sum} sought",
+    "hiddenUndo": "Undo",
+    "compare": "Compare",
+    "compareTitle": "Compare startups",
+    "compareClear": "Clear",
+    "runwayLabel": "Runway"
   },
   "startup": {
     "back": "Back to directory",

@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff } from "lucide-react";
+import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
@@ -41,6 +41,11 @@ const SCORE_PRESETS = [
   { value: 80, label: "Score 80+" },
 ];
 
+const RAISING_PRESETS = [
+  { value: 1_000_000, label: "Raising $1M+" },
+  { value: 2_000_000, label: "Raising $2M+" },
+];
+
 const SORT_OPTIONS = [
   { value: "score",   label: "AI Score"      },
   { value: "recent",  label: "Newest"         },
@@ -65,11 +70,13 @@ interface Filters {
   query: string; industries: string[]; stages: string[];
   mrrMin: number; aiScoreMin: number; sort: string; country: string;
   newOnly?: boolean;
+  raisingMin?: number; runwayMin?: number; growthMin?: number;
 }
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
   mrrMin: 0, aiScoreMin: 0, sort: "score", country: "", newOnly: false,
+  raisingMin: 0, runwayMin: 0, growthMin: 0,
 };
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -313,7 +320,7 @@ function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters:
 
 // ── Search result card ────────────────────────────────────────────────────────
 
-function ResultCard({ s, saved, viewed, hidden, onSave, onHide }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; onSave: (id: string) => void; onHide?: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, hidden, comparing, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -352,6 +359,16 @@ function ResultCard({ s, saved, viewed, hidden, onSave, onHide }: { s: Startup; 
             title={hidden ? t("startups.unhide") : t("startups.hide")}
           >
             <EyeOff style={{ width: 14, height: 14, color: hidden ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
+          </button>
+        )}
+        {onCompare && (
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCompare(s.id); }}
+            style={{ position: "absolute", top: "60px", right: "14px", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
+            aria-label={t("startups.compare")}
+            title={t("startups.compare")}
+          >
+            <GitCompareArrows style={{ width: 14, height: 14, color: comparing ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
           </button>
         )}
 
@@ -400,7 +417,7 @@ function ResultCard({ s, saved, viewed, hidden, onSave, onHide }: { s: Startup; 
           {[
             { label: t("startupDetail.mrr"),    val: s.mrr         ? formatCurrency(s.mrr, true)                                : null },
             { label: t("startupDetail.arr"),    val: s.arr         ? formatCurrency(s.arr, true)                                : null },
-            { label: t("startupDetail.growth"), val: s.growth_rate != null ? `${s.growth_rate >= 0 ? "+" : ""}${s.growth_rate}%` : null, isGrowth: true, positiveGrowth: (s.growth_rate ?? 0) >= 0 },
+            { label: t("startupDetail.growth"), val: s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : null, isGrowth: true, positiveGrowth: (s.growth_rate ?? 0) > 0 },
           ].map(({ label, val, isGrowth, positiveGrowth }) => (
             <div key={label} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "8px 10px 7px" }}>
               <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{label}</div>
@@ -451,11 +468,22 @@ export function StartupsSearch() {
     aiScoreMin: Number(searchParams.get("score")) || 0,
     country:    searchParams.get("country") ?? "",
     newOnly:    searchParams.get("new") === "1",
+    raisingMin: Number(searchParams.get("raising")) || 0,
+    runwayMin:  Number(searchParams.get("runway")) || 0,
+    growthMin:  Number(searchParams.get("growth")) || 0,
     sort:       searchParams.get("sort") ?? DEFAULT_FILTERS.sort,
   };
 
   const [filters, setFilters]         = useState<Filters>(initialFilters);
   const [viewMode, setViewMode]       = useState<"grid" | "list">("grid");
+  useEffect(() => {
+    const saved = localStorage.getItem("cr-browse-view");
+    if (saved === "grid" || saved === "list") setViewMode(saved);
+  }, []);
+  function chooseView(v: "grid" | "list") {
+    setViewMode(v);
+    try { localStorage.setItem("cr-browse-view", v); } catch { /* private mode */ }
+  }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [allStartups, setAllStartups] = useState<Startup[]>([]);
   const [loading, setLoading]         = useState(true);
@@ -471,11 +499,21 @@ export function StartupsSearch() {
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [showHidden, setShowHidden]     = useState(false);
   const myInvestorId = useRef<string | null>(null);
+  const [lastHidden, setLastHidden] = useState<{ id: string; name: string } | null>(null);
+  // Compare tray: up to three listings side by side. Pure client state.
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+  function toggleCompare(id: string) {
+    setCompareIds((prev) => prev.includes(id)
+      ? prev.filter(x => x !== id)
+      : prev.length >= 3 ? prev : [...prev, id]);
+  }
   const [sortOpen, setSortOpen]       = useState(false);
   // Typeahead: name matches from the already-loaded list, so suggestions are
   // instant and need no network round trip or debounce.
   const [suggestOpen, setSuggestOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction">(null);
+  const [suggestIdx, setSuggestIdx] = useState(-1);
+  const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction" | "region">(null);
   const suggestions = filters.query.trim().length >= 2
     ? allStartups
         .filter(s => s.name.toLowerCase().includes(filters.query.trim().toLowerCase()))
@@ -532,6 +570,9 @@ export function StartupsSearch() {
       if (filters.aiScoreMin > 0 && score < filters.aiScoreMin) return false;
       if (filters.country && !(s.country ?? "").toLowerCase().includes(filters.country.toLowerCase())) return false;
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
+      if ((filters.raisingMin ?? 0) > 0 && s.funding_target < filters.raisingMin!) return false;
+      if ((filters.runwayMin ?? 0) > 0 && (s.runway_months ?? 0) < filters.runwayMin!) return false;
+      if ((filters.growthMin ?? 0) > 0 && (s.growth_rate ?? 0) < filters.growthMin!) return false;
       if (!showHidden && dismissedIds.has(s.id)) return false;
       if (showHidden && !dismissedIds.has(s.id)) return false;
       return true;
@@ -553,6 +594,7 @@ export function StartupsSearch() {
     filters.mrrMin > 0 ? 1 : 0, filters.aiScoreMin > 0 ? 1 : 0,
     filters.country ? 1 : 0,
     filters.newOnly ? 1 : 0,
+    filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   const patch = useCallback((delta: Partial<Filters>) => {
@@ -575,6 +617,9 @@ export function StartupsSearch() {
       if (filters.aiScoreMin > 0)     p.set("score", String(filters.aiScoreMin));
       if (filters.country)            p.set("country", filters.country);
       if (filters.newOnly)            p.set("new", "1");
+      if (filters.raisingMin)         p.set("raising", String(filters.raisingMin));
+      if (filters.runwayMin)          p.set("runway", String(filters.runwayMin));
+      if (filters.growthMin)          p.set("growth", String(filters.growthMin));
       if (filters.sort !== DEFAULT_FILTERS.sort) p.set("sort", filters.sort);
       const qs = p.toString();
       const next = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
@@ -604,6 +649,13 @@ export function StartupsSearch() {
       if (hidden) next.delete(id); else next.add(id);
       return next;
     });
+    if (!hidden) {
+      const name = allStartups.find(x => x.id === id)?.name ?? "";
+      setLastHidden({ id, name });
+      setTimeout(() => setLastHidden((cur) => (cur?.id === id ? null : cur)), 8000);
+    } else if (lastHidden?.id === id) {
+      setLastHidden(null);
+    }
     if (hidden) {
       await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id);
     } else {
@@ -661,7 +713,7 @@ export function StartupsSearch() {
               {/* View toggle */}
               <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
                 {(["grid", "list"] as const).map((v) => (
-                  <button key={v} onClick={() => setViewMode(v)}
+                  <button key={v} onClick={() => chooseView(v)}
                     style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
                     {v === "grid" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
                   </button>
@@ -681,7 +733,9 @@ export function StartupsSearch() {
 
       {/* ── Sticky filter bar ── */}
       <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "10px 80px", display: "flex", alignItems: "center", gap: "8px", overflowX: "auto" }}>
+        {/* No overflowX here: it clipped the open filter-group panels. The three
+            groups fit every viewport; anything past them wraps instead. */}
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "10px 80px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           {/* Search */}
           <div style={{ position: "relative", flexShrink: 0 }}>
             <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
@@ -689,8 +743,17 @@ export function StartupsSearch() {
               ref={searchRef}
               type="text"
               value={filters.query}
-              onChange={(e) => { patch({ query: e.target.value }); setSuggestOpen(true); }}
-              onKeyDown={(e) => { if (e.key === "Escape") setSuggestOpen(false); }}
+              onChange={(e) => { patch({ query: e.target.value }); setSuggestOpen(true); setSuggestIdx(-1); }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") { setSuggestOpen(false); return; }
+                if (!suggestions.length) return;
+                if (e.key === "ArrowDown") { e.preventDefault(); setSuggestIdx(i => Math.min(i + 1, suggestions.length - 1)); }
+                else if (e.key === "ArrowUp") { e.preventDefault(); setSuggestIdx(i => Math.max(i - 1, -1)); }
+                else if (e.key === "Enter" && suggestIdx >= 0) {
+                  e.preventDefault();
+                  window.location.href = `/startups/${suggestions[suggestIdx].slug}`;
+                }
+              }}
               placeholder={t("startups.search")}
               style={{
                 background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
@@ -703,9 +766,9 @@ export function StartupsSearch() {
             />
             {suggestOpen && suggestions.length > 0 && (
               <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", overflow: "hidden", zIndex: 50 }}>
-                {suggestions.map((s) => (
+                {suggestions.map((s, si) => (
                   <Link key={s.id} href={`/startups/${s.slug}`}
-                    style={{ display: "flex", flexDirection: "column", gap: "1px", padding: "9px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)" }}
+                    style={{ display: "flex", flexDirection: "column", gap: "1px", padding: "9px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
                     onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                     onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
                     <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)" }}>{s.name}</span>
@@ -742,7 +805,7 @@ export function StartupsSearch() {
             ))}
           </FilterGroup>
           <FilterGroup label={t("startups.traction")}
-            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0)}
+            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0) + (filters.raisingMin ? 1 : 0) + (filters.runwayMin ? 1 : 0) + (filters.growthMin ? 1 : 0)}
             open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
             {MRR_PRESETS.map((m) => (
               <FilterChip key={m.value}
@@ -762,6 +825,31 @@ export function StartupsSearch() {
               onClick={() => patch({ newOnly: !filters.newOnly })}>
               {t("startups.newThisWeek")}
             </FilterChip>
+            {RAISING_PRESETS.map((r) => (
+              <FilterChip key={r.value}
+                active={filters.raisingMin === r.value}
+                onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>
+                {r.label}
+              </FilterChip>
+            ))}
+            <FilterChip active={(filters.runwayMin ?? 0) > 0}
+              onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
+              {t("startups.runway12")}
+            </FilterChip>
+            <FilterChip active={(filters.growthMin ?? 0) > 0}
+              onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
+              {t("startups.growth20")}
+            </FilterChip>
+          </FilterGroup>
+          <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}
+            open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
+            {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
+              <FilterChip key={c}
+                active={filters.country === c}
+                onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                {c}
+              </FilterChip>
+            ))}
           </FilterGroup>
 
           {/* Mobile filter btn */}
@@ -809,6 +897,16 @@ export function StartupsSearch() {
             {filters.country && (
               <AppliedChip label={filters.country} onRemove={() => patch({ country: "" })} />
             )}
+            {(filters.raisingMin ?? 0) > 0 && (
+              <AppliedChip label={RAISING_PRESETS.find(r => r.value === filters.raisingMin)?.label ?? "Raising+"}
+                onRemove={() => patch({ raisingMin: 0 })} />
+            )}
+            {(filters.runwayMin ?? 0) > 0 && (
+              <AppliedChip label={t("startups.runway12")} onRemove={() => patch({ runwayMin: 0 })} />
+            )}
+            {(filters.growthMin ?? 0) > 0 && (
+              <AppliedChip label={t("startups.growth20")} onRemove={() => patch({ growthMin: 0 })} />
+            )}
           </div>
         )}
       </div>
@@ -825,6 +923,25 @@ export function StartupsSearch() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
             {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
+            {!loading && filtered.length > 0 && (
+              <span style={{ marginLeft: "10px", color: "var(--cr-ink-4)" }}>
+                · {t("startups.sumRaising", { count: filtered.length, sum: formatCurrency(filtered.reduce((a, s) => a + (s.funding_target || 0), 0), true) })}
+              </span>
+            )}
+            {activeCount > 0 && (
+              <button
+                onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("startups.linkCopied2")); }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
+                {t("startups.copyLink")}
+              </button>
+            )}
+            {lastHidden && (
+              <button
+                onClick={() => { toggleHide(lastHidden.id); }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
+                {lastHidden.name}: {t("startups.hiddenUndo")}
+              </button>
+            )}
             {dismissedIds.size > 0 && (
               <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
                 style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
@@ -852,7 +969,7 @@ export function StartupsSearch() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
             {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} onSave={toggleSave} onHide={toggleHide} />
+              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
             ))}
           </div>
         )}
@@ -872,6 +989,76 @@ export function StartupsSearch() {
           </p>
         )}
       </div>
+
+      {/* ── Compare tray + modal ── */}
+      {compareIds.length > 0 && (
+        <div style={{ position: "fixed", bottom: "18px", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-ink)", borderRadius: "6px", padding: "10px 14px", boxShadow: "0 10px 30px rgba(26,22,18,0.35)" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#EDE8DE" }}>
+            {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
+          </span>
+          <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
+            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
+            {t("startups.compare")} ({compareIds.length})
+          </button>
+          <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
+            style={{ background: "none", border: "none", color: "#9C8E82", cursor: "pointer", display: "flex", padding: 0 }}>
+            <X style={{ width: 14, height: 14 }} />
+          </button>
+        </div>
+      )}
+      {showCompare && (() => {
+        const rows = compareIds.map(id => allStartups.find(s => s.id === id)).filter((s): s is Startup => !!s);
+        const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
+          { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage },
+          { label: t("onboarding.su.industry"),  get: (s) => s.industry },
+          { label: t("startupDetail.mrr"),       get: (s) => s.mrr ? formatCurrency(s.mrr, true) : "—" },
+          { label: t("startupDetail.arr"),       get: (s) => s.arr ? formatCurrency(s.arr, true) : "—" },
+          { label: t("startupDetail.growth"),    get: (s) => s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : "—" },
+          { label: t("startups.runwayLabel"),    get: (s) => s.runway_months != null ? `${s.runway_months}mo` : "—" },
+          { label: t("listings.raising"),        get: (s) => formatCurrency(s.funding_target, true) },
+          { label: t("dashboard.aiScore"),       get: (s) => s.vaultrise_score != null ? String(s.vaultrise_score) : "—" },
+        ];
+        return (
+          <div style={{ position: "fixed", inset: 0, zIndex: 70 }}>
+            <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.5)" }} onClick={() => setShowCompare(false)} />
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
+                <button onClick={() => setShowCompare(false)} aria-label={t("nav.closeMenu")}
+                  style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex" }}>
+                  <X style={{ width: 18, height: 18 }} />
+                </button>
+              </div>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: "120px" }} />
+                      {rows.map(s => (
+                        <th key={s.id} style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--cr-copper)" }}>
+                          <Link href={`/startups/${s.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                            {s.name}
+                          </Link>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {METRICS.map(m => (
+                      <tr key={m.label}>
+                        <td style={{ padding: "9px 12px 9px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
+                        {rows.map(s => (
+                          <td key={s.id} style={{ padding: "9px 12px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)" }}>{m.get(s)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Mobile filter bottom sheet ── */}
       {sidebarOpen && (
