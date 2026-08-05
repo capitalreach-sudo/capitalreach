@@ -854,7 +854,8 @@
     "editNote": "Click to edit",
     "notePlaceholder": "Why you saved this — thesis fit, who to intro, when to revisit",
     "noteSaveFailed": "Could not save that note.",
-    "upgradeSeeWho": "Upgrade to see who"
+    "upgradeSeeWho": "Upgrade to see who",
+    "jumpBackIn": "Recently viewed"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -929,7 +930,16 @@
     "savedSearchDeleteFailed": "Could not remove that search.",
     "savedSearchDelete": "Remove {name}",
     "savedSearchUpgrade": "Saved searches are available on paid investor plans.",
-    "newThisWeek": "New this week"
+    "newThisWeek": "New this week",
+    "industry": "Industry",
+    "stageGroup": "Stage",
+    "traction": "Traction",
+    "hidden": "Hidden",
+    "showHidden": "Show hidden ({count})",
+    "hide": "Hide listing",
+    "unhide": "Unhide",
+    "viewed": "Viewed",
+    "hideNeedsAccount": "Sign in as an investor to hide listings"
   },
   "startup": {
     "back": "Back to directory",
@@ -1072,7 +1082,8 @@
     "listYourStartup": "List Your Startup",
     "geography": "Geography",
     "verifiedOnly": "Verified members only",
-    "sortName": "Name A–Z"
+    "sortName": "Name A–Z",
+    "fitsYourRaise": "Fits your raise"
   },
   "data": {
     "eyebrow": "Live Platform Data",

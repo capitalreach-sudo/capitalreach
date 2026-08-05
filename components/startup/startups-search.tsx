@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark } from "lucide-react";
+import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
@@ -192,6 +192,51 @@ function SavedSearches({ filters, onApply, isDefault }: {
 
 // ── Primitives ────────────────────────────────────────────────────────────────
 
+/**
+ * A labelled dropdown holding a group of FilterChips. Replaces the old
+ * always-visible chip soup: fifteen chips in a scrolling strip read as
+ * noise, three labelled groups with counts read as a system.
+ */
+function FilterGroup({ label, count, open, onToggle, children }: {
+  label: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode;
+}) {
+  return (
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <button onClick={onToggle}
+        style={{
+          display: "inline-flex", alignItems: "center", gap: "6px",
+          fontFamily: "'DM Sans', sans-serif", fontWeight: count > 0 ? 500 : 400, fontSize: "13px",
+          padding: "6px 12px", borderRadius: "3px",
+          border: count > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+          background: count > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+          color: count > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
+          cursor: "pointer", whiteSpace: "nowrap",
+        }}>
+        {label}{count > 0 ? ` · ${count}` : ""}
+        <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
+      </button>
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "12px", display: "flex", flexWrap: "wrap", gap: "6px", zIndex: 50 }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** One applied filter in the summary row: label + its own remove control. */
+function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "3px 6px 3px 10px" }}>
+      {label}
+      <button onClick={onRemove} aria-label={`remove ${label}`}
+        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
+        <X style={{ width: 11, height: 11 }} />
+      </button>
+    </span>
+  );
+}
+
 function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
@@ -268,7 +313,7 @@ function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters:
 
 // ── Search result card ────────────────────────────────────────────────────────
 
-function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, hidden, onSave, onHide }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; onSave: (id: string) => void; onHide?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -299,6 +344,16 @@ function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: 
         >
           <Bookmark style={{ width: 15, height: 15, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
         </button>
+        {onHide && (
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHide(s.id); }}
+            style={{ position: "absolute", top: "38px", right: "14px", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
+            aria-label={hidden ? t("startups.unhide") : t("startups.hide")}
+            title={hidden ? t("startups.unhide") : t("startups.hide")}
+          >
+            <EyeOff style={{ width: 14, height: 14, color: hidden ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
+          </button>
+        )}
 
         {/* Logo + Name */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px", paddingRight: "24px" }}>
@@ -321,7 +376,12 @@ function ResultCard({ s, saved, onSave }: { s: Startup; saved: boolean; onSave: 
         </div>
 
         {/* Badges */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "14px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "6px", marginBottom: "14px", flexWrap: "wrap", alignItems: "center" }}>
+          {viewed && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
+              <Eye style={{ width: 11, height: 11 }} /> {t("startups.viewed")}
+            </span>
+          )}
           <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "2px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             {s.industry}
           </span>
@@ -387,10 +447,21 @@ export function StartupsSearch() {
   const [loading, setLoading]         = useState(true);
   const [page, setPage]               = useState(1);
   const [savedIds, setSavedIds]       = useState<Set<string>>(new Set());
+  // Which listings this investor has already opened. startup_views RLS is
+  // scoped to the viewing investor, so the bare select returns only their own
+  // history; anonymous and founder sessions just get an empty set.
+  const [viewedIds, setViewedIds]     = useState<Set<string>>(new Set());
+  // "Not for me" (migration 033). RLS scopes rows to the signed-in investor,
+  // so reads and writes go straight through the client. Hidden listings drop
+  // out of browse behind a show-hidden escape hatch.
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const [showHidden, setShowHidden]     = useState(false);
+  const myInvestorId = useRef<string | null>(null);
   const [sortOpen, setSortOpen]       = useState(false);
   // Typeahead: name matches from the already-loaded list, so suggestions are
   // instant and need no network round trip or debounce.
   const [suggestOpen, setSuggestOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction">(null);
   const suggestions = filters.query.trim().length >= 2
     ? allStartups
         .filter(s => s.name.toLowerCase().includes(filters.query.trim().toLowerCase()))
@@ -411,6 +482,18 @@ export function StartupsSearch() {
       setLoading(false);
     }
     load();
+    // View history for the seen tick -- one row per (investor, startup, day),
+    // deduped to a set of ids here.
+    supabase.from("startup_views").select("startup_id").limit(1000)
+      .then(({ data }) => { if (data) setViewedIds(new Set(data.map(v => v.startup_id))); });
+    supabase.from("startup_dismissals").select("startup_id").limit(1000)
+      .then(({ data }) => { if (data) setDismissedIds(new Set(data.map(v => v.startup_id))); });
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: inv } = await supabase.from("investors").select("id").eq("owner_id", user.id).maybeSingle();
+      myInvestorId.current = inv?.id ?? null;
+    })();
   }, []);
 
   const filtered = useMemo(() => {
@@ -424,6 +507,8 @@ export function StartupsSearch() {
       if (filters.aiScoreMin > 0 && score < filters.aiScoreMin) return false;
       if (filters.country && !(s.country ?? "").toLowerCase().includes(filters.country.toLowerCase())) return false;
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
+      if (!showHidden && dismissedIds.has(s.id)) return false;
+      if (showHidden && !dismissedIds.has(s.id)) return false;
       return true;
     });
 
@@ -434,7 +519,7 @@ export function StartupsSearch() {
       case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;
     }
     return res;
-  }, [filters, allStartups]);
+  }, [filters, allStartups, dismissedIds, showHidden]);
 
   const visible    = filtered.slice(0, page * PAGE_SIZE);
   const hasMore    = visible.length < filtered.length;
@@ -459,6 +544,24 @@ export function StartupsSearch() {
       else { next.add(id); notify.success(t("toast.saved")); }
       return next;
     });
+  }
+
+  async function toggleHide(id: string) {
+    const inv = myInvestorId.current;
+    if (!inv) { notify.info(t("startups.hideNeedsAccount")); return; }
+    const hidden = dismissedIds.has(id);
+    // Optimistic; RLS enforces ownership server-side either way.
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      if (hidden) next.delete(id); else next.add(id);
+      return next;
+    });
+    if (hidden) {
+      await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id);
+    } else {
+      await supabase.from("startup_dismissals").upsert(
+        { investor_id: inv, startup_id: id }, { onConflict: "investor_id,startup_id" });
+    }
   }
 
   const sortLabel = SORT_OPTIONS.find((o) => o.value === filters.sort)?.label ?? t("filters.sort");
@@ -566,44 +669,51 @@ export function StartupsSearch() {
 
           <div style={{ width: 1, height: 20, background: "var(--cr-rule-dark)", flexShrink: 0 }} />
 
-          {/* Industry chips */}
-          {INDUSTRIES.slice(0, 6).map((ind) => (
-            <FilterChip key={ind}
-              active={filters.industries.includes(ind)}
-              onClick={() => patch({ industries: filters.industries.includes(ind) ? filters.industries.filter(i => i !== ind) : [...filters.industries, ind] })}>
-              {ind}
+          {/* Grouped filters: three labelled dropdowns instead of fifteen
+              always-visible chips. Full industry list too -- the strip only
+              ever had room for the first six. */}
+          <FilterGroup label={t("startups.industry")} count={filters.industries.length}
+            open={openGroup === "industry"} onToggle={() => setOpenGroup(openGroup === "industry" ? null : "industry")}>
+            {INDUSTRIES.map((ind) => (
+              <FilterChip key={ind}
+                active={filters.industries.includes(ind)}
+                onClick={() => patch({ industries: filters.industries.includes(ind) ? filters.industries.filter(i => i !== ind) : [...filters.industries, ind] })}>
+                {ind}
+              </FilterChip>
+            ))}
+          </FilterGroup>
+          <FilterGroup label={t("startups.stageGroup")} count={filters.stages.length}
+            open={openGroup === "stage"} onToggle={() => setOpenGroup(openGroup === "stage" ? null : "stage")}>
+            {STAGES.map((s) => (
+              <FilterChip key={s.value}
+                active={filters.stages.includes(s.value)}
+                onClick={() => patch({ stages: filters.stages.includes(s.value) ? filters.stages.filter(x => x !== s.value) : [...filters.stages, s.value] })}>
+                {s.label}
+              </FilterChip>
+            ))}
+          </FilterGroup>
+          <FilterGroup label={t("startups.traction")}
+            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0)}
+            open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
+            {MRR_PRESETS.map((m) => (
+              <FilterChip key={m.value}
+                active={filters.mrrMin === m.value}
+                onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
+                {m.label}
+              </FilterChip>
+            ))}
+            {SCORE_PRESETS.map((sc) => (
+              <FilterChip key={sc.value}
+                active={filters.aiScoreMin === sc.value}
+                onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
+                {sc.label}
+              </FilterChip>
+            ))}
+            <FilterChip active={!!filters.newOnly}
+              onClick={() => patch({ newOnly: !filters.newOnly })}>
+              {t("startups.newThisWeek")}
             </FilterChip>
-          ))}
-
-          {/* Stage chips */}
-          {STAGES.map((s) => (
-            <FilterChip key={s.value}
-              active={filters.stages.includes(s.value)}
-              onClick={() => patch({ stages: filters.stages.includes(s.value) ? filters.stages.filter(x => x !== s.value) : [...filters.stages, s.value] })}>
-              {s.label}
-            </FilterChip>
-          ))}
-
-          {/* Threshold chips — one active per group; clicking the active one clears it */}
-          {MRR_PRESETS.map((m) => (
-            <FilterChip key={m.value}
-              active={filters.mrrMin === m.value}
-              onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
-              {m.label}
-            </FilterChip>
-          ))}
-          {SCORE_PRESETS.map((sc) => (
-            <FilterChip key={sc.value}
-              active={filters.aiScoreMin === sc.value}
-              onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
-              {sc.label}
-            </FilterChip>
-          ))}
-
-          <FilterChip active={!!filters.newOnly}
-            onClick={() => patch({ newOnly: !filters.newOnly })}>
-            {t("startups.newThisWeek")}
-          </FilterChip>
+          </FilterGroup>
 
           {/* Mobile filter btn */}
           <button
@@ -623,7 +733,42 @@ export function StartupsSearch() {
             </button>
           )}
         </div>
+
+        {/* Applied filters, each individually removable. Rendered only when
+            something is applied, so the bar stays one quiet row by default. */}
+        {activeCount > 0 && (
+          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 80px 10px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+            {filters.industries.map((ind) => (
+              <AppliedChip key={`i-${ind}`} label={ind}
+                onRemove={() => patch({ industries: filters.industries.filter(i => i !== ind) })} />
+            ))}
+            {filters.stages.map((st) => (
+              <AppliedChip key={`s-${st}`} label={STAGES.find(x => x.value === st)?.label ?? st}
+                onRemove={() => patch({ stages: filters.stages.filter(x => x !== st) })} />
+            ))}
+            {filters.mrrMin > 0 && (
+              <AppliedChip label={MRR_PRESETS.find(m => m.value === filters.mrrMin)?.label ?? `MRR ${filters.mrrMin}+`}
+                onRemove={() => patch({ mrrMin: 0 })} />
+            )}
+            {filters.aiScoreMin > 0 && (
+              <AppliedChip label={SCORE_PRESETS.find(sc => sc.value === filters.aiScoreMin)?.label ?? `Score ${filters.aiScoreMin}+`}
+                onRemove={() => patch({ aiScoreMin: 0 })} />
+            )}
+            {filters.newOnly && (
+              <AppliedChip label={t("startups.newThisWeek")} onRemove={() => patch({ newOnly: false })} />
+            )}
+            {filters.country && (
+              <AppliedChip label={filters.country} onRemove={() => patch({ country: "" })} />
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Click-away closes an open filter group. Sits under the sticky bar
+          (z 40) so the bar's own controls stay directly clickable. */}
+      {openGroup && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 39 }} onClick={() => setOpenGroup(null)} />
+      )}
 
       {/* ── Content ── */}
       <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "32px 80px 60px" }}>
@@ -631,6 +776,12 @@ export function StartupsSearch() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
             {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
+            {dismissedIds.size > 0 && (
+              <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
+                {showHidden ? t("startups.hidden") : t("startups.showHidden", { count: dismissedIds.size })}
+              </button>
+            )}
           </p>
           <button
             className="lg:hidden"
@@ -652,7 +803,7 @@ export function StartupsSearch() {
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
             {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} onSave={toggleSave} />
+              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} onSave={toggleSave} onHide={toggleHide} />
             ))}
           </div>
         )}

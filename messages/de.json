@@ -850,7 +850,8 @@
     "editNote": "Zum Bearbeiten klicken",
     "notePlaceholder": "Warum gespeichert — Thesen-Fit, wen vorstellen, wann wiedervorlegen",
     "noteSaveFailed": "Notiz konnte nicht gespeichert werden.",
-    "upgradeSeeWho": "Upgrade, um zu sehen wer"
+    "upgradeSeeWho": "Upgrade, um zu sehen wer",
+    "jumpBackIn": "Zuletzt angesehen"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -925,7 +926,16 @@
     "savedSearchDeleteFailed": "Suche konnte nicht entfernt werden.",
     "savedSearchDelete": "{name} entfernen",
     "savedSearchUpgrade": "Gespeicherte Suchen sind in den bezahlten Investoren-Tarifen enthalten.",
-    "newThisWeek": "Neu diese Woche"
+    "newThisWeek": "Neu diese Woche",
+    "industry": "Branche",
+    "stageGroup": "Phase",
+    "traction": "Traktion",
+    "hidden": "Ausgeblendet",
+    "showHidden": "Ausgeblendete anzeigen ({count})",
+    "hide": "Listing ausblenden",
+    "unhide": "Wieder einblenden",
+    "viewed": "Angesehen",
+    "hideNeedsAccount": "Als Investor anmelden, um Listings auszublenden"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",
@@ -1068,7 +1078,8 @@
     "listYourStartup": "Startup listen",
     "geography": "Region",
     "verifiedOnly": "Nur verifizierte Mitglieder",
-    "sortName": "Name A–Z"
+    "sortName": "Name A–Z",
+    "fitsYourRaise": "Passt zu Ihrer Runde"
   },
   "data": {
     "eyebrow": "Live-Plattformdaten",
