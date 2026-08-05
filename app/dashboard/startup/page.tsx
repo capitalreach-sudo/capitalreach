@@ -36,6 +36,7 @@ export default async function StartupDashboardPage() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
   const viewSeries: number[] = Array(30).fill(0);
+  const raise = { softCircled: 0, committed: 0 };
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -69,12 +70,19 @@ export default async function StartupDashboardPage() {
       .eq("startup_id", startup.id);
     savesCount = saves || 0;
 
-    const { count: deals } = await supabase
+    // Amounts double as the raise tracker: term-sheet deals count as
+    // soft-circled, closed deals as committed. One query serves both the
+    // active-deal count and the progress bar.
+    const { data: dealRows } = await supabase
       .from("deals")
-      .select("*", { count: "exact", head: true })
+      .select("status, amount")
       .eq("startup_id", startup.id)
       .neq("status", "passed");
-    dealsCount = deals || 0;
+    dealsCount = dealRows?.length || 0;
+    for (const d of dealRows ?? []) {
+      if (d.status === "closed") raise.committed += d.amount ?? 0;
+      else if (d.status === "term_sheet") raise.softCircled += d.amount ?? 0;
+    }
   }
 
   const { isLaunch } = await getLaunchStatus();
@@ -85,7 +93,7 @@ export default async function StartupDashboardPage() {
       <StartupDashboardClient
         profile={profile}
         startup={startup}
-        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries }}
+        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, raise }}
         isLaunchMode={isLaunch}
       />
     </>

@@ -29,7 +29,7 @@ export async function GET() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("investor_targets")
-    .select("id, note, created_at, investor:investors(slug, display_name, firm_name, type)")
+    .select("id, note, status, created_at, investor_id, investor:investors(slug, display_name, firm_name, type)")
     .eq("startup_id", startupId)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -37,7 +37,9 @@ export async function GET() {
   const targets = (data ?? [])
     .map((r: any) => ({
       id: r.id,
+      investorId: r.investor_id,
       note: r.note,
+      status: r.status ?? "to_contact",
       createdAt: r.created_at,
       slug: r.investor?.slug ?? null,
       name: r.investor?.display_name ?? r.investor?.firm_name ?? null,
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { investorId, note } = await req.json().catch(() => ({}));
+  const { investorId, note, status } = await req.json().catch(() => ({}));
   if (!isUuid(investorId)) return NextResponse.json({ error: "investorId required" }, { status: 400 });
 
   const startupId = await callerStartup(user.id);
@@ -69,6 +71,14 @@ export async function POST(req: NextRequest) {
   // without a note never wipes one.
   if (note !== undefined) {
     row.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
+  }
+  // Same only-sent-keys-write rule; the CHECK constraint is the arbiter of
+  // valid values, mirrored here so a typo answers 400 rather than a DB error.
+  if (status !== undefined) {
+    if (!["to_contact", "contacted", "replied", "passed"].includes(status)) {
+      return NextResponse.json({ error: "invalid status" }, { status: 400 });
+    }
+    row.status = status;
   }
 
   const { error } = await admin

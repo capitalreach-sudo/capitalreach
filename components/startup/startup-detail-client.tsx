@@ -115,6 +115,8 @@ export function StartupDetailClient({
 
   const router = useRouter();
   const [startingDeal, setStartingDeal] = useState(false);
+  // Inline PDF viewer: keep the reader on the page instead of a new tab.
+  const [viewerDoc, setViewerDoc] = useState<{ url: string; label: string } | null>(null);
   // The reverse of the pipeline pill: when there is no deal yet, the profile
   // is where an investor decides to start one -- sending them to the portal
   // to re-find this startup by name was the long way round.
@@ -649,10 +651,17 @@ export function StartupDetailClient({
                           <Lock style={{ width: 11, height: 11 }} /> {t("common.upgrade")}
                         </Link>
                       ) : (
+                        /\.pdf(\?|$)/i.test(doc.file_url) ? (
+                          <button onClick={() => setViewerDoc({ url: doc.file_url, label: doc.label })}
+                            style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", cursor: "pointer" }}>
+                            <Eye style={{ width: 11, height: 11 }} /> {t("common.view")}
+                          </button>
+                        ) : (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
                           style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", textDecoration: "none" }}>
                           <ExternalLink style={{ width: 11, height: 11 }} /> {t("common.view")}
                         </a>
+                        )
                       )}
                     </div>
                   );
@@ -662,6 +671,28 @@ export function StartupDetailClient({
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noDocumentsUploaded")}</p>
             )}
           </>
+        )}
+
+        {viewerDoc && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 80 }}>
+            <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.6)" }} onClick={() => setViewerDoc(null)} />
+            <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", width: "min(94vw, 900px)", height: "92vh", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: "1px solid var(--cr-rule-dark)", flexShrink: 0 }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{viewerDoc.label}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <a href={viewerDoc.url} target="_blank" rel="noopener noreferrer"
+                    style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                    {t("startupDetail.openNewTab")}
+                  </a>
+                  <button onClick={() => setViewerDoc(null)} aria-label={t("nav.closeMenu")}
+                    style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex" }}>
+                    <X style={{ width: 16, height: 16 }} />
+                  </button>
+                </div>
+              </div>
+              <iframe src={viewerDoc.url} title={viewerDoc.label} style={{ flex: 1, border: "none", width: "100%" }} />
+            </div>
+          </div>
         )}
 
         {/* ── Tab: Traction ── */}

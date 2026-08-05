@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StartupCard } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
-import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Eye, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Eye, Lock, MessageSquare, Search, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import {
@@ -24,7 +24,7 @@ interface Props {
   aiReports:  AiReport[];
 }
 
-type InvestorTab = "watchlist" | "reports" | "billing";
+type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
 
 // ── Shared button styles ──────────────────────────────────────────────────────
 
@@ -184,6 +184,70 @@ function RecentlyViewedStrip() {
   );
 }
 
+/**
+ * The saved searches themselves, finally manageable: name, a one-line filter
+ * summary, open (the URL-synced browse makes every search addressable), and
+ * delete. The daily cron keeps matching either way.
+ */
+function SavedSearchManager() {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<Array<{ id: string; name: string; filters: Record<string, unknown> }> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/saved-searches").then(r => r.ok ? r.json() : null).then(j => setRows(j?.searches ?? null)).catch(() => setRows(null));
+  }, []);
+
+  if (!rows || rows.length === 0) return null;
+
+  const toQuery = (f: Record<string, unknown>) => {
+    const p = new URLSearchParams();
+    if (f.query)      p.set("q", String(f.query));
+    if (Array.isArray(f.industries) && f.industries.length) p.set("industries", f.industries.join(","));
+    if (Array.isArray(f.stages) && f.stages.length)         p.set("stages", f.stages.join(","));
+    if (Number(f.mrrMin) > 0)     p.set("mrr", String(f.mrrMin));
+    if (Number(f.aiScoreMin) > 0) p.set("score", String(f.aiScoreMin));
+    if (f.country)                p.set("country", String(f.country));
+    return p.toString();
+  };
+  const summary = (f: Record<string, unknown>) => [
+    ...(Array.isArray(f.industries) ? f.industries : []),
+    ...(Array.isArray(f.stages) ? f.stages : []),
+    Number(f.mrrMin) > 0 ? `MRR $${Number(f.mrrMin)/1000}k+` : null,
+    Number(f.aiScoreMin) > 0 ? `Score ${f.aiScoreMin}+` : null,
+    f.country || null, f.query ? `"${f.query}"` : null,
+  ].filter(Boolean).join(" · ") || "—";
+
+  async function remove(id: string) {
+    setRows(prev => prev?.filter(r => r.id !== id) ?? prev);
+    await fetch("/api/saved-searches", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+  }
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+        <Search style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.savedSearches")}</h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{rows.length}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {rows.map((r) => (
+          <div key={r.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px" }}>
+            <div style={{ minWidth: 0 }}>
+              <Link href={`/startups?${toQuery(r.filters)}`}
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                {r.name}
+              </Link>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{summary(r.filters)}</p>
+            </div>
+            <button onClick={() => remove(r.id)} aria-label={`delete ${r.name}`}
+              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "14px", lineHeight: 1, flexShrink: 0 }}>×</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
@@ -192,6 +256,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
   const TABS: { value: InvestorTab; label: string; Icon: React.ElementType }[] = [
     { value: "watchlist", label: t("dashboard.watchlist"), Icon: Bookmark   },
+    { value: "portfolio", label: t("dashboard.portfolio"), Icon: TrendingUp },
     { value: "reports",   label: t("dashboard.aiReports"), Icon: Brain      },
     { value: "billing",   label: t("dashboard.billing"),   Icon: CreditCard },
   ];
@@ -327,6 +392,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {activeTab === "watchlist" && (
           <div>
             <ErrorBoundary label="Recently viewed"><RecentlyViewedStrip /></ErrorBoundary>
+            <ErrorBoundary label="Saved searches"><SavedSearchManager /></ErrorBoundary>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                 {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}
@@ -360,6 +426,39 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         )}
 
         {/* ── AI Reports ── */}
+        {activeTab === "portfolio" && (() => {
+          const closed = deals.filter(d => d.status === "closed");
+          const total = closed.reduce((a, d) => a + (d.amount ?? 0), 0);
+          return closed.length === 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
+              <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noPortfolio")}</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.noPortfolioSub")}</p>
+            </div>
+          ) : (
+            <div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "20px" }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{formatMoney(total, closed[0]?.currency ?? "USD")}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("dashboard.totalDeployed")} · {closed.length}</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {closed.map(d => (
+                  <div key={d.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px" }}>
+                    <Link href={d.startup?.slug ? `/startups/${d.startup.slug}` : `/deals?deal=${d.id}`}
+                      style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                      {d.startup?.name ?? t("deals.startupFallback")}
+                    </Link>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-up)", whiteSpace: "nowrap" }}>
+                      {d.amount != null ? formatMoney(d.amount, d.currency ?? "USD") : "—"}
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginLeft: "10px" }}>{t("dashboard.closedOn", { date: formatDate(d.updated_at) })}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {activeTab === "reports" && (
           aiReports.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>

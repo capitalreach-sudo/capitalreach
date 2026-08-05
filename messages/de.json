@@ -851,7 +851,21 @@
     "notePlaceholder": "Warum gespeichert — Thesen-Fit, wen vorstellen, wann wiedervorlegen",
     "noteSaveFailed": "Notiz konnte nicht gespeichert werden.",
     "upgradeSeeWho": "Upgrade, um zu sehen wer",
-    "jumpBackIn": "Zuletzt angesehen"
+    "jumpBackIn": "Zuletzt angesehen",
+    "raiseProgress": "Fortschritt der Runde",
+    "committed": "Zugesagt",
+    "softCircled": "In Aussicht",
+    "tsToContact": "Zu kontaktieren",
+    "tsContacted": "Kontaktiert",
+    "tsReplied": "Geantwortet",
+    "tsPassed": "Abgesagt",
+    "tsCycle": "Klicken für nächsten Status",
+    "savedSearches": "Gespeicherte Suchen",
+    "portfolio": "Portfolio",
+    "totalDeployed": "Investiert gesamt",
+    "closedOn": "abgeschlossen am {date}",
+    "noPortfolio": "Noch keine abgeschlossenen Investments",
+    "noPortfolioSub": "Abgeschlossene Deals erscheinen hier automatisch."
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -1032,7 +1046,8 @@
     "upgradeTractionTitle": "Upgrade, um Traktionsdaten zu sehen",
     "upgradeTractionDesc": "Angel-Mitglieder sehen MRR, ARR, Nutzerzahlen und Wachstumsraten.",
     "inYourPipeline": "In Ihrer Pipeline",
-    "startDeal": "Deal starten"
+    "startDeal": "Deal starten",
+    "openNewTab": "In neuem Tab öffnen"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",

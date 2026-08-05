@@ -855,7 +855,21 @@
     "notePlaceholder": "Why you saved this — thesis fit, who to intro, when to revisit",
     "noteSaveFailed": "Could not save that note.",
     "upgradeSeeWho": "Upgrade to see who",
-    "jumpBackIn": "Recently viewed"
+    "jumpBackIn": "Recently viewed",
+    "raiseProgress": "Raise progress",
+    "committed": "Committed",
+    "softCircled": "Soft-circled",
+    "tsToContact": "To contact",
+    "tsContacted": "Contacted",
+    "tsReplied": "Replied",
+    "tsPassed": "Passed",
+    "tsCycle": "Click to advance status",
+    "savedSearches": "Saved searches",
+    "portfolio": "Portfolio",
+    "totalDeployed": "Total deployed",
+    "closedOn": "closed {date}",
+    "noPortfolio": "No closed investments yet",
+    "noPortfolioSub": "Deals you close move here automatically."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1036,7 +1050,8 @@
     "upgradeTractionTitle": "Upgrade to see traction data",
     "upgradeTractionDesc": "Angel members see MRR, ARR, user counts, and growth rates.",
     "inYourPipeline": "In your pipeline",
-    "startDeal": "Start a deal"
+    "startDeal": "Start a deal",
+    "openNewTab": "Open in new tab"
   },
   "investors": {
     "pageTitle": "Verified investors",

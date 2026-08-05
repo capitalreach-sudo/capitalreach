@@ -13,7 +13,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 interface Props {
   profile:      Profile;
   startup:      Startup | null;
-  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[] };
+  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; raise?: { softCircled: number; committed: number } };
   isLaunchMode: boolean;
 }
 
@@ -257,10 +257,54 @@ function ViewsSparkline({ series }: { series: number[] }) {
   );
 }
 
+/**
+ * The founder's only question, answered at the top of the dashboard: how much
+ * of the target is soft-circled (open term sheets) or committed (closed),
+ * straight from the deal amounts. Renders nothing until any deal carries an
+ * amount -- an empty ruler helps no one.
+ */
+function RaiseTracker({ target, softCircled, committed }: { target: number; softCircled: number; committed: number }) {
+  const { t } = useTranslation();
+  if (!target || (softCircled === 0 && committed === 0)) return null;
+  const pctC = Math.min(100, (committed / target) * 100);
+  const pctS = Math.min(100 - pctC, (softCircled / target) * 100);
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.raiseProgress")}</h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          {formatCurrency(committed + softCircled, true)} <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}>/ {formatCurrency(target, true)}</span>
+        </span>
+      </div>
+      <div style={{ height: "8px", background: "var(--cr-paper-4)", borderRadius: "4px", overflow: "hidden", display: "flex" }}>
+        <div style={{ width: `${pctC}%`, background: "var(--cr-up)" }} />
+        <div style={{ width: `${pctS}%`, background: "var(--cr-copper)", opacity: 0.75 }} />
+      </div>
+      <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)" }}>
+          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "var(--cr-up)", marginRight: 5 }} />
+          {t("dashboard.committed")}: {formatCurrency(committed, true)}
+        </span>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)" }}>
+          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "var(--cr-copper)", opacity: 0.75, marginRight: 5 }} />
+          {t("dashboard.softCircled")}: {formatCurrency(softCircled, true)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /** The raise's other direction: investors this startup is pursuing. */
 function TargetsPanel() {
   const { t } = useTranslation();
-  const [targets, setTargets] = useState<Array<{ id: string; slug: string; name: string | null; firm: string | null; note: string | null }> | null>(null);
+  const [targets, setTargets] = useState<Array<{ id: string; slug: string; name: string | null; firm: string | null; note: string | null; status: string; investorId?: string }> | null>(null);
+  const STATUS_ORDER = ["to_contact", "contacted", "replied", "passed"] as const;
+  const STATUS_STYLE: Record<string, { label: string; color: string }> = {
+    to_contact: { label: "dashboard.tsToContact", color: "var(--cr-ink-4)"  },
+    contacted:  { label: "dashboard.tsContacted", color: "var(--cr-copper)" },
+    replied:    { label: "dashboard.tsReplied",   color: "var(--cr-up)"     },
+    passed:     { label: "dashboard.tsPassed",    color: "var(--cr-down)"   },
+  };
 
   useEffect(() => {
     fetch("/api/targets")
@@ -282,18 +326,30 @@ function TargetsPanel() {
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {targets.map((tg) => (
-          <Link key={tg.id} href={`/investors/${tg.slug}`}
-            style={{ display: "flex", flexDirection: "column", gap: "2px", textDecoration: "none" }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
-              {tg.name}
-              {tg.firm && tg.firm !== tg.name && (
-                <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {tg.firm}</span>
+          <div key={tg.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "10px" }}>
+            <Link href={`/investors/${tg.slug}`}
+              style={{ display: "flex", flexDirection: "column", gap: "2px", textDecoration: "none", minWidth: 0 }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
+                {tg.name}
+                {tg.firm && tg.firm !== tg.name && (
+                  <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {tg.firm}</span>
+                )}
+              </span>
+              {tg.note && (
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{tg.note}</span>
               )}
-            </span>
-            {tg.note && (
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{tg.note}</span>
-            )}
-          </Link>
+            </Link>
+            <button
+              onClick={async () => {
+                const next = STATUS_ORDER[(STATUS_ORDER.indexOf(tg.status as typeof STATUS_ORDER[number]) + 1) % STATUS_ORDER.length];
+                setTargets((prev) => prev?.map(x => x.id === tg.id ? { ...x, status: next } : x) ?? prev);
+                await fetch("/api/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: tg.investorId, status: next }) });
+              }}
+              title={t("dashboard.tsCycle")}
+              style={{ background: "transparent", border: `1px solid ${STATUS_STYLE[tg.status]?.color ?? "var(--cr-rule-dark)"}`, color: STATUS_STYLE[tg.status]?.color ?? "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>
+              {t(STATUS_STYLE[tg.status]?.label ?? "dashboard.tsToContact")}
+            </button>
+          </div>
         ))}
       </div>
     </div>
@@ -524,6 +580,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </div>
             </div>
 
+            {startup && analytics.raise && (
+              <ErrorBoundary label="Raise progress">
+                <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
+              </ErrorBoundary>
+            )}
             <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary label="Profile viewers"><ViewersPanel /></ErrorBoundary>
             <ErrorBoundary label="Target investors"><TargetsPanel /></ErrorBoundary>

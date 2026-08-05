@@ -359,6 +359,7 @@ export type Database = {
           investor_id: string
           note: string | null
           startup_id: string
+          status: string
         }
         Insert: {
           created_at?: string
@@ -366,6 +367,7 @@ export type Database = {
           investor_id: string
           note?: string | null
           startup_id: string
+          status?: string
         }
         Update: {
           created_at?: string
@@ -373,6 +375,7 @@ export type Database = {
           investor_id?: string
           note?: string | null
           startup_id?: string
+          status?: string
         }
         Relationships: [
           {
@@ -800,6 +803,42 @@ export type Database = {
             columns: ["investor_id"]
             isOneToOne: false
             referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      startup_dismissals: {
+        Row: {
+          created_at: string
+          id: string
+          investor_id: string
+          startup_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_id: string
+          startup_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_id?: string
+          startup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_dismissals_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "startup_dismissals_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
             referencedColumns: ["id"]
           },
         ]
