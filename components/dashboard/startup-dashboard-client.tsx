@@ -17,6 +17,13 @@ interface Props {
   startup:      Startup | null;
   analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; raise?: { softCircled: number; committed: number } };
   isLaunchMode: boolean;
+  /**
+   * Set when an admin is looking at someone else's dashboard. Carries the
+   * founder's name for the banner, and switches every mutating control off --
+   * an admin must not be able to start an AI job or open a billing portal
+   * against an account that is not theirs just by clicking around.
+   */
+  viewingAs?: string;
 }
 
 type StartupTab = "overview" | "documents" | "ai" | "billing";
@@ -439,7 +446,7 @@ function DocAnalyticsPanel() {
   );
 }
 
-export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode }: Props) {
+export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs }: Props) {
   const { t }        = useTranslation();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
@@ -465,7 +472,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   const canGrowth        = isLaunchMode || tier === "growth";
 
   async function generatePitchFeedback() {
-    if (!startup) return;
+    if (!startup || viewingAs) return;
     setLoadingFeedback(true);
     const res = await fetch("/api/ai/pitch-feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id }) });
     setAiFeedback(await res.json());
@@ -473,6 +480,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   }
 
   async function openBillingPortal() {
+    if (viewingAs) return;
     const res = await fetch("/api/checkout/portal", { method: "POST" });
     const { url } = await res.json();
     if (url) window.location.href = url;
@@ -496,6 +504,30 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
+
+      {/* Unmistakable, and at the very top: an admin reading someone else's
+          numbers must never mistake them for their own, and must be able to
+          leave in one click. Every mutating control below is already gone. */}
+      {viewingAs && (
+        <div
+          role="status"
+          style={{
+            background: "var(--cr-ink)", color: "var(--cr-paper)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: "12px", flexWrap: "wrap", padding: "10px 20px",
+            fontFamily: "'DM Sans', sans-serif", fontSize: "13px",
+          }}
+        >
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
+            <Eye style={{ width: 14, height: 14, color: "var(--cr-copper-l)" }} />
+            {t("viewAs.banner", { name: viewingAs })}
+          </span>
+          <span style={{ opacity: 0.55, fontSize: "12px" }}>{t("viewAs.readOnly")}</span>
+          <Link href="/admin" style={{ color: "var(--cr-copper-l)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            {t("viewAs.exit")}
+          </Link>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
@@ -653,7 +685,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 </div>
                 {tier === "free"
                   ? <Link href="/pricing" style={primaryBtn}>{t("common.upgrade")}</Link>
-                  : <button onClick={openBillingPortal} style={outlineBtn}><CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manage")}</button>}
+                  : viewingAs ? null : <button onClick={openBillingPortal} style={outlineBtn}><CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manage")}</button>}
               </div>
 
               {/* Profile visibility */}
@@ -755,9 +787,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </div>
             </div>
             {!aiFeedback ? (
-              <button onClick={generatePitchFeedback} disabled={loadingFeedback} style={{ ...primaryBtn, opacity: loadingFeedback ? 0.6 : 1 }}>
-                {loadingFeedback ? t("dashboard.analyzing") : t("dashboard.generateFeedback")}
-              </button>
+              viewingAs ? null : (
+                <button onClick={generatePitchFeedback} disabled={loadingFeedback} style={{ ...primaryBtn, opacity: loadingFeedback ? 0.6 : 1 }}>
+                  {loadingFeedback ? t("dashboard.analyzing") : t("dashboard.generateFeedback")}
+                </button>
+              )
             ) : (
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "20px" }}>
@@ -777,7 +811,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     </div>
                   ))}
                 </div>
-                <button onClick={generatePitchFeedback} style={outlineBtn}>{t("dashboard.regenerate")}</button>
+                {viewingAs ? null : <button onClick={generatePitchFeedback} style={outlineBtn}>{t("dashboard.regenerate")}</button>}
               </div>
             )}
           </div>
@@ -792,9 +826,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{profile.subscription_status || t("dashboard.statusActive")}</p>
               </div>
-              <button onClick={openBillingPortal} style={outlineBtn}>
-                <CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manageBilling")}
-              </button>
+              {viewingAs ? null : (
+                <button onClick={openBillingPortal} style={outlineBtn}>
+                  <CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manageBilling")}
+                </button>
+              )}
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.7 }}>
               {t("dashboard.billingNote")}

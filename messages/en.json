@@ -2263,5 +2263,11 @@
     "actUnsuspend": "Unsuspended",
     "actSetTier": "Changed plan",
     "unknownAdmin": "Unknown admin"
+  },
+  "viewAs": {
+    "banner": "Viewing {name}’s dashboard as an admin",
+    "readOnly": "Read-only — actions are disabled",
+    "exit": "Back to admin",
+    "open": "View dashboard"
   }
 }

@@ -2263,5 +2263,11 @@
     "actUnsuspend": "Entsperrt",
     "actSetTier": "Plan geändert",
     "unknownAdmin": "Unbekannter Admin"
+  },
+  "viewAs": {
+    "banner": "Dashboard von {name} als Admin ansehen",
+    "readOnly": "Nur Lesen — Aktionen deaktiviert",
+    "exit": "Zurück zum Admin",
+    "open": "Dashboard ansehen"
   }
 }

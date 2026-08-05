@@ -211,6 +211,14 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
                       <Link href={`/startups/${l.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
                         {l.name}
                       </Link>
+                      {/* The only route by which an admin can reach a founder
+                          dashboard at all -- their own dashboard path is /admin. */}
+                      <Link
+                        href={`/admin/view/startup/${l.id}`}
+                        style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px", marginTop: "2px" }}
+                      >
+                        {t("viewAs.open")}
+                      </Link>
                     </td>
                     <td style={{ padding: "10px 14px", minWidth: "120px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
