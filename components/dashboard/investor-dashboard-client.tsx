@@ -15,6 +15,7 @@ import { formatDate } from "@/lib/utils";
 import { formatMoney } from "@/lib/currency";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
 
 interface Props {
   profile:    Profile;
@@ -22,6 +23,8 @@ interface Props {
   watchlist:  Watchlist[];
   deals:      Deal[];
   aiReports:  AiReport[];
+  /** Set when an admin is viewing this investor's dashboard. See read-only.tsx. */
+  viewingAs?: string;
 }
 
 type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
@@ -73,12 +76,14 @@ const FEATURE_ROWS = [
  */
 function WatchlistNote({ startupId, initial }: { startupId: string; initial: string | null }) {
   const { t } = useTranslation();
+  const readOnly = useReadOnly();
   const [value, setValue]     = useState(initial ?? "");
   const [saved, setSaved]     = useState(initial ?? "");
   const [busy, setBusy]       = useState(false);
   const [editing, setEditing] = useState(false);
 
   async function persist() {
+    if (readOnly) { setEditing(false); return; }
     const next = value.trim();
     setEditing(false);
     if (next === saved) return;          // nothing changed -- don't write
@@ -190,6 +195,7 @@ function RecentlyViewedStrip() {
  * delete. The daily cron keeps matching either way.
  */
 function SavedSearchManager() {
+  const readOnly = useReadOnly();
   const { t } = useTranslation();
   const [rows, setRows] = useState<Array<{ id: string; name: string; filters: Record<string, unknown> }> | null>(null);
 
@@ -218,6 +224,7 @@ function SavedSearchManager() {
   ].filter(Boolean).join(" · ") || "—";
 
   async function remove(id: string) {
+    if (readOnly) return;
     setRows(prev => prev?.filter(r => r.id !== id) ?? prev);
     await fetch("/api/saved-searches", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
   }
@@ -248,7 +255,7 @@ function SavedSearchManager() {
   );
 }
 
-export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports }: Props) {
+export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
@@ -296,6 +303,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   }
 
   async function openBillingPortal() {
+    if (viewingAs) return;
     const res = await fetch("/api/checkout/portal", { method: "POST" });
     const { url } = await res.json();
     if (url) window.location.href = url;
@@ -313,7 +321,34 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   }
 
   return (
+    <ReadOnlyProvider value={!!viewingAs}>
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
+
+      {/* Same banner as the founder view. Every write path below -- including
+          the ones inside WatchlistNote and SavedSearchManager -- is gated on
+          the ReadOnly context, because those post to APIs that authenticate as
+          the *admin*: an ungated click would write to the admin's own
+          watchlist while appearing to act on this investor's. */}
+      {viewingAs && (
+        <div
+          role="status"
+          style={{
+            background: "var(--cr-ink)", color: "var(--cr-paper)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: "12px", flexWrap: "wrap", padding: "10px 20px",
+            fontFamily: "'DM Sans', sans-serif", fontSize: "13px",
+          }}
+        >
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
+            <Eye style={{ width: 14, height: 14, color: "var(--cr-copper-l)" }} />
+            {t("viewAs.banner", { name: viewingAs })}
+          </span>
+          <span style={{ opacity: 0.55, fontSize: "12px" }}>{t("viewAs.readOnly")}</span>
+          <Link href="/admin" style={{ color: "var(--cr-copper-l)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            {t("viewAs.exit")}
+          </Link>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
@@ -578,5 +613,6 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           now owns the bottom of the viewport, so a second one would collide
           even if it were fixed. */}
     </main>
+    </ReadOnlyProvider>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -245,9 +247,16 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                   <p className="font-medium text-cr-ink text-sm">{inv.owner?.email}</p>
                   <p className="text-xs text-cr-i4">{inv.type} · {inv.industries?.join(", ") || t("admin.noPreferences")}</p>
                 </div>
-                <span className="text-xs bg-cr-copper/15 text-cr-cu-l px-2 py-0.5 rounded-full capitalize">
-                  {inv.subscription_tier.replace(/_/g, " ")}
-                </span>
+                <div className="flex items-center gap-3">
+                  {/* The only route to an investor dashboard for an admin --
+                      their own dashboard path is /admin. */}
+                  <Link href={`/admin/view/investor/${inv.id}`} className="text-xs text-cr-copper underline underline-offset-2">
+                    {t("viewAs.open")}
+                  </Link>
+                  <span className="text-xs bg-cr-copper/15 text-cr-cu-l px-2 py-0.5 rounded-full capitalize">
+                    {inv.subscription_tier.replace(/_/g, " ")}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
