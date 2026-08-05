@@ -11,6 +11,7 @@ import { STARTUP_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
 import { notify } from "@/components/ui/toast-notify";
 import { announce } from "@/lib/announce";
+import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
@@ -212,6 +213,19 @@ function SavedSearches({ filters, onApply, isDefault }: {
 function FilterGroup({ label, count, open, onToggle, children }: {
   label: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
+  const doneLabel = t("common.done");
+
+  // Only the mobile sheet is modal. The desktop dropdown is an anchored panel
+  // the user should be able to scroll past, so the lock is gated on the same
+  // breakpoint the CSS uses rather than on `open` alone.
+  useEffect(() => {
+    if (!open || !window.matchMedia("(max-width: 1023px)").matches) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
   return (
     <div style={{ position: "relative", flexShrink: 0 }}>
       <button onClick={onToggle}
@@ -227,9 +241,57 @@ function FilterGroup({ label, count, open, onToggle, children }: {
         {label}{count > 0 ? ` · ${count}` : ""}
         <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
       </button>
+      {/* Desktop: a panel anchored under its chip. */}
       {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "12px", display: "flex", flexWrap: "wrap", gap: "6px", zIndex: 50 }}>
+        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "12px", flexWrap: "wrap", gap: "6px", zIndex: 50 }}>
           {children}
+        </div>
+      )}
+
+      {/* Mobile: a bottom sheet, because anchoring cannot work here. The chips
+          live in a horizontally scrolling row, so a chip scrolled to x=300 on a
+          375px screen opened a 280px panel mostly off the right edge -- and the
+          panel could not be scrolled back into view because the row scrolls,
+          not the page. A sheet is anchored to the viewport instead of the chip,
+          so it is always fully reachable, and it sits within thumb reach rather
+          than up under the sticky bar. */}
+      {open && (
+        <div className="lg:hidden">
+          <div
+            style={{ position: "fixed", inset: 0, background: "rgba(26,22,18,0.4)", zIndex: 95 }}
+            onClick={onToggle}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={label}
+            style={{
+              position: "fixed", insetInline: 0,
+              bottom: "var(--cr-tabbar-h, 0px)",
+              zIndex: 96,
+              background: "var(--cr-paper-2)",
+              borderTop: "1px solid var(--cr-rule-dark)",
+              borderRadius: "12px 12px 0 0",
+              boxShadow: "0 -10px 34px rgba(26,22,18,0.22)",
+              maxHeight: "70vh",
+              display: "flex", flexDirection: "column",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 16px 10px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+                {label}
+              </span>
+              <button
+                onClick={onToggle}
+                style={{ minHeight: "36px", paddingInline: "14px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)", cursor: "pointer" }}
+              >
+                {doneLabel}
+              </button>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", padding: "14px 16px", overflowY: "auto", paddingBottom: "calc(14px + env(safe-area-inset-bottom, 0px))" }}>
+              {children}
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -298,27 +360,28 @@ function SkeletonCard() {
   );
 }
 
-function EmptyState({ query, hasFilters, onReset }: { query: string; hasFilters: boolean; onReset: () => void }) {
+function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: boolean; onReset: () => void }) {
   const { t } = useTranslation();
   return (
-    <div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
-      <Search style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>
-        {query ? `${t("startups.noResults")} "${query}"` : t("startups.noListings")}
-      </h3>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
-        {hasFilters ? t("startups.noResults") : t("startups.noListings")}
-      </p>
-      {hasFilters && (
-        <button onClick={onReset} style={{
-          background: "transparent", color: "var(--cr-ink-3)",
-          fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
-          padding: "8px 20px", borderRadius: "4px", border: "1px solid var(--cr-paper-4)",
-          cursor: "pointer",
-        }}>
-          {t("filters.clearAll")}
-        </button>
-      )}
+    <div style={{ gridColumn: "1 / -1" }}>
+      {/* Was a bespoke block whose heading and body rendered the same string
+          ("No results" twice) whenever a query was set. Now the shared shell,
+          with the body carrying the way out rather than repeating the title. */}
+      <EmptyStateBlock
+        Icon={Search}
+        title={query ? t("startups.noResultsFor", { query }) : t("startups.noListings")}
+        body={hasFilters ? t("startups.noResultsBody") : undefined}
+        action={hasFilters ? (
+          <button onClick={onReset} style={{
+            background: "transparent", color: "var(--cr-ink-3)",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+            minHeight: "40px", padding: "8px 20px", borderRadius: "4px",
+            border: "1px solid var(--cr-rule-dark)", cursor: "pointer",
+          }}>
+            {t("filters.clearAll")}
+          </button>
+        ) : undefined}
+      />
     </div>
   );
 }
@@ -1069,7 +1132,7 @@ export function StartupsSearch() {
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ display: "grid" }}>
-            <EmptyState query={filters.query} hasFilters={activeCount > 0 || !!filters.query} onReset={resetFilters} />
+            <NoResults query={filters.query} hasFilters={activeCount > 0 || !!filters.query} onReset={resetFilters} />
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>

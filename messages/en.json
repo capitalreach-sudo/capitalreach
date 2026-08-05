@@ -1004,7 +1004,9 @@
     "compareTitle": "Compare startups",
     "compareClear": "Clear",
     "runwayLabel": "Runway",
-    "recentSearches": "Recent searches"
+    "recentSearches": "Recent searches",
+    "noResultsFor": "No listings match “{query}”",
+    "noResultsBody": "Try removing a filter, widening the stage or industry, or searching a broader term."
   },
   "startup": {
     "back": "Back to directory",
@@ -1273,7 +1275,8 @@
     "custom": "Custom",
     "open": "Open",
     "printTagline": "CapitalReach — Private Capital Marketplace",
-    "view": "View"
+    "view": "View",
+    "done": "Done"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",

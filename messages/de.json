@@ -1000,7 +1000,9 @@
     "compareTitle": "Startups vergleichen",
     "compareClear": "Leeren",
     "runwayLabel": "Runway",
-    "recentSearches": "Letzte Suchen"
+    "recentSearches": "Letzte Suchen",
+    "noResultsFor": "Keine Listings passen zu „{query}“",
+    "noResultsBody": "Entferne einen Filter, erweitere Phase oder Branche, oder suche allgemeiner."
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",
@@ -1269,7 +1271,8 @@
     "custom": "Individuell",
     "open": "Offen",
     "printTagline": "CapitalReach — Marktplatz für Privatkapital",
-    "view": "Ansehen"
+    "view": "Ansehen",
+    "done": "Fertig"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",
