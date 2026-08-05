@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StartupCard } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
-import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Eye, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { createClient } from "@/lib/supabase";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import {
   canExportData, canGetAiDueDiligence, canAccessFinancials, canSendMessages,
 } from "@/types";
@@ -136,6 +138,51 @@ function WatchlistNote({ startupId, initial }: { startupId: string; initial: str
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
+
+/**
+ * The last listings this investor opened, straight from their own
+ * startup_views history (RLS returns only the caller's rows). Deal-flow
+ * triage starts where it left off instead of from a cold directory.
+ */
+function RecentlyViewedStrip() {
+  const { t } = useTranslation();
+  const supabase = useRef(createClient()).current;
+  const [rows, setRows] = useState<Array<{ slug: string; name: string; viewedAt: string }>>([]);
+
+  useEffect(() => {
+    supabase.from("startup_views")
+      .select("viewed_at, startup:startups(slug, name, status)")
+      .order("viewed_at", { ascending: false })
+      .limit(30)
+      .then(({ data }: { data: any[] | null }) => {
+        const seen = new Map<string, { slug: string; name: string; viewedAt: string }>();
+        for (const r of (data ?? []) as any[]) {
+          const s = r.startup;
+          if (!s?.slug || s.status !== "active" || seen.has(s.slug)) continue;
+          seen.set(s.slug, { slug: s.slug, name: s.name, viewedAt: r.viewed_at });
+        }
+        setRows(Array.from(seen.values()).slice(0, 6));
+      });
+  }, [supabase]);
+
+  if (rows.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+        <Eye style={{ width: 11, height: 11 }} /> {t("dashboard.jumpBackIn")}
+      </p>
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {rows.map((r) => (
+          <Link key={r.slug} href={`/startups/${r.slug}`}
+            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "6px 12px", textDecoration: "none" }}>
+            {r.name}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports }: Props) {
   const router       = useRouter();
@@ -279,6 +326,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* ── Watchlist ── */}
         {activeTab === "watchlist" && (
           <div>
+            <ErrorBoundary label="Recently viewed"><RecentlyViewedStrip /></ErrorBoundary>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                 {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}

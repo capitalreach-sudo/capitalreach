@@ -45,6 +45,17 @@ function formatCheck(n: number) {
   return `$${n}`;
 }
 
+function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-cr-copper bg-cr-copper/10 border border-cr-copper/30 rounded px-2 py-0.5">
+      {label}
+      <button onClick={onRemove} aria-label={`remove ${label}`} className="flex items-center text-inherit">
+        <X className="h-3 w-3" />
+      </button>
+    </span>
+  );
+}
+
 function Section({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -103,6 +114,9 @@ export function InvestorsClient() {
   // Typeahead over the already-loaded list -- instant, no round trip.
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  // If a founder is browsing, their own stage and industry mark which
+  // investors actually fit the raise -- the directory as a targeting tool.
+  const [myRaise, setMyRaise] = useState<{ stage: string; industry: string } | null>(null);
 
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
@@ -143,6 +157,13 @@ export function InvestorsClient() {
       setLoading(false);
     }
     fetchInvestors();
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: st } = await supabase
+        .from("startups").select("stage, industry").eq("owner_id", user.id).maybeSingle();
+      if (st) setMyRaise({ stage: st.stage, industry: st.industry });
+    })();
   }, []);
 
   function toggle<K extends "types" | "industries" | "stages" | "geographies">(key: K, val: string) {
@@ -398,6 +419,33 @@ export function InvestorsClient() {
           {/* Mobile sidebar */}
           {sidebarOpen && <div className="lg:hidden mb-6">{Sidebar}</div>}
 
+          {/* Applied filters, each individually removable -- mirrors the
+              startups directory so the two search surfaces feel like one. */}
+          {activeCount > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap mb-5">
+              {f.types.map(ty => (
+                <AppliedChip key={`t-${ty}`} label={t((TYPE_META[ty] ?? TYPE_META.angel).labelKey)} onRemove={() => toggle("types", ty)} />
+              ))}
+              {f.industries.map(ind => (
+                <AppliedChip key={`i-${ind}`} label={ind} onRemove={() => toggle("industries", ind)} />
+              ))}
+              {f.stages.map(st => (
+                <AppliedChip key={`s-${st}`} label={STAGE_LABELS[st] ?? st} onRemove={() => toggle("stages", st)} />
+              ))}
+              {f.geographies.map(g => (
+                <AppliedChip key={`g-${g}`} label={g} onRemove={() => toggle("geographies", g)} />
+              ))}
+              {f.minCheck > 0 && <AppliedChip label={`≥ ${formatCheck(f.minCheck)}`} onRemove={() => setF(p => ({ ...p, minCheck: 0 }))} />}
+              {f.maxCheck < 100_000_000 && <AppliedChip label={`≤ ${formatCheck(f.maxCheck)}`} onRemove={() => setF(p => ({ ...p, maxCheck: 100_000_000 }))} />}
+              {f.leadOnly && <AppliedChip label={t("investors.leadOnly")} onRemove={() => setF(p => ({ ...p, leadOnly: false }))} />}
+              {f.verifiedOnly && <AppliedChip label={t("investors.verifiedOnly")} onRemove={() => setF(p => ({ ...p, verifiedOnly: false }))} />}
+              <button onClick={() => setF(p => ({ ...DEFAULT, query: p.query }))}
+                className="text-xs text-cr-i4 hover:text-cr-i2 underline underline-offset-2 ml-1">
+                {t("investors.clearAllFilters")}
+              </button>
+            </div>
+          )}
+
           {/* Loading state */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-cr-i4">
@@ -472,6 +520,11 @@ export function InvestorsClient() {
                                 {inv.lead_rounds && (
                                   <span className="text-[10px] font-medium px-2 py-0.5 rounded-sm border border-cr-copper-br text-cr-copper bg-transparent uppercase tracking-wide">
                                     {t("investors.leadsRounds")}
+                                  </span>
+                                )}
+                                {myRaise && (inv.stages || []).includes(myRaise.stage) && (inv.industries || []).includes(myRaise.industry) && (
+                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-sm bg-cr-copper text-white uppercase tracking-wide">
+                                    {t("investors.fitsYourRaise")}
                                   </span>
                                 )}
                               </div>
