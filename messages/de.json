@@ -2206,7 +2206,8 @@
     "newThisMonth": "Neu diesen Monat"
   },
   "a11y": {
-    "skipToContent": "Zum Inhalt springen"
+    "skipToContent": "Zum Inhalt springen",
+    "backToTop": "Nach oben"
   },
   "palette": {
     "title": "Befehlspalette",
@@ -2214,5 +2215,14 @@
     "results": "Ergebnisse",
     "noResults": "Nichts passt zu „{q}“",
     "hint": "Listings und Investoren durchsuchen oder zu einer Seite springen."
+  },
+  "shortcuts": {
+    "title": "Tastaturkürzel",
+    "palette": "Befehlspalette öffnen",
+    "search": "Suchfeld fokussieren",
+    "move": "Durch Ergebnisse blättern",
+    "open": "Markiertes Ergebnis öffnen",
+    "close": "Dialog schließen",
+    "help": "Diese Liste anzeigen"
   }
 }

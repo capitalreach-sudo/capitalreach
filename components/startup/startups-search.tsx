@@ -10,6 +10,7 @@ import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
 import { STARTUP_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
 import { notify } from "@/components/ui/toast-notify";
+import { announce } from "@/lib/announce";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
@@ -653,6 +654,18 @@ export function StartupsSearch() {
     filters.newOnly ? 1 : 0,
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
+
+  // Filtering rewrites the whole grid without a navigation, which is silent to
+  // a screen reader: focus never moves and no page loads, so the only way to
+  // learn whether a filter did anything is to tab through the results. The
+  // first render is skipped -- announcing a count while the page title is
+  // still being read is noise, not information.
+  const hasAnnounced = useRef(false);
+  useEffect(() => {
+    if (loading) return;
+    if (!hasAnnounced.current) { hasAnnounced.current = true; return; }
+    announce(t("listings.showing", { current: visible.length, total: filtered.length }));
+  }, [visible.length, filtered.length, loading, t]);
 
   const patch = useCallback((delta: Partial<Filters>) => {
     setPage(1);

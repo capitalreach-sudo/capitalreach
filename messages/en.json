@@ -2206,7 +2206,8 @@
     "newThisMonth": "New this month"
   },
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "backToTop": "Back to top"
   },
   "palette": {
     "title": "Command palette",
@@ -2214,5 +2215,14 @@
     "results": "Results",
     "noResults": "Nothing matches “{q}”",
     "hint": "Search listings and investors, or jump to any page."
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "palette": "Open the command palette",
+    "search": "Focus the search box",
+    "move": "Move through results",
+    "open": "Open the highlighted result",
+    "close": "Close this dialog",
+    "help": "Show this list"
   }
 }

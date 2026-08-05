@@ -9,6 +9,9 @@ import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { BottomNav } from "@/components/shared/bottom-nav";
+import { ShortcutsHelp } from "@/components/shared/shortcuts-help";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { LiveRegion } from "@/components/ui/LiveRegion";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { getLocale } from "@/lib/locale-server";
@@ -98,7 +101,10 @@ export default function RootLayout({
         {/* Global shell. The Navbar is mounted per page, but these three are
             the same everywhere, so the layout is the one place they belong. */}
         <CommandPalette />
+        <ShortcutsHelp />
+        <ScrollToTop />
         <BottomNav />
+        <LiveRegion />
         <Toaster />
         <ToastNotifyProvider />
         <ServiceWorkerRegistrar />
