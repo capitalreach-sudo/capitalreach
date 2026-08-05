@@ -2237,5 +2237,24 @@
     "website": "Website ergänzen",
     "equity": "Angebotene Anteile angeben",
     "booking": "Buchungslink für Calls ergänzen"
+  },
+  "pulse": {
+    "title": "Diese Woche",
+    "healthTitle": "Zustand der Listings",
+    "signups": "Neue Anmeldungen",
+    "listings": "Neue Listings",
+    "deals": "Gestartete Deals",
+    "closed": "Abgeschlossene Deals",
+    "vsLastWeek": "ggü. Vorwoche",
+    "flat": "Keine Änderung",
+    "newActivity": "Neu diese Woche",
+    "needWork": "{count} brauchen Arbeit",
+    "noListings": "Noch keine aktiven Listings.",
+    "colListing": "Listing",
+    "colComplete": "Vollständig",
+    "colNext": "Als Nächstes",
+    "colUpdated": "Aktualisiert",
+    "colViews": "Aufrufe",
+    "daysAgo": "vor {count} T."
   }
 }

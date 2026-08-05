@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { AdminClient } from "@/components/admin/admin-client";
 import type { Profile, Startup, Investor, Deal } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
+import { AdminPulse, type PulseMetric, type HealthListing } from "@/components/admin/admin-pulse";
 
 // The exact embed shapes AdminClient's props declare; asserting them here is
 // licensed by the DB CHECK constraints (unions) and NOT NULL owner FKs (embeds).
@@ -9,8 +10,25 @@ type AdminStartup  = Startup  & { owner: { email: string; full_name: string } };
 type AdminInvestor = Investor & { owner: { email: string; full_name: string; subscription_tier: string } };
 type AdminDeal     = Deal     & { startup: { name: string }; investor: { slug: string } };
 
+// Two seven-day windows, so every pulse metric is "this week vs the one
+// before" rather than a total that only ever grows.
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
 export default async function AdminPage() {
   const supabase = await createServerSupabaseClient();
+  const now = Date.now();
+  const weekAgo = new Date(now - WEEK_MS).toISOString();
+  const twoWeeksAgo = new Date(now - 2 * WEEK_MS).toISOString();
+
+  // head:true — these are counts, so no rows cross the wire. The table name is
+  // the literal union rather than string: the client is typed against the
+  // generated schema, so a renamed table breaks the build here instead of
+  // returning a silent zero on the dashboard.
+  const countIn = (table: "profiles" | "startups" | "deals", col: string, from: string, to?: string) => {
+    let q = supabase.from(table).select("*", { count: "exact", head: true }).gte(col, from);
+    if (to) q = q.lt(col, to);
+    return q;
+  };
 
   // Middleware already guards this — fetch all data
   const [
@@ -29,6 +47,50 @@ export default async function AdminPage() {
     supabase.from("investors").select("*", { count: "exact", head: true }),
   ]);
 
+  // Pulse + listing health. Separate from the block above because these are
+  // aggregate counts and a differently-shaped listing row, not the same rows
+  // sliced again.
+  const [
+    { count: signupsNow }, { count: signupsPrev },
+    { count: listingsNow }, { count: listingsPrev },
+    { count: dealsNow }, { count: dealsPrev },
+    { count: closedNow }, { count: closedPrev },
+    { data: healthRows },
+  ] = await Promise.all([
+    countIn("profiles", "created_at", weekAgo),
+    countIn("profiles", "created_at", twoWeeksAgo, weekAgo),
+    countIn("startups", "created_at", weekAgo),
+    countIn("startups", "created_at", twoWeeksAgo, weekAgo),
+    countIn("deals", "created_at", weekAgo),
+    countIn("deals", "created_at", twoWeeksAgo, weekAgo),
+    supabase.from("deals").select("*", { count: "exact", head: true }).eq("status", "closed").gte("updated_at", weekAgo),
+    supabase.from("deals").select("*", { count: "exact", head: true }).eq("status", "closed").gte("updated_at", twoWeeksAgo).lt("updated_at", weekAgo),
+    // Aliased embeds so the rows satisfy listingCompleteness's input shape
+    // directly -- the same model the founder dashboard scores itself with, so
+    // admin and founder can never disagree about how finished a listing is.
+    supabase
+      .from("startups")
+      .select(`
+        id, name, slug, updated_at, pageviews, tagline, problem, solution, market,
+        competitive_advantage, use_of_funds, website, funding_target, equity_offered,
+        min_check_size, booking_url, mrr, arr, paying_customers, user_count,
+        founders:startup_founders(linkedin_url),
+        documents:startup_documents(id),
+        milestones:startup_milestones(id)
+      `)
+      .eq("status", "active")
+      .order("updated_at", { ascending: true })
+      .limit(50)
+      .returns<HealthListing[]>(),
+  ]);
+
+  const pulse: PulseMetric[] = [
+    { key: "signups",  labelKey: "pulse.signups",  now: signupsNow  ?? 0, prev: signupsPrev  ?? 0 },
+    { key: "listings", labelKey: "pulse.listings", now: listingsNow ?? 0, prev: listingsPrev ?? 0 },
+    { key: "deals",    labelKey: "pulse.deals",    now: dealsNow    ?? 0, prev: dealsPrev    ?? 0 },
+    { key: "closed",   labelKey: "pulse.closed",   now: closedNow   ?? 0, prev: closedPrev   ?? 0 },
+  ];
+
   // Revenue approximation (in real app, query Stripe)
   const tierPrices: Record<string, number> = {
     starter: 29,
@@ -45,6 +107,9 @@ export default async function AdminPage() {
   return (
     <>
       <Navbar />
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 24px 0" }}>
+        <AdminPulse metrics={pulse} listings={healthRows ?? []} />
+      </div>
       <AdminClient
         pendingStartups={pendingStartups ?? []}
         allStartups={allStartups ?? []}

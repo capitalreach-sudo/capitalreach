@@ -2237,5 +2237,24 @@
     "website": "Add your website",
     "equity": "State the equity on offer",
     "booking": "Add a booking link for calls"
+  },
+  "pulse": {
+    "title": "This week",
+    "healthTitle": "Listing health",
+    "signups": "New signups",
+    "listings": "New listings",
+    "deals": "Deals started",
+    "closed": "Deals closed",
+    "vsLastWeek": "vs last week",
+    "flat": "No change",
+    "newActivity": "New this week",
+    "needWork": "{count} need work",
+    "noListings": "No active listings yet.",
+    "colListing": "Listing",
+    "colComplete": "Complete",
+    "colNext": "Do this next",
+    "colUpdated": "Updated",
+    "colViews": "Views",
+    "daysAgo": "{count}d ago"
   }
 }
