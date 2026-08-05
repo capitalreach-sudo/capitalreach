@@ -926,7 +926,8 @@
     "runwayLabel": "ランウェイ",
     "recentSearches": "最近の検索",
     "noResultsFor": "「{query}」に一致する掲載はありません",
-    "noResultsBody": "フィルターを外すか、ステージや業種を広げるか、より一般的な語で検索してみてください。"
+    "noResultsBody": "フィルターを外すか、ステージや業種を広げるか、より一般的な語で検索してみてください。",
+    "pageSubtitle_one": "現在{count}社が掲載中"
   },
   "startup": {
     "back": "ディレクトリに戻る",

@@ -1002,7 +1002,8 @@
     "runwayLabel": "Runway",
     "recentSearches": "Letzte Suchen",
     "noResultsFor": "Keine Listings passen zu „{query}“",
-    "noResultsBody": "Entferne einen Filter, erweitere Phase oder Branche, oder suche allgemeiner."
+    "noResultsBody": "Entferne einen Filter, erweitere Phase oder Branche, oder suche allgemeiner.",
+    "pageSubtitle_one": "{count} Unternehmen derzeit gelistet"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",

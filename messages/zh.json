@@ -926,7 +926,8 @@
     "runwayLabel": "资金可用期",
     "recentSearches": "最近搜索",
     "noResultsFor": "没有与“{query}”匹配的项目",
-    "noResultsBody": "试着移除一个筛选条件、放宽阶段或行业，或使用更宽泛的关键词。"
+    "noResultsBody": "试着移除一个筛选条件、放宽阶段或行业，或使用更宽泛的关键词。",
+    "pageSubtitle_one": "当前{count}家公司在列"
   },
   "startup": {
     "back": "返回目录",

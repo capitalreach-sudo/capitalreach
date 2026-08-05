@@ -1006,7 +1006,8 @@
     "runwayLabel": "Runway",
     "recentSearches": "Recent searches",
     "noResultsFor": "No listings match “{query}”",
-    "noResultsBody": "Try removing a filter, widening the stage or industry, or searching a broader term."
+    "noResultsBody": "Try removing a filter, widening the stage or industry, or searching a broader term.",
+    "pageSubtitle_one": "{count} company currently listed"
   },
   "startup": {
     "back": "Back to directory",

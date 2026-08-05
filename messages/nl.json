@@ -917,7 +917,8 @@
     "runwayLabel": "Runway",
     "recentSearches": "Recente zoekopdrachten",
     "noResultsFor": "Geen aanbod komt overeen met “{query}”",
-    "noResultsBody": "Probeer een filter te verwijderen, de fase of sector te verbreden, of een algemenere term te zoeken."
+    "noResultsBody": "Probeer een filter te verwijderen, de fase of sector te verbreden, of een algemenere term te zoeken.",
+    "pageSubtitle_one": "{count} bedrijf momenteel vermeld"
   },
   "startupDetail": {
     "overview": "Overzicht",

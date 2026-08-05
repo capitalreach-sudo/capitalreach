@@ -917,7 +917,8 @@
     "runwayLabel": "Autonomia",
     "recentSearches": "Pesquisas recentes",
     "noResultsFor": "Nenhuma oportunidade corresponde a «{query}»",
-    "noResultsBody": "Tenta remover um filtro, alargar a fase ou o setor, ou pesquisar um termo mais geral."
+    "noResultsBody": "Tenta remover um filtro, alargar a fase ou o setor, ou pesquisar um termo mais geral.",
+    "pageSubtitle_one": "{count} empresa atualmente listada"
   },
   "startupDetail": {
     "overview": "Visão geral",

@@ -926,7 +926,8 @@
     "runwayLabel": "Pista",
     "recentSearches": "Búsquedas recientes",
     "noResultsFor": "Ninguna oportunidad coincide con «{query}»",
-    "noResultsBody": "Prueba a quitar un filtro, ampliar la etapa o el sector, o buscar un término más general."
+    "noResultsBody": "Prueba a quitar un filtro, ampliar la etapa o el sector, o buscar un término más general.",
+    "pageSubtitle_one": "{count} empresa actualmente listada"
   },
   "startup": {
     "back": "Volver al directorio",

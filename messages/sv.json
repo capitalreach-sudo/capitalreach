@@ -917,7 +917,8 @@
     "runwayLabel": "Runway",
     "recentSearches": "Senaste sökningar",
     "noResultsFor": "Inga noteringar matchar ”{query}”",
-    "noResultsBody": "Prova att ta bort ett filter, bredda fas eller bransch, eller söka på ett mer allmänt ord."
+    "noResultsBody": "Prova att ta bort ett filter, bredda fas eller bransch, eller söka på ett mer allmänt ord.",
+    "pageSubtitle_one": "{count} företag listat just nu"
   },
   "startupDetail": {
     "overview": "Översikt",

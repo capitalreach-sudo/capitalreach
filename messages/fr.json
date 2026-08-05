@@ -926,7 +926,8 @@
     "runwayLabel": "Trésorerie",
     "recentSearches": "Recherches récentes",
     "noResultsFor": "Aucune annonce ne correspond à « {query} »",
-    "noResultsBody": "Essayez de retirer un filtre, d'élargir le stade ou le secteur, ou de chercher un terme plus général."
+    "noResultsBody": "Essayez de retirer un filtre, d'élargir le stade ou le secteur, ou de chercher un terme plus général.",
+    "pageSubtitle_one": "{count} entreprise actuellement listée"
   },
   "startup": {
     "back": "Retour à l'annuaire",

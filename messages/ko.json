@@ -917,7 +917,8 @@
     "runwayLabel": "런웨이",
     "recentSearches": "최근 검색",
     "noResultsFor": "“{query}”와 일치하는 목록이 없습니다",
-    "noResultsBody": "필터를 제거하거나 단계·산업 범위를 넓히거나 더 일반적인 검색어를 사용해 보세요."
+    "noResultsBody": "필터를 제거하거나 단계·산업 범위를 넓히거나 더 일반적인 검색어를 사용해 보세요.",
+    "pageSubtitle_one": "현재 {count}개 사가 등록됨"
   },
   "startupDetail": {
     "overview": "개요",
