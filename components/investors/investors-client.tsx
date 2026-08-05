@@ -56,12 +56,14 @@ function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void 
   );
 }
 
-function Section({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+function Section({ title, count = 0, children, defaultOpen = true }: { title: string; count?: number; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div>
       <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between py-1 mb-2 group">
-        <p className="text-xs font-bold text-cr-i4 uppercase tracking-wide group-hover:text-cr-i2 transition-colors">{title}</p>
+        <p className="text-xs font-bold text-cr-i4 uppercase tracking-wide group-hover:text-cr-i2 transition-colors">
+          {title}{count > 0 && <span className="text-cr-copper normal-case tracking-normal"> · {count}</span>}
+        </p>
         {open ? <ChevronUp className="h-3.5 w-3.5 text-cr-i4" /> : <ChevronDown className="h-3.5 w-3.5 text-cr-i4" />}
       </button>
       {open && <div>{children}</div>}
@@ -114,6 +116,7 @@ export function InvestorsClient() {
   // Typeahead over the already-loaded list -- instant, no round trip.
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const searchRef = useRef<HTMLInputElement>(null);
   // If a founder is browsing, their own stage and industry mark which
   // investors actually fit the raise -- the directory as a targeting tool.
   const [myRaise, setMyRaise] = useState<{ stage: string; industry: string } | null>(null);
@@ -164,6 +167,16 @@ export function InvestorsClient() {
         .from("startups").select("stage, industry").eq("owner_id", user.id).maybeSingle();
       if (st) setMyRaise({ stage: st.stage, industry: st.industry });
     })();
+    // "/" jumps to search from anywhere on the page, unless already typing.
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   function toggle<K extends "types" | "industries" | "stages" | "geographies">(key: K, val: string) {
@@ -258,7 +271,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Investor type */}
-      <Section title={t("investors.investorType")}>
+      <Section title={t("investors.investorType")} count={f.types.length}>
         <div className="flex flex-wrap gap-1.5">
           {Object.entries(TYPE_META).map(([val, meta]) => (
             <button key={val} onClick={() => toggle("types", val)}
@@ -275,7 +288,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Check size */}
-      <Section title={t("investors.checkSizeRange")}>
+      <Section title={t("investors.checkSizeRange")} count={(f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0)}>
         <div className="px-1 pt-1">
           <Slider
             min={0} max={100_000_000} step={100_000}
@@ -292,7 +305,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Stages */}
-      <Section title={t("investors.investmentStage")}>
+      <Section title={t("investors.investmentStage")} count={f.stages.length}>
         <div className="flex flex-wrap gap-1.5">
           {STAGES.map(s => (
             <button key={s.value} onClick={() => toggle("stages", s.value)}
@@ -308,7 +321,7 @@ export function InvestorsClient() {
       <div className="h-px bg-border-dark" />
 
       {/* Industries */}
-      <Section title={t("investors.focusIndustries")} defaultOpen={false}>
+      <Section title={t("investors.focusIndustries")} count={f.industries.length} defaultOpen={false}>
         <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
           {INDUSTRIES.map(ind => (
             <label key={ind} className={cn(
@@ -326,7 +339,7 @@ export function InvestorsClient() {
 
       {/* Geography — options come from the loaded investors, so the list never
           offers a country with zero investors behind it. */}
-      <Section title={t("investors.geography")} defaultOpen={false}>
+      <Section title={t("investors.geography")} count={f.geographies.length} defaultOpen={false}>
         <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
           {allGeographies.map(geo => (
             <label key={geo} className={cn(
@@ -373,6 +386,7 @@ export function InvestorsClient() {
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-cr-i4" />
               <input
+                ref={searchRef}
                 value={f.query}
                 onChange={e => { setF(p => ({ ...p, query: e.target.value })); setSuggestOpen(true); }}
                 onFocus={() => setSuggestOpen(true)}

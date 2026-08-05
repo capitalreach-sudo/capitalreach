@@ -2015,7 +2015,11 @@
     "markAllRead": "Mark all read",
     "empty": "Nothing new.",
     "viewAll": "View all notifications",
-    "loadMore": "Show older"
+    "loadMore": "Show older",
+    "tab_all": "All",
+    "tab_deals": "Deals",
+    "tab_interest": "Interest",
+    "tab_account": "Account"
   },
   "authErrors": {
     "generic": "Something went wrong. Please try again.",
@@ -2068,5 +2072,8 @@
     "startups": "Startups",
     "investors": "Investors",
     "seeAll": "See all results for \"{q}\""
+  },
+  "messages": {
+    "seen": "Seen"
   }
 }

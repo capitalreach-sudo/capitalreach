@@ -126,6 +126,8 @@ export interface Message {
   sender_id: string;
   body: string;
   created_at: string;
+  /** Set when the counterpart opened the thread (messages/unread POST). */
+  read_at?: string | null;
 }
 
 // Based on the generated Row so the field list and nullability can never

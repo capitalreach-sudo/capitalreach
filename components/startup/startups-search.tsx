@@ -438,9 +438,23 @@ function ResultCard({ s, saved, viewed, hidden, onSave, onHide }: { s: Startup; 
 export function StartupsSearch() {
   const { t } = useTranslation();
   const searchParams  = useSearchParams();
-  const initialQuery  = searchParams.get("q") ?? "";
 
-  const [filters, setFilters]         = useState<Filters>({ ...DEFAULT_FILTERS, query: initialQuery });
+  // The whole filter set lives in the address bar: a filtered view can be
+  // shared, bookmarked, or revisited via back/forward. Parsing happens once
+  // as the initial state; writing back is debounced below.
+  const initialFilters: Filters = {
+    ...DEFAULT_FILTERS,
+    query:      searchParams.get("q") ?? "",
+    industries: searchParams.get("industries")?.split(",").filter(Boolean) ?? [],
+    stages:     searchParams.get("stages")?.split(",").filter(Boolean) ?? [],
+    mrrMin:     Number(searchParams.get("mrr")) || 0,
+    aiScoreMin: Number(searchParams.get("score")) || 0,
+    country:    searchParams.get("country") ?? "",
+    newOnly:    searchParams.get("new") === "1",
+    sort:       searchParams.get("sort") ?? DEFAULT_FILTERS.sort,
+  };
+
+  const [filters, setFilters]         = useState<Filters>(initialFilters);
   const [viewMode, setViewMode]       = useState<"grid" | "list">("grid");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [allStartups, setAllStartups] = useState<Startup[]>([]);
@@ -468,6 +482,7 @@ export function StartupsSearch() {
         .slice(0, 6)
     : [];
   const supabase = useRef(createClient()).current;
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function load() {
@@ -494,6 +509,16 @@ export function StartupsSearch() {
       const { data: inv } = await supabase.from("investors").select("id").eq("owner_id", user.id).maybeSingle();
       myInvestorId.current = inv?.id ?? null;
     })();
+    // "/" jumps to search from anywhere on the page, unless already typing.
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const filtered = useMemo(() => {
@@ -536,6 +561,29 @@ export function StartupsSearch() {
   }, []);
 
   const resetFilters = useCallback(() => { setFilters(DEFAULT_FILTERS); setPage(1); }, []);
+
+  // Write the filter set back to the address bar. replaceState rather than the
+  // router: no server round trip, no history spam -- back/forward still works
+  // across real navigations, and the current URL is always shareable.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      const p = new URLSearchParams();
+      if (filters.query)              p.set("q", filters.query);
+      if (filters.industries.length)  p.set("industries", filters.industries.join(","));
+      if (filters.stages.length)      p.set("stages", filters.stages.join(","));
+      if (filters.mrrMin > 0)         p.set("mrr", String(filters.mrrMin));
+      if (filters.aiScoreMin > 0)     p.set("score", String(filters.aiScoreMin));
+      if (filters.country)            p.set("country", filters.country);
+      if (filters.newOnly)            p.set("new", "1");
+      if (filters.sort !== DEFAULT_FILTERS.sort) p.set("sort", filters.sort);
+      const qs = p.toString();
+      const next = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+      if (next !== window.location.pathname + window.location.search) {
+        window.history.replaceState(window.history.state, "", next);
+      }
+    }, 300);
+    return () => clearTimeout(id);
+  }, [filters]);
 
   function toggleSave(id: string) {
     setSavedIds((prev) => {
@@ -638,6 +686,7 @@ export function StartupsSearch() {
           <div style={{ position: "relative", flexShrink: 0 }}>
             <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
             <input
+              ref={searchRef}
               type="text"
               value={filters.query}
               onChange={(e) => { patch({ query: e.target.value }); setSuggestOpen(true); }}

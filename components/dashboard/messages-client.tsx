@@ -486,7 +486,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.startConversation")}</p>
                   </div>
                 )}
-                {messages.map((msg, i) => {
+                {(() => {
+                  // One explicit receipt under the newest own message the
+                  // counterpart has read; the per-bubble check colour carries
+                  // the rest.
+                  const lastReadOwnId = [...messages].reverse().find(m => m.sender_id === profile.id && m.read_at)?.id;
+                  return messages.map((msg, i) => {
                   const isOwn = msg.sender_id === profile.id;
                   const showTime = i === 0 || (new Date(msg.created_at).getTime() - new Date(messages[i - 1].created_at).getTime()) > 5 * 60 * 1000;
                   return (
@@ -510,13 +515,19 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: isOwn ? "rgba(255,255,255,0.6)" : "var(--cr-ink-4)" }}>
                               {new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                             </span>
-                            {isOwn && <CheckCheck style={{ width: 11, height: 11, color: "rgba(255,255,255,0.6)" }} />}
+                            {isOwn && <CheckCheck aria-label={msg.read_at ? t("messages.seen") : undefined} style={{ width: 11, height: 11, color: msg.read_at ? "#fff" : "rgba(255,255,255,0.4)" }} />}
                           </div>
                         </div>
                       </div>
+                      {isOwn && msg.id === lastReadOwnId && (
+                        <p style={{ textAlign: "right", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+                          {t("messages.seen")}
+                        </p>
+                      )}
                     </div>
                   );
-                })}
+                  });
+                })()}
                 <div ref={bottomRef} />
               </div>
 

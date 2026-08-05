@@ -2015,7 +2015,11 @@
     "markAllRead": "Alle als gelesen markieren",
     "empty": "Nichts Neues.",
     "viewAll": "Alle Benachrichtigungen ansehen",
-    "loadMore": "Ältere anzeigen"
+    "loadMore": "Ältere anzeigen",
+    "tab_all": "Alle",
+    "tab_deals": "Deals",
+    "tab_interest": "Interesse",
+    "tab_account": "Konto"
   },
   "authErrors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
@@ -2068,5 +2072,8 @@
     "startups": "Startups",
     "investors": "Investoren",
     "seeAll": "Alle Ergebnisse für „{q}“ anzeigen"
+  },
+  "messages": {
+    "seen": "Gelesen"
   }
 }

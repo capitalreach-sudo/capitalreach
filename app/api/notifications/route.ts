@@ -17,6 +17,17 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const unreadOnly = req.nextUrl.searchParams.get("unread") === "1";
+  // Optional type filter (the page's tabs). Values are intersected with the
+  // known union so nothing user-supplied reaches the query as a surprise;
+  // an empty intersection means no filter rather than an empty feed.
+  const KNOWN_TYPES = new Set([
+    "deal_opened", "deal_stage", "deal_closed", "deal_passed",
+    "message", "follow_up_due", "contract_status", "nda_signed",
+    "listing_approved", "listing_rejected", "team_added",
+    "tier_changed", "search_match", "listing_saved", "listing_update",
+  ]);
+  const types = (req.nextUrl.searchParams.get("types") ?? "")
+    .split(",").map((t) => t.trim()).filter((t) => KNOWN_TYPES.has(t));
   // Cursor pagination: pass the created_at AND id of the last row you have.
   // The cursor must be composite -- rows inserted in one transaction share a
   // created_at (Postgres now() is per-transaction), so a timestamp-only
@@ -39,6 +50,7 @@ export async function GET(req: NextRequest) {
     .limit(30);
 
   if (unreadOnly) query = query.is("read_at", null);
+  if (types.length > 0) query = query.in("type", types);
   if (validBefore && validBeforeId) {
     query = query.or(
       `created_at.lt.${validBefore},and(created_at.eq.${validBefore},id.lt.${validBeforeId})`

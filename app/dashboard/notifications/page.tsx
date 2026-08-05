@@ -28,22 +28,34 @@ export default function NotificationsPage() {
   const [more, setMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  async function load() {
-    const res = await fetch("/api/notifications");
+  // Tabs are a server-side type filter, so pagination stays correct inside a
+  // tab instead of filtering already-fetched pages client-side.
+  const TAB_TYPES: Record<string, string> = {
+    all: "",
+    deals: "deal_opened,deal_stage,deal_closed,deal_passed,follow_up_due,contract_status,nda_signed",
+    interest: "listing_saved,listing_update,search_match",
+    account: "listing_approved,listing_rejected,team_added,tier_changed,message",
+  };
+  const [tab, setTab] = useState<keyof typeof TAB_TYPES>("all");
+
+  async function load(forTab: string = tab) {
+    const typesQ = TAB_TYPES[forTab] ? `?types=${TAB_TYPES[forTab]}` : "";
+    const res = await fetch(`/api/notifications${typesQ}`);
     if (!res.ok) { setRows([]); return; }
     const d = await res.json();
     setRows(d.notifications ?? []);
     setUnread(d.unread ?? 0);
     setMore((d.notifications ?? []).length === 30);
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => { setRows(null); load(tab); }, [tab]);
 
   async function loadMore() {
     if (!rows?.length) return;
     setLoadingMore(true);
     const last = rows[rows.length - 1];
+    const typesQ = TAB_TYPES[tab] ? `&types=${TAB_TYPES[tab]}` : "";
     const res = await fetch(
-      `/api/notifications?before=${encodeURIComponent(last.created_at)}&beforeId=${encodeURIComponent(last.id)}`
+      `/api/notifications?before=${encodeURIComponent(last.created_at)}&beforeId=${encodeURIComponent(last.id)}${typesQ}`
     );
     setLoadingMore(false);
     if (!res.ok) return;
@@ -89,6 +101,17 @@ export default function NotificationsPage() {
               {t("notifications.markAllRead")}
             </Button>
           )}
+        </div>
+
+        <div className="flex items-center gap-1 mb-4 border-b border-cr-p4">
+          {(Object.keys(TAB_TYPES) as Array<keyof typeof TAB_TYPES>).map((k) => (
+            <button key={k} onClick={() => setTab(k)}
+              className={`px-3.5 py-2 text-sm transition-colors border-b-2 -mb-px ${
+                tab === k ? "border-cr-copper text-cr-ink font-semibold" : "border-transparent text-cr-i4 hover:text-cr-i2"
+              }`}>
+              {t(`notifications.tab_${k}`)}
+            </button>
+          ))}
         </div>
 
         {rows === null ? (
