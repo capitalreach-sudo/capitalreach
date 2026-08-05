@@ -939,3 +939,56 @@ body::before {
   .fee-floating-badge { transition: opacity 150ms ease; transform: none; }
   .trace-border::before { animation: none; }
 }
+
+/* ── CTA buttons: one definition, used by the hero and anywhere else a
+      primary/ghost pill is needed. Lift on hover, settle on press --
+      motion that reports the click rather than decorating it. ────────── */
+.cr-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 140ms cubic-bezier(.16,1,.3,1), box-shadow 140ms ease,
+              background-color 140ms ease, border-color 140ms ease;
+}
+.cr-cta-primary {
+  background: var(--cr-copper);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(26,22,18,0.12);
+}
+.cr-cta-primary:hover {
+  background: var(--cr-copper-l);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(181,101,29,0.28);
+}
+.cr-cta-primary:active { transform: translateY(0) scale(0.99); box-shadow: 0 1px 2px rgba(26,22,18,0.12); }
+.cr-cta-ghost {
+  background: transparent;
+  color: var(--cr-ink-2);
+  font-weight: 400;
+  border: 1px solid var(--cr-paper-4);
+}
+.cr-cta-ghost:hover { background: var(--cr-paper-2); border-color: var(--cr-ink-4); transform: translateY(-1px); }
+.cr-cta-ghost:active { transform: translateY(0) scale(0.99); }
+
+/* Keyboard users get the same copper the mouse gets -- the default browser
+   outline disappears against paper. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--cr-copper);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Anyone who asked their system for less motion gets none of it. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up, .animate-fade-up-1, .animate-fade-up-2,
+  .animate-fade-up-3, .animate-fade-up-4 { animation: none !important; }
+  .cr-cta:hover, .cr-cta:active { transform: none !important; }
+  * { scroll-behavior: auto !important; }
+}

@@ -55,7 +55,8 @@
     "trustLaunch": "Free during launch",
     "proofFee": "success fee at close",
     "proofUpfront": "upfront cost",
-    "proofVetted": "listings vetted"
+    "proofVetted": "listings vetted",
+    "liveNow": "Live on the platform"
   },
   "feeStrip": {
     "tagline": "success fee — only after you close. Industry average: 5–7% upfront.",

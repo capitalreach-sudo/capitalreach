@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { LOCALES, DEFAULT_LOCALE } from "@/lib/locale";
+import { LOCALES, DEFAULT_LOCALE, isRTL } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 
 /**
@@ -36,11 +36,27 @@ export function LocaleProvider({
 }) {
   const [locale, setLocale] = useState<Locale>(initialLocale);
 
-  // The switcher does a full navigation, so this is belt-and-braces: it keeps
-  // the tree correct if the cookie is changed without one (another tab, or a
-  // future in-place switch).
+  // Static routes (force-static: the homepage and the five content pages) are
+  // rendered at build time, where there is no request and therefore no cookie
+  // -- the server seed is always the default locale. Without this mount sync a
+  // German visitor got English on those pages permanently, and the switcher
+  // looked broken because navigating served the same prerendered HTML again.
+  //
+  // Deliberately after hydration, so server and client still agree on the
+  // first paint; the correction costs one frame on static pages only, and a
+  // frame of English beats a page that never speaks your language.
   useEffect(() => {
-    const sync = () => setLocale(readLocaleCookie() ?? initialLocale);
+    const sync = () => {
+      const next = readLocaleCookie() ?? initialLocale;
+      setLocale(next);
+      // The layout stamped lang/dir from the build-time locale for the same
+      // reason; keep the document honest for screen readers and RTL.
+      if (typeof document !== "undefined") {
+        document.documentElement.lang = next;
+        document.documentElement.dir = isRTL(next) ? "rtl" : "ltr";
+      }
+    };
+    sync();
     window.addEventListener("localechange", sync);
     return () => window.removeEventListener("localechange", sync);
   }, [initialLocale]);
