@@ -526,7 +526,14 @@
     "strength1": "Débil",
     "strength2": "Aceptable",
     "strength3": "Buena",
-    "strength4": "Fuerte"
+    "strength4": "Fuerte",
+    "mustAcceptTerms": "Debes aceptar los Términos del servicio y la Política de privacidad para continuar.",
+    "resendEmail": "Reenviar",
+    "resending": "Enviando…",
+    "resendIn": "Reenviar en {n} s",
+    "resendSent": "Correo de verificación reenviado.",
+    "selectedPlan": "Te estás registrando en el plan {plan}.",
+    "selectedPlanLaunch": "Durante el lanzamiento todos los planes son gratis: no se te cobrará nada."
   },
   "dashboard": {
     "overview": "Resumen",
@@ -876,7 +883,17 @@
     "accountDeleted": "Cuenta eliminada",
     "accountDeletedDesc": "Tu cuenta y todos los datos se han eliminado permanentemente.",
     "networkError": "Error de red",
-    "networkErrorDesc": "No se pudo conectar con el servidor. Inténtalo de nuevo."
+    "networkErrorDesc": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+    "exportData": "Exporta tus datos",
+    "exportDataSub": "Descarga una copia de todo lo que CapitalReach guarda sobre ti — perfil, listado, operaciones, mensajes y notificaciones — en un archivo JSON.",
+    "exportDownload": "Descargar mis datos",
+    "bookingUrl": "Enlace de agenda (Calendly, Cal.com, …)",
+    "notifPrefs": "Preferencias de notificaciones",
+    "notifPrefsSub": "Desmarca un grupo para dejar de recibir esas notificaciones. Los mensajes directos no se pueden silenciar.",
+    "ngDeals": "Actividad de operaciones (etapas, contratos, NDA, seguimientos)",
+    "ngInterest": "Interés en tu listado (guardados, novedades, coincidencias, compartidos)",
+    "ngQa": "Preguntas y solicitudes de documentos",
+    "ngAccount": "Cuenta y equipo (aprobaciones, cambios de plan, invitaciones)"
   },
   "startups": {
     "pageTitle": "Rondas de financiación activas",
@@ -1900,5 +1917,58 @@
     "open": "Abrir el resultado seleccionado",
     "close": "Cerrar este diálogo",
     "help": "Mostrar esta lista"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar todo como leído",
+    "empty": "Nada nuevo.",
+    "viewAll": "Ver todas las notificaciones",
+    "loadMore": "Ver anteriores",
+    "tab_all": "Todas",
+    "tab_deals": "Operaciones",
+    "tab_interest": "Interés",
+    "tab_account": "Cuenta",
+    "clearRead": "Borrar leídas"
+  },
+  "authErrors": {
+    "generic": "Algo ha fallado. Inténtalo de nuevo.",
+    "rateLimitSeconds": "Espera {n} segundos antes de volver a intentarlo.",
+    "emailRateLimit": "Hemos enviado demasiados correos en poco tiempo. Espera unos minutos e inténtalo de nuevo.",
+    "tooManyRequests": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+    "alreadyRegistered": "Ya existe una cuenta con este correo. Prueba a iniciar sesión.",
+    "invalidCredentials": "Ese correo y contraseña no coinciden. Revísalos e inténtalo de nuevo.",
+    "emailNotConfirmed": "Confirma tu correo primero: busca en tu bandeja el enlace que te enviamos.",
+    "passwordTooShort": "Tu contraseña necesita al menos {n} caracteres.",
+    "passwordWeak": "Elige una contraseña más fuerte: esta es demasiado fácil de adivinar.",
+    "invalidEmail": "Esa dirección de correo no parece válida.",
+    "signupsDisabled": "Los nuevos registros están pausados. Vuelve a intentarlo pronto.",
+    "linkExpired": "Ese enlace ha caducado. Solicita uno nuevo.",
+    "samePassword": "Tu nueva contraseña debe ser distinta de la actual.",
+    "unreachable": "No se puede contactar con el servidor. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "messages": {
+    "seen": "Visto",
+    "templates": "Plantillas",
+    "tplIntroLabel": "Presentación",
+    "tplIntro": "Hola: he visto tu listado en CapitalReach y encaja con lo que invierto. Me encantaría saber más sobre cómo va la ronda.",
+    "tplMetricsLabel": "Pedir métricas",
+    "tplMetrics": "Gracias por el resumen. ¿Podrías compartir tus métricas mensuales más recientes —MRR, crecimiento, churn y pista de efectivo— para poder analizarlo bien?",
+    "tplCallLabel": "Proponer una llamada",
+    "tplCall": "Esto pinta bien. ¿Te vendría bien una llamada de 30 minutos esta semana o la próxima? Me adapto a tu agenda."
+  },
+  "completeness": {
+    "nextBest": "Haz esto ahora",
+    "worth": "+{points} puntos",
+    "andMore": "y {count} más",
+    "traction": "Añade una cifra de tracción (MRR, ARR o usuarios)",
+    "website": "Añade tu sitio web",
+    "equity": "Indica el porcentaje de participación ofrecido",
+    "booking": "Añade un enlace para agendar llamadas"
+  },
+  "viewAs": {
+    "banner": "Viendo el panel de {name} como administrador",
+    "readOnly": "Solo lectura: las acciones están desactivadas",
+    "exit": "Volver al panel de administración",
+    "open": "Ver panel"
   }
 }

@@ -517,7 +517,14 @@
     "tryDifferentEmail": "Prova en annan e-post",
     "unexpectedError": "Ett oväntat fel inträffade.",
     "verifyEmailSent": "Vi har skickat en verifieringslänk till",
-    "welcomeToast": "Välkommen till CapitalReach. Ställer in din profil…"
+    "welcomeToast": "Välkommen till CapitalReach. Ställer in din profil…",
+    "mustAcceptTerms": "Du måste godkänna användarvillkoren och integritetspolicyn för att fortsätta.",
+    "resendEmail": "Skicka igen",
+    "resending": "Skickar…",
+    "resendIn": "Skicka igen om {n} s",
+    "resendSent": "Verifieringsmejlet skickades igen.",
+    "selectedPlan": "Du registrerar dig för {plan}-planen.",
+    "selectedPlanLaunch": "Under lanseringen är alla planer gratis — du debiteras inget."
   },
   "dashboard": {
     "overview": "Översikt",
@@ -867,7 +874,17 @@
     "accountDeletedDesc": "Ditt konto och all data har tagits bort permanent.",
     "networkError": "Nätverksfel",
     "networkErrorDesc": "Kunde inte nå servern. Försök igen.",
-    "backToDashboard": "Tillbaka"
+    "backToDashboard": "Tillbaka",
+    "exportData": "Exportera dina uppgifter",
+    "exportDataSub": "Ladda ner en kopia av allt CapitalReach sparar om dig — profil, notering, affärer, meddelanden och aviseringar — som en JSON-fil.",
+    "exportDownload": "Ladda ner mina uppgifter",
+    "bookingUrl": "Bokningslänk (Calendly, Cal.com, …)",
+    "notifPrefs": "Aviseringsinställningar",
+    "notifPrefsSub": "Avmarkera en grupp för att sluta få de aviseringarna. Direktmeddelanden kan inte tystas.",
+    "ngDeals": "Affärsaktivitet (steg, avtal, NDA, uppföljningar)",
+    "ngInterest": "Intresse för din notering (sparningar, uppdateringar, matchningar, delningar)",
+    "ngQa": "Frågor och dokumentförfrågningar",
+    "ngAccount": "Konto och team (godkännanden, planändringar, inbjudningar)"
   },
   "startups": {
     "pageTitle": "Aktiva finansieringsrundor",
@@ -1900,5 +1917,58 @@
     "open": "Öppna markerat resultat",
     "close": "Stäng dialogen",
     "help": "Visa listan"
+  },
+  "notifications": {
+    "title": "Aviseringar",
+    "markAllRead": "Markera allt som läst",
+    "empty": "Inget nytt.",
+    "viewAll": "Visa alla aviseringar",
+    "loadMore": "Visa äldre",
+    "tab_all": "Alla",
+    "tab_deals": "Affärer",
+    "tab_interest": "Intresse",
+    "tab_account": "Konto",
+    "clearRead": "Rensa lästa"
+  },
+  "authErrors": {
+    "generic": "Något gick fel. Försök igen.",
+    "rateLimitSeconds": "Vänta {n} sekunder innan du försöker igen.",
+    "emailRateLimit": "Vi har skickat för många mejl på kort tid. Vänta några minuter och försök igen.",
+    "tooManyRequests": "För många försök. Vänta en stund och försök igen.",
+    "alreadyRegistered": "Ett konto med den e-postadressen finns redan. Prova att logga in.",
+    "invalidCredentials": "E-postadressen och lösenordet stämmer inte. Kontrollera båda och försök igen.",
+    "emailNotConfirmed": "Bekräfta din e-post först — leta efter länken i inkorgen.",
+    "passwordTooShort": "Lösenordet behöver minst {n} tecken.",
+    "passwordWeak": "Välj ett starkare lösenord — det här är för lätt att gissa.",
+    "invalidEmail": "Den e-postadressen ser inte giltig ut.",
+    "signupsDisabled": "Nya registreringar är pausade. Kom tillbaka snart.",
+    "linkExpired": "Länken har gått ut. Begär en ny.",
+    "samePassword": "Det nya lösenordet måste skilja sig från det nuvarande.",
+    "unreachable": "Kan inte nå servern. Kontrollera din anslutning och försök igen."
+  },
+  "messages": {
+    "seen": "Sedd",
+    "templates": "Mallar",
+    "tplIntroLabel": "Introduktion",
+    "tplIntro": "Hej — jag såg er notering på CapitalReach och den passar det jag investerar i. Jag vill gärna höra hur rundan ligger till.",
+    "tplMetricsLabel": "Be om nyckeltal",
+    "tplMetrics": "Tack för översikten. Kan du dela de senaste månadssiffrorna — MRR, tillväxt, churn och runway — så att jag kan titta ordentligt?",
+    "tplCallLabel": "Föreslå ett samtal",
+    "tplCall": "Det här ser lovande ut. Skulle du vara öppen för ett 30-minuterssamtal den här eller nästa vecka? Jag anpassar mig efter ditt schema."
+  },
+  "completeness": {
+    "nextBest": "Gör det här härnäst",
+    "worth": "+{points} poäng",
+    "andMore": "och {count} till",
+    "traction": "Lägg till ett traktionsvärde (MRR, ARR eller användare)",
+    "website": "Lägg till din webbplats",
+    "equity": "Ange erbjuden ägarandel",
+    "booking": "Lägg till en bokningslänk för samtal"
+  },
+  "viewAs": {
+    "banner": "Visar {name}s panel som administratör",
+    "readOnly": "Skrivskyddat — åtgärder är avstängda",
+    "exit": "Tillbaka till admin",
+    "open": "Visa panel"
   }
 }

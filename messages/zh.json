@@ -526,7 +526,14 @@
     "strength1": "弱",
     "strength2": "一般",
     "strength3": "良好",
-    "strength4": "强"
+    "strength4": "强",
+    "mustAcceptTerms": "继续前需接受服务条款与隐私政策。",
+    "resendEmail": "重新发送",
+    "resending": "发送中…",
+    "resendIn": "{n} 秒后可重发",
+    "resendSent": "已重新发送验证邮件。",
+    "selectedPlan": "你正在注册 {plan} 方案。",
+    "selectedPlanLaunch": "上线期间所有方案均免费，不会向你收费。"
   },
   "dashboard": {
     "overview": "概览",
@@ -876,7 +883,17 @@
     "accountDeleted": "账户已删除",
     "accountDeletedDesc": "您的账户和所有数据已被永久删除。",
     "networkError": "网络错误",
-    "networkErrorDesc": "无法连接到服务器，请重试。"
+    "networkErrorDesc": "无法连接到服务器，请重试。",
+    "exportData": "导出你的数据",
+    "exportDataSub": "下载 CapitalReach 保存的关于你的全部内容（资料、项目、交易、消息与通知），格式为 JSON 文件。",
+    "exportDownload": "下载我的数据",
+    "bookingUrl": "预约链接（Calendly、Cal.com 等）",
+    "notifPrefs": "通知偏好",
+    "notifPrefsSub": "取消勾选某个分组即可停止该类通知。私信无法静音。",
+    "ngDeals": "交易动态（阶段、合同、保密协议、跟进）",
+    "ngInterest": "对你项目的关注（收藏、更新、匹配、分享）",
+    "ngQa": "提问与文件请求",
+    "ngAccount": "账户与团队（审核、方案变更、团队邀请）"
   },
   "startups": {
     "pageTitle": "活跃融资轮次",
@@ -1900,5 +1917,58 @@
     "open": "打开选中的结果",
     "close": "关闭此对话框",
     "help": "显示此列表"
+  },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "全部标为已读",
+    "empty": "暂无新通知。",
+    "viewAll": "查看全部通知",
+    "loadMore": "显示更早",
+    "tab_all": "全部",
+    "tab_deals": "交易",
+    "tab_interest": "关注",
+    "tab_account": "账户",
+    "clearRead": "清除已读"
+  },
+  "authErrors": {
+    "generic": "出了点问题，请重试。",
+    "rateLimitSeconds": "请等待 {n} 秒后重试。",
+    "emailRateLimit": "短时间内发送了过多邮件，请等待几分钟后重试。",
+    "tooManyRequests": "尝试次数过多，请稍候重试。",
+    "alreadyRegistered": "该邮箱已注册，请尝试登录。",
+    "invalidCredentials": "邮箱与密码不匹配，请检查后重试。",
+    "emailNotConfirmed": "请先确认邮箱——查看收件箱中的链接。",
+    "passwordTooShort": "密码至少需要 {n} 个字符。",
+    "passwordWeak": "请选择更强的密码——当前密码太容易被猜到。",
+    "invalidEmail": "该邮箱地址似乎无效。",
+    "signupsDisabled": "新注册暂时暂停，请稍后再试。",
+    "linkExpired": "该链接已过期，请重新获取。",
+    "samePassword": "新密码必须与当前密码不同。",
+    "unreachable": "无法连接服务器，请检查网络后重试。"
+  },
+  "messages": {
+    "seen": "已读",
+    "templates": "模板",
+    "tplIntroLabel": "自我介绍",
+    "tplIntro": "你好，我在 CapitalReach 上看到贵司的项目，与我的投资方向契合。想进一步了解本轮融资的进展。",
+    "tplMetricsLabel": "索取数据",
+    "tplMetrics": "感谢介绍。方便分享最新的月度数据吗——MRR、增长、流失率和资金可用期，以便我认真评估。",
+    "tplCallLabel": "提议通话",
+    "tplCall": "看起来很有潜力。本周或下周方便安排 30 分钟通话吗？时间以你为准。"
+  },
+  "completeness": {
+    "nextBest": "下一步",
+    "worth": "+{points} 分",
+    "andMore": "还有 {count} 项",
+    "traction": "添加一项业务进展数据（MRR、ARR 或用户数）",
+    "website": "添加你的网站",
+    "equity": "说明出让的股权比例",
+    "booking": "添加通话预约链接"
+  },
+  "viewAs": {
+    "banner": "正以管理员身份查看 {name} 的仪表板",
+    "readOnly": "只读——操作已禁用",
+    "exit": "返回管理后台",
+    "open": "查看仪表板"
   }
 }

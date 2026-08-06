@@ -517,7 +517,14 @@
     "tryDifferentEmail": "Tentar outro e-mail",
     "unexpectedError": "Ocorreu um erro inesperado.",
     "verifyEmailSent": "Enviámos um link de verificação para",
-    "welcomeToast": "Bem-vindo à CapitalReach. A configurar o seu perfil…"
+    "welcomeToast": "Bem-vindo à CapitalReach. A configurar o seu perfil…",
+    "mustAcceptTerms": "Tens de aceitar os Termos de Serviço e a Política de Privacidade para continuar.",
+    "resendEmail": "Reenviar",
+    "resending": "A enviar…",
+    "resendIn": "Reenviar em {n} s",
+    "resendSent": "E-mail de verificação reenviado.",
+    "selectedPlan": "Estás a inscrever-te no plano {plan}.",
+    "selectedPlanLaunch": "Durante o lançamento todos os planos são gratuitos — não serás cobrado."
   },
   "dashboard": {
     "overview": "Visão geral",
@@ -867,7 +874,17 @@
     "accountDeletedDesc": "A sua conta e todos os dados foram permanentemente removidos.",
     "networkError": "Erro de rede",
     "networkErrorDesc": "Não foi possível contactar o servidor. Tente novamente.",
-    "backToDashboard": "Voltar"
+    "backToDashboard": "Voltar",
+    "exportData": "Exporta os teus dados",
+    "exportDataSub": "Descarrega uma cópia de tudo o que a CapitalReach guarda sobre ti — perfil, oportunidade, negócios, mensagens e notificações — num ficheiro JSON.",
+    "exportDownload": "Descarregar os meus dados",
+    "bookingUrl": "Link de agendamento (Calendly, Cal.com, …)",
+    "notifPrefs": "Preferências de notificações",
+    "notifPrefsSub": "Desmarca um grupo para deixar de receber essas notificações. As mensagens diretas não podem ser silenciadas.",
+    "ngDeals": "Atividade de negócios (fases, contratos, NDA, seguimentos)",
+    "ngInterest": "Interesse na tua oportunidade (guardados, atualizações, correspondências, partilhas)",
+    "ngQa": "Perguntas e pedidos de documentos",
+    "ngAccount": "Conta e equipa (aprovações, mudanças de plano, convites)"
   },
   "startups": {
     "pageTitle": "Rodadas de captação ativas",
@@ -1900,5 +1917,58 @@
     "open": "Abrir o resultado selecionado",
     "close": "Fechar esta janela",
     "help": "Mostrar esta lista"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "markAllRead": "Marcar tudo como lido",
+    "empty": "Nada de novo.",
+    "viewAll": "Ver todas as notificações",
+    "loadMore": "Mostrar anteriores",
+    "tab_all": "Todas",
+    "tab_deals": "Negócios",
+    "tab_interest": "Interesse",
+    "tab_account": "Conta",
+    "clearRead": "Limpar lidas"
+  },
+  "authErrors": {
+    "generic": "Algo correu mal. Tenta de novo.",
+    "rateLimitSeconds": "Aguarda {n} segundos antes de tentar de novo.",
+    "emailRateLimit": "Enviámos demasiados e-mails em pouco tempo. Espera uns minutos e tenta de novo.",
+    "tooManyRequests": "Demasiadas tentativas. Espera um momento e tenta de novo.",
+    "alreadyRegistered": "Já existe uma conta com este e-mail. Tenta iniciar sessão.",
+    "invalidCredentials": "Esse e-mail e palavra-passe não correspondem. Verifica ambos e tenta de novo.",
+    "emailNotConfirmed": "Confirma primeiro o teu e-mail — procura o link na tua caixa de entrada.",
+    "passwordTooShort": "A palavra-passe precisa de pelo menos {n} caracteres.",
+    "passwordWeak": "Escolhe uma palavra-passe mais forte — esta é fácil de adivinhar.",
+    "invalidEmail": "Esse endereço de e-mail não parece válido.",
+    "signupsDisabled": "Os novos registos estão pausados. Volta em breve.",
+    "linkExpired": "Esse link expirou. Pede um novo.",
+    "samePassword": "A nova palavra-passe tem de ser diferente da atual.",
+    "unreachable": "Não é possível contactar o servidor. Verifica a ligação e tenta de novo."
+  },
+  "messages": {
+    "seen": "Visto",
+    "templates": "Modelos",
+    "tplIntroLabel": "Apresentação",
+    "tplIntro": "Olá — vi a vossa oportunidade na CapitalReach e encaixa no que invisto. Gostava de saber mais sobre o ponto de situação da ronda.",
+    "tplMetricsLabel": "Pedir métricas",
+    "tplMetrics": "Obrigado pela visão geral. Podes partilhar as métricas mensais mais recentes — MRR, crescimento, churn e autonomia — para poder analisar como deve ser?",
+    "tplCallLabel": "Propor uma chamada",
+    "tplCall": "Parece promissor. Estarias disponível para uma chamada de 30 minutos esta semana ou na próxima? Adapto-me à tua agenda."
+  },
+  "completeness": {
+    "nextBest": "Faz isto a seguir",
+    "worth": "+{points} pontos",
+    "andMore": "e mais {count}",
+    "traction": "Adiciona um número de tração (MRR, ARR ou utilizadores)",
+    "website": "Adiciona o teu site",
+    "equity": "Indica a participação oferecida",
+    "booking": "Adiciona um link de marcação de chamadas"
+  },
+  "viewAs": {
+    "banner": "A ver o painel de {name} como administrador",
+    "readOnly": "Apenas leitura — ações desativadas",
+    "exit": "Voltar à administração",
+    "open": "Ver painel"
   }
 }

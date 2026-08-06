@@ -517,7 +517,14 @@
     "tryDifferentEmail": "Spróbuj innego e-maila",
     "unexpectedError": "Wystąpił nieoczekiwany błąd.",
     "verifyEmailSent": "Wysłaliśmy link weryfikacyjny na",
-    "welcomeToast": "Witamy w CapitalReach. Konfigurujemy Twój profil…"
+    "welcomeToast": "Witamy w CapitalReach. Konfigurujemy Twój profil…",
+    "mustAcceptTerms": "Aby kontynuować, musisz zaakceptować Regulamin i Politykę prywatności.",
+    "resendEmail": "Wyślij ponownie",
+    "resending": "Wysyłanie…",
+    "resendIn": "Ponownie za {n} s",
+    "resendSent": "Ponownie wysłano e-mail weryfikacyjny.",
+    "selectedPlan": "Rejestrujesz się w planie {plan}.",
+    "selectedPlanLaunch": "W czasie startu wszystkie plany są bezpłatne — nie pobierzemy opłaty."
   },
   "dashboard": {
     "overview": "Przegląd",
@@ -867,7 +874,17 @@
     "accountDeletedDesc": "Twoje konto i wszystkie dane zostały trwale usunięte.",
     "networkError": "Błąd sieci",
     "networkErrorDesc": "Nie udało się połączyć z serwerem. Spróbuj ponownie.",
-    "backToDashboard": "Wstecz"
+    "backToDashboard": "Wstecz",
+    "exportData": "Wyeksportuj swoje dane",
+    "exportDataSub": "Pobierz kopię wszystkiego, co CapitalReach o tobie przechowuje — profil, ofertę, transakcje, wiadomości i powiadomienia — jako plik JSON.",
+    "exportDownload": "Pobierz moje dane",
+    "bookingUrl": "Link do umawiania spotkań (Calendly, Cal.com, …)",
+    "notifPrefs": "Ustawienia powiadomień",
+    "notifPrefsSub": "Odznacz grupę, aby przestać otrzymywać te powiadomienia. Wiadomości bezpośrednich nie można wyciszyć.",
+    "ngDeals": "Aktywność transakcji (etapy, umowy, NDA, przypomnienia)",
+    "ngInterest": "Zainteresowanie twoją ofertą (zapisy, aktualizacje, dopasowania, udostępnienia)",
+    "ngQa": "Pytania i prośby o dokumenty",
+    "ngAccount": "Konto i zespół (zatwierdzenia, zmiany planu, zaproszenia)"
   },
   "startups": {
     "pageTitle": "Aktywne rundy finansowania",
@@ -1900,5 +1917,58 @@
     "open": "Otwórz zaznaczony wynik",
     "close": "Zamknij to okno",
     "help": "Pokaż tę listę"
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "markAllRead": "Oznacz wszystkie jako przeczytane",
+    "empty": "Nic nowego.",
+    "viewAll": "Zobacz wszystkie powiadomienia",
+    "loadMore": "Pokaż starsze",
+    "tab_all": "Wszystkie",
+    "tab_deals": "Transakcje",
+    "tab_interest": "Zainteresowanie",
+    "tab_account": "Konto",
+    "clearRead": "Wyczyść przeczytane"
+  },
+  "authErrors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+    "rateLimitSeconds": "Odczekaj {n} s przed kolejną próbą.",
+    "emailRateLimit": "Wysłaliśmy zbyt wiele e-maili w krótkim czasie. Odczekaj kilka minut i spróbuj ponownie.",
+    "tooManyRequests": "Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.",
+    "alreadyRegistered": "Konto z tym adresem już istnieje. Spróbuj się zalogować.",
+    "invalidCredentials": "E-mail i hasło nie pasują. Sprawdź oba i spróbuj ponownie.",
+    "emailNotConfirmed": "Najpierw potwierdź adres e-mail — sprawdź link w skrzynce.",
+    "passwordTooShort": "Hasło musi mieć co najmniej {n} znaków.",
+    "passwordWeak": "Wybierz silniejsze hasło — to jest zbyt łatwe do odgadnięcia.",
+    "invalidEmail": "Ten adres e-mail wygląda na nieprawidłowy.",
+    "signupsDisabled": "Nowe rejestracje są wstrzymane. Zajrzyj wkrótce.",
+    "linkExpired": "Link wygasł. Poproś o nowy.",
+    "samePassword": "Nowe hasło musi różnić się od obecnego.",
+    "unreachable": "Nie można połączyć się z serwerem. Sprawdź połączenie i spróbuj ponownie."
+  },
+  "messages": {
+    "seen": "Zobaczono",
+    "templates": "Szablony",
+    "tplIntroLabel": "Przedstawienie się",
+    "tplIntro": "Dzień dobry — natrafiłem na waszą ofertę na CapitalReach i pasuje do mojego obszaru inwestycji. Chętnie dowiem się, na jakim etapie jest runda.",
+    "tplMetricsLabel": "Poproś o wskaźniki",
+    "tplMetrics": "Dziękuję za wprowadzenie. Czy możesz udostępnić najnowsze miesięczne wskaźniki — MRR, wzrost, churn i runway — żebym mógł się temu przyjrzeć?",
+    "tplCallLabel": "Zaproponuj rozmowę",
+    "tplCall": "Wygląda obiecująco. Czy znajdziesz 30 minut na rozmowę w tym lub przyszłym tygodniu? Dopasuję się do twojego kalendarza."
+  },
+  "completeness": {
+    "nextBest": "Zrób to teraz",
+    "worth": "+{points} pkt",
+    "andMore": "i jeszcze {count}",
+    "traction": "Dodaj wskaźnik trakcji (MRR, ARR lub użytkownicy)",
+    "website": "Dodaj swoją stronę",
+    "equity": "Podaj oferowany udział",
+    "booking": "Dodaj link do umawiania rozmów"
+  },
+  "viewAs": {
+    "banner": "Podgląd pulpitu {name} jako administrator",
+    "readOnly": "Tylko do odczytu — akcje wyłączone",
+    "exit": "Wróć do panelu administratora",
+    "open": "Zobacz pulpit"
   }
 }

@@ -517,7 +517,14 @@
     "tryDifferentEmail": "다른 이메일 시도",
     "unexpectedError": "예기치 않은 오류가 발생했습니다.",
     "verifyEmailSent": "인증 링크를 보냈습니다:",
-    "welcomeToast": "CapitalReach에 오신 것을 환영합니다. 프로필 설정 중…"
+    "welcomeToast": "CapitalReach에 오신 것을 환영합니다. 프로필 설정 중…",
+    "mustAcceptTerms": "계속하려면 서비스 약관과 개인정보처리방침에 동의해야 합니다.",
+    "resendEmail": "다시 보내기",
+    "resending": "보내는 중…",
+    "resendIn": "{n}초 후 재전송",
+    "resendSent": "인증 메일을 다시 보냈습니다.",
+    "selectedPlan": "{plan} 플랜으로 가입합니다.",
+    "selectedPlanLaunch": "출시 기간에는 모든 플랜이 무료이며 요금이 청구되지 않습니다."
   },
   "dashboard": {
     "overview": "개요",
@@ -867,7 +874,17 @@
     "accountDeletedDesc": "귀하의 계정과 모든 데이터가 영구적으로 삭제되었습니다.",
     "networkError": "네트워크 오류",
     "networkErrorDesc": "서버에 연결할 수 없습니다. 다시 시도해 주세요.",
-    "backToDashboard": "뒤로"
+    "backToDashboard": "뒤로",
+    "exportData": "내 데이터 내보내기",
+    "exportDataSub": "CapitalReach가 보관하는 모든 정보(프로필, 목록, 딜, 메시지, 알림)를 JSON 파일로 내려받습니다.",
+    "exportDownload": "내 데이터 다운로드",
+    "bookingUrl": "일정 예약 링크 (Calendly, Cal.com 등)",
+    "notifPrefs": "알림 환경설정",
+    "notifPrefsSub": "그룹의 체크를 해제하면 해당 알림이 중지됩니다. 다이렉트 메시지는 음소거할 수 없습니다.",
+    "ngDeals": "딜 활동 (단계, 계약, NDA, 후속 조치)",
+    "ngInterest": "내 목록에 대한 관심 (저장, 업데이트, 매칭, 공유)",
+    "ngQa": "질문 및 자료 요청",
+    "ngAccount": "계정 및 팀 (승인, 플랜 변경, 팀 초대)"
   },
   "startups": {
     "pageTitle": "활성 자금 조달 라운드",
@@ -1900,5 +1917,58 @@
     "open": "선택한 결과 열기",
     "close": "이 대화상자 닫기",
     "help": "이 목록 보기"
+  },
+  "notifications": {
+    "title": "알림",
+    "markAllRead": "모두 읽음 표시",
+    "empty": "새 알림이 없습니다.",
+    "viewAll": "모든 알림 보기",
+    "loadMore": "이전 항목 보기",
+    "tab_all": "전체",
+    "tab_deals": "딜",
+    "tab_interest": "관심",
+    "tab_account": "계정",
+    "clearRead": "읽은 알림 지우기"
+  },
+  "authErrors": {
+    "generic": "문제가 발생했습니다. 다시 시도해 주세요.",
+    "rateLimitSeconds": "{n}초 후에 다시 시도해 주세요.",
+    "emailRateLimit": "짧은 시간에 메일을 너무 많이 보냈습니다. 몇 분 후 다시 시도해 주세요.",
+    "tooManyRequests": "시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+    "alreadyRegistered": "이 이메일로 만든 계정이 이미 있습니다. 로그인해 보세요.",
+    "invalidCredentials": "이메일과 비밀번호가 일치하지 않습니다. 둘 다 확인해 주세요.",
+    "emailNotConfirmed": "먼저 이메일을 확인해 주세요. 받은 편지함에서 보내드린 링크를 찾아보세요.",
+    "passwordTooShort": "비밀번호는 최소 {n}자 이상이어야 합니다.",
+    "passwordWeak": "더 강력한 비밀번호를 선택하세요. 이 비밀번호는 추측하기 쉽습니다.",
+    "invalidEmail": "이메일 주소가 올바르지 않은 것 같습니다.",
+    "signupsDisabled": "신규 가입이 일시 중단되었습니다. 잠시 후 다시 확인해 주세요.",
+    "linkExpired": "링크가 만료되었습니다. 새 링크를 요청하세요.",
+    "samePassword": "새 비밀번호는 현재 비밀번호와 달라야 합니다.",
+    "unreachable": "서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요."
+  },
+  "messages": {
+    "seen": "읽음",
+    "templates": "템플릿",
+    "tplIntroLabel": "소개",
+    "tplIntro": "안녕하세요. CapitalReach에서 귀사의 목록을 보았고 제 투자 분야와 잘 맞습니다. 현재 라운드 상황을 더 알고 싶습니다.",
+    "tplMetricsLabel": "지표 요청",
+    "tplMetrics": "개요 감사합니다. 제대로 검토할 수 있도록 최근 월간 지표(MRR, 성장률, 이탈률, 런웨이)를 공유해 주실 수 있을까요?",
+    "tplCallLabel": "통화 제안",
+    "tplCall": "인상적입니다. 이번 주나 다음 주에 30분 정도 통화 가능하실까요? 일정에 맞추겠습니다."
+  },
+  "completeness": {
+    "nextBest": "다음에 할 일",
+    "worth": "+{points}점",
+    "andMore": "외 {count}개",
+    "traction": "트랙션 수치(MRR, ARR 또는 사용자 수) 추가",
+    "website": "웹사이트 추가",
+    "equity": "제공하는 지분 비율 명시",
+    "booking": "통화 예약 링크 추가"
+  },
+  "viewAs": {
+    "banner": "관리자로 {name}님의 대시보드를 보는 중",
+    "readOnly": "읽기 전용 — 작업이 비활성화됨",
+    "exit": "관리자로 돌아가기",
+    "open": "대시보드 보기"
   }
 }

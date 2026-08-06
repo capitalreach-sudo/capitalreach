@@ -526,7 +526,14 @@
     "strength1": "弱い",
     "strength2": "普通",
     "strength3": "良い",
-    "strength4": "強い"
+    "strength4": "強い",
+    "mustAcceptTerms": "続行するには利用規約とプライバシーポリシーへの同意が必要です。",
+    "resendEmail": "再送する",
+    "resending": "送信中…",
+    "resendIn": "{n}秒後に再送",
+    "resendSent": "確認メールを再送しました。",
+    "selectedPlan": "{plan} プランに登録します。",
+    "selectedPlanLaunch": "ローンチ期間中はすべてのプランが無料です。請求は発生しません。"
   },
   "dashboard": {
     "overview": "概要",
@@ -876,7 +883,17 @@
     "accountDeleted": "アカウントが削除されました",
     "accountDeletedDesc": "アカウントとすべてのデータは完全に削除されました。",
     "networkError": "ネットワークエラー",
-    "networkErrorDesc": "サーバーに接続できませんでした。もう一度お試しください。"
+    "networkErrorDesc": "サーバーに接続できませんでした。もう一度お試しください。",
+    "exportData": "データを書き出す",
+    "exportDataSub": "CapitalReach が保存しているあなたの情報（プロフィール、掲載、ディール、メッセージ、通知）を JSON ファイルで一括ダウンロードできます。",
+    "exportDownload": "データをダウンロード",
+    "bookingUrl": "予約リンク（Calendly、Cal.com など）",
+    "notifPrefs": "通知の設定",
+    "notifPrefsSub": "グループのチェックを外すとその通知が止まります。ダイレクトメッセージはミュートできません。",
+    "ngDeals": "ディールの動き（ステージ、契約、NDA、フォローアップ）",
+    "ngInterest": "掲載への関心（保存、更新、マッチ、共有）",
+    "ngQa": "質問と資料リクエスト",
+    "ngAccount": "アカウントとチーム（承認、プラン変更、招待）"
   },
   "startups": {
     "pageTitle": "アクティブな資金調達ラウンド",
@@ -1900,5 +1917,58 @@
     "open": "選択中の結果を開く",
     "close": "このダイアログを閉じる",
     "help": "この一覧を表示"
+  },
+  "notifications": {
+    "title": "通知",
+    "markAllRead": "すべて既読にする",
+    "empty": "新しい通知はありません。",
+    "viewAll": "すべての通知を見る",
+    "loadMore": "過去の通知を表示",
+    "tab_all": "すべて",
+    "tab_deals": "ディール",
+    "tab_interest": "関心",
+    "tab_account": "アカウント",
+    "clearRead": "既読を消す"
+  },
+  "authErrors": {
+    "generic": "問題が発生しました。もう一度お試しください。",
+    "rateLimitSeconds": "{n} 秒待ってからもう一度お試しください。",
+    "emailRateLimit": "短時間に多くのメールを送信しました。数分待ってからお試しください。",
+    "tooManyRequests": "試行回数が多すぎます。少し待ってからお試しください。",
+    "alreadyRegistered": "このメールアドレスのアカウントは既にあります。ログインをお試しください。",
+    "invalidCredentials": "メールアドレスとパスワードが一致しません。両方をご確認ください。",
+    "emailNotConfirmed": "先にメールアドレスを確認してください。受信トレイのリンクをご確認ください。",
+    "passwordTooShort": "パスワードは {n} 文字以上必要です。",
+    "passwordWeak": "より強いパスワードを設定してください。これは推測されやすい値です。",
+    "invalidEmail": "そのメールアドレスは正しくないようです。",
+    "signupsDisabled": "新規登録は現在停止しています。しばらくしてからご確認ください。",
+    "linkExpired": "リンクの有効期限が切れています。新しいリンクをリクエストしてください。",
+    "samePassword": "新しいパスワードは現在のものと異なる必要があります。",
+    "unreachable": "サーバーに接続できません。接続を確認してお試しください。"
+  },
+  "messages": {
+    "seen": "既読",
+    "templates": "テンプレート",
+    "tplIntroLabel": "はじめまして",
+    "tplIntro": "はじめまして。CapitalReach で御社の掲載を拝見しました。当方の投資領域と合致しており、ラウンドの状況について詳しく伺えればと思います。",
+    "tplMetricsLabel": "数値を依頼",
+    "tplMetrics": "概要をありがとうございます。直近の月次指標（MRR、成長率、チャーン、ランウェイ）を共有いただけますか。きちんと検討したいと思います。",
+    "tplCallLabel": "通話を提案",
+    "tplCall": "とても有望に感じています。今週か来週に30分ほどお話しできますでしょうか。ご都合に合わせます。"
+  },
+  "completeness": {
+    "nextBest": "次にやること",
+    "worth": "+{points} ポイント",
+    "andMore": "ほか {count} 件",
+    "traction": "トラクションの数値（MRR、ARR、ユーザー数）を追加",
+    "website": "ウェブサイトを追加",
+    "equity": "提供する株式比率を記載",
+    "booking": "通話予約のリンクを追加"
+  },
+  "viewAs": {
+    "banner": "管理者として {name} のダッシュボードを表示中",
+    "readOnly": "閲覧のみ — 操作は無効です",
+    "exit": "管理画面へ戻る",
+    "open": "ダッシュボードを見る"
   }
 }

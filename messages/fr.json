@@ -526,7 +526,14 @@
     "strength1": "Faible",
     "strength2": "Moyen",
     "strength3": "Bon",
-    "strength4": "Fort"
+    "strength4": "Fort",
+    "mustAcceptTerms": "Vous devez accepter les Conditions d'utilisation et la Politique de confidentialité pour continuer.",
+    "resendEmail": "Renvoyer",
+    "resending": "Envoi…",
+    "resendIn": "Renvoyer dans {n} s",
+    "resendSent": "E-mail de vérification renvoyé.",
+    "selectedPlan": "Vous vous inscrivez à l'offre {plan}.",
+    "selectedPlanLaunch": "Pendant le lancement, toutes les offres sont gratuites — rien ne vous sera facturé."
   },
   "dashboard": {
     "overview": "Aperçu",
@@ -876,7 +883,17 @@
     "accountDeleted": "Compte supprimé",
     "accountDeletedDesc": "Votre compte et toutes les données ont été définitivement supprimés.",
     "networkError": "Erreur réseau",
-    "networkErrorDesc": "Impossible de joindre le serveur. Veuillez réessayer."
+    "networkErrorDesc": "Impossible de joindre le serveur. Veuillez réessayer.",
+    "exportData": "Exporter vos données",
+    "exportDataSub": "Téléchargez une copie de tout ce que CapitalReach conserve sur vous — profil, annonce, opérations, messages et notifications — dans un fichier JSON.",
+    "exportDownload": "Télécharger mes données",
+    "bookingUrl": "Lien de prise de rendez-vous (Calendly, Cal.com, …)",
+    "notifPrefs": "Préférences de notification",
+    "notifPrefsSub": "Décochez un groupe pour ne plus recevoir ces notifications. Les messages directs ne peuvent pas être coupés.",
+    "ngDeals": "Activité des opérations (étapes, contrats, NDA, relances)",
+    "ngInterest": "Intérêt pour votre annonce (enregistrements, mises à jour, correspondances, partages)",
+    "ngQa": "Questions et demandes de documents",
+    "ngAccount": "Compte et équipe (validations, changements d'offre, invitations)"
   },
   "startups": {
     "pageTitle": "Tours de financement actifs",
@@ -1900,5 +1917,58 @@
     "open": "Ouvrir le résultat sélectionné",
     "close": "Fermer cette fenêtre",
     "help": "Afficher cette liste"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Rien de nouveau.",
+    "viewAll": "Voir toutes les notifications",
+    "loadMore": "Afficher les plus anciennes",
+    "tab_all": "Toutes",
+    "tab_deals": "Opérations",
+    "tab_interest": "Intérêt",
+    "tab_account": "Compte",
+    "clearRead": "Effacer les lues"
+  },
+  "authErrors": {
+    "generic": "Une erreur s'est produite. Réessayez.",
+    "rateLimitSeconds": "Patientez {n} secondes avant de réessayer.",
+    "emailRateLimit": "Trop d'e-mails envoyés en peu de temps. Attendez quelques minutes et réessayez.",
+    "tooManyRequests": "Trop de tentatives. Patientez un instant et réessayez.",
+    "alreadyRegistered": "Un compte existe déjà avec cet e-mail. Essayez de vous connecter.",
+    "invalidCredentials": "Cet e-mail et ce mot de passe ne correspondent pas. Vérifiez les deux et réessayez.",
+    "emailNotConfirmed": "Confirmez d'abord votre e-mail — cherchez le lien dans votre boîte de réception.",
+    "passwordTooShort": "Votre mot de passe doit contenir au moins {n} caractères.",
+    "passwordWeak": "Choisissez un mot de passe plus robuste — celui-ci est trop facile à deviner.",
+    "invalidEmail": "Cette adresse e-mail ne semble pas valide.",
+    "signupsDisabled": "Les nouvelles inscriptions sont suspendues. Revenez bientôt.",
+    "linkExpired": "Ce lien a expiré. Demandez-en un nouveau.",
+    "samePassword": "Votre nouveau mot de passe doit être différent de l'actuel.",
+    "unreachable": "Serveur injoignable. Vérifiez votre connexion et réessayez."
+  },
+  "messages": {
+    "seen": "Vu",
+    "templates": "Modèles",
+    "tplIntroLabel": "Présentation",
+    "tplIntro": "Bonjour — j'ai vu votre annonce sur CapitalReach et elle correspond à ma thèse d'investissement. J'aimerais en savoir plus sur l'état du tour.",
+    "tplMetricsLabel": "Demander les indicateurs",
+    "tplMetrics": "Merci pour cet aperçu. Pourriez-vous partager vos derniers indicateurs mensuels — MRR, croissance, churn et trésorerie — pour que je puisse étudier le dossier ?",
+    "tplCallLabel": "Proposer un appel",
+    "tplCall": "Cela semble prometteur. Seriez-vous disponible pour un appel de 30 minutes cette semaine ou la prochaine ? Je m'adapte à votre agenda."
+  },
+  "completeness": {
+    "nextBest": "À faire ensuite",
+    "worth": "+{points} points",
+    "andMore": "et {count} de plus",
+    "traction": "Ajoutez un indicateur de traction (MRR, ARR ou utilisateurs)",
+    "website": "Ajoutez votre site web",
+    "equity": "Indiquez la part de capital proposée",
+    "booking": "Ajoutez un lien de prise de rendez-vous"
+  },
+  "viewAs": {
+    "banner": "Consultation du tableau de bord de {name} en tant qu'administrateur",
+    "readOnly": "Lecture seule — les actions sont désactivées",
+    "exit": "Retour à l'administration",
+    "open": "Voir le tableau de bord"
   }
 }

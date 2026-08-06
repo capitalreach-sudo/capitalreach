@@ -517,7 +517,14 @@
     "tryDifferentEmail": "Probeer een ander e-mailadres",
     "unexpectedError": "Er is een onverwachte fout opgetreden.",
     "verifyEmailSent": "We hebben een verificatielink gestuurd naar",
-    "welcomeToast": "Welkom bij CapitalReach. Uw profiel wordt ingesteld…"
+    "welcomeToast": "Welkom bij CapitalReach. Uw profiel wordt ingesteld…",
+    "mustAcceptTerms": "Je moet de Servicevoorwaarden en het Privacybeleid accepteren om verder te gaan.",
+    "resendEmail": "Opnieuw sturen",
+    "resending": "Versturen…",
+    "resendIn": "Opnieuw over {n} s",
+    "resendSent": "Verificatiemail opnieuw verstuurd.",
+    "selectedPlan": "Je meldt je aan voor het {plan}-plan.",
+    "selectedPlanLaunch": "Tijdens de lancering zijn alle plannen gratis — er wordt niets in rekening gebracht."
   },
   "dashboard": {
     "overview": "Overzicht",
@@ -867,7 +874,17 @@
     "accountDeletedDesc": "Uw account en alle gegevens zijn permanent verwijderd.",
     "networkError": "Netwerkfout",
     "networkErrorDesc": "Kon de server niet bereiken. Probeer het opnieuw.",
-    "backToDashboard": "Terug"
+    "backToDashboard": "Terug",
+    "exportData": "Exporteer je gegevens",
+    "exportDataSub": "Download een kopie van alles wat CapitalReach over je bewaart — profiel, aanbod, deals, berichten en meldingen — als JSON-bestand.",
+    "exportDownload": "Mijn gegevens downloaden",
+    "bookingUrl": "Afspraaklink (Calendly, Cal.com, …)",
+    "notifPrefs": "Meldingsvoorkeuren",
+    "notifPrefsSub": "Vink een groep uit om die meldingen te stoppen. Directe berichten kunnen niet gedempt worden.",
+    "ngDeals": "Deal-activiteit (fases, contracten, NDA's, opvolging)",
+    "ngInterest": "Interesse in je aanbod (opslaan, updates, matches, delen)",
+    "ngQa": "Vragen en documentverzoeken",
+    "ngAccount": "Account en team (goedkeuringen, planwijzigingen, uitnodigingen)"
   },
   "startups": {
     "pageTitle": "Actieve financieringsrondes",
@@ -1900,5 +1917,58 @@
     "open": "Gemarkeerd resultaat openen",
     "close": "Dit venster sluiten",
     "help": "Deze lijst tonen"
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "markAllRead": "Alles als gelezen markeren",
+    "empty": "Niets nieuws.",
+    "viewAll": "Alle meldingen bekijken",
+    "loadMore": "Oudere tonen",
+    "tab_all": "Alle",
+    "tab_deals": "Deals",
+    "tab_interest": "Interesse",
+    "tab_account": "Account",
+    "clearRead": "Gelezen wissen"
+  },
+  "authErrors": {
+    "generic": "Er ging iets mis. Probeer het opnieuw.",
+    "rateLimitSeconds": "Wacht {n} seconden voordat je het opnieuw probeert.",
+    "emailRateLimit": "We hebben in korte tijd te veel mails verstuurd. Wacht een paar minuten en probeer opnieuw.",
+    "tooManyRequests": "Te veel pogingen. Wacht even en probeer opnieuw.",
+    "alreadyRegistered": "Er bestaat al een account met dit e-mailadres. Probeer in te loggen.",
+    "invalidCredentials": "Dat e-mailadres en wachtwoord komen niet overeen. Controleer beide en probeer opnieuw.",
+    "emailNotConfirmed": "Bevestig eerst je e-mailadres — zoek de link in je inbox.",
+    "passwordTooShort": "Je wachtwoord heeft minstens {n} tekens nodig.",
+    "passwordWeak": "Kies een sterker wachtwoord — dit is te makkelijk te raden.",
+    "invalidEmail": "Dat e-mailadres lijkt niet geldig.",
+    "signupsDisabled": "Nieuwe aanmeldingen zijn tijdelijk gepauzeerd. Kom snel terug.",
+    "linkExpired": "Die link is verlopen. Vraag een nieuwe aan.",
+    "samePassword": "Je nieuwe wachtwoord moet anders zijn dan het huidige.",
+    "unreachable": "Kan de server niet bereiken. Controleer je verbinding en probeer opnieuw."
+  },
+  "messages": {
+    "seen": "Gezien",
+    "templates": "Sjablonen",
+    "tplIntroLabel": "Introductie",
+    "tplIntro": "Hallo — ik zag jullie aanbod op CapitalReach en het past bij waar ik in investeer. Ik hoor graag hoe de ronde ervoor staat.",
+    "tplMetricsLabel": "Vraag om cijfers",
+    "tplMetrics": "Bedankt voor het overzicht. Kun je de recentste maandcijfers delen — MRR, groei, churn en runway — zodat ik er goed naar kan kijken?",
+    "tplCallLabel": "Een gesprek voorstellen",
+    "tplCall": "Dit ziet er veelbelovend uit. Zou je open staan voor een gesprek van 30 minuten deze of volgende week? Ik pas me aan jouw agenda aan."
+  },
+  "completeness": {
+    "nextBest": "Doe dit hierna",
+    "worth": "+{points} punten",
+    "andMore": "en nog {count}",
+    "traction": "Voeg een tractiecijfer toe (MRR, ARR of gebruikers)",
+    "website": "Voeg je website toe",
+    "equity": "Geef aan hoeveel aandelen je aanbiedt",
+    "booking": "Voeg een afspraaklink toe voor gesprekken"
+  },
+  "viewAs": {
+    "banner": "Je bekijkt het dashboard van {name} als beheerder",
+    "readOnly": "Alleen-lezen — acties zijn uitgeschakeld",
+    "exit": "Terug naar beheer",
+    "open": "Dashboard bekijken"
   }
 }

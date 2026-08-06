@@ -517,7 +517,14 @@
     "tryDifferentEmail": "Prova un'altra email",
     "unexpectedError": "Si è verificato un errore imprevisto.",
     "verifyEmailSent": "Abbiamo inviato un link di verifica a",
-    "welcomeToast": "Benvenuto su CapitalReach. Configurazione del profilo…"
+    "welcomeToast": "Benvenuto su CapitalReach. Configurazione del profilo…",
+    "mustAcceptTerms": "Devi accettare i Termini di servizio e l'Informativa sulla privacy per continuare.",
+    "resendEmail": "Invia di nuovo",
+    "resending": "Invio…",
+    "resendIn": "Rinvia tra {n} s",
+    "resendSent": "Email di verifica inviata di nuovo.",
+    "selectedPlan": "Ti stai iscrivendo al piano {plan}.",
+    "selectedPlanLaunch": "Durante il lancio tutti i piani sono gratuiti: non ti verrà addebitato nulla."
   },
   "dashboard": {
     "overview": "Panoramica",
@@ -867,7 +874,17 @@
     "accountDeletedDesc": "Il tuo account e tutti i dati sono stati eliminati permanentemente.",
     "networkError": "Errore di rete",
     "networkErrorDesc": "Impossibile raggiungere il server. Riprova.",
-    "backToDashboard": "Indietro"
+    "backToDashboard": "Indietro",
+    "exportData": "Esporta i tuoi dati",
+    "exportDataSub": "Scarica una copia di tutto ciò che CapitalReach conserva su di te — profilo, opportunità, operazioni, messaggi e notifiche — in un file JSON.",
+    "exportDownload": "Scarica i miei dati",
+    "bookingUrl": "Link per fissare incontri (Calendly, Cal.com, …)",
+    "notifPrefs": "Preferenze di notifica",
+    "notifPrefsSub": "Deseleziona un gruppo per non ricevere più quelle notifiche. I messaggi diretti non si possono silenziare.",
+    "ngDeals": "Attività sulle operazioni (fasi, contratti, NDA, follow-up)",
+    "ngInterest": "Interesse per la tua opportunità (salvataggi, aggiornamenti, affinità, condivisioni)",
+    "ngQa": "Domande e richieste di documenti",
+    "ngAccount": "Account e team (approvazioni, cambi di piano, inviti)"
   },
   "startups": {
     "pageTitle": "Round di finanziamento attivi",
@@ -1900,5 +1917,58 @@
     "open": "Apri il risultato evidenziato",
     "close": "Chiudi questa finestra",
     "help": "Mostra questo elenco"
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "markAllRead": "Segna tutto come letto",
+    "empty": "Niente di nuovo.",
+    "viewAll": "Vedi tutte le notifiche",
+    "loadMore": "Mostra le precedenti",
+    "tab_all": "Tutte",
+    "tab_deals": "Operazioni",
+    "tab_interest": "Interesse",
+    "tab_account": "Account",
+    "clearRead": "Elimina le lette"
+  },
+  "authErrors": {
+    "generic": "Qualcosa è andato storto. Riprova.",
+    "rateLimitSeconds": "Attendi {n} secondi prima di riprovare.",
+    "emailRateLimit": "Abbiamo inviato troppe email in poco tempo. Attendi qualche minuto e riprova.",
+    "tooManyRequests": "Troppi tentativi. Attendi un momento e riprova.",
+    "alreadyRegistered": "Esiste già un account con questa email. Prova ad accedere.",
+    "invalidCredentials": "Email e password non corrispondono. Controllale e riprova.",
+    "emailNotConfirmed": "Conferma prima la tua email: cerca nella posta il link che ti abbiamo inviato.",
+    "passwordTooShort": "La password deve contenere almeno {n} caratteri.",
+    "passwordWeak": "Scegli una password più robusta: questa è troppo facile da indovinare.",
+    "invalidEmail": "Questo indirizzo email non sembra valido.",
+    "signupsDisabled": "Le nuove iscrizioni sono sospese. Riprova a breve.",
+    "linkExpired": "Il link è scaduto. Richiedine uno nuovo.",
+    "samePassword": "La nuova password deve essere diversa da quella attuale.",
+    "unreachable": "Impossibile raggiungere il server. Controlla la connessione e riprova."
+  },
+  "messages": {
+    "seen": "Visto",
+    "templates": "Modelli",
+    "tplIntroLabel": "Presentazione",
+    "tplIntro": "Ciao — ho visto la vostra opportunità su CapitalReach e rientra in ciò su cui investo. Mi piacerebbe sapere a che punto è il round.",
+    "tplMetricsLabel": "Chiedi le metriche",
+    "tplMetrics": "Grazie per la panoramica. Potresti condividere le ultime metriche mensili — MRR, crescita, churn e autonomia di cassa — così da poter valutare bene?",
+    "tplCallLabel": "Proponi una call",
+    "tplCall": "Sembra promettente. Ti andrebbe una call di 30 minuti questa settimana o la prossima? Mi adatto ai tuoi orari."
+  },
+  "completeness": {
+    "nextBest": "Fai questo ora",
+    "worth": "+{points} punti",
+    "andMore": "e altri {count}",
+    "traction": "Aggiungi un dato di trazione (MRR, ARR o utenti)",
+    "website": "Aggiungi il tuo sito web",
+    "equity": "Indica la quota offerta",
+    "booking": "Aggiungi un link per fissare call"
+  },
+  "viewAs": {
+    "banner": "Stai vedendo la dashboard di {name} come amministratore",
+    "readOnly": "Sola lettura: le azioni sono disattivate",
+    "exit": "Torna all'amministrazione",
+    "open": "Vedi dashboard"
   }
 }
