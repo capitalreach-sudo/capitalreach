@@ -996,7 +996,28 @@
     "signUpPitchDeck": "Zarejestruj się, aby zobaczyć pełny pitch deck",
     "createFreeAccount": "Utwórz darmowe konto",
     "upgradeTractionTitle": "Ulepsz, aby zobaczyć dane o trakcji",
-    "upgradeTractionDesc": "Członkowie Angel widzą MRR, ARR, liczbę użytkowników i tempo wzrostu."
+    "upgradeTractionDesc": "Członkowie Angel widzą MRR, ARR, liczbę użytkowników i tempo wzrostu.",
+    "inYourPipeline": "W twoim pipelinie",
+    "startDeal": "Rozpocznij transakcję",
+    "openNewTab": "Otwórz w nowej karcie",
+    "updates": "Aktualizacje",
+    "askQuestion": "Zadaj pytanie",
+    "questionPh": "Czego chcesz się dowiedzieć? (min. 10 znaków)",
+    "askSend": "Wyślij pytanie",
+    "questionSent": "Wysłano pytanie do założyciela",
+    "qa": "Pytania i odpowiedzi",
+    "answerPh": "Napisz publiczną odpowiedź…",
+    "answerSend": "Opublikuj odpowiedź",
+    "answered": "Opublikowano odpowiedź",
+    "requestDoc": "Poproś o dokument",
+    "reqSent": "Wysłano prośbę do założyciela",
+    "bookCall": "Umów rozmowę",
+    "shareWith": "Udostępnij inwestorowi",
+    "shareSearchPh": "Wpisz nazwę inwestora…",
+    "shared": "Udostępniono: {name}",
+    "editNote": "Edytuj notatkę",
+    "addNote": "Dodaj notatkę",
+    "notePh": "Dlaczego to ciekawe? Widzisz to tylko ty."
   },
   "filters": {
     "industry": "Branża",
@@ -1218,7 +1239,17 @@
     "recentListings": "Ostatnie oferty",
     "noData": "Dane platformy pojawią się, gdy startupy dołączą.",
     "errorRetry": "Dane tymczasowo niedostępne. Spróbuj odświeżyć.",
-    "retry": "Spróbuj ponownie"
+    "retry": "Spróbuj ponownie",
+    "dealFlow": "Przepływ transakcji",
+    "liveDeals": "Aktywne transakcje",
+    "closeRate": "Wskaźnik zamknięć",
+    "stage_intro": "Wprowadzenie",
+    "stage_due_diligence": "Due diligence",
+    "stage_term_sheet": "Term sheet",
+    "stage_closed": "Zamknięta",
+    "stage_passed": "Odrzucona",
+    "multiCurrencyNote": "Zamknięte rundy obejmują {list}; kwoty nie są przeliczane na jedną walutę.",
+    "exportCsv": "Eksportuj CSV"
   },
   "onboarding": {
     "welcomeTitle": "Witaj w CapitalReach",
@@ -1360,7 +1391,9 @@
       "startFree": "Zacznij za darmo",
       "selectPlan": "Wybierz {name}",
       "errorSaving": "Błąd zapisu startupu:",
-      "submitted": "Profil przesłany! Sprawdzimy i zatwierdzimy Twoją ofertę w ciągu 1–2 dni roboczych."
+      "submitted": "Profil przesłany! Sprawdzimy i zatwierdzimy Twoją ofertę w ciągu 1–2 dni roboczych.",
+      "pctOutOfRange": "{field} musi mieścić się między 0 a {max}.",
+      "numberTooLarge": "Jedna z liczb jest za duża — procenty muszą wynosić najwyżej 100."
     },
     "accredited": "Potwierdzam, że jestem akredytowanym inwestorem",
     "accreditedNote": "Samocertyfikacja jest wymagana przez politykę platformy. W przypadku kont instytucjonalnych może być wymagana dokumentacja.",
@@ -1511,7 +1544,11 @@
       "if4": "Wsparcie SLA i zgodności",
       "if5": "Niestandardowe raportowanie",
       "errorCreating": "Błąd tworzenia profilu:",
-      "created": "Profil utworzony! Zacznij odkrywać startupy na CapitalReach."
+      "created": "Profil utworzony! Zacznij odkrywać startupy na CapitalReach.",
+      "ageTitle": "Mam ukończone 18 lat",
+      "ageBody": "CapitalReach jest dostępny wyłącznie dla osób dorosłych. Potwierdzasz, że spełniasz minimalny wiek określony w naszym Regulaminie.",
+      "lossTitle": "Rozumiem ryzyko całkowitej straty",
+      "lossBody": "Inwestycje na wczesnym etapie są niepłynne i spekulacyjne. Możesz stracić całą zainwestowaną kwotę. CapitalReach nie gwarantuje żadnego wyniku."
     }
   },
   "banner": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "E-mail:",
     "supportLabel": "Wsparcie:",
-    "footerAck": "Korzystając z CapitalReach, przyjmujesz do wiadomości, że przeczytałeś, zrozumiałeś, i zgadzasz się przestrzegać niniejszego Regulaminu."
+    "footerAck": "Korzystając z CapitalReach, przyjmujesz do wiadomości, że przeczytałeś, zrozumiałeś, i zgadzasz się przestrzegać niniejszego Regulaminu.",
+    "s6l9": "Obchodzenie ustaleń platformy dotyczących prowizji od sukcesu poprzez kontaktowanie się, negocjowanie lub sfinalizowanie inwestycji poza CapitalReach ze stroną, która została ci przedstawiona za pośrednictwem Usługi, w ciągu 24 miesięcy od tego przedstawienia.",
+    "s4h2p2": "Na potrzeby niniejszej sekcji inwestor jest „połączony za pośrednictwem platformy”, jeżeli obejrzał twoją ofertę będąc zalogowanym w CapitalReach, skontaktował się z tobą przez platformę lub został ci przedstawiony poprzez rekord transakcji CapitalReach — w każdym przypadku w ciągu 24 miesięcy przed zamknięciem rundy. CapitalReach przechowuje zapisy tych zdarzeń i w dobrej wierze ustala na ich podstawie fakt połączenia.",
+    "s4h2p3": "Jeśli uważasz, że prowizja od sukcesu została naliczona omyłkowo, możesz ją zakwestionować pisemnie na adres {email} w ciągu 30 dni od daty faktury. Sprawdzimy zapisy połączenia i odpowiemy w ciągu 30 dni. Opłaty objęte trwającym sporem nie są uznawane za zaległe."
   },
   "search": {
     "aria": "Szukaj startupów i inwestorów",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "Tylko właściciel i administratorzy mogą zmieniać skład tego zespołu.",
     "noEntity": "Dokończ konfigurację profilu, zanim kogoś zaprosisz.",
     "unavailable": "Konta zespołowe nie są jeszcze włączone. Zajrzyj wkrótce."
+  },
+  "pullQuote": {
+    "text": "Każda oferta zweryfikowana. Każda liczba prawdziwa. Kapitał nie powinien wymagać wiary na słowo.",
+    "attribution": "Standard CapitalReach"
   }
 }

@@ -1034,7 +1034,28 @@
     "signUpPitchDeck": "注册以查看完整路演文稿",
     "createFreeAccount": "创建免费账户",
     "upgradeTractionTitle": "升级以查看业务进展数据",
-    "upgradeTractionDesc": "Angel会员可查看MRR、ARR、用户数和增长率。"
+    "upgradeTractionDesc": "Angel会员可查看MRR、ARR、用户数和增长率。",
+    "inYourPipeline": "已在你的交易流程中",
+    "startDeal": "发起交易",
+    "openNewTab": "在新标签页打开",
+    "updates": "最新动态",
+    "askQuestion": "提问",
+    "questionPh": "你想了解什么？（至少 10 个字符）",
+    "askSend": "发送提问",
+    "questionSent": "提问已发送给创始人",
+    "qa": "问答",
+    "answerPh": "撰写公开回答…",
+    "answerSend": "发布回答",
+    "answered": "回答已发布",
+    "requestDoc": "索取文件",
+    "reqSent": "请求已发送给创始人",
+    "bookCall": "预约通话",
+    "shareWith": "分享给投资人",
+    "shareSearchPh": "输入投资人姓名…",
+    "shared": "已分享给 {name}",
+    "editNote": "编辑你的备注",
+    "addNote": "添加备注",
+    "notePh": "为什么值得关注？仅你可见。"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1120,7 +1141,17 @@
     "featuredHere": "想让您的初创公司出现在这里吗？",
     "featuredHereSub": "在 CapitalReach 上发布，出现在平台图表中并被投资者发现。",
     "listFree": "免费发布您的初创公司",
-    "preRev": "营收前"
+    "preRev": "营收前",
+    "dealFlow": "交易流",
+    "liveDeals": "进行中的交易",
+    "closeRate": "成交率",
+    "stage_intro": "初步接触",
+    "stage_due_diligence": "尽职调查",
+    "stage_term_sheet": "条款清单",
+    "stage_closed": "已成交",
+    "stage_passed": "已放弃",
+    "multiCurrencyNote": "已成交轮次涉及 {list}；金额未换算为单一货币。",
+    "exportCsv": "导出 CSV"
   },
   "filters": {
     "industry": "行业",
@@ -1347,7 +1378,9 @@
       "startFree": "免费开始",
       "selectPlan": "选择{name}",
       "errorSaving": "保存初创公司时出错：",
-      "submitted": "档案已提交！我们将在1–2个工作日内审核并批准您的列表。"
+      "submitted": "档案已提交！我们将在1–2个工作日内审核并批准您的列表。",
+      "pctOutOfRange": "{field} 必须在 0 到 {max} 之间。",
+      "numberTooLarge": "某个数值过大——百分比不能超过 100。"
     },
     "inv": {
       "forInvestors": "投资者版",
@@ -1467,7 +1500,11 @@
       "if4": "SLA和合规支持",
       "if5": "定制报告",
       "errorCreating": "创建资料时出错：",
-      "created": "资料已创建！开始在 CapitalReach 上发现初创公司。"
+      "created": "资料已创建！开始在 CapitalReach 上发现初创公司。",
+      "ageTitle": "我已年满 18 周岁",
+      "ageBody": "CapitalReach 仅面向成年人。你确认自己符合我们服务条款规定的最低年龄要求。",
+      "lossTitle": "我理解可能全额亏损的风险",
+      "lossBody": "早期阶段投资流动性低且具投机性，你可能损失全部投资金额。CapitalReach 不对任何结果作出保证。"
     }
   },
   "errors": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "电子邮箱：",
     "supportLabel": "支持：",
-    "footerAck": "使用 CapitalReach 即表示您确认已阅读、理解并同意受本服务条款的约束。"
+    "footerAck": "使用 CapitalReach 即表示您确认已阅读、理解并同意受本服务条款的约束。",
+    "s6l9": "在通过本服务获得引荐后 24 个月内，于 CapitalReach 之外联系该方、与其谈判或完成投资，从而规避平台的成功费安排。",
+    "s4h2p2": "就本节而言，若投资人在登录 CapitalReach 状态下浏览了你的项目、通过平台联系了你，或经由 CapitalReach 交易记录被引荐给你，且上述情形均发生在该轮融资交割前 24 个月内，则视为「通过平台建立联系」。CapitalReach 保存上述事件记录，并据此善意判定联系关系。",
+    "s4h2p3": "如你认为成功费系误开具，可在发票日期后 30 日内以书面形式发送至 {email} 提出异议。我们将审阅联系记录并在 30 日内答复。处于争议期间的费用不视为逾期。"
   },
   "search": {
     "aria": "搜索初创公司与投资人",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "只有所有者和管理员可以调整此团队成员。",
     "noEntity": "邀请他人前请先完成个人资料设置。",
     "unavailable": "团队账户尚未开放，请稍后再来。"
+  },
+  "pullQuote": {
+    "text": "每个项目都经审核，每个数字都真实。投资不该靠盲目信任。",
+    "attribution": "CapitalReach 标准"
   }
 }

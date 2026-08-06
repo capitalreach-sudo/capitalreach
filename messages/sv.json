@@ -996,7 +996,28 @@
     "signUpPitchDeck": "Registrera dig för att se hela pitch decket",
     "createFreeAccount": "Skapa gratis konto",
     "upgradeTractionTitle": "Uppgradera för att se traktionsdata",
-    "upgradeTractionDesc": "Angel-medlemmar ser MRR, ARR, användarantal och tillväxttakter."
+    "upgradeTractionDesc": "Angel-medlemmar ser MRR, ARR, användarantal och tillväxttakter.",
+    "inYourPipeline": "I din pipeline",
+    "startDeal": "Starta en affär",
+    "openNewTab": "Öppna i ny flik",
+    "updates": "Uppdateringar",
+    "askQuestion": "Ställ en fråga",
+    "questionPh": "Vad vill du veta? (minst 10 tecken)",
+    "askSend": "Skicka frågan",
+    "questionSent": "Frågan skickades till grundaren",
+    "qa": "Frågor och svar",
+    "answerPh": "Skriv ett offentligt svar…",
+    "answerSend": "Publicera svaret",
+    "answered": "Svaret publicerades",
+    "requestDoc": "Begär ett dokument",
+    "reqSent": "Förfrågan skickades till grundaren",
+    "bookCall": "Boka ett samtal",
+    "shareWith": "Dela med en investerare",
+    "shareSearchPh": "Skriv en investerares namn…",
+    "shared": "Delad med {name}",
+    "editNote": "Redigera din anteckning",
+    "addNote": "Lägg till en anteckning",
+    "notePh": "Varför är det här intressant? Bara du ser detta."
   },
   "filters": {
     "industry": "Bransch",
@@ -1218,7 +1239,17 @@
     "recentListings": "Senaste listningar",
     "noData": "Plattformsdata visas när startups ansluter sig.",
     "errorRetry": "Data tillfälligt otillgänglig. Försök uppdatera.",
-    "retry": "Försök igen"
+    "retry": "Försök igen",
+    "dealFlow": "Affärsflöde",
+    "liveDeals": "Pågående affärer",
+    "closeRate": "Avslutsfrekvens",
+    "stage_intro": "Introduktion",
+    "stage_due_diligence": "Due diligence",
+    "stage_term_sheet": "Term sheet",
+    "stage_closed": "Avslutad",
+    "stage_passed": "Avböjd",
+    "multiCurrencyNote": "Avslutade rundor omfattar {list}; beloppen är inte omräknade till en enda valuta.",
+    "exportCsv": "Exportera CSV"
   },
   "onboarding": {
     "welcomeTitle": "Välkommen till CapitalReach",
@@ -1360,7 +1391,9 @@
       "startFree": "Börja gratis",
       "selectPlan": "Välj {name}",
       "errorSaving": "Fel vid sparande av startup:",
-      "submitted": "Profil inskickad! Vi granskar och godkänner din listning inom 1–2 arbetsdagar."
+      "submitted": "Profil inskickad! Vi granskar och godkänner din listning inom 1–2 arbetsdagar.",
+      "pctOutOfRange": "{field} måste ligga mellan 0 och {max}.",
+      "numberTooLarge": "Ett av talen är för stort — procent måste vara 100 eller lägre."
     },
     "accredited": "Jag bekräftar att jag är en ackrediterad investerare",
     "accreditedNote": "Självcertifiering krävs enligt plattformens policy. Dokumentation kan begäras för institutionella konton.",
@@ -1511,7 +1544,11 @@
       "if4": "SLA- & efterlevnadsstöd",
       "if5": "Anpassad rapportering",
       "errorCreating": "Fel vid skapande av profil:",
-      "created": "Profil skapad! Börja upptäcka startups på CapitalReach."
+      "created": "Profil skapad! Börja upptäcka startups på CapitalReach.",
+      "ageTitle": "Jag är 18 år eller äldre",
+      "ageBody": "CapitalReach är endast tillgängligt för vuxna. Du bekräftar att du uppfyller åldersgränsen i våra användarvillkor.",
+      "lossTitle": "Jag förstår risken för total förlust",
+      "lossBody": "Investeringar i tidiga skeden är illikvida och spekulativa. Du kan förlora hela det investerade beloppet. CapitalReach garanterar inget utfall."
     }
   },
   "banner": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "E-post:",
     "supportLabel": "Support:",
-    "footerAck": "Genom att använda CapitalReach bekräftar du att du har läst, förstått, och godkänner att vara bunden av dessa Användarvillkor."
+    "footerAck": "Genom att använda CapitalReach bekräftar du att du har läst, förstått, och godkänner att vara bunden av dessa Användarvillkor.",
+    "s6l9": "Kringgå plattformens successavgift genom att inom 24 månader efter introduktionen kontakta, förhandla med eller genomföra en investering utanför CapitalReach med en part som du introducerats till via Tjänsten.",
+    "s4h2p2": "I denna sektion anses en investerare vara ”kopplad via plattformen” om denne såg din notering medan hen var inloggad på CapitalReach, kontaktade dig via plattformen, eller introducerades för dig via en CapitalReach-affärspost, i varje fall inom 24 månader före rundans stängning. CapitalReach sparar loggar över dessa händelser och avgör kopplingen i god tro utifrån dem.",
+    "s4h2p3": "Om du anser att en successavgift fakturerats felaktigt kan du bestrida den skriftligen till {email} inom 30 dagar från fakturadatumet. Vi granskar kopplingsloggarna och svarar inom 30 dagar. Avgifter under pågående tvist betraktas inte som förfallna."
   },
   "search": {
     "aria": "Sök startups och investerare",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "Bara ägaren och administratörer kan ändra vilka som är med i teamet.",
     "noEntity": "Slutför din profil innan du bjuder in någon.",
     "unavailable": "Teamkonton är inte påslagna än. Kom tillbaka snart."
+  },
+  "pullQuote": {
+    "text": "Varje notering granskad. Varje siffra verklig. Kapital ska inte kräva ett trossprång.",
+    "attribution": "CapitalReach-standarden"
   }
 }

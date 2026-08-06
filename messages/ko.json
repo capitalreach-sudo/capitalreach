@@ -996,7 +996,28 @@
     "signUpPitchDeck": "전체 피치 덱을 보려면 가입하세요",
     "createFreeAccount": "무료 계정 만들기",
     "upgradeTractionTitle": "트랙션 데이터를 보려면 업그레이드하세요",
-    "upgradeTractionDesc": "Angel 회원은 MRR, ARR, 사용자 수, 성장률을 볼 수 있습니다."
+    "upgradeTractionDesc": "Angel 회원은 MRR, ARR, 사용자 수, 성장률을 볼 수 있습니다.",
+    "inYourPipeline": "내 파이프라인에 있음",
+    "startDeal": "딜 시작",
+    "openNewTab": "새 탭에서 열기",
+    "updates": "업데이트",
+    "askQuestion": "질문하기",
+    "questionPh": "무엇이 궁금하신가요? (최소 10자)",
+    "askSend": "질문 보내기",
+    "questionSent": "창업자에게 질문을 보냈습니다",
+    "qa": "질문과 답변",
+    "answerPh": "공개 답변을 작성하세요…",
+    "answerSend": "답변 게시",
+    "answered": "답변을 게시했습니다",
+    "requestDoc": "자료 요청",
+    "reqSent": "창업자에게 요청을 보냈습니다",
+    "bookCall": "통화 예약",
+    "shareWith": "투자자와 공유",
+    "shareSearchPh": "투자자 이름 입력…",
+    "shared": "{name}님과 공유했습니다",
+    "editNote": "메모 수정",
+    "addNote": "메모 추가",
+    "notePh": "어떤 점이 흥미로운가요? 본인만 볼 수 있습니다."
   },
   "filters": {
     "industry": "산업",
@@ -1218,7 +1239,17 @@
     "recentListings": "최근 등록",
     "noData": "스타트업이 참여하면 플랫폼 데이터가 표시됩니다.",
     "errorRetry": "데이터를 일시적으로 사용할 수 없습니다. 새로고침해 보세요.",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "dealFlow": "딜 플로우",
+    "liveDeals": "진행 중인 딜",
+    "closeRate": "성사율",
+    "stage_intro": "인트로",
+    "stage_due_diligence": "실사",
+    "stage_term_sheet": "텀시트",
+    "stage_closed": "완료",
+    "stage_passed": "패스",
+    "multiCurrencyNote": "완료된 라운드는 {list}에 걸쳐 있으며, 금액은 단일 통화로 환산하지 않았습니다.",
+    "exportCsv": "CSV 내보내기"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReach에 오신 것을 환영합니다",
@@ -1360,7 +1391,9 @@
       "startFree": "무료로 시작",
       "selectPlan": "{name} 선택",
       "errorSaving": "스타트업 저장 오류:",
-      "submitted": "프로필이 제출되었습니다! 1~2 영업일 내에 검토 및 승인해 드립니다."
+      "submitted": "프로필이 제출되었습니다! 1~2 영업일 내에 검토 및 승인해 드립니다.",
+      "pctOutOfRange": "{field}은(는) 0에서 {max} 사이여야 합니다.",
+      "numberTooLarge": "숫자 중 하나가 너무 큽니다 — 백분율은 100 이하여야 합니다."
     },
     "accredited": "본인이 적격 투자자임을 확인합니다",
     "accreditedNote": "플랫폼 정책상 자체 인증이 필요합니다. 기관 계정에는 문서가 요청될 수 있습니다.",
@@ -1511,7 +1544,11 @@
       "if4": "SLA 및 컴플라이언스 지원",
       "if5": "맞춤형 보고서",
       "errorCreating": "프로필 생성 오류:",
-      "created": "프로필이 생성되었습니다! CapitalReach에서 스타트업을 발견해 보세요."
+      "created": "프로필이 생성되었습니다! CapitalReach에서 스타트업을 발견해 보세요.",
+      "ageTitle": "만 18세 이상입니다",
+      "ageBody": "CapitalReach는 성인만 이용할 수 있습니다. 서비스 약관에 정한 최소 연령 요건을 충족함을 확인합니다.",
+      "lossTitle": "전액 손실 위험을 이해합니다",
+      "lossBody": "초기 단계 투자는 유동성이 낮고 투기적입니다. 투자 원금 전액을 잃을 수 있습니다. CapitalReach는 어떤 결과도 보장하지 않습니다."
     }
   },
   "banner": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "이메일:",
     "supportLabel": "지원:",
-    "footerAck": "CapitalReach를 이용함으로써 귀하는 본 서비스 약관을 읽고, 이해했으며, 이에 구속되는 데 동의함을 인정하는 것입니다."
+    "footerAck": "CapitalReach를 이용함으로써 귀하는 본 서비스 약관을 읽고, 이해했으며, 이에 구속되는 데 동의함을 인정하는 것입니다.",
+    "s6l9": "서비스를 통해 소개받은 상대방과 소개 후 24개월 이내에 CapitalReach 외부에서 연락, 협상 또는 투자를 완료하여 플랫폼의 성공 보수 약정을 우회하는 행위.",
+    "s4h2p2": "본 조에서 투자자가 '플랫폼을 통해 연결된' 경우란, CapitalReach에 로그인한 상태로 귀하의 목록을 열람했거나, 플랫폼을 통해 귀하에게 연락했거나, CapitalReach 딜 기록을 통해 소개된 경우를 말하며, 각 경우 라운드 마감 전 24개월 이내에 발생한 것에 한합니다. CapitalReach는 이러한 기록을 보관하고 이를 근거로 선의로 연결 여부를 판단합니다.",
+    "s4h2p3": "성공 보수가 착오로 청구되었다고 판단되면, 청구서 발행일로부터 30일 이내에 {email}로 서면 이의를 제기할 수 있습니다. 당사는 연결 기록을 검토하여 30일 이내에 회신합니다. 분쟁이 진행 중인 요금은 연체로 보지 않습니다."
   },
   "search": {
     "aria": "스타트업과 투자자 검색",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "이 팀의 구성은 소유자와 관리자만 변경할 수 있습니다.",
     "noEntity": "누군가를 초대하기 전에 프로필 설정을 완료하세요.",
     "unavailable": "팀 계정은 아직 활성화되지 않았습니다. 잠시 후 다시 확인해 주세요."
+  },
+  "pullQuote": {
+    "text": "모든 목록을 검증합니다. 모든 수치는 실제입니다. 자본에 막연한 믿음이 필요해서는 안 됩니다.",
+    "attribution": "CapitalReach 기준"
   }
 }

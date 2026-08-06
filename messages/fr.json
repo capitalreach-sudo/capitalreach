@@ -1034,7 +1034,28 @@
     "signUpPitchDeck": "Inscrivez-vous pour voir le pitch deck complet",
     "createFreeAccount": "Créer un compte gratuit",
     "upgradeTractionTitle": "Passez à un niveau supérieur pour voir les données de traction",
-    "upgradeTractionDesc": "Les membres Angel voient le MRR, l'ARR, le nombre d'utilisateurs et les taux de croissance."
+    "upgradeTractionDesc": "Les membres Angel voient le MRR, l'ARR, le nombre d'utilisateurs et les taux de croissance.",
+    "inYourPipeline": "Dans votre pipeline",
+    "startDeal": "Démarrer une opération",
+    "openNewTab": "Ouvrir dans un nouvel onglet",
+    "updates": "Actualités",
+    "askQuestion": "Poser une question",
+    "questionPh": "Que souhaitez-vous savoir ? (10 caractères min.)",
+    "askSend": "Envoyer la question",
+    "questionSent": "Question envoyée au fondateur",
+    "qa": "Questions / réponses",
+    "answerPh": "Rédigez une réponse publique…",
+    "answerSend": "Publier la réponse",
+    "answered": "Réponse publiée",
+    "requestDoc": "Demander un document",
+    "reqSent": "Demande envoyée au fondateur",
+    "bookCall": "Réserver un appel",
+    "shareWith": "Partager avec un investisseur",
+    "shareSearchPh": "Saisissez le nom d'un investisseur…",
+    "shared": "Partagé avec {name}",
+    "editNote": "Modifier votre note",
+    "addNote": "Ajouter une note",
+    "notePh": "Pourquoi est-ce intéressant ? Vous seul voyez cette note."
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1120,7 +1141,17 @@
     "featuredHere": "Vous voulez que votre startup apparaisse ici?",
     "featuredHereSub": "Listez-vous sur CapitalReach pour apparaître dans les graphiques de la plateforme et être découvert par les investisseurs.",
     "listFree": "Lister votre startup gratuitement",
-    "preRev": "Pré-revenu"
+    "preRev": "Pré-revenu",
+    "dealFlow": "Flux d'opérations",
+    "liveDeals": "Opérations en cours",
+    "closeRate": "Taux de closing",
+    "stage_intro": "Introduction",
+    "stage_due_diligence": "Due diligence",
+    "stage_term_sheet": "Term sheet",
+    "stage_closed": "Clôturée",
+    "stage_passed": "Écartée",
+    "multiCurrencyNote": "Les tours clôturés couvrent {list} ; les montants ne sont pas convertis dans une devise unique.",
+    "exportCsv": "Exporter en CSV"
   },
   "filters": {
     "industry": "Secteur",
@@ -1347,7 +1378,9 @@
       "startFree": "Commencer gratuitement",
       "selectPlan": "Choisir {name}",
       "errorSaving": "Erreur lors de l'enregistrement:",
-      "submitted": "Profil soumis! Nous examinerons et approuverons votre annonce sous 1–2 jours ouvrés."
+      "submitted": "Profil soumis! Nous examinerons et approuverons votre annonce sous 1–2 jours ouvrés.",
+      "pctOutOfRange": "{field} doit être compris entre 0 et {max}.",
+      "numberTooLarge": "L'un des nombres est trop grand — les pourcentages doivent être inférieurs ou égaux à 100."
     },
     "inv": {
       "forInvestors": "pour investisseurs",
@@ -1467,7 +1500,11 @@
       "if4": "Support SLA & conformité",
       "if5": "Rapports personnalisés",
       "errorCreating": "Erreur lors de la création du profil:",
-      "created": "Profil créé! Commencez à découvrir des startups sur CapitalReach."
+      "created": "Profil créé! Commencez à découvrir des startups sur CapitalReach.",
+      "ageTitle": "J'ai 18 ans ou plus",
+      "ageBody": "CapitalReach est réservé aux adultes. Vous confirmez remplir la condition d'âge minimum prévue par nos Conditions d'utilisation.",
+      "lossTitle": "Je comprends le risque de perte totale",
+      "lossBody": "Les investissements en amorçage sont illiquides et spéculatifs. Vous pouvez perdre la totalité du montant investi. CapitalReach ne garantit aucun résultat."
     }
   },
   "errors": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "E-mail :",
     "supportLabel": "Support :",
-    "footerAck": "En utilisant CapitalReach, vous reconnaissez avoir lu, compris et accepté d'être lié par ces Conditions d'utilisation."
+    "footerAck": "En utilisant CapitalReach, vous reconnaissez avoir lu, compris et accepté d'être lié par ces Conditions d'utilisation.",
+    "s6l9": "Contourner le dispositif de commission de succès de la plateforme en contactant une partie qui vous a été présentée via le Service, en négociant avec elle ou en réalisant un investissement avec elle en dehors de CapitalReach, dans les 24 mois suivant cette mise en relation.",
+    "s4h2p2": "Aux fins de la présente section, un investisseur est réputé « mis en relation via la plateforme » s'il a consulté votre annonce en étant connecté à CapitalReach, vous a contacté via la plateforme, ou vous a été présenté par un enregistrement d'opération CapitalReach, dans chaque cas au cours des 24 mois précédant la clôture du tour. CapitalReach conserve les enregistrements de ces événements et détermine la mise en relation de bonne foi sur cette base.",
+    "s4h2p3": "Si vous estimez qu'une commission de succès a été facturée à tort, vous pouvez la contester par écrit à {email} dans les 30 jours suivant la date de facture. Nous examinerons les enregistrements de mise en relation et répondrons sous 30 jours. Les frais faisant l'objet d'une contestation en cours ne sont pas considérés comme échus."
   },
   "search": {
     "aria": "Rechercher des startups et des investisseurs",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "Seuls le propriétaire et les administrateurs peuvent modifier la composition de cette équipe.",
     "noEntity": "Terminez la configuration de votre profil avant d'inviter quelqu'un.",
     "unavailable": "Les comptes d'équipe ne sont pas encore activés. Revenez bientôt."
+  },
+  "pullQuote": {
+    "text": "Chaque annonce vérifiée. Chaque chiffre réel. Le capital ne devrait pas exiger un acte de foi.",
+    "attribution": "Le standard CapitalReach"
   }
 }

@@ -996,7 +996,28 @@
     "signUpPitchDeck": "Meld u aan om het volledige pitch deck te bekijken",
     "createFreeAccount": "Gratis account aanmaken",
     "upgradeTractionTitle": "Upgrade om tractiegegevens te zien",
-    "upgradeTractionDesc": "Angel-leden zien MRR, ARR, aantal gebruikers en groeipercentages."
+    "upgradeTractionDesc": "Angel-leden zien MRR, ARR, aantal gebruikers en groeipercentages.",
+    "inYourPipeline": "In je pipeline",
+    "startDeal": "Deal starten",
+    "openNewTab": "In nieuw tabblad openen",
+    "updates": "Updates",
+    "askQuestion": "Stel een vraag",
+    "questionPh": "Wat wil je weten? (min. 10 tekens)",
+    "askSend": "Vraag versturen",
+    "questionSent": "Vraag naar de oprichter gestuurd",
+    "qa": "Vragen en antwoorden",
+    "answerPh": "Schrijf een openbaar antwoord…",
+    "answerSend": "Antwoord publiceren",
+    "answered": "Antwoord gepubliceerd",
+    "requestDoc": "Een document opvragen",
+    "reqSent": "Verzoek naar de oprichter gestuurd",
+    "bookCall": "Een gesprek boeken",
+    "shareWith": "Delen met een investeerder",
+    "shareSearchPh": "Typ de naam van een investeerder…",
+    "shared": "Gedeeld met {name}",
+    "editNote": "Je notitie bewerken",
+    "addNote": "Notitie toevoegen",
+    "notePh": "Waarom is dit interessant? Alleen jij ziet dit."
   },
   "filters": {
     "industry": "Industrie",
@@ -1218,7 +1239,17 @@
     "recentListings": "Recente vermeldingen",
     "noData": "Platformgegevens verschijnen naarmate startups zich aansluiten.",
     "errorRetry": "Gegevens tijdelijk niet beschikbaar. Probeer te vernieuwen.",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "dealFlow": "Deal flow",
+    "liveDeals": "Lopende deals",
+    "closeRate": "Closingpercentage",
+    "stage_intro": "Introductie",
+    "stage_due_diligence": "Due diligence",
+    "stage_term_sheet": "Term sheet",
+    "stage_closed": "Gesloten",
+    "stage_passed": "Afgewezen",
+    "multiCurrencyNote": "Afgesloten rondes omvatten {list}; bedragen zijn niet omgerekend naar één valuta.",
+    "exportCsv": "CSV exporteren"
   },
   "onboarding": {
     "welcomeTitle": "Welkom bij CapitalReach",
@@ -1360,7 +1391,9 @@
       "startFree": "Gratis starten",
       "selectPlan": "{name} selecteren",
       "errorSaving": "Fout bij opslaan startup:",
-      "submitted": "Profiel ingediend! We beoordelen en keuren uw vermelding binnen 1–2 werkdagen goed."
+      "submitted": "Profiel ingediend! We beoordelen en keuren uw vermelding binnen 1–2 werkdagen goed.",
+      "pctOutOfRange": "{field} moet tussen 0 en {max} liggen.",
+      "numberTooLarge": "Een van de getallen is te groot — percentages moeten 100 of lager zijn."
     },
     "accredited": "Ik bevestig dat ik een geaccrediteerde investeerder ben",
     "accreditedNote": "Zelfcertificering is vereist volgens het platformbeleid. Voor institutionele accounts kan documentatie worden gevraagd.",
@@ -1511,7 +1544,11 @@
       "if4": "SLA- & compliance-ondersteuning",
       "if5": "Aangepaste rapportage",
       "errorCreating": "Fout bij het aanmaken van profiel:",
-      "created": "Profiel aangemaakt! Ontdek nu startups op CapitalReach."
+      "created": "Profiel aangemaakt! Ontdek nu startups op CapitalReach.",
+      "ageTitle": "Ik ben 18 jaar of ouder",
+      "ageBody": "CapitalReach is alleen beschikbaar voor volwassenen. Je bevestigt dat je voldoet aan de minimumleeftijd uit onze Servicevoorwaarden.",
+      "lossTitle": "Ik begrijp het risico van totaal verlies",
+      "lossBody": "Investeringen in een vroege fase zijn illiquide en speculatief. Je kunt het volledige geïnvesteerde bedrag verliezen. CapitalReach garandeert geen enkel resultaat."
     }
   },
   "banner": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "E-mail:",
     "supportLabel": "Ondersteuning:",
-    "footerAck": "Door CapitalReach te gebruiken, erkent u dat u deze Servicevoorwaarden heeft gelezen, begrepen, en ermee akkoord gaat eraan gebonden te zijn."
+    "footerAck": "Door CapitalReach te gebruiken, erkent u dat u deze Servicevoorwaarden heeft gelezen, begrepen, en ermee akkoord gaat eraan gebonden te zijn.",
+    "s6l9": "De successfee-regeling van het platform omzeilen door binnen 24 maanden na de introductie buiten CapitalReach om contact op te nemen met, te onderhandelen met of een investering af te ronden met een partij die via de Dienst aan je is voorgesteld.",
+    "s4h2p2": "Voor deze sectie geldt een investeerder als 'via het platform in contact gekomen' indien hij je aanbod bekeek terwijl hij was ingelogd op CapitalReach, via het platform contact met je opnam, of via een CapitalReach-dealrecord aan je werd voorgesteld, telkens binnen 24 maanden voor het sluiten van de ronde. CapitalReach bewaart registraties van deze gebeurtenissen en stelt de connectie te goeder trouw op basis daarvan vast.",
+    "s4h2p3": "Als je meent dat een successfee ten onrechte is gefactureerd, kun je hiertegen schriftelijk bezwaar maken bij {email} binnen 30 dagen na de factuurdatum. Wij beoordelen de connectieregistraties en reageren binnen 30 dagen. Kosten waarover een actief geschil loopt, gelden niet als achterstallig."
   },
   "search": {
     "aria": "Zoek startups en investeerders",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "Alleen de eigenaar en beheerders kunnen wijzigen wie in dit team zit.",
     "noEntity": "Maak eerst je profiel af voordat je iemand uitnodigt.",
     "unavailable": "Teamaccounts staan nog niet aan. Kom snel terug."
+  },
+  "pullQuote": {
+    "text": "Elk aanbod gecontroleerd. Elk cijfer echt. Kapitaal zou geen sprong in het diepe mogen vragen.",
+    "attribution": "De CapitalReach-standaard"
   }
 }

@@ -996,7 +996,28 @@
     "signUpPitchDeck": "Registe-se para ver o pitch deck completo",
     "createFreeAccount": "Criar conta gratuita",
     "upgradeTractionTitle": "Faça upgrade para ver dados de tração",
-    "upgradeTractionDesc": "Os membros Angel veem MRR, ARR, número de utilizadores e taxas de crescimento."
+    "upgradeTractionDesc": "Os membros Angel veem MRR, ARR, número de utilizadores e taxas de crescimento.",
+    "inYourPipeline": "No teu pipeline",
+    "startDeal": "Iniciar negócio",
+    "openNewTab": "Abrir num novo separador",
+    "updates": "Atualizações",
+    "askQuestion": "Fazer uma pergunta",
+    "questionPh": "O que gostarias de saber? (mín. 10 caracteres)",
+    "askSend": "Enviar pergunta",
+    "questionSent": "Pergunta enviada ao fundador",
+    "qa": "Perguntas e respostas",
+    "answerPh": "Escreve uma resposta pública…",
+    "answerSend": "Publicar resposta",
+    "answered": "Resposta publicada",
+    "requestDoc": "Pedir um documento",
+    "reqSent": "Pedido enviado ao fundador",
+    "bookCall": "Marcar uma chamada",
+    "shareWith": "Partilhar com um investidor",
+    "shareSearchPh": "Escreve o nome de um investidor…",
+    "shared": "Partilhado com {name}",
+    "editNote": "Editar a tua nota",
+    "addNote": "Adicionar uma nota",
+    "notePh": "Porque é interessante? Só tu vês isto."
   },
   "filters": {
     "industry": "Indústria",
@@ -1218,7 +1239,17 @@
     "recentListings": "Listagens recentes",
     "noData": "Os dados da plataforma aparecerão à medida que as startups aderirem.",
     "errorRetry": "Dados temporariamente indisponíveis. Tente atualizar.",
-    "retry": "Tentar novamente"
+    "retry": "Tentar novamente",
+    "dealFlow": "Fluxo de negócios",
+    "liveDeals": "Negócios ativos",
+    "closeRate": "Taxa de fecho",
+    "stage_intro": "Apresentação",
+    "stage_due_diligence": "Diligência",
+    "stage_term_sheet": "Term sheet",
+    "stage_closed": "Fechada",
+    "stage_passed": "Recusada",
+    "multiCurrencyNote": "As rondas fechadas abrangem {list}; os valores não são convertidos para uma única moeda.",
+    "exportCsv": "Exportar CSV"
   },
   "onboarding": {
     "welcomeTitle": "Bem-vindo ao CapitalReach",
@@ -1360,7 +1391,9 @@
       "startFree": "Começar grátis",
       "selectPlan": "Selecionar {name}",
       "errorSaving": "Erro ao guardar a startup:",
-      "submitted": "Perfil submetido! Vamos rever e aprovar a sua listagem em 1–2 dias úteis."
+      "submitted": "Perfil submetido! Vamos rever e aprovar a sua listagem em 1–2 dias úteis.",
+      "pctOutOfRange": "{field} tem de estar entre 0 e {max}.",
+      "numberTooLarge": "Um dos números é demasiado grande — as percentagens têm de ser 100 ou menos."
     },
     "accredited": "Confirmo que sou um investidor acreditado",
     "accreditedNote": "A autocertificação é exigida pela política da plataforma. Documentação pode ser solicitada para contas institucionais.",
@@ -1511,7 +1544,11 @@
       "if4": "Suporte SLA e conformidade",
       "if5": "Relatórios personalizados",
       "errorCreating": "Erro ao criar o perfil:",
-      "created": "Perfil criado! Comece a descobrir startups na CapitalReach."
+      "created": "Perfil criado! Comece a descobrir startups na CapitalReach.",
+      "ageTitle": "Tenho 18 anos ou mais",
+      "ageBody": "A CapitalReach está disponível apenas para adultos. Confirmas que cumpres a idade mínima definida nos nossos Termos de Serviço.",
+      "lossTitle": "Compreendo o risco de perda total",
+      "lossBody": "Os investimentos em fase inicial são ilíquidos e especulativos. Podes perder a totalidade do montante investido. A CapitalReach não garante qualquer resultado."
     }
   },
   "banner": {
@@ -1889,7 +1926,10 @@
     "contactBrand": "CapitalReach Ltd.",
     "emailLabel": "E-mail:",
     "supportLabel": "Suporte:",
-    "footerAck": "Ao usar a CapitalReach, reconhece que leu, compreendeu, e concorda em ficar vinculado a estes Termos de Serviço."
+    "footerAck": "Ao usar a CapitalReach, reconhece que leu, compreendeu, e concorda em ficar vinculado a estes Termos de Serviço.",
+    "s6l9": "Contornar o acordo de comissão de êxito da plataforma contactando, negociando ou concretizando um investimento fora da CapitalReach com uma parte que te foi apresentada através do Serviço, no prazo de 24 meses após essa apresentação.",
+    "s4h2p2": "Para efeitos desta secção, considera-se que um investidor está «ligado através da plataforma» se visualizou a tua oportunidade com sessão iniciada na CapitalReach, te contactou através da plataforma, ou te foi apresentado por um registo de negócio da CapitalReach, em cada caso nos 24 meses anteriores ao fecho da ronda. A CapitalReach mantém registos destes eventos e determina a ligação de boa-fé com base neles.",
+    "s4h2p3": "Se considerares que uma comissão de êxito foi faturada por erro, podes contestá-la por escrito para {email} no prazo de 30 dias após a data da fatura. Analisaremos os registos de ligação e responderemos em 30 dias. As comissões em disputa ativa não são consideradas vencidas."
   },
   "search": {
     "aria": "Pesquisar startups e investidores",
@@ -2019,5 +2059,9 @@
     "readOnlyNote": "Só o proprietário e os administradores podem alterar quem está nesta equipa.",
     "noEntity": "Termina a configuração do teu perfil antes de convidar alguém.",
     "unavailable": "As contas de equipa ainda não estão ativas. Volta em breve."
+  },
+  "pullQuote": {
+    "text": "Cada oportunidade verificada. Cada número real. O capital não devia exigir um ato de fé.",
+    "attribution": "O padrão CapitalReach"
   }
 }
