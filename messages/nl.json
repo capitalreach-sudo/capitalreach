@@ -298,7 +298,13 @@
       "savedReports": "Opgeslagen rapporten",
       "exportPdf": "Rapporten exporteren (PDF)",
       "viewOnly": "Alleen bekijken"
-    }
+    },
+    "signInTitle": "Log in om de AI-tools te gebruiken",
+    "signInSub": "Maak een gratis account voor pitchbeoordeling, investeerdersmatching en due-diligencerapporten.",
+    "createAccount": "Account aanmaken",
+    "usageRemaining": "Nog {remaining} van {limit} AI-runs vandaag",
+    "usageUnlimited": "Onbeperkte AI-runs in jouw plan",
+    "usageUpgrade": "Meer krijgen →"
   },
   "pricing": {
     "sectionLabel": "Plannen en prijzen",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "Angel-investeerder",
     "ventureCapital": "Durfkapitaal",
     "familyOffice": "Family Office",
-    "corporateInvestor": "Corporate investeerder"
+    "corporateInvestor": "Corporate investeerder",
+    "selfPreview": "Dit is je openbare profiel — zo zien oprichters je.",
+    "editProfile": "Profiel bewerken",
+    "memberSince": "Op CapitalReach sinds {date}"
   },
   "admin": {
     "panelTitle": "Beheerderspaneel",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "Goedkeuren mislukt",
     "toastRejectReasonRequired": "Voeg een reden voor afwijzing toe",
     "toastRejected": "Startup afgewezen, e-mail verzonden",
-    "toastRejectFailed": "Afwijzen mislukt"
+    "toastRejectFailed": "Afwijzen mislukt",
+    "launchTitle": "Lanceermodus",
+    "launchOnSub": "Actief — elk account heeft gratis toegang op het hoogste niveau ({memberCount}/{target} leden). Uitschakelen laat de betaalde plannen gelden.",
+    "launchOffSub": "Uit — de plannen gelden. Gratis accounts zien afgeschermde functies vergrendeld.",
+    "launchTurnOff": "Lanceerperiode beëindigen",
+    "launchTurnOn": "Lanceermodus opnieuw inschakelen"
   },
   "contact": {
     "title": "Neem contact op",
@@ -1970,5 +1984,40 @@
     "readOnly": "Alleen-lezen — acties zijn uitgeschakeld",
     "exit": "Terug naar beheer",
     "open": "Dashboard bekijken"
+  },
+  "targets": {
+    "target": "Deze investeerder targeten",
+    "targeted": "Op je targetlijst",
+    "added": "Toegevoegd aan je targetlijst",
+    "removed": "Verwijderd van je targetlijst",
+    "failed": "Kon de targetlijst niet bijwerken"
+  },
+  "team": {
+    "title": "Team",
+    "navLabel": "Team",
+    "accessTitle": "Iedereen in dit team deelt het account",
+    "accessBody": "Leden zien dezelfde deals, contracten, documenten en activiteit als jij en kunnen er samen aan werken. Ze zien je facturatie niet, en alleen eigenaren en beheerders kunnen de teamsamenstelling wijzigen.",
+    "inviteHeading": "Iemand aan het team toevoegen",
+    "emailLabel": "Hun e-mailadres",
+    "emailHint": "Ze moeten al een CapitalReach-account hebben — we kunnen nog geen uitnodiging mailen.",
+    "roleLabel": "Rol",
+    "roleMember": "Lid",
+    "roleAdmin": "Beheerder",
+    "roleMemberHint": "Kan de deals van het account bekijken en behandelen.",
+    "roleAdminHint": "Kan ook teamleden toevoegen en verwijderen.",
+    "addButton": "Aan team toevoegen",
+    "adding": "Toevoegen…",
+    "added": "Toegevoegd aan het team.",
+    "removed": "Verwijderd uit het team.",
+    "rosterHeading": "Wie toegang heeft",
+    "count": "{n} met toegang",
+    "unnamed": "(geen naam ingesteld)",
+    "role_owner": "Eigenaar",
+    "role_admin": "Beheerder",
+    "role_member": "Lid",
+    "removeAria": "{name} uit het team verwijderen",
+    "readOnlyNote": "Alleen de eigenaar en beheerders kunnen wijzigen wie in dit team zit.",
+    "noEntity": "Maak eerst je profiel af voordat je iemand uitnodigt.",
+    "unavailable": "Teamaccounts staan nog niet aan. Kom snel terug."
   }
 }

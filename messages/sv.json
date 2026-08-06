@@ -298,7 +298,13 @@
       "savedReports": "Sparade rapporter",
       "exportPdf": "Exportera rapporter (PDF)",
       "viewOnly": "Endast visning"
-    }
+    },
+    "signInTitle": "Logga in för att använda AI-verktygen",
+    "signInSub": "Skapa ett gratiskonto för pitchbedömning, investerarmatchning och due diligence-rapporter.",
+    "createAccount": "Skapa konto",
+    "usageRemaining": "{remaining} av {limit} AI-körningar kvar i dag",
+    "usageUnlimited": "Obegränsade AI-körningar i din plan",
+    "usageUpgrade": "Få fler →"
   },
   "pricing": {
     "sectionLabel": "Planer och priser",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "Ängelinvesterare",
     "ventureCapital": "Riskkapital",
     "familyOffice": "Family Office",
-    "corporateInvestor": "Företagsinvesterare"
+    "corporateInvestor": "Företagsinvesterare",
+    "selfPreview": "Det här är din offentliga profil — så här ser grundare dig.",
+    "editProfile": "Redigera profil",
+    "memberSince": "På CapitalReach sedan {date}"
   },
   "admin": {
     "panelTitle": "Adminpanel",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "Godkännande misslyckades",
     "toastRejectReasonRequired": "Lägg till en avvisningsanledning",
     "toastRejected": "Startup avvisad, e-post skickat",
-    "toastRejectFailed": "Avvisning misslyckades"
+    "toastRejectFailed": "Avvisning misslyckades",
+    "launchTitle": "Lanseringsläge",
+    "launchOnSub": "Aktivt — alla konton har toppnivååtkomst gratis ({memberCount}/{target} medlemmar). Stänger du av det börjar de betalda planerna gälla.",
+    "launchOffSub": "Av — planerna gäller. Gratiskonton ser låsta funktioner som låsta.",
+    "launchTurnOff": "Avsluta lanseringsperioden",
+    "launchTurnOn": "Aktivera lanseringsläget igen"
   },
   "contact": {
     "title": "Kontakta oss",
@@ -1970,5 +1984,40 @@
     "readOnly": "Skrivskyddat — åtgärder är avstängda",
     "exit": "Tillbaka till admin",
     "open": "Visa panel"
+  },
+  "targets": {
+    "target": "Rikta in dig på investeraren",
+    "targeted": "På din mållista",
+    "added": "Tillagd i din mållista",
+    "removed": "Borttagen från din mållista",
+    "failed": "Kunde inte uppdatera mållistan"
+  },
+  "team": {
+    "title": "Team",
+    "navLabel": "Team",
+    "accessTitle": "Alla i teamet delar kontot",
+    "accessBody": "Medlemmar ser samma affärer, avtal, dokument och aktivitet som du och kan arbeta med dem tillsammans med dig. De ser inte din fakturering, och bara ägare och administratörer kan ändra vilka som är med i teamet.",
+    "inviteHeading": "Lägg till någon i teamet",
+    "emailLabel": "Deras e-postadress",
+    "emailHint": "De måste redan ha ett CapitalReach-konto — vi kan inte mejla en inbjudan än.",
+    "roleLabel": "Roll",
+    "roleMember": "Medlem",
+    "roleAdmin": "Administratör",
+    "roleMemberHint": "Kan se och arbeta med kontots affärer.",
+    "roleAdminHint": "Kan även lägga till och ta bort teammedlemmar.",
+    "addButton": "Lägg till i teamet",
+    "adding": "Lägger till…",
+    "added": "Tillagd i teamet.",
+    "removed": "Borttagen från teamet.",
+    "rosterHeading": "Vilka har åtkomst",
+    "count": "{n} med åtkomst",
+    "unnamed": "(inget namn angivet)",
+    "role_owner": "Ägare",
+    "role_admin": "Administratör",
+    "role_member": "Medlem",
+    "removeAria": "Ta bort {name} från teamet",
+    "readOnlyNote": "Bara ägaren och administratörer kan ändra vilka som är med i teamet.",
+    "noEntity": "Slutför din profil innan du bjuder in någon.",
+    "unavailable": "Teamkonton är inte påslagna än. Kom tillbaka snart."
   }
 }

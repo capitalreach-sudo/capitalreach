@@ -307,7 +307,13 @@
       "savedReports": "已保存报告",
       "exportPdf": "导出报告（PDF）",
       "viewOnly": "仅查看"
-    }
+    },
+    "signInTitle": "登录后即可使用 AI 工具",
+    "signInSub": "创建免费账户即可使用路演评分、投资人匹配与尽职调查报告。",
+    "createAccount": "创建账户",
+    "usageRemaining": "今日 AI 运行剩余 {remaining}/{limit} 次",
+    "usageUnlimited": "你的方案包含无限次 AI 运行",
+    "usageUpgrade": "获取更多 →"
   },
   "pricing": {
     "sectionLabel": "方案与定价",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "天使投资人",
     "ventureCapital": "风险投资",
     "familyOffice": "家族办公室",
-    "corporateInvestor": "企业投资者"
+    "corporateInvestor": "企业投资者",
+    "selfPreview": "这是你的公开资料——创始人看到的就是这样。",
+    "editProfile": "编辑资料",
+    "memberSince": "自 {date} 加入 CapitalReach"
   },
   "admin": {
     "panelTitle": "管理面板",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "批准失败",
     "toastRejectReasonRequired": "请添加拒绝原因",
     "toastRejected": "初创公司已拒绝，邮件已发送",
-    "toastRejectFailed": "拒绝失败"
+    "toastRejectFailed": "拒绝失败",
+    "launchTitle": "上线模式",
+    "launchOnSub": "已启用——所有账户免费享有最高等级权限（{memberCount}/{target} 位成员）。关闭后付费等级开始生效。",
+    "launchOffSub": "已关闭——等级已生效。免费账户会看到受限功能处于锁定状态。",
+    "launchTurnOff": "结束上线期",
+    "launchTurnOn": "重新启用上线模式"
   },
   "contact": {
     "title": "联系我们",
@@ -1970,5 +1984,40 @@
     "readOnly": "只读——操作已禁用",
     "exit": "返回管理后台",
     "open": "查看仪表板"
+  },
+  "targets": {
+    "target": "将其列为目标",
+    "targeted": "已在目标名单中",
+    "added": "已加入目标名单",
+    "removed": "已从目标名单移除",
+    "failed": "无法更新目标名单"
+  },
+  "team": {
+    "title": "团队",
+    "navLabel": "团队",
+    "accessTitle": "团队成员共用同一账户",
+    "accessBody": "团队成员可看到与你相同的交易、合同、文件与动态，并可协同处理。他们看不到你的账单信息；只有所有者和管理员可以调整团队成员。",
+    "inviteHeading": "添加团队成员",
+    "emailLabel": "对方的邮箱地址",
+    "emailHint": "对方需已拥有 CapitalReach 账户——我们暂时无法通过邮件发送邀请。",
+    "roleLabel": "角色",
+    "roleMember": "成员",
+    "roleAdmin": "管理员",
+    "roleMemberHint": "可查看并处理账户的交易。",
+    "roleAdminHint": "还可以添加和移除团队成员。",
+    "addButton": "加入团队",
+    "adding": "添加中…",
+    "added": "已加入团队。",
+    "removed": "已移出团队。",
+    "rosterHeading": "谁有访问权限",
+    "count": "{n} 人有访问权限",
+    "unnamed": "（未设置姓名）",
+    "role_owner": "所有者",
+    "role_admin": "管理员",
+    "role_member": "成员",
+    "removeAria": "将 {name} 移出团队",
+    "readOnlyNote": "只有所有者和管理员可以调整此团队成员。",
+    "noEntity": "邀请他人前请先完成个人资料设置。",
+    "unavailable": "团队账户尚未开放，请稍后再来。"
   }
 }

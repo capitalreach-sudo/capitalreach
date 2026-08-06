@@ -298,7 +298,13 @@
       "savedReports": "Zapisane raporty",
       "exportPdf": "Eksportuj raporty (PDF)",
       "viewOnly": "Tylko podgląd"
-    }
+    },
+    "signInTitle": "Zaloguj się, aby korzystać z narzędzi AI",
+    "signInSub": "Załóż darmowe konto, aby korzystać z oceny pitchu, dopasowania inwestorów i raportów due diligence.",
+    "createAccount": "Załóż konto",
+    "usageRemaining": "Zostało {remaining} z {limit} uruchomień AI dzisiaj",
+    "usageUnlimited": "Nielimitowane uruchomienia AI w twoim planie",
+    "usageUpgrade": "Zdobądź więcej →"
   },
   "pricing": {
     "sectionLabel": "Plany i cennik",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "Anioł biznesu",
     "ventureCapital": "Venture capital",
     "familyOffice": "Family Office",
-    "corporateInvestor": "Inwestor korporacyjny"
+    "corporateInvestor": "Inwestor korporacyjny",
+    "selfPreview": "To twój profil publiczny — tak widzą cię założyciele.",
+    "editProfile": "Edytuj profil",
+    "memberSince": "Na CapitalReach od {date}"
   },
   "admin": {
     "panelTitle": "Panel administratora",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "Zatwierdzenie nie powiodło się",
     "toastRejectReasonRequired": "Dodaj powód odrzucenia",
     "toastRejected": "Startup odrzucony, e-mail wysłany",
-    "toastRejectFailed": "Odrzucenie nie powiodło się"
+    "toastRejectFailed": "Odrzucenie nie powiodło się",
+    "launchTitle": "Tryb startowy",
+    "launchOnSub": "Aktywny — każde konto ma darmowy dostęp na najwyższym poziomie ({memberCount}/{target} członków). Wyłączenie sprawi, że plany płatne zaczną obowiązywać.",
+    "launchOffSub": "Wyłączony — plany obowiązują. Konta darmowe widzą funkcje objęte limitem jako zablokowane.",
+    "launchTurnOff": "Zakończ okres startowy",
+    "launchTurnOn": "Włącz ponownie tryb startowy"
   },
   "contact": {
     "title": "Skontaktuj się z nami",
@@ -1970,5 +1984,40 @@
     "readOnly": "Tylko do odczytu — akcje wyłączone",
     "exit": "Wróć do panelu administratora",
     "open": "Zobacz pulpit"
+  },
+  "targets": {
+    "target": "Dodaj do celów",
+    "targeted": "Na twojej liście celów",
+    "added": "Dodano do listy celów",
+    "removed": "Usunięto z listy celów",
+    "failed": "Nie udało się zaktualizować listy celów"
+  },
+  "team": {
+    "title": "Zespół",
+    "navLabel": "Zespół",
+    "accessTitle": "Wszyscy w tym zespole współdzielą konto",
+    "accessBody": "Członkowie widzą te same transakcje, umowy, dokumenty i aktywność co ty i mogą nad nimi pracować razem z tobą. Nie widzą twoich rozliczeń, a skład zespołu mogą zmieniać tylko właściciele i administratorzy.",
+    "inviteHeading": "Dodaj kogoś do zespołu",
+    "emailLabel": "Ich adres e-mail",
+    "emailHint": "Muszą już mieć konto CapitalReach — nie możemy jeszcze wysłać zaproszenia e-mailem.",
+    "roleLabel": "Rola",
+    "roleMember": "Członek",
+    "roleAdmin": "Administrator",
+    "roleMemberHint": "Może przeglądać i prowadzić transakcje konta.",
+    "roleAdminHint": "Może też dodawać i usuwać członków zespołu.",
+    "addButton": "Dodaj do zespołu",
+    "adding": "Dodawanie…",
+    "added": "Dodano do zespołu.",
+    "removed": "Usunięto z zespołu.",
+    "rosterHeading": "Kto ma dostęp",
+    "count": "{n} z dostępem",
+    "unnamed": "(brak nazwy)",
+    "role_owner": "Właściciel",
+    "role_admin": "Administrator",
+    "role_member": "Członek",
+    "removeAria": "Usuń {name} z zespołu",
+    "readOnlyNote": "Tylko właściciel i administratorzy mogą zmieniać skład tego zespołu.",
+    "noEntity": "Dokończ konfigurację profilu, zanim kogoś zaprosisz.",
+    "unavailable": "Konta zespołowe nie są jeszcze włączone. Zajrzyj wkrótce."
   }
 }

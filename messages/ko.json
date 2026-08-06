@@ -298,7 +298,13 @@
       "savedReports": "저장된 보고서",
       "exportPdf": "보고서 내보내기 (PDF)",
       "viewOnly": "보기 전용"
-    }
+    },
+    "signInTitle": "AI 도구를 사용하려면 로그인하세요",
+    "signInSub": "무료 계정을 만들면 피치 평가, 투자자 매칭, 실사 리포트를 이용할 수 있습니다.",
+    "createAccount": "계정 만들기",
+    "usageRemaining": "오늘 AI 실행 {limit}회 중 {remaining}회 남음",
+    "usageUnlimited": "현재 플랜에서 AI 실행 무제한",
+    "usageUpgrade": "더 사용하기 →"
   },
   "pricing": {
     "sectionLabel": "요금제",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "엔젤 투자자",
     "ventureCapital": "벤처 캐피탈",
     "familyOffice": "패밀리 오피스",
-    "corporateInvestor": "기업 투자자"
+    "corporateInvestor": "기업 투자자",
+    "selfPreview": "공개 프로필입니다 — 창업자에게는 이렇게 보입니다.",
+    "editProfile": "프로필 수정",
+    "memberSince": "{date}부터 CapitalReach 이용"
   },
   "admin": {
     "panelTitle": "관리자 패널",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "승인 실패",
     "toastRejectReasonRequired": "거절 사유를 추가해 주세요",
     "toastRejected": "스타트업이 거절되었으며 이메일이 발송되었습니다",
-    "toastRejectFailed": "거절 실패"
+    "toastRejectFailed": "거절 실패",
+    "launchTitle": "출시 모드",
+    "launchOnSub": "활성 — 모든 계정이 최상위 등급을 무료로 이용합니다 ({memberCount}/{target}명). 끄면 유료 등급이 적용됩니다.",
+    "launchOffSub": "꺼짐 — 등급이 적용됩니다. 무료 계정에는 제한 기능이 잠금으로 표시됩니다.",
+    "launchTurnOff": "출시 기간 종료",
+    "launchTurnOn": "출시 모드 다시 켜기"
   },
   "contact": {
     "title": "문의하기",
@@ -1970,5 +1984,40 @@
     "readOnly": "읽기 전용 — 작업이 비활성화됨",
     "exit": "관리자로 돌아가기",
     "open": "대시보드 보기"
+  },
+  "targets": {
+    "target": "이 투자자를 타깃으로",
+    "targeted": "타깃 목록에 있음",
+    "added": "타깃 목록에 추가했습니다",
+    "removed": "타깃 목록에서 제거했습니다",
+    "failed": "타깃 목록을 업데이트하지 못했습니다"
+  },
+  "team": {
+    "title": "팀",
+    "navLabel": "팀",
+    "accessTitle": "이 팀의 모든 구성원이 계정을 공유합니다",
+    "accessBody": "팀원은 여러분과 동일한 딜, 계약, 문서, 활동 내역을 보고 함께 진행할 수 있습니다. 결제 정보는 볼 수 없으며, 팀 구성 변경은 소유자와 관리자만 가능합니다.",
+    "inviteHeading": "팀에 구성원 추가",
+    "emailLabel": "상대방 이메일 주소",
+    "emailHint": "상대방에게 이미 CapitalReach 계정이 있어야 합니다 — 아직 초대 메일을 보낼 수 없습니다.",
+    "roleLabel": "역할",
+    "roleMember": "멤버",
+    "roleAdmin": "관리자",
+    "roleMemberHint": "계정의 딜을 보고 진행할 수 있습니다.",
+    "roleAdminHint": "팀 구성원 추가와 제거도 할 수 있습니다.",
+    "addButton": "팀에 추가",
+    "adding": "추가하는 중…",
+    "added": "팀에 추가했습니다.",
+    "removed": "팀에서 제거했습니다.",
+    "rosterHeading": "접근 권한이 있는 사람",
+    "count": "{n}명 접근 가능",
+    "unnamed": "(이름 없음)",
+    "role_owner": "소유자",
+    "role_admin": "관리자",
+    "role_member": "멤버",
+    "removeAria": "{name}님을 팀에서 제거",
+    "readOnlyNote": "이 팀의 구성은 소유자와 관리자만 변경할 수 있습니다.",
+    "noEntity": "누군가를 초대하기 전에 프로필 설정을 완료하세요.",
+    "unavailable": "팀 계정은 아직 활성화되지 않았습니다. 잠시 후 다시 확인해 주세요."
   }
 }

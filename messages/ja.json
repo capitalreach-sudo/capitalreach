@@ -307,7 +307,13 @@
       "savedReports": "保存済みレポート",
       "exportPdf": "レポートエクスポート（PDF）",
       "viewOnly": "閲覧のみ"
-    }
+    },
+    "signInTitle": "AIツールを使うにはログインしてください",
+    "signInSub": "無料アカウントを作成すると、ピッチ採点、投資家マッチング、デューデリジェンスレポートをご利用いただけます。",
+    "createAccount": "アカウントを作成",
+    "usageRemaining": "本日のAI実行は残り {remaining}/{limit} 回",
+    "usageUnlimited": "ご利用のプランではAI実行は無制限です",
+    "usageUpgrade": "もっと使う →"
   },
   "pricing": {
     "sectionLabel": "プランと料金",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "エンジェル投資家",
     "ventureCapital": "ベンチャーキャピタル",
     "familyOffice": "ファミリーオフィス",
-    "corporateInvestor": "コーポレート投資家"
+    "corporateInvestor": "コーポレート投資家",
+    "selfPreview": "これは公開プロフィールです。創業者にはこう見えます。",
+    "editProfile": "プロフィールを編集",
+    "memberSince": "{date} から CapitalReach に参加"
   },
   "admin": {
     "panelTitle": "管理パネル",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "承認に失敗しました",
     "toastRejectReasonRequired": "却下理由を入力してください",
     "toastRejected": "スタートアップを却下し、メールを送信しました",
-    "toastRejectFailed": "却下に失敗しました"
+    "toastRejectFailed": "却下に失敗しました",
+    "launchTitle": "ローンチモード",
+    "launchOnSub": "有効 — すべてのアカウントが最上位機能を無料で利用できます（{memberCount}/{target} 名）。オフにすると有料プランが適用されます。",
+    "launchOffSub": "無効 — プランが適用中です。無料アカウントには制限付き機能がロック表示されます。",
+    "launchTurnOff": "ローンチ期間を終了",
+    "launchTurnOn": "ローンチモードを再開"
   },
   "contact": {
     "title": "お問い合わせ",
@@ -1970,5 +1984,40 @@
     "readOnly": "閲覧のみ — 操作は無効です",
     "exit": "管理画面へ戻る",
     "open": "ダッシュボードを見る"
+  },
+  "targets": {
+    "target": "この投資家を候補に追加",
+    "targeted": "候補リストに登録済み",
+    "added": "候補リストに追加しました",
+    "removed": "候補リストから削除しました",
+    "failed": "候補リストを更新できませんでした"
+  },
+  "team": {
+    "title": "チーム",
+    "navLabel": "チーム",
+    "accessTitle": "このチームの全員がアカウントを共有します",
+    "accessBody": "メンバーはあなたと同じディール、契約、資料、履歴を見て、一緒に進められます。請求情報は見えません。チーム構成を変更できるのはオーナーと管理者のみです。",
+    "inviteHeading": "チームにメンバーを追加",
+    "emailLabel": "相手のメールアドレス",
+    "emailHint": "相手には既に CapitalReach のアカウントが必要です。招待メールの送信はまだできません。",
+    "roleLabel": "権限",
+    "roleMember": "メンバー",
+    "roleAdmin": "管理者",
+    "roleMemberHint": "アカウントのディールを閲覧し、対応できます。",
+    "roleAdminHint": "チームメンバーの追加・削除もできます。",
+    "addButton": "チームに追加",
+    "adding": "追加中…",
+    "added": "チームに追加しました。",
+    "removed": "チームから削除しました。",
+    "rosterHeading": "アクセスできる人",
+    "count": "{n} 名がアクセス可能",
+    "unnamed": "（名前未設定）",
+    "role_owner": "オーナー",
+    "role_admin": "管理者",
+    "role_member": "メンバー",
+    "removeAria": "{name} をチームから削除",
+    "readOnlyNote": "このチームの構成を変更できるのはオーナーと管理者のみです。",
+    "noEntity": "招待する前にプロフィールの設定を完了してください。",
+    "unavailable": "チームアカウントはまだ有効になっていません。しばらくしてからご確認ください。"
   }
 }

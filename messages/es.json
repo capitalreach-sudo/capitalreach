@@ -307,7 +307,13 @@
       "savedReports": "Informes guardados",
       "exportPdf": "Exportar informes (PDF)",
       "viewOnly": "Solo ver"
-    }
+    },
+    "signInTitle": "Inicia sesión para usar las herramientas de IA",
+    "signInSub": "Crea una cuenta gratuita para acceder a la puntuación de pitches, el emparejamiento con inversores y los informes de due diligence.",
+    "createAccount": "Crear cuenta",
+    "usageRemaining": "Te quedan {remaining} de {limit} usos de IA hoy",
+    "usageUnlimited": "Usos de IA ilimitados en tu plan",
+    "usageUpgrade": "Consigue más →"
   },
   "pricing": {
     "sectionLabel": "Planes y precios",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "Inversor ángel",
     "ventureCapital": "Capital de riesgo",
     "familyOffice": "Family Office",
-    "corporateInvestor": "Inversor corporativo"
+    "corporateInvestor": "Inversor corporativo",
+    "selfPreview": "Este es tu perfil público: así te ven los fundadores.",
+    "editProfile": "Editar perfil",
+    "memberSince": "En CapitalReach desde {date}"
   },
   "admin": {
     "panelTitle": "Panel de administración",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "Error al aprobar",
     "toastRejectReasonRequired": "Agrega un motivo de rechazo",
     "toastRejected": "Startup rechazada, correo enviado",
-    "toastRejectFailed": "Error al rechazar"
+    "toastRejectFailed": "Error al rechazar",
+    "launchTitle": "Modo lanzamiento",
+    "launchOnSub": "Activo: todas las cuentas tienen acceso de nivel máximo gratis ({memberCount}/{target} miembros). Desactivarlo hace que los planes de pago entren en vigor.",
+    "launchOffSub": "Desactivado: los planes están en vigor. Las cuentas gratuitas ven las funciones restringidas bloqueadas.",
+    "launchTurnOff": "Finalizar el periodo de lanzamiento",
+    "launchTurnOn": "Reactivar el modo lanzamiento"
   },
   "contact": {
     "title": "Ponte en contacto",
@@ -1970,5 +1984,40 @@
     "readOnly": "Solo lectura: las acciones están desactivadas",
     "exit": "Volver al panel de administración",
     "open": "Ver panel"
+  },
+  "targets": {
+    "target": "Añadir a objetivos",
+    "targeted": "En tu lista de objetivos",
+    "added": "Añadido a tu lista de objetivos",
+    "removed": "Eliminado de tu lista de objetivos",
+    "failed": "No se pudo actualizar la lista de objetivos"
+  },
+  "team": {
+    "title": "Equipo",
+    "navLabel": "Equipo",
+    "accessTitle": "Todo el equipo comparte la cuenta",
+    "accessBody": "Los miembros ven las mismas operaciones, contratos, documentos y actividad que tú, y pueden trabajarlos contigo. No ven tu facturación, y solo los propietarios y administradores pueden cambiar quién está en el equipo.",
+    "inviteHeading": "Añadir a alguien al equipo",
+    "emailLabel": "Su dirección de correo",
+    "emailHint": "Ya necesitan tener una cuenta de CapitalReach: todavía no podemos enviar invitaciones por correo.",
+    "roleLabel": "Rol",
+    "roleMember": "Miembro",
+    "roleAdmin": "Administrador",
+    "roleMemberHint": "Puede ver y trabajar las operaciones de la cuenta.",
+    "roleAdminHint": "También puede añadir y quitar miembros del equipo.",
+    "addButton": "Añadir al equipo",
+    "adding": "Añadiendo…",
+    "added": "Añadido al equipo.",
+    "removed": "Eliminado del equipo.",
+    "rosterHeading": "Quién tiene acceso",
+    "count": "{n} con acceso",
+    "unnamed": "(sin nombre)",
+    "role_owner": "Propietario",
+    "role_admin": "Administrador",
+    "role_member": "Miembro",
+    "removeAria": "Eliminar a {name} del equipo",
+    "readOnlyNote": "Solo el propietario y los administradores pueden cambiar quién está en este equipo.",
+    "noEntity": "Termina de configurar tu perfil antes de invitar a nadie.",
+    "unavailable": "Las cuentas de equipo aún no están activadas. Vuelve pronto."
   }
 }

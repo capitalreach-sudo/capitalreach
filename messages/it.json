@@ -298,7 +298,13 @@
       "savedReports": "Report salvati",
       "exportPdf": "Esporta report (PDF)",
       "viewOnly": "Solo visualizzazione"
-    }
+    },
+    "signInTitle": "Accedi per usare gli strumenti IA",
+    "signInSub": "Crea un account gratuito per accedere alla valutazione dei pitch, al matching con gli investitori e ai report di due diligence.",
+    "createAccount": "Crea account",
+    "usageRemaining": "Ti restano {remaining} di {limit} esecuzioni IA oggi",
+    "usageUnlimited": "Esecuzioni IA illimitate nel tuo piano",
+    "usageUpgrade": "Ottieni di più →"
   },
   "pricing": {
     "sectionLabel": "Piani e prezzi",
@@ -1564,7 +1570,10 @@
     "angelInvestor": "Business angel",
     "ventureCapital": "Capitale di rischio",
     "familyOffice": "Family Office",
-    "corporateInvestor": "Investitore corporate"
+    "corporateInvestor": "Investitore corporate",
+    "selfPreview": "Questo è il tuo profilo pubblico: così ti vedono i fondatori.",
+    "editProfile": "Modifica profilo",
+    "memberSince": "Su CapitalReach da {date}"
   },
   "admin": {
     "panelTitle": "Pannello di amministrazione",
@@ -1591,7 +1600,12 @@
     "toastApproveFailed": "Approvazione non riuscita",
     "toastRejectReasonRequired": "Aggiungi un motivo di rifiuto",
     "toastRejected": "Startup rifiutata, email inviata",
-    "toastRejectFailed": "Rifiuto non riuscito"
+    "toastRejectFailed": "Rifiuto non riuscito",
+    "launchTitle": "Modalità lancio",
+    "launchOnSub": "Attivo: ogni account ha accesso al livello massimo gratis ({memberCount}/{target} membri). Disattivarlo rende vincolanti i piani a pagamento.",
+    "launchOffSub": "Disattivato: i piani sono vincolanti. Gli account gratuiti vedono bloccate le funzioni riservate.",
+    "launchTurnOff": "Termina il periodo di lancio",
+    "launchTurnOn": "Riattiva la modalità lancio"
   },
   "contact": {
     "title": "Contattaci",
@@ -1970,5 +1984,40 @@
     "readOnly": "Sola lettura: le azioni sono disattivate",
     "exit": "Torna all'amministrazione",
     "open": "Vedi dashboard"
+  },
+  "targets": {
+    "target": "Metti nel mirino",
+    "targeted": "Nella tua lista obiettivi",
+    "added": "Aggiunto alla tua lista obiettivi",
+    "removed": "Rimosso dalla tua lista obiettivi",
+    "failed": "Impossibile aggiornare la lista obiettivi"
+  },
+  "team": {
+    "title": "Team",
+    "navLabel": "Team",
+    "accessTitle": "Tutti nel team condividono l'account",
+    "accessBody": "I membri vedono le stesse operazioni, contratti, documenti e attività che vedi tu, e possono lavorarci insieme a te. Non vedono la tua fatturazione, e solo proprietari e amministratori possono modificare il team.",
+    "inviteHeading": "Aggiungi qualcuno al team",
+    "emailLabel": "Il suo indirizzo email",
+    "emailHint": "Devono già avere un account CapitalReach: non possiamo ancora inviare inviti via email.",
+    "roleLabel": "Ruolo",
+    "roleMember": "Membro",
+    "roleAdmin": "Amministratore",
+    "roleMemberHint": "Può vedere e gestire le operazioni dell'account.",
+    "roleAdminHint": "Può anche aggiungere e rimuovere membri del team.",
+    "addButton": "Aggiungi al team",
+    "adding": "Aggiunta…",
+    "added": "Aggiunto al team.",
+    "removed": "Rimosso dal team.",
+    "rosterHeading": "Chi ha accesso",
+    "count": "{n} con accesso",
+    "unnamed": "(nome non impostato)",
+    "role_owner": "Proprietario",
+    "role_admin": "Amministratore",
+    "role_member": "Membro",
+    "removeAria": "Rimuovi {name} dal team",
+    "readOnlyNote": "Solo il proprietario e gli amministratori possono modificare questo team.",
+    "noEntity": "Completa il tuo profilo prima di invitare qualcuno.",
+    "unavailable": "Gli account team non sono ancora attivi. Torna a breve."
   }
 }
