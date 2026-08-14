@@ -19,6 +19,7 @@ const INVESTOR_TYPE_KEYS: Record<string, string> = {
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -327,6 +328,8 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
     onCreated();
     onClose();
   }
+
+  useEscapeKey(true, onClose);
 
   return (
     <div

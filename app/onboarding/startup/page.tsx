@@ -324,7 +324,7 @@ export default function StartupOnboardingPage() {
                   <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h1")}</h2>
                   <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h1Sub")}</p>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div className="form-row-2" style={{ gap: "16px" }}>
                     <div style={{ gridColumn: "1 / -1" }}>
                       <label style={labelSt}>{t("onboarding.su.companyName")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
                       <input type="text" value={name} onChange={e => setName(e.target.value)}
@@ -476,7 +476,7 @@ export default function StartupOnboardingPage() {
                             </button>
                           )}
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                        <div className="form-row-2" style={{ gap: "12px" }}>
                           <div>
                             <label style={labelSt}>{t("onboarding.su.fullName")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
                             <input type="text" value={f.name} onChange={e => updateFounder(i, "name", e.target.value)}
@@ -603,7 +603,7 @@ export default function StartupOnboardingPage() {
                   <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h4Sub")}</p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                    <div className="form-row-2" style={{ gap: "16px" }}>
                       <div>
                         <label style={labelSt}>{t("onboarding.su.mrrUsd")}</label>
                         <div style={{ position: "relative" }}>
@@ -687,7 +687,7 @@ export default function StartupOnboardingPage() {
                   <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h5")}</h2>
                   <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h5Sub")}</p>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div className="form-row-2" style={{ gap: "16px" }}>
                     <div style={{ gridColumn: "1 / -1" }}>
                       <label style={labelSt}>{t("onboarding.su.fundingTarget")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
                       <div style={{ position: "relative" }}>
@@ -803,7 +803,7 @@ export default function StartupOnboardingPage() {
 
                   <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "20px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.su.unlocksTitle")}</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                    <div className="form-row-2" style={{ gap: "6px" }}>
                       {[
                         ["Free", t("onboarding.su.unlockFree")],
                         ["Starter", t("onboarding.su.unlockStarter")],

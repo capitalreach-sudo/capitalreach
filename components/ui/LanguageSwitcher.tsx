@@ -142,7 +142,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
               background: "#F5F0E8", border: "1px solid #D8D0C4",
               borderRadius: "6px",
               boxShadow: "0 8px 40px rgba(26,22,18,0.18)",
-              width: "220px", maxHeight: "380px", overflowY: "auto",
+              width: "220px", maxWidth: "calc(100vw - 32px)", maxHeight: "380px", overflowY: "auto",
             }}
           >
             <div style={{

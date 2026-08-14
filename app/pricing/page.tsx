@@ -455,14 +455,14 @@ export default function PricingPage() {
             </div>
 
             {activeTab === "startup" && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", maxWidth: "900px", marginBottom: "24px" }}>
+              <div className="grid-plans-3" style={{ maxWidth: "900px", marginBottom: "24px" }}>
                 {FOUNDER_PLANS_LIST.map((p) => (
                   <PlanCard key={p.id} plan={p} features={founderFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
                 ))}
               </div>
             )}
             {activeTab === "investor" && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "24px" }}>
+              <div className="grid-plans-4" style={{ marginBottom: "24px" }}>
                 {INVESTOR_PLANS_LIST.map((p) => (
                   <PlanCard key={p.id} plan={p} features={investorFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
                 ))}
@@ -492,7 +492,7 @@ export default function PricingPage() {
               </h2>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "48px" }}>
+            <div className="grid-plans-3" style={{ marginBottom: "48px" }}>
               {[
                 {
                   label: t("pricing.colTraditional"), fee: "5–7%",

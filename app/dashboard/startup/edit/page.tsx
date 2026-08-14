@@ -221,7 +221,7 @@ function MilestonesSection({ startupId, supabase }: { startupId: string; supabas
           </div>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "150px 1fr auto", gap: "10px", alignItems: "end" }}>
+      <div className="milestone-row" style={{ gap: "10px", alignItems: "end" }}>
         <Field label={t("dashboard.msDate")}><WarmInput type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
         <Field label={t("dashboard.msWhat")}><WarmInput value={description} maxLength={500} onChange={(e) => setDescription(e.target.value)} placeholder={t("dashboard.msPlaceholder")} /></Field>
         <button type="button" onClick={add} disabled={busy || !date || !description.trim()}
@@ -349,7 +349,7 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.tagline")}><WarmInput value={startup.tagline || ""} onChange={e => update("tagline", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.website")}><WarmInput value={startup.website || ""} onChange={e => update("website", e.target.value)} placeholder="https://…" /></Field>
                 <Field label={t("settings.bookingUrl")}><WarmInput value={startup.booking_url || ""} onChange={e => update("booking_url", e.target.value)} placeholder="https://calendly.com/…" /></Field>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div className="form-row-2" style={{ gap: "14px" }}>
                   <Field label={t("onboarding.su.industry")}>
                     <WarmSelect value={startup.industry || ""} onChange={e => update("industry", e.target.value)}>
                       <option value="">{t("onboarding.su.selectIndustry")}</option>
@@ -363,7 +363,7 @@ export default function EditStartupPage() {
                     </WarmSelect>
                   </Field>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div className="form-row-2" style={{ gap: "14px" }}>
                   <Field label={t("editor.roundCloseDate")}>
                     {/* Optional by design: rolling rounds have no date. The
                         listing shows a countdown inside 60 days and "closing
@@ -383,7 +383,7 @@ export default function EditStartupPage() {
                   </Field>
                   <Field label={t("onboarding.su.city")}><WarmInput value={startup.city || ""} onChange={e => update("city", e.target.value)} placeholder="San Francisco" /></Field>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div className="form-row-2" style={{ gap: "14px" }}>
                   <Field label={t("onboarding.su.foundedDate")}><WarmInput type="date" value={startup.founded_date || ""} onChange={e => update("founded_date", e.target.value)} /></Field>
                   <Field label={t("onboarding.su.companyType")}>
                     <WarmSelect value={startup.company_type || ""} onChange={e => update("company_type", e.target.value)}>
@@ -392,7 +392,7 @@ export default function EditStartupPage() {
                     </WarmSelect>
                   </Field>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div className="form-row-2" style={{ gap: "14px" }}>
                   <Field label={t("onboarding.su.teamSize")}>
                     <WarmSelect value={startup.team_size || ""} onChange={e => update("team_size", e.target.value)}>
                       <option value="">{t("onboarding.su.numEmployees")}</option>
@@ -407,7 +407,7 @@ export default function EditStartupPage() {
             {/* Business Model */}
             <section style={sectionStyle}>
               <h2 style={sectionHeadStyle}>{t("onboarding.su.businessModel")}</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div className="form-row-2" style={{ gap: "14px" }}>
                 <Field label={t("onboarding.su.businessModel")}>
                   <WarmSelect value={startup.business_model || ""} onChange={e => update("business_model", e.target.value)}>
                     <option value="">{t("dashboard.selectDots")}</option>
@@ -440,7 +440,7 @@ export default function EditStartupPage() {
             {/* Traction & Metrics */}
             <section style={sectionStyle}>
               <h2 style={sectionHeadStyle}>{t("dashboard.secTraction")}</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div className="form-row-2" style={{ gap: "14px" }}>
                 <Field label={t("onboarding.su.mrrUsd")}><WarmInput type="number" value={startup.mrr || ""} onChange={e => update("mrr", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.arrUsd")}><WarmInput type="number" value={startup.arr || ""} onChange={e => update("arr", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.totalUsers")}><WarmInput type="number" value={startup.user_count || ""} onChange={e => update("user_count", e.target.value)} /></Field>
@@ -535,7 +535,7 @@ export default function EditStartupPage() {
                     {DECK_LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
                   </WarmSelect>
                 </Field>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div className="form-row-2" style={{ gap: "14px" }}>
                   <Field label={t("dashboard.leadInvestor")} hint={t("dashboard.leadInvestorHint")}>
                     <WarmInput value={startup.lead_investor || ""} onChange={e => update("lead_investor", e.target.value)} placeholder="e.g. Sequoia Capital" />
                   </Field>

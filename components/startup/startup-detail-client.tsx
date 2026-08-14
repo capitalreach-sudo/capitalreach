@@ -15,6 +15,7 @@ import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
@@ -279,6 +280,7 @@ export function StartupDetailClient({
   const [isSaved, setIsSaved]                   = useState(false);
   const [viewerCount, setViewerCount]           = useState(1);
   const [messageOpen, setMessageOpen]           = useState(false);
+  useEscapeKey(messageOpen, () => setMessageOpen(false));
   const [messageBody, setMessageBody]           = useState("");
   const [sendingMessage, setSendingMessage]     = useState(false);
   const [aiReport, setAiReport]                 = useState<string | null>(null);
@@ -325,6 +327,7 @@ export function StartupDetailClient({
   const [startingDeal, setStartingDeal] = useState(false);
   // Inline PDF viewer: keep the reader on the page instead of a new tab.
   const [viewerDoc, setViewerDoc] = useState<{ url: string; label: string } | null>(null);
+  useEscapeKey(!!viewerDoc, () => setViewerDoc(null));
   // Best-effort view logging (migration 039); founders see the aggregate.
   function trackDoc(documentId: string) {
     fetch("/api/documents/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documentId }) }).catch(() => {});
@@ -994,7 +997,7 @@ export function StartupDetailClient({
         )}
 
         {viewerDoc && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 80 }}>
+          <div role="dialog" aria-modal="true" aria-label={viewerDoc.label} style={{ position: "fixed", inset: 0, zIndex: 80 }}>
             <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.6)" }} onClick={() => setViewerDoc(null)} />
             <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", width: "min(94vw, 900px)", height: "92vh", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: "1px solid var(--cr-rule-dark)", flexShrink: 0 }}>
@@ -1055,7 +1058,7 @@ export function StartupDetailClient({
 
       {/* ── Message dialog ── */}
       {messageOpen && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "28px", width: "100%", maxWidth: "440px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
               <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startupDetail.expressInterest")}</h3>

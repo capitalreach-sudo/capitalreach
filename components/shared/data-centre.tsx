@@ -430,7 +430,7 @@ export function DataCentre() {
             )}
 
             {/* Charts */}
-            <div ref={barsRef} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "28px" }}>
+            <div ref={barsRef} className="grid-half-stack" style={{ gap: "20px", marginBottom: "28px" }}>
 
               {/* Industry breakdown */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
@@ -464,7 +464,7 @@ export function DataCentre() {
             </div>
 
             {/* Top startups + Recent */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "40px" }}>
+            <div className="grid-half-stack" style={{ gap: "20px", marginBottom: "40px" }}>
 
               {/* Top AI scores */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>

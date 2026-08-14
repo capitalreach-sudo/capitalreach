@@ -1070,3 +1070,46 @@ html { scroll-behavior: smooth; }
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ── Responsive grid utilities ────────────────────────────────────────────
+   Inline styles can't carry media queries; these classes replace the
+   fixed-column inline grids the layout audit flagged. */
+.grid-plans-3, .grid-plans-4 {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.grid-half-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 640px) {
+  .form-row-2, .grid-half-stack {
+    grid-template-columns: 1fr;
+  }
+}
+.milestone-row {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+}
+@media (max-width: 640px) {
+  .milestone-row { grid-template-columns: 1fr; }
+}
+.one-pager-cols {
+  column-count: 2;
+  column-gap: 28px;
+}
+@media (max-width: 640px) {
+  .milestone-row {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+}
+@media (max-width: 640px) {
+  .milestone-row { grid-template-columns: 1fr; }
+}
+.one-pager-cols { column-count: 1; }
+}

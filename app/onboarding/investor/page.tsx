@@ -317,7 +317,7 @@ export default function InvestorOnboardingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div>
                       <label style={labelSt}>{t("onboarding.inv.industriesLabel")}</label>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "8px" }}>
                         {INDUSTRIES.map(ind => (
                           <button key={ind} onClick={() => toggleIndustry(ind)}
                             style={{
@@ -353,7 +353,7 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                    <div className="form-row-2" style={{ gap: "16px" }}>
                       <div>
                         <label style={labelSt}>{t("onboarding.inv.minCheck")}</label>
                         <div style={{ position: "relative" }}>
@@ -400,7 +400,7 @@ export default function InvestorOnboardingPage() {
                   <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h3")}</h2>
                   <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h3Sub")}</p>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div className="form-row-2" style={{ gap: "16px" }}>
                     <div>
                       <label style={labelSt}>{t("onboarding.inv.fullName")}</label>
                       <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)}
@@ -672,7 +672,7 @@ export default function InvestorOnboardingPage() {
 
                   <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "20px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.inv.unlocksTitle")}</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                    <div className="form-row-2" style={{ gap: "6px" }}>
                       {[
                         ["Free", t("onboarding.inv.unlockFree")],
                         ["Angel", t("onboarding.inv.unlockAngel")],

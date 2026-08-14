@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import {
   Send, MessageSquare, Plus, Search, X, ArrowLeft,
   CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Search as SearchIcon } from "lucide-react";
@@ -66,6 +67,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [sending, setSending]               = useState(false);
   const [search, setSearch]                 = useState("");
   const [showNewModal, setShowNewModal]     = useState(false);
+  useEscapeKey(showNewModal, () => setShowNewModal(false));
   const [newBody, setNewBody]               = useState("");
   const [targetKind, setTargetKind]         = useState<"investor" | "startup">("investor");
   const [accountSearch, setAccountSearch]   = useState("");
@@ -695,7 +697,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
       {/* ── New Message Modal ── */}
       {showNewModal && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "28px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
               <div>

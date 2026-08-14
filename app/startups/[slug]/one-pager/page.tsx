@@ -142,7 +142,7 @@ export default async function OnePagerPage({ params }: Props) {
         )}
 
         {/* ── Narrative, two columns on paper and screen alike ── */}
-        <div style={{ columnCount: 2, columnGap: "28px" }}>
+        <div className="one-pager-cols">
           {sections.filter(([, body]) => body?.trim()).map(([title, body]) => (
             <div key={title} style={{ breakInside: "avoid", marginBottom: "16px" }}>
               <p style={label}>{title}</p>

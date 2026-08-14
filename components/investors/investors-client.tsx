@@ -14,6 +14,7 @@ import { cn, STAGE_LABELS } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { notify } from "@/components/ui/toast-notify";
 import { INVESTOR_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
@@ -287,6 +288,7 @@ export function InvestorsClient() {
   // Compare tray, mirroring the startups directory.
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  useEscapeKey(showCompare, () => setShowCompare(false));
   function exportInvestorsCsv() {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const header = ["Name", "Firm", "Type", "Min check", "Max check", "Stages", "Industries", "Geography", "Leads rounds", "Profile"];
@@ -639,7 +641,7 @@ export function InvestorsClient() {
               { label: t("investors.leadsRounds"),    get: (i) => i.lead_rounds ? "✓" : "—" },
             ];
             return (
-              <div className="fixed inset-0 z-[70]">
+              <div role="dialog" aria-modal="true" className="fixed inset-0 z-[70]">
                 <div className="absolute inset-0 bg-cr-ink/50" onClick={() => setShowCompare(false)} />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto bg-cr-paper border border-cr-p4 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">

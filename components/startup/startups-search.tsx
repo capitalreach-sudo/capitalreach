@@ -10,6 +10,7 @@ import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
 import { STARTUP_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
 import { notify } from "@/components/ui/toast-notify";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { announce } from "@/lib/announce";
 import { normalizeCountry, sameCountry } from "@/lib/countries";
 import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
@@ -560,6 +561,7 @@ export function StartupsSearch() {
     try { localStorage.setItem("cr-browse-view", v); } catch { /* private mode */ }
   }
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useEscapeKey(sidebarOpen, () => setSidebarOpen(false));
   const [allStartups, setAllStartups] = useState<Startup[]>([]);
   const [loading, setLoading]         = useState(true);
   const [page, setPage]               = useState(1);
@@ -592,6 +594,7 @@ export function StartupsSearch() {
     try { localStorage.setItem("cr_compare", JSON.stringify(compareIds)); } catch { /* quota */ }
   }, [compareIds]);
   const [showCompare, setShowCompare] = useState(false);
+  useEscapeKey(showCompare, () => setShowCompare(false));
   function toggleCompare(id: string) {
     setCompareIds((prev) => prev.includes(id)
       ? prev.filter(x => x !== id)
@@ -1228,7 +1231,7 @@ export function StartupsSearch() {
           { label: t("dashboard.aiScore"),       get: (s) => s.vaultrise_score != null ? String(s.vaultrise_score) : "—" },
         ];
         return (
-          <div style={{ position: "fixed", inset: 0, zIndex: 70 }}>
+          <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
             <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.5)" }} onClick={() => setShowCompare(false)} />
             <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
@@ -1271,7 +1274,7 @@ export function StartupsSearch() {
 
       {/* ── Mobile filter bottom sheet ── */}
       {sidebarOpen && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50 }}>
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50 }}>
           <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.4)" }} onClick={() => setSidebarOpen(false)} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "8px 8px 0 0", maxHeight: "75vh", overflowY: "auto" }}>
             <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "12px auto 20px" }} />
