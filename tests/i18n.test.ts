@@ -42,9 +42,44 @@ describe("locale files", () => {
     });
   }
 
-  it("de.json is complete (no English fallbacks for the German UI)", () => {
-    const de = flat(JSON.parse(readFileSync(join(dir, "de.json"), "utf8")));
-    const missing = Object.keys(fe).filter((k) => !(k in de));
-    expect(missing).toEqual([]);
+  // Was de-only while the other locales were partial. As of 2026-08-06 every
+  // locale is at 100%, so completeness is now enforced for all of them — a new
+  // en key without its fourteen translations fails the build rather than
+  // silently falling back to English mid-page, which is the exact "the
+  // translations are broken" report that started this work.
+  for (const f of files) {
+    it(`${f} is complete (no English fallbacks)`, () => {
+      const l = flat(JSON.parse(readFileSync(join(dir, f), "utf8")));
+      const missing = Object.keys(fe).filter((k) => !(k in l));
+      expect(missing).toEqual([]);
+    });
+  }
+
+  it("no locale contains characters from a script it has no business using", () => {
+    // Twice during translation a character from the wrong script slipped in
+    // by hand (Korean 데 inside Japanese, English "very" in a Japanese
+    // sentence). Plural-form keys (_one etc.) are exempt per-locale only in
+    // that they may not exist; content-wise they are checked the same.
+    const forbid: Record<string, Array<[number, number, string]>> = {
+      "ja.json": [[0xac00, 0xd7af, "Hangul"]],
+      "ko.json": [[0x3040, 0x30ff, "Kana"]],
+      "zh.json": [[0xac00, 0xd7af, "Hangul"], [0x3040, 0x30ff, "Kana"]],
+      "ru.json": [[0xac00, 0xd7af, "Hangul"], [0x3040, 0x30ff, "Kana"], [0x0600, 0x06ff, "Arabic"]],
+      "ar.json": [[0x0400, 0x04ff, "Cyrillic"], [0x3040, 0x30ff, "Kana"]],
+      "hi.json": [[0x0600, 0x06ff, "Arabic"], [0x3040, 0x30ff, "Kana"]],
+    };
+    const offenders: string[] = [];
+    for (const [file, ranges] of Object.entries(forbid)) {
+      const l = flat(JSON.parse(readFileSync(join(dir, file), "utf8")));
+      for (const [k, v] of Object.entries(l)) {
+        if (v === fe[k]) continue; // untranslated string, caught above
+        for (const ch of v) {
+          const c = ch.codePointAt(0)!;
+          const hit = ranges.find(([lo, hi]) => c >= lo && c <= hi);
+          if (hit) { offenders.push(`${file} ${k}: ${hit[2]} '${ch}'`); break; }
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
   });
 });
