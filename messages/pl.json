@@ -1161,7 +1161,8 @@
     "contact": "Kontakt",
     "terms": "Warunki",
     "privacy": "Prywatność",
-    "aiDisclosure": "Funkcje oparte na AI korzystają z modeli OpenAI. Wyniki mają charakter wyłącznie informacyjny i nie stanowią porady inwestycyjnej."
+    "aiDisclosure": "Funkcje oparte na AI korzystają z modeli OpenAI. Wyniki mają charakter wyłącznie informacyjny i nie stanowią porady inwestycyjnej.",
+    "status": "Status"
   },
   "feeStrip": {
     "tagline": "opłata za sukces — tylko po zamknięciu. Średnia branżowa: 5–7% z góry.",

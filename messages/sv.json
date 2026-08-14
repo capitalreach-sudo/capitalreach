@@ -1161,7 +1161,8 @@
     "contact": "Kontakt",
     "terms": "Villkor",
     "privacy": "Integritetspolicy",
-    "aiDisclosure": "AI-funktioner använder OpenAI-modeller. Resultaten är endast informativa och utgör inte investeringsrådgivning."
+    "aiDisclosure": "AI-funktioner använder OpenAI-modeller. Resultaten är endast informativa och utgör inte investeringsrådgivning.",
+    "status": "Status"
   },
   "feeStrip": {
     "tagline": "framgångsavgift — endast efter avslut. Branschsnitt: 5–7% i förskott.",

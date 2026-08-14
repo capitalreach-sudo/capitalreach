@@ -1613,7 +1613,8 @@
     "contact": "Contacto",
     "terms": "Términos",
     "privacy": "Privacidad",
-    "aiDisclosure": "Las funciones con IA usan modelos de OpenAI. Los resultados son solo informativos y no constituyen asesoramiento de inversión."
+    "aiDisclosure": "Las funciones con IA usan modelos de OpenAI. Los resultados son solo informativos y no constituyen asesoramiento de inversión.",
+    "status": "Estado"
   },
   "banner": {
     "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",

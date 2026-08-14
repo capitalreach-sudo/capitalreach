@@ -1613,7 +1613,8 @@
     "contact": "Contact",
     "terms": "CGU",
     "privacy": "Confidentialité",
-    "aiDisclosure": "Les fonctionnalités d'IA utilisent des modèles OpenAI. Les résultats sont fournis à titre informatif et ne constituent pas un conseil en investissement."
+    "aiDisclosure": "Les fonctionnalités d'IA utilisent des modèles OpenAI. Les résultats sont fournis à titre informatif et ne constituent pas un conseil en investissement.",
+    "status": "Statut"
   },
   "banner": {
     "text": "Gratuit pour nos {target} premiers membres — {memberCount}/{target} inscrits, {spotsLeft} places restantes.",

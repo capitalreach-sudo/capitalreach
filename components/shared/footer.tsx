@@ -39,6 +39,7 @@ export function Footer() {
       [t("footer.blog"),     "/blog"],
       [t("footer.careers"),  "/careers"],
       [t("footer.contact"),  "/contact"],
+      [t("footer.status"),   "/status"],
       [t("footer.terms"),    "/terms"],
       [t("footer.privacy"),  "/privacy"],
     ]],

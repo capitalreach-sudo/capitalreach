@@ -1624,7 +1624,8 @@
     "contact": "Contact",
     "terms": "Terms",
     "privacy": "Privacy",
-    "aiDisclosure": "AI-powered features use OpenAI models. Outputs are informational only and not investment advice."
+    "aiDisclosure": "AI-powered features use OpenAI models. Outputs are informational only and not investment advice.",
+    "status": "Status"
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
