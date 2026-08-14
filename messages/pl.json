@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Runda zamyka się (opcjonalnie)"
+  },
+  "twofa": {
+    "title": "Uwierzytelnianie dwuskładnikowe",
+    "sub": "Dodaj drugi krok przy logowaniu: sześciocyfrowy kod z aplikacji uwierzytelniającej. Nawet z twoim hasłem nikt nie wejdzie bez twojego telefonu.",
+    "on": "Włączone",
+    "enable": "Skonfiguruj 2FA",
+    "working": "Przygotowywanie…",
+    "scanHint": "Zeskanuj kod dowolną aplikacją uwierzytelniającą (1Password, Google Authenticator, Authy…) lub wpisz sekret ręcznie. Następnie wpisz sześciocyfrowy kod z aplikacji.",
+    "secretCopied": "Sekret skopiowany",
+    "codeLabel": "Sześciocyfrowy kod",
+    "activate": "Aktywuj",
+    "checking": "Sprawdzanie…",
+    "enabled": "2FA włączone. Przy każdym logowaniu zostaniesz poproszony o kod.",
+    "wrongCode": "Kod się nie zgadza. Kody szybko wygasają — spróbuj aktualnego.",
+    "enrollFailed": "Nie udało się rozpocząć konfiguracji. Spróbuj ponownie.",
+    "authApp": "Aplikacja uwierzytelniająca",
+    "remove": "Usuń",
+    "removeHint": "Wpisz aktualny kod z aplikacji, aby potwierdzić — skradziony otwarty laptop nie może wystarczyć do wyłączenia.",
+    "confirmRemove": "Potwierdź usunięcie",
+    "removed": "2FA wyłączone.",
+    "removeFailed": "Nie udało się usunąć. Spróbuj ponownie.",
+    "qrAlt": "Kod QR do aplikacji uwierzytelniającej",
+    "loginPrompt": "To konto jest chronione uwierzytelnianiem dwuskładnikowym. Wpisz sześciocyfrowy kod z aplikacji.",
+    "verify": "Zweryfikuj kod",
+    "backToLogin": "Użyj innego konta"
   }
 }

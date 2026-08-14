@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Clôture du tour le (facultatif)"
+  },
+  "twofa": {
+    "title": "Authentification à deux facteurs",
+    "sub": "Ajoutez une deuxième étape à la connexion : un code à six chiffres d'une app d'authentification. Même avec votre mot de passe, impossible d'entrer sans votre téléphone.",
+    "on": "Activée",
+    "enable": "Configurer la double authentification",
+    "working": "Préparation…",
+    "scanHint": "Scannez le code avec une app d'authentification (1Password, Google Authenticator, Authy…) ou saisissez la clé à la main. Entrez ensuite le code à six chiffres affiché par l'app.",
+    "secretCopied": "Clé copiée",
+    "codeLabel": "Code à six chiffres",
+    "activate": "Activer",
+    "checking": "Vérification…",
+    "enabled": "La double authentification est activée. Un code vous sera demandé à chaque connexion.",
+    "wrongCode": "Ce code ne correspond pas. Les codes expirent vite — essayez le code actuel.",
+    "enrollFailed": "Impossible de démarrer la configuration. Réessayez.",
+    "authApp": "App d'authentification",
+    "remove": "Retirer",
+    "removeHint": "Saisissez un code actuel de votre app pour confirmer — un ordinateur volé resté ouvert ne doit pas suffire à désactiver ceci.",
+    "confirmRemove": "Confirmer le retrait",
+    "removed": "La double authentification est désactivée.",
+    "removeFailed": "Impossible de le retirer. Réessayez.",
+    "qrAlt": "QR code pour votre app d'authentification",
+    "loginPrompt": "Ce compte est protégé par la double authentification. Saisissez le code à six chiffres de votre app d'authentification.",
+    "verify": "Vérifier le code",
+    "backToLogin": "Utiliser un autre compte"
   }
 }

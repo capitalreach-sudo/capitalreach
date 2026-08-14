@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Runde schließt am (optional)"
+  },
+  "twofa": {
+    "title": "Zwei-Faktor-Authentifizierung",
+    "sub": "Zweiter Schritt beim Anmelden: ein sechsstelliger Code aus einer Authenticator-App. Wer dein Passwort hat, kommt ohne dein Telefon trotzdem nicht hinein.",
+    "on": "Aktiv",
+    "enable": "Zwei-Faktor einrichten",
+    "working": "Wird vorbereitet…",
+    "scanHint": "Scanne den Code mit einer Authenticator-App (1Password, Google Authenticator, Authy…) oder gib den Schlüssel manuell ein. Tippe dann den sechsstelligen Code aus der App ein.",
+    "secretCopied": "Schlüssel kopiert",
+    "codeLabel": "Sechsstelliger Code",
+    "activate": "Aktivieren",
+    "checking": "Wird geprüft…",
+    "enabled": "Zwei-Faktor ist aktiv. Bei jeder Anmeldung wird ein Code abgefragt.",
+    "wrongCode": "Der Code stimmt nicht. Codes laufen schnell ab — versuche den aktuellen.",
+    "enrollFailed": "Einrichtung konnte nicht gestartet werden. Versuche es erneut.",
+    "authApp": "Authenticator-App",
+    "remove": "Entfernen",
+    "removeHint": "Gib zum Bestätigen einen aktuellen Code aus deiner App ein — ein gestohlener offener Laptop darf nicht reichen, um dies abzuschalten.",
+    "confirmRemove": "Entfernen bestätigen",
+    "removed": "Zwei-Faktor ist deaktiviert.",
+    "removeFailed": "Konnte nicht entfernt werden. Versuche es erneut.",
+    "qrAlt": "QR-Code für deine Authenticator-App",
+    "loginPrompt": "Dieses Konto ist durch Zwei-Faktor-Authentifizierung geschützt. Gib den sechsstelligen Code aus deiner Authenticator-App ein.",
+    "verify": "Code prüfen",
+    "backToLogin": "Anderes Konto verwenden"
   }
 }

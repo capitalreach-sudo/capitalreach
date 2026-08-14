@@ -16,6 +16,7 @@ import Link from "next/link";
 import { getInitials } from "@/lib/utils";
 import type { Profile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { TwoFactorSection } from "@/components/settings/two-factor";
 
 const NOTIF_GROUPS: Array<{ labelKey: string; types: string[] }> = [
   { labelKey: "settings.ngDeals",    types: ["deal_opened", "deal_stage", "deal_closed", "deal_passed", "follow_up_due", "contract_status", "nda_signed"] },
@@ -207,6 +208,11 @@ export default function AccountSettingsPage() {
                 {saving ? t("settings.saving2") : t("settings.saveChanges")}
               </Button>
             </form>
+          </section>
+
+          {/* Two-factor authentication */}
+          <section className="bg-cr-paper border rounded-2xl p-6">
+            <TwoFactorSection />
           </section>
 
           {/* Password section */}

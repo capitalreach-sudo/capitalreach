@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "A ronda fecha a (opcional)"
+  },
+  "twofa": {
+    "title": "Autenticação de dois fatores",
+    "sub": "Adiciona um segundo passo ao iniciar sessão: um código de seis dígitos de uma app de autenticação. Quem tiver a tua palavra-passe continua sem entrar sem o teu telemóvel.",
+    "on": "Ativada",
+    "enable": "Configurar dois fatores",
+    "working": "A preparar…",
+    "scanHint": "Digitaliza o código com qualquer app de autenticação (1Password, Google Authenticator, Authy…) ou introduz a chave manualmente. Depois escreve o código de seis dígitos que a app mostra.",
+    "secretCopied": "Chave copiada",
+    "codeLabel": "Código de seis dígitos",
+    "activate": "Ativar",
+    "checking": "A verificar…",
+    "enabled": "A verificação de dois fatores está ativa. Ser-te-á pedido um código em cada início de sessão.",
+    "wrongCode": "Esse código não corresponde. Os códigos expiram depressa — tenta o atual.",
+    "enrollFailed": "Não foi possível iniciar a configuração. Tenta de novo.",
+    "authApp": "App de autenticação",
+    "remove": "Remover",
+    "removeHint": "Introduz um código atual da tua app para confirmar — um portátil aberto roubado não pode bastar para desligar isto.",
+    "confirmRemove": "Confirmar remoção",
+    "removed": "A verificação de dois fatores está desativada.",
+    "removeFailed": "Não foi possível remover. Tenta de novo.",
+    "qrAlt": "Código QR para a tua app de autenticação",
+    "loginPrompt": "Esta conta está protegida por verificação de dois fatores. Introduz o código de seis dígitos da tua app de autenticação.",
+    "verify": "Verificar código",
+    "backToLogin": "Usar outra conta"
   }
 }

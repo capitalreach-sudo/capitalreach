@@ -43,6 +43,10 @@ function LoginForm() {
   const [password, setPassword]       = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading]         = useState(false);
+  // Set when the account has a verified TOTP factor: password sign-in stopped
+  // at AAL1 and the dashboard stays locked until the code is verified.
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaCode, setMfaCode]         = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -55,6 +59,20 @@ function LoginForm() {
     if (error) {
       notify.error(authErrorMessage(error, t));
     } else {
+      // 2FA gate. With a verified factor, the session issued by the password
+      // alone is AAL1 -- middleware and RLS see it as not-fully-authenticated
+      // -- so this is a real gate, not a UI courtesy: skipping the prompt
+      // would leave a half-session, not an open door.
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.nextLevel === "aal2" && aal.nextLevel !== aal.currentLevel) {
+        const { data: fs } = await supabase.auth.mfa.listFactors();
+        const factor = fs?.totp?.find((f) => f.status === "verified");
+        if (factor) {
+          setMfaFactorId(factor.id);
+          setLoading(false);
+          return;
+        }
+      }
       notify.success(t("auth.welcomeRedirect"));
       if (redirect && redirect !== "/") {
         router.push(redirect); router.refresh();
@@ -66,6 +84,31 @@ function LoginForm() {
       }
     }
     setLoading(false);
+  }
+
+  async function finishLogin(userId: string) {
+    notify.success(t("auth.welcomeRedirect"));
+    if (redirect && redirect !== "/") {
+      router.push(redirect); router.refresh();
+    } else {
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).single();
+      const role = profile?.role;
+      router.push(role === "startup" ? "/dashboard/startup" : role === "investor" ? "/dashboard/investor" : role === "admin" ? "/admin" : "/");
+      router.refresh();
+    }
+  }
+
+  async function handleMfaVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (!mfaFactorId || mfaCode.length < 6) return;
+    setLoading(true);
+    const { data: challenge, error: chErr } = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+    if (chErr || !challenge) { setLoading(false); notify.error(t("twofa.wrongCode")); return; }
+    const { error } = await supabase.auth.mfa.verify({ factorId: mfaFactorId, challengeId: challenge.id, code: mfaCode });
+    if (error) { setLoading(false); notify.error(t("twofa.wrongCode")); setMfaCode(""); return; }
+    const { data: { user } } = await supabase.auth.getUser();
+    setLoading(false);
+    if (user) await finishLogin(user.id);
   }
 
   async function handleGoogleLogin() {
@@ -92,6 +135,28 @@ function LoginForm() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.signInSub")}</p>
         </div>
 
+        {mfaFactorId ? (
+          <form onSubmit={handleMfaVerify} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
+              {t("twofa.loginPrompt")}
+            </p>
+            <input
+              value={mfaCode}
+              onChange={e => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              inputMode="numeric" autoFocus placeholder="000000" aria-label={t("twofa.codeLabel")}
+              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontSize: "22px", letterSpacing: "0.35em", color: "var(--cr-ink)", padding: "12px", outline: "none", textAlign: "center" }}
+            />
+            <button type="submit" disabled={loading || mfaCode.length < 6} className="btn-copper-shimmer"
+              style={{ ...primaryBtn, opacity: loading || mfaCode.length < 6 ? 0.6 : 1 }}>
+              {loading ? t("twofa.checking") : t("twofa.verify")}
+            </button>
+            <button type="button"
+              onClick={async () => { await supabase.auth.signOut(); setMfaFactorId(null); setMfaCode(""); }}
+              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+              {t("twofa.backToLogin")}
+            </button>
+          </form>
+        ) : (
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
             <label style={labelSt}>{t("auth.email")}</label>
@@ -119,7 +184,10 @@ function LoginForm() {
             {loading ? t("auth.signingIn") : t("auth.signIn")}
           </button>
         </form>
+        )}
 
+        {!mfaFactorId && (
+        <>
         <div style={{ position: "relative", margin: "20px 0" }}>
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center" }}>
             <div style={{ width: "100%", borderTop: "1px solid var(--cr-rule)" }} />
@@ -141,6 +209,8 @@ function LoginForm() {
           </svg>
           {t("auth.continueGoogle")}
         </button>
+        </>
+        )}
 
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", marginTop: "20px" }}>
           {t("auth.noAccount")}{" "}

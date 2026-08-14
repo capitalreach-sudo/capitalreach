@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Round closes on (optional)"
+  },
+  "twofa": {
+    "title": "Two-factor authentication",
+    "sub": "Add a second step at sign-in: a six-digit code from an authenticator app. Anyone with your password still cannot get in without your phone.",
+    "on": "On",
+    "enable": "Set up two-factor",
+    "working": "Preparing…",
+    "scanHint": "Scan the code with any authenticator app (1Password, Google Authenticator, Authy…), or enter the secret by hand. Then type the six-digit code the app shows.",
+    "secretCopied": "Secret copied",
+    "codeLabel": "Six-digit code",
+    "activate": "Activate",
+    "checking": "Checking…",
+    "enabled": "Two-factor is on. You will be asked for a code at every sign-in.",
+    "wrongCode": "That code didn’t match. Codes expire quickly — try the current one.",
+    "enrollFailed": "Could not start setup. Try again.",
+    "authApp": "Authenticator app",
+    "remove": "Remove",
+    "removeHint": "Enter a current code from your app to confirm removal — a stolen open laptop must not be enough to switch this off.",
+    "confirmRemove": "Confirm removal",
+    "removed": "Two-factor is off.",
+    "removeFailed": "Could not remove it. Try again.",
+    "qrAlt": "QR code for your authenticator app",
+    "loginPrompt": "This account is protected by two-factor authentication. Enter the six-digit code from your authenticator app.",
+    "verify": "Verify code",
+    "backToLogin": "Use a different account"
   }
 }

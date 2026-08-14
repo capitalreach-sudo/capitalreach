@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "La ronda cierra el (opcional)"
+  },
+  "twofa": {
+    "title": "Autenticación en dos pasos",
+    "sub": "Añade un segundo paso al iniciar sesión: un código de seis dígitos de una app de autenticación. Quien tenga tu contraseña seguirá sin poder entrar sin tu teléfono.",
+    "on": "Activada",
+    "enable": "Configurar dos pasos",
+    "working": "Preparando…",
+    "scanHint": "Escanea el código con cualquier app de autenticación (1Password, Google Authenticator, Authy…) o introduce la clave a mano. Luego escribe el código de seis dígitos que muestra la app.",
+    "secretCopied": "Clave copiada",
+    "codeLabel": "Código de seis dígitos",
+    "activate": "Activar",
+    "checking": "Comprobando…",
+    "enabled": "La verificación en dos pasos está activada. Se te pedirá un código en cada inicio de sesión.",
+    "wrongCode": "Ese código no coincide. Los códigos caducan rápido: prueba el actual.",
+    "enrollFailed": "No se pudo iniciar la configuración. Inténtalo de nuevo.",
+    "authApp": "App de autenticación",
+    "remove": "Quitar",
+    "removeHint": "Introduce un código actual de tu app para confirmar: un portátil abierto robado no debe bastar para desactivarlo.",
+    "confirmRemove": "Confirmar eliminación",
+    "removed": "La verificación en dos pasos está desactivada.",
+    "removeFailed": "No se pudo quitar. Inténtalo de nuevo.",
+    "qrAlt": "Código QR para tu app de autenticación",
+    "loginPrompt": "Esta cuenta está protegida con verificación en dos pasos. Introduce el código de seis dígitos de tu app de autenticación.",
+    "verify": "Verificar código",
+    "backToLogin": "Usar otra cuenta"
   }
 }

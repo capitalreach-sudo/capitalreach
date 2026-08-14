@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Rundan stänger den (valfritt)"
+  },
+  "twofa": {
+    "title": "Tvåfaktorsautentisering",
+    "sub": "Lägg till ett andra steg vid inloggning: en sexsiffrig kod från en autentiseringsapp. Den som har ditt lösenord kommer ändå inte in utan din telefon.",
+    "on": "På",
+    "enable": "Ställ in tvåfaktor",
+    "working": "Förbereder…",
+    "scanHint": "Skanna koden med valfri autentiseringsapp (1Password, Google Authenticator, Authy…) eller ange hemligheten för hand. Skriv sedan den sexsiffriga koden appen visar.",
+    "secretCopied": "Hemlighet kopierad",
+    "codeLabel": "Sexsiffrig kod",
+    "activate": "Aktivera",
+    "checking": "Kontrollerar…",
+    "enabled": "Tvåfaktor är på. En kod krävs vid varje inloggning.",
+    "wrongCode": "Koden stämde inte. Koder går ut snabbt — prova den aktuella.",
+    "enrollFailed": "Kunde inte starta konfigurationen. Försök igen.",
+    "authApp": "Autentiseringsapp",
+    "remove": "Ta bort",
+    "removeHint": "Ange en aktuell kod från din app för att bekräfta — en stulen öppen laptop får inte räcka för att stänga av detta.",
+    "confirmRemove": "Bekräfta borttagning",
+    "removed": "Tvåfaktor är av.",
+    "removeFailed": "Kunde inte ta bort. Försök igen.",
+    "qrAlt": "QR-kod för din autentiseringsapp",
+    "loginPrompt": "Det här kontot skyddas av tvåfaktorsautentisering. Ange den sexsiffriga koden från din autentiseringsapp.",
+    "verify": "Verifiera koden",
+    "backToLogin": "Använd ett annat konto"
   }
 }

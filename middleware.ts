@@ -49,6 +49,20 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
+    // 2FA enforcement. A password-only session on an account with a verified
+    // TOTP factor is AAL1; without this check, the login page's code prompt
+    // would be a curtain, not a gate -- typing /dashboard into the URL bar
+    // would walk straight past it. Computed locally from the session JWT and
+    // its factor list, so this costs no network round trip.
+    if (isProtected && user) {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+        const loginUrl = new URL("/auth/login", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    }
+
     // Suspension + admin guard — one profile read covers both.
     // /suspended and /auth are exempt so a suspended user can still reach the
     // explanation page and sign out instead of bouncing in a redirect loop.
@@ -85,7 +99,14 @@ export async function middleware(request: NextRequest) {
     // role and forwards to onboarding when there is no listing yet, which is
     // where someone clicking that button actually wants to end up.
     if (user && (pathname === "/auth/login" || pathname === "/auth/signup")) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      // Only when fully authenticated. A session waiting on its 2FA code is
+      // exactly where it belongs on /auth/login -- bouncing it to /dashboard
+      // would ping-pong against the AAL check above forever.
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      const waitingOnMfa = aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2";
+      if (!waitingOnMfa) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
     }
 
   } catch (e) {

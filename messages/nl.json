@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Ronde sluit op (optioneel)"
+  },
+  "twofa": {
+    "title": "Tweestapsverificatie",
+    "sub": "Voeg een tweede stap toe bij inloggen: een zescijferige code uit een authenticator-app. Wie je wachtwoord heeft, komt er zonder je telefoon nog steeds niet in.",
+    "on": "Aan",
+    "enable": "Tweestaps instellen",
+    "working": "Voorbereiden…",
+    "scanHint": "Scan de code met een authenticator-app (1Password, Google Authenticator, Authy…) of voer de sleutel handmatig in. Typ daarna de zescijferige code uit de app.",
+    "secretCopied": "Sleutel gekopieerd",
+    "codeLabel": "Zescijferige code",
+    "activate": "Activeren",
+    "checking": "Controleren…",
+    "enabled": "Tweestapsverificatie staat aan. Bij elke aanmelding wordt om een code gevraagd.",
+    "wrongCode": "Die code klopt niet. Codes verlopen snel — probeer de huidige.",
+    "enrollFailed": "Kon de installatie niet starten. Probeer opnieuw.",
+    "authApp": "Authenticator-app",
+    "remove": "Verwijderen",
+    "removeHint": "Voer een actuele code uit je app in om te bevestigen — een gestolen open laptop mag niet genoeg zijn om dit uit te zetten.",
+    "confirmRemove": "Verwijderen bevestigen",
+    "removed": "Tweestapsverificatie staat uit.",
+    "removeFailed": "Kon het niet verwijderen. Probeer opnieuw.",
+    "qrAlt": "QR-code voor je authenticator-app",
+    "loginPrompt": "Dit account is beveiligd met tweestapsverificatie. Voer de zescijferige code uit je authenticator-app in.",
+    "verify": "Code verifiëren",
+    "backToLogin": "Ander account gebruiken"
   }
 }

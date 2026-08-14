@@ -2285,5 +2285,30 @@
   },
   "editor": {
     "roundCloseDate": "Il round chiude il (facoltativo)"
+  },
+  "twofa": {
+    "title": "Autenticazione a due fattori",
+    "sub": "Aggiungi un secondo passaggio all'accesso: un codice a sei cifre da un'app di autenticazione. Chi ha la tua password non entra comunque senza il tuo telefono.",
+    "on": "Attiva",
+    "enable": "Configura due fattori",
+    "working": "Preparazione…",
+    "scanHint": "Scansiona il codice con un'app di autenticazione (1Password, Google Authenticator, Authy…) o inserisci la chiave a mano. Poi digita il codice a sei cifre mostrato dall'app.",
+    "secretCopied": "Chiave copiata",
+    "codeLabel": "Codice a sei cifre",
+    "activate": "Attiva",
+    "checking": "Verifica…",
+    "enabled": "La verifica in due passaggi è attiva. Ti verrà chiesto un codice a ogni accesso.",
+    "wrongCode": "Il codice non corrisponde. I codici scadono in fretta: prova quello attuale.",
+    "enrollFailed": "Impossibile avviare la configurazione. Riprova.",
+    "authApp": "App di autenticazione",
+    "remove": "Rimuovi",
+    "removeHint": "Inserisci un codice attuale dalla tua app per confermare: un laptop rubato e aperto non deve bastare per disattivarla.",
+    "confirmRemove": "Conferma rimozione",
+    "removed": "La verifica in due passaggi è disattivata.",
+    "removeFailed": "Impossibile rimuoverla. Riprova.",
+    "qrAlt": "Codice QR per la tua app di autenticazione",
+    "loginPrompt": "Questo account è protetto dalla verifica in due passaggi. Inserisci il codice a sei cifre dalla tua app di autenticazione.",
+    "verify": "Verifica codice",
+    "backToLogin": "Usa un altro account"
   }
 }
