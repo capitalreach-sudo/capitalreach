@@ -2190,7 +2190,10 @@
     "tplMetricsLabel": "지표 요청",
     "tplMetrics": "개요 감사합니다. 제대로 검토할 수 있도록 최근 월간 지표(MRR, 성장률, 이탈률, 런웨이)를 공유해 주실 수 있을까요?",
     "tplCallLabel": "통화 제안",
-    "tplCall": "인상적입니다. 이번 주나 다음 주에 30분 정도 통화 가능하실까요? 일정에 맞추겠습니다."
+    "tplCall": "인상적입니다. 이번 주나 다음 주에 30분 정도 통화 가능하실까요? 일정에 맞추겠습니다.",
+    "attachFile": "파일 첨부",
+    "attachTooBig": "파일이 10MB를 초과합니다.",
+    "attachCaptionPh": "{name}에 메모 추가 (선택)…"
   },
   "completeness": {
     "nextBest": "다음에 할 일",

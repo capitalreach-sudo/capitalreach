@@ -2190,7 +2190,10 @@
     "tplMetricsLabel": "Vraag om cijfers",
     "tplMetrics": "Bedankt voor het overzicht. Kun je de recentste maandcijfers delen — MRR, groei, churn en runway — zodat ik er goed naar kan kijken?",
     "tplCallLabel": "Een gesprek voorstellen",
-    "tplCall": "Dit ziet er veelbelovend uit. Zou je open staan voor een gesprek van 30 minuten deze of volgende week? Ik pas me aan jouw agenda aan."
+    "tplCall": "Dit ziet er veelbelovend uit. Zou je open staan voor een gesprek van 30 minuten deze of volgende week? Ik pas me aan jouw agenda aan.",
+    "attachFile": "Bestand bijvoegen",
+    "attachTooBig": "Dat bestand is groter dan 10 MB.",
+    "attachCaptionPh": "Voeg een notitie toe aan {name} (optioneel)…"
   },
   "completeness": {
     "nextBest": "Doe dit hierna",

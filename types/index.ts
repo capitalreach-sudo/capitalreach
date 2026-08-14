@@ -128,6 +128,9 @@ export interface Message {
   created_at: string;
   /** Set when the counterpart opened the thread (messages/unread POST). */
   read_at?: string | null;
+  /** Storage path + human filename when the message carries a file (046). */
+  attachment_path?: string | null;
+  attachment_name?: string | null;
 }
 
 // Based on the generated Row so the field list and nullability can never

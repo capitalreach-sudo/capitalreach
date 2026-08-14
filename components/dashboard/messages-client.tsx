@@ -6,8 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import {
   Send, MessageSquare, Plus, Search, X, ArrowLeft,
-  CheckCheck, Building2, Loader2, Users, AlertCircle,
-} from "lucide-react";
+  CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -239,10 +238,39 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setUnreadSet((prev) => { if (!prev.has(t.id)) return prev; const n = new Set(prev); n.delete(t.id); return n; });
   }
 
+  // One pending attachment at a time; picking a file arms it, send ships it.
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+
   async function sendMessage(e: { preventDefault(): void }) {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedThread) return;
+    if ((!newMessage.trim() && !attachedFile) || !selectedThread) return;
     setSending(true);
+
+    if (attachedFile) {
+      // Through the API, not a direct insert: the file has to reach storage
+      // and the row has to point at it, and the route owns that pairing
+      // (including deleting the object if the insert fails).
+      const fd = new FormData();
+      fd.append("file", attachedFile);
+      fd.append("threadId", selectedThread.id);
+      fd.append("body", newMessage.trim());
+      const res = await fetch("/api/messages/attach", { method: "POST", body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        notify.error(json.error || t("dashboard.errSendMessageFailed"));
+      } else {
+        const sent = json.message as Message;
+        setMessages(prev => prev.some(m => m.id === sent.id) ? prev : [...prev, sent]);
+        setNewMessage("");
+        setAttachedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        await supabase.from("threads").update({ updated_at: sent.created_at }).eq("id", selectedThread.id);
+      }
+      setSending(false);
+      return;
+    }
+
     const body = newMessage.trim();
     const { data, error } = await supabase
       .from("messages")
@@ -510,7 +538,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           border: isOwn ? "none" : "1px solid var(--cr-rule-dark)",
                           color: isOwn ? "#fff" : "var(--cr-ink)",
                         }}>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{msg.body}</p>
+                          {msg.attachment_path && (
+                            <a href={`/api/messages/attachment?id=${msg.id}`}
+                              style={{ display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: msg.body && msg.body !== msg.attachment_name ? "6px" : 0, padding: "7px 10px", borderRadius: "4px", background: isOwn ? "rgba(255,255,255,0.15)" : "var(--cr-paper-3)", border: isOwn ? "1px solid rgba(255,255,255,0.25)" : "1px solid var(--cr-rule-dark)", color: "inherit", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", maxWidth: "100%" }}>
+                              <Paperclip style={{ width: 12, height: 12, flexShrink: 0 }} />
+                              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{msg.attachment_name}</span>
+                            </a>
+                          )}
+                          {/* A file-only message stores the filename as its body; showing both would say it twice. */}
+                          {(!msg.attachment_path || (msg.body && msg.body !== msg.attachment_name)) && (
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{msg.body}</p>
+                          )}
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", marginTop: "4px" }}>
                             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: isOwn ? "rgba(255,255,255,0.6)" : "var(--cr-ink-4)" }}>
                               {new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
@@ -545,16 +583,28 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     <option value="messages.tplCall">{t("messages.tplCallLabel")}</option>
                   </select>
                 )}
+                <input ref={fileInputRef} type="file" hidden
+                  accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,.xlsx,.docx,.pptx"
+                  onChange={e => {
+                    const f = e.target.files?.[0] ?? null;
+                    if (f && f.size > 10 * 1024 * 1024) { notify.error(t("messages.attachTooBig")); e.target.value = ""; return; }
+                    setAttachedFile(f);
+                  }} />
+                <button type="button" onClick={() => fileInputRef.current?.click()}
+                  aria-label={t("messages.attachFile")}
+                  style={{ width: 38, height: 38, background: attachedFile ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: attachedFile ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+                  <Paperclip style={{ width: 14, height: 14, color: attachedFile ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
+                </button>
                 <textarea value={newMessage} onChange={e => setNewMessage(e.target.value)}
-                  placeholder={t("dashboard.composePlaceholder")}
+                  placeholder={attachedFile ? t("messages.attachCaptionPh", { name: attachedFile.name }) : t("dashboard.composePlaceholder")}
                   rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", resize: "none", minHeight: "38px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
                   onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim()) sendMessage(e); } }}
+                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim() || attachedFile) sendMessage(e); } }}
                   onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                   onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
                 />
-                <button type="submit" disabled={!newMessage.trim() || sending}
-                  style={{ width: 38, height: 38, background: "var(--cr-copper)", border: "none", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: !newMessage.trim() || sending ? 0.5 : 1 }}>
+                <button type="submit" disabled={(!newMessage.trim() && !attachedFile) || sending}
+                  style={{ width: 38, height: 38, background: "var(--cr-copper)", border: "none", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: (!newMessage.trim() && !attachedFile) || sending ? 0.5 : 1 }}>
                   {sending ? <Loader2 style={{ width: 15, height: 15, color: "#fff" }} /> : <Send style={{ width: 15, height: 15, color: "#fff" }} />}
                 </button>
               </form>

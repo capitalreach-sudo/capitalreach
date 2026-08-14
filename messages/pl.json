@@ -2190,7 +2190,10 @@
     "tplMetricsLabel": "Poproś o wskaźniki",
     "tplMetrics": "Dziękuję za wprowadzenie. Czy możesz udostępnić najnowsze miesięczne wskaźniki — MRR, wzrost, churn i runway — żebym mógł się temu przyjrzeć?",
     "tplCallLabel": "Zaproponuj rozmowę",
-    "tplCall": "Wygląda obiecująco. Czy znajdziesz 30 minut na rozmowę w tym lub przyszłym tygodniu? Dopasuję się do twojego kalendarza."
+    "tplCall": "Wygląda obiecująco. Czy znajdziesz 30 minut na rozmowę w tym lub przyszłym tygodniu? Dopasuję się do twojego kalendarza.",
+    "attachFile": "Załącz plik",
+    "attachTooBig": "Ten plik przekracza 10 MB.",
+    "attachCaptionPh": "Dodaj notatkę do {name} (opcjonalnie)…"
   },
   "completeness": {
     "nextBest": "Zrób to teraz",

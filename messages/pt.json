@@ -2190,7 +2190,10 @@
     "tplMetricsLabel": "Pedir métricas",
     "tplMetrics": "Obrigado pela visão geral. Podes partilhar as métricas mensais mais recentes — MRR, crescimento, churn e autonomia — para poder analisar como deve ser?",
     "tplCallLabel": "Propor uma chamada",
-    "tplCall": "Parece promissor. Estarias disponível para uma chamada de 30 minutos esta semana ou na próxima? Adapto-me à tua agenda."
+    "tplCall": "Parece promissor. Estarias disponível para uma chamada de 30 minutos esta semana ou na próxima? Adapto-me à tua agenda.",
+    "attachFile": "Anexar um ficheiro",
+    "attachTooBig": "Esse ficheiro excede 10 MB.",
+    "attachCaptionPh": "Adiciona uma nota a {name} (opcional)…"
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",

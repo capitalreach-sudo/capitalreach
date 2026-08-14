@@ -2190,7 +2190,10 @@
     "tplMetricsLabel": "索取数据",
     "tplMetrics": "感谢介绍。方便分享最新的月度数据吗——MRR、增长、流失率和资金可用期，以便我认真评估。",
     "tplCallLabel": "提议通话",
-    "tplCall": "看起来很有潜力。本周或下周方便安排 30 分钟通话吗？时间以你为准。"
+    "tplCall": "看起来很有潜力。本周或下周方便安排 30 分钟通话吗？时间以你为准。",
+    "attachFile": "附加文件",
+    "attachTooBig": "该文件超过 10 MB。",
+    "attachCaptionPh": "为 {name} 添加备注（可选）…"
   },
   "completeness": {
     "nextBest": "下一步",

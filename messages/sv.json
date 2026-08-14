@@ -2190,7 +2190,10 @@
     "tplMetricsLabel": "Be om nyckeltal",
     "tplMetrics": "Tack för översikten. Kan du dela de senaste månadssiffrorna — MRR, tillväxt, churn och runway — så att jag kan titta ordentligt?",
     "tplCallLabel": "Föreslå ett samtal",
-    "tplCall": "Det här ser lovande ut. Skulle du vara öppen för ett 30-minuterssamtal den här eller nästa vecka? Jag anpassar mig efter ditt schema."
+    "tplCall": "Det här ser lovande ut. Skulle du vara öppen för ett 30-minuterssamtal den här eller nästa vecka? Jag anpassar mig efter ditt schema.",
+    "attachFile": "Bifoga en fil",
+    "attachTooBig": "Filen är större än 10 MB.",
+    "attachCaptionPh": "Lägg till en notering till {name} (valfritt)…"
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",

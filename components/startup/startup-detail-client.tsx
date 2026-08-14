@@ -22,6 +22,7 @@ import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
+import { roundCloseState } from "@/lib/round-close";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -510,6 +511,17 @@ export function StartupDetailClient({
                   <span style={{ background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {STAGE_LABELS[startup.stage] ?? startup.stage}
                   </span>
+                  {/* Same model as the browse card (lib/round-close), so the
+                      two surfaces cannot disagree about "closing soon". */}
+                  {(() => {
+                    const closing = roundCloseState(startup.round_close_date);
+                    if (!closing) return null;
+                    return (
+                      <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        {closing.kind === "closingSoon" ? t("startup.closingSoon") : t("startup.closesIn", { count: closing.days })}
+                      </span>
+                    );
+                  })()}
                   {startup.country && (
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                       {startup.country}

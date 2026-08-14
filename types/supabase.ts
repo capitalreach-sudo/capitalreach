@@ -662,6 +662,8 @@ export type Database = {
       }
       messages: {
         Row: {
+          attachment_name: string | null
+          attachment_path: string | null
           body: string
           created_at: string
           id: string
@@ -670,6 +672,8 @@ export type Database = {
           thread_id: string
         }
         Insert: {
+          attachment_name?: string | null
+          attachment_path?: string | null
           body: string
           created_at?: string
           id?: string
@@ -678,6 +682,8 @@ export type Database = {
           thread_id: string
         }
         Update: {
+          attachment_name?: string | null
+          attachment_path?: string | null
           body?: string
           created_at?: string
           id?: string

@@ -2196,7 +2196,10 @@
     "tplMetricsLabel": "Kennzahlen anfragen",
     "tplMetrics": "Danke für den Überblick. Könnten Sie Ihre aktuellen Monatskennzahlen teilen — MRR, Wachstum, Churn und Runway — damit ich mir ein genaues Bild machen kann?",
     "tplCallLabel": "Call vorschlagen",
-    "tplCall": "Das klingt vielversprechend. Hätten Sie diese oder nächste Woche Zeit für einen 30-minütigen Call? Ich richte mich gerne nach Ihrem Kalender."
+    "tplCall": "Das klingt vielversprechend. Hätten Sie diese oder nächste Woche Zeit für einen 30-minütigen Call? Ich richte mich gerne nach Ihrem Kalender.",
+    "attachFile": "Datei anhängen",
+    "attachTooBig": "Die Datei ist größer als 10 MB.",
+    "attachCaptionPh": "Notiz zu {name} hinzufügen (optional)…"
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",
