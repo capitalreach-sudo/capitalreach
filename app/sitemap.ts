@@ -29,7 +29,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // /investors -- the two browse pages, and the most valuable indexable pages
   // on the site after the homepage. Individual profiles were being submitted
   // with no listing page pointing at them.
-  const now = new Date();
+  // Static marketing pages: a stable date, bumped when their content
+  // meaningfully changes. Request-time stamps made every crawl look like a
+  // full-site update, which teaches crawlers to distrust lastmod entirely.
+  const staticLastMod = new Date("2026-08-14");
   // Typed so changeFrequency keeps its literal type through the .map below;
   // an untyped array literal widens it to string and no longer satisfies
   // MetadataRoute.Sitemap.
@@ -64,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/privacy`,     changeFrequency: "yearly",  priority: 0.3 },
     { url: `${baseUrl}/disclaimer`,  changeFrequency: "yearly",  priority: 0.3 },
   ];
-  const staticRoutes: MetadataRoute.Sitemap = routes.map(r => ({ ...r, lastModified: now }));
+  const staticRoutes: MetadataRoute.Sitemap = routes.map(r => ({ ...r, lastModified: staticLastMod }));
 
   const startupRoutes: MetadataRoute.Sitemap = (startups || []).map(s => ({
     url: `${baseUrl}/startups/${s.slug}`,

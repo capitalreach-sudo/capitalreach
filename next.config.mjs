@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    // Guessed-URL courtesy: the real route is /auth/signup.
+    return [{ source: "/auth/register", destination: "/auth/signup", permanent: true }];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co" },

@@ -1,6 +1,9 @@
 import { createAdminClient } from "@/lib/supabase-server";
+import type { Metadata } from "next";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
+
+export const metadata: Metadata = { title: "Status" };
 
 /**
  * Public status page. When something breaks, silence is the worst answer —

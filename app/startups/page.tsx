@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Find Startups — CapitalReach",
+  title: "Find Startups",
   description:
     "Browse vetted startups currently raising capital. Filter by industry, stage, MRR, AI score, and more.",
 };

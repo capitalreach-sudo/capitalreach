@@ -4,7 +4,7 @@ import { InvestorsClient } from "@/components/investors/investors-client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Investor Directory — CapitalReach",
+  title: "Investor Directory",
   description: "Browse accredited angels, VCs, and institutional investors actively looking to fund startups on CapitalReach.",
 };
 
