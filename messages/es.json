@@ -2338,5 +2338,8 @@
     "banner": "Vista previa como inversor gratuito: esto es exactamente lo que ve, candados incluidos.",
     "exit": "Volver a mi vista",
     "open": "Vista previa como inversor"
+  },
+  "onePager": {
+    "open": "Resumen de una página"
   }
 }

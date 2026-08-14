@@ -554,6 +554,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <Link href={`/startups/${startup.slug}?preview=investor`} target="_blank" style={outlineBtn}>
               <Eye style={{ width: 12, height: 12 }} /> {t("preview.open")}
             </Link>
+            <Link href={`/startups/${startup.slug}/one-pager`} target="_blank" style={outlineBtn}>
+              <FileText style={{ width: 12, height: 12 }} /> {t("onePager.open")}
+            </Link>
             <Link href="/dashboard/startup/edit" style={outlineBtn}>
               <Settings style={{ width: 12, height: 12 }} /> {t("dashboard.editProfile")}
             </Link>

@@ -2338,5 +2338,8 @@
     "banner": "Anteprima come investitore gratuito: è esattamente ciò che vede, blocchi inclusi.",
     "exit": "Torna alla mia vista",
     "open": "Anteprima da investitore"
+  },
+  "onePager": {
+    "open": "One-pager"
   }
 }

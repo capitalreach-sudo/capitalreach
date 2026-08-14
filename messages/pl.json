@@ -2338,5 +2338,8 @@
     "banner": "Podgląd jako darmowy inwestor — dokładnie to widzą, łącznie z blokadami.",
     "exit": "Wróć do mojego widoku",
     "open": "Podgląd jako inwestor"
+  },
+  "onePager": {
+    "open": "One-pager"
   }
 }

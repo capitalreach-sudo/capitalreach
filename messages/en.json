@@ -2338,5 +2338,8 @@
     "banner": "Previewing as a free investor — this is exactly what they see, locks included.",
     "exit": "Back to my view",
     "open": "Preview as investor"
+  },
+  "onePager": {
+    "open": "One-pager"
   }
 }

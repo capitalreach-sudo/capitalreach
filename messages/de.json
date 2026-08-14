@@ -2338,5 +2338,8 @@
     "banner": "Vorschau als Free-Investor — genau das sehen sie, inklusive Sperren.",
     "exit": "Zurück zu meiner Ansicht",
     "open": "Als Investor ansehen"
+  },
+  "onePager": {
+    "open": "One-Pager"
   }
 }

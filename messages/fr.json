@@ -2338,5 +2338,8 @@
     "banner": "Aperçu en tant qu'investisseur gratuit — c'est exactement ce qu'il voit, verrous compris.",
     "exit": "Revenir à ma vue",
     "open": "Aperçu côté investisseur"
+  },
+  "onePager": {
+    "open": "One-pager"
   }
 }

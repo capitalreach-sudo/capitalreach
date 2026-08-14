@@ -2338,5 +2338,8 @@
     "banner": "Förhandsvisar som gratisinvesterare — precis det de ser, lås inkluderade.",
     "exit": "Tillbaka till min vy",
     "open": "Förhandsgranska som investerare"
+  },
+  "onePager": {
+    "open": "One-pager"
   }
 }

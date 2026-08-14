@@ -2338,5 +2338,8 @@
     "banner": "Voorbeeld als gratis investeerder — dit is precies wat zij zien, sloten inbegrepen.",
     "exit": "Terug naar mijn weergave",
     "open": "Bekijken als investeerder"
+  },
+  "onePager": {
+    "open": "One-pager"
   }
 }
