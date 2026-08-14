@@ -68,7 +68,9 @@
     "startupsListed": "Startups geplaatst",
     "verifiedInvestors": "Geverifieerde investeerders",
     "dealsClosed": "Deals gesloten",
-    "capitalRaised": "Kapitaal opgehaald"
+    "capitalRaised": "Kapitaal opgehaald",
+    "upfrontFees": "voorafgaande kosten",
+    "vettedListings": "geverifieerde listings"
   },
   "listings": {
     "sectionLabel": "Actieve financieringsrondes",
@@ -441,7 +443,8 @@
     "tipSavedSearches": "Sla filtercombinaties op en voer ze opnieuw uit met één klik.",
     "tipVisName": "Je bedrijfsnaam, tagline en sector - altijd openbaar in elk plan.",
     "tipVisTeam": "Founderbio's en teamprofielen op je openbare listing.",
-    "tipVisDeck": "Je pitchdeck, te openen door investeerders op je profiel."
+    "tipVisDeck": "Je pitchdeck, te openen door investeerders op je profiel.",
+    "notIncluded": "Niet inbegrepen"
   },
   "cta": {
     "headline": "Het juiste kapitaal, op het juiste moment.",
@@ -1096,7 +1099,9 @@
     "sortRaising": "Op ophaalbedrag",
     "thresholds": "Tractie",
     "bestMatch": "Beste match voor mij",
-    "matchPct": "{pct}% match"
+    "matchPct": "{pct}% match",
+    "sortUpdated": "Onlangs bijgewerkt",
+    "sortMrr": "Hoogste MRR"
   },
   "common": {
     "loading": "Laden...",
@@ -1136,7 +1141,8 @@
     "printTagline": "CapitalReach — Marktplaats voor privékapitaal",
     "view": "Bekijken",
     "done": "Klaar",
-    "exportPdf": "Afdrukken / opslaan als PDF"
+    "exportPdf": "Afdrukken / opslaan als PDF",
+    "viewPlans": "Bekijk abonnementen"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1182,7 +1188,8 @@
     "privacy": "Privacy",
     "aiDisclosure": "AI-functies gebruiken OpenAI-modellen. Uitkomsten zijn uitsluitend informatief en vormen geen beleggingsadvies.",
     "status": "Status",
-    "stats": "Platformstatistieken"
+    "stats": "Platformstatistieken",
+    "feeStrip": "2% succesfee · alleen na closing · alleen founders · nooit investeerders"
   },
   "feeStrip": {
     "tagline": "succesvergoeding — alleen na sluiting. Sectorgemiddelde: 5–7% vooraf.",
@@ -1291,7 +1298,8 @@
     "compare2": "Vergelijken",
     "compareInvestors": "Investeerders vergelijken",
     "target2": "Targeten",
-    "verifiedBadge": "Geverifieerde investeerder"
+    "verifiedBadge": "Geverifieerde investeerder",
+    "clearCompareAria": "Vergelijking wissen"
   },
   "data": {
     "stageBreakdown": "Faseverdeling",
@@ -2224,7 +2232,8 @@
     "viewArchived": "Gearchiveerd ({count})",
     "showingArchived": "Gearchiveerd getoond ({count}) — terug naar inbox",
     "searchInThread": "Zoeken in dit gesprek…",
-    "clearSearch": "Wissen"
+    "clearSearch": "Wissen",
+    "unreadAria": "Ongelezen"
   },
   "completeness": {
     "nextBest": "Doe dit hierna",
@@ -2396,5 +2405,63 @@
     "targets": "{count} getarget",
     "go": "Doen",
     "tip": "Tip"
+  },
+  "navbar": {
+    "feeBadge": "2% bij closing",
+    "feeBadgeAria": "2% succesfee bij closing"
+  },
+  "feeBadge": {
+    "floating": "2% bij closing — niets vooraf"
+  },
+  "legal": {
+    "aiDisclaimer": "Door AI gegenereerde analyses zijn uitsluitend informatief. Ze vormen geen beleggingsadvies, formele due diligence of aanbeveling om te investeren. Doe altijd je eigen onafhankelijke onderzoek.",
+    "brokerDisclaimer": "CapitalReach is geen geregistreerde broker-dealer of beleggingsadviseur. De getoonde informatie is alleen ter referentie en vormt geen beleggingsadvies.",
+    "aiReportDisclaimer": "Deze door AI gegenereerde analyse is uitsluitend informatief en vormt geen beleggingsadvies, due diligence of aanbeveling om te investeren. Doe altijd je eigen onafhankelijke onderzoek."
+  },
+  "notFound": {
+    "title": "Pagina niet gevonden",
+    "body": "De pagina die je zoekt bestaat niet of is verplaatst. Terug naar het ontdekken van investeringskansen.",
+    "goHome": "Naar home",
+    "browse": "Startups bekijken"
+  },
+  "errorPage": {
+    "title": "Er ging iets mis",
+    "body": "Deze pagina kon niet laden. Meestal is dit tijdelijk — opnieuw proberen werkt vaak.",
+    "tryAgain": "Opnieuw proberen",
+    "backHome": "Terug naar home",
+    "sectionNamed": "{name} kon niet laden",
+    "sectionTitle": "Deze sectie kon niet laden",
+    "sectionBody": "De rest van de pagina werkt nog gewoon.",
+    "retry": "Opnieuw proberen"
+  },
+  "statusPage": {
+    "kicker": "CapitalReach-status",
+    "allOk": "Alle systemen operationeel",
+    "partial": "Gedeeltelijke verstoring",
+    "disruption": "Storing",
+    "checkedAt": "Live gecontroleerd om {time} UTC — elke rij hieronder is getest bij het laden van deze pagina.",
+    "application": "Applicatie",
+    "servingPage": "serveert deze pagina",
+    "database": "Database",
+    "auth": "Inloggen (auth)",
+    "storage": "Bestandsopslag",
+    "jobs": "Achtergrondtaken",
+    "operational": "Operationeel",
+    "degraded": "Verstoord",
+    "down": "Offline",
+    "notScheduled": "Nog niet gepland",
+    "wrongNote": "Ziet iets er verkeerd uit terwijl deze pagina zegt dat alles in orde is? Schrijf ons via de contactpagina — een melding met tijdstip en wat je zag is echt nuttig."
+  },
+  "sections": {
+    "recentlyViewed": "Onlangs bekeken",
+    "savedSearches": "Opgeslagen zoekopdrachten",
+    "updateComposer": "Update schrijven",
+    "raiseProgress": "Voortgang van de ronde",
+    "fundraiseChecklist": "Fundraising-checklist",
+    "tractionHistory": "Tractiegeschiedenis",
+    "investorInterest": "Interesse van investeerders",
+    "profileViewers": "Profielbezoekers",
+    "targetInvestors": "Doelinvesteerders",
+    "documentAnalytics": "Documentstatistieken"
   }
 }

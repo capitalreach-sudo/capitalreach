@@ -477,7 +477,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           <p style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: unreadSet.has(thread.id) ? 700 : 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{getLabel(thread)}</span>
                             {unreadSet.has(thread.id) && (
-                              <span aria-label="unread" style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
+                              <span aria-label={t("messages.unreadAria")} style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
                             )}
                           </p>
                           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{timeAgo(thread.updated_at, t)}</span>

@@ -428,8 +428,8 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* ── Watchlist ── */}
         {activeTab === "watchlist" && (
           <div>
-            <ErrorBoundary label="Recently viewed"><RecentlyViewedStrip /></ErrorBoundary>
-            <ErrorBoundary label="Saved searches"><SavedSearchManager /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                 {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}

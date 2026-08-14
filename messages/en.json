@@ -88,7 +88,9 @@
     "startupsListed": "Startups listed",
     "verifiedInvestors": "Verified investors",
     "dealsClosed": "Deals closed",
-    "capitalRaised": "Capital raised"
+    "capitalRaised": "Capital raised",
+    "upfrontFees": "upfront fees",
+    "vettedListings": "vetted listings"
   },
   "listings": {
     "sectionLabel": "Active fundraising rounds",
@@ -461,7 +463,8 @@
     "tipSavedSearches": "Save filter combinations and re-run them with one click.",
     "tipVisName": "Your company name, tagline and industry - always public on every plan.",
     "tipVisTeam": "Founder bios and team profiles shown on your public listing.",
-    "tipVisDeck": "Your pitch deck, openable by investors on your profile."
+    "tipVisDeck": "Your pitch deck, openable by investors on your profile.",
+    "notIncluded": "Not included"
   },
   "cta": {
     "headline": "The right capital, at the right stage.",
@@ -1201,7 +1204,8 @@
     "compare2": "Compare",
     "compareInvestors": "Compare investors",
     "target2": "Target",
-    "verifiedBadge": "Verified investor"
+    "verifiedBadge": "Verified investor",
+    "clearCompareAria": "Clear comparison"
   },
   "data": {
     "eyebrow": "Live Platform Data",
@@ -1259,7 +1263,9 @@
     "sortRaising": "Raising amount",
     "thresholds": "Traction",
     "bestMatch": "Best match for me",
-    "matchPct": "{pct}% match"
+    "matchPct": "{pct}% match",
+    "sortUpdated": "Recently updated",
+    "sortMrr": "Highest MRR"
   },
   "common": {
     "loading": "Loading...",
@@ -1299,7 +1305,8 @@
     "printTagline": "CapitalReach — Private Capital Marketplace",
     "view": "View",
     "done": "Done",
-    "exportPdf": "Print / save as PDF"
+    "exportPdf": "Print / save as PDF",
+    "viewPlans": "View plans"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",
@@ -1645,7 +1652,8 @@
     "privacy": "Privacy",
     "aiDisclosure": "AI-powered features use OpenAI models. Outputs are informational only and not investment advice.",
     "status": "Status",
-    "stats": "Platform stats"
+    "stats": "Platform stats",
+    "feeStrip": "2% success fee · only after close · founders only · never investors"
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
@@ -2230,7 +2238,8 @@
     "viewArchived": "Archived ({count})",
     "showingArchived": "Showing archived ({count}) — back to inbox",
     "searchInThread": "Search this conversation…",
-    "clearSearch": "Clear"
+    "clearSearch": "Clear",
+    "unreadAria": "Unread"
   },
   "presets": {
     "preseedAi": "Pre-seed AI",
@@ -2396,5 +2405,63 @@
     "targets": "{count} targeted",
     "go": "Do it",
     "tip": "Tip"
+  },
+  "navbar": {
+    "feeBadge": "2% at close",
+    "feeBadgeAria": "2% success fee at close"
+  },
+  "feeBadge": {
+    "floating": "2% at close — zero upfront"
+  },
+  "legal": {
+    "aiDisclaimer": "AI-generated analysis is for informational purposes only. It does not constitute investment advice, formal due diligence, or a recommendation to invest. Always conduct your own independent research.",
+    "brokerDisclaimer": "CapitalReach is not a registered broker-dealer or investment adviser. Information shown is for reference only and does not constitute investment advice.",
+    "aiReportDisclaimer": "This AI-generated analysis is for informational purposes only and does not constitute investment advice, due diligence, or a recommendation to invest. Always conduct your own independent research."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist or has been moved. Let's get you back to discovering great investment opportunities.",
+    "goHome": "Go Home",
+    "browse": "Browse Startups"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "body": "This page failed to load. It is usually temporary — trying again often works.",
+    "tryAgain": "Try again",
+    "backHome": "Back to home",
+    "sectionNamed": "{name} failed to load",
+    "sectionTitle": "This section failed to load",
+    "sectionBody": "The rest of the page still works.",
+    "retry": "Retry"
+  },
+  "statusPage": {
+    "kicker": "CapitalReach status",
+    "allOk": "All systems operational",
+    "partial": "Partial degradation",
+    "disruption": "Service disruption",
+    "checkedAt": "Checked live at {time} UTC — every row below was tested by loading this page.",
+    "application": "Application",
+    "servingPage": "serving this page",
+    "database": "Database",
+    "auth": "Sign-in (auth)",
+    "storage": "File storage",
+    "jobs": "Background jobs",
+    "operational": "Operational",
+    "degraded": "Degraded",
+    "down": "Down",
+    "notScheduled": "Not yet scheduled",
+    "wrongNote": "Something look wrong that this page says is fine? Write to us via the contact page — a report with a time and what you saw is genuinely useful."
+  },
+  "sections": {
+    "recentlyViewed": "Recently viewed",
+    "savedSearches": "Saved searches",
+    "updateComposer": "Update composer",
+    "raiseProgress": "Raise progress",
+    "fundraiseChecklist": "Fundraise checklist",
+    "tractionHistory": "Traction history",
+    "investorInterest": "Investor interest",
+    "profileViewers": "Profile viewers",
+    "targetInvestors": "Target investors",
+    "documentAnalytics": "Document analytics"
   }
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   children: ReactNode;
   /** Replaces the default panel — use when the surrounding layout needs a specific shape. */
   fallback?: ReactNode;
-  /** Shown in the default panel so the message can name what broke. */
-  label?: string;
+  /** Translation key naming what broke, resolved inside the default panel. */
+  labelKey?: string;
 }
 
 interface State {
@@ -33,48 +34,54 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: unknown) {
-    console.error("[ErrorBoundary]", this.props.label ?? "", error, info);
+    console.error("[ErrorBoundary]", this.props.labelKey ?? "", error, info);
   }
 
   render() {
     if (!this.state.hasError) return this.props.children;
     if (this.props.fallback) return this.props.fallback;
 
-    return (
-      <div
+    return <SectionFallback labelKey={this.props.labelKey} onRetry={() => this.setState({ hasError: false })} />;
+  }
+}
+
+// Hooks are unusable inside the class, so the translated fallback lives here.
+function SectionFallback({ labelKey, onRetry }: { labelKey?: string; onRetry: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div
+      style={{
+        display: "flex", flexDirection: "column", alignItems: "center",
+        justifyContent: "center", textAlign: "center",
+        padding: "40px 24px", minHeight: "180px",
+        background: "var(--cr-paper-2)",
+        border: "1px solid var(--cr-rule-dark)",
+        borderRadius: "4px",
+      }}
+    >
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "22px", color: "var(--cr-paper-4)", marginBottom: "10px", lineHeight: 1 }}>
+        ◆
+      </div>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>
+        {labelKey ? t("errorPage.sectionNamed", { name: t(labelKey) }) : t("errorPage.sectionTitle")}
+      </p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "16px", maxWidth: "260px", lineHeight: 1.5 }}>
+        {t("errorPage.sectionBody")}
+      </p>
+      {/* Deliberately re-renders this subtree rather than reloading the page:
+          a full reload would throw away whatever the user was doing in the
+          panels that did not break. */}
+      <button
+        onClick={onRetry}
         style={{
-          display: "flex", flexDirection: "column", alignItems: "center",
-          justifyContent: "center", textAlign: "center",
-          padding: "40px 24px", minHeight: "180px",
-          background: "var(--cr-paper-2)",
-          border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "4px",
+          height: "32px", padding: "0 16px", background: "transparent",
+          border: "1px solid var(--cr-rule-dark)", borderRadius: "4px",
+          cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+          fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)",
         }}
       >
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "22px", color: "var(--cr-paper-4)", marginBottom: "10px", lineHeight: 1 }}>
-          ◆
-        </div>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>
-          {this.props.label ? `${this.props.label} failed to load` : "This section failed to load"}
-        </p>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "16px", maxWidth: "260px", lineHeight: 1.5 }}>
-          The rest of the page still works.
-        </p>
-        {/* Deliberately re-renders this subtree rather than reloading the page:
-            a full reload would throw away whatever the user was doing in the
-            panels that did not break. */}
-        <button
-          onClick={() => this.setState({ hasError: false })}
-          style={{
-            height: "32px", padding: "0 16px", background: "transparent",
-            border: "1px solid var(--cr-rule-dark)", borderRadius: "4px",
-            cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)",
-          }}
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+        {t("errorPage.retry")}
+      </button>
+    </div>
+  );
 }

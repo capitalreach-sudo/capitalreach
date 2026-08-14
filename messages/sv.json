@@ -68,7 +68,9 @@
     "startupsListed": "Startups listade",
     "verifiedInvestors": "Verifierade investerare",
     "dealsClosed": "Affärer avslutade",
-    "capitalRaised": "Kapital insamlat"
+    "capitalRaised": "Kapital insamlat",
+    "upfrontFees": "förskottsavgifter",
+    "vettedListings": "granskade listningar"
   },
   "listings": {
     "sectionLabel": "Aktiva finansieringsrundor",
@@ -441,7 +443,8 @@
     "tipSavedSearches": "Spara filterkombinationer och kör dem igen med ett klick.",
     "tipVisName": "Ditt företagsnamn, tagline och bransch - alltid publikt i alla planer.",
     "tipVisTeam": "Grundarbios och teamprofiler på din publika listning.",
-    "tipVisDeck": "Din pitch deck, öppningsbar för investerare på din profil."
+    "tipVisDeck": "Din pitch deck, öppningsbar för investerare på din profil.",
+    "notIncluded": "Ingår inte"
   },
   "cta": {
     "headline": "Rätt kapital, i rätt fas.",
@@ -1096,7 +1099,9 @@
     "sortRaising": "Efter insamlingsbelopp",
     "thresholds": "Traktion",
     "bestMatch": "Bäst matchning för mig",
-    "matchPct": "{pct}% matchning"
+    "matchPct": "{pct}% matchning",
+    "sortUpdated": "Nyligen uppdaterade",
+    "sortMrr": "Högst MRR"
   },
   "common": {
     "loading": "Laddar...",
@@ -1136,7 +1141,8 @@
     "printTagline": "CapitalReach — Marknadsplats för privat kapital",
     "view": "Visa",
     "done": "Klar",
-    "exportPdf": "Skriv ut / spara som PDF"
+    "exportPdf": "Skriv ut / spara som PDF",
+    "viewPlans": "Se planer"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",
@@ -1182,7 +1188,8 @@
     "privacy": "Integritetspolicy",
     "aiDisclosure": "AI-funktioner använder OpenAI-modeller. Resultaten är endast informativa och utgör inte investeringsrådgivning.",
     "status": "Status",
-    "stats": "Plattformsstatistik"
+    "stats": "Plattformsstatistik",
+    "feeStrip": "2 % success fee · endast efter avslut · endast grundare · aldrig investerare"
   },
   "feeStrip": {
     "tagline": "framgångsavgift — endast efter avslut. Branschsnitt: 5–7% i förskott.",
@@ -1291,7 +1298,8 @@
     "compare2": "Jämför",
     "compareInvestors": "Jämför investerare",
     "target2": "Rikta in",
-    "verifiedBadge": "Verifierad investerare"
+    "verifiedBadge": "Verifierad investerare",
+    "clearCompareAria": "Rensa jämförelse"
   },
   "data": {
     "stageBreakdown": "Fasfördelning",
@@ -2224,7 +2232,8 @@
     "viewArchived": "Arkiverade ({count})",
     "showingArchived": "Visar arkiverade ({count}) — tillbaka till inkorgen",
     "searchInThread": "Sök i den här konversationen…",
-    "clearSearch": "Rensa"
+    "clearSearch": "Rensa",
+    "unreadAria": "Oläst"
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",
@@ -2396,5 +2405,63 @@
     "targets": "{count} utvalda",
     "go": "Gör det",
     "tip": "Tips"
+  },
+  "navbar": {
+    "feeBadge": "2 % vid avslut",
+    "feeBadgeAria": "2 % success fee vid avslut"
+  },
+  "feeBadge": {
+    "floating": "2 % vid avslut — inget i förskott"
+  },
+  "legal": {
+    "aiDisclaimer": "AI-genererade analyser är endast informativa. De utgör inte investeringsrådgivning, formell due diligence eller en rekommendation att investera. Gör alltid din egen oberoende research.",
+    "brokerDisclaimer": "CapitalReach är inte en registrerad broker-dealer eller investeringsrådgivare. Informationen som visas är endast referens och utgör inte investeringsrådgivning.",
+    "aiReportDisclaimer": "Denna AI-genererade analys är endast informativ och utgör inte investeringsrådgivning, due diligence eller en rekommendation att investera. Gör alltid din egen oberoende research."
+  },
+  "notFound": {
+    "title": "Sidan hittades inte",
+    "body": "Sidan du letar efter finns inte eller har flyttats. Låt oss ta dig tillbaka till investeringsmöjligheterna.",
+    "goHome": "Till startsidan",
+    "browse": "Bläddra bland startups"
+  },
+  "errorPage": {
+    "title": "Något gick fel",
+    "body": "Sidan kunde inte laddas. Det är oftast tillfälligt — att försöka igen fungerar ofta.",
+    "tryAgain": "Försök igen",
+    "backHome": "Tillbaka till startsidan",
+    "sectionNamed": "{name} kunde inte laddas",
+    "sectionTitle": "Denna sektion kunde inte laddas",
+    "sectionBody": "Resten av sidan fungerar fortfarande.",
+    "retry": "Försök igen"
+  },
+  "statusPage": {
+    "kicker": "CapitalReach-status",
+    "allOk": "Alla system i drift",
+    "partial": "Delvis störning",
+    "disruption": "Driftstörning",
+    "checkedAt": "Kontrollerad live kl. {time} UTC — varje rad nedan testades när denna sida laddades.",
+    "application": "Applikation",
+    "servingPage": "serverar denna sida",
+    "database": "Databas",
+    "auth": "Inloggning (auth)",
+    "storage": "Fillagring",
+    "jobs": "Bakgrundsjobb",
+    "operational": "I drift",
+    "degraded": "Störd",
+    "down": "Nere",
+    "notScheduled": "Inte schemalagt än",
+    "wrongNote": "Ser något fel ut trots att denna sida säger att allt är bra? Skriv till oss via kontaktsidan — en rapport med tid och vad du såg är verkligen användbar."
+  },
+  "sections": {
+    "recentlyViewed": "Nyligen visade",
+    "savedSearches": "Sparade sökningar",
+    "updateComposer": "Skriv uppdatering",
+    "raiseProgress": "Rundans framsteg",
+    "fundraiseChecklist": "Checklista för rundan",
+    "tractionHistory": "Traktionshistorik",
+    "investorInterest": "Investerarintresse",
+    "profileViewers": "Profilbesökare",
+    "targetInvestors": "Målinvesterare",
+    "documentAnalytics": "Dokumentstatistik"
   }
 }

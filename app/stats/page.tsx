@@ -15,6 +15,8 @@ import { formatMoney, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
  * figure with a made-up rate is exactly the kind of number this page exists
  * not to publish (the data centre made the same call).
  */
+// i18n note: deliberately English-only — hourly ISR (revalidate below) is
+// incompatible with per-request cookie locale. Same policy as /blog.
 export const revalidate = 3600;
 
 export const metadata: Metadata = {

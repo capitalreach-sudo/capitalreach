@@ -620,7 +620,7 @@ export function InvestorsClient() {
                 className={cn("bg-cr-copper text-white text-xs font-semibold rounded px-3.5 py-1.5", compareIds.length < 2 ? "opacity-50" : "cursor-pointer")}>
                 {t("investors.compare2")} ({compareIds.length})
               </button>
-              <button onClick={() => setCompareIds([])} aria-label="clear compare" className="text-cr-i4 flex">
+              <button onClick={() => setCompareIds([])} aria-label={t("investors.clearCompareAria")} className="text-cr-i4 flex">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -641,7 +641,7 @@ export function InvestorsClient() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto bg-cr-paper border border-cr-p4 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-cr-ink" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>{t("investors.compareInvestors")}</h2>
-                    <button onClick={() => setShowCompare(false)} aria-label="close" className="text-cr-i4 flex"><X className="h-5 w-5" /></button>
+                    <button onClick={() => setShowCompare(false)} aria-label={t("common.close")} className="text-cr-i4 flex"><X className="h-5 w-5" /></button>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse">

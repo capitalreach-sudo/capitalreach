@@ -68,7 +68,9 @@
     "startupsListed": "등록된 스타트업",
     "verifiedInvestors": "인증 투자자",
     "dealsClosed": "성사된 거래",
-    "capitalRaised": "조달된 자본"
+    "capitalRaised": "조달된 자본",
+    "upfrontFees": "선불 수수료",
+    "vettedListings": "검증된 리스팅"
   },
   "listings": {
     "sectionLabel": "활성 자금 조달 라운드",
@@ -441,7 +443,8 @@
     "tipSavedSearches": "필터 조합을 저장하고 한 번의 클릭으로 다시 실행합니다.",
     "tipVisName": "회사명, 태그라인, 업종은 모든 요금제에서 항상 공개됩니다.",
     "tipVisTeam": "공개 리스팅에 창업자 소개와 팀 프로필이 표시됩니다.",
-    "tipVisDeck": "투자자가 프로필에서 피치 덱을 열어볼 수 있습니다."
+    "tipVisDeck": "투자자가 프로필에서 피치 덱을 열어볼 수 있습니다.",
+    "notIncluded": "포함 안 됨"
   },
   "cta": {
     "headline": "적절한 단계의 적절한 자본.",
@@ -1096,7 +1099,9 @@
     "sortRaising": "조달금액순",
     "thresholds": "트랙션",
     "bestMatch": "내게 가장 잘 맞는 순",
-    "matchPct": "{pct}% 일치"
+    "matchPct": "{pct}% 일치",
+    "sortUpdated": "최근 업데이트순",
+    "sortMrr": "최고 MRR"
   },
   "common": {
     "loading": "로딩 중...",
@@ -1136,7 +1141,8 @@
     "printTagline": "CapitalReach — 사모 자본 마켓플레이스",
     "view": "보기",
     "done": "완료",
-    "exportPdf": "인쇄 / PDF 저장"
+    "exportPdf": "인쇄 / PDF 저장",
+    "viewPlans": "요금제 보기"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1182,7 +1188,8 @@
     "privacy": "개인정보처리방침",
     "aiDisclosure": "AI 기능은 OpenAI 모델을 사용합니다. 결과는 정보 제공용이며 투자 자문이 아닙니다.",
     "status": "상태",
-    "stats": "플랫폼 통계"
+    "stats": "플랫폼 통계",
+    "feeStrip": "성공 수수료 2% · 딜 종료 후에만 · 창업자만 · 투자자는 없음"
   },
   "feeStrip": {
     "tagline": "성공 수수료 — 클로징 후에만 청구. 업계 평균: 선불 5–7%.",
@@ -1291,7 +1298,8 @@
     "compare2": "비교",
     "compareInvestors": "투자자 비교",
     "target2": "타깃",
-    "verifiedBadge": "인증된 투자자"
+    "verifiedBadge": "인증된 투자자",
+    "clearCompareAria": "비교 지우기"
   },
   "data": {
     "stageBreakdown": "단계별 분류",
@@ -2224,7 +2232,8 @@
     "viewArchived": "보관됨 ({count})",
     "showingArchived": "보관함 표시 중 ({count}) — 받은편지함으로",
     "searchInThread": "이 대화에서 검색…",
-    "clearSearch": "지우기"
+    "clearSearch": "지우기",
+    "unreadAria": "읽지 않음"
   },
   "completeness": {
     "nextBest": "다음에 할 일",
@@ -2396,5 +2405,63 @@
     "targets": "{count}명 타깃",
     "go": "하러 가기",
     "tip": "팁"
+  },
+  "navbar": {
+    "feeBadge": "클로징 시 2%",
+    "feeBadgeAria": "클로징 시 2% 성공 수수료"
+  },
+  "feeBadge": {
+    "floating": "클로징 시 2% — 선불 없음"
+  },
+  "legal": {
+    "aiDisclaimer": "AI가 생성한 분석은 정보 제공 목적으로만 제공됩니다. 투자 자문, 공식 실사, 투자 권유가 아닙니다. 항상 독립적인 조사를 직접 수행하세요.",
+    "brokerDisclaimer": "CapitalReach는 등록된 브로커-딜러나 투자 자문사가 아닙니다. 표시된 정보는 참고용이며 투자 자문이 아닙니다.",
+    "aiReportDisclaimer": "이 AI 생성 분석은 정보 제공 목적으로만 제공되며 투자 자문, 실사, 투자 권유가 아닙니다. 항상 독립적인 조사를 직접 수행하세요."
+  },
+  "notFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "body": "찾으시는 페이지가 존재하지 않거나 이동되었습니다. 투자 기회 탐색으로 돌아가세요.",
+    "goHome": "홈으로",
+    "browse": "스타트업 둘러보기"
+  },
+  "errorPage": {
+    "title": "문제가 발생했습니다",
+    "body": "이 페이지를 불러오지 못했습니다. 보통 일시적입니다 — 다시 시도하면 해결되는 경우가 많습니다.",
+    "tryAgain": "다시 시도",
+    "backHome": "홈으로 돌아가기",
+    "sectionNamed": "{name}을(를) 불러오지 못했습니다",
+    "sectionTitle": "이 섹션을 불러오지 못했습니다",
+    "sectionBody": "페이지의 나머지 부분은 계속 작동합니다.",
+    "retry": "다시 시도"
+  },
+  "statusPage": {
+    "kicker": "CapitalReach 상태",
+    "allOk": "모든 시스템 정상 작동",
+    "partial": "일부 성능 저하",
+    "disruption": "서비스 중단",
+    "checkedAt": "{time} UTC에 실시간 확인 — 아래 각 행은 이 페이지 로드 시 테스트되었습니다.",
+    "application": "애플리케이션",
+    "servingPage": "이 페이지 제공 중",
+    "database": "데이터베이스",
+    "auth": "로그인(인증)",
+    "storage": "파일 저장소",
+    "jobs": "백그라운드 작업",
+    "operational": "정상",
+    "degraded": "저하",
+    "down": "중단",
+    "notScheduled": "아직 예약 안 됨",
+    "wrongNote": "이 페이지는 정상이라고 하는데 뭔가 이상해 보이나요? 문의 페이지로 알려주세요 — 시간과 목격 내용이 담긴 제보는 정말 유용합니다."
+  },
+  "sections": {
+    "recentlyViewed": "최근 본 항목",
+    "savedSearches": "저장된 검색",
+    "updateComposer": "업데이트 작성",
+    "raiseProgress": "라운드 진행률",
+    "fundraiseChecklist": "펀드레이징 체크리스트",
+    "tractionHistory": "트랙션 기록",
+    "investorInterest": "투자자 관심",
+    "profileViewers": "프로필 방문자",
+    "targetInvestors": "타깃 투자자",
+    "documentAnalytics": "문서 분석"
   }
 }

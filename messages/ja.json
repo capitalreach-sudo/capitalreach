@@ -77,7 +77,9 @@
     "startupsListed": "掲載スタートアップ",
     "verifiedInvestors": "認定投資家",
     "dealsClosed": "成約件数",
-    "capitalRaised": "調達資本"
+    "capitalRaised": "調達資本",
+    "upfrontFees": "前払い費用",
+    "vettedListings": "審査済み掲載"
   },
   "listings": {
     "sectionLabel": "アクティブな資金調達ラウンド",
@@ -450,7 +452,8 @@
     "tipSavedSearches": "フィルターの組み合わせを保存し、ワンクリックで再実行できます。",
     "tipVisName": "会社名、タグライン、業種はどのプランでも常に公開されます。",
     "tipVisTeam": "創業者の経歴とチーム情報が公開リスティングに表示されます。",
-    "tipVisDeck": "ピッチ資料を投資家がプロフィール上で開けます。"
+    "tipVisDeck": "ピッチ資料を投資家がプロフィール上で開けます。",
+    "notIncluded": "含まれません"
   },
   "cta": {
     "headline": "適切な資本を、適切なステージで。",
@@ -1190,7 +1193,8 @@
     "compare2": "比較",
     "compareInvestors": "投資家を比較",
     "target2": "候補に追加",
-    "verifiedBadge": "認証済み投資家"
+    "verifiedBadge": "認証済み投資家",
+    "clearCompareAria": "比較をクリア"
   },
   "data": {
     "eyebrow": "ライブプラットフォームデータ",
@@ -1248,7 +1252,9 @@
     "sortRaising": "調達額",
     "thresholds": "トラクション",
     "bestMatch": "自分に最適な順",
-    "matchPct": "{pct}% 一致"
+    "matchPct": "{pct}% 一致",
+    "sortUpdated": "最近更新",
+    "sortMrr": "MRRが高い順"
   },
   "common": {
     "loading": "読み込み中...",
@@ -1288,7 +1294,8 @@
     "printTagline": "CapitalReach — プライベートキャピタル市場",
     "view": "表示",
     "done": "完了",
-    "exportPdf": "印刷／PDF保存"
+    "exportPdf": "印刷／PDF保存",
+    "viewPlans": "プランを見る"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",
@@ -1634,7 +1641,8 @@
     "privacy": "プライバシーポリシー",
     "aiDisclosure": "AI機能はOpenAIのモデルを使用しています。出力は情報提供のみを目的としており、投資助言ではありません。",
     "status": "稼働状況",
-    "stats": "プラットフォーム統計"
+    "stats": "プラットフォーム統計",
+    "feeStrip": "成功報酬2%・クローズ後のみ・ファウンダーのみ・投資家には一切なし"
   },
   "banner": {
     "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",
@@ -2224,7 +2232,8 @@
     "viewArchived": "アーカイブ済み（{count}）",
     "showingArchived": "アーカイブ表示中（{count}）— 受信箱へ戻る",
     "searchInThread": "この会話内を検索…",
-    "clearSearch": "クリア"
+    "clearSearch": "クリア",
+    "unreadAria": "未読"
   },
   "completeness": {
     "nextBest": "次にやること",
@@ -2396,5 +2405,63 @@
     "targets": "{count}名を候補に",
     "go": "やる",
     "tip": "ヒント"
+  },
+  "navbar": {
+    "feeBadge": "クローズ時に2%",
+    "feeBadgeAria": "クローズ時に2%の成功報酬"
+  },
+  "feeBadge": {
+    "floating": "クローズ時に2% — 前払いゼロ"
+  },
+  "legal": {
+    "aiDisclaimer": "AIが生成した分析は情報提供のみを目的としています。投資助言、正式なデューデリジェンス、投資推奨のいずれでもありません。必ずご自身で独立した調査を行ってください。",
+    "brokerDisclaimer": "CapitalReachは登録ブローカー・ディーラーでも投資顧問でもありません。表示される情報は参考情報であり、投資助言ではありません。",
+    "aiReportDisclaimer": "このAI生成分析は情報提供のみを目的としており、投資助言、デューデリジェンス、投資推奨のいずれでもありません。必ずご自身で独立した調査を行ってください。"
+  },
+  "notFound": {
+    "title": "ページが見つかりません",
+    "body": "お探しのページは存在しないか移動されました。投資機会の発見に戻りましょう。",
+    "goHome": "ホームへ",
+    "browse": "スタートアップを見る"
+  },
+  "errorPage": {
+    "title": "問題が発生しました",
+    "body": "このページを読み込めませんでした。通常は一時的なものです — 再試行すると解決することが多いです。",
+    "tryAgain": "再試行",
+    "backHome": "ホームに戻る",
+    "sectionNamed": "{name}を読み込めませんでした",
+    "sectionTitle": "このセクションを読み込めませんでした",
+    "sectionBody": "ページの他の部分は引き続き動作します。",
+    "retry": "再試行"
+  },
+  "statusPage": {
+    "kicker": "CapitalReachステータス",
+    "allOk": "全システム正常稼働中",
+    "partial": "一部機能低下",
+    "disruption": "サービス障害",
+    "checkedAt": "{time} UTCにライブで確認 — 以下の各行はこのページの読み込み時にテストされました。",
+    "application": "アプリケーション",
+    "servingPage": "このページを配信中",
+    "database": "データベース",
+    "auth": "サインイン（認証）",
+    "storage": "ファイルストレージ",
+    "jobs": "バックグラウンドジョブ",
+    "operational": "正常",
+    "degraded": "低下",
+    "down": "停止",
+    "notScheduled": "未スケジュール",
+    "wrongNote": "このページが正常と表示しているのに何かおかしいですか？お問い合わせページからご連絡ください — 時刻と状況を添えた報告は本当に役立ちます。"
+  },
+  "sections": {
+    "recentlyViewed": "最近見た項目",
+    "savedSearches": "保存した検索",
+    "updateComposer": "アップデート作成",
+    "raiseProgress": "調達の進捗",
+    "fundraiseChecklist": "資金調達チェックリスト",
+    "tractionHistory": "トラクション履歴",
+    "investorInterest": "投資家の関心",
+    "profileViewers": "プロフィール閲覧者",
+    "targetInvestors": "ターゲット投資家",
+    "documentAnalytics": "ドキュメント分析"
   }
 }

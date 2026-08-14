@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Lock } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface GateBlurProps {
   title:       string;
@@ -14,10 +15,11 @@ interface GateBlurProps {
 export function GateBlur({
   title,
   description,
-  ctaLabel = "View plans",
+  ctaLabel,
   ctaHref  = "/pricing",
   children,
 }: GateBlurProps) {
+  const { t } = useTranslation();
   return (
     <div style={{ position: "relative", borderRadius: "4px", overflow: "hidden" }}>
       <div
@@ -64,7 +66,7 @@ export function GateBlur({
             padding: "9px 20px", borderRadius: "4px", textDecoration: "none",
           }}
         >
-          {ctaLabel} →
+          {ctaLabel ?? t("common.viewPlans")} →
         </Link>
       </div>
     </div>

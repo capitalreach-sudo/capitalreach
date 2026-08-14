@@ -152,7 +152,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               {displayName}
               {investor.verified_at && (
                 <span className="inline-flex items-center gap-1 ml-2 align-middle rounded border border-cr-copper/30 bg-cr-copper/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cr-copper">
-                  <BadgeCheck className="h-3 w-3" /> Verified
+                  <BadgeCheck className="h-3 w-3" /> {t("investors.verifiedBadge")}
                 </span>
               )}
             </h1>

@@ -731,18 +731,18 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </div>
             </div>
 
-            {startup && startup.status === "active" && <ErrorBoundary label="Update composer"><UpdateComposer /></ErrorBoundary>}
+            {startup && startup.status === "active" && <ErrorBoundary labelKey="sections.updateComposer"><UpdateComposer /></ErrorBoundary>}
             {startup && analytics.raise && (
-              <ErrorBoundary label="Raise progress">
+              <ErrorBoundary labelKey="sections.raiseProgress">
                 <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
               </ErrorBoundary>
             )}
-            <ErrorBoundary label="Fundraise checklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
-            <ErrorBoundary label="Traction history"><MetricsRecorder /></ErrorBoundary>
-            <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
-            <ErrorBoundary label="Profile viewers"><ViewersPanel /></ErrorBoundary>
-            <ErrorBoundary label="Target investors"><TargetsPanel /></ErrorBoundary>
-            <ErrorBoundary label="Document analytics"><DocAnalyticsPanel /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.fundraiseChecklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.tractionHistory"><MetricsRecorder /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.investorInterest"><SaversPanel /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.profileViewers"><ViewersPanel /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.targetInvestors"><TargetsPanel /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.documentAnalytics"><DocAnalyticsPanel /></ErrorBoundary>
           </div>
         )}
 

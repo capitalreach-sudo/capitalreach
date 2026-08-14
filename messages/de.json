@@ -84,7 +84,9 @@
     "startupsListed": "Gelistete Startups",
     "verifiedInvestors": "Verifizierte Investoren",
     "dealsClosed": "Abgeschlossene Deals",
-    "capitalRaised": "Aufgebrachtes Kapital"
+    "capitalRaised": "Aufgebrachtes Kapital",
+    "upfrontFees": "Vorabgebühren",
+    "vettedListings": "geprüfte Listings"
   },
   "listings": {
     "sectionLabel": "Aktive Finanzierungsrunden",
@@ -457,7 +459,8 @@
     "tipSavedSearches": "Speichere Filterkombinationen und führe sie mit einem Klick erneut aus.",
     "tipVisName": "Dein Firmenname, Tagline und Branche - in jedem Plan öffentlich.",
     "tipVisTeam": "Gründer-Bios und Teamprofile auf deinem öffentlichen Listing.",
-    "tipVisDeck": "Dein Pitch-Deck, für Investoren auf deinem Profil einsehbar."
+    "tipVisDeck": "Dein Pitch-Deck, für Investoren auf deinem Profil einsehbar.",
+    "notIncluded": "Nicht enthalten"
   },
   "cta": {
     "headline": "Das richtige Kapital, zur richtigen Phase.",
@@ -1197,7 +1200,8 @@
     "compare2": "Vergleichen",
     "compareInvestors": "Investoren vergleichen",
     "target2": "Anvisieren",
-    "verifiedBadge": "Verifizierter Investor"
+    "verifiedBadge": "Verifizierter Investor",
+    "clearCompareAria": "Vergleich leeren"
   },
   "data": {
     "eyebrow": "Live-Plattformdaten",
@@ -1255,7 +1259,9 @@
     "sortRaising": "Finanzierungsbetrag",
     "thresholds": "Traktion",
     "bestMatch": "Beste Übereinstimmung",
-    "matchPct": "{pct}% Übereinstimmung"
+    "matchPct": "{pct}% Übereinstimmung",
+    "sortUpdated": "Zuletzt aktualisiert",
+    "sortMrr": "Höchster MRR"
   },
   "common": {
     "loading": "Laden...",
@@ -1295,7 +1301,8 @@
     "printTagline": "CapitalReach — Marktplatz für Privatkapital",
     "view": "Ansehen",
     "done": "Fertig",
-    "exportPdf": "Drucken / als PDF speichern"
+    "exportPdf": "Drucken / als PDF speichern",
+    "viewPlans": "Pläne ansehen"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",
@@ -1641,7 +1648,8 @@
     "privacy": "Datenschutz",
     "aiDisclosure": "KI-Funktionen nutzen OpenAI-Modelle. Ausgaben dienen nur zur Information und sind keine Anlageberatung.",
     "status": "Status",
-    "stats": "Plattform-Statistiken"
+    "stats": "Plattform-Statistiken",
+    "feeStrip": "2 % Erfolgsgebühr · nur nach Abschluss · nur Gründer · nie Investoren"
   },
   "banner": {
     "text": "Kostenlos für unsere ersten {target} Mitglieder — {memberCount}/{target} beigetreten, noch {spotsLeft} Plätze übrig.",
@@ -2230,7 +2238,8 @@
     "viewArchived": "Archiviert ({count})",
     "showingArchived": "Archivierte ({count}) — zurück zum Posteingang",
     "searchInThread": "In dieser Unterhaltung suchen…",
-    "clearSearch": "Leeren"
+    "clearSearch": "Leeren",
+    "unreadAria": "Ungelesen"
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",
@@ -2396,5 +2405,63 @@
     "targets": "{count} anvisiert",
     "go": "Los",
     "tip": "Tipp"
+  },
+  "navbar": {
+    "feeBadge": "2 % bei Abschluss",
+    "feeBadgeAria": "2 % Erfolgsgebühr bei Abschluss"
+  },
+  "feeBadge": {
+    "floating": "2 % bei Abschluss — nichts im Voraus"
+  },
+  "legal": {
+    "aiDisclaimer": "KI-generierte Analysen dienen nur zu Informationszwecken. Sie sind keine Anlageberatung, keine formelle Due Diligence und keine Investitionsempfehlung. Führe immer eigene, unabhängige Recherchen durch.",
+    "brokerDisclaimer": "CapitalReach ist kein registrierter Broker-Dealer und kein Anlageberater. Die gezeigten Informationen dienen nur als Referenz und stellen keine Anlageberatung dar.",
+    "aiReportDisclaimer": "Diese KI-generierte Analyse dient nur zu Informationszwecken und ist keine Anlageberatung, keine Due Diligence und keine Investitionsempfehlung. Führe immer eigene, unabhängige Recherchen durch."
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "body": "Die gesuchte Seite existiert nicht oder wurde verschoben. Zurück zu den Investmentchancen.",
+    "goHome": "Zur Startseite",
+    "browse": "Startups entdecken"
+  },
+  "errorPage": {
+    "title": "Etwas ist schiefgelaufen",
+    "body": "Diese Seite konnte nicht geladen werden. Meist ist das vorübergehend — erneut versuchen hilft oft.",
+    "tryAgain": "Erneut versuchen",
+    "backHome": "Zurück zur Startseite",
+    "sectionNamed": "{name} konnte nicht geladen werden",
+    "sectionTitle": "Dieser Bereich konnte nicht geladen werden",
+    "sectionBody": "Der Rest der Seite funktioniert weiterhin.",
+    "retry": "Erneut versuchen"
+  },
+  "statusPage": {
+    "kicker": "CapitalReach-Status",
+    "allOk": "Alle Systeme betriebsbereit",
+    "partial": "Teilweise Beeinträchtigung",
+    "disruption": "Störung",
+    "checkedAt": "Live geprüft um {time} UTC — jede Zeile unten wurde beim Laden dieser Seite getestet.",
+    "application": "Anwendung",
+    "servingPage": "liefert diese Seite aus",
+    "database": "Datenbank",
+    "auth": "Anmeldung (Auth)",
+    "storage": "Dateispeicher",
+    "jobs": "Hintergrundjobs",
+    "operational": "Betriebsbereit",
+    "degraded": "Beeinträchtigt",
+    "down": "Ausgefallen",
+    "notScheduled": "Noch nicht geplant",
+    "wrongNote": "Sieht etwas falsch aus, das diese Seite für in Ordnung hält? Schreib uns über die Kontaktseite — ein Bericht mit Uhrzeit und Beobachtung hilft wirklich."
+  },
+  "sections": {
+    "recentlyViewed": "Zuletzt angesehen",
+    "savedSearches": "Gespeicherte Suchen",
+    "updateComposer": "Update verfassen",
+    "raiseProgress": "Raise-Fortschritt",
+    "fundraiseChecklist": "Fundraising-Checkliste",
+    "tractionHistory": "Traktionsverlauf",
+    "investorInterest": "Investoreninteresse",
+    "profileViewers": "Profilbesucher",
+    "targetInvestors": "Ziel-Investoren",
+    "documentAnalytics": "Dokumentanalysen"
   }
 }

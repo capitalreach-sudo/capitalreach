@@ -1,12 +1,14 @@
 "use client";
 
 import { Printer } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   label?: string;
 }
 
-export function PrintButton({ label = "Export PDF" }: Props) {
+export function PrintButton({ label }: Props) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={() => window.print()}
@@ -38,7 +40,7 @@ export function PrintButton({ label = "Export PDF" }: Props) {
       }}
     >
       <Printer style={{ width: 14, height: 14 }} />
-      {label}
+      {label ?? t("common.exportPdf")}
     </button>
   );
 }

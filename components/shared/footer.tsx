@@ -65,7 +65,7 @@ export function Footer() {
             fontSize: "12px", color: "#B5651D", letterSpacing: "0.05em",
             textAlign: "center",
           }}>
-            ◆ 2% success fee · only after close · founders only · never investors
+            ◆ {t("footer.feeStrip")}
           </span>
         </div>
 

@@ -38,6 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+// i18n note: deliberately English-only. These are SSG SEO landing pages
+// (generateStaticParams); reading the locale cookie would force them dynamic.
+// Same policy as /blog.
 export default async function SectorPage({ params }: Props) {
   const industry = industryFromSlug(params.slug);
   if (!industry) notFound();

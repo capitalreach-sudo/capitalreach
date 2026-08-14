@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslation } from "@/hooks/useTranslation";
 // Regulatory micro-disclaimer.
 //
 // The footer carries "not a registered broker-dealer", but that wording needs
@@ -8,9 +11,8 @@
 // the claim matters.
 
 export function LegalDisclaimer({ variant = "default" }: { variant?: "default" | "ai" }) {
-  const text = variant === "ai"
-    ? "AI-generated analysis is for informational purposes only. It does not constitute investment advice, formal due diligence, or a recommendation to invest. Always conduct your own independent research."
-    : "CapitalReach is not a registered broker-dealer or investment adviser. Information shown is for reference only and does not constitute investment advice.";
+  const { t } = useTranslation();
+  const text = variant === "ai" ? t("legal.aiDisclaimer") : t("legal.brokerDisclaimer");
 
   return (
     <p style={{
@@ -32,6 +34,7 @@ export function LegalDisclaimer({ variant = "default" }: { variant?: "default" |
  * more formal than it is. This sits at the top of a generated report.
  */
 export function AiReportDisclaimer() {
+  const { t } = useTranslation();
   return (
     <div style={{
       background: "var(--cr-copper-bg)",
@@ -47,9 +50,7 @@ export function AiReportDisclaimer() {
         color: "var(--cr-ink-3)",
         lineHeight: 1.65,
       }}>
-        This AI-generated analysis is for informational purposes only and does not
-        constitute investment advice, due diligence, or a recommendation to invest.
-        Always conduct your own independent research.
+        {t("legal.aiReportDisclaimer")}
       </p>
     </div>
   );

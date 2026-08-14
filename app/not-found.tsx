@@ -3,8 +3,10 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslator(getLocale());
   return (
     <div className="min-h-screen flex flex-col bg-base">
       <Navbar />
@@ -24,24 +26,23 @@ export default function NotFound() {
           </p>
 
           <h1 className="text-3xl font-extrabold text-cr-ink mb-3">
-            Page not found
+            {t("notFound.title")}
           </h1>
           <p className="text-cr-i3 mb-8 leading-relaxed text-sm">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
-            Let&apos;s get you back to discovering great investment opportunities.
+            {t("notFound.body")}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/">
               <Button className="w-full sm:w-auto gap-2 bg-cr-copper hover:bg-cr-cu-l text-white">
                 <Home className="h-4 w-4" />
-                Go Home
+                {t("notFound.goHome")}
               </Button>
             </Link>
             <Link href="/startups">
               <Button variant="outline" className="w-full sm:w-auto gap-2 border-cr-p4 text-cr-i2 hover:text-cr-ink hover:bg-cr-paper/5">
                 <ArrowLeft className="h-4 w-4" />
-                Browse Startups
+                {t("notFound.browse")}
               </Button>
             </Link>
           </div>

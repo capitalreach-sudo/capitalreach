@@ -77,7 +77,9 @@
     "startupsListed": "Startups listadas",
     "verifiedInvestors": "Inversores verificados",
     "dealsClosed": "Deals cerrados",
-    "capitalRaised": "Capital captado"
+    "capitalRaised": "Capital captado",
+    "upfrontFees": "comisiones iniciales",
+    "vettedListings": "listados verificados"
   },
   "listings": {
     "sectionLabel": "Rondas de financiación activas",
@@ -450,7 +452,8 @@
     "tipSavedSearches": "Guarda combinaciones de filtros y vuelve a ejecutarlas con un clic.",
     "tipVisName": "El nombre, el eslogan y el sector de tu empresa - siempre públicos en todos los planes.",
     "tipVisTeam": "Biografías de fundadores y perfiles del equipo en tu listado público.",
-    "tipVisDeck": "Tu pitch deck, accesible para inversores en tu perfil."
+    "tipVisDeck": "Tu pitch deck, accesible para inversores en tu perfil.",
+    "notIncluded": "No incluido"
   },
   "cta": {
     "headline": "El capital correcto, en la etapa correcta.",
@@ -1190,7 +1193,8 @@
     "compare2": "Comparar",
     "compareInvestors": "Comparar inversores",
     "target2": "Objetivo",
-    "verifiedBadge": "Inversor verificado"
+    "verifiedBadge": "Inversor verificado",
+    "clearCompareAria": "Borrar comparación"
   },
   "data": {
     "eyebrow": "Datos de plataforma en directo",
@@ -1248,7 +1252,9 @@
     "sortRaising": "Importe de financiación",
     "thresholds": "Tracción",
     "bestMatch": "Mejor coincidencia para mí",
-    "matchPct": "{pct}% de coincidencia"
+    "matchPct": "{pct}% de coincidencia",
+    "sortUpdated": "Actualizados recientemente",
+    "sortMrr": "Mayor MRR"
   },
   "common": {
     "loading": "Cargando...",
@@ -1288,7 +1294,8 @@
     "printTagline": "CapitalReach — Mercado de capital privado",
     "view": "Ver",
     "done": "Hecho",
-    "exportPdf": "Imprimir / guardar como PDF"
+    "exportPdf": "Imprimir / guardar como PDF",
+    "viewPlans": "Ver planes"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",
@@ -1634,7 +1641,8 @@
     "privacy": "Privacidad",
     "aiDisclosure": "Las funciones con IA usan modelos de OpenAI. Los resultados son solo informativos y no constituyen asesoramiento de inversión.",
     "status": "Estado",
-    "stats": "Estadísticas de la plataforma"
+    "stats": "Estadísticas de la plataforma",
+    "feeStrip": "2 % de comisión de éxito · solo tras el cierre · solo fundadores · nunca inversores"
   },
   "banner": {
     "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",
@@ -2224,7 +2232,8 @@
     "viewArchived": "Archivadas ({count})",
     "showingArchived": "Mostrando archivadas ({count}): volver a la bandeja",
     "searchInThread": "Buscar en esta conversación…",
-    "clearSearch": "Limpiar"
+    "clearSearch": "Limpiar",
+    "unreadAria": "No leído"
   },
   "completeness": {
     "nextBest": "Haz esto ahora",
@@ -2396,5 +2405,63 @@
     "targets": "{count} en la lista",
     "go": "Hazlo",
     "tip": "Consejo"
+  },
+  "navbar": {
+    "feeBadge": "2 % al cierre",
+    "feeBadgeAria": "Comisión de éxito del 2 % al cierre"
+  },
+  "feeBadge": {
+    "floating": "2 % al cierre — nada por adelantado"
+  },
+  "legal": {
+    "aiDisclaimer": "El análisis generado por IA es solo informativo. No constituye asesoramiento de inversión, due diligence formal ni una recomendación de invertir. Realiza siempre tu propia investigación independiente.",
+    "brokerDisclaimer": "CapitalReach no es un bróker registrado ni un asesor de inversiones. La información mostrada es solo de referencia y no constituye asesoramiento de inversión.",
+    "aiReportDisclaimer": "Este análisis generado por IA es solo informativo y no constituye asesoramiento de inversión, due diligence ni una recomendación de invertir. Realiza siempre tu propia investigación independiente."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "body": "La página que buscas no existe o se ha movido. Volvamos a descubrir oportunidades de inversión.",
+    "goHome": "Ir al inicio",
+    "browse": "Explorar startups"
+  },
+  "errorPage": {
+    "title": "Algo salió mal",
+    "body": "Esta página no se pudo cargar. Suele ser temporal — reintentar suele funcionar.",
+    "tryAgain": "Reintentar",
+    "backHome": "Volver al inicio",
+    "sectionNamed": "{name} no se pudo cargar",
+    "sectionTitle": "Esta sección no se pudo cargar",
+    "sectionBody": "El resto de la página sigue funcionando.",
+    "retry": "Reintentar"
+  },
+  "statusPage": {
+    "kicker": "Estado de CapitalReach",
+    "allOk": "Todos los sistemas operativos",
+    "partial": "Degradación parcial",
+    "disruption": "Interrupción del servicio",
+    "checkedAt": "Comprobado en vivo a las {time} UTC — cada fila de abajo se probó al cargar esta página.",
+    "application": "Aplicación",
+    "servingPage": "sirviendo esta página",
+    "database": "Base de datos",
+    "auth": "Inicio de sesión (auth)",
+    "storage": "Almacenamiento de archivos",
+    "jobs": "Tareas en segundo plano",
+    "operational": "Operativo",
+    "degraded": "Degradado",
+    "down": "Caído",
+    "notScheduled": "Aún no programado",
+    "wrongNote": "¿Algo parece mal aunque esta página diga que está bien? Escríbenos por la página de contacto — un informe con la hora y lo que viste es realmente útil."
+  },
+  "sections": {
+    "recentlyViewed": "Vistos recientemente",
+    "savedSearches": "Búsquedas guardadas",
+    "updateComposer": "Redactar actualización",
+    "raiseProgress": "Progreso de la ronda",
+    "fundraiseChecklist": "Checklist de la ronda",
+    "tractionHistory": "Histórico de tracción",
+    "investorInterest": "Interés de inversores",
+    "profileViewers": "Visitantes del perfil",
+    "targetInvestors": "Inversores objetivo",
+    "documentAnalytics": "Analítica de documentos"
   }
 }

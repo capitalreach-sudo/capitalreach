@@ -239,9 +239,9 @@ export function HomepageClient({ stats, listings }: Props) {
           { value: stats.startupCount > 0 ? stats.startupCount.toLocaleString() : "—", label: t("stats.startupsListed"), trend: "up" },
           { value: "2%",                                                                 label: t("feeStrip.tagline"),     trend: "down" },
           { value: stats.investorCount > 0 ? stats.investorCount.toLocaleString() : "—", label: t("stats.verifiedInvestors"), trend: "up" },
-          { value: "0",                                                                  label: "upfront fees",            trend: "down" },
+          { value: "0",                                                                  label: t("stats.upfrontFees"),            trend: "down" },
           { value: stats.dealsClosedCount > 0 ? stats.dealsClosedCount.toLocaleString() : "—", label: t("stats.dealsClosed"), trend: "up" },
-          { value: "100%",                                                               label: "vetted listings",         trend: "up" },
+          { value: "100%",                                                               label: t("stats.vettedListings"),         trend: "up" },
         ]}
         speed={36}
       />
@@ -676,7 +676,7 @@ export function HomepageClient({ stats, listings }: Props) {
                               </svg>
                             </span>
                           ) : isDash ? (
-                            <span aria-label="Not included" style={{ display: "inline-block", width: 12, height: 2, borderRadius: "1px", background: "#A79B8D" }} />
+                            <span aria-label={t("pricing.notIncluded")} style={{ display: "inline-block", width: 12, height: 2, borderRadius: "1px", background: "#A79B8D" }} />
                           ) : v}
                         </td>
                       );

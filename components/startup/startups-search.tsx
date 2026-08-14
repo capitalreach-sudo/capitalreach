@@ -54,11 +54,11 @@ const RAISING_PRESETS = [
 ];
 
 const SORT_OPTIONS = [
-  { value: "score",   label: "AI Score"      },
-  { value: "recent",  label: "Newest"         },
-  { value: "updated", label: "Recently updated" },
-  { value: "mrr",     label: "Highest MRR"   },
-  { value: "funding", label: "Funding Target" },
+  { value: "score",   labelKey: "filters.sortScore"   },
+  { value: "recent",  labelKey: "filters.sortRecent"  },
+  { value: "updated", labelKey: "filters.sortUpdated" },
+  { value: "mrr",     labelKey: "filters.sortMrr"     },
+  { value: "funding", labelKey: "filters.sortRaising" },
 ];
 
 const PAGE_SIZE = 24;
@@ -816,9 +816,10 @@ export function StartupsSearch() {
   }
 
   // "Best match for me" only exists for a viewer with a thesis to match on.
-  const sortOptions = myThesis
-    ? [...SORT_OPTIONS, { value: "fit", label: t("filters.bestMatch") }]
-    : SORT_OPTIONS;
+  const sortOptions = (myThesis
+    ? [...SORT_OPTIONS, { value: "fit", labelKey: "filters.bestMatch" }]
+    : SORT_OPTIONS
+  ).map((o) => ({ value: o.value, label: t(o.labelKey) }));
   const sortLabel = sortOptions.find((o) => o.value === filters.sort)?.label ?? t("filters.sort");
 
   return (

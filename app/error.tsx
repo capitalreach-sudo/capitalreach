@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 import { useEffect } from "react";
 import Link from "next/link";
 
@@ -23,6 +25,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation();
   useEffect(() => {
     // The digest is the only handle on the real stack once this is deployed --
     // Next strips messages from client bundles in production.
@@ -42,11 +45,11 @@ export default function Error({
       </div>
 
       <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)", marginBottom: "10px" }}>
-        Something went wrong
+        {t("errorPage.title")}
       </h1>
 
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "360px", marginBottom: "28px" }}>
-        This page failed to load. It is usually temporary — trying again often works.
+        {t("errorPage.body")}
       </p>
 
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
@@ -58,7 +61,7 @@ export default function Error({
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff",
           }}
         >
-          Try again
+          {t("errorPage.tryAgain")}
         </button>
         <Link
           href="/"
@@ -69,7 +72,7 @@ export default function Error({
             color: "var(--cr-ink-3)", textDecoration: "none",
           }}
         >
-          Back to home
+          {t("errorPage.backHome")}
         </Link>
       </div>
 

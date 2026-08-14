@@ -1,9 +1,12 @@
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export function FeeFloatingBadge() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -21,7 +24,7 @@ export function FeeFloatingBadge() {
       tabIndex={visible ? 0 : -1}
     >
       <span className="fee-floating-badge-diamond">◆</span>
-      <span>2% at close — zero upfront</span>
+      <span>{t("feeBadge.floating")}</span>
     </Link>
   );
 }

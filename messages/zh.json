@@ -77,7 +77,9 @@
     "startupsListed": "上线创业公司",
     "verifiedInvestors": "认证投资者",
     "dealsClosed": "完成交易",
-    "capitalRaised": "已募集资金"
+    "capitalRaised": "已募集资金",
+    "upfrontFees": "预付费用",
+    "vettedListings": "审核过的项目"
   },
   "listings": {
     "sectionLabel": "活跃融资轮次",
@@ -450,7 +452,8 @@
     "tipSavedSearches": "保存筛选条件组合，一键重新运行。",
     "tipVisName": "公司名称、口号和行业——在所有套餐中始终公开。",
     "tipVisTeam": "公开主页上展示创始人简介和团队信息。",
-    "tipVisDeck": "投资人可在您的主页上打开您的路演文稿。"
+    "tipVisDeck": "投资人可在您的主页上打开您的路演文稿。",
+    "notIncluded": "不包含"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",
@@ -1190,7 +1193,8 @@
     "compare2": "对比",
     "compareInvestors": "对比投资人",
     "target2": "设为目标",
-    "verifiedBadge": "认证投资人"
+    "verifiedBadge": "认证投资人",
+    "clearCompareAria": "清除对比"
   },
   "data": {
     "eyebrow": "实时平台数据",
@@ -1248,7 +1252,9 @@
     "sortRaising": "融资金额",
     "thresholds": "业务进展",
     "bestMatch": "最匹配我的",
-    "matchPct": "匹配度 {pct}%"
+    "matchPct": "匹配度 {pct}%",
+    "sortUpdated": "最近更新",
+    "sortMrr": "最高MRR"
   },
   "common": {
     "loading": "加载中...",
@@ -1288,7 +1294,8 @@
     "printTagline": "CapitalReach — 私募资本交易平台",
     "view": "查看",
     "done": "完成",
-    "exportPdf": "打印 / 另存为 PDF"
+    "exportPdf": "打印 / 另存为 PDF",
+    "viewPlans": "查看套餐"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
@@ -1634,7 +1641,8 @@
     "privacy": "隐私政策",
     "aiDisclosure": "AI 功能使用 OpenAI 模型。输出仅供参考，不构成投资建议。",
     "status": "系统状态",
-    "stats": "平台统计"
+    "stats": "平台统计",
+    "feeStrip": "2%成功佣金 · 仅在成交后 · 仅创始人 · 投资人永不付费"
   },
   "banner": {
     "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",
@@ -2224,7 +2232,8 @@
     "viewArchived": "已归档（{count}）",
     "showingArchived": "正在显示已归档（{count}）——返回收件箱",
     "searchInThread": "在此会话中搜索…",
-    "clearSearch": "清除"
+    "clearSearch": "清除",
+    "unreadAria": "未读"
   },
   "completeness": {
     "nextBest": "下一步",
@@ -2396,5 +2405,63 @@
     "targets": "已锁定 {count} 位",
     "go": "去完成",
     "tip": "提示"
+  },
+  "navbar": {
+    "feeBadge": "成交时2%",
+    "feeBadgeAria": "成交时收取2%成功佣金"
+  },
+  "feeBadge": {
+    "floating": "成交时2% — 无预付费用"
+  },
+  "legal": {
+    "aiDisclaimer": "AI生成的分析仅供参考，不构成投资建议、正式尽职调查或投资推荐。请务必自行开展独立研究。",
+    "brokerDisclaimer": "CapitalReach不是注册经纪交易商或投资顾问。所示信息仅供参考，不构成投资建议。",
+    "aiReportDisclaimer": "此AI生成的分析仅供参考，不构成投资建议、尽职调查或投资推荐。请务必自行开展独立研究。"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "body": "您要找的页面不存在或已被移动。让我们回到发现投资机会的旅程。",
+    "goHome": "返回首页",
+    "browse": "浏览初创公司"
+  },
+  "errorPage": {
+    "title": "出了点问题",
+    "body": "此页面加载失败。通常是暂时的 — 重试往往有效。",
+    "tryAgain": "重试",
+    "backHome": "返回首页",
+    "sectionNamed": "{name}加载失败",
+    "sectionTitle": "此区块加载失败",
+    "sectionBody": "页面的其他部分仍可正常使用。",
+    "retry": "重试"
+  },
+  "statusPage": {
+    "kicker": "CapitalReach状态",
+    "allOk": "所有系统运行正常",
+    "partial": "部分功能降级",
+    "disruption": "服务中断",
+    "checkedAt": "于{time} UTC实时检查 — 下方每一行都在加载本页时经过测试。",
+    "application": "应用程序",
+    "servingPage": "正在提供此页面",
+    "database": "数据库",
+    "auth": "登录（认证）",
+    "storage": "文件存储",
+    "jobs": "后台任务",
+    "operational": "正常",
+    "degraded": "降级",
+    "down": "故障",
+    "notScheduled": "尚未安排",
+    "wrongNote": "此页面显示一切正常，但您发现了问题？请通过联系页面告诉我们 — 附上时间和所见情况的报告非常有帮助。"
+  },
+  "sections": {
+    "recentlyViewed": "最近浏览",
+    "savedSearches": "已保存的搜索",
+    "updateComposer": "撰写动态",
+    "raiseProgress": "融资进度",
+    "fundraiseChecklist": "融资清单",
+    "tractionHistory": "增长历史",
+    "investorInterest": "投资人关注",
+    "profileViewers": "主页访客",
+    "targetInvestors": "目标投资人",
+    "documentAnalytics": "文件分析"
   }
 }

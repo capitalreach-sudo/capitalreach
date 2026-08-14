@@ -77,7 +77,9 @@
     "startupsListed": "Startups listées",
     "verifiedInvestors": "Investisseurs vérifiés",
     "dealsClosed": "Deals conclus",
-    "capitalRaised": "Capital levé"
+    "capitalRaised": "Capital levé",
+    "upfrontFees": "frais initiaux",
+    "vettedListings": "listings vérifiés"
   },
   "listings": {
     "sectionLabel": "Tours de financement actifs",
@@ -450,7 +452,8 @@
     "tipSavedSearches": "Enregistrez des combinaisons de filtres et relancez-les en un clic.",
     "tipVisName": "Le nom, la tagline et le secteur de votre entreprise - toujours publics sur chaque offre.",
     "tipVisTeam": "Bios des fondateurs et profils d'équipe affichés sur votre listing public.",
-    "tipVisDeck": "Votre pitch deck, consultable par les investisseurs sur votre profil."
+    "tipVisDeck": "Votre pitch deck, consultable par les investisseurs sur votre profil.",
+    "notIncluded": "Non inclus"
   },
   "cta": {
     "headline": "Le bon capital, au bon stade.",
@@ -1190,7 +1193,8 @@
     "compare2": "Comparer",
     "compareInvestors": "Comparer les investisseurs",
     "target2": "Cibler",
-    "verifiedBadge": "Investisseur vérifié"
+    "verifiedBadge": "Investisseur vérifié",
+    "clearCompareAria": "Effacer la comparaison"
   },
   "data": {
     "eyebrow": "Données de la plateforme en direct",
@@ -1248,7 +1252,9 @@
     "sortRaising": "Montant levé",
     "thresholds": "Traction",
     "bestMatch": "Meilleure correspondance pour moi",
-    "matchPct": "{pct}% de correspondance"
+    "matchPct": "{pct}% de correspondance",
+    "sortUpdated": "Mis à jour récemment",
+    "sortMrr": "MRR le plus élevé"
   },
   "common": {
     "loading": "Chargement...",
@@ -1288,7 +1294,8 @@
     "printTagline": "CapitalReach — Marché des capitaux privés",
     "view": "Voir",
     "done": "Terminé",
-    "exportPdf": "Imprimer / enregistrer en PDF"
+    "exportPdf": "Imprimer / enregistrer en PDF",
+    "viewPlans": "Voir les offres"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue sur CapitalReach",
@@ -1634,7 +1641,8 @@
     "privacy": "Confidentialité",
     "aiDisclosure": "Les fonctionnalités d'IA utilisent des modèles OpenAI. Les résultats sont fournis à titre informatif et ne constituent pas un conseil en investissement.",
     "status": "Statut",
-    "stats": "Statistiques de la plateforme"
+    "stats": "Statistiques de la plateforme",
+    "feeStrip": "2 % de commission au succès · seulement après clôture · fondateurs uniquement · jamais les investisseurs"
   },
   "banner": {
     "text": "Gratuit pour nos {target} premiers membres — {memberCount}/{target} inscrits, {spotsLeft} places restantes.",
@@ -2224,7 +2232,8 @@
     "viewArchived": "Archivées ({count})",
     "showingArchived": "Archivées affichées ({count}) — retour à la boîte",
     "searchInThread": "Rechercher dans cette conversation…",
-    "clearSearch": "Effacer"
+    "clearSearch": "Effacer",
+    "unreadAria": "Non lu"
   },
   "completeness": {
     "nextBest": "À faire ensuite",
@@ -2396,5 +2405,63 @@
     "targets": "{count} ciblés",
     "go": "Allez-y",
     "tip": "Conseil"
+  },
+  "navbar": {
+    "feeBadge": "2 % à la clôture",
+    "feeBadgeAria": "Commission de 2 % à la clôture"
+  },
+  "feeBadge": {
+    "floating": "2 % à la clôture — rien d'avance"
+  },
+  "legal": {
+    "aiDisclaimer": "Les analyses générées par IA sont fournies à titre informatif uniquement. Elles ne constituent ni un conseil en investissement, ni une due diligence formelle, ni une recommandation d'investir. Menez toujours vos propres recherches indépendantes.",
+    "brokerDisclaimer": "CapitalReach n'est ni un courtier enregistré ni un conseiller en investissement. Les informations affichées sont fournies à titre de référence et ne constituent pas un conseil en investissement.",
+    "aiReportDisclaimer": "Cette analyse générée par IA est fournie à titre informatif uniquement et ne constitue ni un conseil en investissement, ni une due diligence, ni une recommandation d'investir. Menez toujours vos propres recherches indépendantes."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "La page que vous cherchez n'existe pas ou a été déplacée. Revenons aux opportunités d'investissement.",
+    "goHome": "Accueil",
+    "browse": "Parcourir les startups"
+  },
+  "errorPage": {
+    "title": "Une erreur est survenue",
+    "body": "Cette page n'a pas pu se charger. C'est généralement temporaire — réessayer fonctionne souvent.",
+    "tryAgain": "Réessayer",
+    "backHome": "Retour à l'accueil",
+    "sectionNamed": "{name} n'a pas pu se charger",
+    "sectionTitle": "Cette section n'a pas pu se charger",
+    "sectionBody": "Le reste de la page fonctionne toujours.",
+    "retry": "Réessayer"
+  },
+  "statusPage": {
+    "kicker": "Statut CapitalReach",
+    "allOk": "Tous les systèmes opérationnels",
+    "partial": "Dégradation partielle",
+    "disruption": "Interruption de service",
+    "checkedAt": "Vérifié en direct à {time} UTC — chaque ligne ci-dessous a été testée au chargement de cette page.",
+    "application": "Application",
+    "servingPage": "sert cette page",
+    "database": "Base de données",
+    "auth": "Connexion (auth)",
+    "storage": "Stockage de fichiers",
+    "jobs": "Tâches d'arrière-plan",
+    "operational": "Opérationnel",
+    "degraded": "Dégradé",
+    "down": "Hors service",
+    "notScheduled": "Pas encore planifié",
+    "wrongNote": "Quelque chose semble anormal alors que cette page dit que tout va bien ? Écrivez-nous via la page contact — un signalement avec l'heure et ce que vous avez vu est vraiment utile."
+  },
+  "sections": {
+    "recentlyViewed": "Vus récemment",
+    "savedSearches": "Recherches enregistrées",
+    "updateComposer": "Rédiger une mise à jour",
+    "raiseProgress": "Progression de la levée",
+    "fundraiseChecklist": "Checklist de levée",
+    "tractionHistory": "Historique de traction",
+    "investorInterest": "Intérêt des investisseurs",
+    "profileViewers": "Visiteurs du profil",
+    "targetInvestors": "Investisseurs cibles",
+    "documentAnalytics": "Statistiques des documents"
   }
 }

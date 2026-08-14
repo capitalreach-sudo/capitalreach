@@ -106,8 +106,8 @@ export function Navbar() {
               </span>
             </Link>
 
-            {/* 2% at close signal — desktop only */}
-            <div className="hidden lg:flex items-center gap-3" aria-label="2% success fee at close">
+            {/* {t("navbar.feeBadge")} signal — desktop only */}
+            <div className="hidden lg:flex items-center gap-3" aria-label={t("navbar.feeBadgeAria")}>
               <div style={{ width: "1px", height: "20px", background: "rgba(26,22,18,0.15)" }} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
@@ -115,7 +115,7 @@ export function Navbar() {
                 display: "flex", alignItems: "center", gap: "5px",
               }}>
                 <span style={{ fontSize: "9px" }}>◆</span>
-                2% at close
+                {t("navbar.feeBadge")}
               </span>
             </div>
           </div>

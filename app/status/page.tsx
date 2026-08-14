@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase-server";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
@@ -89,23 +90,24 @@ async function runChecks(): Promise<Array<{ key: string; label: string; state: C
   }
 
   return [
-    { key: "app", label: "Application", state: "ok", detail: "serving this page" },
-    { key: "db", label: "Database", state: db, detail: db === "ok" ? `${dbMs} ms` : undefined },
-    { key: "auth", label: "Sign-in (auth)", state: auth },
-    { key: "storage", label: "File storage", state: storage },
-    { key: "cron", label: "Background jobs", state: cron, detail: cronDetail },
+    { key: "app", label: "statusPage.application", state: "ok" as CheckState, detail: "statusPage.servingPage" },
+    { key: "db", label: "statusPage.database", state: db, detail: db === "ok" ? `${dbMs} ms` : undefined },
+    { key: "auth", label: "statusPage.auth", state: auth },
+    { key: "storage", label: "statusPage.storage", state: storage },
+    { key: "cron", label: "statusPage.jobs", state: cron, detail: cronDetail },
   ];
 }
 
 const STATE_STYLE: Record<CheckState, { dot: string; label: string }> = {
-  ok: { dot: "var(--cr-up)", label: "Operational" },
-  degraded: { dot: "var(--cr-copper)", label: "Degraded" },
-  down: { dot: "var(--cr-down)", label: "Down" },
-  unscheduled: { dot: "var(--cr-ink-4)", label: "Not yet scheduled" },
+  ok: { dot: "var(--cr-up)", label: "statusPage.operational" },
+  degraded: { dot: "var(--cr-copper)", label: "statusPage.degraded" },
+  down: { dot: "var(--cr-down)", label: "statusPage.down" },
+  unscheduled: { dot: "var(--cr-ink-4)", label: "statusPage.notScheduled" },
 };
 
 export default async function StatusPage() {
   const checks = await runChecks();
+  const t = await getTranslator(getLocale());
   const worst: CheckState = checks.some((c) => c.state === "down")
     ? "down"
     : checks.some((c) => c.state === "degraded")
@@ -118,33 +120,33 @@ export default async function StatusPage() {
       <main style={{ background: "var(--cr-paper)", minHeight: "70vh" }}>
         <div style={{ maxWidth: "640px", margin: "0 auto", padding: "56px 24px 80px" }}>
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--cr-copper)", marginBottom: "10px" }}>
-            CapitalReach status
+            {t("statusPage.kicker")}
           </p>
           <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", marginBottom: "6px", display: "flex", alignItems: "center", gap: "12px" }}>
             <span aria-hidden style={{ width: 12, height: 12, borderRadius: "50%", background: STATE_STYLE[worst].dot, flexShrink: 0 }} />
-            {worst === "ok" ? "All systems operational" : worst === "degraded" ? "Partial degradation" : "Service disruption"}
+            {worst === "ok" ? t("statusPage.allOk") : worst === "degraded" ? t("statusPage.partial") : t("statusPage.disruption")}
           </h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "28px" }}>
-            Checked live at {new Date().toISOString().slice(0, 16).replace("T", " ")} UTC — every row below was tested by loading this page.
+            {t("statusPage.checkedAt", { time: new Date().toISOString().slice(0, 16).replace("T", " ") })}
           </p>
 
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px" }}>
             {checks.map((c, i) => (
               <div key={c.key} style={{ display: "flex", alignItems: "baseline", gap: "12px", padding: "14px 18px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
                 <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: STATE_STYLE[c.state].dot, flexShrink: 0, alignSelf: "center" }} />
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{c.label}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{t(c.label)}</span>
                 {c.detail && (
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{c.detail}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{c.key === "app" ? t(c.detail) : c.detail}</span>
                 )}
                 <span style={{ marginInlineStart: "auto", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: STATE_STYLE[c.state].dot }}>
-                  {STATE_STYLE[c.state].label}
+                  {t(STATE_STYLE[c.state].label)}
                 </span>
               </div>
             ))}
           </div>
 
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "20px", lineHeight: 1.7 }}>
-            Something look wrong that this page says is fine? Write to us via the contact page — a report with a time and what you saw is genuinely useful.
+            {t("statusPage.wrongNote")}
           </p>
         </div>
       </main>
