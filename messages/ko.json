@@ -2198,7 +2198,13 @@
     "tplCall": "인상적입니다. 이번 주나 다음 주에 30분 정도 통화 가능하실까요? 일정에 맞추겠습니다.",
     "attachFile": "파일 첨부",
     "attachTooBig": "파일이 10MB를 초과합니다.",
-    "attachCaptionPh": "{name}에 메모 추가 (선택)…"
+    "attachCaptionPh": "{name}에 메모 추가 (선택)…",
+    "archive": "대화 보관",
+    "unarchive": "보관 해제",
+    "viewArchived": "보관됨 ({count})",
+    "showingArchived": "보관함 표시 중 ({count}) — 받은편지함으로",
+    "searchInThread": "이 대화에서 검색…",
+    "clearSearch": "지우기"
   },
   "completeness": {
     "nextBest": "다음에 할 일",

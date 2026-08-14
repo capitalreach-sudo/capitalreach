@@ -2204,7 +2204,13 @@
     "tplCall": "Das klingt vielversprechend. Hätten Sie diese oder nächste Woche Zeit für einen 30-minütigen Call? Ich richte mich gerne nach Ihrem Kalender.",
     "attachFile": "Datei anhängen",
     "attachTooBig": "Die Datei ist größer als 10 MB.",
-    "attachCaptionPh": "Notiz zu {name} hinzufügen (optional)…"
+    "attachCaptionPh": "Notiz zu {name} hinzufügen (optional)…",
+    "archive": "Unterhaltung archivieren",
+    "unarchive": "Archivierung aufheben",
+    "viewArchived": "Archiviert ({count})",
+    "showingArchived": "Archivierte ({count}) — zurück zum Posteingang",
+    "searchInThread": "In dieser Unterhaltung suchen…",
+    "clearSearch": "Leeren"
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",

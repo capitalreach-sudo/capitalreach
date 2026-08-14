@@ -2198,7 +2198,13 @@
     "tplCall": "Dit ziet er veelbelovend uit. Zou je open staan voor een gesprek van 30 minuten deze of volgende week? Ik pas me aan jouw agenda aan.",
     "attachFile": "Bestand bijvoegen",
     "attachTooBig": "Dat bestand is groter dan 10 MB.",
-    "attachCaptionPh": "Voeg een notitie toe aan {name} (optioneel)…"
+    "attachCaptionPh": "Voeg een notitie toe aan {name} (optioneel)…",
+    "archive": "Gesprek archiveren",
+    "unarchive": "Gesprek terugzetten",
+    "viewArchived": "Gearchiveerd ({count})",
+    "showingArchived": "Gearchiveerd getoond ({count}) — terug naar inbox",
+    "searchInThread": "Zoeken in dit gesprek…",
+    "clearSearch": "Wissen"
   },
   "completeness": {
     "nextBest": "Doe dit hierna",

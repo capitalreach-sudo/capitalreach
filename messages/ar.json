@@ -2198,7 +2198,13 @@
     "tplCall": "يبدو هذا واعدًا. هل أنتم منفتحون على مكالمة 30 دقيقة هذا الأسبوع أو الأسبوع المقبل؟ يسعدني التوافق مع جدولكم.",
     "attachFile": "إرفاق ملف",
     "attachTooBig": "حجم الملف يتجاوز 10 ميغابايت.",
-    "attachCaptionPh": "أضف ملاحظة إلى {name} (اختياري)…"
+    "attachCaptionPh": "أضف ملاحظة إلى {name} (اختياري)…",
+    "archive": "أرشفة المحادثة",
+    "unarchive": "إلغاء أرشفة المحادثة",
+    "viewArchived": "المؤرشفة ({count})",
+    "showingArchived": "عرض المؤرشفة ({count}) — عودة إلى الوارد",
+    "searchInThread": "ابحث في هذه المحادثة…",
+    "clearSearch": "مسح"
   },
   "completeness": {
     "nextBest": "التالي",

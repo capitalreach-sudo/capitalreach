@@ -2198,7 +2198,13 @@
     "tplCall": "Parece promissor. Estarias disponível para uma chamada de 30 minutos esta semana ou na próxima? Adapto-me à tua agenda.",
     "attachFile": "Anexar um ficheiro",
     "attachTooBig": "Esse ficheiro excede 10 MB.",
-    "attachCaptionPh": "Adiciona uma nota a {name} (opcional)…"
+    "attachCaptionPh": "Adiciona uma nota a {name} (opcional)…",
+    "archive": "Arquivar conversa",
+    "unarchive": "Desarquivar conversa",
+    "viewArchived": "Arquivadas ({count})",
+    "showingArchived": "A mostrar arquivadas ({count}) — voltar à caixa",
+    "searchInThread": "Pesquisar nesta conversa…",
+    "clearSearch": "Limpar"
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import {
   Send, MessageSquare, Plus, Search, X, ArrowLeft,
-  CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip } from "lucide-react";
+  CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Search as SearchIcon } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -223,7 +223,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     const label = getLabel(t);
     const searchMatch = !search || label.toLowerCase().includes(search.toLowerCase());
     const statusMatch = statusFilter === "all" || t.status === statusFilter;
-    return searchMatch && statusMatch;
+    const archiveMatch = showArchived ? archivedIds.has(t.id) : !archivedIds.has(t.id);
+    return searchMatch && statusMatch && archiveMatch;
   }).sort((a, b) => {
     if (sortBy === "name") return getLabel(a).localeCompare(getLabel(b));
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
@@ -236,6 +237,32 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setSelectedThread(t);
     setMobileShowChat(true);
     setUnreadSet((prev) => { if (!prev.has(t.id)) return prev; const n = new Set(prev); n.delete(t.id); return n; });
+  }
+
+  // Per-user archive (migration 052) + in-thread message search. Archived
+  // threads leave the default list but stay one toggle away -- an archive
+  // you cannot see into is a trash can.
+  const [archivedIds, setArchivedIds] = useState<Set<string>>(new Set());
+  const [showArchived, setShowArchived] = useState(false);
+  const [msgQuery, setMsgQuery] = useState("");
+  useEffect(() => {
+    fetch("/api/messages/archive").then(r => r.ok ? r.json() : null)
+      .then(j => { if (j?.archived) setArchivedIds(new Set(j.archived as string[])); })
+      .catch(() => {});
+  }, []);
+  async function toggleArchive(threadId: string) {
+    const isArchived = archivedIds.has(threadId);
+    // Optimistic; a failed request just puts the row back on reload.
+    setArchivedIds(prev => {
+      const next = new Set(prev);
+      if (isArchived) next.delete(threadId); else next.add(threadId);
+      return next;
+    });
+    await fetch("/api/messages/archive", {
+      method: isArchived ? "DELETE" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId }),
+    }).catch(() => {});
   }
 
   // One pending attachment at a time; picking a file arms it, send ships it.
@@ -368,6 +395,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setSendingNew(false);
   }
 
+  useEffect(() => { setMsgQuery(""); }, [selectedThread?.id]);
+
   const selectedStatusKey = STATUS_KEYS[selectedThread?.status || "active"] || STATUS_KEYS.active;
   const selectedStatusInfo = { ...selectedStatusKey, label: t(selectedStatusKey.labelKey) };
 
@@ -401,6 +430,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
+                <button onClick={() => setShowArchived(v => !v)}
+                  aria-pressed={showArchived}
+                  style={{ background: showArchived ? "var(--cr-copper-bg)" : "transparent", border: showArchived ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: showArchived ? 600 : 400, fontSize: "11px", color: showArchived ? "var(--cr-copper)" : "var(--cr-ink-4)", padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", marginBottom: "8px" }}>
+                  {showArchived ? t("messages.showingArchived", { count: archivedIds.size }) : t("messages.viewArchived", { count: archivedIds.size })}
+                </button>
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("dashboard.searchConversations")}
                   style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "10px", paddingTop: "7px", paddingBottom: "7px", outline: "none", boxSizing: "border-box" }} />
               </div>
@@ -485,6 +519,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                  <button onClick={() => toggleArchive(selectedThread.id)}
+                    aria-label={archivedIds.has(selectedThread.id) ? t("messages.unarchive") : t("messages.archive")}
+                    title={archivedIds.has(selectedThread.id) ? t("messages.unarchive") : t("messages.archive")}
+                    style={{ background: archivedIds.has(selectedThread.id) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: archivedIds.has(selectedThread.id) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                    <Archive style={{ width: 13, height: 13, color: archivedIds.has(selectedThread.id) ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
+                  </button>
                   {profile.role === "startup" && selectedThread.status === "active" && (
                     <button onClick={() => updateStatus("due_diligence")}
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
@@ -507,6 +547,21 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               </div>
 
               {/* Messages area */}
+              {/* In-thread search: threads become unusable at fifty messages
+                  without it. Filters the loaded messages client-side -- they
+                  are all already here. Cleared automatically on thread switch. */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 20px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)" }}>
+                <SearchIcon style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
+                <input value={msgQuery} onChange={e => setMsgQuery(e.target.value)}
+                  placeholder={t("messages.searchInThread")}
+                  style={{ flex: 1, background: "transparent", border: "none", outline: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)" }} />
+                {msgQuery.trim() && (
+                  <button onClick={() => setMsgQuery("")}
+                    style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px", padding: 0 }}>
+                    {t("messages.clearSearch")}
+                  </button>
+                )}
+              </div>
               <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "8px", background: "var(--cr-paper)" }}>
                 {messages.length === 0 && (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "12px", color: "var(--cr-ink-4)" }}>
@@ -519,9 +574,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   // counterpart has read; the per-bubble check colour carries
                   // the rest.
                   const lastReadOwnId = [...messages].reverse().find(m => m.sender_id === profile.id && m.read_at)?.id;
-                  return messages.map((msg, i) => {
+                  const visibleMessages = msgQuery.trim()
+                    ? messages.filter(m =>
+                        m.body.toLowerCase().includes(msgQuery.trim().toLowerCase()) ||
+                        (m.attachment_name ?? "").toLowerCase().includes(msgQuery.trim().toLowerCase()))
+                    : messages;
+                  return visibleMessages.map((msg, i) => {
                   const isOwn = msg.sender_id === profile.id;
-                  const showTime = i === 0 || (new Date(msg.created_at).getTime() - new Date(messages[i - 1].created_at).getTime()) > 5 * 60 * 1000;
+                  const showTime = i === 0 || (new Date(msg.created_at).getTime() - new Date(visibleMessages[i - 1].created_at).getTime()) > 5 * 60 * 1000;
                   return (
                     <div key={msg.id}>
                       {showTime && (

@@ -2198,7 +2198,13 @@
     "tplCall": "Cela semble prometteur. Seriez-vous disponible pour un appel de 30 minutes cette semaine ou la prochaine ? Je m'adapte à votre agenda.",
     "attachFile": "Joindre un fichier",
     "attachTooBig": "Ce fichier dépasse 10 Mo.",
-    "attachCaptionPh": "Ajoutez une note à {name} (facultatif)…"
+    "attachCaptionPh": "Ajoutez une note à {name} (facultatif)…",
+    "archive": "Archiver la conversation",
+    "unarchive": "Désarchiver la conversation",
+    "viewArchived": "Archivées ({count})",
+    "showingArchived": "Archivées affichées ({count}) — retour à la boîte",
+    "searchInThread": "Rechercher dans cette conversation…",
+    "clearSearch": "Effacer"
   },
   "completeness": {
     "nextBest": "À faire ensuite",

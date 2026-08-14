@@ -2198,7 +2198,13 @@
     "tplCall": "Wygląda obiecująco. Czy znajdziesz 30 minut na rozmowę w tym lub przyszłym tygodniu? Dopasuję się do twojego kalendarza.",
     "attachFile": "Załącz plik",
     "attachTooBig": "Ten plik przekracza 10 MB.",
-    "attachCaptionPh": "Dodaj notatkę do {name} (opcjonalnie)…"
+    "attachCaptionPh": "Dodaj notatkę do {name} (opcjonalnie)…",
+    "archive": "Zarchiwizuj rozmowę",
+    "unarchive": "Przywróć rozmowę",
+    "viewArchived": "Zarchiwizowane ({count})",
+    "showingArchived": "Pokazuję zarchiwizowane ({count}) — wróć do skrzynki",
+    "searchInThread": "Szukaj w tej rozmowie…",
+    "clearSearch": "Wyczyść"
   },
   "completeness": {
     "nextBest": "Zrób to teraz",

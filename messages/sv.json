@@ -2198,7 +2198,13 @@
     "tplCall": "Det här ser lovande ut. Skulle du vara öppen för ett 30-minuterssamtal den här eller nästa vecka? Jag anpassar mig efter ditt schema.",
     "attachFile": "Bifoga en fil",
     "attachTooBig": "Filen är större än 10 MB.",
-    "attachCaptionPh": "Lägg till en notering till {name} (valfritt)…"
+    "attachCaptionPh": "Lägg till en notering till {name} (valfritt)…",
+    "archive": "Arkivera konversation",
+    "unarchive": "Återställ konversation",
+    "viewArchived": "Arkiverade ({count})",
+    "showingArchived": "Visar arkiverade ({count}) — tillbaka till inkorgen",
+    "searchInThread": "Sök i den här konversationen…",
+    "clearSearch": "Rensa"
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",

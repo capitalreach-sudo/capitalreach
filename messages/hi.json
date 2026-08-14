@@ -2198,7 +2198,13 @@
     "tplCall": "यह आशाजनक लगता है। क्या इस या अगले सप्ताह 30 मिनट की कॉल संभव है? मैं आपके समय के अनुसार समायोजित कर लूँगा।",
     "attachFile": "फ़ाइल संलग्न करें",
     "attachTooBig": "फ़ाइल 10 MB से बड़ी है।",
-    "attachCaptionPh": "{name} के साथ नोट जोड़ें (वैकल्पिक)…"
+    "attachCaptionPh": "{name} के साथ नोट जोड़ें (वैकल्पिक)…",
+    "archive": "बातचीत संग्रहित करें",
+    "unarchive": "संग्रह से निकालें",
+    "viewArchived": "संग्रहित ({count})",
+    "showingArchived": "संग्रहित दिख रहे ({count}) — इनबॉक्स पर लौटें",
+    "searchInThread": "इस बातचीत में खोजें…",
+    "clearSearch": "साफ़ करें"
   },
   "completeness": {
     "nextBest": "अगला यह करें",

@@ -2198,7 +2198,13 @@
     "tplCall": "Esto pinta bien. ¿Te vendría bien una llamada de 30 minutos esta semana o la próxima? Me adapto a tu agenda.",
     "attachFile": "Adjuntar un archivo",
     "attachTooBig": "Ese archivo supera los 10 MB.",
-    "attachCaptionPh": "Añade una nota a {name} (opcional)…"
+    "attachCaptionPh": "Añade una nota a {name} (opcional)…",
+    "archive": "Archivar conversación",
+    "unarchive": "Desarchivar conversación",
+    "viewArchived": "Archivadas ({count})",
+    "showingArchived": "Mostrando archivadas ({count}): volver a la bandeja",
+    "searchInThread": "Buscar en esta conversación…",
+    "clearSearch": "Limpiar"
   },
   "completeness": {
     "nextBest": "Haz esto ahora",

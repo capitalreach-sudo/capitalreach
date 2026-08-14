@@ -2198,7 +2198,13 @@
     "tplCall": "看起来很有潜力。本周或下周方便安排 30 分钟通话吗？时间以你为准。",
     "attachFile": "附加文件",
     "attachTooBig": "该文件超过 10 MB。",
-    "attachCaptionPh": "为 {name} 添加备注（可选）…"
+    "attachCaptionPh": "为 {name} 添加备注（可选）…",
+    "archive": "归档会话",
+    "unarchive": "取消归档",
+    "viewArchived": "已归档（{count}）",
+    "showingArchived": "正在显示已归档（{count}）——返回收件箱",
+    "searchInThread": "在此会话中搜索…",
+    "clearSearch": "清除"
   },
   "completeness": {
     "nextBest": "下一步",

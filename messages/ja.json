@@ -2198,7 +2198,13 @@
     "tplCall": "とても有望に感じています。今週か来週に30分ほどお話しできますでしょうか。ご都合に合わせます。",
     "attachFile": "ファイルを添付",
     "attachTooBig": "ファイルが10MBを超えています。",
-    "attachCaptionPh": "{name} にメモを添える（任意）…"
+    "attachCaptionPh": "{name} にメモを添える（任意）…",
+    "archive": "会話をアーカイブ",
+    "unarchive": "アーカイブを解除",
+    "viewArchived": "アーカイブ済み（{count}）",
+    "showingArchived": "アーカイブ表示中（{count}）— 受信箱へ戻る",
+    "searchInThread": "この会話内を検索…",
+    "clearSearch": "クリア"
   },
   "completeness": {
     "nextBest": "次にやること",

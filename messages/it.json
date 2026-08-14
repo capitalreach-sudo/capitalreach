@@ -2198,7 +2198,13 @@
     "tplCall": "Sembra promettente. Ti andrebbe una call di 30 minuti questa settimana o la prossima? Mi adatto ai tuoi orari.",
     "attachFile": "Allega un file",
     "attachTooBig": "Il file supera i 10 MB.",
-    "attachCaptionPh": "Aggiungi una nota a {name} (facoltativo)…"
+    "attachCaptionPh": "Aggiungi una nota a {name} (facoltativo)…",
+    "archive": "Archivia conversazione",
+    "unarchive": "Ripristina conversazione",
+    "viewArchived": "Archiviate ({count})",
+    "showingArchived": "Archiviate mostrate ({count}): torna alla posta",
+    "searchInThread": "Cerca in questa conversazione…",
+    "clearSearch": "Cancella"
   },
   "completeness": {
     "nextBest": "Fai questo ora",
