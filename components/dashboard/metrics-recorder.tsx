@@ -24,8 +24,10 @@ export function MetricsRecorder() {
   const [busy, setBusy] = useState(false);
 
   async function load() {
-    const res = await fetch("/api/metrics");
-    if (res.ok) setPoints((await res.json()).metrics ?? []);
+    try {
+      const res = await fetch("/api/metrics");
+      if (res.ok) setPoints((await res.json()).metrics ?? []);
+    } catch { /* chart simply doesn't render; the form still works */ }
   }
   useEffect(() => { load(); }, []);
 
@@ -70,27 +72,27 @@ export function MetricsRecorder() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "10px", marginBottom: "12px" }}>
         <div>
-          <label style={lab}>{t("traction.month")}</label>
-          <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} style={input} />
+          <label style={lab} htmlFor="mr-month">{t("traction.month")}</label>
+          <input id="mr-month" type="month" value={month} onChange={(e) => setMonth(e.target.value)} style={input} />
         </div>
         <div>
-          <label style={lab}>MRR</label>
-          <input inputMode="numeric" value={form.mrr} placeholder="—"
+          <label style={lab} htmlFor="mr-mrr">MRR</label>
+          <input id="mr-mrr" inputMode="numeric" value={form.mrr} placeholder="—"
             onChange={(e) => setForm((f) => ({ ...f, mrr: e.target.value }))} style={input} />
         </div>
         <div>
-          <label style={lab}>ARR</label>
-          <input inputMode="numeric" value={form.arr} placeholder="—"
+          <label style={lab} htmlFor="mr-arr">ARR</label>
+          <input id="mr-arr" inputMode="numeric" value={form.arr} placeholder="—"
             onChange={(e) => setForm((f) => ({ ...f, arr: e.target.value }))} style={input} />
         </div>
         <div>
-          <label style={lab}>{t("traction.users")}</label>
-          <input inputMode="numeric" value={form.userCount} placeholder="—"
+          <label style={lab} htmlFor="mr-users">{t("traction.users")}</label>
+          <input id="mr-users" inputMode="numeric" value={form.userCount} placeholder="—"
             onChange={(e) => setForm((f) => ({ ...f, userCount: e.target.value }))} style={input} />
         </div>
         <div>
-          <label style={lab}>{t("traction.customers")}</label>
-          <input inputMode="numeric" value={form.payingCustomers} placeholder="—"
+          <label style={lab} htmlFor="mr-customers">{t("traction.customers")}</label>
+          <input id="mr-customers" inputMode="numeric" value={form.payingCustomers} placeholder="—"
             onChange={(e) => setForm((f) => ({ ...f, payingCustomers: e.target.value }))} style={input} />
         </div>
       </div>

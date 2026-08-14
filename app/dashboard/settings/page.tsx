@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { isPasswordBreached } from "@/lib/password-check";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { notify } from "@/components/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -153,10 +154,18 @@ export default function AccountSettingsPage() {
     setSavingPassword(false);
   }
 
+  const [portalBusy, setPortalBusy] = useState(false);
   async function handlePortal() {
-    const res = await fetch("/api/checkout/portal", { method: "POST" });
-    const { url } = await res.json();
-    if (url) window.location.href = url;
+    if (portalBusy) return;
+    setPortalBusy(true);
+    try {
+      const res = await fetch("/api/checkout/portal", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) { window.location.href = data.url; return; }
+      notify.error(data.error || t("errors.generic"));
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally { setPortalBusy(false); }
   }
 
   const dashboardPath = profile?.role === "startup" ? "/dashboard/startup" : "/dashboard/investor";

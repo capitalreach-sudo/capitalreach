@@ -46,15 +46,22 @@ export default function StartupBillingPage() {
     }
   }
 
+  const [upgrading, setUpgrading] = useState<string | null>(null);
   async function handleUpgrade(planId: string) {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId, userType: "founder" }),
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-    else notify.error(data.error || t("common.error"));
+    if (upgrading) return;
+    setUpgrading(planId);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId, userType: "founder" }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) { window.location.href = data.url; return; }
+      notify.error(data.error || t("common.error"));
+    } catch {
+      notify.error(t("common.error"));
+    } finally { setUpgrading(null); }
   }
 
   if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">{t("common.loading")}</div></>;

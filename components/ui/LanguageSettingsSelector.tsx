@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { LOCALES, LOCALE_META } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import { useTranslation } from "@/hooks/useTranslation";
+import { notify } from "@/components/ui/toast-notify";
 
 interface Props {
   initialLocale?: Locale;
@@ -28,11 +29,13 @@ export function LanguageSettingsSelector({ initialLocale = "en", translations }:
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ locale: selected }),
-    });
-    if (res.ok) {
+    }).catch(() => null);
+    if (res?.ok) {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
       startTransition(() => router.refresh());
+    } else {
+      notify.error(t("errors.generic"));
     }
   };
 

@@ -27,6 +27,7 @@ export default function DocumentsPage() {
   const [startup, setStartup] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [docsLoading, setDocsLoading] = useState(true);
   const [docType, setDocType] = useState("pitch_deck");
   const [docLabel, setDocLabel] = useState("");
   const [requiresNda, setRequiresNda] = useState(false);
@@ -45,6 +46,7 @@ export default function DocumentsPage() {
       setStartup(s);
       const { data: docs } = await supabase.from("startup_documents").select("*").eq("startup_id", s.id);
       setDocuments(docs || []);
+      setDocsLoading(false);
     })();
   }, []);
 
@@ -61,22 +63,31 @@ export default function DocumentsPage() {
     formData.append("label", docLabel || file.name);
     formData.append("requiresNda", String(requiresNda));
 
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json().catch(() => ({}));
 
-    if (!res.ok) {
-      toast({ title: t("dashboard.uploadFailed"), description: data.error, variant: "destructive" });
-    } else {
-      toast({ title: t("dashboard.docUploaded") });
-      setDocuments(prev => [...prev, data.document]);
-      if (fileRef.current) fileRef.current.value = "";
-      setDocLabel("");
+      if (!res.ok) {
+        toast({ title: t("dashboard.uploadFailed"), description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: t("dashboard.docUploaded") });
+        setDocuments(prev => [...prev, data.document]);
+        if (fileRef.current) fileRef.current.value = "";
+        setDocLabel("");
+      }
+    } catch {
+      toast({ title: t("dashboard.uploadFailed"), variant: "destructive" });
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
   }
 
   async function deleteDocument(docId: string) {
-    await supabase.from("startup_documents").delete().eq("id", docId);
+    const { error } = await supabase.from("startup_documents").delete().eq("id", docId);
+    if (error) {
+      toast({ title: t("errors.generic"), variant: "destructive" });
+      return;
+    }
     setDocuments(prev => prev.filter(d => d.id !== docId));
     toast({ title: t("dashboard.docRemoved") });
   }
@@ -147,7 +158,7 @@ export default function DocumentsPage() {
           <div className="px-5 py-3 border-b bg-cr-p2">
             <h2 className="font-semibold text-cr-ink text-sm">{t("dashboard.uploadedDocuments")} ({documents.length})</h2>
           </div>
-          {documents.length === 0 ? (
+          {docsLoading ? null : documents.length === 0 ? (
             <div className="p-8 text-center text-cr-i4">
               <FileText className="h-8 w-8 mx-auto mb-2 text-cr-i4" />
               <p>{t("startupDetail.noDocumentsUploaded")}</p>

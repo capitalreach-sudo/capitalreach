@@ -37,6 +37,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
     });
     setSavingLaunch(false);
     if (res.ok) setLaunch(await res.json());
+    else toast({ title: t("errors.generic"), variant: "destructive" });
   }
   const { t } = useTranslation();
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
@@ -61,10 +62,9 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ startupId: id }),
     });
-    if (res.ok) toast({ title: t("admin.toastApproved") });
-    else toast({ title: t("admin.toastApproveFailed"), variant: "destructive" });
     setProcessingId(null);
-    window.location.reload();
+    if (res.ok) { toast({ title: t("admin.toastApproved") }); window.location.reload(); }
+    else toast({ title: t("admin.toastApproveFailed"), variant: "destructive" });
   }
 
   async function rejectStartup(id: string) {
@@ -76,10 +76,9 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ startupId: id, reason }),
     });
-    if (res.ok) toast({ title: t("admin.toastRejected") });
-    else toast({ title: t("admin.toastRejectFailed"), variant: "destructive" });
     setProcessingId(null);
-    window.location.reload();
+    if (res.ok) { toast({ title: t("admin.toastRejected") }); window.location.reload(); }
+    else toast({ title: t("admin.toastRejectFailed"), variant: "destructive" });
   }
 
   async function suspendStartup(id: string) {
@@ -89,6 +88,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       body: JSON.stringify({ startupId: id }),
     });
     if (res.ok) window.location.reload();
+    else toast({ title: t("errors.generic"), variant: "destructive" });
   }
 
   return (

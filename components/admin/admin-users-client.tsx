@@ -107,28 +107,33 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
   async function suspend() {
     if (!target || !reason.trim()) return;
     setBusy(target.id);
-    const res = await fetch("/api/admin/suspend", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: target.id, reason: reason.trim(), duration }),
-    });
-    const data = await res.json();
-    setBusy(null);
-    if (!res.ok) { notify.error(data.error || "Failed to suspend"); return; }
+    let res: Response | null = null, data: { error?: string } = {};
+    try {
+      res = await fetch("/api/admin/suspend", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: target.id, reason: reason.trim(), duration }),
+      });
+      data = await res.json().catch(() => ({}));
+    } finally { setBusy(null); }
+    if (!res?.ok) { notify.error(data.error || "Failed to suspend"); return; }
     notify.success(`${target.full_name || target.email} suspended`);
     setTarget(null); setReason(""); setDuration("indefinite");
+    router.refresh();
   }
 
   async function applyTier() {
     if (!tierTarget) return;
     setBusy(tierTarget.id);
-    const res = await fetch("/api/admin/set-tier", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: tierTarget.id, tier: tierChoice }),
-    });
-    const data = await res.json();
-    setBusy(null);
-    if (!res.ok) { notify.error(data.error || "Failed to set tier"); return; }
+    let res: Response | null = null, data: { error?: string } = {};
+    try {
+      res = await fetch("/api/admin/set-tier", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: tierTarget.id, tier: tierChoice }),
+      });
+      data = await res.json().catch(() => ({}));
+    } finally { setBusy(null); }
+    if (!res?.ok) { notify.error(data.error || "Failed to set tier"); return; }
     notify.success("Tier updated");
     setTierTarget(null);
     router.refresh();
@@ -136,30 +141,34 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
 
   async function unsuspend(u: AdminUser) {
     setBusy(u.id);
-    const res = await fetch("/api/admin/unsuspend", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: u.id }),
-    });
-    const data = await res.json();
-    setBusy(null);
-    if (!res.ok) { notify.error(data.error || "Failed to restore"); return; }
+    let res: Response | null = null, data: { error?: string } = {};
+    try {
+      res = await fetch("/api/admin/unsuspend", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: u.id }),
+      });
+      data = await res.json().catch(() => ({}));
+    } finally { setBusy(null); }
+    if (!res?.ok) { notify.error(data.error || "Failed to restore"); return; }
     notify.success(`${u.full_name || u.email} restored`);
     router.refresh();
   }
 
   async function bulk(action: "suspend" | "unsuspend") {
     setBusy("bulk");
-    const res = await fetch("/api/admin/suspend-all", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action,
-        confirm: action === "suspend" ? bulkPhrase : undefined,
-        reason: bulkReason.trim() || undefined,
-      }),
-    });
-    const data = await res.json();
-    setBusy(null);
-    if (!res.ok) { notify.error(data.error || "Bulk action failed"); return; }
+    let res: Response | null = null, data: { error?: string; suspended?: number; restored?: number } = {};
+    try {
+      res = await fetch("/api/admin/suspend-all", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          confirm: action === "suspend" ? bulkPhrase : undefined,
+          reason: bulkReason.trim() || undefined,
+        }),
+      });
+      data = await res.json().catch(() => ({}));
+    } finally { setBusy(null); }
+    if (!res?.ok) { notify.error(data.error || "Bulk action failed"); return; }
     notify.success(action === "suspend"
       ? `${data.suspended} accounts suspended`
       : `${data.restored} accounts restored`);

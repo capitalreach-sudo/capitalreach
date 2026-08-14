@@ -60,8 +60,8 @@ export function SecurityActivity() {
         if (typeof payload.session_id === "string") setSelfSessionId(payload.session_id);
       } catch { /* unmarked is fine */ }
     });
-    supabase.rpc("my_sessions").then(({ data }) => setSessions((data as Session[] | null) ?? []));
-    fetch("/api/account/logins").then((r) => (r.ok ? r.json() : null)).then((j) => setLogins(j?.logins ?? []));
+    supabase.rpc("my_sessions").then(({ data }) => setSessions((data as Session[] | null) ?? []), () => setSessions([]));
+    fetch("/api/account/logins").then((r) => (r.ok ? r.json() : null)).then((j) => setLogins(j?.logins ?? [])).catch(() => setLogins([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

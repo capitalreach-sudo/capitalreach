@@ -8,6 +8,7 @@ import { ArrowLeft, BellOff, X } from "lucide-react";
 import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+import { notify } from "@/components/ui/toast-notify";
 
 interface Row {
   id: string; type: string; title: string; body: string | null;
@@ -22,6 +23,7 @@ interface Row {
 export default function NotificationsPage() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [unread, setUnread] = useState(0);
 
   // True while a full page came back last time -- i.e. there may be more.
@@ -40,12 +42,19 @@ export default function NotificationsPage() {
 
   async function load(forTab: string = tab) {
     const typesQ = TAB_TYPES[forTab] ? `?types=${TAB_TYPES[forTab]}` : "";
-    const res = await fetch(`/api/notifications${typesQ}`);
-    if (!res.ok) { setRows([]); return; }
-    const d = await res.json();
-    setRows(d.notifications ?? []);
-    setUnread(d.unread ?? 0);
-    setMore((d.notifications ?? []).length === 30);
+    try {
+      const res = await fetch(`/api/notifications${typesQ}`);
+      if (!res.ok) throw new Error();
+      const d = await res.json();
+      setLoadError(false);
+      setRows(d.notifications ?? []);
+      setUnread(d.unread ?? 0);
+      setMore((d.notifications ?? []).length === 30);
+    } catch {
+      // A failed load must not masquerade as an empty inbox.
+      setLoadError(true);
+      setRows([]);
+    }
   }
   useEffect(() => { setRows(null); load(tab); }, [tab]);
 
@@ -66,38 +75,44 @@ export default function NotificationsPage() {
   }
 
   async function markAll() {
-    await fetch("/api/notifications", {
+    const res = await fetch("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ all: true }),
-    });
+    }).catch(() => null);
+    if (!res?.ok) { notify.error(t("errors.generic")); return; }
     load();
   }
 
   async function removeOne(id: string) {
+    const prevRows = rows;
     setRows((prev) => prev?.filter((r) => r.id !== id) ?? prev);
-    await fetch("/api/notifications", {
+    const res = await fetch("/api/notifications", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
-    });
+    }).catch(() => null);
+    if (!res?.ok) { setRows(prevRows); notify.error(t("errors.generic")); }
   }
 
   async function clearRead() {
+    const prevRows = rows;
     setRows((prev) => prev?.filter((r) => !r.read_at) ?? prev);
-    await fetch("/api/notifications", {
+    const res = await fetch("/api/notifications", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ allRead: true }),
-    });
+    }).catch(() => null);
+    if (!res?.ok) { setRows(prevRows); notify.error(t("errors.generic")); }
   }
 
   async function markOne(id: string) {
-    await fetch("/api/notifications", {
+    const res = await fetch("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
-    });
+    }).catch(() => null);
+    if (!res?.ok) { notify.error(t("errors.generic")); return; }
     load();
   }
 
@@ -141,6 +156,14 @@ export default function NotificationsPage() {
 
         {rows === null ? (
           <p className="text-sm text-cr-i4">{t("common.loading")}</p>
+        ) : loadError ? (
+          <div className="bg-cr-paper border rounded-2xl p-10 text-center">
+            <p className="text-sm text-cr-i3" style={{ marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
+            <button onClick={() => { setRows(null); load(); }}
+              className="text-sm" style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "6px 16px", cursor: "pointer", color: "var(--cr-ink-3)" }}>
+              {t("errorPage.retry")}
+            </button>
+          </div>
         ) : rows.length === 0 ? (
           <div className="bg-cr-paper border rounded-2xl p-10 text-center">
             <BellOff className="h-8 w-8 text-cr-p4 mx-auto mb-3" />

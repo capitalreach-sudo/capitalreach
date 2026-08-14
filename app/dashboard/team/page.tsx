@@ -47,13 +47,17 @@ export default function TeamPage() {
   const [inviting, setInviting] = useState(false);
 
   const load = useCallback(async (entityType: EntityType) => {
-    const res = await fetch(`/api/team?type=${entityType}`);
-    const data = await res.json();
-    if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
-    setUnavailable(Boolean(data.unavailable));
-    setMembers(data.members ?? []);
-    setMyRole(data.myRole);
-    setEntityId(data.entityId);
+    try {
+      const res = await fetch(`/api/team?type=${entityType}`);
+      const data = await res.json();
+      if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
+      setUnavailable(Boolean(data.unavailable));
+      setMembers(data.members ?? []);
+      setMyRole(data.myRole);
+      setEntityId(data.entityId);
+    } catch {
+      notify.error(t("errors.generic"));
+    }
   }, [t]);
 
   useEffect(() => {
@@ -67,8 +71,7 @@ export default function TeamPage() {
       // The API is keyed on entity type, and a person is one or the other here.
       const entityType: EntityType = profile?.role === "startup" ? "startup" : "investor";
       setType(entityType);
-      await load(entityType);
-      setLoading(false);
+      try { await load(entityType); } finally { setLoading(false); }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

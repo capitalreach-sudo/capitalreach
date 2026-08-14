@@ -467,13 +467,16 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
 
   async function load() {
     setLoading(true);
-    const res = await fetch(`/api/contracts/list?dealId=${dealId}`);
-    const data = await res.json();
-    const list: Contract[] = res.ok ? (data.contracts || []) : [];
-    setContracts(list);
-    setLoading(false);
-    setLoaded(true);
-    if (list.some(c => c.contract_type === "nda")) loadNdaStatus();
+    try {
+      const res = await fetch(`/api/contracts/list?dealId=${dealId}`);
+      const data = await res.json();
+      const list: Contract[] = res.ok ? (data.contracts || []) : [];
+      setContracts(list);
+      if (list.some(c => c.contract_type === "nda")) loadNdaStatus();
+    } catch { setContracts([]); } finally {
+      setLoading(false);
+      setLoaded(true);
+    }
   }
 
   async function loadNdaStatus() {
@@ -692,11 +695,14 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
 
   async function load() {
     setLoading(true);
-    const res = await fetch(`/api/deals/resources?dealId=${dealId}`);
-    const json = await res.json();
-    if (res.ok) setData(json);
-    setLoading(false);
-    setLoaded(true);
+    try {
+      const res = await fetch(`/api/deals/resources?dealId=${dealId}`);
+      const json = await res.json();
+      if (res.ok) setData(json);
+    } catch { /* section shows its empty state */ } finally {
+      setLoading(false);
+      setLoaded(true);
+    }
   }
 
   function toggle() {
@@ -828,11 +834,24 @@ function ChecklistSection({ dealId }: { dealId: string }) {
   }
   async function toggle(id: string, done: boolean) {
     setItems(prev => prev?.map(i => i.id === id ? { ...i, done } : i) ?? prev);
-    await fetch("/api/deals/checklist", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, done }) });
+    try {
+      const res = await fetch("/api/deals/checklist", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, done }) });
+      if (!res.ok) throw new Error();
+    } catch {
+      setItems(prev => prev?.map(i => i.id === id ? { ...i, done: !done } : i) ?? prev);
+      notify.error(t("errors.generic"));
+    }
   }
   async function remove(id: string) {
+    const removed = items?.find(i => i.id === id);
     setItems(prev => prev?.filter(i => i.id !== id) ?? prev);
-    await fetch("/api/deals/checklist", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    try {
+      const res = await fetch("/api/deals/checklist", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      if (!res.ok) throw new Error();
+    } catch {
+      if (removed) setItems(prev => [...(prev ?? []), removed]);
+      notify.error(t("errors.generic"));
+    }
   }
 
   const doneCount = (items ?? []).filter(i => i.done).length;
@@ -876,11 +895,14 @@ function ActivitySection({ dealId }: { dealId: string }) {
 
   async function load() {
     setLoading(true);
-    const res = await fetch(`/api/deals/activity?dealId=${dealId}`);
-    const data = await res.json();
-    if (res.ok) setActivity(data.activity || []);
-    setLoading(false);
-    setLoaded(true);
+    try {
+      const res = await fetch(`/api/deals/activity?dealId=${dealId}`);
+      const data = await res.json();
+      if (res.ok) setActivity(data.activity || []);
+    } catch { /* section shows its empty state */ } finally {
+      setLoading(false);
+      setLoaded(true);
+    }
   }
 
   function toggle() {

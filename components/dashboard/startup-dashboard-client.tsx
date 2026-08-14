@@ -333,9 +333,16 @@ function TargetsPanel() {
             </Link>
             <button
               onClick={async () => {
+                const prevStatus = tg.status;
                 const next = STATUS_ORDER[(STATUS_ORDER.indexOf(tg.status as typeof STATUS_ORDER[number]) + 1) % STATUS_ORDER.length];
                 setTargets((prev) => prev?.map(x => x.id === tg.id ? { ...x, status: next } : x) ?? prev);
-                await fetch("/api/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: tg.investorId, status: next }) });
+                try {
+                  const res = await fetch("/api/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: tg.investorId, status: next }) });
+                  if (!res.ok) throw new Error();
+                } catch {
+                  setTargets((prev) => prev?.map(x => x.id === tg.id ? { ...x, status: prevStatus } : x) ?? prev);
+                  notify.error(t("errors.generic"));
+                }
               }}
               title={t("dashboard.tsCycle")}
               style={{ background: "transparent", border: `1px solid ${STATUS_STYLE[tg.status]?.color ?? "var(--cr-rule-dark)"}`, color: STATUS_STYLE[tg.status]?.color ?? "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>
@@ -475,16 +482,34 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   async function generatePitchFeedback() {
     if (!startup || viewingAs) return;
     setLoadingFeedback(true);
-    const res = await fetch("/api/ai/pitch-feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id }) });
-    setAiFeedback(await res.json());
-    setLoadingFeedback(false);
+    try {
+      const res = await fetch("/api/ai/pitch-feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        notify.error(data.error || t("errors.generic"));
+        return;
+      }
+      setAiFeedback(data);
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setLoadingFeedback(false);
+    }
   }
 
+  const [portalBusy, setPortalBusy] = useState(false);
   async function openBillingPortal() {
     if (viewingAs) return;
-    const res = await fetch("/api/checkout/portal", { method: "POST" });
-    const { url } = await res.json();
-    if (url) window.location.href = url;
+    if (portalBusy) return;
+    setPortalBusy(true);
+    try {
+      const res = await fetch("/api/checkout/portal", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) { window.location.href = data.url; return; }
+      notify.error(data.error || t("errors.generic"));
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally { setPortalBusy(false); }
   }
 
   // ── No startup yet ──

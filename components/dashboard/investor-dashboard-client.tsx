@@ -304,11 +304,19 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
     a.href = url; a.download = "capitalreach-watchlist.csv"; a.click();
   }
 
+  const [portalBusy, setPortalBusy] = useState(false);
   async function openBillingPortal() {
     if (viewingAs) return;
-    const res = await fetch("/api/checkout/portal", { method: "POST" });
-    const { url } = await res.json();
-    if (url) window.location.href = url;
+    if (portalBusy) return;
+    setPortalBusy(true);
+    try {
+      const res = await fetch("/api/checkout/portal", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) { window.location.href = data.url; return; }
+      notify.error(data.error || t("errors.generic"));
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally { setPortalBusy(false); }
   }
 
   const activeDeals = deals.filter((d) => !["closed", "passed"].includes(d.status)).length;

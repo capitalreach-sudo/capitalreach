@@ -382,14 +382,23 @@ export function StartupDetailClient({
   async function generateAiReport() {
     if (!canAi) return;
     setGeneratingReport(true);
-    const res = await fetch("/api/ai/due-diligence", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ startupId: startup.id }),
-    });
-    const data = await res.json();
-    setAiReport(data.report ?? null);
-    setGeneratingReport(false);
+    try {
+      const res = await fetch("/api/ai/due-diligence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startupId: startup.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.report) {
+        notify.error(data.error || t("errors.generic"));
+        return;
+      }
+      setAiReport(data.report);
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setGeneratingReport(false);
+    }
   }
 
   async function requestNda() {

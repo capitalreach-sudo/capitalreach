@@ -24,6 +24,7 @@ const DiamondLogo = ({ size = 10 }: { size?: number }) => (
 
 export function Navbar() {
   const { t, locale } = useTranslation();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [profile, setProfile]       = useState<Profile | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
@@ -160,6 +161,10 @@ export function Navbar() {
                 <div className="relative group">
                   <button
                     className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] transition-colors"
+                    aria-label={t("navbar.accountMenuAria")}
+                    aria-haspopup="menu"
+                    onClick={() => setMenuOpen((v) => !v)}
+                    aria-expanded={menuOpen}
                     style={{ background: "transparent", border: "none", cursor: "pointer" }}
                     onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#E4DDD2")}
                     onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
@@ -182,7 +187,7 @@ export function Navbar() {
 
                   {/* Dropdown */}
                   <div
-                    className="absolute right-0 mt-1 w-52 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50"
+                    className={`absolute right-0 mt-1 w-52 py-1 transition-all duration-150 z-50 ${menuOpen ? "opacity-100 visible" : "opacity-0 invisible"} group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible`}
                     style={{
                       background:   "#EDE8DE",
                       border:       "1px solid rgba(26,22,18,0.2)",
