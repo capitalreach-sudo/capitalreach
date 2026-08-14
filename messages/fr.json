@@ -1889,7 +1889,9 @@
     "heroSub": "Tactiques de levée de fonds, insights d'investisseurs et intelligence de marché pour fondateurs et VC.",
     "comingSoonTitle": "Articles à venir",
     "comingSoonDesc": "Nous travaillons sur des guides approfondis couvrant la stratégie de levée de fonds, les relations investisseurs et l'intelligence de marché. Revenez bientôt.",
-    "browseStartups": "Parcourir les startups à la place"
+    "browseStartups": "Parcourir les startups à la place",
+    "minRead": "{minutes} min de lecture",
+    "readArticle": "Lire l'article"
   },
   "careers": {
     "metaTitle": "Carrières",

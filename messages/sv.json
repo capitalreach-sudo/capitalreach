@@ -1889,7 +1889,9 @@
     "heroSub": "Kapitalanskaffningstaktik, investerarinsikter och marknadsintelligens för grundare och VC:er.",
     "comingSoonTitle": "Artiklar kommer snart",
     "comingSoonDesc": "Vi arbetar med djupgående guider som täcker kapitalanskaffningsstrategi, investerarrelationer och marknadsintelligens. Kom tillbaka snart.",
-    "browseStartups": "Bläddra bland startups istället"
+    "browseStartups": "Bläddra bland startups istället",
+    "minRead": "{minutes} min läsning",
+    "readArticle": "Läs artikeln"
   },
   "careers": {
     "metaTitle": "Karriär",

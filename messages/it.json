@@ -1889,7 +1889,9 @@
     "heroSub": "Tattiche di raccolta fondi, insight sugli investitori e intelligence di mercato per founder e VC.",
     "comingSoonTitle": "Articoli in arrivo",
     "comingSoonDesc": "Stiamo lavorando a guide approfondite su strategia di raccolta fondi, relazioni con gli investitori e intelligence di mercato. Torna presto a trovarci.",
-    "browseStartups": "Sfoglia le startup invece"
+    "browseStartups": "Sfoglia le startup invece",
+    "minRead": "{minutes} min di lettura",
+    "readArticle": "Leggi l'articolo"
   },
   "careers": {
     "metaTitle": "Lavora con noi",

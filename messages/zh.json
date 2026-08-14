@@ -1889,7 +1889,9 @@
     "heroSub": "为创始人和风投提供融资策略、投资者洞见和市场情报。",
     "comingSoonTitle": "文章即将上线",
     "comingSoonDesc": "我们正在制作涵盖融资策略、投资者关系和市场情报的深度指南。请稍后再来查看。",
-    "browseStartups": "改为浏览初创公司"
+    "browseStartups": "改为浏览初创公司",
+    "minRead": "阅读约 {minutes} 分钟",
+    "readArticle": "阅读文章"
   },
   "careers": {
     "metaTitle": "招聘",

@@ -1889,7 +1889,9 @@
     "heroSub": "Táticas de angariação de fundos, perspetivas de investidores e inteligência de mercado para fundadores e VCs.",
     "comingSoonTitle": "Artigos em breve",
     "comingSoonDesc": "Estamos a trabalhar em guias aprofundados sobre estratégia de angariação de fundos, relações com investidores e inteligência de mercado. Volte em breve.",
-    "browseStartups": "Explorar startups em vez disso"
+    "browseStartups": "Explorar startups em vez disso",
+    "minRead": "{minutes} min de leitura",
+    "readArticle": "Ler o artigo"
   },
   "careers": {
     "metaTitle": "Carreiras",

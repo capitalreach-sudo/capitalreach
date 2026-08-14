@@ -1896,7 +1896,9 @@
     "heroSub": "Fundraising-Taktiken, Investoreneinblicke und Marktinformationen für Gründer und VCs.",
     "comingSoonTitle": "Artikel folgen in Kürze",
     "comingSoonDesc": "Wir arbeiten an ausführlichen Leitfäden zu Fundraising-Strategie, Investorenbeziehungen und Marktinformationen. Schau bald wieder vorbei.",
-    "browseStartups": "Stattdessen Startups durchsuchen"
+    "browseStartups": "Stattdessen Startups durchsuchen",
+    "minRead": "{minutes} Min. Lesezeit",
+    "readArticle": "Artikel lesen"
   },
   "careers": {
     "metaTitle": "Karriere",

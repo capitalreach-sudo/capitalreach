@@ -5,6 +5,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { BLOG_POSTS } from "@/lib/blog-posts";
 
 export default function BlogPage() {
   const { t } = useTranslation();
@@ -26,22 +27,23 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Empty state */}
-      <section className="flex-1 py-24 px-4 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-cr-copper/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-cr-copper/20">
-            <BookOpen className="h-8 w-8 text-cr-copper" />
-          </div>
-          <h2 className="text-2xl font-bold text-cr-ink mb-3">{t("blog.comingSoonTitle")}</h2>
-          <p className="text-cr-i3 leading-relaxed mb-6">
-            {t("blog.comingSoonDesc")}
-          </p>
-          <Link
-            href="/startups"
-            className="inline-flex items-center gap-2 text-sm font-medium text-cr-copper hover:text-cr-cu-l transition-colors"
-          >
-            {t("blog.browseStartups")} <ArrowRight className="h-4 w-4" />
-          </Link>
+      {/* Article list — real posts from lib/blog-posts replaced the
+          coming-soon block that sat here since launch. */}
+      <section className="flex-1 py-16 px-4">
+        <div className="container mx-auto max-w-3xl flex flex-col gap-5">
+          {[...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date)).map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`}
+              className="block bg-cr-paper border border-cr-p4 rounded-2xl p-6 hover:border-cr-copper/30 transition-colors">
+              <p className="text-[11px] font-mono uppercase tracking-widest text-cr-copper mb-2">
+                {post.date} · {t("blog.minRead", { minutes: post.minutes })}
+              </p>
+              <h2 className="text-xl font-bold text-cr-ink mb-2">{post.title}</h2>
+              <p className="text-sm text-cr-i3 leading-relaxed mb-3">{post.description}</p>
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-cr-copper">
+                {t("blog.readArticle")} <ArrowRight className="h-4 w-4" />
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 

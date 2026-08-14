@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { SECTOR_SLUGS } from "@/lib/industry-slugs";
+import { BLOG_POSTS } from "@/lib/blog-posts";
 import { createAdminClient } from "@/lib/supabase-server";
 import { brand } from "@/lib/brand";
 
@@ -43,6 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/status`,      changeFrequency: "daily",   priority: 0.3 },
     // One landing page per sector -- search traffic arrives by sector, not
     // by brand, and these are the pages built to catch it.
+    ...BLOG_POSTS.map(({ slug }) => ({
+      url: `${baseUrl}/blog/${slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
     ...SECTOR_SLUGS.map(({ slug }) => ({
       url: `${baseUrl}/startups/sector/${slug}`,
       changeFrequency: "daily" as const,

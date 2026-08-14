@@ -1889,7 +1889,9 @@
     "heroSub": "창업자와 VC를 위한 자금 조달 전략, 투자자 인사이트, 시장 정보.",
     "comingSoonTitle": "곧 게시글이 올라옵니다",
     "comingSoonDesc": "자금 조달 전략, 투자자 관계, 시장 정보를 다루는 심층 가이드를 준비 중입니다. 곧 다시 확인해 주세요.",
-    "browseStartups": "대신 스타트업 둘러보기"
+    "browseStartups": "대신 스타트업 둘러보기",
+    "minRead": "{minutes}분 소요",
+    "readArticle": "글 읽기"
   },
   "careers": {
     "metaTitle": "채용",

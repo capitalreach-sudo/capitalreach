@@ -1889,7 +1889,9 @@
     "heroSub": "Fondsenwervingstactieken, investeerdersinzichten en marktinformatie voor oprichters en VC's.",
     "comingSoonTitle": "Artikelen komen binnenkort",
     "comingSoonDesc": "We werken aan diepgaande gidsen over fondsenwervingsstrategie, investeerdersrelaties en marktinformatie. Kom binnenkort terug.",
-    "browseStartups": "Bekijk in plaats daarvan startups"
+    "browseStartups": "Bekijk in plaats daarvan startups",
+    "minRead": "{minutes} min leestijd",
+    "readArticle": "Lees het artikel"
   },
   "careers": {
     "metaTitle": "Vacatures",

@@ -1900,7 +1900,9 @@
     "heroSub": "Fundraising tactics, investor insights, and market intelligence for founders and VCs.",
     "comingSoonTitle": "Articles coming soon",
     "comingSoonDesc": "We're working on in-depth guides covering fundraising strategy, investor relations, and market intelligence. Check back soon.",
-    "browseStartups": "Browse startups instead"
+    "browseStartups": "Browse startups instead",
+    "minRead": "{minutes} min read",
+    "readArticle": "Read the article"
   },
   "careers": {
     "metaTitle": "Careers",

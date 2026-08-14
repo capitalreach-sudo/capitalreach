@@ -1889,7 +1889,9 @@
     "heroSub": "Taktyki pozyskiwania finansowania, spostrzeżenia inwestorów i analiza rynku dla założycieli i VC.",
     "comingSoonTitle": "Artykuły już wkrótce",
     "comingSoonDesc": "Pracujemy nad szczegółowymi przewodnikami dotyczącymi strategii pozyskiwania finansowania, relacji z inwestorami i analizy rynku. Zajrzyj tu wkrótce ponownie.",
-    "browseStartups": "Przeglądaj startupy zamiast tego"
+    "browseStartups": "Przeglądaj startupy zamiast tego",
+    "minRead": "{minutes} min czytania",
+    "readArticle": "Przeczytaj artykuł"
   },
   "careers": {
     "metaTitle": "Kariera",

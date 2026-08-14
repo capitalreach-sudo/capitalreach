@@ -1889,7 +1889,9 @@
     "heroSub": "創業者とVCのための資金調達戦術、投資家インサイト、市場インテリジェンス。",
     "comingSoonTitle": "記事は近日公開予定",
     "comingSoonDesc": "資金調達戦略、投資家関係、市場インテリジェンスをカバーする詳細なガイドを作成中です。近日中にご確認ください。",
-    "browseStartups": "代わりにスタートアップを閲覧する"
+    "browseStartups": "代わりにスタートアップを閲覧する",
+    "minRead": "読了{minutes}分",
+    "readArticle": "記事を読む"
   },
   "careers": {
     "metaTitle": "採用情報",
