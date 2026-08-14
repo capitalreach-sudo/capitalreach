@@ -56,6 +56,7 @@ const RAISING_PRESETS = [
 const SORT_OPTIONS = [
   { value: "score",   label: "AI Score"      },
   { value: "recent",  label: "Newest"         },
+  { value: "updated", label: "Recently updated" },
   { value: "mrr",     label: "Highest MRR"   },
   { value: "funding", label: "Funding Target" },
 ];
@@ -68,7 +69,7 @@ interface Startup {
   id: string; slug: string; name: string; tagline: string;
   industry: string; stage: string; funding_target: number;
   mrr: number | null; arr: number | null; growth_rate: number | null;
-  runway_months: number | null; created_at: string;
+  runway_months: number | null; created_at: string; updated_at: string;
   vaultrise_score: number | null;
   country: string | null; business_model: string | null; round_close_date: string | null;
 }
@@ -579,6 +580,16 @@ export function StartupsSearch() {
   const [lastHidden, setLastHidden] = useState<{ id: string; name: string } | null>(null);
   // Compare tray: up to three listings side by side. Pure client state.
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  // Compare tray survives reloads; unknown ids are dropped once data arrives.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("cr_compare");
+      if (raw) setCompareIds(JSON.parse(raw).slice(0, 3));
+    } catch { /* corrupted storage — start empty */ }
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem("cr_compare", JSON.stringify(compareIds)); } catch { /* quota */ }
+  }, [compareIds]);
   const [showCompare, setShowCompare] = useState(false);
   function toggleCompare(id: string) {
     setCompareIds((prev) => prev.includes(id)
@@ -708,6 +719,7 @@ export function StartupsSearch() {
       case "score":   res = [...res].sort((a, b) => ((b.vaultrise_score ?? 0) - (a.vaultrise_score ?? 0))); break;
       case "mrr":     res = [...res].sort((a, b) => (b.mrr ?? 0) - (a.mrr ?? 0)); break;
       case "recent":  res = [...res].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
+      case "updated": res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()); break;
       case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;
       case "fit":     res = myThesis ? [...res].sort((a, b) => computeMatchScore(myThesis, b).score - computeMatchScore(myThesis, a).score) : res; break;
     }
