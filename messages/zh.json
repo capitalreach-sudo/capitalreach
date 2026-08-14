@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "一页纸简介"
+  },
+  "traction": {
+    "title": "业务进展历史",
+    "sub": "记录每月快照。拥有财务权限的投资人会在你的项目页看到曲线——趋势比单个数字更有说服力。",
+    "month": "月份",
+    "users": "用户数",
+    "customers": "付费客户",
+    "record": "记录本月",
+    "saved": "已记录。",
+    "saveFailed": "无法保存。",
+    "mrrTitle": "月度 MRR",
+    "usersTitle": "月度用户数"
   }
 }

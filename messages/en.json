@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-pager"
+  },
+  "traction": {
+    "title": "Traction history",
+    "sub": "Record a monthly snapshot. Investors on financial plans see the curve on your listing — a trend persuades where a single number cannot.",
+    "month": "Month",
+    "users": "Users",
+    "customers": "Paying customers",
+    "record": "Record month",
+    "saved": "Month recorded.",
+    "saveFailed": "Could not save that month.",
+    "mrrTitle": "MRR by month",
+    "usersTitle": "Users by month"
   }
 }

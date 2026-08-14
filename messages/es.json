@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "Resumen de una página"
+  },
+  "traction": {
+    "title": "Historial de tracción",
+    "sub": "Registra una instantánea mensual. Los inversores con acceso financiero ven la curva en tu listado: una tendencia convence donde un solo número no puede.",
+    "month": "Mes",
+    "users": "Usuarios",
+    "customers": "Clientes de pago",
+    "record": "Registrar mes",
+    "saved": "Mes registrado.",
+    "saveFailed": "No se pudo guardar el mes.",
+    "mrrTitle": "MRR por mes",
+    "usersTitle": "Usuarios por mes"
   }
 }

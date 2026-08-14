@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "원페이저"
+  },
+  "traction": {
+    "title": "트랙션 추이",
+    "sub": "월별 스냅샷을 기록하세요. 재무 플랜 투자자는 목록에서 곡선을 봅니다. 단일 숫자보다 추세가 설득력이 있습니다.",
+    "month": "월",
+    "users": "사용자",
+    "customers": "유료 고객",
+    "record": "기록",
+    "saved": "기록했습니다.",
+    "saveFailed": "저장하지 못했습니다.",
+    "mrrTitle": "월별 MRR",
+    "usersTitle": "월별 사용자"
   }
 }

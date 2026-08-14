@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-pager"
+  },
+  "traction": {
+    "title": "Historia trakcji",
+    "sub": "Zapisuj miesięczny stan. Inwestorzy z dostępem finansowym widzą krzywą na twojej ofercie — trend przekonuje tam, gdzie pojedyncza liczba nie może.",
+    "month": "Miesiąc",
+    "users": "Użytkownicy",
+    "customers": "Płacący klienci",
+    "record": "Zapisz miesiąc",
+    "saved": "Zapisano miesiąc.",
+    "saveFailed": "Nie udało się zapisać miesiąca.",
+    "mrrTitle": "MRR miesięcznie",
+    "usersTitle": "Użytkownicy miesięcznie"
   }
 }

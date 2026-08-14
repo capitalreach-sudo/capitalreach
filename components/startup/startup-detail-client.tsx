@@ -23,6 +23,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { roundCloseState } from "@/lib/round-close";
+import { TractionChart, type MetricPoint } from "@/components/startup/traction-chart";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -40,6 +41,8 @@ interface Props {
   isLaunchMode:   boolean;
   /** Owner is looking at their own listing as a free investor would see it. */
   previewing?:    boolean;
+  /** Monthly snapshots; server sends them only when this viewer may see them. */
+  metricHistory?: MetricPoint[];
   viewerSuspended?: boolean;
 }
 
@@ -268,7 +271,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, metricHistory = [],
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -732,6 +735,15 @@ export function StartupDetailClient({
                     allowFullScreen
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Metric history: rendered only when the server sent it — the
+                same financial gate as the single MRR figure, enforced where
+                the data lives rather than here. */}
+            {metricHistory.length >= 2 && (
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
+                <TractionChart points={metricHistory} />
               </div>
             )}
 

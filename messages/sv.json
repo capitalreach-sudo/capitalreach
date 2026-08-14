@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-pager"
+  },
+  "traction": {
+    "title": "Traktionshistorik",
+    "sub": "Registrera en månatlig ögonblicksbild. Investerare med finansiell åtkomst ser kurvan på din notering — en trend övertygar där en enskild siffra inte kan.",
+    "month": "Månad",
+    "users": "Användare",
+    "customers": "Betalande kunder",
+    "record": "Registrera månad",
+    "saved": "Månad registrerad.",
+    "saveFailed": "Kunde inte spara månaden.",
+    "mrrTitle": "MRR per månad",
+    "usersTitle": "Användare per månad"
   }
 }

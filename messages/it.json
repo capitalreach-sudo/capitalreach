@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-pager"
+  },
+  "traction": {
+    "title": "Storico trazione",
+    "sub": "Registra uno snapshot mensile. Gli investitori con accesso finanziario vedono la curva sulla tua opportunità: un trend convince dove un numero singolo non può.",
+    "month": "Mese",
+    "users": "Utenti",
+    "customers": "Clienti paganti",
+    "record": "Registra mese",
+    "saved": "Mese registrato.",
+    "saveFailed": "Impossibile salvare il mese.",
+    "mrrTitle": "MRR per mese",
+    "usersTitle": "Utenti per mese"
   }
 }

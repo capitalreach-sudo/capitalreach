@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "Resumo de uma página"
+  },
+  "traction": {
+    "title": "Histórico de tração",
+    "sub": "Regista um retrato mensal. Os investidores com acesso financeiro veem a curva na tua oportunidade — uma tendência convence onde um número isolado não consegue.",
+    "month": "Mês",
+    "users": "Utilizadores",
+    "customers": "Clientes pagantes",
+    "record": "Registar mês",
+    "saved": "Mês registado.",
+    "saveFailed": "Não foi possível guardar o mês.",
+    "mrrTitle": "MRR por mês",
+    "usersTitle": "Utilizadores por mês"
   }
 }

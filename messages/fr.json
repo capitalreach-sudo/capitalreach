@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-pager"
+  },
+  "traction": {
+    "title": "Historique de traction",
+    "sub": "Enregistrez un instantané mensuel. Les investisseurs avec accès financier voient la courbe sur votre annonce — une tendance convainc là où un chiffre isolé ne peut pas.",
+    "month": "Mois",
+    "users": "Utilisateurs",
+    "customers": "Clients payants",
+    "record": "Enregistrer le mois",
+    "saved": "Mois enregistré.",
+    "saveFailed": "Impossible d'enregistrer le mois.",
+    "mrrTitle": "MRR par mois",
+    "usersTitle": "Utilisateurs par mois"
   }
 }

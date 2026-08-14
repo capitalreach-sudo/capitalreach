@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-pager"
+  },
+  "traction": {
+    "title": "Tractiegeschiedenis",
+    "sub": "Leg maandelijks een momentopname vast. Investeerders met financiële toegang zien de curve op je aanbod — een trend overtuigt waar één getal dat niet kan.",
+    "month": "Maand",
+    "users": "Gebruikers",
+    "customers": "Betalende klanten",
+    "record": "Maand vastleggen",
+    "saved": "Maand vastgelegd.",
+    "saveFailed": "Kon de maand niet opslaan.",
+    "mrrTitle": "MRR per maand",
+    "usersTitle": "Gebruikers per maand"
   }
 }

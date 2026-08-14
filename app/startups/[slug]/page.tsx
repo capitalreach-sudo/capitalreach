@@ -214,6 +214,20 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx)),
   };
 
+  // Metric history rides the same gate as the single MRR number: financial
+  // tier (or the owner outside preview). Fetched only when it will render, so
+  // a gated viewer's payload does not carry the curve either.
+  let metricHistory: Array<{ month: string; mrr: number | null; arr: number | null; user_count: number | null; paying_customers: number | null }> = [];
+  if (viewerCaps.viewFinancials || (isOwner && !previewing) || (viewerIsAdmin && !previewing)) {
+    const { data: mh } = await createAdminClient()
+      .from("startup_metrics")
+      .select("month, mrr, arr, user_count, paying_customers")
+      .eq("startup_id", startup.id)
+      .order("month", { ascending: true })
+      .limit(24);
+    metricHistory = mh ?? [];
+  }
+
   return (
     <>
       <Navbar />
@@ -230,6 +244,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         isLaunchMode={isLaunch}
         viewerSuspended={previewing ? false : viewerSuspended}
         previewing={previewing}
+        metricHistory={metricHistory}
       />
       <Footer />
     </>

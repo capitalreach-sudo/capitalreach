@@ -1151,6 +1151,47 @@ export type Database = {
           },
         ]
       }
+      startup_metrics: {
+        Row: {
+          arr: number | null
+          created_at: string
+          id: string
+          month: string
+          mrr: number | null
+          paying_customers: number | null
+          startup_id: string
+          user_count: number | null
+        }
+        Insert: {
+          arr?: number | null
+          created_at?: string
+          id?: string
+          month: string
+          mrr?: number | null
+          paying_customers?: number | null
+          startup_id: string
+          user_count?: number | null
+        }
+        Update: {
+          arr?: number | null
+          created_at?: string
+          id?: string
+          month?: string
+          mrr?: number | null
+          paying_customers?: number | null
+          startup_id?: string
+          user_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_metrics_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       startup_milestones: {
         Row: {
           date: string

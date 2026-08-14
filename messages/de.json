@@ -2341,5 +2341,17 @@
   },
   "onePager": {
     "open": "One-Pager"
+  },
+  "traction": {
+    "title": "Traktionsverlauf",
+    "sub": "Erfasse monatlich einen Stand. Investoren mit Finanzzugang sehen die Kurve auf deinem Listing — ein Trend überzeugt, wo eine einzelne Zahl es nicht kann.",
+    "month": "Monat",
+    "users": "Nutzer",
+    "customers": "Zahlende Kunden",
+    "record": "Monat erfassen",
+    "saved": "Monat erfasst.",
+    "saveFailed": "Monat konnte nicht gespeichert werden.",
+    "mrrTitle": "MRR nach Monat",
+    "usersTitle": "Nutzer nach Monat"
   }
 }
