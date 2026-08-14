@@ -37,11 +37,17 @@ async function runChecks(): Promise<Array<{ key: string; label: string; state: C
     db = "down";
   }
 
-  // Auth: GoTrue's health endpoint, which is public by design.
+  // Auth: GoTrue's health endpoint. It sits behind Supabase's gateway, which
+  // 401s any request without an apikey header -- the first version of this
+  // check omitted it and reported auth "Down" on an otherwise healthy stack,
+  // which the page itself surfaced within minutes of going live. A status
+  // check that cannot distinguish "service down" from "I forgot my key" is
+  // worse than none.
   let auth: CheckState = "ok";
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/health`, {
       cache: "no-store",
+      headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "" },
       signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) auth = "down";
