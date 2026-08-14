@@ -19,7 +19,7 @@ export async function GET() {
     const [startups, investors, deals] = await Promise.all([
       supabase
         .from("startups")
-        .select("id, name, industry, stage, mrr, vaultrise_score, funding_target, status, slug, created_at, featured")
+        .select("id, name, industry, stage, mrr, vaultrise_score, funding_target, status, slug, created_at")
         .eq("status", "active"),
       supabase
         .from("profiles")

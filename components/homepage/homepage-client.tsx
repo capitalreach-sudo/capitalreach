@@ -95,7 +95,6 @@ export function HomepageClient({ stats, listings }: Props) {
     { feature: t("pricing.feature_nda"),       values: ["—", "✓", "✓"]                     as [string,string,string] },
     { feature: t("pricing.feature_pipeline"),  values: ["—", "✓", "✓"]                     as [string,string,string] },
     { feature: t("pricing.feature_analytics"), values: ["—", "—", "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_featured"),  values: ["—", "—", "✓"]                     as [string,string,string] },
     { feature: t("pricing.feature_priority"),  values: ["—", "✓", "✓"]                     as [string,string,string] },
   ];
 

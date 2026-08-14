@@ -83,7 +83,6 @@ const VIS_ROWS = [
   { labelKey: "dashboard.visFinancials", tier: "Growth",  key: "growth" },
   { labelKey: "dashboard.visDemo",       tier: "Growth",  key: "growth" },
   { labelKey: "dashboard.visAiScore",    tier: "Growth",  key: "growth" },
-  { labelKey: "dashboard.visFeatured",   tier: "Growth",  key: "growth" },
 ] as const;
 
 // ── Main ──────────────────────────────────────────────────────────────────────

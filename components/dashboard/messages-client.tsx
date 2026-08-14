@@ -692,7 +692,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   {profile.role === "investor" ? t("dashboard.searchStartupHint") : targetKind === "investor" ? t("dashboard.searchInvestorHint") : t("dashboard.searchStartupHint")}
                 </p>
               </div>
-              <button onClick={closeNewModal} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+              <button onClick={closeNewModal} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
             </div>

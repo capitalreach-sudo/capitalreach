@@ -55,7 +55,6 @@ export interface FounderCapabilities {
   messageLimit:        number;   // Infinity = unlimited
   aiPitchScore:        boolean;
   aiWrittenFeedback:   boolean;
-  featuredBadge:       boolean;
   demoVideo:           boolean;
   priorityReview:      boolean;
   analyticsLevel:      "none" | "basic" | "full";
@@ -64,7 +63,7 @@ export interface FounderCapabilities {
 const FOUNDER_SUSPENDED: FounderCapabilities = {
   listStartup: false, listingLimit: 0, docLimit: 0, useNDA: false,
   seeInvestorIdentity: false, messageLimit: 0, aiPitchScore: false,
-  aiWrittenFeedback: false, featuredBadge: false, demoVideo: false,
+  aiWrittenFeedback: false, demoVideo: false,
   priorityReview: false, analyticsLevel: "none",
 };
 
@@ -85,7 +84,6 @@ export function founderCan(ctx: AccessContext): FounderCapabilities {
     messageLimit:        tier === "growth" ? Infinity : tier === "starter" ? 50 : 5,
     aiPitchScore:        plan.features.aiPitchFeedback,
     aiWrittenFeedback:   tier === "growth",
-    featuredBadge:       plan.features.featuredBadge,
     demoVideo:           plan.features.demoVideo,
     priorityReview:      plan.features.priorityReview,
     analyticsLevel:      !plan.features.analytics ? "basic" : "full",
@@ -192,9 +190,6 @@ export function canFounderAiPitchFeedback(ctx: AccessContext): boolean {
   return founderCan(ctx).aiPitchScore;
 }
 
-export function canFounderFeaturedBadge(ctx: AccessContext): boolean {
-  return founderCan(ctx).featuredBadge;
-}
 
 export function canFounderDemoVideo(ctx: AccessContext): boolean {
   return founderCan(ctx).demoVideo;

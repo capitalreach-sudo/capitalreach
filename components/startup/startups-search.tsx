@@ -68,7 +68,7 @@ interface Startup {
   id: string; slug: string; name: string; tagline: string;
   industry: string; stage: string; funding_target: number;
   mrr: number | null; arr: number | null; growth_rate: number | null;
-  runway_months: number | null; featured: boolean; created_at: string;
+  runway_months: number | null; created_at: string;
   vaultrise_score: number | null;
   country: string | null; business_model: string | null; round_close_date: string | null;
 }

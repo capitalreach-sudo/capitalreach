@@ -340,7 +340,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("deals.newDealTitle")}</p>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}><X style={{ width: 16, height: 16 }} /></button>
+          <button onClick={onClose} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}><X style={{ width: 16, height: 16 }} /></button>
         </div>
 
         {isAdmin ? (
@@ -1001,7 +1001,7 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
           style={{ flex: 1, height: "32px", background: "var(--cr-down)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", cursor: canConfirm ? "pointer" : "default", opacity: canConfirm ? 1 : 0.5 }}>
           {t("deals.confirmPass")}
         </button>
-        <button onClick={onCancel}
+        <button onClick={onCancel} aria-label={t("common.close")}
           style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
           <X style={{ width: 15, height: 15 }} />
         </button>

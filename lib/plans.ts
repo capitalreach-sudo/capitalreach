@@ -7,7 +7,6 @@ export interface FounderFeatures {
   analytics:          boolean;
   aiPitchFeedback:    boolean;
   documentsLimit:     number;   // max documents (0 = none)
-  featuredBadge:      boolean;
   demoVideo:          boolean;
   priorityReview:     boolean;
   customSlug:         boolean;
@@ -37,7 +36,6 @@ export const FOUNDER_PLANS: Record<FounderPlanId, FounderPlan> = {
       analytics:       false,
       aiPitchFeedback: false,
       documentsLimit:  0,
-      featuredBadge:   false,
       demoVideo:       false,
       priorityReview:  false,
       customSlug:      false,
@@ -55,7 +53,6 @@ export const FOUNDER_PLANS: Record<FounderPlanId, FounderPlan> = {
       analytics:       true,
       aiPitchFeedback: true,
       documentsLimit:  3,
-      featuredBadge:   false,
       demoVideo:       false,
       priorityReview:  false,
       customSlug:      true,
@@ -72,7 +69,6 @@ export const FOUNDER_PLANS: Record<FounderPlanId, FounderPlan> = {
       analytics:       true,
       aiPitchFeedback: true,
       documentsLimit:  10,
-      featuredBadge:   true,
       demoVideo:       true,
       priorityReview:  true,
       customSlug:      true,
@@ -236,7 +232,6 @@ export type FounderAction =
   | "listed"
   | "analytics"
   | "aiPitchFeedback"
-  | "featuredBadge"
   | "demoVideo"
   | "priorityReview"
   | "customSlug";

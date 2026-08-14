@@ -24,7 +24,6 @@ function founderFeatureRows(plan: FounderPlan, t: TFn): FeatureRow[] {
     { text: t("pricing.feature_analyticsBoard"),   on: f.analytics },
     { text: f.documentsLimit > 0 ? t("pricing.feature_uploadDocs", { n: f.documentsLimit }) : t("pricing.feature_docUploads"), on: f.documentsLimit > 0 },
     { text: t("pricing.feature_aiPitchFeedback"),  on: f.aiPitchFeedback },
-    { text: t("pricing.feature_featuredBadge"),    on: f.featuredBadge },
     { text: t("pricing.feature_demoVideo"),        on: f.demoVideo },
   ];
 }
