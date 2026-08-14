@@ -2269,5 +2269,13 @@
     "readOnly": "Nur Lesen — Aktionen deaktiviert",
     "exit": "Zurück zum Admin",
     "open": "Dashboard ansehen"
+  },
+  "health": {
+    "title": "Systemzustand",
+    "errorCount": "{count} ungelöst",
+    "noSources": "Noch keine Hintergrundjobs gemeldet. Der tägliche Cron meldet sich nach dem nächsten Lauf.",
+    "lastRun": "ok vor {count} T.",
+    "neverRan": "nie gemeldet",
+    "dismiss": "Fehler verwerfen"
   }
 }

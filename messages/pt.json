@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Reativado",
     "actSetTier": "Plano alterado",
     "unknownAdmin": "Administrador desconhecido"
+  },
+  "health": {
+    "title": "Estado do sistema",
+    "errorCount": "{count} por resolver",
+    "noSources": "Nenhuma tarefa em segundo plano reportou ainda. O cron diário reporta aqui após a próxima execução.",
+    "lastRun": "ok há {count} d",
+    "neverRan": "nunca reportou",
+    "dismiss": "Dispensar este erro"
   }
 }

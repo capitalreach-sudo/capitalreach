@@ -2269,5 +2269,13 @@
     "readOnly": "Read-only — actions are disabled",
     "exit": "Back to admin",
     "open": "View dashboard"
+  },
+  "health": {
+    "title": "System health",
+    "errorCount": "{count} unresolved",
+    "noSources": "No background jobs have reported yet. The daily cron reports here after its next run.",
+    "lastRun": "ok {count}d ago",
+    "neverRan": "never reported",
+    "dismiss": "Dismiss this error"
   }
 }

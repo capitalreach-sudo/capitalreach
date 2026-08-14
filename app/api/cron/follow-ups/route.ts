@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
 import { notifyUser, notifyUsers } from "@/lib/notify-user";
+import { logSystemEvent } from "@/lib/system-events";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,7 @@ export async function GET(req: NextRequest) {
 
   if (error) {
     console.error("[cron/follow-ups]", error);
+    await logSystemEvent("cron/follow-ups", "error", "Due-deals query failed", { error: error.message });
     return NextResponse.json({ error: "Query failed" }, { status: 500 });
   }
 
@@ -134,6 +136,19 @@ export async function GET(req: NextRequest) {
       searchNotified++;
     }
   }
+
+  // A success heartbeat, so /admin can show when the cron last ran at all --
+  // the difference between "quiet because nothing was due" and "quiet because
+  // it has not run for a week" is exactly what this table exists to expose.
+  await logSystemEvent("cron/follow-ups", "info", "Run completed", {
+    checked: due?.length ?? 0, notified, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified,
+  });
+
+  // Prune info rows older than 30 days in passing; errors stay until deleted
+  // from /admin. Piggybacks on the daily run instead of needing its own job.
+  await admin.from("system_events").delete().eq("level", "info")
+    .lt("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    .then(undefined, () => {});
 
   return NextResponse.json({
     ok: true,

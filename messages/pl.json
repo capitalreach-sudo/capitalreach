@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Odwieszono",
     "actSetTier": "Zmieniono plan",
     "unknownAdmin": "Nieznany administrator"
+  },
+  "health": {
+    "title": "Stan systemu",
+    "errorCount": "{count} nierozwiązanych",
+    "noSources": "Żadne zadania w tle jeszcze nie raportowały. Dzienny cron pojawi się tu po następnym uruchomieniu.",
+    "lastRun": "ok {count} dni temu",
+    "neverRan": "nigdy nie raportował",
+    "dismiss": "Odrzuć ten błąd"
   }
 }

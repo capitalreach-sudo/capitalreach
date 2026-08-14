@@ -2269,5 +2269,13 @@
     "actUnsuspend": "已恢复",
     "actSetTier": "已更改方案",
     "unknownAdmin": "未知管理员"
+  },
+  "health": {
+    "title": "系统健康",
+    "errorCount": "{count} 个未解决",
+    "noSources": "尚无后台任务上报。每日定时任务将在下次运行后在此显示。",
+    "lastRun": "{count} 天前正常",
+    "neverRan": "从未上报",
+    "dismiss": "忽略此错误"
   }
 }

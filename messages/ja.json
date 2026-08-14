@@ -2269,5 +2269,13 @@
     "actUnsuspend": "停止解除",
     "actSetTier": "プラン変更",
     "unknownAdmin": "不明な管理者"
+  },
+  "health": {
+    "title": "システム状態",
+    "errorCount": "未解決 {count} 件",
+    "noSources": "バックグラウンドジョブの報告はまだありません。日次クーロンは次回実行後にここに表示されます。",
+    "lastRun": "{count}日前に正常",
+    "neverRan": "報告なし",
+    "dismiss": "このエラーを消す"
   }
 }

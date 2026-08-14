@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logSystemEvent } from "@/lib/system-events";
 import { createAdminClient } from "@/lib/supabase-server";
 import { sendNdaSignedEmail } from "@/lib/resend";
 import { notifyUsers } from "@/lib/notify-user";
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
 
   if (!nda) {
     console.error("NDA record not found for envelope:", envelopeId);
+    await logSystemEvent("webhook/nda", "error", "NDA record not found for envelope", { envelopeId });
     return NextResponse.json({ received: true });
   }
 

@@ -3,6 +3,7 @@ import { AdminClient } from "@/components/admin/admin-client";
 import type { Profile, Startup, Investor, Deal } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { AdminPulse, type PulseMetric, type HealthListing, type AdminAction } from "@/components/admin/admin-pulse";
+import { SystemHealth, type SystemEvent } from "@/components/admin/system-health";
 
 // The exact embed shapes AdminClient's props declare; asserting them here is
 // licensed by the DB CHECK constraints (unions) and NOT NULL owner FKs (embeds).
@@ -57,6 +58,7 @@ export default async function AdminPage() {
     { count: closedNow }, { count: closedPrev },
     { data: healthRows },
     { data: adminActions },
+    { data: systemEvents },
   ] = await Promise.all([
     countIn("profiles", "created_at", weekAgo),
     countIn("profiles", "created_at", twoWeeksAgo, weekAgo),
@@ -93,6 +95,14 @@ export default async function AdminPage() {
       .order("created_at", { ascending: false })
       .limit(12)
       .returns<AdminAction[]>(),
+    // Newest 100 events: enough to show every recent error and each source's
+    // latest heartbeat without paging.
+    supabase
+      .from("system_events")
+      .select("id, source, level, message, detail, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100)
+      .returns<SystemEvent[]>(),
   ]);
 
   const pulse: PulseMetric[] = [
@@ -119,6 +129,10 @@ export default async function AdminPage() {
     <>
       <Navbar />
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 24px 0" }}>
+        <SystemHealth
+          events={systemEvents ?? []}
+          knownSources={["cron/follow-ups"]}
+        />
         <AdminPulse metrics={pulse} listings={healthRows ?? []} actions={adminActions ?? []} />
       </div>
       <AdminClient

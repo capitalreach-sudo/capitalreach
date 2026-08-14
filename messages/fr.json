@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Rétabli",
     "actSetTier": "Offre modifiée",
     "unknownAdmin": "Admin inconnu"
+  },
+  "health": {
+    "title": "État du système",
+    "errorCount": "{count} non résolus",
+    "noSources": "Aucune tâche de fond n'a encore rendu compte. Le cron quotidien apparaîtra ici après sa prochaine exécution.",
+    "lastRun": "ok il y a {count} j",
+    "neverRan": "jamais rapporté",
+    "dismiss": "Ignorer cette erreur"
   }
 }

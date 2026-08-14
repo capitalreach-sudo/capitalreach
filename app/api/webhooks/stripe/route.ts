@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logSystemEvent } from "@/lib/system-events";
 import { constructWebhookEvent, TIER_MAP } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase-server";
 import { incrementMemberCount } from "@/lib/launchMode";
@@ -16,6 +17,7 @@ export async function POST(req: NextRequest) {
     event = constructWebhookEvent(Buffer.from(body), sig);
   } catch (err) {
     console.error("Stripe webhook signature verification failed:", err);
+    await logSystemEvent("webhook/stripe", "error", "Signature verification failed", { error: String(err) });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -228,6 +230,7 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     console.error("Error processing webhook:", err);
+    await logSystemEvent("webhook/stripe", "error", "Handler failed", { error: String(err) });
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
   }
 

@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Återaktiverad",
     "actSetTier": "Plan ändrad",
     "unknownAdmin": "Okänd administratör"
+  },
+  "health": {
+    "title": "Systemhälsa",
+    "errorCount": "{count} olösta",
+    "noSources": "Inga bakgrundsjobb har rapporterat än. Den dagliga cronen rapporterar här efter nästa körning.",
+    "lastRun": "ok {count} d sedan",
+    "neverRan": "aldrig rapporterat",
+    "dismiss": "Avfärda felet"
   }
 }

@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Schorsing opgeheven",
     "actSetTier": "Plan gewijzigd",
     "unknownAdmin": "Onbekende beheerder"
+  },
+  "health": {
+    "title": "Systeemstatus",
+    "errorCount": "{count} onopgelost",
+    "noSources": "Nog geen achtergrondtaken gerapporteerd. De dagelijkse cron meldt zich hier na de volgende run.",
+    "lastRun": "ok {count} d geleden",
+    "neverRan": "nooit gerapporteerd",
+    "dismiss": "Deze fout negeren"
   }
 }

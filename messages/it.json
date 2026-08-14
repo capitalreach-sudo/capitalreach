@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Riattivato",
     "actSetTier": "Piano cambiato",
     "unknownAdmin": "Admin sconosciuto"
+  },
+  "health": {
+    "title": "Stato del sistema",
+    "errorCount": "{count} irrisolti",
+    "noSources": "Nessun job in background ha ancora riportato. Il cron giornaliero comparirà qui dopo la prossima esecuzione.",
+    "lastRun": "ok {count} g fa",
+    "neverRan": "mai riportato",
+    "dismiss": "Ignora questo errore"
   }
 }

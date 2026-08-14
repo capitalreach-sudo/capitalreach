@@ -2269,5 +2269,13 @@
     "actUnsuspend": "Reactivado",
     "actSetTier": "Plan cambiado",
     "unknownAdmin": "Administrador desconocido"
+  },
+  "health": {
+    "title": "Estado del sistema",
+    "errorCount": "{count} sin resolver",
+    "noSources": "Ningún trabajo en segundo plano ha informado aún. El cron diario informará aquí tras su próxima ejecución.",
+    "lastRun": "ok hace {count} d",
+    "neverRan": "nunca ha informado",
+    "dismiss": "Descartar este error"
   }
 }
