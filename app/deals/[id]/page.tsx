@@ -1,6 +1,8 @@
 import { redirect, notFound } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
+export const metadata = { title: "Deal", robots: { index: false } };
+
 /**
  * Canonical address for a single deal.
  *
