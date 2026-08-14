@@ -76,13 +76,13 @@ const primaryBtn: React.CSSProperties = {
 // ── Visibility feature rows ───────────────────────────────────────────────────
 
 const VIS_ROWS = [
-  { labelKey: "dashboard.visName",       always: true },
-  { labelKey: "dashboard.visTeam",       tier: "Starter", key: "docs" },
-  { labelKey: "dashboard.visDeck",       tier: "Starter", key: "docs" },
-  { labelKey: "dashboard.visMessaging",  tier: "Starter", key: "docs" },
-  { labelKey: "dashboard.visFinancials", tier: "Growth",  key: "growth" },
-  { labelKey: "dashboard.visDemo",       tier: "Growth",  key: "growth" },
-  { labelKey: "dashboard.visAiScore",    tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visName",       tipKey: "pricing.tipVisName",      always: true },
+  { labelKey: "dashboard.visTeam",       tipKey: "pricing.tipVisTeam",      tier: "Starter", key: "docs" },
+  { labelKey: "dashboard.visDeck",       tipKey: "pricing.tipVisDeck",      tier: "Starter", key: "docs" },
+  { labelKey: "dashboard.visMessaging",  tipKey: "pricing.tipMessaging",    tier: "Starter", key: "docs" },
+  { labelKey: "dashboard.visFinancials", tipKey: "pricing.tipFinancials",   tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visDemo",       tipKey: "pricing.tipDemoVideo",    tier: "Growth",  key: "growth" },
+  { labelKey: "dashboard.visAiScore",    tipKey: "pricing.tipAiScore",      tier: "Growth",  key: "growth" },
 ] as const;
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -712,7 +712,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                           {unlocked
                             ? <CheckCircle2 style={{ width: 13, height: 13, color: "var(--cr-up)", flexShrink: 0 }} />
                             : <Lock style={{ width: 13, height: 13, color: "var(--cr-ink-4)", flexShrink: 0 }} />}
-                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(row.labelKey)}</span>
+                          <span data-tip={t(row.tipKey)} tabIndex={0} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(row.labelKey)}</span>
                         </div>
                         {!unlocked && "tier" in row && (
                           <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>

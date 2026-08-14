@@ -39,7 +39,7 @@ function founderTier(ctx: AccessContext): FounderPlanId | "suspended" {
 
 function investorTier(ctx: AccessContext): InvestorPlanId | "suspended" {
   if (ctx.suspended) return "suspended";
-  if (ctx.role === "admin") return "pro";
+  if (ctx.role === "admin") return "institution";
   if (ctx.isLaunchMode) return "pro";
   return getInvestorPlan(ctx.tier).id;
 }

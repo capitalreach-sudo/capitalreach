@@ -198,7 +198,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   // including URL stripping, so the preview is honest rather than cosmetic.
   const viewerCaps = investorCan({
     userId: previewing ? null : investorId,
-    role: previewing ? ("investor" as const) : investorId ? ("investor" as const) : null,
+    role: previewing ? ("investor" as const) : viewerIsAdmin ? ("admin" as const) : investorId ? ("investor" as const) : null,
     tier: previewing ? null : investorTier,
     isLaunchMode: isLaunch,
     suspended: previewing ? false : viewerSuspended,
@@ -240,6 +240,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         relatedStartups={related ?? []}
         updates={updates ?? []}
         isOwner={previewing ? false : isOwner}
+        viewerIsAdmin={previewing ? false : viewerIsAdmin}
         questions={questions ?? []}
         isLaunchMode={isLaunch}
         viewerSuspended={previewing ? false : viewerSuspended}

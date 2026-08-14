@@ -14,25 +14,25 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Feature row builders ──────────────────────────────────────
 
-type FeatureRow = { text: string; on: boolean };
+type FeatureRow = { text: string; on: boolean; tip: string };
 type TFn = (key: string, vars?: Record<string, string | number>) => string;
 
 function founderFeatureRows(plan: FounderPlan, t: TFn): FeatureRow[] {
   const f = plan.features;
   return [
-    { text: t("pricing.feature_publicListing"),   on: f.listed },
-    { text: t("pricing.feature_analyticsBoard"),   on: f.analytics },
-    { text: f.documentsLimit > 0 ? t("pricing.feature_uploadDocs", { n: f.documentsLimit }) : t("pricing.feature_docUploads"), on: f.documentsLimit > 0 },
-    { text: t("pricing.feature_aiPitchFeedback"),  on: f.aiPitchFeedback },
-    { text: t("pricing.feature_demoVideo"),        on: f.demoVideo },
+    { text: t("pricing.feature_publicListing"),   on: f.listed,           tip: t("pricing.tipPublicListing") },
+    { text: t("pricing.feature_analyticsBoard"),   on: f.analytics,        tip: t("pricing.tipAnalytics") },
+    { text: f.documentsLimit > 0 ? t("pricing.feature_uploadDocs", { n: f.documentsLimit }) : t("pricing.feature_docUploads"), on: f.documentsLimit > 0, tip: t("pricing.tipDocs") },
+    { text: t("pricing.feature_aiPitchFeedback"),  on: f.aiPitchFeedback,  tip: t("pricing.tipAiScore") },
+    { text: t("pricing.feature_demoVideo"),        on: f.demoVideo,        tip: t("pricing.tipDemoVideo") },
   ];
 }
 
 function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
   const f = plan.features;
   return [
-    { text: t("pricing.feature_browseStartups"),   on: f.browseStartups },
-    { text: t("pricing.feature_financials"),        on: f.viewFinancials },
+    { text: t("pricing.feature_browseStartups"),   on: f.browseStartups,  tip: t("pricing.tipBrowse") },
+    { text: t("pricing.feature_financials"),        on: f.viewFinancials,  tip: t("pricing.tipFinancials") },
     {
       text: !f.sendMessages
         ? t("pricing.feature_messaging")
@@ -40,10 +40,11 @@ function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
           ? t("pricing.feature_unlimitedMessaging")
           : t("pricing.feature_messagingLimit", { n: f.messageLimit }),
       on: f.sendMessages,
+      tip: t("pricing.tipMessaging"),
     },
-    { text: t("pricing.feature_aiDiligence"),  on: f.aiDueDiligence },
-    { text: t("pricing.feature_exportCsv"),    on: f.exportData },
-    { text: t("pricing.feature_savedSearches"), on: f.savedSearches },
+    { text: t("pricing.feature_aiDiligence"),  on: f.aiDueDiligence,  tip: t("pricing.tipDiligence") },
+    { text: t("pricing.feature_exportCsv"),    on: f.exportData,      tip: t("pricing.tipExport") },
+    { text: t("pricing.feature_savedSearches"), on: f.savedSearches,  tip: t("pricing.tipSavedSearches") },
   ];
 }
 
@@ -194,7 +195,7 @@ function PlanCard({
                   <span style={{ width: 10, height: "1px", background: "var(--cr-rule-dark)" }} />
                 </span>
               )}
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: f.on ? "var(--cr-ink-3)" : "var(--cr-ink-4)" }}>{f.text}</span>
+              <span data-tip={f.tip} tabIndex={0} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: f.on ? "var(--cr-ink-3)" : "var(--cr-ink-4)" }}>{f.text}</span>
             </li>
           ))}
         </ul>

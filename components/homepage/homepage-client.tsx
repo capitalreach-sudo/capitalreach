@@ -90,21 +90,21 @@ export function HomepageClient({ stats, listings }: Props) {
   ] as const;
 
   const FOUNDER_FEATURES_T = [
-    { feature: t("pricing.feature_listings"),  values: ["1", "1", t("common.unlimited")]   as [string,string,string] },
-    { feature: t("pricing.feature_aiScore"),   values: ["—", "✓", "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_nda"),       values: ["—", "✓", "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_pipeline"),  values: ["—", "✓", "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_analytics"), values: ["—", "—", "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_priority"),  values: ["—", "✓", "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_listings"),  tip: t("pricing.tipListings"),  values: ["1", "1", t("common.unlimited")]   as [string,string,string] },
+    { feature: t("pricing.feature_aiScore"),   tip: t("pricing.tipAiScore"),   values: ["—", "✓", "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_nda"),       tip: t("pricing.tipNda"),       values: ["—", "✓", "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_pipeline"),  tip: t("pricing.tipPipeline"),  values: ["—", "✓", "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_analytics"), tip: t("pricing.tipAnalytics"), values: ["—", "—", "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_priority"),  tip: t("pricing.tipPriority"),  values: ["—", "✓", "✓"]                     as [string,string,string] },
   ];
 
   const INVESTOR_FEATURES_T = [
-    { feature: t("pricing.feature_investorBrowse"),     values: ["✓", "✓",          "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_investorFinancials"), values: ["—", "✓",          "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_investorMessaging"),  values: ["—", "✓",          "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_investorDiligence"),  values: ["—", "$29/report", t("common.included")]    as [string,string,string] },
-    { feature: t("pricing.feature_investorMatching"),   values: ["—", "—",          "✓"]                     as [string,string,string] },
-    { feature: t("pricing.feature_investorExport"),     values: ["—", "—",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorBrowse"), tip: t("pricing.tipBrowse"),     values: ["✓", "✓",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorFinancials"), tip: t("pricing.tipFinancials"), values: ["—", "✓",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorMessaging"), tip: t("pricing.tipMessaging"),  values: ["—", "✓",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorDiligence"), tip: t("pricing.tipDiligence"),  values: ["—", "$29/report", t("common.included")]    as [string,string,string] },
+    { feature: t("pricing.feature_investorMatching"), tip: t("pricing.tipMatching"),   values: ["—", "—",          "✓"]                     as [string,string,string] },
+    { feature: t("pricing.feature_investorExport"), tip: t("pricing.tipExport"),     values: ["—", "—",          "✓"]                     as [string,string,string] },
   ];
 
   // Stats — filter zeros
@@ -645,9 +645,9 @@ export function HomepageClient({ stats, listings }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {pricingFeatures.map(({ feature, values }, rowIdx) => (
+                {pricingFeatures.map(({ feature, tip, values }, rowIdx) => (
                   <tr key={feature} className="pricing-row" style={{ background: rowIdx % 2 === 0 ? "rgba(26,22,18,0.03)" : "transparent", borderBottom: "1px solid rgba(26,22,18,0.08)" }}>
-                    <td style={{ padding: "13px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "#1A1612" }}>{feature}</td>
+                    <td style={{ padding: "13px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "#1A1612" }}><span data-tip={tip} tabIndex={0}>{feature}</span></td>
                     {values.map((v, i) => {
                       const isCheck = v === "✓";
                       const isDash  = v === "—";

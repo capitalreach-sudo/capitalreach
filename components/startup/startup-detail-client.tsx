@@ -41,6 +41,8 @@ interface Props {
   isLaunchMode:   boolean;
   /** Owner is looking at their own listing as a free investor would see it. */
   previewing?:    boolean;
+  /** Admins bypass every viewer gate (never while previewing). */
+  viewerIsAdmin?: boolean;
   /** Monthly snapshots; server sends them only when this viewer may see them. */
   metricHistory?: MetricPoint[];
   viewerSuspended?: boolean;
@@ -271,7 +273,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, metricHistory = [],
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [],
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -285,7 +287,7 @@ export function StartupDetailClient({
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
 
-  const accessCtx = { userId: investorId, role: investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
+  const accessCtx = { userId: investorId, role: viewerIsAdmin ? "admin" as const : investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
   const caps          = investorCan(accessCtx);
   const canFinancials = caps.viewFinancials;
   const canMessage    = caps.message;
