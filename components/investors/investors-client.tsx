@@ -17,6 +17,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
 import { INVESTOR_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const TYPE_META: Record<string, { labelKey: string; color: string; bg: string; border: string }> = {
   angel:         { labelKey: "investors.typeAngel",        color: "text-blue-300",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
@@ -766,14 +767,19 @@ export function InvestorsClient() {
 
               {/* Investor grid */}
               {results.length === 0 ? (
-                <div className="text-center py-20 text-cr-i4">
-                  <Users className="h-10 w-10 mx-auto mb-3 text-cr-i4/40" />
-                  <p className="font-medium text-cr-i3">{t("investors.noMatch")}</p>
-                  <p className="text-sm mt-1">{t("investors.noMatchSub")}</p>
-                  <button onClick={() => setF(DEFAULT)} className="mt-4 text-sm text-cr-copper hover:underline font-medium">
-                    {t("investors.clearAllFilters")}
-                  </button>
-                </div>
+                /* The shared shell, same as the startups browse — every list
+                   surface's dead end should look like the same product. */
+                <EmptyState
+                  Icon={Users}
+                  title={t("investors.noMatch")}
+                  body={t("investors.noMatchSub")}
+                  action={
+                    <button onClick={() => setF(DEFAULT)}
+                      style={{ background: "transparent", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "8px 20px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", cursor: "pointer" }}>
+                      {t("investors.clearAllFilters")}
+                    </button>
+                  }
+                />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                   {results.map((inv, idx) => {
