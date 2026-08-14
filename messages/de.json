@@ -1032,7 +1032,9 @@
     "new": "Neu",
     "runwayMonths": "{n} Mon. Reichweite",
     "unlockScores": "Upgrade, um Finanzen & KI-Scores freizuschalten",
-    "scoreTitle": "KI-Score: {score}/100"
+    "scoreTitle": "KI-Score: {score}/100",
+    "closingSoon": "Schließt bald",
+    "closesIn": "Schließt in {count} T."
   },
   "startupDetail": {
     "overview": "Übersicht",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok vor {count} T.",
     "neverRan": "nie gemeldet",
     "dismiss": "Fehler verwerfen"
+  },
+  "editor": {
+    "roundCloseDate": "Runde schließt am (optional)"
   }
 }

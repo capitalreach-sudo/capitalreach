@@ -1199,7 +1199,9 @@
     "new": "Nuovo",
     "runwayMonths": "{n} mesi di runway",
     "unlockScores": "Esegui l'upgrade per sbloccare finanze e punteggi IA",
-    "scoreTitle": "Punteggio IA: {score}/100"
+    "scoreTitle": "Punteggio IA: {score}/100",
+    "closingSoon": "Chiude a breve",
+    "closesIn": "Chiude tra {count} g"
   },
   "investors": {
     "pageTitle": "Investitori verificati",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok {count} g fa",
     "neverRan": "mai riportato",
     "dismiss": "Ignora questo errore"
+  },
+  "editor": {
+    "roundCloseDate": "Il round chiude il (facoltativo)"
   }
 }

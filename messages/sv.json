@@ -1199,7 +1199,9 @@
     "new": "Nytt",
     "runwayMonths": "{n} mån runway",
     "unlockScores": "Uppgradera för att låsa upp ekonomi och AI-poäng",
-    "scoreTitle": "AI-poäng: {score}/100"
+    "scoreTitle": "AI-poäng: {score}/100",
+    "closingSoon": "Stänger snart",
+    "closesIn": "Stänger om {count} d"
   },
   "investors": {
     "pageTitle": "Verifierade investerare",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok {count} d sedan",
     "neverRan": "aldrig rapporterat",
     "dismiss": "Avfärda felet"
+  },
+  "editor": {
+    "roundCloseDate": "Rundan stänger den (valfritt)"
   }
 }

@@ -1199,7 +1199,9 @@
     "new": "신규",
     "runwayMonths": "활주로 {n}개월",
     "unlockScores": "업그레이드하여 재무 정보와 AI 점수를 잠금 해제하세요",
-    "scoreTitle": "AI 점수: {score}/100"
+    "scoreTitle": "AI 점수: {score}/100",
+    "closingSoon": "곧 마감",
+    "closesIn": "{count}일 후 마감"
   },
   "investors": {
     "pageTitle": "검증된 투자자",
@@ -2277,5 +2279,8 @@
     "lastRun": "{count}일 전 정상",
     "neverRan": "보고 없음",
     "dismiss": "이 오류 지우기"
+  },
+  "editor": {
+    "roundCloseDate": "라운드 마감일 (선택)"
   }
 }

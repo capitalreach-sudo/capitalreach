@@ -166,7 +166,7 @@ export default async function StartupDetailPage({ params }: Props) {
   // Related startups
   const { data: related } = await supabase
     .from("startups")
-    .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score")
+    .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score, round_close_date")
     .eq("status", "active")
     .eq("industry", startup.industry)
     .neq("id", startup.id)

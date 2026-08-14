@@ -1025,7 +1025,9 @@
     "new": "新着",
     "runwayMonths": "残り{n}ヶ月分の資金",
     "unlockScores": "アップグレードして財務情報とAIスコアを解除",
-    "scoreTitle": "AIスコア：{score}/100"
+    "scoreTitle": "AIスコア：{score}/100",
+    "closingSoon": "まもなく締切",
+    "closesIn": "締切まで{count}日"
   },
   "startupDetail": {
     "overview": "概要",
@@ -2277,5 +2279,8 @@
     "lastRun": "{count}日前に正常",
     "neverRan": "報告なし",
     "dismiss": "このエラーを消す"
+  },
+  "editor": {
+    "roundCloseDate": "ラウンド締切日（任意）"
   }
 }

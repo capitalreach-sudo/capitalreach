@@ -1025,7 +1025,9 @@
     "new": "Nouveau",
     "runwayMonths": "{n} mois de trésorerie",
     "unlockScores": "Passez à un forfait supérieur pour débloquer finances et scores IA",
-    "scoreTitle": "Score IA : {score}/100"
+    "scoreTitle": "Score IA : {score}/100",
+    "closingSoon": "Clôture imminente",
+    "closesIn": "Clôture dans {count} j"
   },
   "startupDetail": {
     "overview": "Aperçu",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok il y a {count} j",
     "neverRan": "jamais rapporté",
     "dismiss": "Ignorer cette erreur"
+  },
+  "editor": {
+    "roundCloseDate": "Clôture du tour le (facultatif)"
   }
 }

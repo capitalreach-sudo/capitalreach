@@ -1025,7 +1025,9 @@
     "new": "جديد",
     "runwayMonths": "{n} أشهر من السيولة المتبقية",
     "unlockScores": "قم بالترقية لفتح البيانات المالية ودرجات الذكاء الاصطناعي",
-    "scoreTitle": "درجة الذكاء الاصطناعي: {score}/100"
+    "scoreTitle": "درجة الذكاء الاصطناعي: {score}/100",
+    "closingSoon": "تُغلق قريبًا",
+    "closesIn": "تُغلق خلال {count} يوم"
   },
   "startupDetail": {
     "overview": "نظرة عامة",
@@ -2277,5 +2279,8 @@
     "lastRun": "سليم قبل {count} يوم",
     "neverRan": "لم يُبلغ قط",
     "dismiss": "تجاهل هذا الخطأ"
+  },
+  "editor": {
+    "roundCloseDate": "تُغلق الجولة في (اختياري)"
   }
 }

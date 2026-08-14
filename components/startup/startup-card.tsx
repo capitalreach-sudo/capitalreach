@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Bookmark, Lock } from "lucide-react";
 import { formatCurrency, daysSince, getInitials, STAGE_LABELS } from "@/lib/utils";
+import { roundCloseState } from "@/lib/round-close";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import { canAccessFinancials } from "@/types";
 import type { Startup, SubscriptionTier } from "@/types";
@@ -74,7 +75,7 @@ function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionT
  */
 export type StartupCardData = Pick<Startup,
   "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
-  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score">;
+  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date">;
 
 interface StartupCardProps {
   startup:     StartupCardData;
@@ -89,6 +90,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
   const { t } = useTranslation();
   const canSeeFinancials = canAccessFinancials(investorTier ?? null);
   const isNew            = daysSince(startup.created_at) <= 5;
+  const closing          = roundCloseState(startup.round_close_date);
   const score            = startup.vaultrise_score ?? null;
 
   function handleSave(e: React.MouseEvent) {
@@ -239,6 +241,27 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               letterSpacing: "0.05em",
             }}>
               {t("startup.new")}
+            </span>
+          )}
+          {/* Copper when urgent (≤14d), otherwise quiet — see lib/round-close
+              for why a passed date says "closing soon" instead of a negative
+              count and why >60d shows nothing. */}
+          {closing && (
+            <span style={{
+              background:    closing.kind === "days" && !closing.urgent ? "transparent" : "var(--cr-copper-bg)",
+              border:        "1px solid var(--cr-copper-br)",
+              color:         "var(--cr-copper)",
+              fontFamily:    "'DM Sans', sans-serif",
+              fontWeight:    closing.kind === "closingSoon" || closing.urgent ? 600 : 500,
+              fontSize:      "10px",
+              borderRadius:  "3px",
+              padding:       "2px 8px",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}>
+              {closing.kind === "closingSoon"
+                ? t("startup.closingSoon")
+                : t("startup.closesIn", { count: closing.days })}
             </span>
           )}
         </div>

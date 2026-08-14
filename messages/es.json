@@ -1025,7 +1025,9 @@
     "new": "Nuevo",
     "runwayMonths": "{n} meses de runway",
     "unlockScores": "Mejora tu plan para desbloquear finanzas y puntuaciones de IA",
-    "scoreTitle": "Puntuación IA: {score}/100"
+    "scoreTitle": "Puntuación IA: {score}/100",
+    "closingSoon": "Cierra pronto",
+    "closesIn": "Cierra en {count} d"
   },
   "startupDetail": {
     "overview": "Resumen",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok hace {count} d",
     "neverRan": "nunca ha informado",
     "dismiss": "Descartar este error"
+  },
+  "editor": {
+    "roundCloseDate": "La ronda cierra el (opcional)"
   }
 }

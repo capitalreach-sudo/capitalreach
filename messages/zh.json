@@ -1025,7 +1025,9 @@
     "new": "新",
     "runwayMonths": "{n}个月现金跑道",
     "unlockScores": "升级以解锁财务数据和AI评分",
-    "scoreTitle": "AI评分：{score}/100"
+    "scoreTitle": "AI评分：{score}/100",
+    "closingSoon": "即将截止",
+    "closesIn": "{count} 天后截止"
   },
   "startupDetail": {
     "overview": "概述",
@@ -2277,5 +2279,8 @@
     "lastRun": "{count} 天前正常",
     "neverRan": "从未上报",
     "dismiss": "忽略此错误"
+  },
+  "editor": {
+    "roundCloseDate": "融资截止日（可选）"
   }
 }

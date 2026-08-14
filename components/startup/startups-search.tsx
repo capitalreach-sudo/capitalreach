@@ -70,7 +70,7 @@ interface Startup {
   mrr: number | null; arr: number | null; growth_rate: number | null;
   runway_months: number | null; featured: boolean; created_at: string;
   vaultrise_score: number | null;
-  country: string | null; business_model: string | null;
+  country: string | null; business_model: string | null; round_close_date: string | null;
 }
 
 interface Filters {

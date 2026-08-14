@@ -364,6 +364,13 @@ export default function EditStartupPage() {
                   </Field>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                  <Field label={t("editor.roundCloseDate")}>
+                    {/* Optional by design: rolling rounds have no date. The
+                        listing shows a countdown inside 60 days and "closing
+                        soon" once passed — see lib/round-close. */}
+                    <WarmInput type="date" value={startup.round_close_date || ""}
+                      onChange={e => update("round_close_date", e.target.value || null)} />
+                  </Field>
                   <Field label={t("onboarding.su.country")}>
                     {/* See lib/countries: canonical spelling keeps the
                         Region facet and thesis-fit geography working. */}

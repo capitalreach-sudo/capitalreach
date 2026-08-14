@@ -1199,7 +1199,9 @@
     "new": "Nowe",
     "runwayMonths": "Płynność na {n} mies.",
     "unlockScores": "Ulepsz plan, aby odblokować finanse i wyniki AI",
-    "scoreTitle": "Wynik AI: {score}/100"
+    "scoreTitle": "Wynik AI: {score}/100",
+    "closingSoon": "Wkrótce zamknięcie",
+    "closesIn": "Zamknięcie za {count} dni"
   },
   "investors": {
     "pageTitle": "Zweryfikowani inwestorzy",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok {count} dni temu",
     "neverRan": "nigdy nie raportował",
     "dismiss": "Odrzuć ten błąd"
+  },
+  "editor": {
+    "roundCloseDate": "Runda zamyka się (opcjonalnie)"
   }
 }

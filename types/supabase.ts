@@ -1253,6 +1253,7 @@ export type Database = {
           product_hunt_url: string | null
           require_nda: boolean
           revenue_model: string | null
+          round_close_date: string | null
           runway_months: number | null
           search_vector: unknown
           slug: string
@@ -1313,6 +1314,7 @@ export type Database = {
           product_hunt_url?: string | null
           require_nda?: boolean
           revenue_model?: string | null
+          round_close_date?: string | null
           runway_months?: number | null
           search_vector?: unknown
           slug: string
@@ -1373,6 +1375,7 @@ export type Database = {
           product_hunt_url?: string | null
           require_nda?: boolean
           revenue_model?: string | null
+          round_close_date?: string | null
           runway_months?: number | null
           search_vector?: unknown
           slug?: string

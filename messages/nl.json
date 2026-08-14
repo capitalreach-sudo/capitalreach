@@ -1199,7 +1199,9 @@
     "new": "Nieuw",
     "runwayMonths": "{n} mnd cashrunway",
     "unlockScores": "Upgrade om financiën en AI-scores te ontgrendelen",
-    "scoreTitle": "AI-score: {score}/100"
+    "scoreTitle": "AI-score: {score}/100",
+    "closingSoon": "Sluit binnenkort",
+    "closesIn": "Sluit over {count} d"
   },
   "investors": {
     "pageTitle": "Geverifieerde investeerders",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok {count} d geleden",
     "neverRan": "nooit gerapporteerd",
     "dismiss": "Deze fout negeren"
+  },
+  "editor": {
+    "roundCloseDate": "Ronde sluit op (optioneel)"
   }
 }

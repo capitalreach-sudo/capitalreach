@@ -1036,7 +1036,9 @@
     "new": "New",
     "runwayMonths": "{n}mo runway",
     "unlockScores": "Upgrade to unlock financials & AI scores",
-    "scoreTitle": "AI Score: {score}/100"
+    "scoreTitle": "AI Score: {score}/100",
+    "closingSoon": "Closing soon",
+    "closesIn": "Closes in {count}d"
   },
   "startupDetail": {
     "overview": "Overview",
@@ -2277,5 +2279,8 @@
     "lastRun": "ok {count}d ago",
     "neverRan": "never reported",
     "dismiss": "Dismiss this error"
+  },
+  "editor": {
+    "roundCloseDate": "Round closes on (optional)"
   }
 }

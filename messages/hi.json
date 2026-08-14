@@ -1199,7 +1199,9 @@
     "new": "नया",
     "runwayMonths": "{n} माह की रनवे",
     "unlockScores": "वित्तीय जानकारी और AI स्कोर अनलॉक करने के लिए अपग्रेड करें",
-    "scoreTitle": "AI स्कोर: {score}/100"
+    "scoreTitle": "AI स्कोर: {score}/100",
+    "closingSoon": "जल्द बंद",
+    "closesIn": "{count} दिन में बंद"
   },
   "investors": {
     "pageTitle": "सत्यापित निवेशक",
@@ -2277,5 +2279,8 @@
     "lastRun": "ठीक, {count} दिन पहले",
     "neverRan": "कभी रिपोर्ट नहीं किया",
     "dismiss": "यह त्रुटि हटाएँ"
+  },
+  "editor": {
+    "roundCloseDate": "राउंड बंद होगा (वैकल्पिक)"
   }
 }
