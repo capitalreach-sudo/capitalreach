@@ -2310,5 +2310,19 @@
     "loginPrompt": "이 계정은 2단계 인증으로 보호됩니다. 인증 앱의 6자리 코드를 입력하세요.",
     "verify": "코드 확인",
     "backToLogin": "다른 계정 사용"
+  },
+  "security": {
+    "sessionsTitle": "로그인된 위치",
+    "sessionsSub": "이 계정에 세션이 열려 있는 모든 기기입니다. 취소하면 해당 기기는 한 시간 내에 로그아웃됩니다.",
+    "thisDevice": "현재 기기",
+    "unknownDevice": "알 수 없는 기기",
+    "lastActive": "{count}일 전 활동",
+    "revoke": "취소",
+    "signOutHere": "여기에서 로그아웃",
+    "revoked": "세션이 취소되었습니다. 해당 기기는 곧 로그아웃됩니다.",
+    "revokeFailed": "세션을 취소하지 못했습니다.",
+    "loginsTitle": "최근 로그인",
+    "loginsSub": "이 계정의 최근 로그인 내역(기기 및 IP 포함). 본인이 아닌 항목이 있으면 비밀번호를 변경하고 위에서 세션을 취소하세요.",
+    "noLogins": "기록된 로그인이 아직 없습니다. 다음 로그인부터 기록됩니다."
   }
 }

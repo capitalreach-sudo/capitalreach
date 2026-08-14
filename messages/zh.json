@@ -2310,5 +2310,19 @@
     "loginPrompt": "该账户已启用两步验证。请输入身份验证器应用中的六位验证码。",
     "verify": "验证",
     "backToLogin": "使用其他账户"
+  },
+  "security": {
+    "sessionsTitle": "已登录的设备",
+    "sessionsSub": "此账户所有已登录的设备。撤销后该设备将在一小时内登出。",
+    "thisDevice": "当前设备",
+    "unknownDevice": "未知设备",
+    "lastActive": "{count} 天前活跃",
+    "revoke": "撤销",
+    "signOutHere": "在此登出",
+    "revoked": "会话已撤销。该设备即将登出。",
+    "revokeFailed": "无法撤销该会话。",
+    "loginsTitle": "最近登录",
+    "loginsSub": "此账户最近的登录记录（含设备与 IP）。若有不是你本人的记录，请修改密码并在上方撤销会话。",
+    "noLogins": "暂无登录记录——历史将从你的下次登录开始。"
   }
 }

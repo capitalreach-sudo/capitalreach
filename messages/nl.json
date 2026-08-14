@@ -2310,5 +2310,19 @@
     "loginPrompt": "Dit account is beveiligd met tweestapsverificatie. Voer de zescijferige code uit je authenticator-app in.",
     "verify": "Code verifiëren",
     "backToLogin": "Ander account gebruiken"
+  },
+  "security": {
+    "sessionsTitle": "Waar je bent ingelogd",
+    "sessionsSub": "Elk apparaat met een open sessie op dit account. Intrekken logt dat apparaat binnen een uur uit.",
+    "thisDevice": "Dit apparaat",
+    "unknownDevice": "Onbekend apparaat",
+    "lastActive": "actief {count} d geleden",
+    "revoke": "Intrekken",
+    "signOutHere": "Hier uitloggen",
+    "revoked": "Sessie ingetrokken. Dat apparaat wordt binnenkort uitgelogd.",
+    "revokeFailed": "Kon die sessie niet intrekken.",
+    "loginsTitle": "Recente aanmeldingen",
+    "loginsSub": "De laatste aanmeldingen, met apparaat en IP. Was er één niet van jou, wijzig dan je wachtwoord en trek de sessie hierboven in.",
+    "noLogins": "Nog geen aanmeldingen vastgelegd — de historie begint bij je volgende login."
   }
 }

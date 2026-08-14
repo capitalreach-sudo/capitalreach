@@ -2310,5 +2310,19 @@
     "loginPrompt": "Ce compte est protégé par la double authentification. Saisissez le code à six chiffres de votre app d'authentification.",
     "verify": "Vérifier le code",
     "backToLogin": "Utiliser un autre compte"
+  },
+  "security": {
+    "sessionsTitle": "Où vous êtes connecté",
+    "sessionsSub": "Chaque appareil ayant une session ouverte sur ce compte. La révocation déconnecte l’appareil dans l’heure.",
+    "thisDevice": "Cet appareil",
+    "unknownDevice": "Appareil inconnu",
+    "lastActive": "actif il y a {count} j",
+    "revoke": "Révoquer",
+    "signOutHere": "Se déconnecter ici",
+    "revoked": "Session révoquée. Cet appareil sera déconnecté sous peu.",
+    "revokeFailed": "Impossible de révoquer cette session.",
+    "loginsTitle": "Connexions récentes",
+    "loginsSub": "Les dernières connexions, avec appareil et IP. Si l’une d’elles n’était pas vous, changez votre mot de passe et révoquez la session ci-dessus.",
+    "noLogins": "Aucune connexion enregistrée pour l’instant — l’historique commence à votre prochaine connexion."
   }
 }

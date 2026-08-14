@@ -2310,5 +2310,19 @@
     "loginPrompt": "Det här kontot skyddas av tvåfaktorsautentisering. Ange den sexsiffriga koden från din autentiseringsapp.",
     "verify": "Verifiera koden",
     "backToLogin": "Använd ett annat konto"
+  },
+  "security": {
+    "sessionsTitle": "Var du är inloggad",
+    "sessionsSub": "Varje enhet med en öppen session på kontot. Återkallelse loggar ut enheten inom en timme.",
+    "thisDevice": "Den här enheten",
+    "unknownDevice": "Okänd enhet",
+    "lastActive": "aktiv {count} d sedan",
+    "revoke": "Återkalla",
+    "signOutHere": "Logga ut här",
+    "revoked": "Sessionen återkallad. Enheten loggas ut inom kort.",
+    "revokeFailed": "Kunde inte återkalla sessionen.",
+    "loginsTitle": "Senaste inloggningar",
+    "loginsSub": "De senaste inloggningarna, med enhet och IP. Om någon inte var du: byt lösenord och återkalla sessionen ovan.",
+    "noLogins": "Inga inloggningar registrerade än — historiken börjar vid nästa inloggning."
   }
 }

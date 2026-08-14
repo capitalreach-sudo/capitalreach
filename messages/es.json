@@ -2310,5 +2310,19 @@
     "loginPrompt": "Esta cuenta está protegida con verificación en dos pasos. Introduce el código de seis dígitos de tu app de autenticación.",
     "verify": "Verificar código",
     "backToLogin": "Usar otra cuenta"
+  },
+  "security": {
+    "sessionsTitle": "Dónde tienes la sesión iniciada",
+    "sessionsSub": "Cada dispositivo con una sesión abierta en esta cuenta. Al revocarla, ese dispositivo se desconecta en menos de una hora.",
+    "thisDevice": "Este dispositivo",
+    "unknownDevice": "Dispositivo desconocido",
+    "lastActive": "activo hace {count} d",
+    "revoke": "Revocar",
+    "signOutHere": "Cerrar sesión aquí",
+    "revoked": "Sesión revocada. Ese dispositivo se desconectará en breve.",
+    "revokeFailed": "No se pudo revocar la sesión.",
+    "loginsTitle": "Inicios de sesión recientes",
+    "loginsSub": "Los últimos inicios de sesión, con dispositivo e IP. Si alguno no fuiste tú, cambia la contraseña y revoca la sesión arriba.",
+    "noLogins": "Aún no hay inicios registrados: el historial empieza con tu próximo inicio de sesión."
   }
 }

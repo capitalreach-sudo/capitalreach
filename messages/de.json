@@ -2310,5 +2310,19 @@
     "loginPrompt": "Dieses Konto ist durch Zwei-Faktor-Authentifizierung geschützt. Gib den sechsstelligen Code aus deiner Authenticator-App ein.",
     "verify": "Code prüfen",
     "backToLogin": "Anderes Konto verwenden"
+  },
+  "security": {
+    "sessionsTitle": "Wo du angemeldet bist",
+    "sessionsSub": "Jedes Gerät mit offener Sitzung. Beim Widerrufen wird das Gerät innerhalb einer Stunde abgemeldet.",
+    "thisDevice": "Dieses Gerät",
+    "unknownDevice": "Unbekanntes Gerät",
+    "lastActive": "aktiv vor {count} T.",
+    "revoke": "Widerrufen",
+    "signOutHere": "Hier abmelden",
+    "revoked": "Sitzung widerrufen. Das Gerät wird in Kürze abgemeldet.",
+    "revokeFailed": "Sitzung konnte nicht widerrufen werden.",
+    "loginsTitle": "Letzte Anmeldungen",
+    "loginsSub": "Die letzten Anmeldungen mit Gerät und IP. War eine davon nicht du, ändere dein Passwort und widerrufe oben die Sitzung.",
+    "noLogins": "Noch keine Anmeldungen erfasst — die Historie beginnt mit deinem nächsten Login."
   }
 }

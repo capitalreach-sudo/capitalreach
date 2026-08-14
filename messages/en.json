@@ -2310,5 +2310,19 @@
     "loginPrompt": "This account is protected by two-factor authentication. Enter the six-digit code from your authenticator app.",
     "verify": "Verify code",
     "backToLogin": "Use a different account"
+  },
+  "security": {
+    "sessionsTitle": "Where you’re signed in",
+    "sessionsSub": "Every device with an open session on this account. Revoking one signs that device out within the hour.",
+    "thisDevice": "This device",
+    "unknownDevice": "Unknown device",
+    "lastActive": "active {count}d ago",
+    "revoke": "Revoke",
+    "signOutHere": "Sign out here",
+    "revoked": "Session revoked. That device will be signed out shortly.",
+    "revokeFailed": "Could not revoke that session.",
+    "loginsTitle": "Recent sign-ins",
+    "loginsSub": "The last sign-ins to this account, with device and IP. If one of these wasn’t you, change your password and revoke the session above.",
+    "noLogins": "No sign-ins recorded yet — history starts with your next login."
   }
 }

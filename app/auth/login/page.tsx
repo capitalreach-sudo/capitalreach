@@ -73,20 +73,15 @@ function LoginForm() {
           return;
         }
       }
-      notify.success(t("auth.welcomeRedirect"));
-      if (redirect && redirect !== "/") {
-        router.push(redirect); router.refresh();
-      } else {
-        const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user!.id).single();
-        const role = profile?.role;
-        router.push(role === "startup" ? "/dashboard/startup" : role === "investor" ? "/dashboard/investor" : role === "admin" ? "/admin" : "/");
-        router.refresh();
-      }
+      await finishLogin(data.user!.id);
     }
     setLoading(false);
   }
 
   async function finishLogin(userId: string) {
+    // Fire-and-forget is safe here: this is the browser, not a lambda, and a
+    // lost history row must never block a sign-in.
+    fetch("/api/account/logins", { method: "POST" }).catch(() => {});
     notify.success(t("auth.welcomeRedirect"));
     if (redirect && redirect !== "/") {
       router.push(redirect); router.refresh();

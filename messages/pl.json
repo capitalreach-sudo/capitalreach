@@ -2310,5 +2310,19 @@
     "loginPrompt": "To konto jest chronione uwierzytelnianiem dwuskładnikowym. Wpisz sześciocyfrowy kod z aplikacji.",
     "verify": "Zweryfikuj kod",
     "backToLogin": "Użyj innego konta"
+  },
+  "security": {
+    "sessionsTitle": "Gdzie jesteś zalogowany",
+    "sessionsSub": "Każde urządzenie z otwartą sesją na tym koncie. Unieważnienie wylogowuje je w ciągu godziny.",
+    "thisDevice": "To urządzenie",
+    "unknownDevice": "Nieznane urządzenie",
+    "lastActive": "aktywne {count} dni temu",
+    "revoke": "Unieważnij",
+    "signOutHere": "Wyloguj tutaj",
+    "revoked": "Sesja unieważniona. Urządzenie wkrótce zostanie wylogowane.",
+    "revokeFailed": "Nie udało się unieważnić sesji.",
+    "loginsTitle": "Ostatnie logowania",
+    "loginsSub": "Ostatnie logowania z urządzeniem i IP. Jeśli któreś nie było twoje, zmień hasło i unieważnij sesję powyżej.",
+    "noLogins": "Brak zapisanych logowań — historia zacznie się od następnego logowania."
   }
 }
