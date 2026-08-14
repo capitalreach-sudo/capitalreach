@@ -15,7 +15,7 @@ import { listingCompleteness } from "@/lib/listing-completeness";
 interface Props {
   profile:      Profile;
   startup:      Startup | null;
-  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; raise?: { softCircled: number; committed: number } };
+  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number } };
   isLaunchMode: boolean;
   /**
    * Set when an admin is looking at someone else's dashboard. Carries the
@@ -578,8 +578,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
           {[
             { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye,           series: analytics.viewSeries },
-            { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark      },
-            { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: MessageSquare },
+            { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark,      series: analytics.saveSeries },
+            { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: MessageSquare, series: analytics.dealSeries },
             { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp   },
           ].map(({ label, val, Icon, series }: { label: string; val: number | string; Icon: typeof Eye; series?: number[] }) => (
             <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>

@@ -36,6 +36,8 @@ export default async function StartupDashboardPage() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
   const viewSeries: number[] = Array(30).fill(0);
+  const saveSeries: number[] = Array(30).fill(0);
+  const dealSeries: number[] = Array(30).fill(0);
   const raise = { softCircled: 0, committed: 0 };
 
   if (startup) {
@@ -64,21 +66,33 @@ export default async function StartupDashboardPage() {
       if (idx >= 0 && idx < 30) viewSeries[idx] += 1;
     }
 
-    const { count: saves } = await metrics
+    // Rows rather than a head-count, for the same reason as pageviews above:
+    // the created_at timestamps also feed the per-day sparkline, so one
+    // query serves the number and the trend.
+    const { data: saveRows } = await metrics
       .from("watchlists")
-      .select("*", { count: "exact", head: true })
-      .eq("startup_id", startup.id);
-    savesCount = saves || 0;
+      .select("created_at")
+      .eq("startup_id", startup.id)
+      .limit(10000);
+    savesCount = saveRows?.length || 0;
+    for (const r of saveRows ?? []) {
+      const idx = 29 - Math.floor((today.getTime() - new Date(r.created_at).setHours(0, 0, 0, 0)) / DAY);
+      if (idx >= 0 && idx < 30) saveSeries[idx] += 1;
+    }
 
     // Amounts double as the raise tracker: term-sheet deals count as
     // soft-circled, closed deals as committed. One query serves both the
     // active-deal count and the progress bar.
     const { data: dealRows } = await supabase
       .from("deals")
-      .select("status, amount")
+      .select("status, amount, created_at")
       .eq("startup_id", startup.id)
       .neq("status", "passed");
     dealsCount = dealRows?.length || 0;
+    for (const d of dealRows ?? []) {
+      const idx = 29 - Math.floor((today.getTime() - new Date(d.created_at).setHours(0, 0, 0, 0)) / DAY);
+      if (idx >= 0 && idx < 30) dealSeries[idx] += 1;
+    }
     for (const d of dealRows ?? []) {
       if (d.status === "closed") raise.committed += d.amount ?? 0;
       else if (d.status === "term_sheet") raise.softCircled += d.amount ?? 0;
@@ -93,7 +107,7 @@ export default async function StartupDashboardPage() {
       <StartupDashboardClient
         profile={profile}
         startup={startup}
-        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, raise }}
+        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise }}
         isLaunchMode={isLaunch}
       />
     </>
