@@ -169,7 +169,7 @@ function LoginForm() {
                 onChange={e => setPassword(e.target.value)} required autoComplete="current-password"
                 onFocus={onFocusCopper} onBlur={onBlurRule}
                 style={{ ...iStyle, paddingRight: "40px" }} />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}
+              <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
                 style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", padding: 0 }}>
                 {showPassword ? <EyeOff style={{ width: 16, height: 16 }} /> : <Eye style={{ width: 16, height: 16 }} />}
               </button>

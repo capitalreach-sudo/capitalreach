@@ -561,7 +561,9 @@
     "selectedPlan": "أنت تسجّل في خطة {plan}.",
     "selectedPlanLaunch": "أثناء الإطلاق، كل الخطط مجانية — لن يتم تحصيل أي رسوم.",
     "passwordBreached": "ظهرت كلمة المرور هذه في {count} تسريبًا معروفًا — يجرّبها المهاجمون أولًا. اختر غيرها.",
-    "passwordBreachedShort": "كلمة المرور هذه واردة في تسريبات معروفة — اختر غيرها."
+    "passwordBreachedShort": "كلمة المرور هذه واردة في تسريبات معروفة — اختر غيرها.",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
   },
   "dashboard": {
     "overview": "نظرة عامة",
@@ -1295,7 +1297,8 @@
     "view": "عرض",
     "done": "تم",
     "exportPdf": "طباعة / حفظ PDF",
-    "viewPlans": "عرض الخطط"
+    "viewPlans": "عرض الخطط",
+    "remove": "إزالة"
   },
   "onboarding": {
     "welcomeTitle": "مرحباً بك في CapitalReach",
@@ -2232,8 +2235,9 @@
     "viewArchived": "المؤرشفة ({count})",
     "showingArchived": "عرض المؤرشفة ({count}) — عودة إلى الوارد",
     "searchInThread": "ابحث في هذه المحادثة…",
-    "clearSearch": "مسح",
-    "unreadAria": "غير مقروء"
+    "clearSearch": "مسح البحث",
+    "unreadAria": "غير مقروء",
+    "noMatches": "لا توجد رسائل تطابق \"{query}\""
   },
   "completeness": {
     "nextBest": "التالي",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% عند الإغلاق",
-    "feeBadgeAria": "عمولة نجاح 2% عند الإغلاق"
+    "feeBadgeAria": "عمولة نجاح 2% عند الإغلاق",
+    "accountMenuAria": "قائمة الحساب"
   },
   "feeBadge": {
     "floating": "2% عند الإغلاق — لا شيء مقدما"

@@ -561,7 +561,9 @@
     "selectedPlan": "{plan} プランに登録します。",
     "selectedPlanLaunch": "ローンチ期間中はすべてのプランが無料です。請求は発生しません。",
     "passwordBreached": "このパスワードは既知の情報漏えいに{count}回登場しています。攻撃者が最初に試すものです。別のものを選んでください。",
-    "passwordBreachedShort": "そのパスワードは既知の漏えいに含まれています。別のものを選んでください。"
+    "passwordBreachedShort": "そのパスワードは既知の漏えいに含まれています。別のものを選んでください。",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを隠す"
   },
   "dashboard": {
     "overview": "概要",
@@ -1295,7 +1297,8 @@
     "view": "表示",
     "done": "完了",
     "exportPdf": "印刷／PDF保存",
-    "viewPlans": "プランを見る"
+    "viewPlans": "プランを見る",
+    "remove": "削除"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",
@@ -2232,8 +2235,9 @@
     "viewArchived": "アーカイブ済み（{count}）",
     "showingArchived": "アーカイブ表示中（{count}）— 受信箱へ戻る",
     "searchInThread": "この会話内を検索…",
-    "clearSearch": "クリア",
-    "unreadAria": "未読"
+    "clearSearch": "検索をクリア",
+    "unreadAria": "未読",
+    "noMatches": "「{query}」に一致するメッセージはありません"
   },
   "completeness": {
     "nextBest": "次にやること",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "クローズ時に2%",
-    "feeBadgeAria": "クローズ時に2%の成功報酬"
+    "feeBadgeAria": "クローズ時に2%の成功報酬",
+    "accountMenuAria": "アカウントメニュー"
   },
   "feeBadge": {
     "floating": "クローズ時に2% — 前払いゼロ"

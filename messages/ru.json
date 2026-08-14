@@ -552,7 +552,9 @@
     "selectedPlan": "Вы регистрируетесь на тариф {plan}.",
     "selectedPlanLaunch": "На старте все тарифы бесплатны — с вас ничего не спишут.",
     "passwordBreached": "Этот пароль встречался в {count} известных утечках — злоумышленники пробуют его первым. Выберите другой.",
-    "passwordBreachedShort": "Пароль встречается в известных утечках — выберите другой."
+    "passwordBreachedShort": "Пароль встречается в известных утечках — выберите другой.",
+    "showPassword": "Показать пароль",
+    "hidePassword": "Скрыть пароль"
   },
   "dashboard": {
     "overview": "Обзор",
@@ -1142,7 +1144,8 @@
     "view": "Просмотр",
     "done": "Готово",
     "exportPdf": "Печать / сохранить в PDF",
-    "viewPlans": "Смотреть тарифы"
+    "viewPlans": "Смотреть тарифы",
+    "remove": "Удалить"
   },
   "errors": {
     "required": "Это поле обязательно",
@@ -2232,8 +2235,9 @@
     "viewArchived": "В архиве ({count})",
     "showingArchived": "Показан архив ({count}) — назад во входящие",
     "searchInThread": "Поиск в этой беседе…",
-    "clearSearch": "Сброс",
-    "unreadAria": "Непрочитано"
+    "clearSearch": "Очистить поиск",
+    "unreadAria": "Непрочитано",
+    "noMatches": "Нет сообщений по запросу \"{query}\""
   },
   "completeness": {
     "nextBest": "Сделайте это дальше",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% при закрытии",
-    "feeBadgeAria": "Комиссия за успех 2% при закрытии"
+    "feeBadgeAria": "Комиссия за успех 2% при закрытии",
+    "accountMenuAria": "Меню аккаунта"
   },
   "feeBadge": {
     "floating": "2% при закрытии — ничего заранее"

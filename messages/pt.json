@@ -552,7 +552,9 @@
     "selectedPlan": "Estás a inscrever-te no plano {plan}.",
     "selectedPlanLaunch": "Durante o lançamento todos os planos são gratuitos — não serás cobrado.",
     "passwordBreached": "Esta palavra-passe apareceu em {count} fugas de dados conhecidas — os atacantes tentam-na primeiro. Escolhe outra.",
-    "passwordBreachedShort": "Essa palavra-passe aparece em fugas conhecidas — escolhe outra."
+    "passwordBreachedShort": "Essa palavra-passe aparece em fugas conhecidas — escolhe outra.",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha"
   },
   "dashboard": {
     "overview": "Visão geral",
@@ -1142,7 +1144,8 @@
     "view": "Ver",
     "done": "Concluído",
     "exportPdf": "Imprimir / guardar como PDF",
-    "viewPlans": "Ver planos"
+    "viewPlans": "Ver planos",
+    "remove": "Remover"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Arquivadas ({count})",
     "showingArchived": "A mostrar arquivadas ({count}) — voltar à caixa",
     "searchInThread": "Pesquisar nesta conversa…",
-    "clearSearch": "Limpar",
-    "unreadAria": "Não lido"
+    "clearSearch": "Limpar busca",
+    "unreadAria": "Não lido",
+    "noMatches": "Nenhuma mensagem corresponde a \"{query}\""
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% no fechamento",
-    "feeBadgeAria": "Taxa de sucesso de 2% no fechamento"
+    "feeBadgeAria": "Taxa de sucesso de 2% no fechamento",
+    "accountMenuAria": "Menu da conta"
   },
   "feeBadge": {
     "floating": "2% no fechamento — nada adiantado"

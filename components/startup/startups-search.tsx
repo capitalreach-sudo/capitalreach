@@ -579,6 +579,7 @@ export function StartupsSearch() {
   const [myThesis, setMyThesis] = useState<InvestorThesis | null>(null);
   const [lastHidden, setLastHidden] = useState<{ id: string; name: string } | null>(null);
   // Compare tray: up to three listings side by side. Pure client state.
+  const [loadError, setLoadError] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   // Compare tray survives reloads; unknown ids are dropped once data arrives.
   useEffect(() => {
@@ -639,8 +640,12 @@ export function StartupsSearch() {
       try {
         const res = await fetch("/api/startups/list");
         const json = await res.json();
+        if (!res.ok) throw new Error();
+        setLoadError(false);
         setAllStartups((json.startups as Startup[]) ?? []);
       } catch {
+        // A failed fetch must not render as "no listings exist".
+        setLoadError(true);
         setAllStartups([]);
       }
       setLoading(false);
@@ -807,11 +812,18 @@ export function StartupsSearch() {
     } else if (lastHidden?.id === id) {
       setLastHidden(null);
     }
-    if (hidden) {
-      await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id);
-    } else {
-      await supabase.from("startup_dismissals").upsert(
-        { investor_id: inv, startup_id: id }, { onConflict: "investor_id,startup_id" });
+    const { error } = hidden
+      ? await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id)
+      : await supabase.from("startup_dismissals").upsert(
+          { investor_id: inv, startup_id: id }, { onConflict: "investor_id,startup_id" });
+    if (error) {
+      // Put the set back the way it was and say so.
+      setDismissedIds((prev) => {
+        const next = new Set(prev);
+        if (hidden) next.add(id); else next.delete(id);
+        return next;
+      });
+      notify.error(t("errors.generic"));
     }
   }
 
@@ -869,7 +881,7 @@ export function StartupsSearch() {
               {/* View toggle */}
               <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
                 {(["grid", "list"] as const).map((v) => (
-                  <button key={v} onClick={() => chooseView(v)}
+                  <button key={v} onClick={() => chooseView(v)} aria-label={v} aria-pressed={viewMode === v}
                     style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
                     {v === "grid" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
                   </button>
@@ -1148,6 +1160,14 @@ export function StartupsSearch() {
         {loading ? (
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : loadError ? (
+          <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "8px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
+            <button onClick={() => window.location.reload()}
+              style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "7px 18px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
+              {t("errorPage.retry")}
+            </button>
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ display: "grid" }}>

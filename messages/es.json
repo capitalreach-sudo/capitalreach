@@ -561,7 +561,9 @@
     "selectedPlan": "Te estás registrando en el plan {plan}.",
     "selectedPlanLaunch": "Durante el lanzamiento todos los planes son gratis: no se te cobrará nada.",
     "passwordBreached": "Esta contraseña ha aparecido en {count} filtraciones conocidas: los atacantes la prueban primero. Elige otra.",
-    "passwordBreachedShort": "Esa contraseña aparece en filtraciones conocidas: elige otra."
+    "passwordBreachedShort": "Esa contraseña aparece en filtraciones conocidas: elige otra.",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "dashboard": {
     "overview": "Resumen",
@@ -1295,7 +1297,8 @@
     "view": "Ver",
     "done": "Hecho",
     "exportPdf": "Imprimir / guardar como PDF",
-    "viewPlans": "Ver planes"
+    "viewPlans": "Ver planes",
+    "remove": "Quitar"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Archivadas ({count})",
     "showingArchived": "Mostrando archivadas ({count}): volver a la bandeja",
     "searchInThread": "Buscar en esta conversación…",
-    "clearSearch": "Limpiar",
-    "unreadAria": "No leído"
+    "clearSearch": "Borrar búsqueda",
+    "unreadAria": "No leído",
+    "noMatches": "Ningún mensaje coincide con \"{query}\""
   },
   "completeness": {
     "nextBest": "Haz esto ahora",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2 % al cierre",
-    "feeBadgeAria": "Comisión de éxito del 2 % al cierre"
+    "feeBadgeAria": "Comisión de éxito del 2 % al cierre",
+    "accountMenuAria": "Menú de cuenta"
   },
   "feeBadge": {
     "floating": "2 % al cierre — nada por adelantado"

@@ -561,7 +561,9 @@
     "selectedPlan": "你正在注册 {plan} 方案。",
     "selectedPlanLaunch": "上线期间所有方案均免费，不会向你收费。",
     "passwordBreached": "该密码已在 {count} 次已知数据泄露中出现——攻击者会最先尝试它。请换一个。",
-    "passwordBreachedShort": "该密码存在于已知泄露中——请换一个。"
+    "passwordBreachedShort": "该密码存在于已知泄露中——请换一个。",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码"
   },
   "dashboard": {
     "overview": "概览",
@@ -1295,7 +1297,8 @@
     "view": "查看",
     "done": "完成",
     "exportPdf": "打印 / 另存为 PDF",
-    "viewPlans": "查看套餐"
+    "viewPlans": "查看套餐",
+    "remove": "移除"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
@@ -2232,8 +2235,9 @@
     "viewArchived": "已归档（{count}）",
     "showingArchived": "正在显示已归档（{count}）——返回收件箱",
     "searchInThread": "在此会话中搜索…",
-    "clearSearch": "清除",
-    "unreadAria": "未读"
+    "clearSearch": "清除搜索",
+    "unreadAria": "未读",
+    "noMatches": "没有与\"{query}\"匹配的消息"
   },
   "completeness": {
     "nextBest": "下一步",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "成交时2%",
-    "feeBadgeAria": "成交时收取2%成功佣金"
+    "feeBadgeAria": "成交时收取2%成功佣金",
+    "accountMenuAria": "账户菜单"
   },
   "feeBadge": {
     "floating": "成交时2% — 无预付费用"

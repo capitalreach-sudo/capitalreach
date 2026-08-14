@@ -552,7 +552,9 @@
     "selectedPlan": "Du registrerar dig för {plan}-planen.",
     "selectedPlanLaunch": "Under lanseringen är alla planer gratis — du debiteras inget.",
     "passwordBreached": "Det här lösenordet har förekommit i {count} kända dataläckor — angripare provar det först. Välj ett annat.",
-    "passwordBreachedShort": "Lösenordet förekommer i kända läckor — välj ett annat."
+    "passwordBreachedShort": "Lösenordet förekommer i kända läckor — välj ett annat.",
+    "showPassword": "Visa lösenord",
+    "hidePassword": "Dölj lösenord"
   },
   "dashboard": {
     "overview": "Översikt",
@@ -1142,7 +1144,8 @@
     "view": "Visa",
     "done": "Klar",
     "exportPdf": "Skriv ut / spara som PDF",
-    "viewPlans": "Se planer"
+    "viewPlans": "Se planer",
+    "remove": "Ta bort"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Arkiverade ({count})",
     "showingArchived": "Visar arkiverade ({count}) — tillbaka till inkorgen",
     "searchInThread": "Sök i den här konversationen…",
-    "clearSearch": "Rensa",
-    "unreadAria": "Oläst"
+    "clearSearch": "Rensa sökning",
+    "unreadAria": "Oläst",
+    "noMatches": "Inga meddelanden matchar \"{query}\""
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2 % vid avslut",
-    "feeBadgeAria": "2 % success fee vid avslut"
+    "feeBadgeAria": "2 % success fee vid avslut",
+    "accountMenuAria": "Kontomeny"
   },
   "feeBadge": {
     "floating": "2 % vid avslut — inget i förskott"

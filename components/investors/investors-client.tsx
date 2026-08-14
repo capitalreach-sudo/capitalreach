@@ -164,6 +164,7 @@ export function InvestorsClient() {
     });
   }
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   // If a founder is browsing, their own stage and industry mark which
   // investors actually fit the raise -- the directory as a targeting tool.
@@ -203,9 +204,11 @@ export function InvestorsClient() {
             firm: inv.firm || null,
           }));
           setInvestors(mapped);
+          setLoadError(false);
         }
       } catch {
-        // DB not connected
+        // A failed fetch must not render as "no investors yet".
+        setLoadError(true);
       }
       setLoading(false);
     }
@@ -716,6 +719,14 @@ export function InvestorsClient() {
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-cr-i4">
               <Loader2 className="h-8 w-8 animate-spin text-cr-copper" />
               <p className="text-sm">{t("investors.loadingInvestors")}</p>
+            </div>
+          ) : loadError ? (
+            <div className="text-center py-20 bg-cr-paper rounded-2xl border border-cr-p4">
+              <p className="font-bold text-cr-ink text-lg mb-4">{t("errorPage.sectionTitle")}</p>
+              <button onClick={() => window.location.reload()}
+                className="text-sm" style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "7px 18px", cursor: "pointer", color: "var(--cr-ink-3)" }}>
+                {t("errorPage.retry")}
+              </button>
             </div>
           ) : investors.length === 0 ? (
             /* No investors yet */

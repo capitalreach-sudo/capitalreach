@@ -561,7 +561,9 @@
     "selectedPlan": "Vous vous inscrivez à l'offre {plan}.",
     "selectedPlanLaunch": "Pendant le lancement, toutes les offres sont gratuites — rien ne vous sera facturé.",
     "passwordBreached": "Ce mot de passe figure dans {count} fuites de données connues — les attaquants l'essaient en premier. Choisissez-en un autre.",
-    "passwordBreachedShort": "Ce mot de passe figure dans des fuites connues — choisissez-en un autre."
+    "passwordBreachedShort": "Ce mot de passe figure dans des fuites connues — choisissez-en un autre.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "dashboard": {
     "overview": "Aperçu",
@@ -1295,7 +1297,8 @@
     "view": "Voir",
     "done": "Terminé",
     "exportPdf": "Imprimer / enregistrer en PDF",
-    "viewPlans": "Voir les offres"
+    "viewPlans": "Voir les offres",
+    "remove": "Supprimer"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue sur CapitalReach",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Archivées ({count})",
     "showingArchived": "Archivées affichées ({count}) — retour à la boîte",
     "searchInThread": "Rechercher dans cette conversation…",
-    "clearSearch": "Effacer",
-    "unreadAria": "Non lu"
+    "clearSearch": "Effacer la recherche",
+    "unreadAria": "Non lu",
+    "noMatches": "Aucun message ne correspond à \"{query}\""
   },
   "completeness": {
     "nextBest": "À faire ensuite",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2 % à la clôture",
-    "feeBadgeAria": "Commission de 2 % à la clôture"
+    "feeBadgeAria": "Commission de 2 % à la clôture",
+    "accountMenuAria": "Menu du compte"
   },
   "feeBadge": {
     "floating": "2 % à la clôture — rien d'avance"

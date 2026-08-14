@@ -350,11 +350,13 @@ export function StartupDetailClient({
   async function toggleSave() {
     if (!investorId) { notify.info(t("startupDetail.signInToSave")); return; }
     if (isSaved) {
-      await supabase.from("watchlists").delete().match({ investor_id: investorId, startup_id: startup.id });
+      const { error } = await supabase.from("watchlists").delete().match({ investor_id: investorId, startup_id: startup.id });
+      if (error) { notify.error(t("errors.generic")); return; }
       setIsSaved(false);
       notify.info(t("toast.unsaved"));
     } else {
-      await supabase.from("watchlists").insert({ investor_id: investorId, startup_id: startup.id });
+      const { error } = await supabase.from("watchlists").insert({ investor_id: investorId, startup_id: startup.id });
+      if (error) { notify.error(t("errors.generic")); return; }
       setIsSaved(true);
       notify.success(t("toast.saved"));
     }

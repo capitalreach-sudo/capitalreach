@@ -572,7 +572,9 @@
     "selectedPlan": "You're signing up for the {plan} plan.",
     "selectedPlanLaunch": "During launch, every plan is free — you won't be charged.",
     "passwordBreached": "This password has appeared in {count} known data breaches — attackers try it first. Pick a different one.",
-    "passwordBreachedShort": "That password appears in known breaches — pick a different one."
+    "passwordBreachedShort": "That password appears in known breaches — pick a different one.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "dashboard": {
     "overview": "Overview",
@@ -1306,7 +1308,8 @@
     "view": "View",
     "done": "Done",
     "exportPdf": "Print / save as PDF",
-    "viewPlans": "View plans"
+    "viewPlans": "View plans",
+    "remove": "Remove"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",
@@ -2238,8 +2241,9 @@
     "viewArchived": "Archived ({count})",
     "showingArchived": "Showing archived ({count}) — back to inbox",
     "searchInThread": "Search this conversation…",
-    "clearSearch": "Clear",
-    "unreadAria": "Unread"
+    "clearSearch": "Clear search",
+    "unreadAria": "Unread",
+    "noMatches": "No messages match \"{query}\""
   },
   "presets": {
     "preseedAi": "Pre-seed AI",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% at close",
-    "feeBadgeAria": "2% success fee at close"
+    "feeBadgeAria": "2% success fee at close",
+    "accountMenuAria": "Account menu"
   },
   "feeBadge": {
     "floating": "2% at close — zero upfront"

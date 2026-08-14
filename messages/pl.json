@@ -552,7 +552,9 @@
     "selectedPlan": "Rejestrujesz się w planie {plan}.",
     "selectedPlanLaunch": "W czasie startu wszystkie plany są bezpłatne — nie pobierzemy opłaty.",
     "passwordBreached": "To hasło pojawiło się w {count} znanych wyciekach — atakujący próbują go najpierw. Wybierz inne.",
-    "passwordBreachedShort": "To hasło występuje w znanych wyciekach — wybierz inne."
+    "passwordBreachedShort": "To hasło występuje w znanych wyciekach — wybierz inne.",
+    "showPassword": "Pokaż hasło",
+    "hidePassword": "Ukryj hasło"
   },
   "dashboard": {
     "overview": "Przegląd",
@@ -1142,7 +1144,8 @@
     "view": "Zobacz",
     "done": "Gotowe",
     "exportPdf": "Drukuj / zapisz jako PDF",
-    "viewPlans": "Zobacz plany"
+    "viewPlans": "Zobacz plany",
+    "remove": "Usuń"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Zarchiwizowane ({count})",
     "showingArchived": "Pokazuję zarchiwizowane ({count}) — wróć do skrzynki",
     "searchInThread": "Szukaj w tej rozmowie…",
-    "clearSearch": "Wyczyść",
-    "unreadAria": "Nieprzeczytane"
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "unreadAria": "Nieprzeczytane",
+    "noMatches": "Brak wiadomości pasujących do \"{query}\""
   },
   "completeness": {
     "nextBest": "Zrób to teraz",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% przy zamknięciu",
-    "feeBadgeAria": "2% prowizji od sukcesu przy zamknięciu"
+    "feeBadgeAria": "2% prowizji od sukcesu przy zamknięciu",
+    "accountMenuAria": "Menu konta"
   },
   "feeBadge": {
     "floating": "2% przy zamknięciu — nic z góry"

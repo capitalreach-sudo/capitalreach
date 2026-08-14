@@ -518,7 +518,7 @@ export default function InvestorOnboardingPage() {
                             <input type="number" value={co.year} onChange={e => updatePortfolioCompany(i, "year", e.target.value)}
                               placeholder={t("onboarding.inv.yearPh")} style={{ ...iStyle, width: "80px" }} />
                             {portfolioCompanies.length > 1 && (
-                              <button onClick={() => removePortfolioCompany(i)}
+                              <button onClick={() => removePortfolioCompany(i)} aria-label={t("common.remove")}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                                 <Trash2 style={{ width: 14, height: 14 }} />
                               </button>

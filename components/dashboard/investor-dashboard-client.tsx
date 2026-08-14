@@ -223,8 +223,10 @@ function SavedSearchManager() {
 
   async function remove(id: string) {
     if (readOnly) return;
+    const prevRows = rows;
     setRows(prev => prev?.filter(r => r.id !== id) ?? prev);
-    await fetch("/api/saved-searches", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    const res = await fetch("/api/saved-searches", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }).catch(() => null);
+    if (!res?.ok) { setRows(prevRows); notify.error(t("errors.generic")); }
   }
 
   return (

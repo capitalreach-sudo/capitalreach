@@ -552,7 +552,9 @@
     "selectedPlan": "{plan} 플랜으로 가입합니다.",
     "selectedPlanLaunch": "출시 기간에는 모든 플랜이 무료이며 요금이 청구되지 않습니다.",
     "passwordBreached": "이 비밀번호는 알려진 유출 사고에 {count}회 등장했습니다. 공격자가 가장 먼저 시도합니다. 다른 것을 선택하세요.",
-    "passwordBreachedShort": "해당 비밀번호는 알려진 유출에 포함되어 있습니다. 다른 것을 선택하세요."
+    "passwordBreachedShort": "해당 비밀번호는 알려진 유출에 포함되어 있습니다. 다른 것을 선택하세요.",
+    "showPassword": "비밀번호 표시",
+    "hidePassword": "비밀번호 숨기기"
   },
   "dashboard": {
     "overview": "개요",
@@ -1142,7 +1144,8 @@
     "view": "보기",
     "done": "완료",
     "exportPdf": "인쇄 / PDF 저장",
-    "viewPlans": "요금제 보기"
+    "viewPlans": "요금제 보기",
+    "remove": "제거"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -2232,8 +2235,9 @@
     "viewArchived": "보관됨 ({count})",
     "showingArchived": "보관함 표시 중 ({count}) — 받은편지함으로",
     "searchInThread": "이 대화에서 검색…",
-    "clearSearch": "지우기",
-    "unreadAria": "읽지 않음"
+    "clearSearch": "검색 지우기",
+    "unreadAria": "읽지 않음",
+    "noMatches": "\"{query}\"와 일치하는 메시지가 없습니다"
   },
   "completeness": {
     "nextBest": "다음에 할 일",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "클로징 시 2%",
-    "feeBadgeAria": "클로징 시 2% 성공 수수료"
+    "feeBadgeAria": "클로징 시 2% 성공 수수료",
+    "accountMenuAria": "계정 메뉴"
   },
   "feeBadge": {
     "floating": "클로징 시 2% — 선불 없음"

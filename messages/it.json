@@ -552,7 +552,9 @@
     "selectedPlan": "Ti stai iscrivendo al piano {plan}.",
     "selectedPlanLaunch": "Durante il lancio tutti i piani sono gratuiti: non ti verrà addebitato nulla.",
     "passwordBreached": "Questa password è comparsa in {count} violazioni note: gli attaccanti la provano per prima. Scegline un'altra.",
-    "passwordBreachedShort": "Quella password compare in violazioni note: scegline un'altra."
+    "passwordBreachedShort": "Quella password compare in violazioni note: scegline un'altra.",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password"
   },
   "dashboard": {
     "overview": "Panoramica",
@@ -1142,7 +1144,8 @@
     "view": "Visualizza",
     "done": "Fatto",
     "exportPdf": "Stampa / salva come PDF",
-    "viewPlans": "Vedi i piani"
+    "viewPlans": "Vedi i piani",
+    "remove": "Rimuovi"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Archiviate ({count})",
     "showingArchived": "Archiviate mostrate ({count}): torna alla posta",
     "searchInThread": "Cerca in questa conversazione…",
-    "clearSearch": "Cancella",
-    "unreadAria": "Non letto"
+    "clearSearch": "Cancella ricerca",
+    "unreadAria": "Non letto",
+    "noMatches": "Nessun messaggio corrisponde a \"{query}\""
   },
   "completeness": {
     "nextBest": "Fai questo ora",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% alla chiusura",
-    "feeBadgeAria": "Commissione di successo del 2% alla chiusura"
+    "feeBadgeAria": "Commissione di successo del 2% alla chiusura",
+    "accountMenuAria": "Menu account"
   },
   "feeBadge": {
     "floating": "2% alla chiusura — zero anticipi"

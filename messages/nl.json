@@ -552,7 +552,9 @@
     "selectedPlan": "Je meldt je aan voor het {plan}-plan.",
     "selectedPlanLaunch": "Tijdens de lancering zijn alle plannen gratis — er wordt niets in rekening gebracht.",
     "passwordBreached": "Dit wachtwoord kwam voor in {count} bekende datalekken — aanvallers proberen het als eerste. Kies een ander.",
-    "passwordBreachedShort": "Dat wachtwoord komt voor in bekende lekken — kies een ander."
+    "passwordBreachedShort": "Dat wachtwoord komt voor in bekende lekken — kies een ander.",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen"
   },
   "dashboard": {
     "overview": "Overzicht",
@@ -1142,7 +1144,8 @@
     "view": "Bekijken",
     "done": "Klaar",
     "exportPdf": "Afdrukken / opslaan als PDF",
-    "viewPlans": "Bekijk abonnementen"
+    "viewPlans": "Bekijk abonnementen",
+    "remove": "Verwijderen"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -2232,8 +2235,9 @@
     "viewArchived": "Gearchiveerd ({count})",
     "showingArchived": "Gearchiveerd getoond ({count}) — terug naar inbox",
     "searchInThread": "Zoeken in dit gesprek…",
-    "clearSearch": "Wissen",
-    "unreadAria": "Ongelezen"
+    "clearSearch": "Zoekopdracht wissen",
+    "unreadAria": "Ongelezen",
+    "noMatches": "Geen berichten voor \"{query}\""
   },
   "completeness": {
     "nextBest": "Doe dit hierna",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2% bij closing",
-    "feeBadgeAria": "2% succesfee bij closing"
+    "feeBadgeAria": "2% succesfee bij closing",
+    "accountMenuAria": "Accountmenu"
   },
   "feeBadge": {
     "floating": "2% bij closing — niets vooraf"

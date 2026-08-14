@@ -42,7 +42,7 @@ export function ScoreRing({ score, size = 40, strokeWidth = 3.5 }: Props) {
 
   if (score == null) {
     return (
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label="Not scored yet">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -59,6 +59,8 @@ export function ScoreRing({ score, size = 40, strokeWidth = 3.5 }: Props) {
   return (
     <svg
       ref={ref}
+      role="img"
+      aria-label={`AI score ${score} of 100`}
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}

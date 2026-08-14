@@ -317,7 +317,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
   async function updateStatus(status: ThreadStatus) {
     if (!selectedThread) return;
-    await supabase.from("threads").update({ status }).eq("id", selectedThread.id);
+    const { error } = await supabase.from("threads").update({ status }).eq("id", selectedThread.id);
+    if (error) { notify.error(t("errors.generic")); return; }
     setSelectedThread({ ...selectedThread, status });
   }
 
@@ -502,7 +503,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               {/* Chat header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 18px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", flexShrink: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <button onClick={() => setMobileShowChat(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+                  <button onClick={() => setMobileShowChat(false)} aria-label={t("common.back")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
                     <ArrowLeft style={{ width: 16, height: 16 }} />
                   </button>
                   <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)" }}>
@@ -579,6 +580,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         m.body.toLowerCase().includes(msgQuery.trim().toLowerCase()) ||
                         (m.attachment_name ?? "").toLowerCase().includes(msgQuery.trim().toLowerCase()))
                     : messages;
+                  if (visibleMessages.length === 0 && msgQuery.trim()) {
+                    return (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "10px", color: "var(--cr-ink-4)" }}>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("messages.noMatches", { query: msgQuery.trim() })}</p>
+                        <button onClick={() => setMsgQuery("")}
+                          style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "5px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                          {t("messages.clearSearch")}
+                        </button>
+                      </div>
+                    );
+                  }
                   return visibleMessages.map((msg, i) => {
                   const isOwn = msg.sender_id === profile.id;
                   const showTime = i === 0 || (new Date(msg.created_at).getTime() - new Date(visibleMessages[i - 1].created_at).getTime()) > 5 * 60 * 1000;

@@ -568,7 +568,9 @@
     "selectedPlan": "Sie registrieren sich für den Tarif {plan}.",
     "selectedPlanLaunch": "Während der Launch-Phase ist jeder Tarif kostenlos — es fallen keine Kosten an.",
     "passwordBreached": "Dieses Passwort tauchte in {count} bekannten Datenlecks auf — Angreifer probieren es zuerst. Wähle ein anderes.",
-    "passwordBreachedShort": "Dieses Passwort taucht in bekannten Lecks auf — wähle ein anderes."
+    "passwordBreachedShort": "Dieses Passwort taucht in bekannten Lecks auf — wähle ein anderes.",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen"
   },
   "dashboard": {
     "overview": "Übersicht",
@@ -1302,7 +1304,8 @@
     "view": "Ansehen",
     "done": "Fertig",
     "exportPdf": "Drucken / als PDF speichern",
-    "viewPlans": "Pläne ansehen"
+    "viewPlans": "Pläne ansehen",
+    "remove": "Entfernen"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",
@@ -2238,8 +2241,9 @@
     "viewArchived": "Archiviert ({count})",
     "showingArchived": "Archivierte ({count}) — zurück zum Posteingang",
     "searchInThread": "In dieser Unterhaltung suchen…",
-    "clearSearch": "Leeren",
-    "unreadAria": "Ungelesen"
+    "clearSearch": "Suche löschen",
+    "unreadAria": "Ungelesen",
+    "noMatches": "Keine Nachrichten passen zu \"{query}\""
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",
@@ -2408,7 +2412,8 @@
   },
   "navbar": {
     "feeBadge": "2 % bei Abschluss",
-    "feeBadgeAria": "2 % Erfolgsgebühr bei Abschluss"
+    "feeBadgeAria": "2 % Erfolgsgebühr bei Abschluss",
+    "accountMenuAria": "Kontomenü"
   },
   "feeBadge": {
     "floating": "2 % bei Abschluss — nichts im Voraus"

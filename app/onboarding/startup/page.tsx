@@ -470,7 +470,7 @@ export default function StartupOnboardingPage() {
                             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("onboarding.su.founderN", { n: i + 1 })}</span>
                           </div>
                           {founders.length > 1 && (
-                            <button onClick={() => removeFounder(i)}
+                            <button onClick={() => removeFounder(i)} aria-label={t("common.remove")}
                               style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)" }}>
                               <Trash2 style={{ width: 14, height: 14 }} />
                             </button>
@@ -579,7 +579,7 @@ export default function StartupOnboardingPage() {
                             <input type="text" value={c.differentiator} onChange={e => updateCompetitor(i, "differentiator", e.target.value)}
                               placeholder={t("onboarding.su.competitorDiffPh")} style={{ ...iStyle, flex: 1, fontSize: "13px" }} />
                             {competitors.length > 1 && (
-                              <button onClick={() => removeCompetitor(i)}
+                              <button onClick={() => removeCompetitor(i)} aria-label={t("common.remove")}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", paddingTop: "8px", flexShrink: 0 }}>
                                 <Trash2 style={{ width: 14, height: 14 }} />
                               </button>
@@ -668,7 +668,7 @@ export default function StartupOnboardingPage() {
                             <input type="text" value={m.description} onChange={e => updateMilestone(i, "description", e.target.value)}
                               placeholder={t("onboarding.su.milestonePh")} style={{ ...iStyle, flex: 1, fontSize: "13px" }} />
                             {milestones.length > 1 && (
-                              <button onClick={() => removeMilestone(i)}
+                              <button onClick={() => removeMilestone(i)} aria-label={t("common.remove")}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                                 <Trash2 style={{ width: 14, height: 14 }} />
                               </button>
