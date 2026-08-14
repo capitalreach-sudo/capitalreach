@@ -11,10 +11,17 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { startupId, investorId, body: messageBody } = await req.json();
+  const { startupId, investorId, body: messageBody } = await req.json().catch(() => ({}));
 
   if (!messageBody?.trim()) {
     return NextResponse.json({ error: "Message body required" }, { status: 400 });
+  }
+  // Cap the stored body so a caller can't push an arbitrarily large row.
+  if (typeof messageBody !== "string" || messageBody.length > 5000) {
+    return NextResponse.json({ error: "Message too long" }, { status: 400 });
+  }
+  if (typeof startupId !== "string" || typeof investorId !== "string") {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   const adminClient = createAdminClient();
@@ -54,6 +61,14 @@ export async function POST(req: NextRequest) {
 
   if (!canSendMessages(ctx)) {
     return NextResponse.json({ error: "Angel tier required to send messages" }, { status: 403 });
+  }
+
+  // The target listing must be publicly active — no messaging a draft, rejected
+  // or suspended startup that isn't visible in the directory.
+  const { data: targetStartup } = await adminClient
+    .from("startups").select("status").eq("id", startupId).single();
+  if (!targetStartup || targetStartup.status !== "active") {
+    return NextResponse.json({ error: "Startup not available" }, { status: 404 });
   }
 
   // Check if thread already exists (no need to count existing thread)

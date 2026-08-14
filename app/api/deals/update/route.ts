@@ -27,7 +27,17 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { dealId, status, reason, nextFollowUp, amount, currency } = await req.json();
+  const { dealId, status, reason, nextFollowUp, amount, currency } = await req.json().catch(() => ({}));
+
+  // Statuses the UI can actually render. "closed" is handled by /api/deals/close
+  // and rejected below; everything else must be one of these.
+  const VALID_STATUSES = ["intro", "due_diligence", "term_sheet", "passed"];
+  if (status !== undefined && !VALID_STATUSES.includes(status) && status !== "closed") {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  }
+  if (nextFollowUp !== undefined && nextFollowUp !== null && !/^\d{4}-\d{2}-\d{2}$/.test(nextFollowUp)) {
+    return NextResponse.json({ error: "Invalid follow-up date" }, { status: 400 });
+  }
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
 

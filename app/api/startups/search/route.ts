@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
 
 export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
+  const q = (req.nextUrl.searchParams.get("q")?.trim() ?? "").slice(0, 100);
   const limit = Math.min(Number(req.nextUrl.searchParams.get("limit") ?? "6"), 20);
 
   if (q.length < 2) {
@@ -13,13 +13,13 @@ export async function GET(req: NextRequest) {
   const { data, error } = await supabase
     .from("startups")
     .select("id, slug, name, industry, stage")
-    .ilike("name", `%${q}%`)
+    .ilike("name", `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`)
     .eq("status", "active")
     .order("name", { ascending: true })
     .limit(limit);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Search failed" }, { status: 500 });
   }
 
   return NextResponse.json({ startups: data ?? [] });

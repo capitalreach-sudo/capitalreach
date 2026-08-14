@@ -119,6 +119,6 @@ export async function DELETE(req: NextRequest) {
     .eq("id", id)
     .eq("investor_id", investor.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Could not save search" }, { status: 500 });
   return NextResponse.json({ deleted: true });
 }

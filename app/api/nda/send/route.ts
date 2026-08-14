@@ -15,7 +15,10 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { startupId, investorId } = await req.json();
+  const { startupId, investorId } = await req.json().catch(() => ({}));
+  if (typeof startupId !== "string" || typeof investorId !== "string") {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
   const adminClient = createAdminClient();
 
   // Get startup + owner details
@@ -29,13 +32,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "NDA not required for this startup" }, { status: 400 });
   }
 
-  // Get startup owner email
-  const { data: startupOwner } = await adminClient
-    .from("profiles")
-    .select("email, full_name")
-    .eq("id", startup.owner_id)
-    .single();
-
   // Get investor + owner details
   const { data: investor } = await adminClient
     .from("investors")
@@ -44,6 +40,20 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (!investor) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
+
+  // The caller must be one of the two parties this NDA is between. Without this
+  // any signed-in user could mail a DocuSign envelope to an arbitrary
+  // founder/investor pair and write an nda_records row on their behalf.
+  if (startup.owner_id !== user.id && investor.owner_id !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Get startup owner email
+  const { data: startupOwner } = await adminClient
+    .from("profiles")
+    .select("email, full_name")
+    .eq("id", startup.owner_id)
+    .single();
   const { data: investorOwner } = await adminClient
     .from("profiles")
     .select("email, full_name")

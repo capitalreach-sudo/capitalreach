@@ -195,6 +195,6 @@ export async function DELETE(req: NextRequest) {
     .eq("entity_type", type)
     .eq("entity_id", me.entityId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Request failed" }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

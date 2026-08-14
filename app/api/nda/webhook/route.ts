@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
 import { logSystemEvent } from "@/lib/system-events";
 import { createAdminClient } from "@/lib/supabase-server";
 import { sendNdaSignedEmail } from "@/lib/resend";
@@ -7,11 +8,31 @@ import { notifyUsers } from "@/lib/notify-user";
 // DocuSign Connect webhook — fires when envelope status changes
 // Configure in DocuSign Admin > Connect > Add Configuration
 // URL: https://your-domain.com/api/nda/webhook
+
+// DocuSign signs each Connect message with an HMAC-SHA256 over the raw body,
+// base64-encoded in the X-DocuSign-Signature-1 header. Verify it so an attacker
+// who guesses an envelope id can't POST here to mark an NDA signed and unlock a
+// data room. Fails closed when the key is set; when unset (DocuSign not yet
+// configured) the endpoint stays inert-but-open, as before.
+function verifyDocusignSignature(rawBody: string, header: string | null): boolean {
+  const key = process.env.DOCUSIGN_CONNECT_HMAC_KEY;
+  if (!key) return true; // not configured — no signing to verify against
+  if (!header) return false;
+  const expected = createHmac("sha256", key).update(rawBody, "utf8").digest("base64");
+  const a = Buffer.from(expected);
+  const b = Buffer.from(header);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
 
+  if (!verifyDocusignSignature(body, req.headers.get("x-docusign-signature-1"))) {
+    await logSystemEvent("webhook/nda", "error", "Rejected NDA webhook with bad signature", {});
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+  }
+
   // Parse the DocuSign Connect XML payload
-  // In production, verify the HMAC signature from DocuSign
   let envelopeId: string | null = null;
   let status: string | null = null;
 

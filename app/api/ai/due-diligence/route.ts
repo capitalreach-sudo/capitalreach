@@ -55,6 +55,10 @@ export async function POST(req: NextRequest) {
   const profile = profileRes.data;
   const startup = startupRes.data;
   if (!startup) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+  // No diligence on a listing that isn't publicly visible.
+  if (startup.status !== "active") {
+    return NextResponse.json({ error: "Startup not available" }, { status: 404 });
+  }
 
   const ctx = buildAccessContext(profile, isLaunch);
   if (!canAiDueDiligence(ctx)) {

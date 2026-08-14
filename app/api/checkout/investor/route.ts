@@ -32,6 +32,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/pricing", req.url));
   }
 
+  // This route writes an *investor* tier; refuse a non-investor caller so a
+  // founder can't stamp an investor tier onto their own profile.
+  {
+    const { data: roleRow } = await createAdminClient()
+      .from("profiles").select("role").eq("id", user.id).single();
+    if (roleRow?.role !== "investor") {
+      return NextResponse.redirect(new URL("/pricing", req.url));
+    }
+  }
+
   // ── Free-until-100 gate ───────────────────────────────────────────────
   try {
     const admin = createAdminClient();

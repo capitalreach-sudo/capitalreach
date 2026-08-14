@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildAccessContext, investorCan } from "@/lib/access";
+import { getLaunchStatus } from "@/lib/launchMode";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
 import { notifyUser } from "@/lib/notify-user";
@@ -55,6 +57,25 @@ export async function POST(req: NextRequest) {
     .eq("investor_id", investorId)
     .eq("startup_id", startupId)
     .maybeSingle();
+
+  // Enforce the plan's watchlist cap on genuinely new saves (editing a note on
+  // an existing save is always allowed).
+  if (!prior) {
+    const { data: prof } = await supabase
+      .from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", user.id).maybeSingle();
+    const { isLaunch } = await getLaunchStatus();
+    const cap = investorCan(buildAccessContext(prof, isLaunch)).watchlistLimit;
+    if (Number.isFinite(cap)) {
+      const { count } = await supabase
+        .from("watchlists").select("*", { count: "exact", head: true }).eq("investor_id", investorId);
+      if ((count ?? 0) >= cap) {
+        return NextResponse.json(
+          { error: `Free plan saves up to ${cap} startups. Upgrade for unlimited.` },
+          { status: 403 }
+        );
+      }
+    }
+  }
 
   const { error } = await supabase
     .from("watchlists")

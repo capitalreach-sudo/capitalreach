@@ -19,8 +19,21 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { dealId, amount, currency } = await req.json();
+  const body = await req.json().catch(() => ({}));
+  const { dealId, amount, currency } = body;
   const dealCurrency = isCurrencyCode(currency) ? currency : DEFAULT_CURRENCY;
+
+  // Amount is optional (fall back to the deal's stored amount below), but when
+  // supplied it drives a real Stripe invoice against the founder — so it must
+  // be a sane, bounded number, never a caller-supplied string like "9999999".
+  let parsedAmount: number | null = null;
+  if (amount !== undefined && amount !== null && amount !== "") {
+    const n = typeof amount === "number" ? amount : Number(amount);
+    if (!Number.isFinite(n) || n < 0 || n > 1_000_000_000_000) {
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+    }
+    parsedAmount = n;
+  }
 
   const adminClient = createAdminClient();
 
@@ -50,13 +63,13 @@ export async function POST(req: NextRequest) {
   const { data: startupProfile } = await adminClient
     .from("profiles")
     .select("email, full_name, stripe_customer_id")
-    .eq("id", deal.startup.owner_id)
+    .eq("id", deal.startup?.owner_id)
     .single();
 
   const { data: investorProfile } = await adminClient
     .from("profiles")
     .select("email, full_name")
-    .eq("id", deal.investor.owner_id)
+    .eq("id", deal.investor?.owner_id)
     .single();
 
   // Mark deal as closed.
@@ -68,7 +81,7 @@ export async function POST(req: NextRequest) {
   // requests both read the deal as open; only one can win this statement,
   // because the loser re-evaluates the qualifier after the row lock clears and
   // matches nothing. The invoice below only runs for the winner.
-  const finalAmount = amount || deal.amount;
+  const finalAmount = parsedAmount ?? deal.amount;
 
   const { data: closedRows } = await adminClient
     .from("deals")
@@ -107,12 +120,12 @@ export async function POST(req: NextRequest) {
 
   let invoiceUrl = "";
   // Create success fee invoice if we have a customer ID and amount
-  if (startupProfile?.stripe_customer_id && amount > 0 && !deal.success_fee_invoiced) {
+  if (startupProfile?.stripe_customer_id && finalAmount && finalAmount > 0 && !deal.success_fee_invoiced) {
     try {
       const invoice = await createSuccessFeeInvoice(
         startupProfile.stripe_customer_id,
-        amount,
-        deal.startup.name,
+        finalAmount,
+        deal.startup?.name ?? "Startup",
         dealCurrency,
         dealId
       );
@@ -152,9 +165,9 @@ export async function POST(req: NextRequest) {
     await sendDealClosedEmail(
       startupProfile.email,
       investorProfile.email,
-      deal.startup.name,
+      deal.startup?.name ?? "Startup",
       investorProfile.full_name || "the investor",
-      amount || 0,
+      finalAmount || 0,
       invoiceUrl,
       dealCurrency
     ).catch(() => {});

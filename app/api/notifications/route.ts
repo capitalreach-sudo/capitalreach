@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
     "message", "follow_up_due", "contract_status", "nda_signed",
     "listing_approved", "listing_rejected", "team_added",
     "tier_changed", "search_match", "listing_saved", "listing_update",
+    "doc_request", "deal_shared", "question_asked", "question_answered", "verified",
   ]);
   const types = (req.nextUrl.searchParams.get("types") ?? "")
     .split(",").map((t) => t.trim()).filter((t) => KNOWN_TYPES.has(t));
@@ -121,7 +122,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const { error } = await q;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Could not load notifications" }, { status: 500 });
 
   return NextResponse.json({ ok: true });
 }

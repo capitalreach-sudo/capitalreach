@@ -24,6 +24,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/pricing", req.url));
   }
 
+  // This route writes a *founder* tier. Refuse if the caller isn't a startup —
+  // otherwise an investor hitting it would stamp a founder tier onto their own
+  // profile.
+  {
+    const { data: roleRow } = await createAdminClient()
+      .from("profiles").select("role").eq("id", user.id).single();
+    if (roleRow?.role !== "startup") {
+      return NextResponse.redirect(new URL("/pricing", req.url));
+    }
+  }
+
   // ── Free-until-100 gate ───────────────────────────────────────────────
   try {
     const admin = createAdminClient();
