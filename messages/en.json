@@ -2333,5 +2333,10 @@
     "done": "Investor verified — the badge is live.",
     "undone": "Verification removed.",
     "failed": "Could not update verification."
+  },
+  "preview": {
+    "banner": "Previewing as a free investor — this is exactly what they see, locks included.",
+    "exit": "Back to my view",
+    "open": "Preview as investor"
   }
 }

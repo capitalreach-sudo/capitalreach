@@ -2333,5 +2333,10 @@
     "done": "Investitore verificato: il badge è attivo.",
     "undone": "Verifica rimossa.",
     "failed": "Impossibile aggiornare la verifica."
+  },
+  "preview": {
+    "banner": "Anteprima come investitore gratuito: è esattamente ciò che vede, blocchi inclusi.",
+    "exit": "Torna alla mia vista",
+    "open": "Anteprima da investitore"
   }
 }

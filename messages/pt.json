@@ -2333,5 +2333,10 @@
     "done": "Investidor verificado — o selo está visível.",
     "undone": "Verificação removida.",
     "failed": "Não foi possível atualizar a verificação."
+  },
+  "preview": {
+    "banner": "Pré-visualização como investidor gratuito — é exatamente o que ele vê, cadeados incluídos.",
+    "exit": "Voltar à minha vista",
+    "open": "Pré-visualizar como investidor"
   }
 }

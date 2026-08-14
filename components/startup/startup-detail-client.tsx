@@ -38,6 +38,8 @@ interface Props {
   isOwner?: boolean;
   questions?: Array<{ id: string; question: string; answer: string | null; answered_at: string | null; created_at: string }>;
   isLaunchMode:   boolean;
+  /** Owner is looking at their own listing as a free investor would see it. */
+  previewing?:    boolean;
   viewerSuspended?: boolean;
 }
 
@@ -266,7 +268,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -410,6 +412,21 @@ export function StartupDetailClient({
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
+      {/* Same black-bar convention as the admin view-as banner: unmistakable,
+          and one click out. Everything below really is the free-investor
+          view -- the server stripped document URLs and zeroed the tier, so
+          this is the truth, not a costume. */}
+      {previewing && (
+        <div role="status" style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
+            <Eye style={{ width: 14, height: 14, color: "var(--cr-copper-l)" }} />
+            {t("preview.banner")}
+          </span>
+          <Link href={`/startups/${startup.slug}`} style={{ color: "var(--cr-copper-l)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            {t("preview.exit")}
+          </Link>
+        </div>
+      )}
       <PrintHeader title={startup.name} tagline={t("common.printTagline")} />
 
       {/* ── Editorial hero ── */}

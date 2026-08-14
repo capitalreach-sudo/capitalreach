@@ -14,6 +14,7 @@ export const revalidate = 120; // ISR — revalidate every 2 minutes
 
 interface Props {
   params: { slug: string };
+  searchParams?: { preview?: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -56,7 +57,7 @@ export async function generateStaticParams() {
   return (data || []).map(s => ({ slug: s.slug }));
 }
 
-export default async function StartupDetailPage({ params }: Props) {
+export default async function StartupDetailPage({ params, searchParams }: Props) {
   const supabase = await createServerSupabaseClient();
 
   const { data: startup } = await supabase
@@ -179,21 +180,34 @@ export default async function StartupDetailPage({ params }: Props) {
     .returns<StartupCardData[]>();
 
   // Live viewer count placeholder (handled client-side via Supabase Presence)
+  const isOwner = !!user && user.id === startup.owner_id;
+
+  // Owner preview: ?preview=investor renders this page as a signed-out-tier
+  // ("free") investor would see it -- gates closed, documents locked, upgrade
+  // prompts visible. "View listing" always showed the founder the unlocked
+  // version, so what a real investor actually meets was unknowable without a
+  // second account. Owner or admin only: for anyone else the param is
+  // ignored rather than erroring, so a shared link with the param on it
+  // degrades to the normal page.
+  const previewing = (isOwner || viewerIsAdmin) && searchParams?.preview === "investor";
+
   // The URL is the access control. The client renders padlocks from the same
   // facts, but it must never HOLD a url it may not open -- devtools reads
   // what a padlock hides. Same rule as /api/deals/resources (lib/document-access).
+  // Under preview the context is computed exactly as for a free investor --
+  // including URL stripping, so the preview is honest rather than cosmetic.
   const viewerCaps = investorCan({
-    userId: investorId,
-    role: investorId ? ("investor" as const) : null,
-    tier: investorTier,
+    userId: previewing ? null : investorId,
+    role: previewing ? ("investor" as const) : investorId ? ("investor" as const) : null,
+    tier: previewing ? null : investorTier,
     isLaunchMode: isLaunch,
-    suspended: viewerSuspended,
+    suspended: previewing ? false : viewerSuspended,
   });
   const docCtx = {
-    isOwnerOrAdmin: (!!user && user.id === startup.owner_id) || viewerIsAdmin,
+    isOwnerOrAdmin: previewing ? false : isOwner || viewerIsAdmin,
     canDocuments: viewerCaps.viewDocuments,
     startupRequiresNda: !!startup.require_nda,
-    ndaSigned,
+    ndaSigned: previewing ? false : ndaSigned,
   };
   const safeStartup = {
     ...startup,
@@ -205,16 +219,17 @@ export default async function StartupDetailPage({ params }: Props) {
       <Navbar />
       <StartupDetailClient
         startup={safeStartup}
-        investorTier={investorTier}
-        investorId={investorId}
-        viewerDeal={viewerDeal}
-        ndaSigned={ndaSigned}
+        investorTier={previewing ? null : investorTier}
+        investorId={previewing ? null : investorId}
+        viewerDeal={previewing ? null : viewerDeal}
+        ndaSigned={previewing ? false : ndaSigned}
         relatedStartups={related ?? []}
         updates={updates ?? []}
-        isOwner={!!user && user.id === startup.owner_id}
+        isOwner={previewing ? false : isOwner}
         questions={questions ?? []}
         isLaunchMode={isLaunch}
-        viewerSuspended={viewerSuspended}
+        viewerSuspended={previewing ? false : viewerSuspended}
+        previewing={previewing}
       />
       <Footer />
     </>

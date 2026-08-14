@@ -2333,5 +2333,10 @@
     "done": "Inversor verificado: la insignia ya está visible.",
     "undone": "Verificación retirada.",
     "failed": "No se pudo actualizar la verificación."
+  },
+  "preview": {
+    "banner": "Vista previa como inversor gratuito: esto es exactamente lo que ve, candados incluidos.",
+    "exit": "Volver a mi vista",
+    "open": "Vista previa como inversor"
   }
 }

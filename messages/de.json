@@ -2333,5 +2333,10 @@
     "done": "Investor verifiziert — das Abzeichen ist aktiv.",
     "undone": "Verifizierung entzogen.",
     "failed": "Verifizierung konnte nicht geändert werden."
+  },
+  "preview": {
+    "banner": "Vorschau als Free-Investor — genau das sehen sie, inklusive Sperren.",
+    "exit": "Zurück zu meiner Ansicht",
+    "open": "Als Investor ansehen"
   }
 }

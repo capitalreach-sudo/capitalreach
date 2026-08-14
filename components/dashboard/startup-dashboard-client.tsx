@@ -548,6 +548,12 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <Link href={`/startups/${startup.slug}`} target="_blank" style={outlineBtn}>
               <ExternalLink style={{ width: 12, height: 12 }} /> {t("dashboard.viewListing")}
             </Link>
+            {/* The unlocked owner view above lies by omission: it never shows
+                what a real investor meets. This one does — tier zeroed,
+                documents locked, upgrade prompts visible. */}
+            <Link href={`/startups/${startup.slug}?preview=investor`} target="_blank" style={outlineBtn}>
+              <Eye style={{ width: 12, height: 12 }} /> {t("preview.open")}
+            </Link>
             <Link href="/dashboard/startup/edit" style={outlineBtn}>
               <Settings style={{ width: 12, height: 12 }} /> {t("dashboard.editProfile")}
             </Link>

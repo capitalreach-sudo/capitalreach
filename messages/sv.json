@@ -2333,5 +2333,10 @@
     "done": "Investeraren verifierad — märket är live.",
     "undone": "Verifieringen borttagen.",
     "failed": "Kunde inte uppdatera verifieringen."
+  },
+  "preview": {
+    "banner": "Förhandsvisar som gratisinvesterare — precis det de ser, lås inkluderade.",
+    "exit": "Tillbaka till min vy",
+    "open": "Förhandsgranska som investerare"
   }
 }

@@ -2333,5 +2333,10 @@
     "done": "Inwestor zweryfikowany — odznaka jest aktywna.",
     "undone": "Weryfikacja cofnięta.",
     "failed": "Nie udało się zaktualizować weryfikacji."
+  },
+  "preview": {
+    "banner": "Podgląd jako darmowy inwestor — dokładnie to widzą, łącznie z blokadami.",
+    "exit": "Wróć do mojego widoku",
+    "open": "Podgląd jako inwestor"
   }
 }
