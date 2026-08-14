@@ -1767,7 +1767,8 @@
     "statCycleHint": "Mediana dei giorni dall'apertura di un'operazione alla chiusura o rinuncia",
     "statAge": "Età mediana aperte",
     "statAgeHint": "Mediana dei giorni da cui le operazioni ancora aperte sono in corso",
-    "days": "{n} g"
+    "days": "{n} g",
+    "feePreview": "Commissione di successo alla chiusura: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Impossibile salvare il mese.",
     "mrrTitle": "MRR per mese",
     "usersTitle": "Utenti per mese"
+  },
+  "fundraise": {
+    "title": "Checklist di raccolta",
+    "sub": "Ogni spunta si guadagna, non si clicca: i passi si completano quando il lavoro accade davvero.",
+    "step_complete": "Porta l'opportunità al 90%+",
+    "step_deck": "Carica il pitch deck",
+    "step_closeDate": "Fissa la data di chiusura",
+    "step_traction": "Registra 2+ mesi di trazione",
+    "step_targets": "Metti nel mirino almeno 5 investitori",
+    "step_preview": "Guarda l'opportunità come la vedono gli investitori",
+    "months": "{count} registrati",
+    "targets": "{count} nel mirino",
+    "go": "Fallo",
+    "tip": "Consiglio"
   }
 }

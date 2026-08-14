@@ -1767,7 +1767,8 @@
     "statCycleHint": "Mediaan aantal dagen van openen tot sluiten of afwijzen van een deal",
     "statAge": "Mediane leeftijd open",
     "statAgeHint": "Mediaan aantal dagen dat de nog open deals lopen",
-    "days": "{n} d"
+    "days": "{n} d",
+    "feePreview": "Successfee bij closing: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Kon de maand niet opslaan.",
     "mrrTitle": "MRR per maand",
     "usersTitle": "Gebruikers per maand"
+  },
+  "fundraise": {
+    "title": "Fundraising-checklist",
+    "sub": "Elk vinkje wordt verdiend, niet geklikt — stappen vinken zichzelf af als het werk echt gebeurt.",
+    "step_complete": "Breng je aanbod naar 90%+",
+    "step_deck": "Upload je pitchdeck",
+    "step_closeDate": "Stel een sluitdatum in",
+    "step_traction": "Leg 2+ maanden tractie vast",
+    "step_targets": "Target minstens 5 investeerders",
+    "step_preview": "Bekijk je aanbod zoals investeerders het zien",
+    "months": "{count} vastgelegd",
+    "targets": "{count} getarget",
+    "go": "Doen",
+    "tip": "Tip"
   }
 }

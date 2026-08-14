@@ -1767,7 +1767,8 @@
     "statCycleHint": "从发起交易到成交或放弃的天数中位数",
     "statAge": "未结交易时长中位数",
     "statAgeHint": "仍在进行的交易已持续天数的中位数",
-    "days": "{n} 天"
+    "days": "{n} 天",
+    "feePreview": "成交成功费：{fee}（2%）"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -2353,5 +2354,19 @@
     "saveFailed": "无法保存。",
     "mrrTitle": "月度 MRR",
     "usersTitle": "月度用户数"
+  },
+  "fundraise": {
+    "title": "融资清单",
+    "sub": "每个勾都是做出来的，不是点出来的——工作完成后步骤会自动打勾。",
+    "step_complete": "将项目完善至 90% 以上",
+    "step_deck": "上传路演材料",
+    "step_closeDate": "设定融资截止日",
+    "step_traction": "记录 2 个月以上的业务数据",
+    "step_targets": "锁定至少 5 位目标投资人",
+    "step_preview": "以投资人视角查看你的项目",
+    "months": "已记录 {count} 个月",
+    "targets": "已锁定 {count} 位",
+    "go": "去完成",
+    "tip": "提示"
   }
 }

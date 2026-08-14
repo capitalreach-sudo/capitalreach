@@ -1098,11 +1098,30 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             actually asks -- not "what stage" but "how long has it been there".
             updated_at can't answer it: a note or a contract bumps that without
             the stage moving, so a deal stuck for months looks freshly touched. */}
-        {isActive && deal.stage_entered_at && (
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-3)", background: "var(--cr-paper-3)", borderRadius: "3px", padding: "1px 6px" }}>
-            {t("deals.inStageFor", { n: daysSince(deal.stage_entered_at) })}
-          </span>
-        )}
+        {isActive && deal.stage_entered_at && (() => {
+          // Per-stage service levels: how long a deal may sit in a stage
+          // before the age itself is the finding. Intro conversations go cold
+          // in two weeks; diligence legitimately takes a month; a term sheet
+          // unsigned for three weeks is a term sheet being shopped or
+          // ignored. Copper past the threshold, red past double -- the same
+          // escalation grammar the rest of the pipeline uses.
+          const SLA_DAYS: Record<string, number> = { intro: 14, due_diligence: 30, term_sheet: 21 };
+          const days = daysSince(deal.stage_entered_at);
+          const sla = SLA_DAYS[deal.status] ?? 30;
+          const over = days > sla;
+          const critical = days > sla * 2;
+          return (
+            <span style={{
+              fontFamily: "'DM Sans', sans-serif", fontWeight: over ? 600 : 500, fontSize: "10px",
+              color: critical ? "var(--cr-down)" : over ? "var(--cr-copper)" : "var(--cr-ink-3)",
+              background: critical ? "var(--cr-down-bg)" : over ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+              border: critical ? "1px solid rgba(180,50,50,0.2)" : over ? "1px solid var(--cr-copper-br)" : "none",
+              borderRadius: "3px", padding: "1px 6px",
+            }}>
+              {t("deals.inStageFor", { n: days })}
+            </span>
+          );
+        })()}
 
         {isActive && daysSince(deal.updated_at) > 21 && (
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", borderRadius: "3px", padding: "1px 6px" }}>
@@ -1216,6 +1235,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
             </select>
           </div>
+          {/* The exact invoice, live, before the click that triggers it.
+              Nobody should learn the number from the invoice email. */}
+          {parseFloat(closeAmount) > 0 && (
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "6px 10px", marginBottom: "8px" }}>
+              {t("deals.feePreview", { fee: formatMoney(parseFloat(closeAmount) * 0.02, closeCurrency) })}
+            </p>
+          )}
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "10px" }}>
             {t("deals.feeNotice")}
           </p>

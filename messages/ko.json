@@ -1767,7 +1767,8 @@
     "statCycleHint": "딜 시작부터 성사 또는 패스까지 걸린 일수의 중앙값",
     "statAge": "진행 중 기간 중앙값",
     "statAgeHint": "아직 진행 중인 딜이 경과한 일수의 중앙값",
-    "days": "{n}일"
+    "days": "{n}일",
+    "feePreview": "클로징 성공 보수: {fee} (2%)"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",
@@ -2353,5 +2354,19 @@
     "saveFailed": "저장하지 못했습니다.",
     "mrrTitle": "월별 MRR",
     "usersTitle": "월별 사용자"
+  },
+  "fundraise": {
+    "title": "펀드레이징 체크리스트",
+    "sub": "체크는 클릭이 아니라 실제 작업으로 완료됩니다.",
+    "step_complete": "목록 완성도 90% 이상 달성",
+    "step_deck": "피치덱 업로드",
+    "step_closeDate": "라운드 마감일 설정",
+    "step_traction": "2개월 이상 트랙션 기록",
+    "step_targets": "투자자 5명 이상 타깃",
+    "step_preview": "투자자의 눈으로 목록 확인",
+    "months": "{count}개 기록됨",
+    "targets": "{count}명 타깃",
+    "go": "하러 가기",
+    "tip": "팁"
   }
 }

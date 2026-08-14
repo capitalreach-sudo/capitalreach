@@ -1767,7 +1767,8 @@
     "statCycleHint": "Mediana de dias desde a abertura de um negócio até ao fecho ou recusa",
     "statAge": "Idade mediana em aberto",
     "statAgeHint": "Mediana de dias que os negócios ainda abertos estão a decorrer",
-    "days": "{n} d"
+    "days": "{n} d",
+    "feePreview": "Comissão de êxito no fecho: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Não foi possível guardar o mês.",
     "mrrTitle": "MRR por mês",
     "usersTitle": "Utilizadores por mês"
+  },
+  "fundraise": {
+    "title": "Checklist de angariação",
+    "sub": "Cada visto é conquistado, não clicado — os passos completam-se quando o trabalho acontece.",
+    "step_complete": "Leva a tua oportunidade a 90%+",
+    "step_deck": "Carrega o teu pitch deck",
+    "step_closeDate": "Define a data de fecho da ronda",
+    "step_traction": "Regista 2+ meses de tração",
+    "step_targets": "Define pelo menos 5 investidores-alvo",
+    "step_preview": "Vê a tua oportunidade como os investidores a veem",
+    "months": "{count} registados",
+    "targets": "{count} definidos",
+    "go": "Fazer",
+    "tip": "Dica"
   }
 }

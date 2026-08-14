@@ -1767,7 +1767,8 @@
     "statCycleHint": "ディール開始から成約または見送りまでの日数の中央値",
     "statAge": "進行中の日数中央値",
     "statAgeHint": "進行中のディールが経過した日数の中央値",
-    "days": "{n}日"
+    "days": "{n}日",
+    "feePreview": "成約時の成功報酬：{fee}（2%）"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -2353,5 +2354,19 @@
     "saveFailed": "保存できませんでした。",
     "mrrTitle": "月次MRR",
     "usersTitle": "月次ユーザー数"
+  },
+  "fundraise": {
+    "title": "資金調達チェックリスト",
+    "sub": "チェックは押すものではなく、実際に作業が終わると自動で付きます。",
+    "step_complete": "掲載を90%以上に仕上げる",
+    "step_deck": "ピッチ資料をアップロード",
+    "step_closeDate": "ラウンド締切日を設定",
+    "step_traction": "2か月以上のトラクションを記録",
+    "step_targets": "5名以上の投資家を候補に",
+    "step_preview": "投資家の視点で掲載を確認",
+    "months": "{count}件記録済み",
+    "targets": "{count}名を候補に",
+    "go": "やる",
+    "tip": "ヒント"
   }
 }

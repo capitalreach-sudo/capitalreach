@@ -1767,7 +1767,8 @@
     "statCycleHint": "Mediana de días desde abrir una operación hasta cerrarla o descartarla",
     "statAge": "Antigüedad mediana",
     "statAgeHint": "Mediana de días que llevan abiertas las operaciones aún en curso",
-    "days": "{n} d"
+    "days": "{n} d",
+    "feePreview": "Comisión de éxito al cierre: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Volver a inversores",
@@ -2353,5 +2354,19 @@
     "saveFailed": "No se pudo guardar el mes.",
     "mrrTitle": "MRR por mes",
     "usersTitle": "Usuarios por mes"
+  },
+  "fundraise": {
+    "title": "Lista de la ronda",
+    "sub": "Cada marca se gana, no se pulsa: los pasos se completan cuando el trabajo realmente ocurre.",
+    "step_complete": "Lleva tu listado al 90%+",
+    "step_deck": "Sube tu pitch deck",
+    "step_closeDate": "Fija la fecha de cierre",
+    "step_traction": "Registra 2+ meses de tracción",
+    "step_targets": "Apunta al menos a 5 inversores",
+    "step_preview": "Mira tu listado como lo ven los inversores",
+    "months": "{count} registrados",
+    "targets": "{count} en la lista",
+    "go": "Hazlo",
+    "tip": "Consejo"
   }
 }

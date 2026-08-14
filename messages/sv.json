@@ -1767,7 +1767,8 @@
     "statCycleHint": "Medianantal dagar från öppnad affär till avslut eller avböjande",
     "statAge": "Medianålder öppna",
     "statAgeHint": "Medianantal dagar som de öppna affärerna pågått",
-    "days": "{n} d"
+    "days": "{n} d",
+    "feePreview": "Successavgift vid stängning: {fee} (2 %)"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Kunde inte spara månaden.",
     "mrrTitle": "MRR per månad",
     "usersTitle": "Användare per månad"
+  },
+  "fundraise": {
+    "title": "Checklista för kapitalresning",
+    "sub": "Varje bock förtjänas, klickas inte — stegen bockar av sig själva när arbetet faktiskt sker.",
+    "step_complete": "Få noteringen till 90 %+",
+    "step_deck": "Ladda upp din pitch deck",
+    "step_closeDate": "Sätt ett stängningsdatum",
+    "step_traction": "Registrera 2+ månaders traktion",
+    "step_targets": "Sikta på minst 5 investerare",
+    "step_preview": "Se din notering som investerare gör",
+    "months": "{count} registrerade",
+    "targets": "{count} utvalda",
+    "go": "Gör det",
+    "tip": "Tips"
   }
 }

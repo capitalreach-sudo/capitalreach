@@ -10,6 +10,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
 import { MetricsRecorder } from "@/components/dashboard/metrics-recorder";
+import { FundraiseChecklist } from "@/components/dashboard/fundraise-checklist";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -737,6 +738,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
               </ErrorBoundary>
             )}
+            <ErrorBoundary label="Fundraise checklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
             <ErrorBoundary label="Traction history"><MetricsRecorder /></ErrorBoundary>
             <ErrorBoundary label="Investor interest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary label="Profile viewers"><ViewersPanel /></ErrorBoundary>

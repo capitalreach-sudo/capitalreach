@@ -1778,7 +1778,8 @@
     "statCycleHint": "Median days from opening a deal to closing or passing it",
     "statAge": "Median age open",
     "statAgeHint": "Median days the still-open deals have been running",
-    "days": "{n}d"
+    "days": "{n}d",
+    "feePreview": "Success fee on close: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Could not save that month.",
     "mrrTitle": "MRR by month",
     "usersTitle": "Users by month"
+  },
+  "fundraise": {
+    "title": "Fundraising checklist",
+    "sub": "Every tick is earned, not clicked — steps check themselves off as the work actually happens.",
+    "step_complete": "Get your listing to 90%+",
+    "step_deck": "Upload your pitch deck",
+    "step_closeDate": "Set a round close date",
+    "step_traction": "Record 2+ months of traction",
+    "step_targets": "Target at least 5 investors",
+    "step_preview": "See your listing as investors do",
+    "months": "{count} recorded",
+    "targets": "{count} targeted",
+    "go": "Do it",
+    "tip": "Tip"
   }
 }

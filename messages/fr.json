@@ -1767,7 +1767,8 @@
     "statCycleHint": "Nombre médian de jours entre l'ouverture d'une opération et sa clôture ou son abandon",
     "statAge": "Ancienneté médiane",
     "statAgeHint": "Nombre médian de jours depuis lesquels les opérations encore ouvertes sont en cours",
-    "days": "{n} j"
+    "days": "{n} j",
+    "feePreview": "Commission de succès à la clôture : {fee} (2 %)"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Impossible d'enregistrer le mois.",
     "mrrTitle": "MRR par mois",
     "usersTitle": "Utilisateurs par mois"
+  },
+  "fundraise": {
+    "title": "Checklist de levée",
+    "sub": "Chaque coche se mérite, elle ne se clique pas — les étapes se valident quand le travail est réellement fait.",
+    "step_complete": "Portez votre annonce à 90 %+",
+    "step_deck": "Téléversez votre deck",
+    "step_closeDate": "Fixez une date de clôture",
+    "step_traction": "Enregistrez 2 mois+ de traction",
+    "step_targets": "Ciblez au moins 5 investisseurs",
+    "step_preview": "Voyez votre annonce comme les investisseurs",
+    "months": "{count} enregistrés",
+    "targets": "{count} ciblés",
+    "go": "Allez-y",
+    "tip": "Conseil"
   }
 }

@@ -1774,7 +1774,8 @@
     "statCycleHint": "Median-Tage vom Öffnen bis zum Abschluss oder Absagen",
     "statAge": "Median-Alter offen",
     "statAgeHint": "Median-Tage, die offene Deals bereits laufen",
-    "days": "{n} T."
+    "days": "{n} T.",
+    "feePreview": "Erfolgsgebühr bei Abschluss: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Monat konnte nicht gespeichert werden.",
     "mrrTitle": "MRR nach Monat",
     "usersTitle": "Nutzer nach Monat"
+  },
+  "fundraise": {
+    "title": "Fundraising-Checkliste",
+    "sub": "Jeder Haken ist verdient, nicht geklickt — Schritte haken sich ab, wenn die Arbeit wirklich passiert.",
+    "step_complete": "Listing auf 90%+ bringen",
+    "step_deck": "Pitch-Deck hochladen",
+    "step_closeDate": "Schlussdatum der Runde setzen",
+    "step_traction": "2+ Monate Traktion erfassen",
+    "step_targets": "Mindestens 5 Investoren anvisieren",
+    "step_preview": "Dein Listing mit Investorenaugen sehen",
+    "months": "{count} erfasst",
+    "targets": "{count} anvisiert",
+    "go": "Los",
+    "tip": "Tipp"
   }
 }

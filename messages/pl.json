@@ -1767,7 +1767,8 @@
     "statCycleHint": "Mediana dni od otwarcia transakcji do jej zamknięcia lub odrzucenia",
     "statAge": "Mediana wieku otwartych",
     "statAgeHint": "Mediana dni trwania wciąż otwartych transakcji",
-    "days": "{n} dni"
+    "days": "{n} dni",
+    "feePreview": "Prowizja od sukcesu przy zamknięciu: {fee} (2%)"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -2353,5 +2354,19 @@
     "saveFailed": "Nie udało się zapisać miesiąca.",
     "mrrTitle": "MRR miesięcznie",
     "usersTitle": "Użytkownicy miesięcznie"
+  },
+  "fundraise": {
+    "title": "Checklista fundraisingu",
+    "sub": "Każdy ptaszek jest zasłużony, nie kliknięty — kroki odhaczają się, gdy praca faktycznie się dzieje.",
+    "step_complete": "Doprowadź ofertę do 90%+",
+    "step_deck": "Wgraj pitch deck",
+    "step_closeDate": "Ustal datę zamknięcia rundy",
+    "step_traction": "Zapisz 2+ miesiące trakcji",
+    "step_targets": "Weź na cel co najmniej 5 inwestorów",
+    "step_preview": "Zobacz ofertę oczami inwestorów",
+    "months": "{count} zapisanych",
+    "targets": "{count} na celowniku",
+    "go": "Zrób to",
+    "tip": "Wskazówka"
   }
 }
