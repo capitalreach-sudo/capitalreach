@@ -24,21 +24,6 @@ export function optionalEnv(key: string): string | undefined {
   return isConfigured(value) ? value : undefined;
 }
 
-/**
- * Reads an env var that the calling code cannot work without.
- * Throws at call time (not import time) so a missing key surfaces as a handled
- * request error rather than crashing the whole server on boot.
- */
-export function requireEnv(key: string): string {
-  const value = optionalEnv(key);
-  if (!value) {
-    throw new Error(
-      `Missing required environment variable: ${key}. ` +
-      `Set it in .env.local (local) or the Vercel project settings (deployed).`
-    );
-  }
-  return value;
-}
 
 // ── Per-integration availability ─────────────────────────────────────────────
 // Route handlers should check these and degrade gracefully rather than 500.
@@ -86,23 +71,8 @@ export const env = {
 // ── Feature availability flags ───────────────────────────────────────────────
 
 export const isSupabaseConfigured = !!(env.supabase.url && env.supabase.anonKey);
-export const isServiceRoleConfigured = !!env.supabase.serviceRoleKey;
 export const isStripeConfigured   = !!env.stripe.secretKey;
 export const isResendConfigured   = !!env.resend.apiKey;
 export const isOpenAIConfigured   = !!env.openai.apiKey;
 export const isRedisConfigured    = !!(env.redis.url && env.redis.token);
-export const isDocuSignConfigured = !!env.docusign.integrationKey;
 
-/**
- * Env vars the app genuinely cannot run without. Everything else degrades:
- * no Stripe means no billing, no Resend means no email, no OpenAI means the
- * AI routes return 503 — all handled, none fatal.
- */
-export function assertCoreEnv(): void {
-  if (!isSupabaseConfigured) {
-    throw new Error(
-      "Supabase is not configured. NEXT_PUBLIC_SUPABASE_URL and " +
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY are required."
-    );
-  }
-}

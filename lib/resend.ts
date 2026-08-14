@@ -70,16 +70,6 @@ export async function sendWelcomeEmail(to: string, name: string, role: string) {
   );
 }
 
-export async function sendEmailVerification(to: string, verifyUrl: string) {
-  return send(
-    to,
-    "Verify your CapitalReach email",
-    `<h2>Verify your email address</h2>
-    <p>Click the button below to verify your email and access your account.</p>
-    <p><a href="${verifyUrl}" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">Verify Email →</a></p>
-    <p>This link expires in 24 hours.</p>`
-  );
-}
 
 export async function sendProfileUnderReviewEmail(to: string, startupName: string) {
   return send(

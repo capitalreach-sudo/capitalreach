@@ -5,13 +5,6 @@ export function formatCurrency(n: number): string {
   return `$${n.toLocaleString()}`;
 }
 
-export function formatGrowth(n: number): { text: string; positive: boolean } {
-  return {
-    text:     `${n >= 0 ? "+" : ""}${n}%`,
-    positive: n >= 0,
-  };
-}
-
 export function formatDate(d: string): string {
   const diff = Date.now() - new Date(d).getTime();
   const days = Math.floor(diff / 86_400_000);
@@ -23,10 +16,3 @@ export function formatDate(d: string): string {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  if (n >= 1_000)     return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}k`;
-  return n.toLocaleString();
-}
-
-export const formatRelativeDate = formatDate;

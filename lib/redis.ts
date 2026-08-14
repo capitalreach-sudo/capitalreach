@@ -103,51 +103,13 @@ export const aiRatelimit: Pick<Ratelimit, "limit"> = _redis
 
 // ─── Helpers (silently no-op when Redis is unavailable) ─────────────────────
 
-export async function trackPageview(startupId: string, sessionId: string): Promise<boolean> {
-  if (!_redis) return false;
-  const key = `capitalreach:pv:${startupId}:${sessionId}`;
-  const exists = await _redis.exists(key);
-  if (exists) return false;
-  await _redis.set(key, 1, { ex: 1800 });
-  return true;
-}
 
-export async function getStartupPageviews(startupId: string, days = 7): Promise<number> {
-  if (!_redis) return 0;
-  const key = `capitalreach:pv_count:${startupId}`;
-  const count = await _redis.get<number>(key);
-  return count || 0;
-}
 
-export async function incrementPageviewCount(startupId: string): Promise<void> {
-  if (!_redis) return;
-  const key = `capitalreach:pv_count:${startupId}`;
-  await _redis.incr(key);
-}
 
 export async function cacheStartupScore(startupId: string, score: number): Promise<void> {
   if (!_redis) return;
   await _redis.set(`capitalreach:score:${startupId}`, score, { ex: 86400 });
 }
 
-export async function getCachedScore(startupId: string): Promise<number | null> {
-  if (!_redis) return null;
-  return _redis.get<number>(`capitalreach:score:${startupId}`);
-}
 
-export async function getMessageThreadCount(investorId: string): Promise<number> {
-  if (!_redis) return 0;
-  const key = `capitalreach:msg_threads:${investorId}`;
-  const count = await _redis.get<number>(key);
-  return count || 0;
-}
 
-export async function incrementMessageThreadCount(investorId: string): Promise<void> {
-  if (!_redis) return;
-  const key = `capitalreach:msg_threads:${investorId}`;
-  const ttl = await _redis.ttl(key);
-  await _redis.incr(key);
-  if (ttl < 0) {
-    await _redis.expire(key, 30 * 24 * 60 * 60);
-  }
-}

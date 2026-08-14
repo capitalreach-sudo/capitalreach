@@ -62,9 +62,6 @@ export function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export function generateSessionId(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
-}
 
 export const STAGE_LABELS: Record<string, string> = {
   "pre-seed": "Pre-Seed",
@@ -73,12 +70,6 @@ export const STAGE_LABELS: Record<string, string> = {
   series_b_plus: "Series B+",
 };
 
-export const STAGE_COLORS: Record<string, string> = {
-  "pre-seed": "bg-purple-500/10 text-purple-400 border border-purple-500/20",
-  seed: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-  series_a: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  series_b_plus: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
-};
 
 export const STATUS_COLORS: Record<string, string> = {
   pending_review: "bg-amber-500/10 text-amber-400 border border-amber-500/20",

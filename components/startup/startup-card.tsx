@@ -5,7 +5,7 @@ import { Bookmark, Lock } from "lucide-react";
 import { formatCurrency, daysSince, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { roundCloseState } from "@/lib/round-close";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
-import { canAccessFinancials } from "@/types";
+import { getInvestorPlan } from "@/lib/plans";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -88,7 +88,7 @@ interface StartupCardProps {
 
 export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupCardProps) {
   const { t } = useTranslation();
-  const canSeeFinancials = canAccessFinancials(investorTier ?? null);
+  const canSeeFinancials = getInvestorPlan(investorTier ?? null).features.viewFinancials;
   const isNew            = daysSince(startup.created_at) <= 5;
   const closing          = roundCloseState(startup.round_close_date);
   const score            = startup.vaultrise_score ?? null;

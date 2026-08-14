@@ -45,22 +45,8 @@ export const LOCALE_META: Record<Locale, {
   pl: { name: "Polish",               native: "Polski",     flag: "🇵🇱", rtl: false },
 };
 
-/** Convenience flat maps kept for any legacy code */
-export const LOCALE_NAMES = Object.fromEntries(
-  (Object.entries(LOCALE_META) as [Locale, typeof LOCALE_META[Locale]][])
-    .map(([k, v]) => [k, v.native])
-) as Record<Locale, string>;
 
-export const LOCALE_FLAGS = Object.fromEntries(
-  (Object.entries(LOCALE_META) as [Locale, typeof LOCALE_META[Locale]][])
-    .map(([k, v]) => [k, v.flag])
-) as Record<Locale, string>;
 
-export const LOCALE_RTL: Locale[] = (
-  Object.entries(LOCALE_META) as [Locale, typeof LOCALE_META[Locale]][]
-)
-  .filter(([, v]) => v.rtl)
-  .map(([k]) => k);
 
 export function isRTL(locale: Locale): boolean {
   return LOCALE_META[locale]?.rtl ?? false;
@@ -68,15 +54,4 @@ export function isRTL(locale: Locale): boolean {
 
 export function getLocaleFont(locale: Locale): string | undefined {
   return LOCALE_META[locale]?.font;
-}
-
-/** Simple {key} interpolation for use in templates */
-export function interpolate(
-  str: string,
-  vars: Record<string, string | number> = {},
-): string {
-  return Object.entries(vars).reduce(
-    (s, [k, v]) => s.replaceAll(`{${k}}`, String(v)),
-    str,
-  );
 }

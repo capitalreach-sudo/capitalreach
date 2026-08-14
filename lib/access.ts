@@ -146,9 +146,6 @@ export function investorCan(ctx: AccessContext): InvestorCapabilities {
 
 // ── Investor gates (existing API — delegates to investorCan) ──────────────────
 
-export function canViewFinancials(ctx: AccessContext): boolean {
-  return investorCan(ctx).viewFinancials;
-}
 
 export function canSendMessages(ctx: AccessContext): boolean {
   return investorCan(ctx).message;
@@ -166,9 +163,6 @@ export function canUseSavedSearches(ctx: AccessContext): boolean {
   return investorCan(ctx).savedSearches;
 }
 
-export function canUseAdvancedFilters(ctx: AccessContext): boolean {
-  return investorCan(ctx).advancedFilters;
-}
 
 // Returns the monthly message thread limit, or null for unlimited.
 export function getMessageLimit(ctx: AccessContext): number | null {
@@ -178,22 +172,10 @@ export function getMessageLimit(ctx: AccessContext): number | null {
 
 // ── Founder gates (existing API — delegates to founderCan) ───────────────────
 
-export function canFounderBeListed(ctx: AccessContext): boolean {
-  return founderCan(ctx).listStartup && founderTier(ctx) !== "free";
-}
-
-export function canFounderViewAnalytics(ctx: AccessContext): boolean {
-  return founderCan(ctx).analyticsLevel === "full";
-}
-
-export function canFounderAiPitchFeedback(ctx: AccessContext): boolean {
-  return founderCan(ctx).aiPitchScore;
-}
 
 
-export function canFounderDemoVideo(ctx: AccessContext): boolean {
-  return founderCan(ctx).demoVideo;
-}
+
+
 
 export function getFounderDocumentsLimit(ctx: AccessContext): number {
   return founderCan(ctx).docLimit;
@@ -227,20 +209,6 @@ export function buildAccessContext(
 
 // ── Convenience: fetch context straight from Supabase ────────────────────────
 
-export async function getUserContext(
-  userId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
-  isLaunchMode: boolean,
-): Promise<AccessContext> {
-  const { data } = await supabase
-    .from("profiles")
-    .select("id, role, subscription_tier, suspended, account_status")
-    .eq("id", userId)
-    .maybeSingle();
-
-  return buildAccessContext(data, isLaunchMode);
-}
 
 // ── Suspension ────────────────────────────────────────────────────────────────
 

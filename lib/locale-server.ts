@@ -14,7 +14,7 @@ export function getLocale(): Locale {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getT(locale: Locale): Promise<Record<string, any>> {
+async function getT(locale: Locale): Promise<Record<string, any>> {
   try {
     return (await import(`../messages/${locale}.json`)).default;
   } catch {

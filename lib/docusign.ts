@@ -118,18 +118,3 @@ By signing below, both parties agree to the terms of this Agreement.`;
   return results.envelopeId;
 }
 
-export async function getEnvelopeStatus(envelopeId: string): Promise<string> {
-  const accessToken = await getAccessToken();
-
-  const apiClient = new docusign.ApiClient();
-  apiClient.setBasePath(DOCUSIGN_BASE_PATH);
-  apiClient.addDefaultHeader("Authorization", `Bearer ${accessToken}`);
-
-  const envelopesApi = new docusign.EnvelopesApi(apiClient);
-  const envelope = await envelopesApi.getEnvelope(
-    process.env.DOCUSIGN_ACCOUNT_ID!,
-    envelopeId
-  );
-
-  return envelope.status; // "sent", "delivered", "completed", "declined"
-}

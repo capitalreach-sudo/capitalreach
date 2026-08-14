@@ -8,9 +8,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Eye, Lock, MessageSquare, Search, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import {
-  canExportData, canGetAiDueDiligence, canAccessFinancials, canSendMessages,
-} from "@/types";
+import { buildAccessContext, investorCan } from "@/lib/access";
 import { formatDate } from "@/lib/utils";
 import { formatMoney } from "@/lib/currency";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
@@ -279,10 +277,14 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const canExport        = canExportData(investor.subscription_tier);
-  const canSeeFinancials = canAccessFinancials(investor.subscription_tier);
-  const canMsg           = canSendMessages(investor.subscription_tier);
-  const canAi            = canGetAiDueDiligence(investor.subscription_tier);
+  // One capability object instead of four legacy tier-string checks; admin
+  // and suspension handling come along for free. Launch mode is a server
+  // concern and is already reflected in subscription_tier upgrades.
+  const caps             = investorCan(buildAccessContext(profile, false));
+  const canExport        = caps.dataExport;
+  const canSeeFinancials = caps.viewFinancials;
+  const canMsg           = caps.message;
+  const canAi            = caps.aiDiligence !== "no";
 
   const tierLabel = investor.subscription_tier === "free"
     ? "Explorer"

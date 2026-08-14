@@ -199,26 +199,6 @@ export interface Watchlist {
 // Utility types
 export type InvestorTier = "free" | "angel" | "pro_investor" | "institutional";
 
-export function canAccessFinancials(tier: SubscriptionTier | null): boolean {
-  return tier === "angel" || tier === "pro_investor" || tier === "institutional";
-}
-
-export function canSendMessages(tier: SubscriptionTier | null): boolean {
-  return tier === "angel" || tier === "pro_investor" || tier === "institutional";
-}
-
-export function canGetAiDueDiligence(tier: SubscriptionTier | null): boolean {
-  return tier === "pro_investor" || tier === "institutional";
-}
-
-export function canExportData(tier: SubscriptionTier | null): boolean {
-  return tier === "pro_investor" || tier === "institutional";
-}
-
-export function canGetAiPitchFeedback(tier: SubscriptionTier | null): boolean {
-  return tier === "growth" || tier === "starter";
-}
-
 export const INDUSTRIES = [
   "AI / Machine Learning",
   "B2B SaaS",

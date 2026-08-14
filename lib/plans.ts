@@ -244,29 +244,7 @@ export type InvestorAction =
   | "savedSearches"
   | "advancedFilters";
 
-export function canFounderDoAction(
-  dbTier: string | null | undefined,
-  action: FounderAction,
-  isLaunchMode = false,
-): boolean {
-  if (isLaunchMode) return true;
-  const plan = getFounderPlan(dbTier);
-  return !!plan.features[action as keyof FounderFeatures];
-}
 
-export function canInvestorDoAction(
-  dbTier: string | null | undefined,
-  action: InvestorAction,
-  isLaunchMode = false,
-): boolean {
-  if (isLaunchMode) return true;
-  const plan = getInvestorPlan(dbTier);
-  return !!plan.features[action as keyof InvestorFeatures];
-}
 
 // ── Stripe price env var resolution ──────────────────────────────────────────
 
-export function getStripePriceId(envKey: string | null): string | null {
-  if (!envKey) return null;
-  return process.env[envKey] ?? null;
-}

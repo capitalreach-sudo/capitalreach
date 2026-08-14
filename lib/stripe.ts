@@ -106,20 +106,6 @@ export async function createSuccessFeeInvoice(
   return stripe.invoices.finalizeInvoice(invoice.id);
 }
 
-export async function createOneTimeCharge(
-  customerId: string,
-  amountCents: number,
-  description: string
-): Promise<Stripe.PaymentIntent> {
-  return stripe.paymentIntents.create({
-    customer: customerId,
-    amount: amountCents,
-    currency: "usd",
-    description,
-    confirm: false,
-    payment_method_types: ["card"],
-  });
-}
 
 export function constructWebhookEvent(payload: Buffer, sig: string) {
   return stripe.webhooks.constructEvent(
