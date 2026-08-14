@@ -1271,7 +1271,8 @@
     "open": "不限",
     "printTagline": "CapitalReach — 私募资本交易平台",
     "view": "查看",
-    "done": "完成"
+    "done": "完成",
+    "exportPdf": "打印 / 另存为 PDF"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",

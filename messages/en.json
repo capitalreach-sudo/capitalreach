@@ -1282,7 +1282,8 @@
     "open": "Open",
     "printTagline": "CapitalReach — Private Capital Marketplace",
     "view": "View",
-    "done": "Done"
+    "done": "Done",
+    "exportPdf": "Print / save as PDF"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",

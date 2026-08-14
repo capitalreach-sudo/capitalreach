@@ -1278,7 +1278,8 @@
     "open": "Offen",
     "printTagline": "CapitalReach — Marktplatz für Privatkapital",
     "view": "Ansehen",
-    "done": "Fertig"
+    "done": "Fertig",
+    "exportPdf": "Drucken / als PDF speichern"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",

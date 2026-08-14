@@ -1119,7 +1119,8 @@
     "open": "제한 없음",
     "printTagline": "CapitalReach — 사모 자본 마켓플레이스",
     "view": "보기",
-    "done": "완료"
+    "done": "완료",
+    "exportPdf": "인쇄 / PDF 저장"
   },
   "errors": {
     "required": "이 필드는 필수입니다",

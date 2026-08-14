@@ -1271,7 +1271,8 @@
     "open": "Ouvert",
     "printTagline": "CapitalReach — Marché des capitaux privés",
     "view": "Voir",
-    "done": "Terminé"
+    "done": "Terminé",
+    "exportPdf": "Imprimer / enregistrer en PDF"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue sur CapitalReach",

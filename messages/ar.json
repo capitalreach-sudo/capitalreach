@@ -1271,7 +1271,8 @@
     "open": "مفتوح",
     "printTagline": "CapitalReach — سوق رأس المال الخاص",
     "view": "عرض",
-    "done": "تم"
+    "done": "تم",
+    "exportPdf": "طباعة / حفظ PDF"
   },
   "onboarding": {
     "welcomeTitle": "مرحباً بك في CapitalReach",

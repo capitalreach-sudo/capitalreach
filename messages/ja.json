@@ -1271,7 +1271,8 @@
     "open": "制限なし",
     "printTagline": "CapitalReach — プライベートキャピタル市場",
     "view": "表示",
-    "done": "完了"
+    "done": "完了",
+    "exportPdf": "印刷／PDF保存"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",

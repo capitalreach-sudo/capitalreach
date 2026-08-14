@@ -1119,7 +1119,8 @@
     "open": "Öppet",
     "printTagline": "CapitalReach — Marknadsplats för privat kapital",
     "view": "Visa",
-    "done": "Klar"
+    "done": "Klar",
+    "exportPdf": "Skriv ut / spara som PDF"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",

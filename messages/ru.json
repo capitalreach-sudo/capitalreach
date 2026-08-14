@@ -1119,7 +1119,8 @@
     "open": "Открыто",
     "printTagline": "CapitalReach — Рынок частного капитала",
     "view": "Просмотр",
-    "done": "Готово"
+    "done": "Готово",
+    "exportPdf": "Печать / сохранить в PDF"
   },
   "errors": {
     "required": "Это поле обязательно",

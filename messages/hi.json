@@ -1119,7 +1119,8 @@
     "open": "खुला",
     "printTagline": "CapitalReach — निजी पूंजी बाज़ार",
     "view": "देखें",
-    "done": "हो गया"
+    "done": "हो गया",
+    "exportPdf": "प्रिंट / PDF सहेजें"
   },
   "errors": {
     "required": "यह फ़ील्ड आवश्यक है",

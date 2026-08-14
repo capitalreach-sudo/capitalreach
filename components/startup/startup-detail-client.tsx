@@ -609,7 +609,11 @@ export function StartupDetailClient({
                   <FileText style={{ width: 13, height: 13 }} /> {t("onePager.open")}
                 </Link>
                 {investorId && !viewerSuspended && <SharePicker startupId={startup.id} />}
-                <PrintButton label={t("startupDetail.aiDiligenceTitle")} />
+                {/* Was labeled "AI Due Diligence Report" while its only action is
+                    window.print() -- a button that promises AI and delivers the
+                    print dialog. It prints the page (including the AI report
+                    section when one is on it), so it says that now. */}
+                <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
                 {canMessage ? (
                   <button onClick={() => setMessageOpen(true)}

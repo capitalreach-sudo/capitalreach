@@ -1119,7 +1119,8 @@
     "open": "Otwarte",
     "printTagline": "CapitalReach — Rynek kapitału prywatnego",
     "view": "Zobacz",
-    "done": "Gotowe"
+    "done": "Gotowe",
+    "exportPdf": "Drukuj / zapisz jako PDF"
   },
   "errors": {
     "required": "To pole jest wymagane",

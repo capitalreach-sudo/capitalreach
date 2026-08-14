@@ -1119,7 +1119,8 @@
     "open": "Open",
     "printTagline": "CapitalReach — Marktplaats voor privékapitaal",
     "view": "Bekijken",
-    "done": "Klaar"
+    "done": "Klaar",
+    "exportPdf": "Afdrukken / opslaan als PDF"
   },
   "errors": {
     "required": "Dit veld is verplicht",
