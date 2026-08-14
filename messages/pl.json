@@ -530,7 +530,9 @@
     "resendIn": "Ponownie za {n} s",
     "resendSent": "Ponownie wysłano e-mail weryfikacyjny.",
     "selectedPlan": "Rejestrujesz się w planie {plan}.",
-    "selectedPlanLaunch": "W czasie startu wszystkie plany są bezpłatne — nie pobierzemy opłaty."
+    "selectedPlanLaunch": "W czasie startu wszystkie plany są bezpłatne — nie pobierzemy opłaty.",
+    "passwordBreached": "To hasło pojawiło się w {count} znanych wyciekach — atakujący próbują go najpierw. Wybierz inne.",
+    "passwordBreachedShort": "To hasło występuje w znanych wyciekach — wybierz inne."
   },
   "dashboard": {
     "overview": "Przegląd",

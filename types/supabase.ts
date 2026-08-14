@@ -1555,6 +1555,30 @@ export type Database = {
           },
         ]
       }
+      terms_acceptances: {
+        Row: {
+          accepted_at: string
+          id: string
+          ip: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          id?: string
+          ip?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          id?: string
+          ip?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
       threads: {
         Row: {
           created_at: string

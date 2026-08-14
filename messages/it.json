@@ -530,7 +530,9 @@
     "resendIn": "Rinvia tra {n} s",
     "resendSent": "Email di verifica inviata di nuovo.",
     "selectedPlan": "Ti stai iscrivendo al piano {plan}.",
-    "selectedPlanLaunch": "Durante il lancio tutti i piani sono gratuiti: non ti verrà addebitato nulla."
+    "selectedPlanLaunch": "Durante il lancio tutti i piani sono gratuiti: non ti verrà addebitato nulla.",
+    "passwordBreached": "Questa password è comparsa in {count} violazioni note: gli attaccanti la provano per prima. Scegline un'altra.",
+    "passwordBreachedShort": "Quella password compare in violazioni note: scegline un'altra."
   },
   "dashboard": {
     "overview": "Panoramica",

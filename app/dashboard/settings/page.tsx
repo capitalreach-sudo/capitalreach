@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { isPasswordBreached } from "@/lib/password-check";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -133,6 +134,14 @@ export default function AccountSettingsPage() {
       return;
     }
     setSavingPassword(true);
+    // Same breach gate as signup -- changing TO a breached password is the
+    // same mistake at a worse time.
+    const { breached } = await isPasswordBreached(newPassword);
+    if (breached) {
+      toast({ title: t("auth.passwordBreachedShort"), variant: "destructive" });
+      setSavingPassword(false);
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
       toast({ title: t("settings.passwordUpdateFailed"), description: error.message, variant: "destructive" });

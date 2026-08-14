@@ -530,7 +530,9 @@
     "resendIn": "Reenviar em {n} s",
     "resendSent": "E-mail de verificação reenviado.",
     "selectedPlan": "Estás a inscrever-te no plano {plan}.",
-    "selectedPlanLaunch": "Durante o lançamento todos os planos são gratuitos — não serás cobrado."
+    "selectedPlanLaunch": "Durante o lançamento todos os planos são gratuitos — não serás cobrado.",
+    "passwordBreached": "Esta palavra-passe apareceu em {count} fugas de dados conhecidas — os atacantes tentam-na primeiro. Escolhe outra.",
+    "passwordBreachedShort": "Essa palavra-passe aparece em fugas conhecidas — escolhe outra."
   },
   "dashboard": {
     "overview": "Visão geral",

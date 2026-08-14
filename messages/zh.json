@@ -539,7 +539,9 @@
     "resendIn": "{n} 秒后可重发",
     "resendSent": "已重新发送验证邮件。",
     "selectedPlan": "你正在注册 {plan} 方案。",
-    "selectedPlanLaunch": "上线期间所有方案均免费，不会向你收费。"
+    "selectedPlanLaunch": "上线期间所有方案均免费，不会向你收费。",
+    "passwordBreached": "该密码已在 {count} 次已知数据泄露中出现——攻击者会最先尝试它。请换一个。",
+    "passwordBreachedShort": "该密码存在于已知泄露中——请换一个。"
   },
   "dashboard": {
     "overview": "概览",

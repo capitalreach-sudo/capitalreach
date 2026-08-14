@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { isPasswordBreached } from "@/lib/password-check";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -100,6 +101,17 @@ function SignupForm() {
     if (!termsAccepted) { setSignupError(t("auth.mustAcceptTerms")); return; }
     setLoading(true); setSignupError("");
     try {
+      // k-anonymity breach check (lib/password-check): only five hex chars of
+      // a local SHA-1 ever leave the device, and the check fails open, so a
+      // HIBP outage cannot block registration. Blocking rather than warning:
+      // a password seen in breaches WILL be in credential-stuffing lists,
+      // and this platform holds deal financials.
+      const { breached, count } = await isPasswordBreached(password);
+      if (breached) {
+        setSignupError(t("auth.passwordBreached", { count }));
+        setLoading(false);
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email, password,
         options: {
@@ -118,6 +130,10 @@ function SignupForm() {
       if (error) { setSignupError(authErrorMessage(error, t)); setLoading(false); return; }
       if (!data.user) { setSignupError(t("auth.signupFailed")); setLoading(false); return; }
       if (data.session) {
+        // Durable acceptance record (terms_acceptances) -- the checkbox alone
+        // recorded nothing. Fire-and-forget: browser context, and a lost row
+        // must not block a signup that already succeeded.
+        fetch("/api/account/accept-terms", { method: "POST" }).catch(() => {});
         fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
         notify.success(t("auth.welcomeToast"));
         router.push(`/onboarding/${role}`);

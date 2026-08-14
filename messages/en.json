@@ -550,7 +550,9 @@
     "resendIn": "Resend in {n}s",
     "resendSent": "Verification email sent again.",
     "selectedPlan": "You're signing up for the {plan} plan.",
-    "selectedPlanLaunch": "During launch, every plan is free — you won't be charged."
+    "selectedPlanLaunch": "During launch, every plan is free — you won't be charged.",
+    "passwordBreached": "This password has appeared in {count} known data breaches — attackers try it first. Pick a different one.",
+    "passwordBreachedShort": "That password appears in known breaches — pick a different one."
   },
   "dashboard": {
     "overview": "Overview",

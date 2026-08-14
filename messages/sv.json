@@ -530,7 +530,9 @@
     "resendIn": "Skicka igen om {n} s",
     "resendSent": "Verifieringsmejlet skickades igen.",
     "selectedPlan": "Du registrerar dig för {plan}-planen.",
-    "selectedPlanLaunch": "Under lanseringen är alla planer gratis — du debiteras inget."
+    "selectedPlanLaunch": "Under lanseringen är alla planer gratis — du debiteras inget.",
+    "passwordBreached": "Det här lösenordet har förekommit i {count} kända dataläckor — angripare provar det först. Välj ett annat.",
+    "passwordBreachedShort": "Lösenordet förekommer i kända läckor — välj ett annat."
   },
   "dashboard": {
     "overview": "Översikt",

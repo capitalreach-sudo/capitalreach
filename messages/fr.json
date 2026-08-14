@@ -539,7 +539,9 @@
     "resendIn": "Renvoyer dans {n} s",
     "resendSent": "E-mail de vérification renvoyé.",
     "selectedPlan": "Vous vous inscrivez à l'offre {plan}.",
-    "selectedPlanLaunch": "Pendant le lancement, toutes les offres sont gratuites — rien ne vous sera facturé."
+    "selectedPlanLaunch": "Pendant le lancement, toutes les offres sont gratuites — rien ne vous sera facturé.",
+    "passwordBreached": "Ce mot de passe figure dans {count} fuites de données connues — les attaquants l'essaient en premier. Choisissez-en un autre.",
+    "passwordBreachedShort": "Ce mot de passe figure dans des fuites connues — choisissez-en un autre."
   },
   "dashboard": {
     "overview": "Aperçu",

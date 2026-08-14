@@ -530,7 +530,9 @@
     "resendIn": "Opnieuw over {n} s",
     "resendSent": "Verificatiemail opnieuw verstuurd.",
     "selectedPlan": "Je meldt je aan voor het {plan}-plan.",
-    "selectedPlanLaunch": "Tijdens de lancering zijn alle plannen gratis — er wordt niets in rekening gebracht."
+    "selectedPlanLaunch": "Tijdens de lancering zijn alle plannen gratis — er wordt niets in rekening gebracht.",
+    "passwordBreached": "Dit wachtwoord kwam voor in {count} bekende datalekken — aanvallers proberen het als eerste. Kies een ander.",
+    "passwordBreachedShort": "Dat wachtwoord komt voor in bekende lekken — kies een ander."
   },
   "dashboard": {
     "overview": "Overzicht",

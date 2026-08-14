@@ -539,7 +539,9 @@
     "resendIn": "Reenviar en {n} s",
     "resendSent": "Correo de verificación reenviado.",
     "selectedPlan": "Te estás registrando en el plan {plan}.",
-    "selectedPlanLaunch": "Durante el lanzamiento todos los planes son gratis: no se te cobrará nada."
+    "selectedPlanLaunch": "Durante el lanzamiento todos los planes son gratis: no se te cobrará nada.",
+    "passwordBreached": "Esta contraseña ha aparecido en {count} filtraciones conocidas: los atacantes la prueban primero. Elige otra.",
+    "passwordBreachedShort": "Esa contraseña aparece en filtraciones conocidas: elige otra."
   },
   "dashboard": {
     "overview": "Resumen",

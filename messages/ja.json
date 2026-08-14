@@ -539,7 +539,9 @@
     "resendIn": "{n}秒後に再送",
     "resendSent": "確認メールを再送しました。",
     "selectedPlan": "{plan} プランに登録します。",
-    "selectedPlanLaunch": "ローンチ期間中はすべてのプランが無料です。請求は発生しません。"
+    "selectedPlanLaunch": "ローンチ期間中はすべてのプランが無料です。請求は発生しません。",
+    "passwordBreached": "このパスワードは既知の情報漏えいに{count}回登場しています。攻撃者が最初に試すものです。別のものを選んでください。",
+    "passwordBreachedShort": "そのパスワードは既知の漏えいに含まれています。別のものを選んでください。"
   },
   "dashboard": {
     "overview": "概要",

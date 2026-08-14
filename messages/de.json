@@ -546,7 +546,9 @@
     "resendIn": "Erneut senden in {n}s",
     "resendSent": "Bestätigungs-E-Mail erneut gesendet.",
     "selectedPlan": "Sie registrieren sich für den Tarif {plan}.",
-    "selectedPlanLaunch": "Während der Launch-Phase ist jeder Tarif kostenlos — es fallen keine Kosten an."
+    "selectedPlanLaunch": "Während der Launch-Phase ist jeder Tarif kostenlos — es fallen keine Kosten an.",
+    "passwordBreached": "Dieses Passwort tauchte in {count} bekannten Datenlecks auf — Angreifer probieren es zuerst. Wähle ein anderes.",
+    "passwordBreachedShort": "Dieses Passwort taucht in bekannten Lecks auf — wähle ein anderes."
   },
   "dashboard": {
     "overview": "Übersicht",
