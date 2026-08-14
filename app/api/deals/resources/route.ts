@@ -51,10 +51,14 @@ export async function GET(req: NextRequest) {
 
   const ndaSigned = !!nda?.signed_at;
   const requireNda = !!startupWithDocs?.require_nda;
-  const documents = (startupWithDocs?.documents || []).map((doc: { requires_nda: boolean } & Record<string, unknown>) => ({
-    ...doc,
-    locked: !isAdmin && doc.requires_nda && requireNda && !ndaSigned,
-  }));
+  // locked strips the URL too: shipping file_url next to locked:true made the
+  // padlock a decoration -- devtools reads what a padlock hides.
+  const documents = (startupWithDocs?.documents || []).map(
+    (doc: { requires_nda: boolean; file_url: string } & Record<string, unknown>) => {
+      const locked = !isAdmin && doc.requires_nda && requireNda && !ndaSigned;
+      return { ...doc, file_url: locked ? "" : doc.file_url, locked };
+    },
+  );
 
   return NextResponse.json({
     reports: reports ?? [],

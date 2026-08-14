@@ -3,6 +3,8 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupDetailClient } from "@/components/startup/startup-detail-client";
+import { stripLockedUrl } from "@/lib/document-access";
+import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
 import type { Startup, SubscriptionTier } from "@/types";
 import type { Metadata } from "next";
@@ -82,6 +84,7 @@ export default async function StartupDetailPage({ params }: Props) {
   let investorId: string | null = null;
   let ndaSigned = false;
   let viewerSuspended = false;
+  let viewerIsAdmin = false;
 
   if (user) {
     const { data: profile } = await supabase
@@ -95,6 +98,7 @@ export default async function StartupDetailPage({ params }: Props) {
     viewerSuspended = !!profile?.suspended
       || profile?.account_status === "suspended"
       || profile?.account_status === "banned";
+    viewerIsAdmin = profile?.role === "admin";
 
     if (profile?.role === "investor") {
       investorTier = profile.subscription_tier;
@@ -175,11 +179,32 @@ export default async function StartupDetailPage({ params }: Props) {
     .returns<StartupCardData[]>();
 
   // Live viewer count placeholder (handled client-side via Supabase Presence)
+  // The URL is the access control. The client renders padlocks from the same
+  // facts, but it must never HOLD a url it may not open -- devtools reads
+  // what a padlock hides. Same rule as /api/deals/resources (lib/document-access).
+  const viewerCaps = investorCan({
+    userId: investorId,
+    role: investorId ? ("investor" as const) : null,
+    tier: investorTier,
+    isLaunchMode: isLaunch,
+    suspended: viewerSuspended,
+  });
+  const docCtx = {
+    isOwnerOrAdmin: (!!user && user.id === startup.owner_id) || viewerIsAdmin,
+    canDocuments: viewerCaps.viewDocuments,
+    startupRequiresNda: !!startup.require_nda,
+    ndaSigned,
+  };
+  const safeStartup = {
+    ...startup,
+    documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx)),
+  };
+
   return (
     <>
       <Navbar />
       <StartupDetailClient
-        startup={startup}
+        startup={safeStartup}
         investorTier={investorTier}
         investorId={investorId}
         viewerDeal={viewerDeal}
