@@ -43,6 +43,17 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
   const [processingId, setProcessingId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  async function toggleVerified(investorId: string, verified: boolean) {
+    const res = await fetch("/api/admin/investor/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ investorId, verified }),
+    });
+    if (res.ok) toast({ title: verified ? t("adminVerify.done") : t("adminVerify.undone") });
+    else { toast({ title: t("adminVerify.failed"), variant: "destructive" }); return; }
+    window.location.reload();
+  }
+
   async function approveStartup(id: string) {
     setProcessingId(id);
     const res = await fetch("/api/admin/startup/approve", {
@@ -248,6 +259,16 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                   <p className="text-xs text-cr-i4">{inv.type} · {inv.industries?.join(", ") || t("admin.noPreferences")}</p>
                 </div>
                 <div className="flex items-center gap-3">
+                  {/* Verification is a judgement, so it is a click away from
+                      the row where the judgement gets made. */}
+                  <button
+                    onClick={() => toggleVerified(inv.id, !inv.verified_at)}
+                    className={inv.verified_at
+                      ? "text-xs text-cr-i4 underline underline-offset-2"
+                      : "text-xs text-cr-copper underline underline-offset-2"}
+                  >
+                    {inv.verified_at ? t("adminVerify.unverify") : t("adminVerify.verify")}
+                  </button>
                   {/* The only route to an investor dashboard for an admin --
                       their own dashboard path is /admin. */}
                   <Link href={`/admin/view/investor/${inv.id}`} className="text-xs text-cr-copper underline underline-offset-2">

@@ -1269,7 +1269,8 @@
     "exportCsv2": "Exportar CSV",
     "compare2": "Comparar",
     "compareInvestors": "Comparar investidores",
-    "target2": "Alvo"
+    "target2": "Alvo",
+    "verifiedBadge": "Investidor verificado"
   },
   "data": {
     "stageBreakdown": "Divisão por fase",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Inícios de sessão recentes",
     "loginsSub": "Os últimos inícios de sessão, com dispositivo e IP. Se algum não foste tu, muda a palavra-passe e revoga a sessão acima.",
     "noLogins": "Ainda não há inícios registados — o histórico começa no teu próximo login."
+  },
+  "adminVerify": {
+    "verify": "Verificar",
+    "unverify": "Remover verificação",
+    "done": "Investidor verificado — o selo está visível.",
+    "undone": "Verificação removida.",
+    "failed": "Não foi possível atualizar a verificação."
   }
 }

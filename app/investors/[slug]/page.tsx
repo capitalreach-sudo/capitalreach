@@ -8,10 +8,8 @@ import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Linkedin, MapPin, DollarSign, Globe, Twitter,
-  Briefcase, BookOpen, Eye, Pencil, Handshake,
-} from "lucide-react";
+import { Linkedin, MapPin, DollarSign, Globe, Twitter,
+  Briefcase, BookOpen, Eye, Pencil, Handshake, BadgeCheck } from "lucide-react";
 import { formatCurrency, getInitials } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
@@ -150,7 +148,14 @@ export default async function InvestorProfilePage({ params }: Props) {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-cr-ink mb-0.5">{displayName}</h1>
+            <h1 className="text-2xl font-bold text-cr-ink mb-0.5">
+              {displayName}
+              {investor.verified_at && (
+                <span className="inline-flex items-center gap-1 ml-2 align-middle rounded border border-cr-copper/30 bg-cr-copper/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cr-copper">
+                  <BadgeCheck className="h-3 w-3" /> Verified
+                </span>
+              )}
+            </h1>
             {investor.firm_name && (
               <p className="text-cr-copper font-semibold text-sm mb-2">{investor.firm_name}</p>
             )}

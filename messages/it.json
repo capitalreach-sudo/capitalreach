@@ -1269,7 +1269,8 @@
     "exportCsv2": "Esporta CSV",
     "compare2": "Confronta",
     "compareInvestors": "Confronta investitori",
-    "target2": "Obiettivo"
+    "target2": "Obiettivo",
+    "verifiedBadge": "Investitore verificato"
   },
   "data": {
     "stageBreakdown": "Ripartizione per fase",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Accessi recenti",
     "loginsSub": "Gli ultimi accessi, con dispositivo e IP. Se uno non eri tu, cambia la password e revoca la sessione sopra.",
     "noLogins": "Nessun accesso registrato: la cronologia inizia dal tuo prossimo login."
+  },
+  "adminVerify": {
+    "verify": "Verifica",
+    "unverify": "Rimuovi verifica",
+    "done": "Investitore verificato: il badge è attivo.",
+    "undone": "Verifica rimossa.",
+    "failed": "Impossibile aggiornare la verifica."
   }
 }

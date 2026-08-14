@@ -1269,7 +1269,8 @@
     "exportCsv2": "Eksportuj CSV",
     "compare2": "Porównaj",
     "compareInvestors": "Porównaj inwestorów",
-    "target2": "Cel"
+    "target2": "Cel",
+    "verifiedBadge": "Zweryfikowany inwestor"
   },
   "data": {
     "stageBreakdown": "Podział na etapy",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Ostatnie logowania",
     "loginsSub": "Ostatnie logowania z urządzeniem i IP. Jeśli któreś nie było twoje, zmień hasło i unieważnij sesję powyżej.",
     "noLogins": "Brak zapisanych logowań — historia zacznie się od następnego logowania."
+  },
+  "adminVerify": {
+    "verify": "Zweryfikuj",
+    "unverify": "Cofnij weryfikację",
+    "done": "Inwestor zweryfikowany — odznaka jest aktywna.",
+    "undone": "Weryfikacja cofnięta.",
+    "failed": "Nie udało się zaktualizować weryfikacji."
   }
 }

@@ -1171,7 +1171,8 @@
     "exportCsv2": "Exporter en CSV",
     "compare2": "Comparer",
     "compareInvestors": "Comparer les investisseurs",
-    "target2": "Cibler"
+    "target2": "Cibler",
+    "verifiedBadge": "Investisseur vérifié"
   },
   "data": {
     "eyebrow": "Données de la plateforme en direct",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Connexions récentes",
     "loginsSub": "Les dernières connexions, avec appareil et IP. Si l’une d’elles n’était pas vous, changez votre mot de passe et révoquez la session ci-dessus.",
     "noLogins": "Aucune connexion enregistrée pour l’instant — l’historique commence à votre prochaine connexion."
+  },
+  "adminVerify": {
+    "verify": "Vérifier",
+    "unverify": "Retirer la vérification",
+    "done": "Investisseur vérifié — le badge est visible.",
+    "undone": "Vérification retirée.",
+    "failed": "Impossible de mettre à jour la vérification."
   }
 }

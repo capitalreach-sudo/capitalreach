@@ -1182,7 +1182,8 @@
     "exportCsv2": "Export CSV",
     "compare2": "Compare",
     "compareInvestors": "Compare investors",
-    "target2": "Target"
+    "target2": "Target",
+    "verifiedBadge": "Verified investor"
   },
   "data": {
     "eyebrow": "Live Platform Data",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Recent sign-ins",
     "loginsSub": "The last sign-ins to this account, with device and IP. If one of these wasn’t you, change your password and revoke the session above.",
     "noLogins": "No sign-ins recorded yet — history starts with your next login."
+  },
+  "adminVerify": {
+    "verify": "Verify",
+    "unverify": "Remove verification",
+    "done": "Investor verified — the badge is live.",
+    "undone": "Verification removed.",
+    "failed": "Could not update verification."
   }
 }

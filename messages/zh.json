@@ -1171,7 +1171,8 @@
     "exportCsv2": "导出 CSV",
     "compare2": "对比",
     "compareInvestors": "对比投资人",
-    "target2": "设为目标"
+    "target2": "设为目标",
+    "verifiedBadge": "认证投资人"
   },
   "data": {
     "eyebrow": "实时平台数据",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "最近登录",
     "loginsSub": "此账户最近的登录记录（含设备与 IP）。若有不是你本人的记录，请修改密码并在上方撤销会话。",
     "noLogins": "暂无登录记录——历史将从你的下次登录开始。"
+  },
+  "adminVerify": {
+    "verify": "认证",
+    "unverify": "移除认证",
+    "done": "投资人已认证——徽章已生效。",
+    "undone": "认证已移除。",
+    "failed": "无法更新认证状态。"
   }
 }

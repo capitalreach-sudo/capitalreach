@@ -22,6 +22,8 @@ const UNION: NotificationType[] = [
   "listing_approved", "listing_rejected", "team_added",
   "tier_changed", "search_match", "listing_saved", "listing_update",
   "doc_request", "deal_shared", "question_asked", "question_answered",
+  // Migration 049: admin verified an investor.
+  "verified",
 ];
 // If the union gains a member this list lacks, the annotation above errors;
 // if the list gains one the union lacks, the same. Compile-time both ways.

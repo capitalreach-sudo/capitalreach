@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase";
 import { announce } from "@/lib/announce";
 import {
   Search, SlidersHorizontal, X, ChevronDown, ChevronUp,
-  Users, Globe, Filter, Loader2, Crosshair, GitCompareArrows, Clock,
+  Users, Globe, Filter, Loader2, Crosshair, GitCompareArrows, Clock, BadgeCheck,
 } from "lucide-react";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn, STAGE_LABELS } from "@/lib/utils";
@@ -89,6 +89,7 @@ interface Investor {
   max_check: number | null;
   geography: string[];
   subscription_tier: string | null;
+  verified_at: string | null;
   full_name: string | null;
   firm?: string | null;
 }
@@ -178,7 +179,7 @@ export function InvestorsClient() {
         const { data } = await supabase
           .from("investors")
           .select(`
-            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, lead_rounds, created_at,
+            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, created_at,
             profiles:owner_id ( full_name, email )
           `)
           .order("created_at", { ascending: false });
@@ -197,6 +198,7 @@ export function InvestorsClient() {
             max_check: inv.max_check,
             geography: inv.geography || [],
             subscription_tier: inv.subscription_tier,
+            verified_at: inv.verified_at ?? null,
             full_name: inv.profiles?.full_name || null,
             firm: inv.firm || null,
           }));
@@ -318,7 +320,10 @@ export function InvestorsClient() {
       // invests where I am?").
       const matchGeo = f.geographies.length === 0 || f.geographies.some(g => (inv.geography || []).includes(g));
       const matchLead = !f.leadOnly || !!inv.lead_rounds;
-      const matchVerified = !f.verifiedOnly || (!!inv.subscription_tier && inv.subscription_tier !== "free");
+      // Real verification (admin-granted, migration 049) -- this used to
+      // match subscription_tier !== "free", i.e. "pays us", which is not
+      // verification and misled the founders it was meant to protect.
+      const matchVerified = !f.verifiedOnly || !!inv.verified_at;
       const matchFit = !f.fitOnly || fits(inv);
       const matchNew = !f.newOnly || (!!inv.created_at && (Date.now() - new Date(inv.created_at).getTime()) / 86400000 <= 30);
       const minCheckOk = !inv.max_check || inv.max_check >= f.minCheck;
@@ -815,7 +820,12 @@ export function InvestorsClient() {
                               {displayName[0].toUpperCase()}
                             </div>
                             <div>
-                              <p className="text-cr-ink leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px" }}>{displayName}</p>
+                              <p className="text-cr-ink leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px" }}>
+                                {displayName}
+                                {inv.verified_at && (
+                                  <BadgeCheck aria-label={t("investors.verifiedBadge")} className="inline-block ml-1.5 h-3.5 w-3.5 text-cr-copper align-[-2px]" />
+                                )}
+                              </p>
                               {inv.firm && <p className="text-xs text-cr-i4 mt-0.5">{inv.firm}</p>}
                               <div className="flex items-center gap-1.5 mt-1">
                                 <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-sm border bg-transparent uppercase tracking-wide", meta.color, meta.border)}>

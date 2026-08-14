@@ -1269,7 +1269,8 @@
     "exportCsv2": "CSV exporteren",
     "compare2": "Vergelijken",
     "compareInvestors": "Investeerders vergelijken",
-    "target2": "Targeten"
+    "target2": "Targeten",
+    "verifiedBadge": "Geverifieerde investeerder"
   },
   "data": {
     "stageBreakdown": "Faseverdeling",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Recente aanmeldingen",
     "loginsSub": "De laatste aanmeldingen, met apparaat en IP. Was er één niet van jou, wijzig dan je wachtwoord en trek de sessie hierboven in.",
     "noLogins": "Nog geen aanmeldingen vastgelegd — de historie begint bij je volgende login."
+  },
+  "adminVerify": {
+    "verify": "Verifiëren",
+    "unverify": "Verificatie intrekken",
+    "done": "Investeerder geverifieerd — de badge staat live.",
+    "undone": "Verificatie ingetrokken.",
+    "failed": "Kon verificatie niet bijwerken."
   }
 }

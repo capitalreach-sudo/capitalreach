@@ -541,6 +541,8 @@ export type Database = {
           subscription_tier: string
           twitter_url: string | null
           type: string
+          verified_at: string | null
+          verified_by: string | null
           website: string | null
         }
         Insert: {
@@ -572,6 +574,8 @@ export type Database = {
           subscription_tier?: string
           twitter_url?: string | null
           type: string
+          verified_at?: string | null
+          verified_by?: string | null
           website?: string | null
         }
         Update: {
@@ -603,6 +607,8 @@ export type Database = {
           subscription_tier?: string
           twitter_url?: string | null
           type?: string
+          verified_at?: string | null
+          verified_by?: string | null
           website?: string | null
         }
         Relationships: [

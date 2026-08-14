@@ -1171,7 +1171,8 @@
     "exportCsv2": "Exportar CSV",
     "compare2": "Comparar",
     "compareInvestors": "Comparar inversores",
-    "target2": "Objetivo"
+    "target2": "Objetivo",
+    "verifiedBadge": "Inversor verificado"
   },
   "data": {
     "eyebrow": "Datos de plataforma en directo",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Inicios de sesión recientes",
     "loginsSub": "Los últimos inicios de sesión, con dispositivo e IP. Si alguno no fuiste tú, cambia la contraseña y revoca la sesión arriba.",
     "noLogins": "Aún no hay inicios registrados: el historial empieza con tu próximo inicio de sesión."
+  },
+  "adminVerify": {
+    "verify": "Verificar",
+    "unverify": "Quitar verificación",
+    "done": "Inversor verificado: la insignia ya está visible.",
+    "undone": "Verificación retirada.",
+    "failed": "No se pudo actualizar la verificación."
   }
 }

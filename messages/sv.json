@@ -1269,7 +1269,8 @@
     "exportCsv2": "Exportera CSV",
     "compare2": "Jämför",
     "compareInvestors": "Jämför investerare",
-    "target2": "Rikta in"
+    "target2": "Rikta in",
+    "verifiedBadge": "Verifierad investerare"
   },
   "data": {
     "stageBreakdown": "Fasfördelning",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Senaste inloggningar",
     "loginsSub": "De senaste inloggningarna, med enhet och IP. Om någon inte var du: byt lösenord och återkalla sessionen ovan.",
     "noLogins": "Inga inloggningar registrerade än — historiken börjar vid nästa inloggning."
+  },
+  "adminVerify": {
+    "verify": "Verifiera",
+    "unverify": "Ta bort verifiering",
+    "done": "Investeraren verifierad — märket är live.",
+    "undone": "Verifieringen borttagen.",
+    "failed": "Kunde inte uppdatera verifieringen."
   }
 }

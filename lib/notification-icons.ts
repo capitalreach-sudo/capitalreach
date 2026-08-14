@@ -29,6 +29,7 @@ export const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
   deal_shared:      { Icon: Share2,         color: "var(--cr-copper)" },
   question_asked:   { Icon: HelpCircle,     color: "var(--cr-copper)" },
   question_answered:{ Icon: MessageCircleReply, color: "var(--cr-up)" },
+  verified:         { Icon: BadgeCheck,     color: "var(--cr-up)"     },
 };
 
 // Unknown types still render plainly rather than disappearing -- a

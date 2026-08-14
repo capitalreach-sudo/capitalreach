@@ -1269,7 +1269,8 @@
     "exportCsv2": "CSV 내보내기",
     "compare2": "비교",
     "compareInvestors": "투자자 비교",
-    "target2": "타깃"
+    "target2": "타깃",
+    "verifiedBadge": "인증된 투자자"
   },
   "data": {
     "stageBreakdown": "단계별 분류",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "최근 로그인",
     "loginsSub": "이 계정의 최근 로그인 내역(기기 및 IP 포함). 본인이 아닌 항목이 있으면 비밀번호를 변경하고 위에서 세션을 취소하세요.",
     "noLogins": "기록된 로그인이 아직 없습니다. 다음 로그인부터 기록됩니다."
+  },
+  "adminVerify": {
+    "verify": "인증",
+    "unverify": "인증 해제",
+    "done": "투자자 인증 완료 — 배지가 표시됩니다.",
+    "undone": "인증이 해제되었습니다.",
+    "failed": "인증을 업데이트하지 못했습니다."
   }
 }

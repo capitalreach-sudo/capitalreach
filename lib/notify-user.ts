@@ -27,7 +27,9 @@ export type NotificationType =
   | "doc_request"
   | "deal_shared"
   | "question_asked"
-  | "question_answered";
+  | "question_answered"
+  // Migration 049: an admin verified this investor.
+  | "verified";
 
 interface NotifyInput {
   userId: string;

@@ -1178,7 +1178,8 @@
     "exportCsv2": "CSV exportieren",
     "compare2": "Vergleichen",
     "compareInvestors": "Investoren vergleichen",
-    "target2": "Anvisieren"
+    "target2": "Anvisieren",
+    "verifiedBadge": "Verifizierter Investor"
   },
   "data": {
     "eyebrow": "Live-Plattformdaten",
@@ -2324,5 +2325,12 @@
     "loginsTitle": "Letzte Anmeldungen",
     "loginsSub": "Die letzten Anmeldungen mit Gerät und IP. War eine davon nicht du, ändere dein Passwort und widerrufe oben die Sitzung.",
     "noLogins": "Noch keine Anmeldungen erfasst — die Historie beginnt mit deinem nächsten Login."
+  },
+  "adminVerify": {
+    "verify": "Verifizieren",
+    "unverify": "Verifizierung entziehen",
+    "done": "Investor verifiziert — das Abzeichen ist aktiv.",
+    "undone": "Verifizierung entzogen.",
+    "failed": "Verifizierung konnte nicht geändert werden."
   }
 }
