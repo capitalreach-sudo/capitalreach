@@ -50,8 +50,8 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Mission */}
-      <section className="py-20 px-4">
+      {/* Mission — also the target of the footer's "How it works" link. */}
+      <section id="how-it-works" className="py-20 px-4 scroll-mt-20">
         <div className="container mx-auto max-w-4xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>

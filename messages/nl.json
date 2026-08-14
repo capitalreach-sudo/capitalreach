@@ -1165,7 +1165,8 @@
     "terms": "Voorwaarden",
     "privacy": "Privacy",
     "aiDisclosure": "AI-functies gebruiken OpenAI-modellen. Uitkomsten zijn uitsluitend informatief en vormen geen beleggingsadvies.",
-    "status": "Status"
+    "status": "Status",
+    "stats": "Platformstatistieken"
   },
   "feeStrip": {
     "tagline": "succesvergoeding — alleen na sluiting. Sectorgemiddelde: 5–7% vooraf.",

@@ -1165,7 +1165,8 @@
     "terms": "Termos",
     "privacy": "Privacidade",
     "aiDisclosure": "As funcionalidades com IA usam modelos da OpenAI. Os resultados são apenas informativos e não constituem aconselhamento de investimento.",
-    "status": "Estado"
+    "status": "Estado",
+    "stats": "Estatísticas da plataforma"
   },
   "feeStrip": {
     "tagline": "taxa de sucesso — apenas após o fecho. Média do setor: 5–7% adiantado.",

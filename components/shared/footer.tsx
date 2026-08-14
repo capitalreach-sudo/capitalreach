@@ -26,7 +26,10 @@ export function Footer() {
       [t("footer.listYourStartup"), "/auth/signup"],
       [t("footer.howItWorks"),      "/about#how-it-works"],
       [t("footer.pricing"),         "/pricing#founders"],
-      [t("footer.successStories"),  "/about#stories"],
+      // Was "Success stories" -> /about#stories: an anchor that existed
+      // nowhere, pointing at content the platform does not yet have. The
+      // stats page is the honest version of the same promise.
+      [t("footer.stats"),           "/stats"],
     ]],
     [t("footer.investors"), [
       [t("footer.browseDeals"),   "/startups"],

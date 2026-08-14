@@ -338,7 +338,7 @@ function MatchingTab() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+    <div id="match" style={{ display: "flex", flexDirection: "column", gap: "28px", scrollMarginTop: "80px" }}>
       <div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.matching.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
@@ -550,7 +550,7 @@ function DiligenceTab() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+    <div id="due-diligence" style={{ display: "flex", flexDirection: "column", gap: "28px", scrollMarginTop: "80px" }}>
       <div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.diligence.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>

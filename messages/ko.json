@@ -1165,7 +1165,8 @@
     "terms": "이용약관",
     "privacy": "개인정보처리방침",
     "aiDisclosure": "AI 기능은 OpenAI 모델을 사용합니다. 결과는 정보 제공용이며 투자 자문이 아닙니다.",
-    "status": "상태"
+    "status": "상태",
+    "stats": "플랫폼 통계"
   },
   "feeStrip": {
     "tagline": "성공 수수료 — 클로징 후에만 청구. 업계 평균: 선불 5–7%.",

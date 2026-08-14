@@ -1617,7 +1617,8 @@
     "terms": "条款",
     "privacy": "隐私政策",
     "aiDisclosure": "AI 功能使用 OpenAI 模型。输出仅供参考，不构成投资建议。",
-    "status": "系统状态"
+    "status": "系统状态",
+    "stats": "平台统计"
   },
   "banner": {
     "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",

@@ -1165,7 +1165,8 @@
     "terms": "Termini",
     "privacy": "Privacy",
     "aiDisclosure": "Le funzionalità basate su IA usano modelli OpenAI. I risultati sono solo informativi e non costituiscono consulenza finanziaria.",
-    "status": "Stato"
+    "status": "Stato",
+    "stats": "Statistiche della piattaforma"
   },
   "feeStrip": {
     "tagline": "commissione di successo — solo dopo la chiusura. Media del settore: 5–7% anticipato.",

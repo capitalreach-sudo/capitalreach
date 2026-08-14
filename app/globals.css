@@ -940,6 +940,12 @@ body::before {
   .trace-border::before { animation: none; }
 }
 
+/* Anchor navigation glides instead of teleporting -- the footer's section
+   links (#match, #due-diligence, #founders...) read as movement within a
+   page rather than a jump cut. The prefers-reduced-motion block below
+   already forces scroll-behavior back to auto for anyone who asked. */
+html { scroll-behavior: smooth; }
+
 /* Keyboard users get the same copper the mouse gets -- the default browser
    outline disappears against paper. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {

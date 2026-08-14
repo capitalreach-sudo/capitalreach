@@ -1628,7 +1628,8 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "aiDisclosure": "AI-powered features use OpenAI models. Outputs are informational only and not investment advice.",
-    "status": "Status"
+    "status": "Status",
+    "stats": "Platform stats"
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",

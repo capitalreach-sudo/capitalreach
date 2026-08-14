@@ -1617,7 +1617,8 @@
     "terms": "Términos",
     "privacy": "Privacidad",
     "aiDisclosure": "Las funciones con IA usan modelos de OpenAI. Los resultados son solo informativos y no constituyen asesoramiento de inversión.",
-    "status": "Estado"
+    "status": "Estado",
+    "stats": "Estadísticas de la plataforma"
   },
   "banner": {
     "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",

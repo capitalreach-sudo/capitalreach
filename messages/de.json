@@ -1624,7 +1624,8 @@
     "terms": "AGB",
     "privacy": "Datenschutz",
     "aiDisclosure": "KI-Funktionen nutzen OpenAI-Modelle. Ausgaben dienen nur zur Information und sind keine Anlageberatung.",
-    "status": "Status"
+    "status": "Status",
+    "stats": "Plattform-Statistiken"
   },
   "banner": {
     "text": "Kostenlos für unsere ersten {target} Mitglieder — {memberCount}/{target} beigetreten, noch {spotsLeft} Plätze übrig.",

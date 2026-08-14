@@ -1617,7 +1617,8 @@
     "terms": "利用規約",
     "privacy": "プライバシーポリシー",
     "aiDisclosure": "AI機能はOpenAIのモデルを使用しています。出力は情報提供のみを目的としており、投資助言ではありません。",
-    "status": "稼働状況"
+    "status": "稼働状況",
+    "stats": "プラットフォーム統計"
   },
   "banner": {
     "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",

@@ -270,6 +270,12 @@ export default function PricingPage() {
       setViewer({ role: p.role, tier: p.subscription_tier });
       if (p.role === "investor") setActiveTab("investor");
     });
+    // Footer links promise /pricing#founders and /pricing#investors; the hash
+    // both scrolls here and selects the matching tab, so the link keeps its
+    // whole promise rather than landing on the wrong table.
+    const hash = window.location.hash;
+    if (hash === "#investors") setActiveTab("investor");
+    if (hash === "#founders") setActiveTab("startup");
   }, []);
 
   // profiles.subscription_tier -> plan id (the set-tier route writes
@@ -358,7 +364,8 @@ export default function PricingPage() {
         </section>
 
         {/* Plans */}
-        <section style={{ padding: "64px 0" }}>
+        <section id="founders" style={{ padding: "64px 0", scrollMarginTop: "60px" }}>
+          <span id="investors" aria-hidden />
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", marginBottom: "48px", flexWrap: "wrap" }}>
 
