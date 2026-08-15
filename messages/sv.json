@@ -1504,7 +1504,8 @@
       "errorSaving": "Fel vid sparande av startup:",
       "submitted": "Profil inskickad! Vi granskar och godkänner din listning inom 1–2 arbetsdagar.",
       "pctOutOfRange": "{field} måste ligga mellan 0 och {max}.",
-      "numberTooLarge": "Ett av talen är för stort — procent måste vara 100 eller lägre."
+      "numberTooLarge": "Ett av talen är för stort — procent måste vara 100 eller lägre.",
+      "partialSave": "Din annons sparades, men vissa grundare eller milstolpar kunde inte läggas till. Du kan lägga till dem från redigeringssidan."
     },
     "accredited": "Jag bekräftar att jag är en ackrediterad investerare",
     "accreditedNote": "Självcertifiering krävs enligt plattformens policy. Dokumentation kan begäras för institutionella konton.",
@@ -1814,7 +1815,12 @@
     "statAge": "Medianålder öppna",
     "statAgeHint": "Medianantal dagar som de öppna affärerna pågått",
     "days": "{n} d",
-    "feePreview": "Successavgift vid stängning: {fee} (2 %)"
+    "feePreview": "Successavgift vid stängning: {fee} (2 %)",
+    "portalLabel": "Deal-portal",
+    "yourDeals": "Dina deals",
+    "allDeals": "Alla deals",
+    "adminSubtitle": "Plattformsövergripande översikt — varje deal för varje startup och investerare.",
+    "availableTo": "Deal-portalen är tillgänglig för startup-, investerar- och adminkonton."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

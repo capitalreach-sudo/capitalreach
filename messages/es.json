@@ -1488,7 +1488,8 @@
       "errorSaving": "Error al guardar la startup:",
       "submitted": "¡Perfil enviado! Revisaremos y aprobaremos tu listado en 1–2 días hábiles.",
       "pctOutOfRange": "{field} debe estar entre 0 y {max}.",
-      "numberTooLarge": "Uno de los números es demasiado grande: los porcentajes deben ser 100 o menos."
+      "numberTooLarge": "Uno de los números es demasiado grande: los porcentajes deben ser 100 o menos.",
+      "partialSave": "Tu anuncio se guardó, pero algunos fundadores o hitos no se pudieron añadir. Puedes agregarlos desde la página de edición."
     },
     "inv": {
       "forInvestors": "para inversores",
@@ -1814,7 +1815,12 @@
     "statAge": "Antigüedad mediana",
     "statAgeHint": "Mediana de días que llevan abiertas las operaciones aún en curso",
     "days": "{n} d",
-    "feePreview": "Comisión de éxito al cierre: {fee} (2%)"
+    "feePreview": "Comisión de éxito al cierre: {fee} (2%)",
+    "portalLabel": "Portal de deals",
+    "yourDeals": "Tus deals",
+    "allDeals": "Todos los deals",
+    "adminSubtitle": "Supervisión de toda la plataforma — cada deal de cada startup e inversor.",
+    "availableTo": "El portal de deals está disponible para cuentas de startup, inversor y administrador."
   },
   "investorProfile": {
     "back": "Volver a inversores",

@@ -212,21 +212,28 @@ export default function StartupOnboardingPage() {
       setLoading(false); return false;
     }
 
+    // The listing itself is saved by here; these are secondary. If either
+    // fails, don't lose the founder's work silently — warn so they can re-add
+    // from the edit page rather than discovering the gap on their live profile.
+    let partialLoss = false;
     const validFounders = founders.filter(f => f.name && f.role);
     if (validFounders.length > 0) {
-      await supabase.from("startup_founders").insert(
+      const { error: fErr } = await supabase.from("startup_founders").insert(
         validFounders.map(f => ({
           startup_id: startup.id, name: f.name, role: f.role,
           linkedin_url: f.linkedin_url || null, twitter_url: f.twitter_url || null, bio: f.bio || null,
         }))
       );
+      if (fErr) partialLoss = true;
     }
     const validMilestones = milestones.filter(m => m.date && m.description);
     if (validMilestones.length > 0) {
-      await supabase.from("startup_milestones").insert(
+      const { error: mErr } = await supabase.from("startup_milestones").insert(
         validMilestones.map(m => ({ startup_id: startup.id, ...m }))
       );
+      if (mErr) partialLoss = true;
     }
+    if (partialLoss) notify.error(t("onboarding.su.partialSave"));
     await fetch("/api/admin/notify-review", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ startupId: startup.id }),

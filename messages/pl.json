@@ -1504,7 +1504,8 @@
       "errorSaving": "Błąd zapisu startupu:",
       "submitted": "Profil przesłany! Sprawdzimy i zatwierdzimy Twoją ofertę w ciągu 1–2 dni roboczych.",
       "pctOutOfRange": "{field} musi mieścić się między 0 a {max}.",
-      "numberTooLarge": "Jedna z liczb jest za duża — procenty muszą wynosić najwyżej 100."
+      "numberTooLarge": "Jedna z liczb jest za duża — procenty muszą wynosić najwyżej 100.",
+      "partialSave": "Twoja oferta została zapisana, ale niektórych founderów lub kamieni milowych nie udało się dodać. Możesz je dodać na stronie edycji."
     },
     "accredited": "Potwierdzam, że jestem akredytowanym inwestorem",
     "accreditedNote": "Samocertyfikacja jest wymagana przez politykę platformy. W przypadku kont instytucjonalnych może być wymagana dokumentacja.",
@@ -1814,7 +1815,12 @@
     "statAge": "Mediana wieku otwartych",
     "statAgeHint": "Mediana dni trwania wciąż otwartych transakcji",
     "days": "{n} dni",
-    "feePreview": "Prowizja od sukcesu przy zamknięciu: {fee} (2%)"
+    "feePreview": "Prowizja od sukcesu przy zamknięciu: {fee} (2%)",
+    "portalLabel": "Portal transakcji",
+    "yourDeals": "Twoje transakcje",
+    "allDeals": "Wszystkie transakcje",
+    "adminSubtitle": "Nadzór nad całą platformą — każda transakcja każdego startupu i inwestora.",
+    "availableTo": "Portal transakcji jest dostępny dla kont startupów, inwestorów i administratorów."
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

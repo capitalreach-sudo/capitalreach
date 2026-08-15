@@ -1504,7 +1504,8 @@
       "errorSaving": "Fout bij opslaan startup:",
       "submitted": "Profiel ingediend! We beoordelen en keuren uw vermelding binnen 1–2 werkdagen goed.",
       "pctOutOfRange": "{field} moet tussen 0 en {max} liggen.",
-      "numberTooLarge": "Een van de getallen is te groot — percentages moeten 100 of lager zijn."
+      "numberTooLarge": "Een van de getallen is te groot — percentages moeten 100 of lager zijn.",
+      "partialSave": "Je vermelding is opgeslagen, maar sommige oprichters of mijlpalen konden niet worden toegevoegd. Je kunt ze toevoegen via de bewerkpagina."
     },
     "accredited": "Ik bevestig dat ik een geaccrediteerde investeerder ben",
     "accreditedNote": "Zelfcertificering is vereist volgens het platformbeleid. Voor institutionele accounts kan documentatie worden gevraagd.",
@@ -1814,7 +1815,12 @@
     "statAge": "Mediane leeftijd open",
     "statAgeHint": "Mediaan aantal dagen dat de nog open deals lopen",
     "days": "{n} d",
-    "feePreview": "Successfee bij closing: {fee} (2%)"
+    "feePreview": "Successfee bij closing: {fee} (2%)",
+    "portalLabel": "Deal-portaal",
+    "yourDeals": "Jouw deals",
+    "allDeals": "Alle deals",
+    "adminSubtitle": "Platformbreed overzicht — elke deal van elke startup en investeerder.",
+    "availableTo": "Het deal-portaal is beschikbaar voor startup-, investeerder- en adminaccounts."
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

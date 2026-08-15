@@ -1499,7 +1499,8 @@
       "errorSaving": "Error saving startup:",
       "submitted": "Profile submitted! We'll review and approve your listing within 1–2 business days.",
       "pctOutOfRange": "{field} must be between 0 and {max}.",
-      "numberTooLarge": "One of the numbers is too large — percentages must be 100 or less."
+      "numberTooLarge": "One of the numbers is too large — percentages must be 100 or less.",
+      "partialSave": "Your listing was saved, but some founders or milestones couldn't be added. You can add them from the edit page."
     },
     "inv": {
       "forInvestors": "for investors",
@@ -1825,7 +1826,12 @@
     "statAge": "Median age open",
     "statAgeHint": "Median days the still-open deals have been running",
     "days": "{n}d",
-    "feePreview": "Success fee on close: {fee} (2%)"
+    "feePreview": "Success fee on close: {fee} (2%)",
+    "portalLabel": "Deal Portal",
+    "yourDeals": "Your deals",
+    "allDeals": "All deals",
+    "adminSubtitle": "Platform-wide oversight — every deal across every startup and investor.",
+    "availableTo": "The Deal Portal is available to startup, investor, and admin accounts."
   },
   "investorProfile": {
     "back": "Back to investors",

@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     priceId,
     successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/startup?upgraded=1`,
     cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    metadata: { userId: user.id, role: "startup", tier: tier },
+    metadata: { userId: user.id, role: "founder", tier: tier },
   });
 
   return NextResponse.redirect(session.url!);

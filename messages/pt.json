@@ -1504,7 +1504,8 @@
       "errorSaving": "Erro ao guardar a startup:",
       "submitted": "Perfil submetido! Vamos rever e aprovar a sua listagem em 1–2 dias úteis.",
       "pctOutOfRange": "{field} tem de estar entre 0 e {max}.",
-      "numberTooLarge": "Um dos números é demasiado grande — as percentagens têm de ser 100 ou menos."
+      "numberTooLarge": "Um dos números é demasiado grande — as percentagens têm de ser 100 ou menos.",
+      "partialSave": "Seu anúncio foi salvo, mas alguns fundadores ou marcos não puderam ser adicionados. Você pode adicioná-los na página de edição."
     },
     "accredited": "Confirmo que sou um investidor acreditado",
     "accreditedNote": "A autocertificação é exigida pela política da plataforma. Documentação pode ser solicitada para contas institucionais.",
@@ -1814,7 +1815,12 @@
     "statAge": "Idade mediana em aberto",
     "statAgeHint": "Mediana de dias que os negócios ainda abertos estão a decorrer",
     "days": "{n} d",
-    "feePreview": "Comissão de êxito no fecho: {fee} (2%)"
+    "feePreview": "Comissão de êxito no fecho: {fee} (2%)",
+    "portalLabel": "Portal de deals",
+    "yourDeals": "Seus deals",
+    "allDeals": "Todos os deals",
+    "adminSubtitle": "Supervisão de toda a plataforma — cada deal de cada startup e investidor.",
+    "availableTo": "O portal de deals está disponível para contas de startup, investidor e admin."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

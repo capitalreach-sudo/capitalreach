@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getLaunchStatus } from "@/lib/launchMode";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Deal } from "@/types";
 import { buildAccessContext, canExportData, founderCan, isSuspended } from "@/lib/access";
 import { Navbar } from "@/components/shared/navbar";
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DealsPage() {
+  const t = await getTranslator(getLocale());
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?redirect=/deals");
@@ -56,9 +58,9 @@ export default async function DealsPage() {
         <Navbar />
         <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>Deal Portal</div>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
-              Your deals
+              {t("deals.yourDeals")}
             </h1>
             <DealsPortalClient
               deals={(deals ?? []) as Deal[]}
@@ -103,9 +105,9 @@ export default async function DealsPage() {
         <Navbar />
         <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>Deal Portal</div>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
-              Your deals
+              {t("deals.yourDeals")}
             </h1>
             <DealsPortalClient
               deals={(deals ?? []) as Deal[]}
@@ -138,12 +140,12 @@ export default async function DealsPage() {
         <Navbar />
         <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>Deal Portal</div>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "8px" }}>
-              All deals
+              {t("deals.allDeals")}
             </h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
-              Platform-wide oversight — every deal across every startup and investor.
+              {t("deals.adminSubtitle")}
             </p>
             <DealsPortalClient deals={(deals ?? []) as Deal[]} viewAs="admin" canExport />
             <LegalDisclaimer />
@@ -159,7 +161,7 @@ export default async function DealsPage() {
       <Navbar />
       <main style={{ background: "var(--cr-paper)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", padding: "100px 24px" }}>
-          The Deal Portal is available to startup, investor, and admin accounts.
+          {t("deals.availableTo")}
         </p>
       </main>
       <Footer />

@@ -1504,7 +1504,8 @@
       "errorSaving": "Errore nel salvataggio della startup:",
       "submitted": "Profilo inviato! Revisioneremo e approveremo il tuo annuncio entro 1–2 giorni lavorativi.",
       "pctOutOfRange": "{field} deve essere compreso tra 0 e {max}.",
-      "numberTooLarge": "Uno dei numeri è troppo grande: le percentuali devono essere pari o inferiori a 100."
+      "numberTooLarge": "Uno dei numeri è troppo grande: le percentuali devono essere pari o inferiori a 100.",
+      "partialSave": "Il tuo annuncio è stato salvato, ma alcuni founder o milestone non sono stati aggiunti. Puoi aggiungerli dalla pagina di modifica."
     },
     "accredited": "Confermo di essere un investitore accreditato",
     "accreditedNote": "L'autocertificazione è richiesta dalla politica della piattaforma. Per gli account istituzionali può essere richiesta documentazione.",
@@ -1814,7 +1815,12 @@
     "statAge": "Età mediana aperte",
     "statAgeHint": "Mediana dei giorni da cui le operazioni ancora aperte sono in corso",
     "days": "{n} g",
-    "feePreview": "Commissione di successo alla chiusura: {fee} (2%)"
+    "feePreview": "Commissione di successo alla chiusura: {fee} (2%)",
+    "portalLabel": "Portale deal",
+    "yourDeals": "I tuoi deal",
+    "allDeals": "Tutti i deal",
+    "adminSubtitle": "Supervisione a livello di piattaforma — ogni deal di ogni startup e investitore.",
+    "availableTo": "Il portale deal è disponibile per account startup, investitore e admin."
   },
   "investorProfile": {
     "back": "Torna agli investitori",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
@@ -31,9 +31,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}${dashboardPath}` });
   }
 
-  // Launch mode — skip payment, grant access immediately
+  // Launch mode — skip payment, grant access immediately. Persist the tier so
+  // it survives launch ending: without this, a first-100 user who upgrades
+  // here kept the tier only while access.ts forced it during launch, then
+  // silently dropped to free. The onboarding routes already persist; this
+  // brings the pricing/billing path in line.
   const { isLaunch } = await getLaunchStatus();
   if (isLaunch) {
+    const admin = createAdminClient();
+    const entityTable = userType === "founder" ? "startups" : "investors";
+    await Promise.all([
+      admin.from("profiles").update({ subscription_tier: plan.id, subscription_status: "active" }).eq("id", user.id),
+      admin.from(entityTable).update({ subscription_tier: plan.id }).eq("owner_id", user.id),
+    ]);
     return NextResponse.json({
       url: `${process.env.NEXT_PUBLIC_APP_URL}${dashboardPath}?upgraded=1&launch=1`,
     });

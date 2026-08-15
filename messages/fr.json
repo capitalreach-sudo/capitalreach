@@ -1488,7 +1488,8 @@
       "errorSaving": "Erreur lors de l'enregistrement:",
       "submitted": "Profil soumis! Nous examinerons et approuverons votre annonce sous 1–2 jours ouvrés.",
       "pctOutOfRange": "{field} doit être compris entre 0 et {max}.",
-      "numberTooLarge": "L'un des nombres est trop grand — les pourcentages doivent être inférieurs ou égaux à 100."
+      "numberTooLarge": "L'un des nombres est trop grand — les pourcentages doivent être inférieurs ou égaux à 100.",
+      "partialSave": "Votre annonce a été enregistrée, mais certains fondateurs ou jalons n'ont pas pu être ajoutés. Vous pouvez les ajouter depuis la page d'édition."
     },
     "inv": {
       "forInvestors": "pour investisseurs",
@@ -1814,7 +1815,12 @@
     "statAge": "Ancienneté médiane",
     "statAgeHint": "Nombre médian de jours depuis lesquels les opérations encore ouvertes sont en cours",
     "days": "{n} j",
-    "feePreview": "Commission de succès à la clôture : {fee} (2 %)"
+    "feePreview": "Commission de succès à la clôture : {fee} (2 %)",
+    "portalLabel": "Portail des deals",
+    "yourDeals": "Vos deals",
+    "allDeals": "Tous les deals",
+    "adminSubtitle": "Supervision à l'échelle de la plateforme — chaque deal de chaque startup et investisseur.",
+    "availableTo": "Le portail des deals est accessible aux comptes startup, investisseur et admin."
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
