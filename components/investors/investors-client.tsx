@@ -91,6 +91,7 @@ interface Investor {
   geography: string[];
   subscription_tier: string | null;
   verified_at: string | null;
+  number_of_investments?: number | null;
   full_name: string | null;
   firm?: string | null;
 }
@@ -107,7 +108,7 @@ interface InvestorFilters {
   verifiedOnly: boolean;
   fitOnly: boolean;
   newOnly: boolean;
-  sort: "recent" | "check_asc" | "check_desc" | "name" | "fit";
+  sort: "recent" | "check_asc" | "check_desc" | "name" | "fit" | "active";
 }
 
 const DEFAULT: InvestorFilters = {
@@ -181,7 +182,7 @@ export function InvestorsClient() {
         const { data } = await supabase
           .from("investors")
           .select(`
-            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, created_at,
+            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at,
             profiles:owner_id ( full_name, email )
           `)
           .order("created_at", { ascending: false });
@@ -201,6 +202,7 @@ export function InvestorsClient() {
             geography: inv.geography || [],
             subscription_tier: inv.subscription_tier,
             verified_at: inv.verified_at ?? null,
+            number_of_investments: inv.number_of_investments ?? null,
             full_name: inv.profiles?.full_name || null,
             firm: inv.firm || null,
           }));
@@ -340,6 +342,7 @@ export function InvestorsClient() {
     else if (f.sort === "check_asc") list = [...list].sort((a, b) => (a.min_check || 0) - (b.min_check || 0));
     else if (f.sort === "name") list = [...list].sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
     else if (f.sort === "fit") list = [...list].sort((a, b) => Number(fits(b)) - Number(fits(a)));
+    else if (f.sort === "active") list = [...list].sort((a, b) => (b.number_of_investments || 0) - (a.number_of_investments || 0));
 
     return list;
   }, [f, investors, myRaise]);
@@ -381,6 +384,7 @@ export function InvestorsClient() {
             ["check_desc",   t("investors.sortLargest")],
             ["check_asc",    t("investors.sortSmallest")],
             ["name",         t("investors.sortName")],
+            ["active",       t("investors.sortActive")],
             ...(myRaise ? [["fit", t("investors.sortFit")] as const] : []),
           ] as const).map(([val, label]) => (
             <button key={val} onClick={() => setF(p => ({ ...p, sort: val }))}

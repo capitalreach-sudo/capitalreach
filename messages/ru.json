@@ -1012,7 +1012,8 @@
     "noResultsBody": "Попробуйте снять фильтр, расширить стадию или отрасль либо задать более общий запрос.",
     "pageSubtitle_one": "{count} компания сейчас в списке",
     "closingSoon": "Скоро закрытие",
-    "businessModelGroup": "Бизнес-модель"
+    "businessModelGroup": "Бизнес-модель",
+    "hasDemo": "С демо-видео"
   },
   "startupDetail": {
     "overview": "Обзор",
@@ -1093,7 +1094,8 @@
     "businessModel": "Бизнес-модель",
     "companyType": "Тип компании",
     "previousFunding": "Прошлое финансирование",
-    "competitors": "Конкуренты"
+    "competitors": "Конкуренты",
+    "productHunt": "Product Hunt"
   },
   "filters": {
     "industry": "Отрасль",
@@ -1310,7 +1312,8 @@
     "compareInvestors": "Сравнение инвесторов",
     "target2": "В цели",
     "verifiedBadge": "Проверенный инвестор",
-    "clearCompareAria": "Очистить сравнение"
+    "clearCompareAria": "Очистить сравнение",
+    "sortActive": "Самые активные"
   },
   "data": {
     "stageBreakdown": "Разбивка по стадиям",

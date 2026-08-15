@@ -1021,7 +1021,8 @@
     "noResultsBody": "试着移除一个筛选条件、放宽阶段或行业，或使用更宽泛的关键词。",
     "pageSubtitle_one": "当前{count}家公司在列",
     "closingSoon": "即将截止",
-    "businessModelGroup": "商业模式"
+    "businessModelGroup": "商业模式",
+    "hasDemo": "有演示视频"
   },
   "startup": {
     "back": "返回目录",
@@ -1133,7 +1134,8 @@
     "businessModel": "商业模式",
     "companyType": "公司类型",
     "previousFunding": "过往融资",
-    "competitors": "竞争对手"
+    "competitors": "竞争对手",
+    "productHunt": "Product Hunt"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1203,7 +1205,8 @@
     "compareInvestors": "对比投资人",
     "target2": "设为目标",
     "verifiedBadge": "认证投资人",
-    "clearCompareAria": "清除对比"
+    "clearCompareAria": "清除对比",
+    "sortActive": "最活跃"
   },
   "data": {
     "eyebrow": "实时平台数据",

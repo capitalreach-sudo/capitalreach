@@ -1021,7 +1021,8 @@
     "noResultsBody": "フィルターを外すか、ステージや業種を広げるか、より一般的な語で検索してみてください。",
     "pageSubtitle_one": "現在{count}社が掲載中",
     "closingSoon": "まもなく締切",
-    "businessModelGroup": "ビジネスモデル"
+    "businessModelGroup": "ビジネスモデル",
+    "hasDemo": "デモ動画あり"
   },
   "startup": {
     "back": "ディレクトリに戻る",
@@ -1133,7 +1134,8 @@
     "businessModel": "ビジネスモデル",
     "companyType": "会社形態",
     "previousFunding": "過去の資金調達",
-    "competitors": "競合"
+    "competitors": "競合",
+    "productHunt": "Product Hunt"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1203,7 +1205,8 @@
     "compareInvestors": "投資家を比較",
     "target2": "候補に追加",
     "verifiedBadge": "認証済み投資家",
-    "clearCompareAria": "比較をクリア"
+    "clearCompareAria": "比較をクリア",
+    "sortActive": "最も活発"
   },
   "data": {
     "eyebrow": "ライブプラットフォームデータ",

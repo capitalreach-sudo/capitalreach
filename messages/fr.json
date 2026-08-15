@@ -1021,7 +1021,8 @@
     "noResultsBody": "Essayez de retirer un filtre, d'élargir le stade ou le secteur, ou de chercher un terme plus général.",
     "pageSubtitle_one": "{count} entreprise actuellement listée",
     "closingSoon": "Bientôt clôturé",
-    "businessModelGroup": "Modèle économique"
+    "businessModelGroup": "Modèle économique",
+    "hasDemo": "Avec vidéo démo"
   },
   "startup": {
     "back": "Retour à l'annuaire",
@@ -1133,7 +1134,8 @@
     "businessModel": "Modèle économique",
     "companyType": "Type d'entreprise",
     "previousFunding": "Financement précédent",
-    "competitors": "Concurrents"
+    "competitors": "Concurrents",
+    "productHunt": "Product Hunt"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1203,7 +1205,8 @@
     "compareInvestors": "Comparer les investisseurs",
     "target2": "Cibler",
     "verifiedBadge": "Investisseur vérifié",
-    "clearCompareAria": "Effacer la comparaison"
+    "clearCompareAria": "Effacer la comparaison",
+    "sortActive": "Les plus actifs"
   },
   "data": {
     "eyebrow": "Données de la plateforme en direct",

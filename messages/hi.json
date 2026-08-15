@@ -1012,7 +1012,8 @@
     "noResultsBody": "कोई फ़िल्टर हटाएँ, चरण या उद्योग को व्यापक करें, या अधिक सामान्य शब्द खोजें।",
     "pageSubtitle_one": "{count} कंपनी वर्तमान में सूचीबद्ध",
     "closingSoon": "जल्द बंद",
-    "businessModelGroup": "व्यवसाय मॉडल"
+    "businessModelGroup": "व्यवसाय मॉडल",
+    "hasDemo": "डेमो वीडियो सहित"
   },
   "startupDetail": {
     "overview": "अवलोकन",
@@ -1093,7 +1094,8 @@
     "businessModel": "व्यवसाय मॉडल",
     "companyType": "कंपनी प्रकार",
     "previousFunding": "पिछली फंडिंग",
-    "competitors": "प्रतिस्पर्धी"
+    "competitors": "प्रतिस्पर्धी",
+    "productHunt": "Product Hunt"
   },
   "filters": {
     "industry": "उद्योग",
@@ -1310,7 +1312,8 @@
     "compareInvestors": "निवेशकों की तुलना करें",
     "target2": "लक्ष्य",
     "verifiedBadge": "सत्यापित निवेशक",
-    "clearCompareAria": "तुलना साफ़ करें"
+    "clearCompareAria": "तुलना साफ़ करें",
+    "sortActive": "सबसे सक्रिय"
   },
   "data": {
     "stageBreakdown": "चरण विभाजन",

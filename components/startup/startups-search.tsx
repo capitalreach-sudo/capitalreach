@@ -74,7 +74,7 @@ interface Startup {
   mrr: number | null; arr: number | null; growth_rate: number | null;
   runway_months: number | null; created_at: string; updated_at: string;
   vaultrise_score: number | null;
-  country: string | null; business_model: string | null; round_close_date: string | null;
+  country: string | null; business_model: string | null; round_close_date: string | null; demo_video_url: string | null;
 }
 
 interface Filters {
@@ -82,13 +82,13 @@ interface Filters {
   mrrMin: number; aiScoreMin: number; sort: string; country: string;
   newOnly?: boolean;
   raisingMin?: number; runwayMin?: number; growthMin?: number;
-  closingSoon?: boolean; businessModel?: string;
+  closingSoon?: boolean; businessModel?: string; hasDemo?: boolean;
 }
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
   mrrMin: 0, aiScoreMin: 0, sort: "score", country: "", newOnly: false,
-  raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "",
+  raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
 };
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -552,6 +552,7 @@ export function StartupsSearch() {
     growthMin:  Number(searchParams.get("growth")) || 0,
     closingSoon: searchParams.get("closing") === "1",
     businessModel: searchParams.get("bmodel") ?? "",
+    hasDemo:    searchParams.get("demo") === "1",
     sort:       searchParams.get("sort") ?? DEFAULT_FILTERS.sort,
   };
 
@@ -722,6 +723,7 @@ export function StartupsSearch() {
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
       if (filters.closingSoon && roundCloseState(s.round_close_date) === null) return false;
       if (filters.businessModel && s.business_model !== filters.businessModel) return false;
+      if (filters.hasDemo && !s.demo_video_url) return false;
       if ((filters.raisingMin ?? 0) > 0 && s.funding_target < filters.raisingMin!) return false;
       if ((filters.runwayMin ?? 0) > 0 && (s.runway_months ?? 0) < filters.runwayMin!) return false;
       if ((filters.growthMin ?? 0) > 0 && (s.growth_rate ?? 0) < filters.growthMin!) return false;
@@ -754,7 +756,7 @@ export function StartupsSearch() {
     filters.country ? 1 : 0,
     filters.newOnly ? 1 : 0,
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
-    filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0,
+    filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0, filters.hasDemo ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   // Filtering rewrites the whole grid without a navigation, which is silent to
@@ -794,6 +796,7 @@ export function StartupsSearch() {
       if (filters.growthMin)          p.set("growth", String(filters.growthMin));
       if (filters.closingSoon)        p.set("closing", "1");
       if (filters.businessModel)      p.set("bmodel", filters.businessModel);
+      if (filters.hasDemo)            p.set("demo", "1");
       if (filters.sort !== DEFAULT_FILTERS.sort) p.set("sort", filters.sort);
       const qs = p.toString();
       const next = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
@@ -1011,7 +1014,7 @@ export function StartupsSearch() {
             ))}
           </FilterGroup>
           <FilterGroup label={t("startups.traction")}
-            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0) + (filters.raisingMin ? 1 : 0) + (filters.runwayMin ? 1 : 0) + (filters.growthMin ? 1 : 0) + (filters.closingSoon ? 1 : 0)}
+            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0) + (filters.raisingMin ? 1 : 0) + (filters.runwayMin ? 1 : 0) + (filters.growthMin ? 1 : 0) + (filters.closingSoon ? 1 : 0) + (filters.hasDemo ? 1 : 0)}
             open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
             {MRR_PRESETS.map((m) => (
               <FilterChip key={m.value}
@@ -1049,6 +1052,10 @@ export function StartupsSearch() {
             <FilterChip active={!!filters.closingSoon}
               onClick={() => patch({ closingSoon: !filters.closingSoon })}>
               {t("startups.closingSoon")}
+            </FilterChip>
+            <FilterChip active={!!filters.hasDemo}
+              onClick={() => patch({ hasDemo: !filters.hasDemo })}>
+              {t("startups.hasDemo")}
             </FilterChip>
           </FilterGroup>
           <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}

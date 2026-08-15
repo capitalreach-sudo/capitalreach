@@ -611,6 +611,12 @@ export function StartupDetailClient({
                     <Globe style={{ width: 13, height: 13 }} /> {t("startupDetail.website")}
                   </a>
                 )}
+                {startup.product_hunt_url && (
+                  <a href={startup.product_hunt_url} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
+                    <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.productHunt")}
+                  </a>
+                )}
                 <button onClick={toggleSave} style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
                   <Bookmark style={{ width: 13, height: 13, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
                   {isSaved ? t("toast.saved") : t("common.saveWatchlist")}

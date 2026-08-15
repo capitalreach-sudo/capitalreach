@@ -1021,7 +1021,8 @@
     "noResultsBody": "Prueba a quitar un filtro, ampliar la etapa o el sector, o buscar un término más general.",
     "pageSubtitle_one": "{count} empresa actualmente listada",
     "closingSoon": "Cierra pronto",
-    "businessModelGroup": "Modelo de negocio"
+    "businessModelGroup": "Modelo de negocio",
+    "hasDemo": "Con vídeo demo"
   },
   "startup": {
     "back": "Volver al directorio",
@@ -1133,7 +1134,8 @@
     "businessModel": "Modelo de negocio",
     "companyType": "Tipo de empresa",
     "previousFunding": "Financiación previa",
-    "competitors": "Competidores"
+    "competitors": "Competidores",
+    "productHunt": "Product Hunt"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -1203,7 +1205,8 @@
     "compareInvestors": "Comparar inversores",
     "target2": "Objetivo",
     "verifiedBadge": "Inversor verificado",
-    "clearCompareAria": "Borrar comparación"
+    "clearCompareAria": "Borrar comparación",
+    "sortActive": "Más activos"
   },
   "data": {
     "eyebrow": "Datos de plataforma en directo",

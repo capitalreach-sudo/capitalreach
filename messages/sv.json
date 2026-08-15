@@ -1012,7 +1012,8 @@
     "noResultsBody": "Prova att ta bort ett filter, bredda fas eller bransch, eller söka på ett mer allmänt ord.",
     "pageSubtitle_one": "{count} företag listat just nu",
     "closingSoon": "Stänger snart",
-    "businessModelGroup": "Affärsmodell"
+    "businessModelGroup": "Affärsmodell",
+    "hasDemo": "Med demovideo"
   },
   "startupDetail": {
     "overview": "Översikt",
@@ -1093,7 +1094,8 @@
     "businessModel": "Affärsmodell",
     "companyType": "Företagstyp",
     "previousFunding": "Tidigare finansiering",
-    "competitors": "Konkurrenter"
+    "competitors": "Konkurrenter",
+    "productHunt": "Product Hunt"
   },
   "filters": {
     "industry": "Bransch",
@@ -1310,7 +1312,8 @@
     "compareInvestors": "Jämför investerare",
     "target2": "Rikta in",
     "verifiedBadge": "Verifierad investerare",
-    "clearCompareAria": "Rensa jämförelse"
+    "clearCompareAria": "Rensa jämförelse",
+    "sortActive": "Mest aktiva"
   },
   "data": {
     "stageBreakdown": "Fasfördelning",

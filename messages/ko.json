@@ -1012,7 +1012,8 @@
     "noResultsBody": "필터를 제거하거나 단계·산업 범위를 넓히거나 더 일반적인 검색어를 사용해 보세요.",
     "pageSubtitle_one": "현재 {count}개 사가 등록됨",
     "closingSoon": "마감 임박",
-    "businessModelGroup": "비즈니스 모델"
+    "businessModelGroup": "비즈니스 모델",
+    "hasDemo": "데모 영상 있음"
   },
   "startupDetail": {
     "overview": "개요",
@@ -1093,7 +1094,8 @@
     "businessModel": "비즈니스 모델",
     "companyType": "회사 유형",
     "previousFunding": "이전 투자",
-    "competitors": "경쟁사"
+    "competitors": "경쟁사",
+    "productHunt": "Product Hunt"
   },
   "filters": {
     "industry": "산업",
@@ -1310,7 +1312,8 @@
     "compareInvestors": "투자자 비교",
     "target2": "타깃",
     "verifiedBadge": "인증된 투자자",
-    "clearCompareAria": "비교 지우기"
+    "clearCompareAria": "비교 지우기",
+    "sortActive": "가장 활발"
   },
   "data": {
     "stageBreakdown": "단계별 분류",

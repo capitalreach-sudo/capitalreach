@@ -1021,7 +1021,8 @@
     "noResultsBody": "جرّب إزالة مرشّح، أو توسيع المرحلة أو القطاع، أو البحث بمصطلح أعم.",
     "pageSubtitle_one": "{count} شركة مدرجة حاليًا",
     "closingSoon": "يُغلق قريبا",
-    "businessModelGroup": "نموذج العمل"
+    "businessModelGroup": "نموذج العمل",
+    "hasDemo": "به فيديو تجريبي"
   },
   "startup": {
     "back": "العودة إلى الدليل",
@@ -1133,7 +1134,8 @@
     "businessModel": "نموذج العمل",
     "companyType": "نوع الشركة",
     "previousFunding": "التمويل السابق",
-    "competitors": "المنافسون"
+    "competitors": "المنافسون",
+    "productHunt": "Product Hunt"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",
@@ -1203,7 +1205,8 @@
     "compareInvestors": "مقارنة المستثمرين",
     "target2": "استهدف",
     "verifiedBadge": "مستثمر موثّق",
-    "clearCompareAria": "مسح المقارنة"
+    "clearCompareAria": "مسح المقارنة",
+    "sortActive": "الأكثر نشاطا"
   },
   "data": {
     "eyebrow": "بيانات المنصة الحية",

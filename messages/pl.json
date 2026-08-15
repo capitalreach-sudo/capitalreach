@@ -1012,7 +1012,8 @@
     "noResultsBody": "Spróbuj usunąć filtr, poszerzyć etap lub branżę albo wyszukać ogólniejsze hasło.",
     "pageSubtitle_one": "{count} firma obecnie na liście",
     "closingSoon": "Wkrótce zamknięcie",
-    "businessModelGroup": "Model biznesowy"
+    "businessModelGroup": "Model biznesowy",
+    "hasDemo": "Z wideo demo"
   },
   "startupDetail": {
     "overview": "Przegląd",
@@ -1093,7 +1094,8 @@
     "businessModel": "Model biznesowy",
     "companyType": "Typ firmy",
     "previousFunding": "Poprzednie finansowanie",
-    "competitors": "Konkurenci"
+    "competitors": "Konkurenci",
+    "productHunt": "Product Hunt"
   },
   "filters": {
     "industry": "Branża",
@@ -1310,7 +1312,8 @@
     "compareInvestors": "Porównaj inwestorów",
     "target2": "Cel",
     "verifiedBadge": "Zweryfikowany inwestor",
-    "clearCompareAria": "Wyczyść porównanie"
+    "clearCompareAria": "Wyczyść porównanie",
+    "sortActive": "Najbardziej aktywni"
   },
   "data": {
     "stageBreakdown": "Podział na etapy",

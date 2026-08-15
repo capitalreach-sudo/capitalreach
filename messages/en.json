@@ -1032,7 +1032,8 @@
     "noResultsBody": "Try removing a filter, widening the stage or industry, or searching a broader term.",
     "pageSubtitle_one": "{count} company currently listed",
     "closingSoon": "Closing soon",
-    "businessModelGroup": "Business model"
+    "businessModelGroup": "Business model",
+    "hasDemo": "Has demo video"
   },
   "startup": {
     "back": "Back to directory",
@@ -1144,7 +1145,8 @@
     "businessModel": "Business model",
     "companyType": "Company type",
     "previousFunding": "Previous funding",
-    "competitors": "Competitors"
+    "competitors": "Competitors",
+    "productHunt": "Product Hunt"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1214,7 +1216,8 @@
     "compareInvestors": "Compare investors",
     "target2": "Target",
     "verifiedBadge": "Verified investor",
-    "clearCompareAria": "Clear comparison"
+    "clearCompareAria": "Clear comparison",
+    "sortActive": "Most active"
   },
   "data": {
     "eyebrow": "Live Platform Data",
