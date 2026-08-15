@@ -1206,7 +1206,8 @@
     "aiDisclosure": "AI 기능은 OpenAI 모델을 사용합니다. 결과는 정보 제공용이며 투자 자문이 아닙니다.",
     "status": "상태",
     "stats": "플랫폼 통계",
-    "feeStrip": "성공 수수료 2% · 딜 종료 후에만 · 창업자만 · 투자자는 없음"
+    "feeStrip": "성공 수수료 2% · 딜 종료 후에만 · 창업자만 · 투자자는 없음",
+    "imprint": "법적 고지"
   },
   "feeStrip": {
     "tagline": "성공 수수료 — 클로징 후에만 청구. 업계 평균: 선불 5–7%.",
@@ -2554,5 +2555,20 @@
     "kicker": "관리자",
     "pageTitle": "사용자 관리",
     "pageSubtitle": "{n}개 계정. 정지는 즉시 적용되며 사용자를 로그아웃시킵니다."
+  },
+  "imprint": {
+    "metaTitle": "법적 고지 — CapitalReach",
+    "metaDesc": "CapitalReach의 법적 고지 및 제공자 정보.",
+    "title": "법적 고지",
+    "subtitle": "제공자 정보(§ 5 TMG)",
+    "provider": "제공자",
+    "address": "주소",
+    "representedBy": "대표자",
+    "contact": "연락처",
+    "register": "등기 정보",
+    "vatId": "부가가치세 번호",
+    "euDispute": "온라인 분쟁 해결: 유럽 위원회는 ec.europa.eu/consumers/odr에서 플랫폼을 제공합니다. 당사는 소비자 중재 기관에서의 분쟁 해결 절차에 참여할 의무나 의사가 없습니다.",
+    "pendingTitle": "법적 고지 준비 중",
+    "pendingBody": "운영 회사가 등록되면 법인 정보가 여기에 표시됩니다. 그때까지는 문의 페이지로 연락해 주세요."
   }
 }

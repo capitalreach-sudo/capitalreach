@@ -1206,7 +1206,8 @@
     "aiDisclosure": "AI-funktioner använder OpenAI-modeller. Resultaten är endast informativa och utgör inte investeringsrådgivning.",
     "status": "Status",
     "stats": "Plattformsstatistik",
-    "feeStrip": "2 % success fee · endast efter avslut · endast grundare · aldrig investerare"
+    "feeStrip": "2 % success fee · endast efter avslut · endast grundare · aldrig investerare",
+    "imprint": "Impressum"
   },
   "feeStrip": {
     "tagline": "framgångsavgift — endast efter avslut. Branschsnitt: 5–7% i förskott.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "Användarhantering",
     "pageSubtitle": "{n} konton. Avstängning gäller direkt och loggar ut användaren."
+  },
+  "imprint": {
+    "metaTitle": "Impressum — CapitalReach",
+    "metaDesc": "Rättslig information och leverantörsidentifiering för CapitalReach.",
+    "title": "Impressum",
+    "subtitle": "Leverantörsidentifiering (§ 5 TMG)",
+    "provider": "Leverantör",
+    "address": "Adress",
+    "representedBy": "Företräds av",
+    "contact": "Kontakt",
+    "register": "Registrering",
+    "vatId": "Momsnummer",
+    "euDispute": "Tvistlösning online: EU-kommissionen tillhandahåller en plattform på ec.europa.eu/consumers/odr. Vi är varken skyldiga eller villiga att delta i tvistlösning inför en konsumenttvistnämnd.",
+    "pendingTitle": "Impressum under förberedelse",
+    "pendingBody": "Uppgifter om vår juridiska enhet visas här när driftbolaget har registrerats. Kontakta oss under tiden via kontaktsidan."
   }
 }

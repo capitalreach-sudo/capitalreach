@@ -1206,7 +1206,8 @@
     "aiDisclosure": "AI-functies gebruiken OpenAI-modellen. Uitkomsten zijn uitsluitend informatief en vormen geen beleggingsadvies.",
     "status": "Status",
     "stats": "Platformstatistieken",
-    "feeStrip": "2% succesfee · alleen na closing · alleen founders · nooit investeerders"
+    "feeStrip": "2% succesfee · alleen na closing · alleen founders · nooit investeerders",
+    "imprint": "Colofon"
   },
   "feeStrip": {
     "tagline": "succesvergoeding — alleen na sluiting. Sectorgemiddelde: 5–7% vooraf.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "Gebruikersbeheer",
     "pageSubtitle": "{n} accounts. Schorsing gaat meteen in en meldt de gebruiker af."
+  },
+  "imprint": {
+    "metaTitle": "Colofon — CapitalReach",
+    "metaDesc": "Wettelijke informatie en aanbiederidentificatie voor CapitalReach.",
+    "title": "Colofon",
+    "subtitle": "Aanbiederidentificatie (§ 5 TMG)",
+    "provider": "Aanbieder",
+    "address": "Adres",
+    "representedBy": "Vertegenwoordigd door",
+    "contact": "Contact",
+    "register": "Registerinschrijving",
+    "vatId": "Btw-nummer",
+    "euDispute": "Onlinegeschillenbeslechting: de Europese Commissie biedt een platform op ec.europa.eu/consumers/odr. Wij zijn niet verplicht en niet bereid deel te nemen aan geschillenbeslechting voor een consumentengeschillencommissie.",
+    "pendingTitle": "Colofon in voorbereiding",
+    "pendingBody": "De gegevens van onze juridische entiteit verschijnen hier zodra het exploiterende bedrijf is geregistreerd. Neem tot dan contact met ons op via de contactpagina."
   }
 }

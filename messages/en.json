@@ -1672,7 +1672,8 @@
     "aiDisclosure": "AI-powered features use OpenAI models. Outputs are informational only and not investment advice.",
     "status": "Status",
     "stats": "Platform stats",
-    "feeStrip": "2% success fee · only after close · founders only · never investors"
+    "feeStrip": "2% success fee · only after close · founders only · never investors",
+    "imprint": "Imprint"
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "User management",
     "pageSubtitle": "{n} accounts. Suspension takes effect immediately and signs the user out."
+  },
+  "imprint": {
+    "metaTitle": "Imprint — CapitalReach",
+    "metaDesc": "Legal notice and provider identification for CapitalReach.",
+    "title": "Imprint",
+    "subtitle": "Provider identification under § 5 TMG",
+    "provider": "Provider",
+    "address": "Address",
+    "representedBy": "Represented by",
+    "contact": "Contact",
+    "register": "Register entry",
+    "vatId": "VAT ID",
+    "euDispute": "Online dispute resolution: the European Commission provides a platform at ec.europa.eu/consumers/odr. We are neither obligated nor willing to participate in dispute resolution proceedings before a consumer arbitration board.",
+    "pendingTitle": "Imprint pending",
+    "pendingBody": "Our legal entity details will appear here once the operating company is registered. Until then, reach us via the contact page."
   }
 }

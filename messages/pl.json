@@ -1206,7 +1206,8 @@
     "aiDisclosure": "Funkcje oparte na AI korzystają z modeli OpenAI. Wyniki mają charakter wyłącznie informacyjny i nie stanowią porady inwestycyjnej.",
     "status": "Status",
     "stats": "Statystyki platformy",
-    "feeStrip": "2% prowizji od sukcesu · tylko po zamknięciu · tylko founderzy · nigdy inwestorzy"
+    "feeStrip": "2% prowizji od sukcesu · tylko po zamknięciu · tylko founderzy · nigdy inwestorzy",
+    "imprint": "Nota prawna"
   },
   "feeStrip": {
     "tagline": "opłata za sukces — tylko po zamknięciu. Średnia branżowa: 5–7% z góry.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "Zarządzanie użytkownikami",
     "pageSubtitle": "Konta: {n}. Zawieszenie działa natychmiast i wylogowuje użytkownika."
+  },
+  "imprint": {
+    "metaTitle": "Nota prawna — CapitalReach",
+    "metaDesc": "Nota prawna i identyfikacja usługodawcy CapitalReach.",
+    "title": "Nota prawna",
+    "subtitle": "Identyfikacja usługodawcy (§ 5 TMG)",
+    "provider": "Usługodawca",
+    "address": "Adres",
+    "representedBy": "Reprezentowany przez",
+    "contact": "Kontakt",
+    "register": "Wpis do rejestru",
+    "vatId": "NIP/VAT",
+    "euDispute": "Internetowe rozstrzyganie sporów: Komisja Europejska udostępnia platformę pod adresem ec.europa.eu/consumers/odr. Nie jesteśmy zobowiązani ani gotowi do udziału w postępowaniu przed polubownym sądem konsumenckim.",
+    "pendingTitle": "Nota prawna w przygotowaniu",
+    "pendingBody": "Dane naszego podmiotu prawnego pojawią się tutaj po zarejestrowaniu spółki operacyjnej. Do tego czasu skontaktuj się z nami przez stronę kontaktową."
   }
 }

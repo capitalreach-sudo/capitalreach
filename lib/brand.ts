@@ -35,3 +35,23 @@ export const brand = {
   careers: at("careers"),
   noreply: at("noreply"),
 } as const;
+
+/**
+ * Registered-entity details for the Impressum / legal notice. All optional and
+ * env-driven — the /imprint page shows a "not yet published" state until the
+ * company is registered and these are set, rather than inventing details (a
+ * wrong Impressum is worse than a pending one). Set them in Vercel once the
+ * company exists; the page fills in with no code change.
+ */
+export const legalEntity = {
+  name:      process.env.NEXT_PUBLIC_LEGAL_NAME || "",       // e.g. "CapitalReach GmbH"
+  address:   process.env.NEXT_PUBLIC_LEGAL_ADDRESS || "",    // full postal address, newline-separated
+  managing:  process.env.NEXT_PUBLIC_LEGAL_MANAGING || "",   // represented by / managing director(s)
+  email:     process.env.NEXT_PUBLIC_LEGAL_EMAIL || brand.legal, // contact email
+  phone:     process.env.NEXT_PUBLIC_LEGAL_PHONE || "",
+  register:  process.env.NEXT_PUBLIC_LEGAL_REGISTER || "",   // e.g. "Amtsgericht Berlin, HRB 123456"
+  vatId:     process.env.NEXT_PUBLIC_LEGAL_VAT || "",        // e.g. "DE123456789"
+} as const;
+
+/** True once the minimum Impressum fields exist. */
+export const legalEntityConfigured = !!(legalEntity.name && legalEntity.address);

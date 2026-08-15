@@ -1661,7 +1661,8 @@
     "aiDisclosure": "AI機能はOpenAIのモデルを使用しています。出力は情報提供のみを目的としており、投資助言ではありません。",
     "status": "稼働状況",
     "stats": "プラットフォーム統計",
-    "feeStrip": "成功報酬2%・クローズ後のみ・ファウンダーのみ・投資家には一切なし"
+    "feeStrip": "成功報酬2%・クローズ後のみ・ファウンダーのみ・投資家には一切なし",
+    "imprint": "インプリント"
   },
   "banner": {
     "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",
@@ -2554,5 +2555,20 @@
     "kicker": "管理者",
     "pageTitle": "ユーザー管理",
     "pageSubtitle": "{n} 件のアカウント。停止は即時に有効になり、ユーザーをサインアウトさせます。"
+  },
+  "imprint": {
+    "metaTitle": "インプリント — CapitalReach",
+    "metaDesc": "CapitalReach の法的表示と事業者情報。",
+    "title": "インプリント",
+    "subtitle": "事業者情報（§ 5 TMG）",
+    "provider": "事業者",
+    "address": "住所",
+    "representedBy": "代表者",
+    "contact": "連絡先",
+    "register": "登記情報",
+    "vatId": "付加価値税番号",
+    "euDispute": "オンライン紛争解決：欧州委員会は ec.europa.eu/consumers/odr にプラットフォームを提供しています。当社は消費者仲裁機関での紛争解決手続きに参加する義務も意思もありません。",
+    "pendingTitle": "インプリントは準備中です",
+    "pendingBody": "運営会社の登記が完了次第、法人情報をここに掲載します。それまではお問い合わせページからご連絡ください。"
   }
 }

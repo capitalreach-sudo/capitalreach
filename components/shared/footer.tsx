@@ -45,6 +45,7 @@ export function Footer() {
       [t("footer.status"),   "/status"],
       [t("footer.terms"),    "/terms"],
       [t("footer.privacy"),  "/privacy"],
+      [t("footer.imprint"),  "/imprint"],
     ]],
   ];
 

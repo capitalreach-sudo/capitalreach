@@ -1661,7 +1661,8 @@
     "aiDisclosure": "AI 功能使用 OpenAI 模型。输出仅供参考，不构成投资建议。",
     "status": "系统状态",
     "stats": "平台统计",
-    "feeStrip": "2%成功佣金 · 仅在成交后 · 仅创始人 · 投资人永不付费"
+    "feeStrip": "2%成功佣金 · 仅在成交后 · 仅创始人 · 投资人永不付费",
+    "imprint": "法律声明"
   },
   "banner": {
     "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",
@@ -2554,5 +2555,20 @@
     "kicker": "管理员",
     "pageTitle": "用户管理",
     "pageSubtitle": "{n} 个账户。暂停立即生效并将用户登出。"
+  },
+  "imprint": {
+    "metaTitle": "法律声明 — CapitalReach",
+    "metaDesc": "CapitalReach 的法律声明与提供者信息。",
+    "title": "法律声明",
+    "subtitle": "提供者信息（§ 5 TMG）",
+    "provider": "提供者",
+    "address": "地址",
+    "representedBy": "代表人",
+    "contact": "联系方式",
+    "register": "登记信息",
+    "vatId": "增值税号",
+    "euDispute": "在线争议解决：欧盟委员会在 ec.europa.eu/consumers/odr 提供平台。我们没有义务也不愿意参加消费者仲裁机构的争议解决程序。",
+    "pendingTitle": "法律声明筹备中",
+    "pendingBody": "运营公司注册后，我们的法律实体信息将显示在此处。在此之前，请通过联系页面与我们联系。"
   }
 }

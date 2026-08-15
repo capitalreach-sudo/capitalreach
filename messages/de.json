@@ -1668,7 +1668,8 @@
     "aiDisclosure": "KI-Funktionen nutzen OpenAI-Modelle. Ausgaben dienen nur zur Information und sind keine Anlageberatung.",
     "status": "Status",
     "stats": "Plattform-Statistiken",
-    "feeStrip": "2 % Erfolgsgebühr · nur nach Abschluss · nur Gründer · nie Investoren"
+    "feeStrip": "2 % Erfolgsgebühr · nur nach Abschluss · nur Gründer · nie Investoren",
+    "imprint": "Impressum"
   },
   "banner": {
     "text": "Kostenlos für unsere ersten {target} Mitglieder — {memberCount}/{target} beigetreten, noch {spotsLeft} Plätze übrig.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "Nutzerverwaltung",
     "pageSubtitle": "{n} Konten. Die Sperre wirkt sofort und meldet den Nutzer ab."
+  },
+  "imprint": {
+    "metaTitle": "Impressum — CapitalReach",
+    "metaDesc": "Impressum und Anbieterkennzeichnung für CapitalReach.",
+    "title": "Impressum",
+    "subtitle": "Angaben gemäß § 5 TMG",
+    "provider": "Anbieter",
+    "address": "Anschrift",
+    "representedBy": "Vertreten durch",
+    "contact": "Kontakt",
+    "register": "Registereintrag",
+    "vatId": "USt-IdNr.",
+    "euDispute": "Online-Streitbeilegung: Die Europäische Kommission stellt eine Plattform unter ec.europa.eu/consumers/odr bereit. Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.",
+    "pendingTitle": "Impressum in Vorbereitung",
+    "pendingBody": "Die Angaben zu unserer juristischen Person erscheinen hier, sobald die Betreibergesellschaft eingetragen ist. Bis dahin erreichst du uns über die Kontaktseite."
   }
 }

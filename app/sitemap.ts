@@ -66,6 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/terms`,       changeFrequency: "yearly",  priority: 0.3 },
     { url: `${baseUrl}/privacy`,     changeFrequency: "yearly",  priority: 0.3 },
     { url: `${baseUrl}/disclaimer`,  changeFrequency: "yearly",  priority: 0.3 },
+    { url: `${baseUrl}/imprint`,     changeFrequency: "yearly",  priority: 0.3 },
   ];
   const staticRoutes: MetadataRoute.Sitemap = routes.map(r => ({ ...r, lastModified: staticLastMod }));
 

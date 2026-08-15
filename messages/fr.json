@@ -1661,7 +1661,8 @@
     "aiDisclosure": "Les fonctionnalités d'IA utilisent des modèles OpenAI. Les résultats sont fournis à titre informatif et ne constituent pas un conseil en investissement.",
     "status": "Statut",
     "stats": "Statistiques de la plateforme",
-    "feeStrip": "2 % de commission au succès · seulement après clôture · fondateurs uniquement · jamais les investisseurs"
+    "feeStrip": "2 % de commission au succès · seulement après clôture · fondateurs uniquement · jamais les investisseurs",
+    "imprint": "Mentions légales"
   },
   "banner": {
     "text": "Gratuit pour nos {target} premiers membres — {memberCount}/{target} inscrits, {spotsLeft} places restantes.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "Gestion des utilisateurs",
     "pageSubtitle": "{n} comptes. La suspension prend effet immédiatement et déconnecte l'utilisateur."
+  },
+  "imprint": {
+    "metaTitle": "Mentions légales — CapitalReach",
+    "metaDesc": "Mentions légales et identification de l'éditeur de CapitalReach.",
+    "title": "Mentions légales",
+    "subtitle": "Identification de l'éditeur (§ 5 TMG)",
+    "provider": "Éditeur",
+    "address": "Adresse",
+    "representedBy": "Représenté par",
+    "contact": "Contact",
+    "register": "Inscription au registre",
+    "vatId": "Numéro de TVA",
+    "euDispute": "Règlement en ligne des litiges : la Commission européenne fournit une plateforme sur ec.europa.eu/consumers/odr. Nous ne sommes ni obligés ni disposés à participer à une procédure de règlement des litiges devant un organe de conciliation.",
+    "pendingTitle": "Mentions légales en préparation",
+    "pendingBody": "Les informations sur notre entité juridique apparaîtront ici une fois la société d'exploitation immatriculée. En attendant, contactez-nous via la page contact."
   }
 }

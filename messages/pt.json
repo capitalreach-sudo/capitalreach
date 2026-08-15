@@ -1206,7 +1206,8 @@
     "aiDisclosure": "As funcionalidades com IA usam modelos da OpenAI. Os resultados são apenas informativos e não constituem aconselhamento de investimento.",
     "status": "Estado",
     "stats": "Estatísticas da plataforma",
-    "feeStrip": "Taxa de sucesso de 2% · só após o fechamento · só fundadores · nunca investidores"
+    "feeStrip": "Taxa de sucesso de 2% · só após o fechamento · só fundadores · nunca investidores",
+    "imprint": "Informações legais"
   },
   "feeStrip": {
     "tagline": "taxa de sucesso — apenas após o fecho. Média do setor: 5–7% adiantado.",
@@ -2554,5 +2555,20 @@
     "kicker": "Admin",
     "pageTitle": "Gestão de usuários",
     "pageSubtitle": "{n} contas. A suspensão tem efeito imediato e desconecta o usuário."
+  },
+  "imprint": {
+    "metaTitle": "Informações legais — CapitalReach",
+    "metaDesc": "Informações legais e identificação do prestador da CapitalReach.",
+    "title": "Informações legais",
+    "subtitle": "Identificação do prestador (§ 5 TMG)",
+    "provider": "Prestador",
+    "address": "Endereço",
+    "representedBy": "Representado por",
+    "contact": "Contato",
+    "register": "Registro",
+    "vatId": "NIF/IVA",
+    "euDispute": "Resolução de litígios online: a Comissão Europeia disponibiliza uma plataforma em ec.europa.eu/consumers/odr. Não somos obrigados nem dispostos a participar em procedimentos de resolução perante um órgão de conciliação.",
+    "pendingTitle": "Informações legais pendentes",
+    "pendingBody": "Os dados da nossa entidade legal aparecerão aqui assim que a empresa operadora for registrada. Até lá, fale conosco pela página de contato."
   }
 }
