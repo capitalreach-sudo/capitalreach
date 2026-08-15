@@ -1839,7 +1839,8 @@
     "editProfile": "프로필 수정",
     "memberSince": "{date}부터 CapitalReach 이용",
     "boardSeat": "이사회 자리",
-    "followOn": "후속 투자 정책"
+    "followOn": "후속 투자 정책",
+    "similarInvestors": "유사한 투자자"
   },
   "admin": {
     "panelTitle": "관리자 패널",

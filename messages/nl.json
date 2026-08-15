@@ -1839,7 +1839,8 @@
     "editProfile": "Profiel bewerken",
     "memberSince": "Op CapitalReach sinds {date}",
     "boardSeat": "Bestuurszetel",
-    "followOn": "Follow-on-beleid"
+    "followOn": "Follow-on-beleid",
+    "similarInvestors": "Vergelijkbare investeerders"
   },
   "admin": {
     "panelTitle": "Beheerderspaneel",

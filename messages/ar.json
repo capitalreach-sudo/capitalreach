@@ -1839,7 +1839,8 @@
     "editProfile": "تعديل الملف",
     "memberSince": "على CapitalReach منذ {date}",
     "boardSeat": "مقعد في المجلس",
-    "followOn": "سياسة الاستثمار المتابع"
+    "followOn": "سياسة الاستثمار المتابع",
+    "similarInvestors": "مستثمرون مشابهون"
   },
   "admin": {
     "panelTitle": "لوحة الإدارة",

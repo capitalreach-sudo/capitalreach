@@ -1839,7 +1839,8 @@
     "editProfile": "प्रोफ़ाइल संपादित करें",
     "memberSince": "{date} से CapitalReach पर",
     "boardSeat": "बोर्ड सीट",
-    "followOn": "फॉलो-ऑन नीति"
+    "followOn": "फॉलो-ऑन नीति",
+    "similarInvestors": "समान निवेशक"
   },
   "admin": {
     "panelTitle": "एडमिन पैनल",

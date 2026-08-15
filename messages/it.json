@@ -1839,7 +1839,8 @@
     "editProfile": "Modifica profilo",
     "memberSince": "Su CapitalReach da {date}",
     "boardSeat": "Posto nel board",
-    "followOn": "Politica di follow-on"
+    "followOn": "Politica di follow-on",
+    "similarInvestors": "Investitori simili"
   },
   "admin": {
     "panelTitle": "Pannello di amministrazione",

@@ -1839,7 +1839,8 @@
     "editProfile": "Edytuj profil",
     "memberSince": "Na CapitalReach od {date}",
     "boardSeat": "Miejsce w zarządzie",
-    "followOn": "Polityka follow-on"
+    "followOn": "Polityka follow-on",
+    "similarInvestors": "Podobni inwestorzy"
   },
   "admin": {
     "panelTitle": "Panel administratora",

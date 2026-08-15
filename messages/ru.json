@@ -1839,7 +1839,8 @@
     "editProfile": "Редактировать профиль",
     "memberSince": "На CapitalReach с {date}",
     "boardSeat": "Место в совете",
-    "followOn": "Политика доинвестирования"
+    "followOn": "Политика доинвестирования",
+    "similarInvestors": "Похожие инвесторы"
   },
   "admin": {
     "panelTitle": "Панель администратора",

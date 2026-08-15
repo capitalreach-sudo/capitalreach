@@ -1839,7 +1839,8 @@
     "editProfile": "编辑资料",
     "memberSince": "自 {date} 加入 CapitalReach",
     "boardSeat": "董事会席位",
-    "followOn": "追加投资政策"
+    "followOn": "追加投资政策",
+    "similarInvestors": "相似的投资人"
   },
   "admin": {
     "panelTitle": "管理面板",

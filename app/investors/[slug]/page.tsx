@@ -112,6 +112,25 @@ export default async function InvestorProfilePage({ params }: Props) {
       ? (investor.portfolio_json as Array<{ name: string; stage?: string; outcome?: string }>).filter((c) => c?.name)
       : [];
 
+  // Similar investors — others who overlap on industry or stage, so a founder
+  // browsing one lead can find the rest of the shortlist without going back.
+  const overlapIndustries = (investor.industries ?? []).slice(0, 6);
+  const overlapStages = (investor.stages ?? []).slice(0, 6);
+  let similar: Array<{ slug: string; display_name: string | null; firm_name: string | null; type: string; industries: string[] | null }> = [];
+  if (overlapIndustries.length || overlapStages.length) {
+    const admin = createAdminClient();
+    const orParts: string[] = [];
+    if (overlapIndustries.length) orParts.push(`industries.ov.{${overlapIndustries.map((s) => `"${s.replace(/"/g, "")}"`).join(",")}}`);
+    if (overlapStages.length) orParts.push(`stages.ov.{${overlapStages.map((s) => `"${s.replace(/"/g, "")}"`).join(",")}}`);
+    const { data } = await admin
+      .from("investors")
+      .select("slug, display_name, firm_name, type, industries")
+      .neq("id", investor.id)
+      .or(orParts.join(","))
+      .limit(4);
+    similar = data ?? [];
+  }
+
   return (
     <>
       <Navbar />
@@ -399,6 +418,24 @@ export default async function InvestorProfilePage({ params }: Props) {
                     )}
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Similar investors ── */}
+        {similar.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-cr-p4">
+            <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-3">{t("investorProfile.similarInvestors")}</p>
+            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
+              {similar.map((s) => (
+                <a key={s.slug} href={`/investors/${s.slug}`} className="bg-cr-paper border rounded-xl p-4 hover:border-cr-copper transition-colors">
+                  <p className="font-semibold text-cr-ink text-sm truncate">{s.display_name || s.firm_name || s.slug}</p>
+                  <p className="text-xs text-cr-i4 mt-0.5 capitalize">{s.type}{s.firm_name && s.display_name ? ` · ${s.firm_name}` : ""}</p>
+                  {(s.industries ?? []).length > 0 && (
+                    <p className="text-xs text-cr-i3 mt-1.5 truncate">{(s.industries ?? []).slice(0, 3).join(", ")}</p>
+                  )}
+                </a>
               ))}
             </div>
           </div>

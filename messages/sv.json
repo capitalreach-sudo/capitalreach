@@ -1839,7 +1839,8 @@
     "editProfile": "Redigera profil",
     "memberSince": "På CapitalReach sedan {date}",
     "boardSeat": "Styrelseplats",
-    "followOn": "Follow-on-policy"
+    "followOn": "Follow-on-policy",
+    "similarInvestors": "Liknande investerare"
   },
   "admin": {
     "panelTitle": "Adminpanel",

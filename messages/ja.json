@@ -1839,7 +1839,8 @@
     "editProfile": "プロフィールを編集",
     "memberSince": "{date} から CapitalReach に参加",
     "boardSeat": "取締役会の席",
-    "followOn": "フォローオン方針"
+    "followOn": "フォローオン方針",
+    "similarInvestors": "類似の投資家"
   },
   "admin": {
     "panelTitle": "管理パネル",

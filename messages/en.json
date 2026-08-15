@@ -1850,7 +1850,8 @@
     "familyOffice": "Family Office",
     "corporateInvestor": "Corporate Investor",
     "boardSeat": "Board seat",
-    "followOn": "Follow-on policy"
+    "followOn": "Follow-on policy",
+    "similarInvestors": "Similar investors"
   },
   "admin": {
     "panelTitle": "Admin Panel",
