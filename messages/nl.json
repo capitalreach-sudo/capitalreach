@@ -1854,7 +1854,22 @@
     "uploadDoc": "Uploaden",
     "docUploaded": "Document toegevoegd aan de dealruimte.",
     "fromFounder": "Oprichter",
-    "fromInvestor": "Investeerder"
+    "fromInvestor": "Investeerder",
+    "seedChecklist": "Voeg de voorgestelde checklist voor deze fase toe",
+    "checklistOpenWarn": "{n} checklist-items staan nog open — klik nogmaals om toch te verplaatsen.",
+    "clickAgain": "klik nogmaals",
+    "ckIntro1": "Pitchdeck beoordelen",
+    "ckIntro2": "Kernmetrics controleren",
+    "ckIntro3": "Kennismakingscall inplannen",
+    "ckIntro4": "Vervolgstappen afspreken",
+    "ckDd1": "Dataroom openen (NDA)",
+    "ckDd2": "Financiën beoordelen",
+    "ckDd3": "Referentiecalls doen",
+    "ckDd4": "Juridische & cap-table-check",
+    "ckTs1": "Term sheet opstellen",
+    "ckTs2": "Voorwaarden onderhandelen",
+    "ckTs3": "Term sheet ondertekenen",
+    "ckTs4": "Slotbedrag bevestigen"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

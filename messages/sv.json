@@ -1854,7 +1854,22 @@
     "uploadDoc": "Ladda upp",
     "docUploaded": "Dokument tillagt i affärsrummet.",
     "fromFounder": "Grundare",
-    "fromInvestor": "Investerare"
+    "fromInvestor": "Investerare",
+    "seedChecklist": "Lägg till förslagen checklista för detta steg",
+    "checklistOpenWarn": "{n} checklistpunkter är fortfarande öppna — klicka igen för att flytta ändå.",
+    "clickAgain": "klicka igen",
+    "ckIntro1": "Granska pitch decken",
+    "ckIntro2": "Kontrollera nyckeltal",
+    "ckIntro3": "Boka ett introsamtal",
+    "ckIntro4": "Kom överens om nästa steg",
+    "ckDd1": "Öppna datarummet (NDA)",
+    "ckDd2": "Granska ekonomin",
+    "ckDd3": "Gör referenssamtal",
+    "ckDd4": "Juridisk & cap table-granskning",
+    "ckTs1": "Utarbeta term sheet",
+    "ckTs2": "Förhandla villkor",
+    "ckTs3": "Signera term sheet",
+    "ckTs4": "Bekräfta slutbeloppet"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

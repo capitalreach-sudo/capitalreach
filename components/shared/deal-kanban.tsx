@@ -941,7 +941,16 @@ const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
  * off. RLS inherits deal visibility, so both sides and team members share
  * the same list.
  */
-function ChecklistSection({ dealId }: { dealId: string }) {
+// Suggested per-stage checklist items — turns stage movement from a label
+// change into a guided process. One click seeds them; every item stays
+// editable/removable like any hand-added one.
+const STAGE_CHECKLIST_KEYS: Record<string, string[]> = {
+  intro:         ["deals.ckIntro1", "deals.ckIntro2", "deals.ckIntro3", "deals.ckIntro4"],
+  due_diligence: ["deals.ckDd1", "deals.ckDd2", "deals.ckDd3", "deals.ckDd4"],
+  term_sheet:    ["deals.ckTs1", "deals.ckTs2", "deals.ckTs3", "deals.ckTs4"],
+};
+
+function ChecklistSection({ dealId, stage, onOpenCount }: { dealId: string; stage: string; onOpenCount?: (n: number) => void }) {
   const { t } = useTranslation();
   const [items, setItems] = useState<Array<{ id: string; label: string; done: boolean }> | null>(null);
   const [label, setLabel] = useState("");
@@ -980,12 +989,34 @@ function ChecklistSection({ dealId }: { dealId: string }) {
   }
 
   const doneCount = (items ?? []).filter(i => i.done).length;
+  const openCount = (items ?? []).length - doneCount;
+  useEffect(() => { onOpenCount?.(items === null ? 0 : openCount); }, [openCount, items, onOpenCount]);
+
+  const [seeding, setSeeding] = useState(false);
+  async function seedStageChecklist() {
+    const keys = STAGE_CHECKLIST_KEYS[stage] ?? [];
+    if (!keys.length || seeding) return;
+    setSeeding(true);
+    try {
+      for (const k of keys) {
+        const res = await fetch("/api/deals/checklist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, label: t(k) }) });
+        const j = await res.json().catch(() => null);
+        if (res.ok && j?.item) setItems(prev => [...(prev ?? []), j.item]);
+      }
+    } finally { setSeeding(false); }
+  }
 
   return (
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "8px" }}>
         {t("deals.checklist")}{items && items.length > 0 ? ` · ${doneCount}/${items.length}` : ""}
       </p>
+      {items !== null && items.length === 0 && STAGE_CHECKLIST_KEYS[stage] && (
+        <button onClick={seedStageChecklist} disabled={seeding}
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-copper-bg)", border: "1px dashed var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "7px 0", cursor: "pointer", marginBottom: "8px", opacity: seeding ? 0.6 : 1 }}>
+          <Plus style={{ width: 11, height: 11 }} /> {seeding ? t("common.saving") : t("deals.seedChecklist")}
+        </button>
+      )}
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         {(items ?? []).map(i => (
           <div key={i.id} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1177,6 +1208,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [closeCurrency, setCloseCurrency] = useState(deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
   const [showPassedPicker, setShowPassedPicker] = useState(false);
+  const [checklistOpen, setChecklistOpen] = useState(0);
+  const [pendingMove, setPendingMove] = useState<DealStatus | null>(null);
 
   const { investorName, startupName } = dealNames(deal, t);
 
@@ -1281,9 +1314,21 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {onStatusChange && isActive && !showPassedPicker && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px" }}>
           {QUICK_MOVE.filter(s => s !== deal.status).map((s) => (
-            <button key={s} onClick={() => (s === "passed" ? setShowPassedPicker(true) : onStatusChange(deal.id, s))}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
-              → {columns.find(c => c.status === s)?.label}
+            <button key={s} onClick={() => {
+                if (s === "passed") { setShowPassedPicker(true); return; }
+                // Soft gate: open checklist items are a nudge, not a wall. The
+                // first click warns; a second click within the same render
+                // moves anyway. Passing is never gated.
+                if (checklistOpen > 0 && pendingMove !== s) {
+                  setPendingMove(s);
+                  notify.info(t("deals.checklistOpenWarn", { n: String(checklistOpen) }));
+                  return;
+                }
+                setPendingMove(null);
+                onStatusChange(deal.id, s);
+              }}
+              style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: pendingMove === s ? 600 : 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
+              → {columns.find(c => c.status === s)?.label}{pendingMove === s ? ` (${t("deals.clickAgain")})` : ""}
             </button>
           ))}
         </div>
@@ -1444,7 +1489,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         startupId={deal.startup_id}
         investorId={deal.investor_id}
       />
-      <ChecklistSection dealId={deal.id} />
+      <ChecklistSection dealId={deal.id} stage={deal.status} onOpenCount={setChecklistOpen} />
       <ActivitySection dealId={deal.id} />
     </div>
   );

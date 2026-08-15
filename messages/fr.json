@@ -1854,7 +1854,22 @@
     "uploadDoc": "Téléverser",
     "docUploaded": "Document ajouté à la data room.",
     "fromFounder": "Fondateur",
-    "fromInvestor": "Investisseur"
+    "fromInvestor": "Investisseur",
+    "seedChecklist": "Ajouter la checklist suggérée pour cette étape",
+    "checklistOpenWarn": "{n} éléments de la checklist sont encore ouverts — cliquez à nouveau pour déplacer quand même.",
+    "clickAgain": "cliquez à nouveau",
+    "ckIntro1": "Examiner le pitch deck",
+    "ckIntro2": "Vérifier les métriques clés",
+    "ckIntro3": "Réserver un premier appel",
+    "ckIntro4": "Convenir des prochaines étapes",
+    "ckDd1": "Ouvrir la data room (NDA)",
+    "ckDd2": "Examiner les finances",
+    "ckDd3": "Faire les appels de référence",
+    "ckDd4": "Revue juridique et de la cap table",
+    "ckTs1": "Rédiger le term sheet",
+    "ckTs2": "Négocier les termes",
+    "ckTs3": "Signer le term sheet",
+    "ckTs4": "Confirmer le montant de clôture"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

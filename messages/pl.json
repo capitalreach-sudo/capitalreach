@@ -1854,7 +1854,22 @@
     "uploadDoc": "Prześlij",
     "docUploaded": "Dokument dodano do pokoju transakcji.",
     "fromFounder": "Founder",
-    "fromInvestor": "Inwestor"
+    "fromInvestor": "Inwestor",
+    "seedChecklist": "Dodaj sugerowaną checklistę dla tego etapu",
+    "checklistOpenWarn": "{n} pozycji checklisty jest wciąż otwartych — kliknij ponownie, aby mimo to przenieść.",
+    "clickAgain": "kliknij ponownie",
+    "ckIntro1": "Przejrzyj pitch deck",
+    "ckIntro2": "Sprawdź kluczowe metryki",
+    "ckIntro3": "Umów wstępną rozmowę",
+    "ckIntro4": "Uzgodnij następne kroki",
+    "ckDd1": "Otwórz data room (NDA)",
+    "ckDd2": "Przejrzyj finanse",
+    "ckDd3": "Wykonaj rozmowy referencyjne",
+    "ckDd4": "Przegląd prawny i cap table",
+    "ckTs1": "Przygotuj term sheet",
+    "ckTs2": "Negocjuj warunki",
+    "ckTs3": "Podpisz term sheet",
+    "ckTs4": "Potwierdź kwotę zamknięcia"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

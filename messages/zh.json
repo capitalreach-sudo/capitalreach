@@ -1854,7 +1854,22 @@
     "uploadDoc": "上传",
     "docUploaded": "已将文件添加到交易资料室。",
     "fromFounder": "创始人",
-    "fromInvestor": "投资人"
+    "fromInvestor": "投资人",
+    "seedChecklist": "添加此阶段的建议清单",
+    "checklistOpenWarn": "仍有 {n} 项清单未完成——再次点击仍可移动。",
+    "clickAgain": "再次点击",
+    "ckIntro1": "审阅路演文稿",
+    "ckIntro2": "核对关键指标",
+    "ckIntro3": "预约初次通话",
+    "ckIntro4": "商定后续步骤",
+    "ckDd1": "打开资料室（保密协议）",
+    "ckDd2": "审阅财务",
+    "ckDd3": "进行背景访谈",
+    "ckDd4": "法务与股权结构审查",
+    "ckTs1": "起草条款清单",
+    "ckTs2": "谈判条款",
+    "ckTs3": "签署条款清单",
+    "ckTs4": "确认成交金额"
   },
   "investorProfile": {
     "back": "返回投资者列表",

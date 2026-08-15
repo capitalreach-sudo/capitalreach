@@ -1865,7 +1865,22 @@
     "uploadDoc": "Upload",
     "docUploaded": "Document added to the deal room.",
     "fromFounder": "Founder",
-    "fromInvestor": "Investor"
+    "fromInvestor": "Investor",
+    "seedChecklist": "Add the suggested checklist for this stage",
+    "checklistOpenWarn": "{n} checklist items are still open — click again to move anyway.",
+    "clickAgain": "click again",
+    "ckIntro1": "Review the pitch deck",
+    "ckIntro2": "Check key metrics",
+    "ckIntro3": "Book an intro call",
+    "ckIntro4": "Agree next steps",
+    "ckDd1": "Open the data room (NDA)",
+    "ckDd2": "Review financials",
+    "ckDd3": "Do reference calls",
+    "ckDd4": "Legal & cap-table review",
+    "ckTs1": "Draft the term sheet",
+    "ckTs2": "Negotiate terms",
+    "ckTs3": "Sign the term sheet",
+    "ckTs4": "Confirm the closing amount"
   },
   "investorProfile": {
     "back": "Back to investors",

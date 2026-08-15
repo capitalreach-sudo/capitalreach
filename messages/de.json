@@ -1861,7 +1861,22 @@
     "uploadDoc": "Hochladen",
     "docUploaded": "Dokument zum Deal-Raum hinzugefügt.",
     "fromFounder": "Gründer",
-    "fromInvestor": "Investor"
+    "fromInvestor": "Investor",
+    "seedChecklist": "Vorgeschlagene Checkliste für diese Phase hinzufügen",
+    "checklistOpenWarn": "{n} Checklistenpunkte sind noch offen — erneut klicken, um trotzdem zu verschieben.",
+    "clickAgain": "erneut klicken",
+    "ckIntro1": "Pitch-Deck prüfen",
+    "ckIntro2": "Kernmetriken prüfen",
+    "ckIntro3": "Kennenlern-Call buchen",
+    "ckIntro4": "Nächste Schritte vereinbaren",
+    "ckDd1": "Datenraum öffnen (NDA)",
+    "ckDd2": "Finanzen prüfen",
+    "ckDd3": "Referenzgespräche führen",
+    "ckDd4": "Rechts- & Cap-Table-Prüfung",
+    "ckTs1": "Term Sheet entwerfen",
+    "ckTs2": "Bedingungen verhandeln",
+    "ckTs3": "Term Sheet unterschreiben",
+    "ckTs4": "Abschlussbetrag bestätigen"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

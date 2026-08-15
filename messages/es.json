@@ -1854,7 +1854,22 @@
     "uploadDoc": "Subir",
     "docUploaded": "Documento añadido a la sala del deal.",
     "fromFounder": "Fundador",
-    "fromInvestor": "Inversor"
+    "fromInvestor": "Inversor",
+    "seedChecklist": "Añadir la checklist sugerida para esta etapa",
+    "checklistOpenWarn": "{n} elementos de la checklist siguen abiertos — haz clic de nuevo para mover igualmente.",
+    "clickAgain": "haz clic de nuevo",
+    "ckIntro1": "Revisar el pitch deck",
+    "ckIntro2": "Comprobar métricas clave",
+    "ckIntro3": "Agendar una llamada inicial",
+    "ckIntro4": "Acordar próximos pasos",
+    "ckDd1": "Abrir el data room (NDA)",
+    "ckDd2": "Revisar las finanzas",
+    "ckDd3": "Hacer llamadas de referencia",
+    "ckDd4": "Revisión legal y de cap table",
+    "ckTs1": "Redactar el term sheet",
+    "ckTs2": "Negociar los términos",
+    "ckTs3": "Firmar el term sheet",
+    "ckTs4": "Confirmar el importe de cierre"
   },
   "investorProfile": {
     "back": "Volver a inversores",

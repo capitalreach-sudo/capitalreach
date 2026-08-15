@@ -1854,7 +1854,22 @@
     "uploadDoc": "アップロード",
     "docUploaded": "ディールルームに書類を追加しました。",
     "fromFounder": "創業者",
-    "fromInvestor": "投資家"
+    "fromInvestor": "投資家",
+    "seedChecklist": "この段階の推奨チェックリストを追加",
+    "checklistOpenWarn": "チェックリストに未完了の項目が {n} 件あります — それでも移動するにはもう一度クリックしてください。",
+    "clickAgain": "もう一度クリック",
+    "ckIntro1": "ピッチ資料を確認",
+    "ckIntro2": "主要指標を確認",
+    "ckIntro3": "初回コールを予約",
+    "ckIntro4": "次のステップを合意",
+    "ckDd1": "データルームを開く（NDA）",
+    "ckDd2": "財務を確認",
+    "ckDd3": "リファレンスコールを実施",
+    "ckDd4": "法務・資本政策の確認",
+    "ckTs1": "タームシートを起草",
+    "ckTs2": "条件を交渉",
+    "ckTs3": "タームシートに署名",
+    "ckTs4": "クローズ金額を確認"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
