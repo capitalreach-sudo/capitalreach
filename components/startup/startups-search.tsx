@@ -1165,6 +1165,15 @@ export function StartupsSearch() {
             {(filters.growthMin ?? 0) > 0 && (
               <AppliedChip label={t("startups.growth20")} onRemove={() => patch({ growthMin: 0 })} />
             )}
+            {filters.closingSoon && (
+              <AppliedChip label={t("startups.closingSoon")} onRemove={() => patch({ closingSoon: false })} />
+            )}
+            {filters.businessModel && (
+              <AppliedChip label={filters.businessModel} onRemove={() => patch({ businessModel: "" })} />
+            )}
+            {filters.hasDemo && (
+              <AppliedChip label={t("startups.hasDemo")} onRemove={() => patch({ hasDemo: false })} />
+            )}
           </div>
         )}
       </div>
