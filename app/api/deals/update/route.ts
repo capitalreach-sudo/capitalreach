@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   // Verify participant (or admin, who can manage any deal for oversight)
   const { data: deal } = await supabase
     .from("deals")
-    .select("startup_id, investor_id, startup:startups(owner_id), investor:investors(owner_id)")
+    .select("startup_id, investor_id, status, startup:startups(owner_id), investor:investors(owner_id)")
     .eq("id", dealId)
     .single();
 
@@ -107,7 +107,12 @@ export async function POST(req: NextRequest) {
       investor_id: deal.investor_id,
       actor_id: user.id,
       type: "status_change",
-      body: status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
+      // "Intro → Term Sheet" — without the transition the timeline could only
+      // say that *something* moved, which made it useless as a record.
+      body: [
+        `${STAGE_LABEL[deal.status as string] ?? deal.status} → ${STAGE_LABEL[status as string] ?? status}`,
+        status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : "",
+      ].filter(Boolean).join(" · "),
     });
 
     // Tell the other side. A deal moving stage -- especially to passed -- is

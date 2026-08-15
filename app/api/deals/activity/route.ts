@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { isTeamMemberOfEither } from "@/lib/membership";
 import { apiRatelimit } from "@/lib/redis";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { notifyUsers } from "@/lib/notify-user";
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -94,6 +95,18 @@ export async function POST(req: NextRequest) {
     .select("id, type, body, created_at, actor:profiles(full_name)")
     .single();
   if (error || !entry) return NextResponse.json({ error: "Failed to add note" }, { status: 500 });
+
+  // A note is written to be read — tell the counterpart instead of hoping
+  // they reload the board.
+  const other = [startup?.owner_id, investor?.owner_id].filter((id): id is string => !!id && id !== user.id);
+  if (other.length) {
+    await notifyUsers(other, {
+      type: "deal_stage",
+      title: "New note on your deal",
+      body: body.trim().slice(0, 140),
+      href: `/deals?deal=${deal.id}`,
+    }).catch(() => {});
+  }
 
   return NextResponse.json({ success: true, entry });
 }

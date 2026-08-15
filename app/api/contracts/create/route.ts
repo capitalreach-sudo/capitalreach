@@ -4,6 +4,7 @@ import { isTeamMemberOfEither } from "@/lib/membership";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import type { ContractType } from "@/types";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { notifyUsers } from "@/lib/notify-user";
 
 const CONTRACT_TYPES: ContractType[] = ["term_sheet", "safe", "convertible_note", "nda", "custom"];
 
@@ -66,6 +67,28 @@ export async function POST(req: NextRequest) {
     .single();
   if (error || !contract) {
     return NextResponse.json({ error: "Failed to create contract" }, { status: 500 });
+  }
+
+  // A draft appearing silently was the audit's finding: the counterpart only
+  // learned of a contract when its *status* changed. Record the creation on
+  // the shared timeline and tell the other side now.
+  await admin.from("deal_activity").insert({
+    deal_id: deal.id,
+    startup_id: deal.startup_id,
+    investor_id: deal.investor_id,
+    actor_id: user.id,
+    type: "contract_status",
+    body: `${contract.title} created (draft)`,
+  }).then(undefined, () => {});
+
+  const other = [startup?.owner_id, investor?.owner_id].filter((id): id is string => !!id && id !== user.id);
+  if (other.length) {
+    await notifyUsers(other, {
+      type: "contract_status",
+      title: `New contract drafted — ${contract.title}`,
+      body: `A ${type.replace(/_/g, " ")} was added to your deal.`,
+      href: `/deals?deal=${deal.id}`,
+    }).catch(() => {});
   }
 
   return NextResponse.json({ success: true, contract });
