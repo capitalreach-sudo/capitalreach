@@ -79,7 +79,8 @@
     "dealsClosed": "Deals conclus",
     "capitalRaised": "Capital levé",
     "upfrontFees": "frais initiaux",
-    "vettedListings": "listings vérifiés"
+    "vettedListings": "listings vérifiés",
+    "foundingCohort": "Une cohorte fondatrice se forme — soyez parmi les premières entreprises et premiers investisseurs sur CapitalReach."
   },
   "listings": {
     "sectionLabel": "Tours de financement actifs",
@@ -1489,7 +1490,8 @@
       "submitted": "Profil soumis! Nous examinerons et approuverons votre annonce sous 1–2 jours ouvrés.",
       "pctOutOfRange": "{field} doit être compris entre 0 et {max}.",
       "numberTooLarge": "L'un des nombres est trop grand — les pourcentages doivent être inférieurs ou égaux à 100.",
-      "partialSave": "Votre annonce a été enregistrée, mais certains fondateurs ou jalons n'ont pas pu être ajoutés. Vous pouvez les ajouter depuis la page d'édition."
+      "partialSave": "Votre annonce a été enregistrée, mais certains fondateurs ou jalons n'ont pas pu être ajoutés. Vous pouvez les ajouter depuis la page d'édition.",
+      "uploadLinkHint": "Collez ci-dessous un lien partageable vers votre deck (Google Drive, DocSend, Notion ou une URL PDF)."
     },
     "inv": {
       "forInvestors": "pour investisseurs",
@@ -1821,7 +1823,8 @@
     "yourDeals": "Vos deals",
     "allDeals": "Tous les deals",
     "adminSubtitle": "Supervision à l'échelle de la plateforme — chaque deal de chaque startup et investisseur.",
-    "availableTo": "Le portail des deals est accessible aux comptes startup, investisseur et admin."
+    "availableTo": "Le portail des deals est accessible aux comptes startup, investisseur et admin.",
+    "feeNotBilled": "Deal clôturé. La commission de 2 % n'a pas encore pu être facturée — le fondateur n'a aucun moyen de paiement enregistré."
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

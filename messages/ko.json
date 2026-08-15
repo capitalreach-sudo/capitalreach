@@ -70,7 +70,8 @@
     "dealsClosed": "성사된 거래",
     "capitalRaised": "조달된 자본",
     "upfrontFees": "선불 수수료",
-    "vettedListings": "검증된 리스팅"
+    "vettedListings": "검증된 리스팅",
+    "foundingCohort": "창립 코호트가 형성되고 있습니다 — CapitalReach의 첫 기업·투자자가 되어 보세요."
   },
   "listings": {
     "sectionLabel": "활성 자금 조달 라운드",
@@ -1506,7 +1507,8 @@
       "submitted": "프로필이 제출되었습니다! 1~2 영업일 내에 검토 및 승인해 드립니다.",
       "pctOutOfRange": "{field}은(는) 0에서 {max} 사이여야 합니다.",
       "numberTooLarge": "숫자 중 하나가 너무 큽니다 — 백분율은 100 이하여야 합니다.",
-      "partialSave": "리스팅은 저장되었지만 일부 창업자 또는 마일스톤을 추가하지 못했습니다. 편집 페이지에서 추가할 수 있습니다."
+      "partialSave": "리스팅은 저장되었지만 일부 창업자 또는 마일스톤을 추가하지 못했습니다. 편집 페이지에서 추가할 수 있습니다.",
+      "uploadLinkHint": "공유 가능한 덱 링크를 아래에 붙여넣으세요(Google Drive, DocSend, Notion 또는 PDF URL)."
     },
     "accredited": "본인이 적격 투자자임을 확인합니다",
     "accreditedNote": "플랫폼 정책상 자체 인증이 필요합니다. 기관 계정에는 문서가 요청될 수 있습니다.",
@@ -1821,7 +1823,8 @@
     "yourDeals": "내 딜",
     "allDeals": "모든 딜",
     "adminSubtitle": "플랫폼 전체 관리 — 모든 스타트업과 투자자의 모든 딜.",
-    "availableTo": "딜 포털은 스타트업, 투자자, 관리자 계정에서 사용할 수 있습니다."
+    "availableTo": "딜 포털은 스타트업, 투자자, 관리자 계정에서 사용할 수 있습니다.",
+    "feeNotBilled": "딜이 완료되었습니다. 2% 수수료를 아직 청구하지 못했습니다 — 창업자의 결제 수단이 등록되어 있지 않습니다."
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

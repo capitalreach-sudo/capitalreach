@@ -70,7 +70,8 @@
     "dealsClosed": "Deals fechados",
     "capitalRaised": "Capital captado",
     "upfrontFees": "taxas antecipadas",
-    "vettedListings": "listagens verificadas"
+    "vettedListings": "listagens verificadas",
+    "foundingCohort": "Uma coorte fundadora está se formando — esteja entre as primeiras empresas e investidores na CapitalReach."
   },
   "listings": {
     "sectionLabel": "Rodadas de captação ativas",
@@ -1506,7 +1507,8 @@
       "submitted": "Perfil submetido! Vamos rever e aprovar a sua listagem em 1–2 dias úteis.",
       "pctOutOfRange": "{field} tem de estar entre 0 e {max}.",
       "numberTooLarge": "Um dos números é demasiado grande — as percentagens têm de ser 100 ou menos.",
-      "partialSave": "Seu anúncio foi salvo, mas alguns fundadores ou marcos não puderam ser adicionados. Você pode adicioná-los na página de edição."
+      "partialSave": "Seu anúncio foi salvo, mas alguns fundadores ou marcos não puderam ser adicionados. Você pode adicioná-los na página de edição.",
+      "uploadLinkHint": "Cole abaixo um link compartilhável para o seu deck (Google Drive, DocSend, Notion ou uma URL de PDF)."
     },
     "accredited": "Confirmo que sou um investidor acreditado",
     "accreditedNote": "A autocertificação é exigida pela política da plataforma. Documentação pode ser solicitada para contas institucionais.",
@@ -1821,7 +1823,8 @@
     "yourDeals": "Seus deals",
     "allDeals": "Todos os deals",
     "adminSubtitle": "Supervisão de toda a plataforma — cada deal de cada startup e investidor.",
-    "availableTo": "O portal de deals está disponível para contas de startup, investidor e admin."
+    "availableTo": "O portal de deals está disponível para contas de startup, investidor e admin.",
+    "feeNotBilled": "Deal fechado. A taxa de 2% ainda não pôde ser faturada — o fundador não tem método de pagamento cadastrado."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

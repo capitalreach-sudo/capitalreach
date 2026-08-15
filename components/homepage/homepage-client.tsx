@@ -241,12 +241,22 @@ export function HomepageClient({ stats, listings }: Props) {
           { value: stats.investorCount > 0 ? stats.investorCount.toLocaleString() : "—", label: t("stats.verifiedInvestors"), trend: "up" },
           { value: "0",                                                                  label: t("stats.upfrontFees"),            trend: "down" },
           { value: stats.dealsClosedCount > 0 ? stats.dealsClosedCount.toLocaleString() : "—", label: t("stats.dealsClosed"), trend: "up" },
-          { value: "100%",                                                               label: t("stats.vettedListings"),         trend: "up" },
+          { value: stats.startupCount > 0 ? "100%" : "—",                                label: t("stats.vettedListings"),         trend: "up" },
         ]}
         speed={36}
       />
 
       {/* ── STATS STRIP ── */}
+      {!showStats && (
+        <div
+          className="flex items-center justify-center"
+          style={{ minHeight: "56px", background: "#EDE8DE", borderTop: "1px solid rgba(26,22,18,0.1)", borderBottom: "1px solid rgba(26,22,18,0.1)", padding: "12px 24px" }}
+        >
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#6B6056", textAlign: "center", letterSpacing: "0.01em" }}>
+            {t("stats.foundingCohort")}
+          </p>
+        </div>
+      )}
       {showStats && (
         <div
           className="h-[72px] flex items-center"

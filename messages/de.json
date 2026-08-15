@@ -86,7 +86,8 @@
     "dealsClosed": "Abgeschlossene Deals",
     "capitalRaised": "Aufgebrachtes Kapital",
     "upfrontFees": "Vorabgebühren",
-    "vettedListings": "geprüfte Listings"
+    "vettedListings": "geprüfte Listings",
+    "foundingCohort": "Eine Gründungskohorte entsteht — sei unter den ersten Unternehmen und Investoren auf CapitalReach."
   },
   "listings": {
     "sectionLabel": "Aktive Finanzierungsrunden",
@@ -1496,7 +1497,8 @@
       "submitted": "Profil eingereicht! Wir prüfen und genehmigen dein Listing innerhalb von 1–2 Werktagen.",
       "pctOutOfRange": "{field} muss zwischen 0 und {max} liegen.",
       "numberTooLarge": "Eine der Zahlen ist zu groß — Prozentwerte dürfen höchstens 100 sein.",
-      "partialSave": "Dein Eintrag wurde gespeichert, aber einige Gründer oder Meilensteine konnten nicht hinzugefügt werden. Du kannst sie auf der Bearbeitungsseite ergänzen."
+      "partialSave": "Dein Eintrag wurde gespeichert, aber einige Gründer oder Meilensteine konnten nicht hinzugefügt werden. Du kannst sie auf der Bearbeitungsseite ergänzen.",
+      "uploadLinkHint": "Füge unten einen teilbaren Link zu deinem Deck ein (Google Drive, DocSend, Notion oder eine PDF-URL)."
     },
     "inv": {
       "forInvestors": "für Investoren",
@@ -1828,7 +1830,8 @@
     "yourDeals": "Deine Deals",
     "allDeals": "Alle Deals",
     "adminSubtitle": "Plattformweite Übersicht — jeder Deal über alle Startups und Investoren.",
-    "availableTo": "Das Deal-Portal steht Startup-, Investoren- und Admin-Konten zur Verfügung."
+    "availableTo": "Das Deal-Portal steht Startup-, Investoren- und Admin-Konten zur Verfügung.",
+    "feeNotBilled": "Deal abgeschlossen. Die 2 %-Gebühr konnte noch nicht in Rechnung gestellt werden — der Gründer hat keine Zahlungsmethode hinterlegt."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

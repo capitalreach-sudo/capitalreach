@@ -119,6 +119,8 @@ export async function POST(req: NextRequest) {
   });
 
   let invoiceUrl = "";
+  // A fee is due but cannot be billed if the founder never set up Stripe.
+  const feeNotBilled = !!finalAmount && finalAmount > 0 && !deal.success_fee_invoiced && !startupProfile?.stripe_customer_id;
   // Create success fee invoice if we have a customer ID and amount
   if (startupProfile?.stripe_customer_id && finalAmount && finalAmount > 0 && !deal.success_fee_invoiced) {
     try {
@@ -156,7 +158,7 @@ export async function POST(req: NextRequest) {
   await notifyUsers([deal.startup?.owner_id, deal.investor?.owner_id], {
     type:  "deal_closed",
     title: `Deal closed — ${deal.startup?.name ?? "a startup"}`,
-    body:  finalAmount ? `${dealCurrency} ${finalAmount.toLocaleString()} · 2% success fee invoiced` : null,
+    body:  finalAmount ? `${dealCurrency} ${finalAmount.toLocaleString()}${feeNotBilled ? "" : " · 2% success fee invoiced"}` : null,
     href:  `/deals?deal=${dealId}`,
   });
 
@@ -173,5 +175,5 @@ export async function POST(req: NextRequest) {
     ).catch(() => {});
   }
 
-  return NextResponse.json({ success: true, invoiceUrl });
+  return NextResponse.json({ success: true, invoiceUrl, feeNotBilled });
 }

@@ -70,7 +70,8 @@
     "dealsClosed": "Deal conclusi",
     "capitalRaised": "Capitale raccolto",
     "upfrontFees": "costi iniziali",
-    "vettedListings": "annunci verificati"
+    "vettedListings": "annunci verificati",
+    "foundingCohort": "Si sta formando una coorte fondatrice — sii tra le prime aziende e investitori su CapitalReach."
   },
   "listings": {
     "sectionLabel": "Round di finanziamento attivi",
@@ -1506,7 +1507,8 @@
       "submitted": "Profilo inviato! Revisioneremo e approveremo il tuo annuncio entro 1–2 giorni lavorativi.",
       "pctOutOfRange": "{field} deve essere compreso tra 0 e {max}.",
       "numberTooLarge": "Uno dei numeri è troppo grande: le percentuali devono essere pari o inferiori a 100.",
-      "partialSave": "Il tuo annuncio è stato salvato, ma alcuni founder o milestone non sono stati aggiunti. Puoi aggiungerli dalla pagina di modifica."
+      "partialSave": "Il tuo annuncio è stato salvato, ma alcuni founder o milestone non sono stati aggiunti. Puoi aggiungerli dalla pagina di modifica.",
+      "uploadLinkHint": "Incolla qui sotto un link condivisibile al tuo deck (Google Drive, DocSend, Notion o un URL PDF)."
     },
     "accredited": "Confermo di essere un investitore accreditato",
     "accreditedNote": "L'autocertificazione è richiesta dalla politica della piattaforma. Per gli account istituzionali può essere richiesta documentazione.",
@@ -1821,7 +1823,8 @@
     "yourDeals": "I tuoi deal",
     "allDeals": "Tutti i deal",
     "adminSubtitle": "Supervisione a livello di piattaforma — ogni deal di ogni startup e investitore.",
-    "availableTo": "Il portale deal è disponibile per account startup, investitore e admin."
+    "availableTo": "Il portale deal è disponibile per account startup, investitore e admin.",
+    "feeNotBilled": "Deal chiuso. La commissione del 2% non è ancora stata fatturata — il founder non ha un metodo di pagamento registrato."
   },
   "investorProfile": {
     "back": "Torna agli investitori",

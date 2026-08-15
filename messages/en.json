@@ -90,7 +90,8 @@
     "dealsClosed": "Deals closed",
     "capitalRaised": "Capital raised",
     "upfrontFees": "upfront fees",
-    "vettedListings": "vetted listings"
+    "vettedListings": "vetted listings",
+    "foundingCohort": "A founding cohort is forming — be among the first companies and investors on CapitalReach."
   },
   "listings": {
     "sectionLabel": "Active fundraising rounds",
@@ -1500,7 +1501,8 @@
       "submitted": "Profile submitted! We'll review and approve your listing within 1–2 business days.",
       "pctOutOfRange": "{field} must be between 0 and {max}.",
       "numberTooLarge": "One of the numbers is too large — percentages must be 100 or less.",
-      "partialSave": "Your listing was saved, but some founders or milestones couldn't be added. You can add them from the edit page."
+      "partialSave": "Your listing was saved, but some founders or milestones couldn't be added. You can add them from the edit page.",
+      "uploadLinkHint": "Paste a shareable link to your deck below (Google Drive, DocSend, Notion, or a PDF URL)."
     },
     "inv": {
       "forInvestors": "for investors",
@@ -1832,7 +1834,8 @@
     "yourDeals": "Your deals",
     "allDeals": "All deals",
     "adminSubtitle": "Platform-wide oversight — every deal across every startup and investor.",
-    "availableTo": "The Deal Portal is available to startup, investor, and admin accounts."
+    "availableTo": "The Deal Portal is available to startup, investor, and admin accounts.",
+    "feeNotBilled": "Deal closed. The 2% fee couldn't be invoiced yet — the founder has no payment method on file."
   },
   "investorProfile": {
     "back": "Back to investors",

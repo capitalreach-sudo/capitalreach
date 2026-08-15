@@ -36,6 +36,7 @@ export interface CompletenessInput {
   competitive_advantage?: string | null;
   use_of_funds?: string | null;
   website?: string | null;
+  pitch_deck_url?: string | null;
   funding_target?: number | null;
   equity_offered?: number | null;
   min_check_size?: number | null;
@@ -59,7 +60,7 @@ export function listingCompleteness(s: CompletenessInput): {
 } {
   // Declared heaviest-first: `next` is then simply the first miss.
   const items: CompletenessItem[] = [
-    { key: "deck", labelKey: "dashboard.ckDeck", weight: 15, done: (s.documents?.length ?? 0) > 0 },
+    { key: "deck", labelKey: "dashboard.ckDeck", weight: 15, done: (s.documents?.length ?? 0) > 0 || filled(s.pitch_deck_url) },
     { key: "problem", labelKey: "dashboard.ckProblem", weight: 10, done: filled(s.problem) },
     { key: "solution", labelKey: "dashboard.ckSolution", weight: 10, done: filled(s.solution) },
     { key: "useOfFunds", labelKey: "dashboard.ckUseOfFunds", weight: 9, done: filled(s.use_of_funds) },

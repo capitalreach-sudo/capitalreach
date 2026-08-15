@@ -246,7 +246,7 @@ export default function StartupOnboardingPage() {
   }
 
   const canNext = () => {
-    if (step === 1) return !!(name && tagline && country && industry && stage);
+    if (step === 1) return !!(name && country && industry && stage);
     if (step === 2) return founders.some(f => f.name && f.role);
     if (step === 3) return !!(problem && solution);
     if (step === 5) return !!fundingTarget;
@@ -751,10 +751,12 @@ export default function StartupOnboardingPage() {
                   <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h6Sub")}</p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                    <div style={{ border: "2px dashed var(--cr-rule-dark)", borderRadius: "4px", padding: "32px", textAlign: "center" }}>
-                      <Upload style={{ width: 28, height: 28, color: "var(--cr-ink-4)", margin: "0 auto 10px" }} />
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "4px" }}>{t("onboarding.su.uploadTitle")}</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("onboarding.su.uploadSub")}</p>
+                    <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px 24px", display: "flex", alignItems: "center", gap: "14px", background: "var(--cr-paper-2)" }}>
+                      <Upload style={{ width: 22, height: 22, color: "var(--cr-copper)", flexShrink: 0 }} />
+                      <div>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("onboarding.su.uploadTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{t("onboarding.su.uploadLinkHint")}</p>
+                      </div>
                     </div>
 
                     <div>

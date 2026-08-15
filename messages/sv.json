@@ -70,7 +70,8 @@
     "dealsClosed": "Affärer avslutade",
     "capitalRaised": "Kapital insamlat",
     "upfrontFees": "förskottsavgifter",
-    "vettedListings": "granskade listningar"
+    "vettedListings": "granskade listningar",
+    "foundingCohort": "En grundarkohort bildas — var bland de första bolagen och investerarna på CapitalReach."
   },
   "listings": {
     "sectionLabel": "Aktiva finansieringsrundor",
@@ -1506,7 +1507,8 @@
       "submitted": "Profil inskickad! Vi granskar och godkänner din listning inom 1–2 arbetsdagar.",
       "pctOutOfRange": "{field} måste ligga mellan 0 och {max}.",
       "numberTooLarge": "Ett av talen är för stort — procent måste vara 100 eller lägre.",
-      "partialSave": "Din annons sparades, men vissa grundare eller milstolpar kunde inte läggas till. Du kan lägga till dem från redigeringssidan."
+      "partialSave": "Din annons sparades, men vissa grundare eller milstolpar kunde inte läggas till. Du kan lägga till dem från redigeringssidan.",
+      "uploadLinkHint": "Klistra in en delbar länk till din pitch nedan (Google Drive, DocSend, Notion eller en PDF-URL)."
     },
     "accredited": "Jag bekräftar att jag är en ackrediterad investerare",
     "accreditedNote": "Självcertifiering krävs enligt plattformens policy. Dokumentation kan begäras för institutionella konton.",
@@ -1821,7 +1823,8 @@
     "yourDeals": "Dina deals",
     "allDeals": "Alla deals",
     "adminSubtitle": "Plattformsövergripande översikt — varje deal för varje startup och investerare.",
-    "availableTo": "Deal-portalen är tillgänglig för startup-, investerar- och adminkonton."
+    "availableTo": "Deal-portalen är tillgänglig för startup-, investerar- och adminkonton.",
+    "feeNotBilled": "Affären stängd. 2%-avgiften kunde inte faktureras ännu — grundaren har ingen betalningsmetod registrerad."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

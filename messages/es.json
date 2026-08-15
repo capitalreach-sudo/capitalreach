@@ -79,7 +79,8 @@
     "dealsClosed": "Deals cerrados",
     "capitalRaised": "Capital captado",
     "upfrontFees": "comisiones iniciales",
-    "vettedListings": "listados verificados"
+    "vettedListings": "listados verificados",
+    "foundingCohort": "Se está formando una cohorte fundadora — sé de las primeras empresas e inversores en CapitalReach."
   },
   "listings": {
     "sectionLabel": "Rondas de financiación activas",
@@ -1489,7 +1490,8 @@
       "submitted": "¡Perfil enviado! Revisaremos y aprobaremos tu listado en 1–2 días hábiles.",
       "pctOutOfRange": "{field} debe estar entre 0 y {max}.",
       "numberTooLarge": "Uno de los números es demasiado grande: los porcentajes deben ser 100 o menos.",
-      "partialSave": "Tu anuncio se guardó, pero algunos fundadores o hitos no se pudieron añadir. Puedes agregarlos desde la página de edición."
+      "partialSave": "Tu anuncio se guardó, pero algunos fundadores o hitos no se pudieron añadir. Puedes agregarlos desde la página de edición.",
+      "uploadLinkHint": "Pega abajo un enlace compartible a tu deck (Google Drive, DocSend, Notion o una URL de PDF)."
     },
     "inv": {
       "forInvestors": "para inversores",
@@ -1821,7 +1823,8 @@
     "yourDeals": "Tus deals",
     "allDeals": "Todos los deals",
     "adminSubtitle": "Supervisión de toda la plataforma — cada deal de cada startup e inversor.",
-    "availableTo": "El portal de deals está disponible para cuentas de startup, inversor y administrador."
+    "availableTo": "El portal de deals está disponible para cuentas de startup, inversor y administrador.",
+    "feeNotBilled": "Deal cerrado. La comisión del 2 % aún no se pudo facturar — el fundador no tiene método de pago registrado."
   },
   "investorProfile": {
     "back": "Volver a inversores",

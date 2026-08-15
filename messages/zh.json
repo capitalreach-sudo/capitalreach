@@ -79,7 +79,8 @@
     "dealsClosed": "完成交易",
     "capitalRaised": "已募集资金",
     "upfrontFees": "预付费用",
-    "vettedListings": "审核过的项目"
+    "vettedListings": "审核过的项目",
+    "foundingCohort": "创始梯队正在形成——成为 CapitalReach 上最早的公司和投资人之一。"
   },
   "listings": {
     "sectionLabel": "活跃融资轮次",
@@ -1489,7 +1490,8 @@
       "submitted": "档案已提交！我们将在1–2个工作日内审核并批准您的列表。",
       "pctOutOfRange": "{field} 必须在 0 到 {max} 之间。",
       "numberTooLarge": "某个数值过大——百分比不能超过 100。",
-      "partialSave": "您的列表已保存，但部分创始人或里程碑未能添加。您可以在编辑页面添加它们。"
+      "partialSave": "您的列表已保存，但部分创始人或里程碑未能添加。您可以在编辑页面添加它们。",
+      "uploadLinkHint": "在下方粘贴一个可分享的路演文稿链接（Google Drive、DocSend、Notion 或 PDF 网址）。"
     },
     "inv": {
       "forInvestors": "投资者版",
@@ -1821,7 +1823,8 @@
     "yourDeals": "您的交易",
     "allDeals": "所有交易",
     "adminSubtitle": "全平台监督——每个初创公司和投资人的每笔交易。",
-    "availableTo": "交易门户面向初创公司、投资人和管理员账户开放。"
+    "availableTo": "交易门户面向初创公司、投资人和管理员账户开放。",
+    "feeNotBilled": "交易已完成。2% 费用暂时无法开票——创始人尚未设置付款方式。"
   },
   "investorProfile": {
     "back": "返回投资者列表",

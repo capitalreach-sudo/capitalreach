@@ -70,7 +70,8 @@
     "dealsClosed": "Zamkniętych dealów",
     "capitalRaised": "Pozyskanego kapitału",
     "upfrontFees": "opłaty wstępne",
-    "vettedListings": "zweryfikowane oferty"
+    "vettedListings": "zweryfikowane oferty",
+    "foundingCohort": "Tworzy się kohorta założycielska — bądź wśród pierwszych firm i inwestorów na CapitalReach."
   },
   "listings": {
     "sectionLabel": "Aktywne rundy finansowania",
@@ -1506,7 +1507,8 @@
       "submitted": "Profil przesłany! Sprawdzimy i zatwierdzimy Twoją ofertę w ciągu 1–2 dni roboczych.",
       "pctOutOfRange": "{field} musi mieścić się między 0 a {max}.",
       "numberTooLarge": "Jedna z liczb jest za duża — procenty muszą wynosić najwyżej 100.",
-      "partialSave": "Twoja oferta została zapisana, ale niektórych founderów lub kamieni milowych nie udało się dodać. Możesz je dodać na stronie edycji."
+      "partialSave": "Twoja oferta została zapisana, ale niektórych founderów lub kamieni milowych nie udało się dodać. Możesz je dodać na stronie edycji.",
+      "uploadLinkHint": "Wklej poniżej udostępnialny link do swojej prezentacji (Google Drive, DocSend, Notion lub adres URL pliku PDF)."
     },
     "accredited": "Potwierdzam, że jestem akredytowanym inwestorem",
     "accreditedNote": "Samocertyfikacja jest wymagana przez politykę platformy. W przypadku kont instytucjonalnych może być wymagana dokumentacja.",
@@ -1821,7 +1823,8 @@
     "yourDeals": "Twoje transakcje",
     "allDeals": "Wszystkie transakcje",
     "adminSubtitle": "Nadzór nad całą platformą — każda transakcja każdego startupu i inwestora.",
-    "availableTo": "Portal transakcji jest dostępny dla kont startupów, inwestorów i administratorów."
+    "availableTo": "Portal transakcji jest dostępny dla kont startupów, inwestorów i administratorów.",
+    "feeNotBilled": "Transakcja zamknięta. Prowizji 2% nie udało się jeszcze zafakturować — założyciel nie ma zapisanej metody płatności."
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

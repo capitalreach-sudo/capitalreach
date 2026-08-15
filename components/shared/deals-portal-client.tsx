@@ -28,8 +28,12 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   async function handleDealClose(dealId: string, amount: number, currency: string) {
     const res = await fetch("/api/deals/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, amount, currency }) });
     const data = await res.json();
-    if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); }
-    else { notify.success(amount ? t("dashboard.dealClosedAt", { amount: formatMoney(amount, currency) }) : t("dashboard.dealClosed")); router.refresh(); }
+    if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); return; }
+    notify.success(amount ? t("dashboard.dealClosedAt", { amount: formatMoney(amount, currency) }) : t("dashboard.dealClosed"));
+    // The fee couldn't be invoiced because the founder has no payment method on
+    // file — say so rather than letting the revenue leak silently.
+    if (data.feeNotBilled) notify.info(t("deals.feeNotBilled"));
+    router.refresh();
   }
 
   async function handleSetFollowUp(dealId: string, date: string | null) {

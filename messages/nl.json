@@ -70,7 +70,8 @@
     "dealsClosed": "Deals gesloten",
     "capitalRaised": "Kapitaal opgehaald",
     "upfrontFees": "voorafgaande kosten",
-    "vettedListings": "geverifieerde listings"
+    "vettedListings": "geverifieerde listings",
+    "foundingCohort": "Er vormt zich een oprichterscohort — wees een van de eerste bedrijven en investeerders op CapitalReach."
   },
   "listings": {
     "sectionLabel": "Actieve financieringsrondes",
@@ -1506,7 +1507,8 @@
       "submitted": "Profiel ingediend! We beoordelen en keuren uw vermelding binnen 1–2 werkdagen goed.",
       "pctOutOfRange": "{field} moet tussen 0 en {max} liggen.",
       "numberTooLarge": "Een van de getallen is te groot — percentages moeten 100 of lager zijn.",
-      "partialSave": "Je vermelding is opgeslagen, maar sommige oprichters of mijlpalen konden niet worden toegevoegd. Je kunt ze toevoegen via de bewerkpagina."
+      "partialSave": "Je vermelding is opgeslagen, maar sommige oprichters of mijlpalen konden niet worden toegevoegd. Je kunt ze toevoegen via de bewerkpagina.",
+      "uploadLinkHint": "Plak hieronder een deelbare link naar je deck (Google Drive, DocSend, Notion of een PDF-URL)."
     },
     "accredited": "Ik bevestig dat ik een geaccrediteerde investeerder ben",
     "accreditedNote": "Zelfcertificering is vereist volgens het platformbeleid. Voor institutionele accounts kan documentatie worden gevraagd.",
@@ -1821,7 +1823,8 @@
     "yourDeals": "Jouw deals",
     "allDeals": "Alle deals",
     "adminSubtitle": "Platformbreed overzicht — elke deal van elke startup en investeerder.",
-    "availableTo": "Het deal-portaal is beschikbaar voor startup-, investeerder- en adminaccounts."
+    "availableTo": "Het deal-portaal is beschikbaar voor startup-, investeerder- en adminaccounts.",
+    "feeNotBilled": "Deal gesloten. De 2%-fee kon nog niet worden gefactureerd — de oprichter heeft geen betaalmethode ingesteld."
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
