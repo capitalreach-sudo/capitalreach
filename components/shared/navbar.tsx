@@ -176,7 +176,7 @@ export function Navbar() {
                     >
                       {profile.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                        <img src={profile.avatar_url} alt="" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <span style={{ fontSize: "10px", fontWeight: 600, color: "#B5651D" }}>
                           {getInitials(profile.full_name || profile.email)}
@@ -393,6 +393,7 @@ export function Navbar() {
                     const active = isActive(href);
                     return (
                       <Link key={href} href={href} onClick={() => setMobileOpen(false)}
+                        aria-current={active ? "page" : undefined}
                         className="flex items-center gap-3 px-5"
                         style={{
                           height:         "46px",
