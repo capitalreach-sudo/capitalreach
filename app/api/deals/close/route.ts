@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
   // Verify user is a participant (or admin, who can manage any deal for oversight)
   const isStartupOwner = deal.startup?.owner_id === user.id;
   const isInvestorOwner = deal.investor?.owner_id === user.id;
+  let isAdmin = false;
   if (!isStartupOwner && !isInvestorOwner) {
     // Team members may close too -- the Team page promises members can "work
     // the account's deals", and the fee below is unaffected by who clicks:
@@ -56,7 +57,43 @@ export async function POST(req: NextRequest) {
     if (!isMember) {
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
       if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      isAdmin = true;
     }
+  }
+
+  // ── Two-party close handshake ─────────────────────────────────────────────
+  // Closing bills the founder, so one side can't do it alone. The first call
+  // records a proposed amount and notifies the counterpart; the deal only
+  // closes when the *other* side confirms that same amount. Admins bypass the
+  // handshake (oversight). A different amount from the counterpart becomes a
+  // fresh counter-proposal rather than an acceptance.
+  const startupOwnerId = deal.startup?.owner_id as string | undefined;
+  const investorOwnerId = deal.investor?.owner_id as string | undefined;
+  const proposalFromOther = !!deal.close_proposed_by && deal.close_proposed_by !== user.id;
+  const proposedAmt = deal.close_proposed_amount != null ? Number(deal.close_proposed_amount) : null;
+  const confirming =
+    isAdmin ||
+    (proposalFromOther && (parsedAmount === null || parsedAmount === proposedAmt));
+
+  if (!confirming) {
+    const propAmount = parsedAmount ?? deal.amount ?? null;
+    await adminClient.from("deals").update({
+      close_proposed_by: user.id,
+      close_proposed_amount: propAmount,
+      close_proposed_currency: dealCurrency,
+      close_proposed_at: new Date().toISOString(),
+    }).eq("id", dealId);
+
+    const counterpart = user.id === startupOwnerId ? investorOwnerId : startupOwnerId;
+    if (counterpart) {
+      await notifyUsers([counterpart], {
+        type: "deal_stage",
+        title: `Close proposed — ${deal.startup?.name ?? "a deal"}`,
+        body: propAmount ? `Confirm to close at ${dealCurrency} ${propAmount.toLocaleString()} (2% fee applies).` : `Confirm to close this deal.`,
+        href: `/deals?deal=${dealId}`,
+      }).catch(() => {});
+    }
+    return NextResponse.json({ proposed: true, proposedAmount: propAmount, currency: dealCurrency });
   }
 
   // Get startup owner's Stripe customer ID
@@ -81,14 +118,26 @@ export async function POST(req: NextRequest) {
   // requests both read the deal as open; only one can win this statement,
   // because the loser re-evaluates the qualifier after the row lock clears and
   // matches nothing. The invoice below only runs for the winner.
-  const finalAmount = parsedAmount ?? deal.amount;
+  // On a confirm, the agreed figure is what the OTHER party proposed — the
+  // confirmer accepts it, they don't get to substitute a different number.
+  // Admins (bypassing the handshake) use the request/stored amount.
+  const finalAmount = (!isAdmin && proposalFromOther)
+    ? (proposedAmt ?? deal.amount)
+    : (parsedAmount ?? deal.amount);
+  const finalCurrency = (!isAdmin && proposalFromOther && deal.close_proposed_currency)
+    ? deal.close_proposed_currency
+    : dealCurrency;
 
   const { data: closedRows } = await adminClient
     .from("deals")
     .update({
       status: "closed",
       amount: finalAmount,
-      currency: dealCurrency,
+      currency: finalCurrency,
+      close_proposed_by: null,
+      close_proposed_amount: null,
+      close_proposed_currency: null,
+      close_proposed_at: null,
       // closed_at has existed since 017 and nothing ever wrote it, so no deal
       // in production carried a close date. That is not a gap you can backfill
       // later -- the moment passes and the timestamp is gone -- and without it
@@ -128,7 +177,7 @@ export async function POST(req: NextRequest) {
         startupProfile.stripe_customer_id,
         finalAmount,
         deal.startup?.name ?? "Startup",
-        dealCurrency,
+        finalCurrency,
         dealId
       );
       await adminClient
@@ -146,7 +195,7 @@ export async function POST(req: NextRequest) {
         investor_id: deal.investor_id,
         actor_id: user.id,
         type: "success_fee",
-        body: `${dealCurrency} ${(finalAmount * 0.02).toLocaleString()}`,
+        body: `${finalCurrency} ${(finalAmount * 0.02).toLocaleString()}`,
       }).then(undefined, () => {});
     } catch (err) {
       console.error("Failed to create success fee invoice:", err);
@@ -158,7 +207,7 @@ export async function POST(req: NextRequest) {
   await notifyUsers([deal.startup?.owner_id, deal.investor?.owner_id], {
     type:  "deal_closed",
     title: `Deal closed — ${deal.startup?.name ?? "a startup"}`,
-    body:  finalAmount ? `${dealCurrency} ${finalAmount.toLocaleString()}${feeNotBilled ? "" : " · 2% success fee invoiced"}` : null,
+    body:  finalAmount ? `${finalCurrency} ${finalAmount.toLocaleString()}${feeNotBilled ? "" : " · 2% success fee invoiced"}` : null,
     href:  `/deals?deal=${dealId}`,
   });
 
@@ -171,7 +220,7 @@ export async function POST(req: NextRequest) {
       investorProfile.full_name || "the investor",
       finalAmount || 0,
       invoiceUrl,
-      dealCurrency
+      finalCurrency
     ).catch(() => {});
   }
 

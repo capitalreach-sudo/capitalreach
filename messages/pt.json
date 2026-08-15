@@ -1843,7 +1843,12 @@
     "signNamePlaceholder": "Seu nome completo",
     "signConfirm": "Assinar agora",
     "contractSigned": "Contrato assinado.",
-    "contract": "Contrato"
+    "contract": "Contrato",
+    "closeProposedAt": "Fechamento proposto em {amount}",
+    "closeProposedHint": "A outra parte propôs fechar. Confirme o valor para finalizar, ou insira outro para contrapor.",
+    "reviewClose": "Revisar e confirmar",
+    "proposeClose": "Propor fechamento",
+    "closeProposedSent": "Fechamento proposto — a outra parte confirma para finalizar."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

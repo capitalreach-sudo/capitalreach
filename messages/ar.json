@@ -1843,7 +1843,12 @@
     "signNamePlaceholder": "اسمك الكامل",
     "signConfirm": "وقّع الآن",
     "contractSigned": "تم توقيع العقد.",
-    "contract": "عقد"
+    "contract": "عقد",
+    "closeProposedAt": "اقتُرح الإغلاق عند {amount}",
+    "closeProposedHint": "اقترح الطرف الآخر الإغلاق. أكّد المبلغ لإتمامه، أو أدخل مبلغًا مختلفًا للمقابلة.",
+    "reviewClose": "مراجعة وتأكيد",
+    "proposeClose": "اقتراح الإغلاق",
+    "closeProposedSent": "اقتُرح الإغلاق — يؤكّد الطرف الآخر لإتمامه."
   },
   "investorProfile": {
     "back": "العودة إلى المستثمرين",

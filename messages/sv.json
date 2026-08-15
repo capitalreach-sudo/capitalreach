@@ -1843,7 +1843,12 @@
     "signNamePlaceholder": "Ditt fullständiga namn",
     "signConfirm": "Signera nu",
     "contractSigned": "Avtal signerat.",
-    "contract": "Avtal"
+    "contract": "Avtal",
+    "closeProposedAt": "Avslut föreslaget till {amount}",
+    "closeProposedHint": "Motparten föreslog avslut. Bekräfta beloppet för att slutföra, eller ange ett annat för att lägga ett motbud.",
+    "reviewClose": "Granska och bekräfta",
+    "proposeClose": "Föreslå avslut",
+    "closeProposedSent": "Avslut föreslaget — motparten bekräftar för att slutföra."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

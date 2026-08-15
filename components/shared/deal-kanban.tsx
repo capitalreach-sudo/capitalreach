@@ -1113,8 +1113,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [showCloseForm, setShowCloseForm] = useState(false);
   const [editingFollowUp, setEditingFollowUp] = useState(false);
   const [followUpDraft, setFollowUpDraft] = useState(deal.next_follow_up || "");
-  const [closeAmount, setCloseAmount]     = useState(deal.amount ? String(deal.amount) : "");
-  const [closeCurrency, setCloseCurrency] = useState(deal.currency || DEFAULT_CURRENCY);
+  const [closeAmount, setCloseAmount]     = useState(deal.close_proposed_amount != null ? String(deal.close_proposed_amount) : deal.amount ? String(deal.amount) : "");
+  const [closeCurrency, setCloseCurrency] = useState(deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
   const [showPassedPicker, setShowPassedPicker] = useState(false);
 
@@ -1250,6 +1250,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           {deal.closed_at
             ? t("deals.closedOn", { date: formatDate(deal.closed_at) })
             : t("deals.passedOn", { date: formatDate(deal.passed_at as string) })}
+          {deal.closed_at && deal.amount
+            ? ` · ${formatMoney(Number(deal.amount), deal.currency || DEFAULT_CURRENCY)}`
+            : ""}
           {deal.success_fee_amount
             ? ` · ${t("deals.feeBilled", { amount: formatMoney(deal.success_fee_amount / 100, deal.currency || DEFAULT_CURRENCY) })}`
             : ""}
@@ -1295,8 +1298,22 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </div>
       )}
 
+      {/* A pending close proposal — both sides must agree before the fee fires. */}
+      {isActive && onDealClose && !showCloseForm && deal.close_proposed_at && (
+        <div style={{ marginTop: "10px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "10px 12px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", marginBottom: "2px" }}>
+            {t("deals.closeProposedAt", { amount: formatMoney(Number(deal.close_proposed_amount ?? 0), deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY) })}
+          </p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.closeProposedHint")}</p>
+          <button onClick={() => setShowCloseForm(true)}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 0", cursor: "pointer" }}>
+            <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.reviewClose")}
+          </button>
+        </div>
+      )}
+
       {/* Close deal */}
-      {isActive && onDealClose && !showCloseForm && (
+      {isActive && onDealClose && !showCloseForm && !deal.close_proposed_at && (
         <button onClick={() => setShowCloseForm(true)}
           style={{ marginTop: "10px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "7px 0", cursor: "pointer" }}>
           <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.closeDeal")}
@@ -1306,7 +1323,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {/* Close form */}
       {showCloseForm && (
         <div style={{ marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>{t("deals.confirmClose")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>{deal.close_proposed_at ? t("deals.confirmClose") : t("deals.proposeClose")}</p>
           <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
             <div style={{ position: "relative", flex: 1 }}>
               <span style={{ position: "absolute", left: "9px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)", pointerEvents: "none" }}>

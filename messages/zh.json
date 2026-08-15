@@ -1843,7 +1843,12 @@
     "signNamePlaceholder": "您的全名",
     "signConfirm": "立即签署",
     "contractSigned": "合同已签署。",
-    "contract": "合同"
+    "contract": "合同",
+    "closeProposedAt": "已提议以 {amount} 成交",
+    "closeProposedHint": "对方提议成交。确认金额以完成，或输入不同金额以还价。",
+    "reviewClose": "查看并确认",
+    "proposeClose": "提议成交",
+    "closeProposedSent": "已提议成交——对方确认后完成。"
   },
   "investorProfile": {
     "back": "返回投资者列表",

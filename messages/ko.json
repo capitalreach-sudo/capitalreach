@@ -1843,7 +1843,12 @@
     "signNamePlaceholder": "전체 이름",
     "signConfirm": "지금 서명",
     "contractSigned": "계약에 서명했습니다.",
-    "contract": "계약"
+    "contract": "계약",
+    "closeProposedAt": "{amount}에 마감 제안됨",
+    "closeProposedHint": "상대방이 마감을 제안했습니다. 금액을 확인해 확정하거나 다른 금액을 입력해 역제안하세요.",
+    "reviewClose": "검토 및 확인",
+    "proposeClose": "마감 제안",
+    "closeProposedSent": "마감이 제안됨 — 상대방이 확인하면 확정됩니다."
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

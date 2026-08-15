@@ -1854,7 +1854,12 @@
     "signNamePlaceholder": "Your full name",
     "signConfirm": "Sign now",
     "contractSigned": "Contract signed.",
-    "contract": "Contract"
+    "contract": "Contract",
+    "closeProposedAt": "Close proposed at {amount}",
+    "closeProposedHint": "The other side proposed closing. Confirm the amount to finalize, or enter a different one to counter.",
+    "reviewClose": "Review & confirm",
+    "proposeClose": "Propose close",
+    "closeProposedSent": "Close proposed — the other side confirms to finalize."
   },
   "investorProfile": {
     "back": "Back to investors",

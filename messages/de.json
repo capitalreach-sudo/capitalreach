@@ -1850,7 +1850,12 @@
     "signNamePlaceholder": "Dein vollständiger Name",
     "signConfirm": "Jetzt signieren",
     "contractSigned": "Vertrag signiert.",
-    "contract": "Vertrag"
+    "contract": "Vertrag",
+    "closeProposedAt": "Abschluss vorgeschlagen bei {amount}",
+    "closeProposedHint": "Die andere Seite hat einen Abschluss vorgeschlagen. Bestätige den Betrag zum Abschluss oder gib einen anderen ein, um zu kontern.",
+    "reviewClose": "Prüfen & bestätigen",
+    "proposeClose": "Abschluss vorschlagen",
+    "closeProposedSent": "Abschluss vorgeschlagen — die andere Seite bestätigt zum Abschluss."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

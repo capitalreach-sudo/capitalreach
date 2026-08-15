@@ -367,6 +367,10 @@ export type Database = {
       deals: {
         Row: {
           amount: number | null
+          close_proposed_amount: number | null
+          close_proposed_at: string | null
+          close_proposed_by: string | null
+          close_proposed_currency: string | null
           closed_at: string | null
           created_at: string
           currency: string
@@ -387,6 +391,10 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          close_proposed_amount?: number | null
+          close_proposed_at?: string | null
+          close_proposed_by?: string | null
+          close_proposed_currency?: string | null
           closed_at?: string | null
           created_at?: string
           currency?: string
@@ -407,6 +415,10 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          close_proposed_amount?: number | null
+          close_proposed_at?: string | null
+          close_proposed_by?: string | null
+          close_proposed_currency?: string | null
           closed_at?: string | null
           created_at?: string
           currency?: string
