@@ -960,7 +960,11 @@
     "ngDeals": "Aktywność transakcji (etapy, umowy, NDA, przypomnienia)",
     "ngInterest": "Zainteresowanie twoją ofertą (zapisy, aktualizacje, dopasowania, udostępnienia)",
     "ngQa": "Pytania i prośby o dokumenty",
-    "ngAccount": "Konto i zespół (zatwierdzenia, zmiany planu, zaproszenia)"
+    "ngAccount": "Konto i zespół (zatwierdzenia, zmiany planu, zaproszenia)",
+    "accTitle": "Status inwestora akredytowanego",
+    "accBody": "Chronione dane finansowe są udostępniane na podstawie tego oświadczenia. Jest wymagane do rozpoczynania transakcji i otwierania data roomów; przeglądanie jest otwarte dla wszystkich.",
+    "accCheckbox": "Potwierdzam, że jestem inwestorem akredytowanym/kwalifikowanym zgodnie z obowiązującymi mnie przepisami, a to oświadczenie jest zgodne z prawdą.",
+    "accLockedHint": "Bez tego oświadczenia możesz przeglądać i wysyłać wiadomości, ale nie rozpoczynać transakcji ani otwierać data roomów."
   },
   "startups": {
     "pageTitle": "Aktywne rundy finansowania",
@@ -1674,7 +1678,9 @@
       "ageTitle": "Mam ukończone 18 lat",
       "ageBody": "CapitalReach jest dostępny wyłącznie dla osób dorosłych. Potwierdzasz, że spełniasz minimalny wiek określony w naszym Regulaminie.",
       "lossTitle": "Rozumiem ryzyko całkowitej straty",
-      "lossBody": "Inwestycje na wczesnym etapie są niepłynne i spekulacyjne. Możesz stracić całą zainwestowaną kwotę. CapitalReach nie gwarantuje żadnego wyniku."
+      "lossBody": "Inwestycje na wczesnym etapie są niepłynne i spekulacyjne. Możesz stracić całą zainwestowaną kwotę. CapitalReach nie gwarantuje żadnego wyniku.",
+      "accOptional": "opcjonalnie",
+      "accBrowseNote": "Możesz przeglądać wszystkie oferty bez tego. Rozpoczęcie transakcji lub otwarcie data roomu tego wymaga — możesz to potwierdzić w każdej chwili w Ustawieniach."
     }
   },
   "banner": {

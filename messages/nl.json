@@ -960,7 +960,11 @@
     "ngDeals": "Deal-activiteit (fases, contracten, NDA's, opvolging)",
     "ngInterest": "Interesse in je aanbod (opslaan, updates, matches, delen)",
     "ngQa": "Vragen en documentverzoeken",
-    "ngAccount": "Account en team (goedkeuringen, planwijzigingen, uitnodigingen)"
+    "ngAccount": "Account en team (goedkeuringen, planwijzigingen, uitnodigingen)",
+    "accTitle": "Status van geaccrediteerde investeerder",
+    "accBody": "Beschermde financiën worden met je gedeeld op basis van deze eigen verklaring. Ze is vereist om deals te starten en datarooms te openen; browsen staat voor iedereen open.",
+    "accCheckbox": "Ik bevestig dat ik een geaccrediteerde/gekwalificeerde investeerder ben volgens de op mij toepasselijke regels, en dat deze verklaring waarheidsgetrouw is.",
+    "accLockedHint": "Zonder deze verklaring kun je browsen en berichten sturen, maar geen deals starten of datarooms openen."
   },
   "startups": {
     "pageTitle": "Actieve financieringsrondes",
@@ -1674,7 +1678,9 @@
       "ageTitle": "Ik ben 18 jaar of ouder",
       "ageBody": "CapitalReach is alleen beschikbaar voor volwassenen. Je bevestigt dat je voldoet aan de minimumleeftijd uit onze Servicevoorwaarden.",
       "lossTitle": "Ik begrijp het risico van totaal verlies",
-      "lossBody": "Investeringen in een vroege fase zijn illiquide en speculatief. Je kunt het volledige geïnvesteerde bedrag verliezen. CapitalReach garandeert geen enkel resultaat."
+      "lossBody": "Investeringen in een vroege fase zijn illiquide en speculatief. Je kunt het volledige geïnvesteerde bedrag verliezen. CapitalReach garandeert geen enkel resultaat.",
+      "accOptional": "optioneel",
+      "accBrowseNote": "Je kunt alle listings bekijken zonder dit. Een deal starten of een dataroom openen vereist het — je kunt het altijd bevestigen in Instellingen."
     }
   },
   "banner": {

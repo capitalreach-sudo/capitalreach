@@ -960,7 +960,11 @@
     "ngDeals": "Affärsaktivitet (steg, avtal, NDA, uppföljningar)",
     "ngInterest": "Intresse för din notering (sparningar, uppdateringar, matchningar, delningar)",
     "ngQa": "Frågor och dokumentförfrågningar",
-    "ngAccount": "Konto och team (godkännanden, planändringar, inbjudningar)"
+    "ngAccount": "Konto och team (godkännanden, planändringar, inbjudningar)",
+    "accTitle": "Status som ackrediterad investerare",
+    "accBody": "Skyddad ekonomi delas med dig på grundval av denna egenförsäkran. Den krävs för att starta affärer och öppna datarum; att bläddra är öppet för alla.",
+    "accCheckbox": "Jag bekräftar att jag är en ackrediterad/kvalificerad investerare enligt de regler som gäller för mig, och att denna försäkran är sanningsenlig.",
+    "accLockedHint": "Utan denna försäkran kan du bläddra och skicka meddelanden, men inte starta affärer eller öppna datarum."
   },
   "startups": {
     "pageTitle": "Aktiva finansieringsrundor",
@@ -1674,7 +1678,9 @@
       "ageTitle": "Jag är 18 år eller äldre",
       "ageBody": "CapitalReach är endast tillgängligt för vuxna. Du bekräftar att du uppfyller åldersgränsen i våra användarvillkor.",
       "lossTitle": "Jag förstår risken för total förlust",
-      "lossBody": "Investeringar i tidiga skeden är illikvida och spekulativa. Du kan förlora hela det investerade beloppet. CapitalReach garanterar inget utfall."
+      "lossBody": "Investeringar i tidiga skeden är illikvida och spekulativa. Du kan förlora hela det investerade beloppet. CapitalReach garanterar inget utfall.",
+      "accOptional": "valfritt",
+      "accBrowseNote": "Du kan bläddra bland alla listningar utan detta. Att starta en affär eller öppna ett datarum kräver det — du kan bekräfta det när som helst i Inställningar."
     }
   },
   "banner": {

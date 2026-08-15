@@ -74,6 +74,17 @@ export async function POST(req: NextRequest) {
       startup_id  = myStartup.entityId;
       investor_id = inv.id;
     } else if (myInvestor) {
+      // Browsing is open to everyone; *investing* requires the accreditation
+      // attestation. Attestable any time from Settings — this is a gate on the
+      // action, not on the account.
+      const { data: attest } = await admin
+        .from("profiles").select("accreditation_certified").eq("id", user.id).maybeSingle();
+      if (!attest?.accreditation_certified) {
+        return NextResponse.json(
+          { error: "Confirm your accredited-investor status in Settings to start a deal." },
+          { status: 403 },
+        );
+      }
       const { data: st } = await admin.from("startups").select("id, status").eq("id", counterpartId).maybeSingle();
       if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
       // `status` was already being selected here but never tested, so an

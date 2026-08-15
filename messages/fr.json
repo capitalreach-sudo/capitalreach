@@ -969,7 +969,11 @@
     "ngDeals": "Activité des opérations (étapes, contrats, NDA, relances)",
     "ngInterest": "Intérêt pour votre annonce (enregistrements, mises à jour, correspondances, partages)",
     "ngQa": "Questions et demandes de documents",
-    "ngAccount": "Compte et équipe (validations, changements d'offre, invitations)"
+    "ngAccount": "Compte et équipe (validations, changements d'offre, invitations)",
+    "accTitle": "Statut d'investisseur accrédité",
+    "accBody": "Les données financières protégées vous sont partagées sur la foi de cette auto-attestation. Elle est requise pour démarrer des deals et ouvrir des data rooms ; la navigation est ouverte à tous.",
+    "accCheckbox": "Je confirme être un investisseur accrédité/qualifié selon les règles qui me sont applicables, et que cette attestation est véridique.",
+    "accLockedHint": "Sans cette attestation, vous pouvez naviguer et envoyer des messages, mais pas démarrer de deals ni ouvrir de data rooms."
   },
   "startups": {
     "pageTitle": "Tours de financement actifs",
@@ -1626,7 +1630,9 @@
       "ageTitle": "J'ai 18 ans ou plus",
       "ageBody": "CapitalReach est réservé aux adultes. Vous confirmez remplir la condition d'âge minimum prévue par nos Conditions d'utilisation.",
       "lossTitle": "Je comprends le risque de perte totale",
-      "lossBody": "Les investissements en amorçage sont illiquides et spéculatifs. Vous pouvez perdre la totalité du montant investi. CapitalReach ne garantit aucun résultat."
+      "lossBody": "Les investissements en amorçage sont illiquides et spéculatifs. Vous pouvez perdre la totalité du montant investi. CapitalReach ne garantit aucun résultat.",
+      "accOptional": "facultatif",
+      "accBrowseNote": "Vous pouvez parcourir tous les listings sans cela. Démarrer un deal ou ouvrir une data room l'exige — vous pouvez le confirmer à tout moment dans les Paramètres."
     }
   },
   "errors": {

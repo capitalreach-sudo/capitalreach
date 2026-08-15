@@ -150,6 +150,7 @@ function PortfolioEditor({
 export default function InvestorSettingsPage() {
   const { t } = useTranslation();
   const [investor, setInvestor] = useState<any>(null);
+  const [accredited, setAccredited] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
@@ -163,7 +164,7 @@ export default function InvestorSettingsPage() {
       if (!user) { router.push("/auth/login"); return; }
       const [{ data }, { data: profile }] = await Promise.all([
         supabase.from("investors").select("*").eq("owner_id", user.id).single(),
-        supabase.from("profiles").select("investor_type,portfolio_count,lead_investor,check_size_min,check_size_max,languages").eq("id", user.id).single(),
+        supabase.from("profiles").select("investor_type,portfolio_count,lead_investor,check_size_min,check_size_max,languages,accreditation_certified").eq("id", user.id).single(),
       ]);
       if (data) {
         // Ensure arrays / json default properly
@@ -171,6 +172,7 @@ export default function InvestorSettingsPage() {
         data.stages = data.stages || [];
         data.geography = data.geography || [];
         data.portfolio_json = Array.isArray(data.portfolio_json) ? data.portfolio_json : [];
+        setAccredited(!!profile?.accreditation_certified);
         // Merge profile fields
         if (profile) {
           data.investor_type  = profile.investor_type;
@@ -240,6 +242,7 @@ export default function InvestorSettingsPage() {
           check_size_min:   investor.check_size_min ? parseFloat(investor.check_size_min) : null,
           check_size_max:   investor.check_size_max ? parseFloat(investor.check_size_max) : null,
           languages:        investor.languages?.length ? investor.languages : null,
+          accreditation_certified: accredited,
         }).eq("id", user.id);
       }
     }
@@ -279,6 +282,20 @@ export default function InvestorSettingsPage() {
         </div>
 
         <form onSubmit={handleSave} className="space-y-6">
+
+          {/* ── Accreditation ─────────────────────────────────────────────── */}
+          <div className="bg-cr-paper border rounded-2xl p-6">
+            <h2 className="font-semibold text-cr-ink mb-2">{t("settings.accTitle")}</h2>
+            <p className="text-sm text-cr-i3 mb-4 leading-relaxed">{t("settings.accBody")}</p>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" checked={accredited} onChange={e => setAccredited(e.target.checked)}
+                style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: 2, flexShrink: 0, cursor: "pointer" }} />
+              <span className="text-sm text-cr-ink leading-relaxed">{t("settings.accCheckbox")}</span>
+            </label>
+            {!accredited && (
+              <p className="text-xs text-cr-i4 mt-3 leading-relaxed">{t("settings.accLockedHint")}</p>
+            )}
+          </div>
 
           {/* ── Identity ──────────────────────────────────────────────────── */}
           <div className="bg-cr-paper border rounded-2xl p-6">

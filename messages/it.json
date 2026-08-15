@@ -960,7 +960,11 @@
     "ngDeals": "Attività sulle operazioni (fasi, contratti, NDA, follow-up)",
     "ngInterest": "Interesse per la tua opportunità (salvataggi, aggiornamenti, affinità, condivisioni)",
     "ngQa": "Domande e richieste di documenti",
-    "ngAccount": "Account e team (approvazioni, cambi di piano, inviti)"
+    "ngAccount": "Account e team (approvazioni, cambi di piano, inviti)",
+    "accTitle": "Status di investitore accreditato",
+    "accBody": "I dati finanziari protetti ti vengono condivisi sulla base di questa autodichiarazione. È richiesta per avviare deal e aprire data room; la navigazione è aperta a tutti.",
+    "accCheckbox": "Confermo di essere un investitore accreditato/qualificato secondo le regole a me applicabili, e che questa dichiarazione è veritiera.",
+    "accLockedHint": "Senza questa dichiarazione puoi navigare e inviare messaggi, ma non avviare deal né aprire data room."
   },
   "startups": {
     "pageTitle": "Round di finanziamento attivi",
@@ -1674,7 +1678,9 @@
       "ageTitle": "Ho 18 anni o più",
       "ageBody": "CapitalReach è disponibile solo per adulti. Confermi di soddisfare il requisito di età minima previsto dai nostri Termini di servizio.",
       "lossTitle": "Comprendo il rischio di perdita totale",
-      "lossBody": "Gli investimenti in fase iniziale sono illiquidi e speculativi. Puoi perdere l'intero importo investito. CapitalReach non garantisce alcun risultato."
+      "lossBody": "Gli investimenti in fase iniziale sono illiquidi e speculativi. Puoi perdere l'intero importo investito. CapitalReach non garantisce alcun risultato.",
+      "accOptional": "facoltativo",
+      "accBrowseNote": "Puoi sfogliare tutti gli annunci senza questo. Avviare un deal o aprire una data room lo richiede — puoi confermarlo in qualsiasi momento nelle Impostazioni."
     }
   },
   "banner": {

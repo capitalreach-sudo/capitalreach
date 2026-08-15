@@ -976,7 +976,11 @@
     "ngDeals": "Deal-Aktivität (Phasen, Verträge, NDAs, Follow-ups)",
     "ngInterest": "Interesse an Ihrem Listing (Speicherungen, Updates, Matches, Empfehlungen)",
     "ngQa": "Fragen & Dokumentanfragen",
-    "ngAccount": "Konto & Team (Freigaben, Tarifänderungen, Team-Einladungen)"
+    "ngAccount": "Konto & Team (Freigaben, Tarifänderungen, Team-Einladungen)",
+    "accTitle": "Status als qualifizierter Investor",
+    "accBody": "Geschützte Finanzdaten werden dir auf Grundlage dieser Selbstauskunft geteilt. Sie ist erforderlich, um Deals zu starten und Datenräume zu öffnen; das Durchsuchen steht allen offen.",
+    "accCheckbox": "Ich bestätige, dass ich nach den für mich geltenden Regeln ein akkreditierter/qualifizierter Investor bin und diese Erklärung wahrheitsgemäß ist.",
+    "accLockedHint": "Ohne diese Erklärung kannst du browsen und Nachrichten senden, aber keine Deals starten oder Datenräume öffnen."
   },
   "startups": {
     "pageTitle": "Aktive Finanzierungsrunden",
@@ -1633,7 +1637,9 @@
       "ageTitle": "Ich bin mindestens 18 Jahre alt",
       "ageBody": "CapitalReach steht ausschließlich Volljährigen offen. Sie bestätigen, dass Sie das in unseren Nutzungsbedingungen festgelegte Mindestalter erreicht haben.",
       "lossTitle": "Ich verstehe das Risiko eines Totalverlusts",
-      "lossBody": "Frühphasen-Investments sind illiquide und spekulativ. Der gesamte investierte Betrag kann verloren gehen. CapitalReach garantiert keinerlei Ergebnis."
+      "lossBody": "Frühphasen-Investments sind illiquide und spekulativ. Der gesamte investierte Betrag kann verloren gehen. CapitalReach garantiert keinerlei Ergebnis.",
+      "accOptional": "optional",
+      "accBrowseNote": "Du kannst alle Listings ohne diese Angabe durchsuchen. Für das Starten eines Deals oder das Öffnen eines Datenraums ist sie erforderlich — du kannst sie jederzeit in den Einstellungen bestätigen."
     }
   },
   "errors": {

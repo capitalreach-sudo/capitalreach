@@ -50,6 +50,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Only investors can accept an NDA" }, { status: 403 });
   }
 
+  // Protected financials are shared on the strength of this attestation —
+  // require it before the room opens. Attestable any time from Settings.
+  const { data: attest } = await admin
+    .from("profiles").select("accreditation_certified").eq("id", user.id).maybeSingle();
+  if (!attest?.accreditation_certified) {
+    return NextResponse.json(
+      { error: "Confirm your accredited-investor status in Settings to open data rooms." },
+      { status: 403 },
+    );
+  }
+
   // Already accepted? Return success idempotently so the UI just unlocks.
   const { data: existing } = await admin
     .from("nda_records")

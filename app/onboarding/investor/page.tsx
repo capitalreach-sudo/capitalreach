@@ -204,7 +204,7 @@ export default function InvestorOnboardingPage() {
   const canNext = () => {
     if (step === 1) return !!investorType;
     if (step === 3) return !!bio;
-    if (step === 5) return accredited && accreditedDeclaration && ageConfirmed && riskAcknowledged;
+    if (step === 5) return accreditedDeclaration && ageConfirmed && riskAcknowledged;
     return true;
   };
 
@@ -602,9 +602,12 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={accredited} onChange={e => setAccredited(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.accTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.accTitle")} <span style={{ fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "none" }}>· {t("onboarding.inv.accOptional")}</span></p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           {t("onboarding.inv.accBody")}
+                        </p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", lineHeight: 1.55, marginTop: "6px" }}>
+                          {t("onboarding.inv.accBrowseNote")}
                         </p>
                       </div>
                     </label>

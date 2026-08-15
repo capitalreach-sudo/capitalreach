@@ -980,7 +980,11 @@
     "ngDeals": "Deal activity (stages, contracts, NDAs, follow-ups)",
     "ngInterest": "Interest in your listing (saves, updates, matches, shares)",
     "ngQa": "Questions & document requests",
-    "ngAccount": "Account & team (approvals, tier changes, team invites)"
+    "ngAccount": "Account & team (approvals, tier changes, team invites)",
+    "accTitle": "Accredited investor status",
+    "accBody": "Protected financials are shared with you on the strength of this self-attestation. It is required to start deals and open data rooms; browsing is open to everyone.",
+    "accCheckbox": "I confirm I am an accredited / qualified investor under the rules applicable to me, and this attestation is truthful.",
+    "accLockedHint": "Without this attestation you can browse and message, but not start deals or open data rooms."
   },
   "startups": {
     "pageTitle": "Active fundraising rounds",
@@ -1637,7 +1641,9 @@
       "ageTitle": "I am 18 years or older",
       "ageBody": "CapitalReach is available only to adults. You confirm you meet the minimum age requirement set out in our Terms of Service.",
       "lossTitle": "I understand the risk of total loss",
-      "lossBody": "Early-stage investments are illiquid and speculative. You may lose the entire amount invested. CapitalReach does not guarantee any outcome."
+      "lossBody": "Early-stage investments are illiquid and speculative. You may lose the entire amount invested. CapitalReach does not guarantee any outcome.",
+      "accOptional": "optional",
+      "accBrowseNote": "You can browse every listing without this. Starting a deal or opening a data room requires it — you can confirm it any time in Settings."
     }
   },
   "errors": {
