@@ -292,7 +292,7 @@ export function InvestorsClient() {
   const [showCompare, setShowCompare] = useState(false);
   useEscapeKey(showCompare, () => setShowCompare(false));
   function exportInvestorsCsv() {
-    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
     const header = ["Name", "Firm", "Type", "Min check", "Max check", "Stages", "Industries", "Geography", "Leads rounds", "Profile"];
     const lines = results.map(i => [
       i.full_name, i.firm, i.type, i.min_check, i.max_check,

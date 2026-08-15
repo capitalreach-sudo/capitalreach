@@ -120,15 +120,22 @@ export default async function InvestorProfilePage({ params }: Props) {
   if (overlapIndustries.length || overlapStages.length) {
     const admin = createAdminClient();
     const orParts: string[] = [];
-    if (overlapIndustries.length) orParts.push(`industries.ov.{${overlapIndustries.map((s) => `"${s.replace(/"/g, "")}"`).join(",")}}`);
-    if (overlapStages.length) orParts.push(`stages.ov.{${overlapStages.map((s) => `"${s.replace(/"/g, "")}"`).join(",")}}`);
-    const { data } = await admin
-      .from("investors")
-      .select("slug, display_name, firm_name, type, industries")
-      .neq("id", investor.id)
-      .or(orParts.join(","))
-      .limit(4);
-    similar = data ?? [];
+    // Drop any value carrying a character that would break the PostgREST array
+    // literal or the top-level .or() separator, then quote what remains.
+    const safe = (arr: string[]) => arr.filter((v) => !/[{}"(),\\]/.test(v));
+    const inds = safe(overlapIndustries);
+    const stgs = safe(overlapStages);
+    if (inds.length) orParts.push(`industries.ov.{${inds.map((v) => `"${v}"`).join(",")}}`);
+    if (stgs.length) orParts.push(`stages.ov.{${stgs.map((v) => `"${v}"`).join(",")}}`);
+    if (orParts.length) {
+      const { data } = await admin
+        .from("investors")
+        .select("slug, display_name, firm_name, type, industries")
+        .neq("id", investor.id)
+        .or(orParts.join(","))
+        .limit(4);
+      similar = data ?? [];
+    }
   }
 
   return (

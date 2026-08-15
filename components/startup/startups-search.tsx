@@ -603,7 +603,9 @@ export function StartupsSearch() {
   const [showCompare, setShowCompare] = useState(false);
   useEscapeKey(showCompare, () => setShowCompare(false));
   function exportStartupsCsv() {
-    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    // Neutralize spreadsheet formula injection (=,+,-,@ leading a cell) with a
+    // leading apostrophe, then quote and double internal quotes.
+    const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
     const header = ["Name", "Tagline", "Industry", "Stage", "Raising", "MRR", "Growth %", "Runway (mo)", "AI score", "Country", "Profile"];
     const lines = filtered.map((s) => [
       s.name, s.tagline, s.industry, s.stage, s.funding_target,
@@ -856,12 +858,14 @@ export function StartupsSearch() {
       : await supabase.from("startup_dismissals").upsert(
           { investor_id: inv, startup_id: id }, { onConflict: "investor_id,startup_id" });
     if (error) {
-      // Put the set back the way it was and say so.
+      // Put the set back the way it was and say so. Also drop the undo toast,
+      // which otherwise lingers over an item that was never actually hidden.
       setDismissedIds((prev) => {
         const next = new Set(prev);
         if (hidden) next.add(id); else next.delete(id);
         return next;
       });
+      if (!hidden) setLastHidden((cur) => (cur?.id === id ? null : cur));
       notify.error(t("errors.generic"));
     }
   }

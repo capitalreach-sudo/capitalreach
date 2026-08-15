@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendNdaEnvelope } from "@/lib/docusign";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { isTeamMemberOfEither } from "@/lib/membership";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -41,11 +42,13 @@ export async function POST(req: NextRequest) {
 
   if (!investor) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
 
-  // The caller must be one of the two parties this NDA is between. Without this
-  // any signed-in user could mail a DocuSign envelope to an arbitrary
+  // The caller must be one of the two parties this NDA is between (or a team
+  // member on either side — same rule as closing a deal). Without this, any
+  // signed-in user could mail a DocuSign envelope to an arbitrary
   // founder/investor pair and write an nda_records row on their behalf.
   if (startup.owner_id !== user.id && investor.owner_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const isMember = await isTeamMemberOfEither(user.id, startup.id, investor.id);
+    if (!isMember) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // Get startup owner email
