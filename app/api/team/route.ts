@@ -173,7 +173,12 @@ export async function DELETE(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { type: rawType, memberId } = await req.json();
+  // Match POST: a suspended account cannot mutate the team either.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
+
+  const { type: rawType, memberId } = await req.json().catch(() => ({}));
   const type = parseType(rawType);
   if (!type || typeof memberId !== "string" || !memberId) {
     return NextResponse.json({ error: "type and memberId are required" }, { status: 400 });

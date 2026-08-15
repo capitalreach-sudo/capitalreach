@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
 
   const { counterpartId, startupId, investorId, amount, currency, status, note, nextFollowUp } =
-    await req.json();
+    await req.json().catch(() => ({}));
   const dealCurrency = isCurrencyCode(currency) ? currency : DEFAULT_CURRENCY;
   const parsedAmount = typeof amount === "number" && amount > 0 ? Math.round(amount) : null;
 

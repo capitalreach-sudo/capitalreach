@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { threadId } = await req.json();
+  const { threadId } = await req.json().catch(() => ({}));
   if (typeof threadId !== "string" || !threadId) {
     return NextResponse.json({ error: "threadId required" }, { status: 400 });
   }

@@ -12,10 +12,13 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { planId, userType } = await req.json() as {
-    planId:   string;
-    userType: "founder" | "investor";
-  };
+  const { planId, userType } = await req.json().catch(() => ({}));
+  if (userType !== "founder" && userType !== "investor") {
+    return NextResponse.json({ error: "Invalid userType" }, { status: 400 });
+  }
+  if (typeof planId !== "string") {
+    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
+  }
 
   const plans: AnyPlan[] = userType === "founder" ? FOUNDER_PLANS_LIST : INVESTOR_PLANS_LIST;
   const plan = plans.find(p => p.id === planId);

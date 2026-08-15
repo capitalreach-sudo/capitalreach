@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   if (!guard.ok) return guard.response;
   const { adminId, admin } = guard;
 
-  const { userId } = await req.json();
+  const { userId } = await req.json().catch(() => ({}));
   if (!userId) return NextResponse.json({ error: "User is required" }, { status: 400 });
 
   const { data: target } = await admin

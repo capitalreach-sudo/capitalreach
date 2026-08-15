@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (!guard.ok) return guard.response;
   const { adminId, admin } = guard;
 
-  const { userId, reason, duration } = await req.json();
+  const { userId, reason, duration } = await req.json().catch(() => ({}));
 
   if (!userId || typeof reason !== "string" || !reason.trim()) {
     return NextResponse.json({ error: "User and reason are required" }, { status: 400 });

@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Saved searches are not available on your plan.", upgrade: true }, { status: 403 });
   }
 
-  const { name, filters } = await req.json();
+  const { name, filters } = await req.json().catch(() => ({}));
   const trimmed = typeof name === "string" ? name.trim().slice(0, 80) : "";
   if (!trimmed) return NextResponse.json({ error: "Name required" }, { status: 400 });
   if (filters == null || typeof filters !== "object" || Array.isArray(filters)) {
@@ -104,7 +104,7 @@ export async function DELETE(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await req.json();
+  const { id } = await req.json().catch(() => ({}));
   if (typeof id !== "string" || !id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
   const { investor } = await resolveInvestor(supabase, user.id);

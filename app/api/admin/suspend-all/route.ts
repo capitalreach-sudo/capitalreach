@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (!guard.ok) return guard.response;
   const { adminId, admin } = guard;
 
-  const { action, confirm, reason } = await req.json();
+  const { action, confirm, reason } = await req.json().catch(() => ({}));
 
   if (action !== "suspend" && action !== "unsuspend") {
     return NextResponse.json({ error: "action must be 'suspend' or 'unsuspend'" }, { status: 400 });

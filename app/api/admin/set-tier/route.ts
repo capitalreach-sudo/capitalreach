@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const guard = await requireAdmin();
   if (!guard.ok) return guard.response;
 
-  const { userId, tier } = await req.json();
+  const { userId, tier } = await req.json().catch(() => ({}));
   if (typeof userId !== "string" || !userId || typeof tier !== "string") {
     return NextResponse.json({ error: "userId and tier are required" }, { status: 400 });
   }

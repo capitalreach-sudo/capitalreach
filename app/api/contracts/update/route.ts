@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { contractId, status } = await req.json();
+  const { contractId, status } = await req.json().catch(() => ({}));
   if (!contractId || !CONTRACT_STATUSES.includes(status)) {
     return NextResponse.json({ error: "Missing contract or invalid status" }, { status: 400 });
   }

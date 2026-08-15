@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { dealId, title, contractType, amount, currency, equityPercent, terms } = await req.json();
+  const { dealId, title, contractType, amount, currency, equityPercent, terms } = await req.json().catch(() => ({}));
   if (!dealId || typeof title !== "string" || !title.trim()) {
     return NextResponse.json({ error: "Missing deal or title" }, { status: 400 });
   }
@@ -55,12 +55,12 @@ export async function POST(req: NextRequest) {
       startup_id: deal.startup_id,
       investor_id: deal.investor_id,
       created_by: user.id,
-      title: title.trim(),
+      title: title.trim().slice(0, 200),
       contract_type: type,
       amount: parsedAmount,
       currency: dealCurrency,
       equity_percent: parsedEquity,
-      terms: typeof terms === "string" && terms.trim() ? terms.trim() : null,
+      terms: typeof terms === "string" && terms.trim() ? terms.trim().slice(0, 10000) : null,
     })
     .select()
     .single();

@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Admin required" }, { status: 403 });
   }
 
-  const { startupId } = await req.json();
+  const { startupId } = await req.json().catch(() => ({}));
   const adminClient = createAdminClient();
 
   const { data: startup } = await adminClient

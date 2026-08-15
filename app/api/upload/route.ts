@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       startup_id: startupId,
       type: docType,
       file_url: fileUrl,
-      label: label || file.name,
+      label: (label || file.name).slice(0, 200),
       requires_nda: requiresNda,
     })
     .select()

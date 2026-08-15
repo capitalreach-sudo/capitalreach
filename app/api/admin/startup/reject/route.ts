@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Admin required" }, { status: 403 });
   }
 
-  const { startupId, reason } = await req.json();
+  const { startupId, reason } = await req.json().catch(() => ({}));
   if (!reason) return NextResponse.json({ error: "Rejection reason required" }, { status: 400 });
 
   const adminClient = createAdminClient();

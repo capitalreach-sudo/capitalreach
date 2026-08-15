@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { startupId } = await req.json();
+  const { startupId } = await req.json().catch(() => ({}));
   if (typeof startupId !== "string" || !startupId) {
     return NextResponse.json({ error: "startupId required" }, { status: 400 });
   }

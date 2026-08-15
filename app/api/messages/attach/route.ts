@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
   const file = formData.get("file") as File | null;
   const threadId = formData.get("threadId") as string | null;
-  const note = ((formData.get("body") as string | null) ?? "").trim();
+  const note = ((formData.get("body") as string | null) ?? "").trim().slice(0, 5000);
 
   if (!file || !threadId) {
     return NextResponse.json({ error: "file and threadId required" }, { status: 400 });

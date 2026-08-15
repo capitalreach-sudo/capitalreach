@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     // Redis unavailable — fail open and allow the request through
   }
 
-  const { dealId, body } = await req.json();
+  const { dealId, body } = await req.json().catch(() => ({}));
   if (!dealId || typeof body !== "string" || !body.trim()) {
     return NextResponse.json({ error: "Missing deal or note" }, { status: 400 });
   }
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       investor_id: deal.investor_id,
       actor_id: user.id,
       type: "note",
-      body: body.trim(),
+      body: body.trim().slice(0, 5000),
     })
     .select("id, type, body, created_at, actor:profiles(full_name)")
     .single();
