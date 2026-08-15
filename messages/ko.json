@@ -1096,7 +1096,9 @@
     "companyType": "회사 유형",
     "previousFunding": "이전 투자",
     "competitors": "경쟁사",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "X에 공유",
+    "shareLinkedIn": "LinkedIn에 공유"
   },
   "filters": {
     "industry": "산업",
@@ -1114,7 +1116,8 @@
     "matchPct": "{pct}% 일치",
     "sortUpdated": "최근 업데이트순",
     "sortMrr": "최고 MRR",
-    "sortClosing": "마감 임박순"
+    "sortClosing": "마감 임박순",
+    "sortFounded": "최근 설립순"
   },
   "common": {
     "loading": "로딩 중...",

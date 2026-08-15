@@ -1136,7 +1136,9 @@
     "companyType": "公司类型",
     "previousFunding": "过往融资",
     "competitors": "竞争对手",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "分享到X",
+    "shareLinkedIn": "分享到LinkedIn"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1268,7 +1270,8 @@
     "matchPct": "匹配度 {pct}%",
     "sortUpdated": "最近更新",
     "sortMrr": "最高MRR",
-    "sortClosing": "最快截止"
+    "sortClosing": "最快截止",
+    "sortFounded": "最新成立"
   },
   "common": {
     "loading": "加载中...",

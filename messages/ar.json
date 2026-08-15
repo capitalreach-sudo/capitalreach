@@ -1136,7 +1136,9 @@
     "companyType": "نوع الشركة",
     "previousFunding": "التمويل السابق",
     "competitors": "المنافسون",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "مشاركة على X",
+    "shareLinkedIn": "مشاركة على LinkedIn"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",
@@ -1268,7 +1270,8 @@
     "matchPct": "تطابق {pct}%",
     "sortUpdated": "محدثة مؤخرا",
     "sortMrr": "أعلى MRR",
-    "sortClosing": "الأقرب إغلاقا"
+    "sortClosing": "الأقرب إغلاقا",
+    "sortFounded": "الأحدث تأسيسا"
   },
   "common": {
     "loading": "جاري التحميل...",

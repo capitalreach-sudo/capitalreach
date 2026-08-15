@@ -1136,7 +1136,9 @@
     "companyType": "Type d'entreprise",
     "previousFunding": "Financement précédent",
     "competitors": "Concurrents",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Partager sur X",
+    "shareLinkedIn": "Partager sur LinkedIn"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1268,7 +1270,8 @@
     "matchPct": "{pct}% de correspondance",
     "sortUpdated": "Mis à jour récemment",
     "sortMrr": "MRR le plus élevé",
-    "sortClosing": "Clôture la plus proche"
+    "sortClosing": "Clôture la plus proche",
+    "sortFounded": "Fondées récemment"
   },
   "common": {
     "loading": "Chargement...",

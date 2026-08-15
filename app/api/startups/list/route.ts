@@ -10,7 +10,7 @@ export async function GET() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("startups")
-    .select("id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url")
+    .select("id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year")
     .eq("status", "active")
     .order("created_at", { ascending: false });
 

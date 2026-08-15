@@ -1096,7 +1096,9 @@
     "companyType": "Bedrijfstype",
     "previousFunding": "Eerdere financiering",
     "competitors": "Concurrenten",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Delen op X",
+    "shareLinkedIn": "Delen op LinkedIn"
   },
   "filters": {
     "industry": "Industrie",
@@ -1114,7 +1116,8 @@
     "matchPct": "{pct}% match",
     "sortUpdated": "Onlangs bijgewerkt",
     "sortMrr": "Hoogste MRR",
-    "sortClosing": "Sluit het eerst"
+    "sortClosing": "Sluit het eerst",
+    "sortFounded": "Recentst opgericht"
   },
   "common": {
     "loading": "Laden...",

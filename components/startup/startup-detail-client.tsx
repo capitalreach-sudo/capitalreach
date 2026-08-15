@@ -626,6 +626,18 @@ export function StartupDetailClient({
                   style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
                   <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")}
                 </button>
+                <button
+                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer")}
+                  aria-label={t("startupDetail.shareX")}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
+                  <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.shareX")}
+                </button>
+                <button
+                  onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer")}
+                  aria-label={t("startupDetail.shareLinkedIn")}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
+                  <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.shareLinkedIn")}
+                </button>
                 <Link href={`/startups/${startup.slug}/one-pager`} target="_blank"
                   style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none" }}>
                   <FileText style={{ width: 13, height: 13 }} /> {t("onePager.open")}

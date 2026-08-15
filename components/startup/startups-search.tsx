@@ -60,6 +60,7 @@ const SORT_OPTIONS = [
   { value: "recent",  labelKey: "filters.sortRecent"  },
   { value: "updated", labelKey: "filters.sortUpdated" },
   { value: "closing", labelKey: "filters.sortClosing" },
+  { value: "founded", labelKey: "filters.sortFounded" },
   { value: "mrr",     labelKey: "filters.sortMrr"     },
   { value: "funding", labelKey: "filters.sortRaising" },
 ];
@@ -74,7 +75,7 @@ interface Startup {
   mrr: number | null; arr: number | null; growth_rate: number | null;
   runway_months: number | null; created_at: string; updated_at: string;
   vaultrise_score: number | null;
-  country: string | null; business_model: string | null; round_close_date: string | null; demo_video_url: string | null;
+  country: string | null; business_model: string | null; round_close_date: string | null; demo_video_url: string | null; founded_year: number | null;
 }
 
 interface Filters {
@@ -758,6 +759,7 @@ export function StartupsSearch() {
         const bv = b.round_close_date ? new Date(b.round_close_date).getTime() : Infinity;
         return av - bv;
       }); break;
+      case "founded": res = [...res].sort((a, b) => (b.founded_year ?? 0) - (a.founded_year ?? 0)); break;
       case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;
       case "fit":     res = myThesis ? [...res].sort((a, b) => computeMatchScore(myThesis, b).score - computeMatchScore(myThesis, a).score) : res; break;
     }

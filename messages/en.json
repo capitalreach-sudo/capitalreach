@@ -1147,7 +1147,9 @@
     "companyType": "Company type",
     "previousFunding": "Previous funding",
     "competitors": "Competitors",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Share on X",
+    "shareLinkedIn": "Share on LinkedIn"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1279,7 +1281,8 @@
     "matchPct": "{pct}% match",
     "sortUpdated": "Recently updated",
     "sortMrr": "Highest MRR",
-    "sortClosing": "Closing soonest"
+    "sortClosing": "Closing soonest",
+    "sortFounded": "Newest founded"
   },
   "common": {
     "loading": "Loading...",

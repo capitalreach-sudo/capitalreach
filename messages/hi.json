@@ -1096,7 +1096,9 @@
     "companyType": "कंपनी प्रकार",
     "previousFunding": "पिछली फंडिंग",
     "competitors": "प्रतिस्पर्धी",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "X पर साझा करें",
+    "shareLinkedIn": "LinkedIn पर साझा करें"
   },
   "filters": {
     "industry": "उद्योग",
@@ -1114,7 +1116,8 @@
     "matchPct": "{pct}% मिलान",
     "sortUpdated": "हाल ही में अपडेटेड",
     "sortMrr": "सबसे अधिक MRR",
-    "sortClosing": "सबसे जल्दी बंद"
+    "sortClosing": "सबसे जल्दी बंद",
+    "sortFounded": "सबसे नई स्थापित"
   },
   "common": {
     "loading": "लोड हो रहा है...",

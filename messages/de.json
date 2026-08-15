@@ -1143,7 +1143,9 @@
     "companyType": "Unternehmensart",
     "previousFunding": "Bisherige Finanzierung",
     "competitors": "Wettbewerber",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Auf X teilen",
+    "shareLinkedIn": "Auf LinkedIn teilen"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1275,7 +1277,8 @@
     "matchPct": "{pct}% Übereinstimmung",
     "sortUpdated": "Zuletzt aktualisiert",
     "sortMrr": "Höchster MRR",
-    "sortClosing": "Schließt am ehesten"
+    "sortClosing": "Schließt am ehesten",
+    "sortFounded": "Zuletzt gegründet"
   },
   "common": {
     "loading": "Laden...",

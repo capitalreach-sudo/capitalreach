@@ -1096,7 +1096,9 @@
     "companyType": "Tipo de empresa",
     "previousFunding": "Financiamento anterior",
     "competitors": "Concorrentes",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Compartilhar no X",
+    "shareLinkedIn": "Compartilhar no LinkedIn"
   },
   "filters": {
     "industry": "Indústria",
@@ -1114,7 +1116,8 @@
     "matchPct": "{pct}% de correspondência",
     "sortUpdated": "Atualizadas recentemente",
     "sortMrr": "Maior MRR",
-    "sortClosing": "Fecha mais cedo"
+    "sortClosing": "Fecha mais cedo",
+    "sortFounded": "Fundadas mais recentes"
   },
   "common": {
     "loading": "Carregando...",

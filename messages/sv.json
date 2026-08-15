@@ -1096,7 +1096,9 @@
     "companyType": "Företagstyp",
     "previousFunding": "Tidigare finansiering",
     "competitors": "Konkurrenter",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Dela på X",
+    "shareLinkedIn": "Dela på LinkedIn"
   },
   "filters": {
     "industry": "Bransch",
@@ -1114,7 +1116,8 @@
     "matchPct": "{pct}% matchning",
     "sortUpdated": "Nyligen uppdaterade",
     "sortMrr": "Högst MRR",
-    "sortClosing": "Stänger snarast"
+    "sortClosing": "Stänger snarast",
+    "sortFounded": "Senast grundade"
   },
   "common": {
     "loading": "Laddar...",

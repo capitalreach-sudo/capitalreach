@@ -1096,7 +1096,9 @@
     "companyType": "Тип компании",
     "previousFunding": "Прошлое финансирование",
     "competitors": "Конкуренты",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Поделиться в X",
+    "shareLinkedIn": "Поделиться в LinkedIn"
   },
   "filters": {
     "industry": "Отрасль",
@@ -1114,7 +1116,8 @@
     "matchPct": "совпадение {pct}%",
     "sortUpdated": "Недавно обновлённые",
     "sortMrr": "Наибольший MRR",
-    "sortClosing": "Скорее всего закроется"
+    "sortClosing": "Скорее всего закроется",
+    "sortFounded": "Недавно основанные"
   },
   "common": {
     "loading": "Загрузка...",

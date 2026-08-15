@@ -1136,7 +1136,9 @@
     "companyType": "Tipo de empresa",
     "previousFunding": "Financiación previa",
     "competitors": "Competidores",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Compartir en X",
+    "shareLinkedIn": "Compartir en LinkedIn"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -1268,7 +1270,8 @@
     "matchPct": "{pct}% de coincidencia",
     "sortUpdated": "Actualizados recientemente",
     "sortMrr": "Mayor MRR",
-    "sortClosing": "Cierre más próximo"
+    "sortClosing": "Cierre más próximo",
+    "sortFounded": "Fundadas más recientes"
   },
   "common": {
     "loading": "Cargando...",

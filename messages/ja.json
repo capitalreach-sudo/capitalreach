@@ -1136,7 +1136,9 @@
     "companyType": "会社形態",
     "previousFunding": "過去の資金調達",
     "competitors": "競合",
-    "productHunt": "Product Hunt"
+    "productHunt": "Product Hunt",
+    "shareX": "Xで共有",
+    "shareLinkedIn": "LinkedInで共有"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1268,7 +1270,8 @@
     "matchPct": "{pct}% 一致",
     "sortUpdated": "最近更新",
     "sortMrr": "MRRが高い順",
-    "sortClosing": "締切が近い順"
+    "sortClosing": "締切が近い順",
+    "sortFounded": "設立が新しい順"
   },
   "common": {
     "loading": "読み込み中...",
