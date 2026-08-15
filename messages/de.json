@@ -1876,7 +1876,8 @@
     "ckTs1": "Term Sheet entwerfen",
     "ckTs2": "Bedingungen verhandeln",
     "ckTs3": "Term Sheet unterschreiben",
-    "ckTs4": "Abschlussbetrag bestätigen"
+    "ckTs4": "Abschlussbetrag bestätigen",
+    "moneyWorks": "So funktioniert das Geld: Die Investition fließt direkt zwischen dir und der Gegenseite — CapitalReach verwahrt niemals Gelder. Die 2 %-Gebühr wird dem Gründer erst in Rechnung gestellt, nachdem beide Seiten den Abschluss bestätigt haben."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

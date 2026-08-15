@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bookmark, Lock } from "lucide-react";
+import { Bookmark, Lock, BadgeCheck } from "lucide-react";
 import { formatCurrency, daysSince, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { roundCloseState } from "@/lib/round-close";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
@@ -75,7 +75,7 @@ function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionT
  */
 export type StartupCardData = Pick<Startup,
   "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
-  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date">;
+  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date"> & { verified_at?: string | null };
 
 interface StartupCardProps {
   startup:     StartupCardData;
@@ -187,8 +187,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
             {getInitials(startup.name)}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {startup.name}
+            <p style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{startup.name}</span>
+              {startup.verified_at && <BadgeCheck aria-label="verified" style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0 }} />}
             </p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {startup.tagline}

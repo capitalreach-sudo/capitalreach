@@ -1477,6 +1477,8 @@ export type Database = {
           use_of_funds: string | null
           user_count: number | null
           vaultrise_score: number | null
+          verified_at: string | null
+          verified_by: string | null
           video_pitch_url: string | null
           website: string | null
         }
@@ -1538,6 +1540,8 @@ export type Database = {
           use_of_funds?: string | null
           user_count?: number | null
           vaultrise_score?: number | null
+          verified_at?: string | null
+          verified_by?: string | null
           video_pitch_url?: string | null
           website?: string | null
         }
@@ -1599,6 +1603,8 @@ export type Database = {
           use_of_funds?: string | null
           user_count?: number | null
           vaultrise_score?: number | null
+          verified_at?: string | null
+          verified_by?: string | null
           video_pitch_url?: string | null
           website?: string | null
         }

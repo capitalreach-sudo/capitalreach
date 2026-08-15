@@ -1880,7 +1880,8 @@
     "ckTs1": "Draft the term sheet",
     "ckTs2": "Negotiate terms",
     "ckTs3": "Sign the term sheet",
-    "ckTs4": "Confirm the closing amount"
+    "ckTs4": "Confirm the closing amount",
+    "moneyWorks": "How the money works: the investment moves directly between you and the counterparty — CapitalReach never holds funds. The 2% fee is invoiced to the founder only after both sides confirm the close."
   },
   "investorProfile": {
     "back": "Back to investors",

@@ -1869,7 +1869,8 @@
     "ckTs1": "Przygotuj term sheet",
     "ckTs2": "Negocjuj warunki",
     "ckTs3": "Podpisz term sheet",
-    "ckTs4": "Potwierdź kwotę zamknięcia"
+    "ckTs4": "Potwierdź kwotę zamknięcia",
+    "moneyWorks": "Jak działają pieniądze: inwestycja przepływa bezpośrednio między Tobą a drugą stroną — CapitalReach nigdy nie przechowuje środków. Prowizja 2% jest fakturowana founderowi dopiero po potwierdzeniu zamknięcia przez obie strony."
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

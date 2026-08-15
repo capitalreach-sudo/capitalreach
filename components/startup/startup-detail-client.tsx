@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StartupCard } from "./startup-card";
-import { Globe, Share2, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake, CalendarClock } from "lucide-react";
+import { Globe, Share2, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake, CalendarClock, BadgeCheck } from "lucide-react";
 import {
   formatCurrency, formatNumber, formatDate, formatPercent,
   STAGE_LABELS, getInitials,
@@ -496,6 +496,11 @@ export function StartupDetailClient({
                   <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 38px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
                     {startup.name}
                   </h1>
+                  {startup.verified_at && (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      <BadgeCheck style={{ width: 11, height: 11 }} /> {t("investors.verifiedBadge")}
+                    </span>
+                  )}
                   {startup.subscription_tier === "growth" && (
                     <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       Featured

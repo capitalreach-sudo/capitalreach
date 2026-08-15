@@ -1451,8 +1451,11 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               {t("deals.feePreview", { fee: formatMoney(parseFloat(closeAmount) * 0.02, closeCurrency) })}
             </p>
           )}
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "10px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>
             {t("deals.feeNotice")}
+          </p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "10px", lineHeight: 1.5 }}>
+            {t("deals.moneyWorks")}
           </p>
           <div style={{ display: "flex", gap: "6px" }}>
             <button onClick={handleClose} disabled={closing}

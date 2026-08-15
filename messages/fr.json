@@ -1869,7 +1869,8 @@
     "ckTs1": "Rédiger le term sheet",
     "ckTs2": "Négocier les termes",
     "ckTs3": "Signer le term sheet",
-    "ckTs4": "Confirmer le montant de clôture"
+    "ckTs4": "Confirmer le montant de clôture",
+    "moneyWorks": "Comment fonctionne l'argent : l'investissement circule directement entre vous et la contrepartie — CapitalReach ne détient jamais de fonds. La commission de 2 % n'est facturée au fondateur qu'après confirmation de la clôture par les deux parties."
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

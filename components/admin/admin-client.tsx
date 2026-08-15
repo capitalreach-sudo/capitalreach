@@ -55,6 +55,17 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
     window.location.reload();
   }
 
+  async function toggleStartupVerified(startupId: string, verified: boolean) {
+    const res = await fetch("/api/admin/startup/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId, verified }),
+    });
+    if (res.ok) toast({ title: verified ? t("adminVerify.done") : t("adminVerify.undone") });
+    else { toast({ title: t("adminVerify.failed"), variant: "destructive" }); return; }
+    window.location.reload();
+  }
+
   async function approveStartup(id: string) {
     setProcessingId(id);
     const res = await fetch("/api/admin/startup/approve", {
@@ -238,6 +249,13 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     {s.status.replace(/_/g, " ")}
                   </span>
                   <span className="text-xs bg-cr-p3 text-cr-i3 px-2 py-0.5 rounded-full capitalize">{s.subscription_tier}</span>
+                  {s.status === "active" && (
+                    <Button size="sm" variant="outline"
+                      className={s.verified_at ? "text-xs h-7 text-cr-up border-cr-up/40" : "text-xs h-7"}
+                      onClick={() => toggleStartupVerified(s.id, !s.verified_at)}>
+                      {s.verified_at ? t("adminVerify.unverify") : t("adminVerify.verify")}
+                    </Button>
+                  )}
                   {s.status === "active" && (
                     <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => suspendStartup(s.id)}>
                       {t("admin.suspend")}

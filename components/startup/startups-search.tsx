@@ -75,7 +75,7 @@ interface Startup {
   mrr: number | null; arr: number | null; growth_rate: number | null;
   runway_months: number | null; created_at: string; updated_at: string;
   vaultrise_score: number | null;
-  country: string | null; business_model: string | null; round_close_date: string | null; demo_video_url: string | null; founded_year: number | null;
+  country: string | null; business_model: string | null; round_close_date: string | null; demo_video_url: string | null; founded_year: number | null; verified_at: string | null;
 }
 
 interface Filters {

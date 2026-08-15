@@ -1869,7 +1869,8 @@
     "ckTs1": "Redigir o term sheet",
     "ckTs2": "Negociar os termos",
     "ckTs3": "Assinar o term sheet",
-    "ckTs4": "Confirmar o valor de fechamento"
+    "ckTs4": "Confirmar o valor de fechamento",
+    "moneyWorks": "Como o dinheiro funciona: o investimento passa diretamente entre você e a contraparte — a CapitalReach nunca retém fundos. A taxa de 2% é faturada ao fundador somente depois que ambos os lados confirmam o fechamento."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
