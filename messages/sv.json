@@ -1013,7 +1013,8 @@
     "pageSubtitle_one": "{count} företag listat just nu",
     "closingSoon": "Stänger snart",
     "businessModelGroup": "Affärsmodell",
-    "hasDemo": "Med demovideo"
+    "hasDemo": "Med demovideo",
+    "exportCsv": "Exportera CSV"
   },
   "startupDetail": {
     "overview": "Översikt",

@@ -1013,7 +1013,8 @@
     "pageSubtitle_one": "{count} bedrijf momenteel vermeld",
     "closingSoon": "Sluit binnenkort",
     "businessModelGroup": "Bedrijfsmodel",
-    "hasDemo": "Met demovideo"
+    "hasDemo": "Met demovideo",
+    "exportCsv": "CSV exporteren"
   },
   "startupDetail": {
     "overview": "Overzicht",

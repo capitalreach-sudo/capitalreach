@@ -1022,7 +1022,8 @@
     "pageSubtitle_one": "当前{count}家公司在列",
     "closingSoon": "即将截止",
     "businessModelGroup": "商业模式",
-    "hasDemo": "有演示视频"
+    "hasDemo": "有演示视频",
+    "exportCsv": "导出CSV"
   },
   "startup": {
     "back": "返回目录",

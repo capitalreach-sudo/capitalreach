@@ -1013,7 +1013,8 @@
     "pageSubtitle_one": "{count} firma obecnie na liście",
     "closingSoon": "Wkrótce zamknięcie",
     "businessModelGroup": "Model biznesowy",
-    "hasDemo": "Z wideo demo"
+    "hasDemo": "Z wideo demo",
+    "exportCsv": "Eksportuj CSV"
   },
   "startupDetail": {
     "overview": "Przegląd",

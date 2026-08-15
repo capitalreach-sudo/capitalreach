@@ -1013,7 +1013,8 @@
     "pageSubtitle_one": "현재 {count}개 사가 등록됨",
     "closingSoon": "마감 임박",
     "businessModelGroup": "비즈니스 모델",
-    "hasDemo": "데모 영상 있음"
+    "hasDemo": "데모 영상 있음",
+    "exportCsv": "CSV 내보내기"
   },
   "startupDetail": {
     "overview": "개요",

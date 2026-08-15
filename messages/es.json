@@ -1022,7 +1022,8 @@
     "pageSubtitle_one": "{count} empresa actualmente listada",
     "closingSoon": "Cierra pronto",
     "businessModelGroup": "Modelo de negocio",
-    "hasDemo": "Con vídeo demo"
+    "hasDemo": "Con vídeo demo",
+    "exportCsv": "Exportar CSV"
   },
   "startup": {
     "back": "Volver al directorio",

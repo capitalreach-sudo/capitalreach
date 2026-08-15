@@ -1033,7 +1033,8 @@
     "pageSubtitle_one": "{count} company currently listed",
     "closingSoon": "Closing soon",
     "businessModelGroup": "Business model",
-    "hasDemo": "Has demo video"
+    "hasDemo": "Has demo video",
+    "exportCsv": "Export CSV"
   },
   "startup": {
     "back": "Back to directory",

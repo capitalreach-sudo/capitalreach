@@ -1013,7 +1013,8 @@
     "pageSubtitle_one": "{count} कंपनी वर्तमान में सूचीबद्ध",
     "closingSoon": "जल्द बंद",
     "businessModelGroup": "व्यवसाय मॉडल",
-    "hasDemo": "डेमो वीडियो सहित"
+    "hasDemo": "डेमो वीडियो सहित",
+    "exportCsv": "CSV निर्यात करें"
   },
   "startupDetail": {
     "overview": "अवलोकन",

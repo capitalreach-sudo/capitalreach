@@ -601,6 +601,22 @@ export function StartupsSearch() {
   }, [compareIds]);
   const [showCompare, setShowCompare] = useState(false);
   useEscapeKey(showCompare, () => setShowCompare(false));
+  function exportStartupsCsv() {
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const header = ["Name", "Tagline", "Industry", "Stage", "Raising", "MRR", "Growth %", "Runway (mo)", "AI score", "Country", "Profile"];
+    const lines = filtered.map((s) => [
+      s.name, s.tagline, s.industry, s.stage, s.funding_target,
+      s.mrr ?? "", s.growth_rate ?? "", s.runway_months ?? "", s.vaultrise_score ?? "", s.country ?? "",
+      `${window.location.origin}/startups/${s.slug}`,
+    ]);
+    const csv = [header, ...lines].map((r) => r.map(esc).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "startups.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function toggleCompare(id: string) {
     setCompareIds((prev) => prev.includes(id)
       ? prev.filter(x => x !== id)
@@ -1173,6 +1189,13 @@ export function StartupsSearch() {
                 onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("startups.linkCopied2")); }}
                 style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
                 {t("startups.copyLink")}
+              </button>
+            )}
+            {!loading && filtered.length > 0 && (
+              <button
+                onClick={exportStartupsCsv}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
+                {t("startups.exportCsv")}
               </button>
             )}
             {lastHidden && (

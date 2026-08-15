@@ -1022,7 +1022,8 @@
     "pageSubtitle_one": "{count} شركة مدرجة حاليًا",
     "closingSoon": "يُغلق قريبا",
     "businessModelGroup": "نموذج العمل",
-    "hasDemo": "به فيديو تجريبي"
+    "hasDemo": "به فيديو تجريبي",
+    "exportCsv": "تصدير CSV"
   },
   "startup": {
     "back": "العودة إلى الدليل",

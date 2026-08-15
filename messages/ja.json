@@ -1022,7 +1022,8 @@
     "pageSubtitle_one": "現在{count}社が掲載中",
     "closingSoon": "まもなく締切",
     "businessModelGroup": "ビジネスモデル",
-    "hasDemo": "デモ動画あり"
+    "hasDemo": "デモ動画あり",
+    "exportCsv": "CSVをエクスポート"
   },
   "startup": {
     "back": "ディレクトリに戻る",

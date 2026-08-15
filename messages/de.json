@@ -1029,7 +1029,8 @@
     "pageSubtitle_one": "{count} Unternehmen derzeit gelistet",
     "closingSoon": "Schließt bald",
     "businessModelGroup": "Geschäftsmodell",
-    "hasDemo": "Mit Demo-Video"
+    "hasDemo": "Mit Demo-Video",
+    "exportCsv": "CSV exportieren"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",

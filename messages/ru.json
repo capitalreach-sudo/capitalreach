@@ -1013,7 +1013,8 @@
     "pageSubtitle_one": "{count} компания сейчас в списке",
     "closingSoon": "Скоро закрытие",
     "businessModelGroup": "Бизнес-модель",
-    "hasDemo": "С демо-видео"
+    "hasDemo": "С демо-видео",
+    "exportCsv": "Экспорт CSV"
   },
   "startupDetail": {
     "overview": "Обзор",
