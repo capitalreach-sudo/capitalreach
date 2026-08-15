@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { AdminUsersClient } from "@/components/admin/admin-users-client";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminUsersPage() {
+  const t = await getTranslator(getLocale());
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?redirect=/admin/users");
@@ -35,19 +37,19 @@ export default async function AdminUsersPage() {
       <Navbar />
       <main style={{ background: "var(--cr-paper)", minHeight: "80vh" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
-          <div className="ruled-label" style={{ marginBottom: "16px" }}>Admin</div>
+          <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("adminUsers.kicker")}</div>
           <h1 style={{
             fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700,
             fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)",
             letterSpacing: "-0.02em", marginBottom: "8px",
           }}>
-            User management
+            {t("adminUsers.pageTitle")}
           </h1>
           <p style={{
             fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
             color: "var(--cr-ink-4)", marginBottom: "32px",
           }}>
-            {users?.length ?? 0} accounts. Suspension takes effect immediately and signs the user out.
+            {t("adminUsers.pageSubtitle", { n: String(users?.length ?? 0) })}
           </p>
 
           <AdminUsersClient users={users ?? []} currentAdminId={user.id} />

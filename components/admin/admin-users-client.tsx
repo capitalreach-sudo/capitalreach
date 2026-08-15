@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { notify } from "@/components/ui/toast-notify";
 import { formatDate } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AdminUser {
   id: string;
@@ -21,18 +22,6 @@ interface AdminUser {
 
 const TABS = ["all", "startup", "investor", "suspended", "admin"] as const;
 type Tab = typeof TABS[number];
-
-const TAB_LABEL: Record<Tab, string> = {
-  all: "All", startup: "Startups", investor: "Investors",
-  suspended: "Suspended", admin: "Admins",
-};
-
-const DURATIONS = [
-  { value: "1d",         label: "1 day" },
-  { value: "7d",         label: "7 days" },
-  { value: "30d",        label: "30 days" },
-  { value: "indefinite", label: "Indefinite" },
-];
 
 const CONFIRM_PHRASE = "SUSPEND ALL";
 
@@ -61,7 +50,19 @@ const linkBtn: React.CSSProperties = {
 };
 
 export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]; currentAdminId: string }) {
+  const { t } = useTranslation();
   const router = useRouter();
+  const TAB_LABEL: Record<Tab, string> = {
+    all: t("adminUsers.tabAll"), startup: t("adminUsers.tabStartups"),
+    investor: t("adminUsers.tabInvestors"), suspended: t("adminUsers.tabSuspended"),
+    admin: t("adminUsers.tabAdmins"),
+  };
+  const DURATIONS = [
+    { value: "1d",         label: t("adminUsers.dur1d") },
+    { value: "7d",         label: t("adminUsers.dur7d") },
+    { value: "30d",        label: t("adminUsers.dur30d") },
+    { value: "indefinite", label: t("adminUsers.durIndefinite") },
+  ];
   const [tab, setTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
@@ -115,8 +116,8 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
       });
       data = await res.json().catch(() => ({}));
     } finally { setBusy(null); }
-    if (!res?.ok) { notify.error(data.error || "Failed to suspend"); return; }
-    notify.success(`${target.full_name || target.email} suspended`);
+    if (!res?.ok) { notify.error(data.error || t("adminUsers.failSuspend")); return; }
+    notify.success(t("adminUsers.suspendedToast", { name: target.full_name || target.email }));
     setTarget(null); setReason(""); setDuration("indefinite");
     router.refresh();
   }
@@ -133,8 +134,8 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
       });
       data = await res.json().catch(() => ({}));
     } finally { setBusy(null); }
-    if (!res?.ok) { notify.error(data.error || "Failed to set tier"); return; }
-    notify.success("Tier updated");
+    if (!res?.ok) { notify.error(data.error || t("adminUsers.failTier")); return; }
+    notify.success(t("adminUsers.tierUpdated"));
     setTierTarget(null);
     router.refresh();
   }
@@ -149,8 +150,8 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
       });
       data = await res.json().catch(() => ({}));
     } finally { setBusy(null); }
-    if (!res?.ok) { notify.error(data.error || "Failed to restore"); return; }
-    notify.success(`${u.full_name || u.email} restored`);
+    if (!res?.ok) { notify.error(data.error || t("adminUsers.failRestore")); return; }
+    notify.success(t("adminUsers.restoredToast", { name: u.full_name || u.email }));
     router.refresh();
   }
 
@@ -168,10 +169,10 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
       });
       data = await res.json().catch(() => ({}));
     } finally { setBusy(null); }
-    if (!res?.ok) { notify.error(data.error || "Bulk action failed"); return; }
+    if (!res?.ok) { notify.error(data.error || t("adminUsers.failBulk")); return; }
     notify.success(action === "suspend"
-      ? `${data.suspended} accounts suspended`
-      : `${data.restored} accounts restored`);
+      ? t("adminUsers.bulkSuspended", { n: String(data.suspended ?? 0) })
+      : t("adminUsers.bulkRestored", { n: String(data.restored ?? 0) }));
     setBulkStep(0); setBulkPhrase(""); setBulkReason("");
     router.refresh();
   }
@@ -180,21 +181,21 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
     <div>
       {/* Filters */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginBottom: "20px" }}>
-        {TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)}
+        {TABS.map(tb => (
+          <button key={tb} onClick={() => setTab(tb)}
             style={{
-              background: tab === t ? "var(--cr-ink)" : "var(--cr-paper-2)",
-              border: `1px solid ${tab === t ? "var(--cr-ink)" : "var(--cr-rule-dark)"}`,
+              background: tab === tb ? "var(--cr-ink)" : "var(--cr-paper-2)",
+              border: `1px solid ${tab === tb ? "var(--cr-ink)" : "var(--cr-rule-dark)"}`,
               borderRadius: "14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-              fontSize: "12px", color: tab === t ? "var(--cr-paper)" : "var(--cr-ink-3)",
+              fontSize: "12px", color: tab === tb ? "var(--cr-paper)" : "var(--cr-ink-3)",
               padding: "6px 13px", cursor: "pointer",
             }}>
-            {TAB_LABEL[t]} ({counts[t]})
+            {TAB_LABEL[tb]} ({counts[tb]})
           </button>
         ))}
         <div style={{ flex: 1 }} />
         <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search name or email…"
+          placeholder={t("adminUsers.searchPlaceholder")}
           style={{
             background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
             borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px",
@@ -207,7 +208,7 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "780px" }}>
           <thead>
             <tr>
-              {["User", "Role", "Plan", "Joined", "Status", "Actions"].map(h => (
+              {[t("adminUsers.colUser"), t("adminUsers.colRole"), t("adminUsers.colPlan"), t("adminUsers.colJoined"), t("adminUsers.colStatus"), t("adminUsers.colActions")].map(h => (
                 <th key={h} style={{
                   textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
                   fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
@@ -218,7 +219,7 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={6} style={{ ...cellStyle, textAlign: "center", padding: "32px" }}>No users match.</td></tr>
+              <tr><td colSpan={6} style={{ ...cellStyle, textAlign: "center", padding: "32px" }}>{t("adminUsers.noMatch")}</td></tr>
             )}
             {filtered.map(u => {
               const suspended = isSuspended(u);
@@ -227,7 +228,7 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                 <tr key={u.id}>
                   <td style={cellStyle}>
                     <div style={{ fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-                      {u.full_name || "—"}{self && " (you)"}
+                      {u.full_name || "—"}{self && ` ${t("adminUsers.you")}`}
                     </div>
                     <div style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>{u.email}</div>
                   </td>
@@ -238,7 +239,7 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                     ) : (
                       <button
                         onClick={() => { setTierTarget(u); setTierChoice(u.subscription_tier || "free"); }}
-                        title="Change tier"
+                        title={t("adminUsers.changeTier")}
                         style={{ background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit", textTransform: "capitalize", color: "var(--cr-copper)", textDecoration: "underline dotted" }}
                       >
                         {u.subscription_tier || "free"}
@@ -258,16 +259,16 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                   </td>
                   <td style={cellStyle}>
                     {u.role === "admin" || self ? (
-                      <span style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>Protected</span>
+                      <span style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("adminUsers.protected")}</span>
                     ) : suspended ? (
                       <button onClick={() => unsuspend(u)} disabled={busy === u.id}
                         style={{ ...linkBtn, color: "var(--cr-up)", opacity: busy === u.id ? 0.5 : 1 }}>
-                        {busy === u.id ? "Restoring…" : "Unsuspend"}
+                        {busy === u.id ? t("adminUsers.restoring") : t("adminUsers.unsuspend")}
                       </button>
                     ) : (
                       <button onClick={() => { setTarget(u); setReason(""); setDuration("indefinite"); }}
                         style={{ ...linkBtn, color: "var(--cr-down)" }}>
-                        Suspend
+                        {t("adminUsers.suspend")}
                       </button>
                     )}
                   </td>
@@ -284,12 +285,10 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
         borderRadius: "8px", padding: "24px", marginTop: "48px",
       }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>
-          Danger zone
+          {t("adminUsers.dangerZone")}
         </p>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "6px", lineHeight: 1.6 }}>
-          Suspends every non-admin account and signs them out immediately. Admin accounts are
-          never affected, so you keep access to reverse it. No emails are sent — the suspension
-          page explains the situation instead.
+          {t("adminUsers.dangerDesc")}
         </p>
         <div style={{ display: "flex", gap: "10px", marginTop: "16px", flexWrap: "wrap" }}>
           <button onClick={() => setBulkStep(1)} disabled={busy === "bulk"}
@@ -298,7 +297,7 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
               color: "#fff", padding: "10px 20px", cursor: "pointer",
             }}>
-            Suspend all users
+            {t("adminUsers.suspendAll")}
           </button>
           <button onClick={() => bulk("unsuspend")} disabled={busy === "bulk"}
             style={{
@@ -306,16 +305,16 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
               fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
               color: "var(--cr-ink-3)", padding: "10px 20px", cursor: "pointer",
             }}>
-            {busy === "bulk" ? "Working…" : "Unsuspend all"}
+            {busy === "bulk" ? t("adminUsers.working") : t("adminUsers.unsuspendAll")}
           </button>
         </div>
       </div>
 
       {/* Suspend modal */}
       {tierTarget && (
-        <Modal onClose={() => setTierTarget(null)} title={`Set tier for ${tierTarget.full_name || tierTarget.email}`}>
+        <Modal onClose={() => setTierTarget(null)} title={t("adminUsers.setTierFor", { name: tierTarget.full_name || tierTarget.email })}>
           <p style={{ fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
-            Applies immediately and notifies the user. Role: <b style={{ textTransform: "capitalize" }}>{tierTarget.role}</b>
+            {t("adminUsers.tierApplies")} <b style={{ textTransform: "capitalize" }}>{tierTarget.role}</b>
           </p>
           <select
             value={tierChoice}
@@ -328,22 +327,22 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
             ).map(t2 => <option key={t2} value={t2} style={{ textTransform: "capitalize" }}>{t2}</option>)}
           </select>
           <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-            <button onClick={() => setTierTarget(null)} style={ghostBtn}>Cancel</button>
+            <button onClick={() => setTierTarget(null)} style={ghostBtn}>{t("adminUsers.cancel")}</button>
             <button onClick={applyTier} disabled={busy === tierTarget.id}
               style={{ background: "var(--cr-copper)", color: "#fff", border: "none", borderRadius: "4px", padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", cursor: "pointer", opacity: busy === tierTarget.id ? 0.5 : 1 }}>
-              {busy === tierTarget.id ? "Saving…" : "Apply tier"}
+              {busy === tierTarget.id ? t("adminUsers.saving") : t("adminUsers.applyTier")}
             </button>
           </div>
         </Modal>
       )}
 
       {target && (
-        <Modal onClose={() => setTarget(null)} title={`Suspend ${target.full_name || target.email}?`}>
-          <label style={labelStyle}>Reason (shown to the user)</label>
+        <Modal onClose={() => setTarget(null)} title={t("adminUsers.suspendQ", { name: target.full_name || target.email })}>
+          <label style={labelStyle}>{t("adminUsers.reasonLabel")}</label>
           <textarea value={reason} onChange={e => setReason(e.target.value)} rows={3} autoFocus
-            placeholder="Explain why this account is being suspended…"
+            placeholder={t("adminUsers.reasonPlaceholder")}
             style={{ ...inputStyle, resize: "vertical" }} />
-          <label style={{ ...labelStyle, marginTop: "12px" }}>Duration</label>
+          <label style={{ ...labelStyle, marginTop: "12px" }}>{t("adminUsers.duration")}</label>
           <select value={duration} onChange={e => setDuration(e.target.value)} style={inputStyle}>
             {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
           </select>
@@ -354,25 +353,24 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff",
                 cursor: !reason.trim() ? "default" : "pointer", opacity: !reason.trim() ? 0.5 : 1,
               }}>
-              {busy === target.id ? "Suspending…" : "Suspend account"}
+              {busy === target.id ? t("adminUsers.suspending") : t("adminUsers.suspendAccount")}
             </button>
-            <button onClick={() => setTarget(null)} style={ghostBtn}>Cancel</button>
+            <button onClick={() => setTarget(null)} style={ghostBtn}>{t("adminUsers.cancel")}</button>
           </div>
         </Modal>
       )}
 
       {/* Bulk confirm — step 1: type the phrase */}
       {bulkStep === 1 && (
-        <Modal onClose={() => { setBulkStep(0); setBulkPhrase(""); }} title="Suspend all users?">
+        <Modal onClose={() => { setBulkStep(0); setBulkPhrase(""); }} title={t("adminUsers.suspendAllQ")}>
           <p style={modalTextStyle}>
-            This suspends every non-admin account on the platform and signs those users out.
-            Type <strong>{CONFIRM_PHRASE}</strong> to continue.
+            {t("adminUsers.bulkStep1a")} <strong>{CONFIRM_PHRASE}</strong> {t("adminUsers.bulkStep1b")}
           </p>
           <input type="text" value={bulkPhrase} onChange={e => setBulkPhrase(e.target.value)} autoFocus
             placeholder={CONFIRM_PHRASE} style={{ ...inputStyle, marginTop: "12px" }} />
-          <label style={{ ...labelStyle, marginTop: "12px" }}>Reason shown to users (optional)</label>
+          <label style={{ ...labelStyle, marginTop: "12px" }}>{t("adminUsers.bulkReasonLabel")}</label>
           <input type="text" value={bulkReason} onChange={e => setBulkReason(e.target.value)}
-            placeholder="Platform temporarily unavailable…" style={inputStyle} />
+            placeholder={t("adminUsers.bulkReasonPlaceholder")} style={inputStyle} />
           <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
             <button onClick={() => setBulkStep(2)} disabled={bulkPhrase !== CONFIRM_PHRASE}
               style={{
@@ -381,19 +379,18 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                 cursor: bulkPhrase !== CONFIRM_PHRASE ? "default" : "pointer",
                 opacity: bulkPhrase !== CONFIRM_PHRASE ? 0.5 : 1,
               }}>
-              Continue
+              {t("adminUsers.continue")}
             </button>
-            <button onClick={() => { setBulkStep(0); setBulkPhrase(""); }} style={ghostBtn}>Cancel</button>
+            <button onClick={() => { setBulkStep(0); setBulkPhrase(""); }} style={ghostBtn}>{t("adminUsers.cancel")}</button>
           </div>
         </Modal>
       )}
 
       {/* Bulk confirm — step 2 */}
       {bulkStep === 2 && (
-        <Modal onClose={() => setBulkStep(0)} title="Final confirmation">
+        <Modal onClose={() => setBulkStep(0)} title={t("adminUsers.finalConfirm")}>
           <p style={modalTextStyle}>
-            All non-admin users will lose access immediately and their sessions will be revoked.
-            You can reverse this with &ldquo;Unsuspend all&rdquo;.
+            {t("adminUsers.bulkStep2")}
           </p>
           <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
             <button onClick={() => bulk("suspend")} disabled={busy === "bulk"}
@@ -402,9 +399,9 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff",
                 cursor: "pointer", opacity: busy === "bulk" ? 0.6 : 1,
               }}>
-              {busy === "bulk" ? "Suspending…" : "Suspend all users"}
+              {busy === "bulk" ? t("adminUsers.suspending") : t("adminUsers.suspendAll")}
             </button>
-            <button onClick={() => setBulkStep(0)} style={ghostBtn}>Cancel</button>
+            <button onClick={() => setBulkStep(0)} style={ghostBtn}>{t("adminUsers.cancel")}</button>
           </div>
         </Modal>
       )}
