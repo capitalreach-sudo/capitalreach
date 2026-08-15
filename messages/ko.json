@@ -1835,7 +1835,15 @@
     "allDeals": "모든 딜",
     "adminSubtitle": "플랫폼 전체 관리 — 모든 스타트업과 투자자의 모든 딜.",
     "availableTo": "딜 포털은 스타트업, 투자자, 관리자 계정에서 사용할 수 있습니다.",
-    "feeNotBilled": "딜이 완료되었습니다. 2% 수수료를 아직 청구하지 못했습니다 — 창업자의 결제 수단이 등록되어 있지 않습니다."
+    "feeNotBilled": "딜이 완료되었습니다. 2% 수수료를 아직 청구하지 못했습니다 — 창업자의 결제 수단이 등록되어 있지 않습니다.",
+    "signContract": "서명",
+    "signTitle": "서명: {title}",
+    "signIntro": "서명하려면 법적 전체 이름을 입력하세요. 서명, 날짜, 그리고 바로 이 조건의 지문이 기록되어 — 이후 수정으로 합의한 내용을 바꿀 수 없습니다.",
+    "signNameLabel": "법적 전체 이름",
+    "signNamePlaceholder": "전체 이름",
+    "signConfirm": "지금 서명",
+    "contractSigned": "계약에 서명했습니다.",
+    "contract": "계약"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

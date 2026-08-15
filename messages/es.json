@@ -1835,7 +1835,15 @@
     "allDeals": "Todos los deals",
     "adminSubtitle": "Supervisión de toda la plataforma — cada deal de cada startup e inversor.",
     "availableTo": "El portal de deals está disponible para cuentas de startup, inversor y administrador.",
-    "feeNotBilled": "Deal cerrado. La comisión del 2 % aún no se pudo facturar — el fundador no tiene método de pago registrado."
+    "feeNotBilled": "Deal cerrado. La comisión del 2 % aún no se pudo facturar — el fundador no tiene método de pago registrado.",
+    "signContract": "Firmar",
+    "signTitle": "Firmar: {title}",
+    "signIntro": "Escribe tu nombre legal completo para firmar. Se registran tu firma, la fecha y una huella de estos términos exactos — una edición posterior no puede cambiar lo que aceptaste.",
+    "signNameLabel": "Nombre legal completo",
+    "signNamePlaceholder": "Tu nombre completo",
+    "signConfirm": "Firmar ahora",
+    "contractSigned": "Contrato firmado.",
+    "contract": "Contrato"
   },
   "investorProfile": {
     "back": "Volver a inversores",

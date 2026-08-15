@@ -467,6 +467,10 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [ndaStatus, setNdaStatus] = useState<"none" | "pending" | "signed" | null>(null);
   const [ndaSending, setNdaSending] = useState(false);
+  const [signing, setSigning] = useState<Contract | null>(null);
+  const [signerName, setSignerName] = useState("");
+  const [signBusy, setSignBusy] = useState(false);
+  useEscapeKey(!!signing, () => setSigning(null));
 
   async function load() {
     setLoading(true);
@@ -557,6 +561,28 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
     setContracts(prev => prev.map(c => (c.id === contractId ? data.contract : c)));
   }
 
+  async function signContract() {
+    if (!signing || !signerName.trim() || signBusy) return;
+    setSignBusy(true);
+    try {
+      const res = await fetch("/api/contracts/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contractId: signing.id, signerName: signerName.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
+      notify.success(t("deals.contractSigned"));
+      if (data.contract) setContracts(prev => prev.map(c => (c.id === signing.id ? data.contract : c)));
+      setSigning(null);
+      setSignerName("");
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setSignBusy(false);
+    }
+  }
+
   const statusStyle: Record<Contract["status"], React.CSSProperties> = {
     draft:  { background: "var(--cr-paper-3)", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule)" },
     sent:   { background: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" },
@@ -624,10 +650,17 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               {NEXT_CONTRACT_STATUSES[c.status].length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "6px" }}>
                   {NEXT_CONTRACT_STATUSES[c.status].map(next => (
-                    <button key={next} onClick={() => updateStatus(c.id, next)} disabled={updatingId === c.id}
-                      style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: next === "void" ? "var(--cr-down)" : "var(--cr-copper)", textDecoration: "underline", opacity: updatingId === c.id ? 0.6 : 1 }}>
-                      {t(STATUS_ACTION_KEY[next])}
-                    </button>
+                    next === "signed" ? (
+                      <button key={next} onClick={() => { setSigning(c); setSignerName(""); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline" }}>
+                        {t("deals.signContract")}
+                      </button>
+                    ) : (
+                      <button key={next} onClick={() => updateStatus(c.id, next)} disabled={updatingId === c.id}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: next === "void" ? "var(--cr-down)" : "var(--cr-copper)", textDecoration: "underline", opacity: updatingId === c.id ? 0.6 : 1 }}>
+                        {t(STATUS_ACTION_KEY[next])}
+                      </button>
+                    )
                   ))}
                 </div>
               )}
@@ -675,6 +708,35 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               <Plus style={{ width: 11, height: 11 }} /> {t("deals.newContract")}
             </button>
           )}
+        </div>
+      )}
+
+      {signing && (
+        <div role="dialog" aria-modal="true" onClick={() => setSigning(null)}
+          style={{ position: "fixed", inset: 0, background: "rgba(26,22,18,0.5)", zIndex: 210, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "8px", width: "100%", maxWidth: "480px", maxHeight: "86vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ padding: "20px 24px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("deals.signTitle", { title: signing.title || t("deals.contract") })}</p>
+            </div>
+            <div style={{ padding: "16px 24px", overflowY: "auto" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.55, marginBottom: "14px" }}>{t("deals.signIntro")}</p>
+              {signing.terms && (
+                <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 16px", margin: "0 0 14px", maxHeight: "180px", overflowY: "auto" }}>{signing.terms}</pre>
+              )}
+              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{t("deals.signNameLabel")}</label>
+              <input value={signerName} onChange={e => setSignerName(e.target.value)} autoFocus
+                placeholder={t("deals.signNamePlaceholder")}
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', serif", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "14px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
+              <button onClick={() => setSigning(null)} style={{ height: "38px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
+              <button onClick={signContract} disabled={signBusy || signerName.trim().length < 2}
+                style={{ height: "38px", padding: "0 20px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
+                {signBusy ? t("common.saving") : t("deals.signConfirm")}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

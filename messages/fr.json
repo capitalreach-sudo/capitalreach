@@ -1835,7 +1835,15 @@
     "allDeals": "Tous les deals",
     "adminSubtitle": "Supervision à l'échelle de la plateforme — chaque deal de chaque startup et investisseur.",
     "availableTo": "Le portail des deals est accessible aux comptes startup, investisseur et admin.",
-    "feeNotBilled": "Deal clôturé. La commission de 2 % n'a pas encore pu être facturée — le fondateur n'a aucun moyen de paiement enregistré."
+    "feeNotBilled": "Deal clôturé. La commission de 2 % n'a pas encore pu être facturée — le fondateur n'a aucun moyen de paiement enregistré.",
+    "signContract": "Signer",
+    "signTitle": "Signer : {title}",
+    "signIntro": "Saisissez votre nom légal complet pour signer. Votre signature, la date et une empreinte de ces termes exacts sont enregistrées — une modification ultérieure ne peut pas changer ce que vous avez accepté.",
+    "signNameLabel": "Nom légal complet",
+    "signNamePlaceholder": "Votre nom complet",
+    "signConfirm": "Signer maintenant",
+    "contractSigned": "Contrat signé.",
+    "contract": "Contrat"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

@@ -1835,7 +1835,15 @@
     "allDeals": "Alle deals",
     "adminSubtitle": "Platformbreed overzicht — elke deal van elke startup en investeerder.",
     "availableTo": "Het deal-portaal is beschikbaar voor startup-, investeerder- en adminaccounts.",
-    "feeNotBilled": "Deal gesloten. De 2%-fee kon nog niet worden gefactureerd — de oprichter heeft geen betaalmethode ingesteld."
+    "feeNotBilled": "Deal gesloten. De 2%-fee kon nog niet worden gefactureerd — de oprichter heeft geen betaalmethode ingesteld.",
+    "signContract": "Ondertekenen",
+    "signTitle": "Ondertekenen: {title}",
+    "signIntro": "Typ je volledige juridische naam om te ondertekenen. Je handtekening, de datum en een vingerafdruk van precies deze voorwaarden worden vastgelegd — een latere wijziging kan niet veranderen waarmee je akkoord ging.",
+    "signNameLabel": "Volledige juridische naam",
+    "signNamePlaceholder": "Je volledige naam",
+    "signConfirm": "Nu ondertekenen",
+    "contractSigned": "Contract ondertekend.",
+    "contract": "Contract"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

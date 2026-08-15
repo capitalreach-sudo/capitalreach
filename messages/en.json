@@ -1846,7 +1846,15 @@
     "allDeals": "All deals",
     "adminSubtitle": "Platform-wide oversight — every deal across every startup and investor.",
     "availableTo": "The Deal Portal is available to startup, investor, and admin accounts.",
-    "feeNotBilled": "Deal closed. The 2% fee couldn't be invoiced yet — the founder has no payment method on file."
+    "feeNotBilled": "Deal closed. The 2% fee couldn't be invoiced yet — the founder has no payment method on file.",
+    "signContract": "Sign",
+    "signTitle": "Sign: {title}",
+    "signIntro": "Type your full legal name to sign. Your signature, the date, and a fingerprint of these exact terms are recorded — a later edit can't change what you agreed to.",
+    "signNameLabel": "Full legal name",
+    "signNamePlaceholder": "Your full name",
+    "signConfirm": "Sign now",
+    "contractSigned": "Contract signed.",
+    "contract": "Contract"
   },
   "investorProfile": {
     "back": "Back to investors",

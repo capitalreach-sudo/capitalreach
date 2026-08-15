@@ -1835,7 +1835,15 @@
     "allDeals": "所有交易",
     "adminSubtitle": "全平台监督——每个初创公司和投资人的每笔交易。",
     "availableTo": "交易门户面向初创公司、投资人和管理员账户开放。",
-    "feeNotBilled": "交易已完成。2% 费用暂时无法开票——创始人尚未设置付款方式。"
+    "feeNotBilled": "交易已完成。2% 费用暂时无法开票——创始人尚未设置付款方式。",
+    "signContract": "签署",
+    "signTitle": "签署：{title}",
+    "signIntro": "输入您的法定全名以签署。您的签名、日期以及这些条款的指纹将被记录——之后的修改无法改变您已同意的内容。",
+    "signNameLabel": "法定全名",
+    "signNamePlaceholder": "您的全名",
+    "signConfirm": "立即签署",
+    "contractSigned": "合同已签署。",
+    "contract": "合同"
   },
   "investorProfile": {
     "back": "返回投资者列表",

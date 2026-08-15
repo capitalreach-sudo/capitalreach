@@ -1835,7 +1835,15 @@
     "allDeals": "Alla deals",
     "adminSubtitle": "Plattformsövergripande översikt — varje deal för varje startup och investerare.",
     "availableTo": "Deal-portalen är tillgänglig för startup-, investerar- och adminkonton.",
-    "feeNotBilled": "Affären stängd. 2%-avgiften kunde inte faktureras ännu — grundaren har ingen betalningsmetod registrerad."
+    "feeNotBilled": "Affären stängd. 2%-avgiften kunde inte faktureras ännu — grundaren har ingen betalningsmetod registrerad.",
+    "signContract": "Signera",
+    "signTitle": "Signera: {title}",
+    "signIntro": "Skriv ditt fullständiga juridiska namn för att signera. Din signatur, datumet och ett fingeravtryck av exakt dessa villkor registreras — en senare ändring kan inte ändra vad du godkände.",
+    "signNameLabel": "Fullständigt juridiskt namn",
+    "signNamePlaceholder": "Ditt fullständiga namn",
+    "signConfirm": "Signera nu",
+    "contractSigned": "Avtal signerat.",
+    "contract": "Avtal"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

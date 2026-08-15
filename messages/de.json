@@ -1842,7 +1842,15 @@
     "allDeals": "Alle Deals",
     "adminSubtitle": "Plattformweite Übersicht — jeder Deal über alle Startups und Investoren.",
     "availableTo": "Das Deal-Portal steht Startup-, Investoren- und Admin-Konten zur Verfügung.",
-    "feeNotBilled": "Deal abgeschlossen. Die 2 %-Gebühr konnte noch nicht in Rechnung gestellt werden — der Gründer hat keine Zahlungsmethode hinterlegt."
+    "feeNotBilled": "Deal abgeschlossen. Die 2 %-Gebühr konnte noch nicht in Rechnung gestellt werden — der Gründer hat keine Zahlungsmethode hinterlegt.",
+    "signContract": "Signieren",
+    "signTitle": "Signieren: {title}",
+    "signIntro": "Gib deinen vollständigen rechtlichen Namen ein, um zu signieren. Deine Unterschrift, das Datum und ein Fingerabdruck genau dieser Bedingungen werden aufgezeichnet — eine spätere Änderung kann das Vereinbarte nicht verändern.",
+    "signNameLabel": "Vollständiger rechtlicher Name",
+    "signNamePlaceholder": "Dein vollständiger Name",
+    "signConfirm": "Jetzt signieren",
+    "contractSigned": "Vertrag signiert.",
+    "contract": "Vertrag"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

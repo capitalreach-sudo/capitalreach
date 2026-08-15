@@ -146,6 +146,47 @@ export type Database = {
         }
         Relationships: []
       }
+      contract_signatures: {
+        Row: {
+          content_hash: string
+          contract_id: string
+          created_at: string
+          id: string
+          signed_ip: string | null
+          signed_ua: string | null
+          signer_id: string
+          signer_name: string
+        }
+        Insert: {
+          content_hash: string
+          contract_id: string
+          created_at?: string
+          id?: string
+          signed_ip?: string | null
+          signed_ua?: string | null
+          signer_id: string
+          signer_name: string
+        }
+        Update: {
+          content_hash?: string
+          contract_id?: string
+          created_at?: string
+          id?: string
+          signed_ip?: string | null
+          signed_ua?: string | null
+          signer_id?: string
+          signer_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signatures_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contracts: {
         Row: {
           amount: number | null

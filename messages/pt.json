@@ -1835,7 +1835,15 @@
     "allDeals": "Todos os deals",
     "adminSubtitle": "Supervisão de toda a plataforma — cada deal de cada startup e investidor.",
     "availableTo": "O portal de deals está disponível para contas de startup, investidor e admin.",
-    "feeNotBilled": "Deal fechado. A taxa de 2% ainda não pôde ser faturada — o fundador não tem método de pagamento cadastrado."
+    "feeNotBilled": "Deal fechado. A taxa de 2% ainda não pôde ser faturada — o fundador não tem método de pagamento cadastrado.",
+    "signContract": "Assinar",
+    "signTitle": "Assinar: {title}",
+    "signIntro": "Digite seu nome legal completo para assinar. Sua assinatura, a data e uma impressão destes termos exatos são registradas — uma edição posterior não pode alterar o que você aceitou.",
+    "signNameLabel": "Nome legal completo",
+    "signNamePlaceholder": "Seu nome completo",
+    "signConfirm": "Assinar agora",
+    "contractSigned": "Contrato assinado.",
+    "contract": "Contrato"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

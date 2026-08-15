@@ -1835,7 +1835,15 @@
     "allDeals": "Wszystkie transakcje",
     "adminSubtitle": "Nadzór nad całą platformą — każda transakcja każdego startupu i inwestora.",
     "availableTo": "Portal transakcji jest dostępny dla kont startupów, inwestorów i administratorów.",
-    "feeNotBilled": "Transakcja zamknięta. Prowizji 2% nie udało się jeszcze zafakturować — założyciel nie ma zapisanej metody płatności."
+    "feeNotBilled": "Transakcja zamknięta. Prowizji 2% nie udało się jeszcze zafakturować — założyciel nie ma zapisanej metody płatności.",
+    "signContract": "Podpisz",
+    "signTitle": "Podpisz: {title}",
+    "signIntro": "Wpisz swoje pełne imię i nazwisko, aby podpisać. Twój podpis, data i odcisk dokładnie tych warunków są rejestrowane — późniejsza edycja nie może zmienić tego, na co się zgodziłeś.",
+    "signNameLabel": "Pełne imię i nazwisko",
+    "signNamePlaceholder": "Twoje pełne imię i nazwisko",
+    "signConfirm": "Podpisz teraz",
+    "contractSigned": "Umowa podpisana.",
+    "contract": "Umowa"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
