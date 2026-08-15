@@ -127,6 +127,7 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
+                aria-current={isActive(href) ? "page" : undefined}
                 className="relative pb-[2px]"
                 style={{
                   fontFamily:     "'DM Sans', sans-serif",

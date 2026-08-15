@@ -127,7 +127,7 @@ export function TwoFactorSection() {
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px", display: "flex", flexWrap: "wrap", gap: "16px" }}>
           {/* The QR from Supabase is a self-contained SVG data URI. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={enrolling.qr} alt={t("twofa.qrAlt")} width={132} height={132}
+          <img src={enrolling.qr} alt={t("twofa.qrAlt")} width={132} height={132} decoding="async"
             style={{ background: "#fff", borderRadius: "4px", padding: "6px", flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: "220px" }}>
             <p style={{ ...sub, marginBottom: "8px" }}>{t("twofa.scanHint")}</p>

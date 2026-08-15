@@ -922,7 +922,7 @@ export function StartupDetailClient({
                     <div style={{ width: 44, height: 44, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                       {f.photo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={f.photo_url} alt={f.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={f.photo_url} alt={f.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : (
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "var(--cr-copper)" }}>{getInitials(f.name)}</span>
                       )}
