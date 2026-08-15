@@ -17,6 +17,7 @@ import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { ndaText } from "@/lib/nda-text";
+import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/currency";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
@@ -284,6 +285,8 @@ export function StartupDetailClient({
   useEscapeKey(messageOpen, () => setMessageOpen(false));
   const [messageBody, setMessageBody]           = useState("");
   const [sendingMessage, setSendingMessage]     = useState(false);
+  const [interestAmount, setInterestAmount]     = useState("");
+  const [interestCurrency, setInterestCurrency] = useState<string>(DEFAULT_CURRENCY);
   const [aiReport, setAiReport]                 = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [ndaLoading, setNdaLoading]             = useState(false);
@@ -325,7 +328,6 @@ export function StartupDetailClient({
   }, [investorId, startup.id, supabase]);
 
   const router = useRouter();
-  const [startingDeal, setStartingDeal] = useState(false);
   // Inline PDF viewer: keep the reader on the page instead of a new tab.
   const [viewerDoc, setViewerDoc] = useState<{ url: string; label: string } | null>(null);
   useEscapeKey(!!viewerDoc, () => setViewerDoc(null));
@@ -336,19 +338,6 @@ export function StartupDetailClient({
   // The reverse of the pipeline pill: when there is no deal yet, the profile
   // is where an investor decides to start one -- sending them to the portal
   // to re-find this startup by name was the long way round.
-  async function startDeal() {
-    if (!investorId || startingDeal) return;
-    setStartingDeal(true);
-    const res = await fetch("/api/deals/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ counterpartId: startup.id }),
-    });
-    const data = await res.json();
-    setStartingDeal(false);
-    if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
-    router.push(`/deals?deal=${data.deal.id}`);
-  }
 
 
   async function toggleSave() {
@@ -366,22 +355,33 @@ export function StartupDetailClient({
     }
   }
 
-  async function sendMessage() {
-    if (!investorId) return;
+  async function expressInterest() {
+    if (!investorId || sendingMessage) return;
+    if (!messageBody.trim()) { notify.info(t("startupDetail.interestNeedsMessage")); return; }
     setSendingMessage(true);
-    const res = await fetch("/api/messages/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ startupId: startup.id, investorId, body: messageBody }),
-    });
-    setSendingMessage(false);
-    if (res.ok) {
+    try {
+      const amt = parseFloat(interestAmount.replace(/[^0-9.]/g, ""));
+      const res = await fetch("/api/deals/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          counterpartId: startup.id,
+          amount: Number.isFinite(amt) && amt > 0 ? amt : undefined,
+          currency: interestCurrency,
+          note: messageBody.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.deal) { notify.error(data.error || t("errors.generic")); return; }
+      notify.success(t("startupDetail.interestSent"));
       setMessageOpen(false);
       setMessageBody("");
-      notify.success(t("toast.messageSent"));
-    } else {
-      const err = await res.json();
-      notify.error(err.error || t("startupDetail.failedSendMessage"));
+      setInterestAmount("");
+      router.push(`/deals?deal=${data.deal.id}`);
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setSendingMessage(false);
     }
   }
 
@@ -533,24 +533,6 @@ export function StartupDetailClient({
                         : t("deals.colPassed")}
                     </Link>
                   )}
-                  {!viewerDeal && investorId && !viewerSuspended && (
-                    <button
-                      onClick={startDeal}
-                      disabled={startingDeal}
-                      style={{
-                        display: "inline-flex", alignItems: "center", gap: "5px",
-                        background: "transparent", border: "1px solid var(--cr-copper-br)",
-                        color: "var(--cr-copper)", cursor: "pointer",
-                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px",
-                        borderRadius: "2px", padding: "3px 9px",
-                        textTransform: "uppercase", letterSpacing: "0.05em",
-                        opacity: startingDeal ? 0.5 : 1,
-                      }}
-                    >
-                      <Handshake style={{ width: 11, height: 11 }} />
-                      {startingDeal ? t("deals.creating") : t("startupDetail.startDeal")}
-                    </button>
-                  )}
                   <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     {startup.industry}
                   </span>
@@ -659,12 +641,18 @@ export function StartupDetailClient({
                     section when one is on it), so it says that now. */}
                 <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
-                {investorId && !viewerSuspended && (
+                {!viewerDeal && investorId && !viewerSuspended && (
                   <button onClick={() => setMessageOpen(true)}
                     className="btn-copper-shimmer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
-                    <MessageSquare style={{ width: 13, height: 13 }} /> {t("startupDetail.requestIntro")}
+                    <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.expressInterest")}
                   </button>
+                )}
+                {viewerDeal && (
+                  <Link href={`/deals?deal=${viewerDeal.id}`}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 18px", textDecoration: "none" }}>
+                    <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.viewInPipeline")}
+                  </Link>
                 )}
               </div>
             </div>
@@ -1149,8 +1137,22 @@ export function StartupDetailClient({
               </button>
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
-              Send {startup.name} a message to start the conversation.
+              {t("startupDetail.interestIntro", { name: startup.name })}
             </p>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+              <input
+                inputMode="decimal"
+                value={interestAmount}
+                onChange={(e) => setInterestAmount(e.target.value)}
+                placeholder={t("startupDetail.interestAmountPlaceholder")}
+                style={{ flex: 1, border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", padding: "11px 14px", outline: "none", boxSizing: "border-box" }}
+              />
+              <select value={interestCurrency} onChange={(e) => setInterestCurrency(e.target.value)}
+                aria-label={t("deals.currency")}
+                style={{ border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "0 10px" }}>
+                {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
+              </select>
+            </div>
             <textarea
               style={{ width: "100%", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink)", padding: "12px 14px", resize: "none", minHeight: "110px", outline: "none", boxSizing: "border-box" }}
               placeholder={`Hi ${startup.name} team, I'm interested in your funding round…`}
@@ -1164,10 +1166,10 @@ export function StartupDetailClient({
                 style={{ flex: 1, height: "44px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                 {t("common.cancel")}
               </button>
-              <button onClick={sendMessage} disabled={sendingMessage || !messageBody.trim()}
+              <button onClick={expressInterest} disabled={sendingMessage || !messageBody.trim()}
                 className="btn-copper-shimmer"
                 style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer", opacity: sendingMessage || !messageBody.trim() ? 0.5 : 1 }}>
-                {sendingMessage ? t("common.saving") : t("toast.messageSent")}
+                {sendingMessage ? t("common.saving") : t("startupDetail.expressInterestBtn")}
               </button>
             </div>
           </div>
@@ -1194,24 +1196,8 @@ export function StartupDetailClient({
           <span className="sr-only">{isSaved ? t("toast.saved") : t("common.saveWatchlist")}</span>
         </button>
 
-        {!viewerDeal && investorId && !viewerSuspended && (
-          <button
-            onClick={startDeal}
-            disabled={startingDeal}
-            style={{
-              display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
-              height: "44px", paddingInline: "14px", flexShrink: 0,
-              border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-              color: "var(--cr-copper)", cursor: "pointer", opacity: startingDeal ? 0.5 : 1,
-            }}
-          >
-            <Handshake style={{ width: 15, height: 15 }} />
-            {startingDeal ? t("deals.creating") : t("startupDetail.startDeal")}
-          </button>
-        )}
 
-        {investorId && !viewerSuspended && (
+        {!viewerDeal && investorId && !viewerSuspended && (
           <button
             onClick={() => setMessageOpen(true)}
             style={{
@@ -1221,11 +1207,26 @@ export function StartupDetailClient({
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer",
             }}
           >
-            <MessageSquare style={{ width: 15, height: 15, flexShrink: 0 }} />
+            <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {t("startupDetail.requestIntro")}
+              {t("startupDetail.expressInterest")}
             </span>
           </button>
+        )}
+        {viewerDeal && (
+          <Link href={`/deals?deal=${viewerDeal.id}`}
+            style={{
+              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+              height: "44px", minWidth: 0, textDecoration: "none",
+              background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff",
+            }}
+          >
+            <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {t("startupDetail.viewInPipeline")}
+            </span>
+          </Link>
         )}
       </StickyActionBar>
     </main>

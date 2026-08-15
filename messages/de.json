@@ -1151,7 +1151,13 @@
     "ndaIntro": "{name} teilt geschützte Dokumente nur mit Investoren, die sich zur Vertraulichkeit verpflichten. Lies und akzeptiere unten, um den Datenraum zu öffnen.",
     "ndaAcceptBtn": "Ich stimme zu — Datenraum öffnen",
     "ndaAccepted": "NDA akzeptiert. Der Datenraum ist offen.",
-    "signInToView": "Zum Ansehen anmelden"
+    "signInToView": "Zum Ansehen anmelden",
+    "expressInterestBtn": "Senden & Deal öffnen",
+    "interestIntro": "Sag {name}, dass du interessiert bist. Das öffnet einen Deal in deiner Pipeline und teilt deine Notiz mit dem Gründer. Ein Betrag ist optional.",
+    "interestAmountPlaceholder": "Betrag (optional)",
+    "interestNeedsMessage": "Füge eine kurze Nachricht hinzu, damit der Gründer Kontext hat.",
+    "interestSent": "Interesse gesendet — der Deal ist in deiner Pipeline.",
+    "viewInPipeline": "In Pipeline ansehen"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",

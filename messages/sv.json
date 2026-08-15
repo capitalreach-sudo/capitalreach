@@ -1104,7 +1104,13 @@
     "ndaIntro": "{name} delar skyddade dokument endast med investerare som går med på att hålla dem konfidentiella. Läs och acceptera nedan för att öppna datarummet.",
     "ndaAcceptBtn": "Jag godkänner — öppna datarummet",
     "ndaAccepted": "NDA accepterat. Datarummet är öppet.",
-    "signInToView": "Logga in för att se"
+    "signInToView": "Logga in för att se",
+    "expressInterestBtn": "Skicka och öppna affär",
+    "interestIntro": "Berätta för {name} att du är intresserad. Detta öppnar en affär i din pipeline och delar din notering med grundaren. Belopp är valfritt.",
+    "interestAmountPlaceholder": "Belopp (valfritt)",
+    "interestNeedsMessage": "Lägg till ett kort meddelande så att grundaren får sammanhang.",
+    "interestSent": "Intresse skickat — affären finns i din pipeline.",
+    "viewInPipeline": "Visa i pipeline"
   },
   "filters": {
     "industry": "Bransch",

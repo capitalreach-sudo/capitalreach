@@ -1104,7 +1104,13 @@
     "ndaIntro": "{name} condivide i documenti protetti solo con investitori che accettano di mantenerli riservati. Leggi e accetta qui sotto per aprire la data room.",
     "ndaAcceptBtn": "Accetto — apri la data room",
     "ndaAccepted": "NDA accettato. La data room è aperta.",
-    "signInToView": "Accedi per vedere"
+    "signInToView": "Accedi per vedere",
+    "expressInterestBtn": "Invia e apri il deal",
+    "interestIntro": "Fai sapere a {name} che sei interessato. Questo apre un deal nella tua pipeline e condivide la tua nota con il founder. L'importo è facoltativo.",
+    "interestAmountPlaceholder": "Importo (facoltativo)",
+    "interestNeedsMessage": "Aggiungi un breve messaggio per dare contesto al founder.",
+    "interestSent": "Interesse inviato — il deal è nella tua pipeline.",
+    "viewInPipeline": "Vedi nella pipeline"
   },
   "filters": {
     "industry": "Settore",

@@ -1144,7 +1144,13 @@
     "ndaIntro": "{name} 仅与同意保密的投资人分享受保护文件。请阅读并在下方同意以打开资料室。",
     "ndaAcceptBtn": "我同意——打开资料室",
     "ndaAccepted": "已同意保密协议。资料室已开放。",
-    "signInToView": "登录后查看"
+    "signInToView": "登录后查看",
+    "expressInterestBtn": "发送并开启交易",
+    "interestIntro": "告诉 {name} 您有兴趣。这会在您的管道中开启一笔交易，并将您的留言分享给创始人。金额为可选。",
+    "interestAmountPlaceholder": "金额（可选）",
+    "interestNeedsMessage": "添加一条简短留言，让创始人了解背景。",
+    "interestSent": "已发送兴趣——交易已在您的管道中。",
+    "viewInPipeline": "在管道中查看"
   },
   "investors": {
     "pageTitle": "认证投资者",

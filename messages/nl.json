@@ -1104,7 +1104,13 @@
     "ndaIntro": "{name} deelt beschermde documenten alleen met investeerders die instemmen ze vertrouwelijk te houden. Lees en accepteer hieronder om de dataroom te openen.",
     "ndaAcceptBtn": "Ik ga akkoord — dataroom openen",
     "ndaAccepted": "NDA geaccepteerd. De dataroom is open.",
-    "signInToView": "Log in om te bekijken"
+    "signInToView": "Log in om te bekijken",
+    "expressInterestBtn": "Verstuur & open deal",
+    "interestIntro": "Laat {name} weten dat je geïnteresseerd bent. Dit opent een deal in je pipeline en deelt je notitie met de oprichter. Een bedrag is optioneel.",
+    "interestAmountPlaceholder": "Bedrag (optioneel)",
+    "interestNeedsMessage": "Voeg een kort bericht toe zodat de oprichter context heeft.",
+    "interestSent": "Interesse verzonden — de deal staat in je pipeline.",
+    "viewInPipeline": "Bekijk in pipeline"
   },
   "filters": {
     "industry": "Industrie",

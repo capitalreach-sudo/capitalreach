@@ -1144,7 +1144,13 @@
     "ndaIntro": "{name} は、機密を守ることに同意した投資家にのみ保護文書を共有します。以下を読んで同意し、データルームを開いてください。",
     "ndaAcceptBtn": "同意する — データルームを開く",
     "ndaAccepted": "NDAに同意しました。データルームが開きました。",
-    "signInToView": "閲覧するにはサインイン"
+    "signInToView": "閲覧するにはサインイン",
+    "expressInterestBtn": "送信してディールを開く",
+    "interestIntro": "{name} に関心を伝えましょう。パイプラインにディールが作成され、メモが創業者に共有されます。金額は任意です。",
+    "interestAmountPlaceholder": "金額（任意）",
+    "interestNeedsMessage": "創業者が状況を把握できるよう、短いメッセージを添えてください。",
+    "interestSent": "関心を送信しました — ディールがパイプラインにあります。",
+    "viewInPipeline": "パイプラインで見る"
   },
   "investors": {
     "pageTitle": "認定投資家",

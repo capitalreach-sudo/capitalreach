@@ -1104,7 +1104,13 @@
     "ndaIntro": "{name} udostępnia chronione dokumenty tylko inwestorom, którzy zgadzają się zachować je w poufności. Przeczytaj i zaakceptuj poniżej, aby otworzyć data room.",
     "ndaAcceptBtn": "Zgadzam się — otwórz data room",
     "ndaAccepted": "NDA zaakceptowane. Data room jest otwarty.",
-    "signInToView": "Zaloguj się, aby zobaczyć"
+    "signInToView": "Zaloguj się, aby zobaczyć",
+    "expressInterestBtn": "Wyślij i otwórz transakcję",
+    "interestIntro": "Powiedz {name}, że jesteś zainteresowany. To otworzy transakcję w Twoim pipeline i udostępni Twoją notatkę founderowi. Kwota jest opcjonalna.",
+    "interestAmountPlaceholder": "Kwota (opcjonalnie)",
+    "interestNeedsMessage": "Dodaj krótką wiadomość, aby founder miał kontekst.",
+    "interestSent": "Zainteresowanie wysłane — transakcja jest w Twoim pipeline.",
+    "viewInPipeline": "Zobacz w pipeline"
   },
   "filters": {
     "industry": "Branża",

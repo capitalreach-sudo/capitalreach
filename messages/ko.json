@@ -1104,7 +1104,13 @@
     "ndaIntro": "{name}은(는) 기밀 유지에 동의한 투자자에게만 보호 문서를 공유합니다. 아래를 읽고 동의하여 데이터룸을 여세요.",
     "ndaAcceptBtn": "동의합니다 — 데이터룸 열기",
     "ndaAccepted": "NDA에 동의했습니다. 데이터룸이 열렸습니다.",
-    "signInToView": "보려면 로그인"
+    "signInToView": "보려면 로그인",
+    "expressInterestBtn": "보내고 딜 열기",
+    "interestIntro": "{name}에게 관심을 알리세요. 파이프라인에 딜이 생성되고 메모가 창업자와 공유됩니다. 금액은 선택 사항입니다.",
+    "interestAmountPlaceholder": "금액(선택)",
+    "interestNeedsMessage": "창업자가 맥락을 알 수 있도록 짧은 메시지를 추가하세요.",
+    "interestSent": "관심을 보냈습니다 — 딜이 파이프라인에 있습니다.",
+    "viewInPipeline": "파이프라인에서 보기"
   },
   "filters": {
     "industry": "산업",
