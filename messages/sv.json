@@ -1848,7 +1848,13 @@
     "closeProposedHint": "Motparten föreslog avslut. Bekräfta beloppet för att slutföra, eller ange ett annat för att lägga ett motbud.",
     "reviewClose": "Granska och bekräfta",
     "proposeClose": "Föreslå avslut",
-    "closeProposedSent": "Avslut föreslaget — motparten bekräftar för att slutföra."
+    "closeProposedSent": "Avslut föreslaget — motparten bekräftar för att slutföra.",
+    "sharedRoom": "Delat datarum",
+    "sharedRoomEmpty": "Inga delade filer än. Båda sidor kan ladda upp term sheets, cap tables, referenser.",
+    "uploadDoc": "Ladda upp",
+    "docUploaded": "Dokument tillagt i affärsrummet.",
+    "fromFounder": "Grundare",
+    "fromInvestor": "Investerare"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

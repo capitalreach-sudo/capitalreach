@@ -1848,7 +1848,13 @@
     "closeProposedHint": "L'altra parte ha proposto di chiudere. Conferma l'importo per finalizzare, o inseriscine uno diverso per una controproposta.",
     "reviewClose": "Rivedi e conferma",
     "proposeClose": "Proponi chiusura",
-    "closeProposedSent": "Chiusura proposta — l'altra parte conferma per finalizzare."
+    "closeProposedSent": "Chiusura proposta — l'altra parte conferma per finalizzare.",
+    "sharedRoom": "Data room condivisa",
+    "sharedRoomEmpty": "Ancora nessun file condiviso. Entrambe le parti possono caricare term sheet, cap table, referenze.",
+    "uploadDoc": "Carica",
+    "docUploaded": "Documento aggiunto alla stanza del deal.",
+    "fromFounder": "Founder",
+    "fromInvestor": "Investitore"
   },
   "investorProfile": {
     "back": "Torna agli investitori",

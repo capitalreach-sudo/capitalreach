@@ -757,13 +757,21 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
   const [data, setData]       = useState<DealResources | null>(null);
   const [generating, setGenerating] = useState(false);
   const [expandedReport, setExpandedReport] = useState<string | null>(null);
+  const [dealDocs, setDealDocs] = useState<Array<{ id: string; uploader_side: string; file_name: string; file_size: number | null; created_at: string }>>([]);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const dealDocInput = useRef<HTMLInputElement>(null);
 
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch(`/api/deals/resources?dealId=${dealId}`);
+      const [res, docsRes] = await Promise.all([
+        fetch(`/api/deals/resources?dealId=${dealId}`),
+        fetch(`/api/deals/documents?dealId=${dealId}`),
+      ]);
       const json = await res.json();
       if (res.ok) setData(json);
+      const docsJson = await docsRes.json().catch(() => ({}));
+      if (docsRes.ok) setDealDocs(docsJson.documents ?? []);
     } catch { /* section shows its empty state */ } finally {
       setLoading(false);
       setLoaded(true);
@@ -788,6 +796,25 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
     if (!res.ok) { notify.error(json.error || t("deals.reportGenerateFailed")); return; }
     notify.success(t("deals.reportGenerated"));
     load();
+  }
+
+  async function uploadDealDoc(file: File) {
+    setUploadingDoc(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("dealId", dealId);
+      const res = await fetch("/api/deals/documents", { method: "POST", body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) { notify.error(json.error || t("errors.generic")); return; }
+      setDealDocs(prev => [json.document, ...prev]);
+      notify.success(t("deals.docUploaded"));
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setUploadingDoc(false);
+      if (dealDocInput.current) dealDocInput.current.value = "";
+    }
   }
 
   return (
@@ -826,6 +853,39 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
                   )}
                 </div>
               ))}
+
+              {/* Shared deal room — both sides upload here (append-only). */}
+              <div style={{ marginTop: "10px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{t("deals.sharedRoom")}</p>
+                  {(viewAs === "startup" || viewAs === "investor") && (
+                    <>
+                      <input ref={dealDocInput} type="file" style={{ display: "none" }}
+                        onChange={e => { const f = e.target.files?.[0]; if (f) uploadDealDoc(f); }} />
+                      <button onClick={() => dealDocInput.current?.click()} disabled={uploadingDoc}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline", opacity: uploadingDoc ? 0.6 : 1 }}>
+                        {uploadingDoc ? t("common.saving") : t("deals.uploadDoc")}
+                      </button>
+                    </>
+                  )}
+                </div>
+                {dealDocs.length === 0 && (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.sharedRoomEmpty")}</p>
+                )}
+                {dealDocs.map(d => (
+                  <div key={d.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", padding: "5px 0" }}>
+                    <span style={{ minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
+                      <FileText style={{ width: 11, height: 11, flexShrink: 0 }} />
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.file_name}</span>
+                      <span style={{ flexShrink: 0, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.04em" }}>· {d.uploader_side === "startup" ? t("deals.fromFounder") : t("deals.fromInvestor")}</span>
+                    </span>
+                    <a href={`/api/deals/documents/download?id=${d.id}`} target="_blank" rel="noopener noreferrer"
+                      style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
+                      {t("deals.viewDocument")}
+                    </a>
+                  </div>
+                ))}
+              </div>
 
               {(viewAs === "investor" || data.reports.length > 0) && (
                 <div style={{ marginTop: "10px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>

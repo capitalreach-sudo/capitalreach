@@ -1859,7 +1859,13 @@
     "closeProposedHint": "The other side proposed closing. Confirm the amount to finalize, or enter a different one to counter.",
     "reviewClose": "Review & confirm",
     "proposeClose": "Propose close",
-    "closeProposedSent": "Close proposed — the other side confirms to finalize."
+    "closeProposedSent": "Close proposed — the other side confirms to finalize.",
+    "sharedRoom": "Shared data room",
+    "sharedRoomEmpty": "No shared files yet. Either side can upload term sheets, cap tables, references.",
+    "uploadDoc": "Upload",
+    "docUploaded": "Document added to the deal room.",
+    "fromFounder": "Founder",
+    "fromInvestor": "Investor"
   },
   "investorProfile": {
     "back": "Back to investors",

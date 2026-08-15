@@ -1848,7 +1848,13 @@
     "closeProposedHint": "Druga strona zaproponowała zamknięcie. Potwierdź kwotę, aby sfinalizować, lub wpisz inną, by kontrować.",
     "reviewClose": "Sprawdź i potwierdź",
     "proposeClose": "Zaproponuj zamknięcie",
-    "closeProposedSent": "Zaproponowano zamknięcie — druga strona potwierdza, aby sfinalizować."
+    "closeProposedSent": "Zaproponowano zamknięcie — druga strona potwierdza, aby sfinalizować.",
+    "sharedRoom": "Wspólny data room",
+    "sharedRoomEmpty": "Brak wspólnych plików. Każda strona może przesłać term sheety, cap table, referencje.",
+    "uploadDoc": "Prześlij",
+    "docUploaded": "Dokument dodano do pokoju transakcji.",
+    "fromFounder": "Founder",
+    "fromInvestor": "Inwestor"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

@@ -1848,7 +1848,13 @@
     "closeProposedHint": "De andere partij stelde afsluiten voor. Bevestig het bedrag om te finaliseren, of voer een ander bedrag in om tegen te bieden.",
     "reviewClose": "Bekijk en bevestig",
     "proposeClose": "Afsluiting voorstellen",
-    "closeProposedSent": "Afsluiting voorgesteld — de andere partij bevestigt om te finaliseren."
+    "closeProposedSent": "Afsluiting voorgesteld — de andere partij bevestigt om te finaliseren.",
+    "sharedRoom": "Gedeelde dataroom",
+    "sharedRoomEmpty": "Nog geen gedeelde bestanden. Beide partijen kunnen term sheets, cap tables, referenties uploaden.",
+    "uploadDoc": "Uploaden",
+    "docUploaded": "Document toegevoegd aan de dealruimte.",
+    "fromFounder": "Oprichter",
+    "fromInvestor": "Investeerder"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

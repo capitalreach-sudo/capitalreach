@@ -1848,7 +1848,13 @@
     "closeProposedHint": "A outra parte propôs fechar. Confirme o valor para finalizar, ou insira outro para contrapor.",
     "reviewClose": "Revisar e confirmar",
     "proposeClose": "Propor fechamento",
-    "closeProposedSent": "Fechamento proposto — a outra parte confirma para finalizar."
+    "closeProposedSent": "Fechamento proposto — a outra parte confirma para finalizar.",
+    "sharedRoom": "Data room compartilhado",
+    "sharedRoomEmpty": "Ainda sem arquivos compartilhados. Qualquer lado pode enviar term sheets, cap tables, referências.",
+    "uploadDoc": "Enviar",
+    "docUploaded": "Documento adicionado à sala do deal.",
+    "fromFounder": "Fundador",
+    "fromInvestor": "Investidor"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

@@ -1848,7 +1848,13 @@
     "closeProposedHint": "相手側がクローズを提案しました。金額を確認して確定するか、別の金額を入力して逆提案してください。",
     "reviewClose": "確認して承認",
     "proposeClose": "クローズを提案",
-    "closeProposedSent": "クローズを提案しました — 相手側が確認して確定します。"
+    "closeProposedSent": "クローズを提案しました — 相手側が確認して確定します。",
+    "sharedRoom": "共有データルーム",
+    "sharedRoomEmpty": "共有ファイルはまだありません。どちらの側もタームシート、キャップテーブル、推薦状をアップロードできます。",
+    "uploadDoc": "アップロード",
+    "docUploaded": "ディールルームに書類を追加しました。",
+    "fromFounder": "創業者",
+    "fromInvestor": "投資家"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",

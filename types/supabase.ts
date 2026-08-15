@@ -364,6 +364,70 @@ export type Database = {
           },
         ]
       }
+      deal_documents: {
+        Row: {
+          created_at: string
+          deal_id: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          investor_id: string
+          mime_type: string | null
+          startup_id: string
+          uploader_id: string
+          uploader_side: string
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          investor_id: string
+          mime_type?: string | null
+          startup_id: string
+          uploader_id: string
+          uploader_side: string
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          investor_id?: string
+          mime_type?: string | null
+          startup_id?: string
+          uploader_id?: string
+          uploader_side?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_documents_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_documents_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_documents_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           amount: number | null

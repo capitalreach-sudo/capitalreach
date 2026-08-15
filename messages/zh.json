@@ -1848,7 +1848,13 @@
     "closeProposedHint": "对方提议成交。确认金额以完成，或输入不同金额以还价。",
     "reviewClose": "查看并确认",
     "proposeClose": "提议成交",
-    "closeProposedSent": "已提议成交——对方确认后完成。"
+    "closeProposedSent": "已提议成交——对方确认后完成。",
+    "sharedRoom": "共享资料室",
+    "sharedRoomEmpty": "暂无共享文件。任一方均可上传条款清单、股权结构表、推荐信。",
+    "uploadDoc": "上传",
+    "docUploaded": "已将文件添加到交易资料室。",
+    "fromFounder": "创始人",
+    "fromInvestor": "投资人"
   },
   "investorProfile": {
     "back": "返回投资者列表",

@@ -1855,7 +1855,13 @@
     "closeProposedHint": "Die andere Seite hat einen Abschluss vorgeschlagen. Bestätige den Betrag zum Abschluss oder gib einen anderen ein, um zu kontern.",
     "reviewClose": "Prüfen & bestätigen",
     "proposeClose": "Abschluss vorschlagen",
-    "closeProposedSent": "Abschluss vorgeschlagen — die andere Seite bestätigt zum Abschluss."
+    "closeProposedSent": "Abschluss vorgeschlagen — die andere Seite bestätigt zum Abschluss.",
+    "sharedRoom": "Gemeinsamer Datenraum",
+    "sharedRoomEmpty": "Noch keine geteilten Dateien. Beide Seiten können Term Sheets, Cap Tables, Referenzen hochladen.",
+    "uploadDoc": "Hochladen",
+    "docUploaded": "Dokument zum Deal-Raum hinzugefügt.",
+    "fromFounder": "Gründer",
+    "fromInvestor": "Investor"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
