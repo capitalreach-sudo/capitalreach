@@ -1099,7 +1099,12 @@
     "competitors": "Concurrenten",
     "productHunt": "Product Hunt",
     "shareX": "Delen op X",
-    "shareLinkedIn": "Delen op LinkedIn"
+    "shareLinkedIn": "Delen op LinkedIn",
+    "ndaTitle": "Geheimhoudingsovereenkomst",
+    "ndaIntro": "{name} deelt beschermde documenten alleen met investeerders die instemmen ze vertrouwelijk te houden. Lees en accepteer hieronder om de dataroom te openen.",
+    "ndaAcceptBtn": "Ik ga akkoord — dataroom openen",
+    "ndaAccepted": "NDA geaccepteerd. De dataroom is open.",
+    "signInToView": "Log in om te bekijken"
   },
   "filters": {
     "industry": "Industrie",

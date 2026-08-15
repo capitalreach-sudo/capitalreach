@@ -1099,7 +1099,12 @@
     "competitors": "Concorrentes",
     "productHunt": "Product Hunt",
     "shareX": "Compartilhar no X",
-    "shareLinkedIn": "Compartilhar no LinkedIn"
+    "shareLinkedIn": "Compartilhar no LinkedIn",
+    "ndaTitle": "Acordo de confidencialidade",
+    "ndaIntro": "A {name} compartilha documentos protegidos apenas com investidores que concordam em mantê-los confidenciais. Leia e aceite abaixo para abrir o data room.",
+    "ndaAcceptBtn": "Concordo — abrir o data room",
+    "ndaAccepted": "NDA aceito. O data room está aberto.",
+    "signInToView": "Entre para ver"
   },
   "filters": {
     "industry": "Indústria",

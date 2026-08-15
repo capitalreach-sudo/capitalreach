@@ -1146,7 +1146,12 @@
     "competitors": "Wettbewerber",
     "productHunt": "Product Hunt",
     "shareX": "Auf X teilen",
-    "shareLinkedIn": "Auf LinkedIn teilen"
+    "shareLinkedIn": "Auf LinkedIn teilen",
+    "ndaTitle": "Vertraulichkeitsvereinbarung",
+    "ndaIntro": "{name} teilt geschützte Dokumente nur mit Investoren, die sich zur Vertraulichkeit verpflichten. Lies und akzeptiere unten, um den Datenraum zu öffnen.",
+    "ndaAcceptBtn": "Ich stimme zu — Datenraum öffnen",
+    "ndaAccepted": "NDA akzeptiert. Der Datenraum ist offen.",
+    "signInToView": "Zum Ansehen anmelden"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",

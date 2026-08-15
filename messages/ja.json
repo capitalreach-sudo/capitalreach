@@ -1139,7 +1139,12 @@
     "competitors": "競合",
     "productHunt": "Product Hunt",
     "shareX": "Xで共有",
-    "shareLinkedIn": "LinkedInで共有"
+    "shareLinkedIn": "LinkedInで共有",
+    "ndaTitle": "秘密保持契約",
+    "ndaIntro": "{name} は、機密を守ることに同意した投資家にのみ保護文書を共有します。以下を読んで同意し、データルームを開いてください。",
+    "ndaAcceptBtn": "同意する — データルームを開く",
+    "ndaAccepted": "NDAに同意しました。データルームが開きました。",
+    "signInToView": "閲覧するにはサインイン"
   },
   "investors": {
     "pageTitle": "認定投資家",

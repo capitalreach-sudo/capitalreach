@@ -743,21 +743,33 @@ export type Database = {
           docusign_envelope_id: string | null
           id: string
           investor_id: string
+          method: string | null
+          nda_version: string | null
           signed_at: string | null
+          signed_ip: string | null
+          signed_ua: string | null
           startup_id: string
         }
         Insert: {
           docusign_envelope_id?: string | null
           id?: string
           investor_id: string
+          method?: string | null
+          nda_version?: string | null
           signed_at?: string | null
+          signed_ip?: string | null
+          signed_ua?: string | null
           startup_id: string
         }
         Update: {
           docusign_envelope_id?: string | null
           id?: string
           investor_id?: string
+          method?: string | null
+          nda_version?: string | null
           signed_at?: string | null
+          signed_ip?: string | null
+          signed_ua?: string | null
           startup_id?: string
         }
         Relationships: [

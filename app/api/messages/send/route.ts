@@ -4,7 +4,7 @@ import { sendNewMessageEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
 import { messageRatelimit } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
-import { buildAccessContext, canSendMessages, getMessageLimit } from "@/lib/access";
+import { buildAccessContext, getMessageLimit } from "@/lib/access";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -59,9 +59,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
 
-  if (!canSendMessages(ctx)) {
-    return NextResponse.json({ error: "Angel tier required to send messages" }, { status: 403 });
-  }
+  // First contact is free — a marketplace where the two sides can't say hello
+  // isn't a marketplace. Volume is still bounded: the monthly new-thread rate
+  // limit below applies to every tier that isn't unlimited (free included),
+  // and replies within an existing thread go through the client's own path.
+  // Paid tiers raise or remove that cap; that's the upgrade.
 
   // The target listing must be publicly active — no messaging a draft, rejected
   // or suspended startup that isn't visible in the directory.

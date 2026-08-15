@@ -1139,7 +1139,12 @@
     "competitors": "المنافسون",
     "productHunt": "Product Hunt",
     "shareX": "مشاركة على X",
-    "shareLinkedIn": "مشاركة على LinkedIn"
+    "shareLinkedIn": "مشاركة على LinkedIn",
+    "ndaTitle": "اتفاقية سرية",
+    "ndaIntro": "تشارك {name} المستندات المحمية فقط مع المستثمرين الذين يوافقون على الحفاظ على سريتها. اقرأ ووافق أدناه لفتح غرفة البيانات.",
+    "ndaAcceptBtn": "أوافق — افتح غرفة البيانات",
+    "ndaAccepted": "تمت الموافقة على اتفاقية السرية. غرفة البيانات مفتوحة.",
+    "signInToView": "سجّل الدخول للعرض"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",

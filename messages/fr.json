@@ -1139,7 +1139,12 @@
     "competitors": "Concurrents",
     "productHunt": "Product Hunt",
     "shareX": "Partager sur X",
-    "shareLinkedIn": "Partager sur LinkedIn"
+    "shareLinkedIn": "Partager sur LinkedIn",
+    "ndaTitle": "Accord de confidentialité",
+    "ndaIntro": "{name} ne partage ses documents protégés qu'avec les investisseurs qui s'engagent à les garder confidentiels. Lisez et acceptez ci-dessous pour ouvrir la data room.",
+    "ndaAcceptBtn": "J'accepte — ouvrir la data room",
+    "ndaAccepted": "NDA accepté. La data room est ouverte.",
+    "signInToView": "Connectez-vous pour voir"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",

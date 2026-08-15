@@ -4,16 +4,16 @@ import { mayOpenDocument, stripLockedUrl } from "../lib/document-access";
 const openDoc = { requires_nda: false, file_url: "https://example.com/deck.pdf" };
 const ndaDoc = { requires_nda: true, file_url: "https://example.com/financials.pdf" };
 
-const base = { isOwnerOrAdmin: false, canDocuments: true, startupRequiresNda: true, ndaSigned: false };
+const base = { isOwnerOrAdmin: false, isInvestor: true, startupRequiresNda: true, ndaSigned: false };
 
 describe("mayOpenDocument", () => {
   it("owner and admin always open, even NDA-gated documents unsigned", () => {
     expect(mayOpenDocument(ndaDoc, { ...base, isOwnerOrAdmin: true })).toBe(true);
   });
 
-  it("no documents capability blocks everything", () => {
-    expect(mayOpenDocument(openDoc, { ...base, canDocuments: false })).toBe(false);
-    expect(mayOpenDocument(ndaDoc, { ...base, canDocuments: false })).toBe(false);
+  it("anonymous (not an investor) is blocked from everything", () => {
+    expect(mayOpenDocument(openDoc, { ...base, isInvestor: false })).toBe(false);
+    expect(mayOpenDocument(ndaDoc, { ...base, isInvestor: false })).toBe(false);
   });
 
   it("NDA gate needs all three: doc flagged, listing requires, not signed", () => {

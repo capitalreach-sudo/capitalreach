@@ -16,6 +16,7 @@ import type { Startup, SubscriptionTier } from "@/types";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
+import { ndaText } from "@/lib/nda-text";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
@@ -286,15 +287,15 @@ export function StartupDetailClient({
   const [aiReport, setAiReport]                 = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [ndaLoading, setNdaLoading]             = useState(false);
+  const [ndaModalOpen, setNdaModalOpen]         = useState(false);
+  useEscapeKey(ndaModalOpen, () => setNdaModalOpen(false));
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
 
   const accessCtx = { userId: investorId, role: viewerIsAdmin ? "admin" as const : investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
   const caps          = investorCan(accessCtx);
   const canFinancials = caps.viewFinancials;
-  const canMessage    = caps.message;
   const canAi         = caps.aiDiligence === "included";
-  const canDocuments  = caps.viewDocuments;
   const canTeam       = caps.viewTeam;
 
   // Live viewer presence
@@ -366,7 +367,7 @@ export function StartupDetailClient({
   }
 
   async function sendMessage() {
-    if (!investorId || !canMessage) return;
+    if (!investorId) return;
     setSendingMessage(true);
     const res = await fetch("/api/messages/send", {
       method: "POST",
@@ -406,16 +407,25 @@ export function StartupDetailClient({
     }
   }
 
-  async function requestNda() {
+  async function acceptNda() {
     setNdaLoading(true);
-    const res = await fetch("/api/nda/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ startupId: startup.id, investorId }),
-    });
-    setNdaLoading(false);
-    if (res.ok) notify.success(t("startupDetail.ndaSent"));
-    else notify.error(t("startupDetail.failedSendNda"));
+    try {
+      const res = await fetch("/api/nda/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startupId: startup.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
+      notify.success(t("startupDetail.ndaAccepted"));
+      setNdaModalOpen(false);
+      // Re-fetch so ndaSigned becomes true server-side and the room unlocks.
+      router.refresh();
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setNdaLoading(false);
+    }
   }
 
   const { t } = useTranslation();
@@ -649,18 +659,12 @@ export function StartupDetailClient({
                     section when one is on it), so it says that now. */}
                 <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
-                {canMessage ? (
+                {investorId && !viewerSuspended && (
                   <button onClick={() => setMessageOpen(true)}
                     className="btn-copper-shimmer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
                     <MessageSquare style={{ width: 13, height: 13 }} /> {t("startupDetail.requestIntro")}
                   </button>
-                ) : (
-                  <Link href="/pricing"
-                    className="btn-copper-shimmer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", textDecoration: "none" }}>
-                    <Lock style={{ width: 13, height: 13 }} /> {t("common.upgrade")}
-                  </Link>
                 )}
               </div>
             </div>
@@ -1004,7 +1008,6 @@ export function StartupDetailClient({
             {startup.documents && startup.documents.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {startup.documents.map((doc) => {
-                  const requiresUpgrade = !canDocuments;
                   const requiresNda     = doc.requires_nda && startup.require_nda && !ndaSigned;
 
                   return (
@@ -1019,15 +1022,15 @@ export function StartupDetailClient({
                         </div>
                       </div>
                       {requiresNda && !ndaSigned ? (
-                        <button onClick={requestNda} disabled={ndaLoading}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer", opacity: ndaLoading ? 0.6 : 1 }}>
+                        <button onClick={() => setNdaModalOpen(true)}
+                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer" }}>
                           <Lock style={{ width: 11, height: 11 }} />
-                          {ndaLoading ? t("common.saving") : t("startupDetail.signNdaAccess")}
+                          {t("startupDetail.signNdaAccess")}
                         </button>
-                      ) : requiresUpgrade ? (
-                        <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", textDecoration: "none" }}>
-                          <Lock style={{ width: 11, height: 11 }} /> {t("common.upgrade")}
-                        </Link>
+                      ) : !doc.file_url ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "7px 4px" }}>
+                          <Lock style={{ width: 11, height: 11 }} /> {t("startupDetail.signInToView")}
+                        </span>
                       ) : (
                         /\.pdf(\?|$)/i.test(doc.file_url) ? (
                           <button onClick={() => { trackDoc(doc.id); setViewerDoc({ url: doc.file_url, label: doc.label }); }}
@@ -1112,6 +1115,29 @@ export function StartupDetailClient({
         )}
       </div>
 
+      {/* ── NDA accept dialog ── */}
+      {ndaModalOpen && (
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "560px", maxHeight: "88vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "22px 26px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startupDetail.ndaTitle")}</h3>
+              <button onClick={() => setNdaModalOpen(false)} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}><X style={{ width: 18, height: 18 }} /></button>
+            </div>
+            <div style={{ padding: "18px 26px", overflowY: "auto" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "14px", lineHeight: 1.55 }}>{t("startupDetail.ndaIntro", { name: startup.name })}</p>
+              <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px", margin: 0 }}>{ndaText(startup.name)}</pre>
+            </div>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "16px 26px 20px", borderTop: "1px solid var(--cr-rule)" }}>
+              <button onClick={() => setNdaModalOpen(false)} style={{ height: "40px", padding: "0 18px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
+              <button onClick={acceptNda} disabled={ndaLoading}
+                style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: "pointer", opacity: ndaLoading ? 0.6 : 1 }}>
+                {ndaLoading ? t("common.saving") : t("startupDetail.ndaAcceptBtn")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Message dialog ── */}
       {messageOpen && (
         <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
@@ -1185,7 +1211,7 @@ export function StartupDetailClient({
           </button>
         )}
 
-        {canMessage ? (
+        {investorId && !viewerSuspended && (
           <button
             onClick={() => setMessageOpen(true)}
             style={{
@@ -1200,19 +1226,6 @@ export function StartupDetailClient({
               {t("startupDetail.requestIntro")}
             </span>
           </button>
-        ) : (
-          <Link
-            href="/pricing"
-            style={{
-              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
-              height: "44px", minWidth: 0,
-              background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", textDecoration: "none",
-            }}
-          >
-            <Lock style={{ width: 15, height: 15, flexShrink: 0 }} />
-            {t("common.upgrade")}
-          </Link>
         )}
       </StickyActionBar>
     </main>

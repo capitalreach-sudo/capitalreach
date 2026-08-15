@@ -1139,7 +1139,12 @@
     "competitors": "竞争对手",
     "productHunt": "Product Hunt",
     "shareX": "分享到X",
-    "shareLinkedIn": "分享到LinkedIn"
+    "shareLinkedIn": "分享到LinkedIn",
+    "ndaTitle": "保密协议",
+    "ndaIntro": "{name} 仅与同意保密的投资人分享受保护文件。请阅读并在下方同意以打开资料室。",
+    "ndaAcceptBtn": "我同意——打开资料室",
+    "ndaAccepted": "已同意保密协议。资料室已开放。",
+    "signInToView": "登录后查看"
   },
   "investors": {
     "pageTitle": "认证投资者",

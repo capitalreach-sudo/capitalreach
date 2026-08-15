@@ -1099,7 +1099,12 @@
     "competitors": "Konkurrenter",
     "productHunt": "Product Hunt",
     "shareX": "Dela på X",
-    "shareLinkedIn": "Dela på LinkedIn"
+    "shareLinkedIn": "Dela på LinkedIn",
+    "ndaTitle": "Sekretessavtal",
+    "ndaIntro": "{name} delar skyddade dokument endast med investerare som går med på att hålla dem konfidentiella. Läs och acceptera nedan för att öppna datarummet.",
+    "ndaAcceptBtn": "Jag godkänner — öppna datarummet",
+    "ndaAccepted": "NDA accepterat. Datarummet är öppet.",
+    "signInToView": "Logga in för att se"
   },
   "filters": {
     "industry": "Bransch",

@@ -205,7 +205,9 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   });
   const docCtx = {
     isOwnerOrAdmin: previewing ? false : isOwner || viewerIsAdmin,
-    canDocuments: viewerCaps.viewDocuments,
+    // Any signed-in investor is in the room (preview simulates one); NDA-gated
+    // docs still need the NDA below.
+    isInvestor: previewing ? true : !!investorId,
     startupRequiresNda: !!startup.require_nda,
     ndaSigned: previewing ? false : ndaSigned,
   };

@@ -1099,7 +1099,12 @@
     "competitors": "경쟁사",
     "productHunt": "Product Hunt",
     "shareX": "X에 공유",
-    "shareLinkedIn": "LinkedIn에 공유"
+    "shareLinkedIn": "LinkedIn에 공유",
+    "ndaTitle": "비밀유지 계약",
+    "ndaIntro": "{name}은(는) 기밀 유지에 동의한 투자자에게만 보호 문서를 공유합니다. 아래를 읽고 동의하여 데이터룸을 여세요.",
+    "ndaAcceptBtn": "동의합니다 — 데이터룸 열기",
+    "ndaAccepted": "NDA에 동의했습니다. 데이터룸이 열렸습니다.",
+    "signInToView": "보려면 로그인"
   },
   "filters": {
     "industry": "산업",

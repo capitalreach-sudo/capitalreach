@@ -13,8 +13,10 @@
 export interface DocumentAccessContext {
   /** Owner of the listing or an admin: always allowed. */
   isOwnerOrAdmin: boolean;
-  /** Viewer's plan allows opening data-room documents at all. */
-  canDocuments: boolean;
+  /** Viewer is a signed-in investor (any tier). Reading the data room is not a
+   *  paid gate — evaluating a deal requires seeing the documents. Monetization
+   *  lives in tools and volume, not in charging investors to look. */
+  isInvestor: boolean;
   /** The listing demands an NDA before its gated documents. */
   startupRequiresNda: boolean;
   /** This viewer has a signed NDA with this startup. */
@@ -26,7 +28,9 @@ export function mayOpenDocument(
   ctx: DocumentAccessContext,
 ): boolean {
   if (ctx.isOwnerOrAdmin) return true;
-  if (!ctx.canDocuments) return false;
+  // Anonymous visitors don't get the data room at all.
+  if (!ctx.isInvestor) return false;
+  // NDA-gated documents still require an accepted NDA — that gate is real.
   if (doc.requires_nda && ctx.startupRequiresNda && !ctx.ndaSigned) return false;
   return true;
 }

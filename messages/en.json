@@ -1150,7 +1150,12 @@
     "competitors": "Competitors",
     "productHunt": "Product Hunt",
     "shareX": "Share on X",
-    "shareLinkedIn": "Share on LinkedIn"
+    "shareLinkedIn": "Share on LinkedIn",
+    "ndaTitle": "Confidentiality agreement",
+    "ndaIntro": "{name} shares protected documents only with investors who agree to keep them confidential. Read and accept below to open the data room.",
+    "ndaAcceptBtn": "I agree — open the data room",
+    "ndaAccepted": "NDA accepted. The data room is open.",
+    "signInToView": "Sign in to view"
   },
   "investors": {
     "pageTitle": "Verified investors",
