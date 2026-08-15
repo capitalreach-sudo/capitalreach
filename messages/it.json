@@ -1010,7 +1010,9 @@
     "recentSearches": "Ricerche recenti",
     "noResultsFor": "Nessuna opportunità corrisponde a «{query}»",
     "noResultsBody": "Prova a rimuovere un filtro, ad ampliare la fase o il settore, o a cercare un termine più generico.",
-    "pageSubtitle_one": "{count} azienda attualmente in elenco"
+    "pageSubtitle_one": "{count} azienda attualmente in elenco",
+    "closingSoon": "In chiusura",
+    "businessModelGroup": "Modello di business"
   },
   "startupDetail": {
     "overview": "Panoramica",
@@ -1086,7 +1088,12 @@
     "shared": "Condiviso con {name}",
     "editNote": "Modifica la tua nota",
     "addNote": "Aggiungi una nota",
-    "notePh": "Perché è interessante? Lo vedi solo tu."
+    "notePh": "Perché è interessante? Lo vedi solo tu.",
+    "location": "Sede",
+    "businessModel": "Modello di business",
+    "companyType": "Tipo di azienda",
+    "previousFunding": "Finanziamenti precedenti",
+    "competitors": "Concorrenti"
   },
   "filters": {
     "industry": "Settore",
@@ -1103,7 +1110,8 @@
     "bestMatch": "Più adatti a me",
     "matchPct": "{pct}% di affinità",
     "sortUpdated": "Aggiornati di recente",
-    "sortMrr": "MRR più alto"
+    "sortMrr": "MRR più alto",
+    "sortClosing": "In chiusura prima"
   },
   "common": {
     "loading": "Caricamento...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Investitore corporate",
     "selfPreview": "Questo è il tuo profilo pubblico: così ti vedono i fondatori.",
     "editProfile": "Modifica profilo",
-    "memberSince": "Su CapitalReach da {date}"
+    "memberSince": "Su CapitalReach da {date}",
+    "boardSeat": "Posto nel board",
+    "followOn": "Politica di follow-on"
   },
   "admin": {
     "panelTitle": "Pannello di amministrazione",
@@ -2155,7 +2165,8 @@
     "noResults": "Nessun risultato.",
     "startups": "Startup",
     "investors": "Investitori",
-    "seeAll": "Vedi tutti i risultati per \"{q}\""
+    "seeAll": "Vedi tutti i risultati per \"{q}\"",
+    "keepTyping": "Continua a digitare per cercare…"
   },
   "presets": {
     "preseedAi": "IA pre-seed",

@@ -13,6 +13,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { announce } from "@/lib/announce";
 import { normalizeCountry, sameCountry } from "@/lib/countries";
+import { roundCloseState } from "@/lib/round-close";
 import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -58,6 +59,7 @@ const SORT_OPTIONS = [
   { value: "score",   labelKey: "filters.sortScore"   },
   { value: "recent",  labelKey: "filters.sortRecent"  },
   { value: "updated", labelKey: "filters.sortUpdated" },
+  { value: "closing", labelKey: "filters.sortClosing" },
   { value: "mrr",     labelKey: "filters.sortMrr"     },
   { value: "funding", labelKey: "filters.sortRaising" },
 ];
@@ -80,12 +82,13 @@ interface Filters {
   mrrMin: number; aiScoreMin: number; sort: string; country: string;
   newOnly?: boolean;
   raisingMin?: number; runwayMin?: number; growthMin?: number;
+  closingSoon?: boolean; businessModel?: string;
 }
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
   mrrMin: 0, aiScoreMin: 0, sort: "score", country: "", newOnly: false,
-  raisingMin: 0, runwayMin: 0, growthMin: 0,
+  raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "",
 };
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -547,6 +550,8 @@ export function StartupsSearch() {
     raisingMin: Number(searchParams.get("raising")) || 0,
     runwayMin:  Number(searchParams.get("runway")) || 0,
     growthMin:  Number(searchParams.get("growth")) || 0,
+    closingSoon: searchParams.get("closing") === "1",
+    businessModel: searchParams.get("bmodel") ?? "",
     sort:       searchParams.get("sort") ?? DEFAULT_FILTERS.sort,
   };
 
@@ -628,7 +633,7 @@ export function StartupsSearch() {
       return next;
     });
   }
-  const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction" | "region">(null);
+  const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction" | "region" | "bmodel">(null);
   const suggestions = filters.query.trim().length >= 2
     ? allStartups
         .filter(s => s.name.toLowerCase().includes(filters.query.trim().toLowerCase()))
@@ -715,6 +720,8 @@ export function StartupsSearch() {
       // Compared canonically for the same reason the facet is keyed that way.
       if (filters.country && !sameCountry(s.country, filters.country)) return false;
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
+      if (filters.closingSoon && roundCloseState(s.round_close_date) === null) return false;
+      if (filters.businessModel && s.business_model !== filters.businessModel) return false;
       if ((filters.raisingMin ?? 0) > 0 && s.funding_target < filters.raisingMin!) return false;
       if ((filters.runwayMin ?? 0) > 0 && (s.runway_months ?? 0) < filters.runwayMin!) return false;
       if ((filters.growthMin ?? 0) > 0 && (s.growth_rate ?? 0) < filters.growthMin!) return false;
@@ -728,6 +735,11 @@ export function StartupsSearch() {
       case "mrr":     res = [...res].sort((a, b) => (b.mrr ?? 0) - (a.mrr ?? 0)); break;
       case "recent":  res = [...res].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
       case "updated": res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()); break;
+      case "closing": res = [...res].sort((a, b) => {
+        const av = a.round_close_date ? new Date(a.round_close_date).getTime() : Infinity;
+        const bv = b.round_close_date ? new Date(b.round_close_date).getTime() : Infinity;
+        return av - bv;
+      }); break;
       case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;
       case "fit":     res = myThesis ? [...res].sort((a, b) => computeMatchScore(myThesis, b).score - computeMatchScore(myThesis, a).score) : res; break;
     }
@@ -742,6 +754,7 @@ export function StartupsSearch() {
     filters.country ? 1 : 0,
     filters.newOnly ? 1 : 0,
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
+    filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   // Filtering rewrites the whole grid without a navigation, which is silent to
@@ -779,6 +792,8 @@ export function StartupsSearch() {
       if (filters.raisingMin)         p.set("raising", String(filters.raisingMin));
       if (filters.runwayMin)          p.set("runway", String(filters.runwayMin));
       if (filters.growthMin)          p.set("growth", String(filters.growthMin));
+      if (filters.closingSoon)        p.set("closing", "1");
+      if (filters.businessModel)      p.set("bmodel", filters.businessModel);
       if (filters.sort !== DEFAULT_FILTERS.sort) p.set("sort", filters.sort);
       const qs = p.toString();
       const next = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
@@ -996,7 +1011,7 @@ export function StartupsSearch() {
             ))}
           </FilterGroup>
           <FilterGroup label={t("startups.traction")}
-            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0) + (filters.raisingMin ? 1 : 0) + (filters.runwayMin ? 1 : 0) + (filters.growthMin ? 1 : 0)}
+            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0) + (filters.raisingMin ? 1 : 0) + (filters.runwayMin ? 1 : 0) + (filters.growthMin ? 1 : 0) + (filters.closingSoon ? 1 : 0)}
             open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
             {MRR_PRESETS.map((m) => (
               <FilterChip key={m.value}
@@ -1031,6 +1046,10 @@ export function StartupsSearch() {
               onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
               {t("startups.growth20")}
             </FilterChip>
+            <FilterChip active={!!filters.closingSoon}
+              onClick={() => patch({ closingSoon: !filters.closingSoon })}>
+              {t("startups.closingSoon")}
+            </FilterChip>
           </FilterGroup>
           <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}
             open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
@@ -1042,6 +1061,18 @@ export function StartupsSearch() {
               </FilterChip>
             ))}
           </FilterGroup>
+          {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).length > 0 && (
+            <FilterGroup label={t("startups.businessModelGroup")} count={filters.businessModel ? 1 : 0}
+              open={openGroup === "bmodel"} onToggle={() => setOpenGroup(openGroup === "bmodel" ? null : "bmodel")}>
+              {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).sort().map((m) => (
+                <FilterChip key={m}
+                  active={filters.businessModel === m}
+                  onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>
+                  {m}
+                </FilterChip>
+              ))}
+            </FilterGroup>
+          )}
 
           {/* Mobile filter btn */}
           <button

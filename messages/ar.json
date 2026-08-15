@@ -1019,7 +1019,9 @@
     "recentSearches": "عمليات بحث حديثة",
     "noResultsFor": "لا توجد قوائم تطابق «{query}»",
     "noResultsBody": "جرّب إزالة مرشّح، أو توسيع المرحلة أو القطاع، أو البحث بمصطلح أعم.",
-    "pageSubtitle_one": "{count} شركة مدرجة حاليًا"
+    "pageSubtitle_one": "{count} شركة مدرجة حاليًا",
+    "closingSoon": "يُغلق قريبا",
+    "businessModelGroup": "نموذج العمل"
   },
   "startup": {
     "back": "العودة إلى الدليل",
@@ -1126,7 +1128,12 @@
     "shared": "تمت المشاركة مع {name}",
     "editNote": "عدّل ملاحظتك",
     "addNote": "أضف ملاحظة",
-    "notePh": "لماذا هذا مثير للاهتمام؟ أنت وحدك من يرى هذا."
+    "notePh": "لماذا هذا مثير للاهتمام؟ أنت وحدك من يرى هذا.",
+    "location": "الموقع",
+    "businessModel": "نموذج العمل",
+    "companyType": "نوع الشركة",
+    "previousFunding": "التمويل السابق",
+    "competitors": "المنافسون"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",
@@ -1256,7 +1263,8 @@
     "bestMatch": "الأنسب لي",
     "matchPct": "تطابق {pct}%",
     "sortUpdated": "محدثة مؤخرا",
-    "sortMrr": "أعلى MRR"
+    "sortMrr": "أعلى MRR",
+    "sortClosing": "الأقرب إغلاقا"
   },
   "common": {
     "loading": "جاري التحميل...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "مستثمر مؤسسي",
     "selfPreview": "هذا ملفك العام — هكذا يراك المؤسسون.",
     "editProfile": "تعديل الملف",
-    "memberSince": "على CapitalReach منذ {date}"
+    "memberSince": "على CapitalReach منذ {date}",
+    "boardSeat": "مقعد في المجلس",
+    "followOn": "سياسة الاستثمار المتابع"
   },
   "admin": {
     "panelTitle": "لوحة الإدارة",
@@ -2155,7 +2165,8 @@
     "noResults": "لا يوجد ما يطابق ذلك.",
     "startups": "الشركات الناشئة",
     "investors": "المستثمرون",
-    "seeAll": "عرض كل النتائج عن \"{q}\""
+    "seeAll": "عرض كل النتائج عن \"{q}\"",
+    "keepTyping": "واصل الكتابة للبحث…"
   },
   "presets": {
     "preseedAi": "ذكاء اصطناعي ما قبل التأسيس",

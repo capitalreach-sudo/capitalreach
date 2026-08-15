@@ -654,6 +654,29 @@ export function StartupDetailClient({
               <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />
               <MetricCell label={t("startupDetail.pageViews")} value={formatNumber(startup.pageviews ?? 0)} />
             </div>
+
+            {/* Company facts — stored since onboarding but never surfaced before. */}
+            {(() => {
+              const facts: Array<{ label: string; value: string }> = [];
+              if (startup.founded_year) facts.push({ label: t("startupDetail.founded"), value: String(startup.founded_year) });
+              if (startup.team_size) facts.push({ label: t("startupDetail.teamSize"), value: startup.team_size });
+              const loc = [startup.city, startup.country].filter(Boolean).join(", ");
+              if (loc) facts.push({ label: t("startupDetail.location"), value: loc });
+              if (startup.business_model) facts.push({ label: t("startupDetail.businessModel"), value: startup.business_model });
+              if (startup.company_type) facts.push({ label: t("startupDetail.companyType"), value: startup.company_type });
+              if (startup.previous_funding) facts.push({ label: t("startupDetail.previousFunding"), value: formatCurrency(startup.previous_funding, true) });
+              if (facts.length === 0) return null;
+              return (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 28px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
+                  {facts.map((f) => (
+                    <div key={f.label}>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{f.label}</div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)" }}>{f.value}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -715,6 +738,21 @@ export function StartupDetailClient({
             {startup.market              && <Section title={t("startupDetail.market")}>{startup.market}</Section>}
             {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}>{startup.competitive_advantage}</Section>}
             {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}>{startup.use_of_funds}</Section>}
+
+            {/* Competitors — captured at onboarding, never shown until now. */}
+            {Array.isArray(startup.competitors_json) && startup.competitors_json.length > 0 && (
+              <div>
+                <div className="ruled-label" style={{ marginBottom: "14px" }}>{t("startupDetail.competitors")}</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "12px" }}>
+                  {startup.competitors_json.filter((c) => c?.name).map((c, i) => (
+                    <div key={i} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 16px" }}>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: c.differentiator ? "4px" : 0 }}>{c.name}</div>
+                      {c.differentiator && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{c.differentiator}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Milestones */}
             {startup.milestones && startup.milestones.length > 0 && (

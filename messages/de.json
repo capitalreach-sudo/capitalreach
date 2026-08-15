@@ -1026,7 +1026,9 @@
     "recentSearches": "Letzte Suchen",
     "noResultsFor": "Keine Listings passen zu „{query}“",
     "noResultsBody": "Entferne einen Filter, erweitere Phase oder Branche, oder suche allgemeiner.",
-    "pageSubtitle_one": "{count} Unternehmen derzeit gelistet"
+    "pageSubtitle_one": "{count} Unternehmen derzeit gelistet",
+    "closingSoon": "Schließt bald",
+    "businessModelGroup": "Geschäftsmodell"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",
@@ -1133,7 +1135,12 @@
     "shared": "Mit {name} geteilt",
     "editNote": "Notiz bearbeiten",
     "addNote": "Notiz hinzufügen",
-    "notePh": "Warum ist das interessant? Nur Sie sehen das."
+    "notePh": "Warum ist das interessant? Nur Sie sehen das.",
+    "location": "Standort",
+    "businessModel": "Geschäftsmodell",
+    "companyType": "Unternehmensart",
+    "previousFunding": "Bisherige Finanzierung",
+    "competitors": "Wettbewerber"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1263,7 +1270,8 @@
     "bestMatch": "Beste Übereinstimmung",
     "matchPct": "{pct}% Übereinstimmung",
     "sortUpdated": "Zuletzt aktualisiert",
-    "sortMrr": "Höchster MRR"
+    "sortMrr": "Höchster MRR",
+    "sortClosing": "Schließt am ehesten"
   },
   "common": {
     "loading": "Laden...",
@@ -1833,7 +1841,9 @@
     "corporateInvestor": "Unternehmensinvestor",
     "selfPreview": "Das ist Ihr öffentliches Profil — so sehen Gründer Sie.",
     "editProfile": "Profil bearbeiten",
-    "memberSince": "Bei CapitalReach seit {date}"
+    "memberSince": "Bei CapitalReach seit {date}",
+    "boardSeat": "Board-Sitz",
+    "followOn": "Follow-on-Politik"
   },
   "admin": {
     "panelTitle": "Admin-Bereich",
@@ -2222,7 +2232,8 @@
     "noResults": "Keine Treffer.",
     "startups": "Startups",
     "investors": "Investoren",
-    "seeAll": "Alle Ergebnisse für „{q}“ anzeigen"
+    "seeAll": "Alle Ergebnisse für „{q}“ anzeigen",
+    "keepTyping": "Weiter tippen zum Suchen…"
   },
   "messages": {
     "seen": "Gelesen",

@@ -1010,7 +1010,9 @@
     "recentSearches": "Pesquisas recentes",
     "noResultsFor": "Nenhuma oportunidade corresponde a «{query}»",
     "noResultsBody": "Tenta remover um filtro, alargar a fase ou o setor, ou pesquisar um termo mais geral.",
-    "pageSubtitle_one": "{count} empresa atualmente listada"
+    "pageSubtitle_one": "{count} empresa atualmente listada",
+    "closingSoon": "Fechando em breve",
+    "businessModelGroup": "Modelo de negócio"
   },
   "startupDetail": {
     "overview": "Visão geral",
@@ -1086,7 +1088,12 @@
     "shared": "Partilhado com {name}",
     "editNote": "Editar a tua nota",
     "addNote": "Adicionar uma nota",
-    "notePh": "Porque é interessante? Só tu vês isto."
+    "notePh": "Porque é interessante? Só tu vês isto.",
+    "location": "Localização",
+    "businessModel": "Modelo de negócio",
+    "companyType": "Tipo de empresa",
+    "previousFunding": "Financiamento anterior",
+    "competitors": "Concorrentes"
   },
   "filters": {
     "industry": "Indústria",
@@ -1103,7 +1110,8 @@
     "bestMatch": "Melhor correspondência para mim",
     "matchPct": "{pct}% de correspondência",
     "sortUpdated": "Atualizadas recentemente",
-    "sortMrr": "Maior MRR"
+    "sortMrr": "Maior MRR",
+    "sortClosing": "Fecha mais cedo"
   },
   "common": {
     "loading": "Carregando...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Investidor corporativo",
     "selfPreview": "Este é o teu perfil público — é assim que os fundadores te veem.",
     "editProfile": "Editar perfil",
-    "memberSince": "Na CapitalReach desde {date}"
+    "memberSince": "Na CapitalReach desde {date}",
+    "boardSeat": "Assento no conselho",
+    "followOn": "Política de follow-on"
   },
   "admin": {
     "panelTitle": "Painel de administração",
@@ -2155,7 +2165,8 @@
     "noResults": "Sem resultados.",
     "startups": "Startups",
     "investors": "Investidores",
-    "seeAll": "Ver todos os resultados de \"{q}\""
+    "seeAll": "Ver todos os resultados de \"{q}\"",
+    "keepTyping": "Continue digitando para buscar…"
   },
   "presets": {
     "preseedAi": "IA pre-seed",

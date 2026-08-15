@@ -1019,7 +1019,9 @@
     "recentSearches": "最近搜索",
     "noResultsFor": "没有与“{query}”匹配的项目",
     "noResultsBody": "试着移除一个筛选条件、放宽阶段或行业，或使用更宽泛的关键词。",
-    "pageSubtitle_one": "当前{count}家公司在列"
+    "pageSubtitle_one": "当前{count}家公司在列",
+    "closingSoon": "即将截止",
+    "businessModelGroup": "商业模式"
   },
   "startup": {
     "back": "返回目录",
@@ -1126,7 +1128,12 @@
     "shared": "已分享给 {name}",
     "editNote": "编辑你的备注",
     "addNote": "添加备注",
-    "notePh": "为什么值得关注？仅你可见。"
+    "notePh": "为什么值得关注？仅你可见。",
+    "location": "所在地",
+    "businessModel": "商业模式",
+    "companyType": "公司类型",
+    "previousFunding": "过往融资",
+    "competitors": "竞争对手"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1256,7 +1263,8 @@
     "bestMatch": "最匹配我的",
     "matchPct": "匹配度 {pct}%",
     "sortUpdated": "最近更新",
-    "sortMrr": "最高MRR"
+    "sortMrr": "最高MRR",
+    "sortClosing": "最快截止"
   },
   "common": {
     "loading": "加载中...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "企业投资者",
     "selfPreview": "这是你的公开资料——创始人看到的就是这样。",
     "editProfile": "编辑资料",
-    "memberSince": "自 {date} 加入 CapitalReach"
+    "memberSince": "自 {date} 加入 CapitalReach",
+    "boardSeat": "董事会席位",
+    "followOn": "追加投资政策"
   },
   "admin": {
     "panelTitle": "管理面板",
@@ -2155,7 +2165,8 @@
     "noResults": "没有匹配结果。",
     "startups": "初创公司",
     "investors": "投资人",
-    "seeAll": "查看“{q}”的全部结果"
+    "seeAll": "查看“{q}”的全部结果",
+    "keepTyping": "继续输入以搜索…"
   },
   "presets": {
     "preseedAi": "种子前 AI",

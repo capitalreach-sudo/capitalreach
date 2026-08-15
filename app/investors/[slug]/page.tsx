@@ -278,7 +278,7 @@ export default async function InvestorProfilePage({ params }: Props) {
         {/* ── Investor detail ───────────────────────────────────────────── */}
         {/* portfolio_count is deliberately not repeated here: it is the same
             number as number_of_investments, already shown in the stats row. */}
-        {(investor.min_check || investor.max_check || investor.languages?.length) && (
+        {(investor.min_check || investor.max_check || investor.languages?.length || investor.board_seat_pref || investor.follow_on_policy) && (
           <div className="bg-cr-paper border rounded-xl p-6 mb-6">
             <h2 className="font-semibold text-cr-ink mb-4">{t("investorProfile.investorDetail")}</h2>
             <div className="grid grid-cols-2 gap-4">
@@ -290,6 +290,18 @@ export default async function InvestorProfilePage({ params }: Props) {
                     {" – "}
                     {investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}
                   </p>
+                </div>
+              )}
+              {investor.board_seat_pref && (
+                <div>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.boardSeat")}</p>
+                  <p className="text-sm text-cr-ink">{investor.board_seat_pref}</p>
+                </div>
+              )}
+              {investor.follow_on_policy && (
+                <div>
+                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.followOn")}</p>
+                  <p className="text-sm text-cr-ink">{investor.follow_on_policy}</p>
                 </div>
               )}
               {(investor.languages ?? []).length > 0 && (

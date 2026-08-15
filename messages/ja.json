@@ -1019,7 +1019,9 @@
     "recentSearches": "最近の検索",
     "noResultsFor": "「{query}」に一致する掲載はありません",
     "noResultsBody": "フィルターを外すか、ステージや業種を広げるか、より一般的な語で検索してみてください。",
-    "pageSubtitle_one": "現在{count}社が掲載中"
+    "pageSubtitle_one": "現在{count}社が掲載中",
+    "closingSoon": "まもなく締切",
+    "businessModelGroup": "ビジネスモデル"
   },
   "startup": {
     "back": "ディレクトリに戻る",
@@ -1126,7 +1128,12 @@
     "shared": "{name} に共有しました",
     "editNote": "メモを編集",
     "addNote": "メモを追加",
-    "notePh": "どこが興味深いですか？これはあなたにだけ見えます。"
+    "notePh": "どこが興味深いですか？これはあなたにだけ見えます。",
+    "location": "所在地",
+    "businessModel": "ビジネスモデル",
+    "companyType": "会社形態",
+    "previousFunding": "過去の資金調達",
+    "competitors": "競合"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1256,7 +1263,8 @@
     "bestMatch": "自分に最適な順",
     "matchPct": "{pct}% 一致",
     "sortUpdated": "最近更新",
-    "sortMrr": "MRRが高い順"
+    "sortMrr": "MRRが高い順",
+    "sortClosing": "締切が近い順"
   },
   "common": {
     "loading": "読み込み中...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "コーポレート投資家",
     "selfPreview": "これは公開プロフィールです。創業者にはこう見えます。",
     "editProfile": "プロフィールを編集",
-    "memberSince": "{date} から CapitalReach に参加"
+    "memberSince": "{date} から CapitalReach に参加",
+    "boardSeat": "取締役会の席",
+    "followOn": "フォローオン方針"
   },
   "admin": {
     "panelTitle": "管理パネル",
@@ -2155,7 +2165,8 @@
     "noResults": "該当するものはありません。",
     "startups": "スタートアップ",
     "investors": "投資家",
-    "seeAll": "「{q}」のすべての結果を見る"
+    "seeAll": "「{q}」のすべての結果を見る",
+    "keepTyping": "検索するには入力を続けてください…"
   },
   "presets": {
     "preseedAi": "プレシードAI",

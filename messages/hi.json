@@ -1010,7 +1010,9 @@
     "recentSearches": "हाल की खोजें",
     "noResultsFor": "“{query}” से मेल खाती कोई लिस्टिंग नहीं",
     "noResultsBody": "कोई फ़िल्टर हटाएँ, चरण या उद्योग को व्यापक करें, या अधिक सामान्य शब्द खोजें।",
-    "pageSubtitle_one": "{count} कंपनी वर्तमान में सूचीबद्ध"
+    "pageSubtitle_one": "{count} कंपनी वर्तमान में सूचीबद्ध",
+    "closingSoon": "जल्द बंद",
+    "businessModelGroup": "व्यवसाय मॉडल"
   },
   "startupDetail": {
     "overview": "अवलोकन",
@@ -1086,7 +1088,12 @@
     "shared": "{name} के साथ साझा किया गया",
     "editNote": "अपना नोट संपादित करें",
     "addNote": "नोट जोड़ें",
-    "notePh": "यह दिलचस्प क्यों है? यह केवल आप देखते हैं।"
+    "notePh": "यह दिलचस्प क्यों है? यह केवल आप देखते हैं।",
+    "location": "स्थान",
+    "businessModel": "व्यवसाय मॉडल",
+    "companyType": "कंपनी प्रकार",
+    "previousFunding": "पिछली फंडिंग",
+    "competitors": "प्रतिस्पर्धी"
   },
   "filters": {
     "industry": "उद्योग",
@@ -1103,7 +1110,8 @@
     "bestMatch": "मेरे लिए सर्वोत्तम मिलान",
     "matchPct": "{pct}% मिलान",
     "sortUpdated": "हाल ही में अपडेटेड",
-    "sortMrr": "सबसे अधिक MRR"
+    "sortMrr": "सबसे अधिक MRR",
+    "sortClosing": "सबसे जल्दी बंद"
   },
   "common": {
     "loading": "लोड हो रहा है...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "कॉर्पोरेट निवेशक",
     "selfPreview": "यह आपकी सार्वजनिक प्रोफ़ाइल है — संस्थापक आपको ऐसे देखते हैं।",
     "editProfile": "प्रोफ़ाइल संपादित करें",
-    "memberSince": "{date} से CapitalReach पर"
+    "memberSince": "{date} से CapitalReach पर",
+    "boardSeat": "बोर्ड सीट",
+    "followOn": "फॉलो-ऑन नीति"
   },
   "admin": {
     "panelTitle": "एडमिन पैनल",
@@ -2155,7 +2165,8 @@
     "noResults": "कुछ भी मेल नहीं खाता।",
     "startups": "स्टार्टअप",
     "investors": "निवेशक",
-    "seeAll": "\"{q}\" के सभी परिणाम देखें"
+    "seeAll": "\"{q}\" के सभी परिणाम देखें",
+    "keepTyping": "खोजने के लिए टाइप करते रहें…"
   },
   "presets": {
     "preseedAi": "प्री-सीड AI",

@@ -120,6 +120,11 @@ export function GlobalSearch() {
             style={{ width: "100%", height: "38px", padding: "0 12px", border: "none", borderBottom: hasHits || (q.trim().length >= 2 && results) ? "1px solid var(--cr-rule)" : "none", background: "transparent", outline: "none", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", boxSizing: "border-box" }}
           />
 
+          {q.trim().length === 1 && (
+            <p style={{ padding: "14px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+              {t("search.keepTyping")}
+            </p>
+          )}
           {results && !hasHits && q.trim().length >= 2 && (
             <p style={{ padding: "14px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
               {t("search.noResults")}

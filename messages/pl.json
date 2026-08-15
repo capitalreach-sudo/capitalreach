@@ -1010,7 +1010,9 @@
     "recentSearches": "Ostatnie wyszukiwania",
     "noResultsFor": "Żadna oferta nie pasuje do „{query}”",
     "noResultsBody": "Spróbuj usunąć filtr, poszerzyć etap lub branżę albo wyszukać ogólniejsze hasło.",
-    "pageSubtitle_one": "{count} firma obecnie na liście"
+    "pageSubtitle_one": "{count} firma obecnie na liście",
+    "closingSoon": "Wkrótce zamknięcie",
+    "businessModelGroup": "Model biznesowy"
   },
   "startupDetail": {
     "overview": "Przegląd",
@@ -1086,7 +1088,12 @@
     "shared": "Udostępniono: {name}",
     "editNote": "Edytuj notatkę",
     "addNote": "Dodaj notatkę",
-    "notePh": "Dlaczego to ciekawe? Widzisz to tylko ty."
+    "notePh": "Dlaczego to ciekawe? Widzisz to tylko ty.",
+    "location": "Lokalizacja",
+    "businessModel": "Model biznesowy",
+    "companyType": "Typ firmy",
+    "previousFunding": "Poprzednie finansowanie",
+    "competitors": "Konkurenci"
   },
   "filters": {
     "industry": "Branża",
@@ -1103,7 +1110,8 @@
     "bestMatch": "Najlepiej dopasowane",
     "matchPct": "{pct}% dopasowania",
     "sortUpdated": "Ostatnio zaktualizowane",
-    "sortMrr": "Najwyższy MRR"
+    "sortMrr": "Najwyższy MRR",
+    "sortClosing": "Najbliższe zamknięcie"
   },
   "common": {
     "loading": "Ładowanie...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Inwestor korporacyjny",
     "selfPreview": "To twój profil publiczny — tak widzą cię założyciele.",
     "editProfile": "Edytuj profil",
-    "memberSince": "Na CapitalReach od {date}"
+    "memberSince": "Na CapitalReach od {date}",
+    "boardSeat": "Miejsce w zarządzie",
+    "followOn": "Polityka follow-on"
   },
   "admin": {
     "panelTitle": "Panel administratora",
@@ -2155,7 +2165,8 @@
     "noResults": "Brak wyników.",
     "startups": "Startupy",
     "investors": "Inwestorzy",
-    "seeAll": "Zobacz wszystkie wyniki dla \"{q}\""
+    "seeAll": "Zobacz wszystkie wyniki dla \"{q}\"",
+    "keepTyping": "Pisz dalej, aby wyszukać…"
   },
   "presets": {
     "preseedAi": "AI pre-seed",

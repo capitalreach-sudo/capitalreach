@@ -1019,7 +1019,9 @@
     "recentSearches": "Recherches récentes",
     "noResultsFor": "Aucune annonce ne correspond à « {query} »",
     "noResultsBody": "Essayez de retirer un filtre, d'élargir le stade ou le secteur, ou de chercher un terme plus général.",
-    "pageSubtitle_one": "{count} entreprise actuellement listée"
+    "pageSubtitle_one": "{count} entreprise actuellement listée",
+    "closingSoon": "Bientôt clôturé",
+    "businessModelGroup": "Modèle économique"
   },
   "startup": {
     "back": "Retour à l'annuaire",
@@ -1126,7 +1128,12 @@
     "shared": "Partagé avec {name}",
     "editNote": "Modifier votre note",
     "addNote": "Ajouter une note",
-    "notePh": "Pourquoi est-ce intéressant ? Vous seul voyez cette note."
+    "notePh": "Pourquoi est-ce intéressant ? Vous seul voyez cette note.",
+    "location": "Localisation",
+    "businessModel": "Modèle économique",
+    "companyType": "Type d'entreprise",
+    "previousFunding": "Financement précédent",
+    "competitors": "Concurrents"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1256,7 +1263,8 @@
     "bestMatch": "Meilleure correspondance pour moi",
     "matchPct": "{pct}% de correspondance",
     "sortUpdated": "Mis à jour récemment",
-    "sortMrr": "MRR le plus élevé"
+    "sortMrr": "MRR le plus élevé",
+    "sortClosing": "Clôture la plus proche"
   },
   "common": {
     "loading": "Chargement...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Investisseur d'entreprise",
     "selfPreview": "Voici votre profil public — tel que les fondateurs le voient.",
     "editProfile": "Modifier le profil",
-    "memberSince": "Sur CapitalReach depuis {date}"
+    "memberSince": "Sur CapitalReach depuis {date}",
+    "boardSeat": "Siège au conseil",
+    "followOn": "Politique de suivi"
   },
   "admin": {
     "panelTitle": "Panneau d'administration",
@@ -2155,7 +2165,8 @@
     "noResults": "Aucun résultat.",
     "startups": "Startups",
     "investors": "Investisseurs",
-    "seeAll": "Voir tous les résultats pour \"{q}\""
+    "seeAll": "Voir tous les résultats pour \"{q}\"",
+    "keepTyping": "Continuez à taper pour rechercher…"
   },
   "presets": {
     "preseedAi": "IA pre-seed",

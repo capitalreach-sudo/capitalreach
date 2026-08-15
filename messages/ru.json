@@ -1010,7 +1010,9 @@
     "recentSearches": "Недавние поиски",
     "noResultsFor": "Нет проектов по запросу «{query}»",
     "noResultsBody": "Попробуйте снять фильтр, расширить стадию или отрасль либо задать более общий запрос.",
-    "pageSubtitle_one": "{count} компания сейчас в списке"
+    "pageSubtitle_one": "{count} компания сейчас в списке",
+    "closingSoon": "Скоро закрытие",
+    "businessModelGroup": "Бизнес-модель"
   },
   "startupDetail": {
     "overview": "Обзор",
@@ -1086,7 +1088,12 @@
     "shared": "Отправлено {name}",
     "editNote": "Изменить заметку",
     "addNote": "Добавить заметку",
-    "notePh": "Чем это интересно? Видите только вы."
+    "notePh": "Чем это интересно? Видите только вы.",
+    "location": "Местоположение",
+    "businessModel": "Бизнес-модель",
+    "companyType": "Тип компании",
+    "previousFunding": "Прошлое финансирование",
+    "competitors": "Конкуренты"
   },
   "filters": {
     "industry": "Отрасль",
@@ -1103,7 +1110,8 @@
     "bestMatch": "Лучшее совпадение",
     "matchPct": "совпадение {pct}%",
     "sortUpdated": "Недавно обновлённые",
-    "sortMrr": "Наибольший MRR"
+    "sortMrr": "Наибольший MRR",
+    "sortClosing": "Скорее всего закроется"
   },
   "common": {
     "loading": "Загрузка...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Корпоративный инвестор",
     "selfPreview": "Это ваш публичный профиль — так вас видят основатели.",
     "editProfile": "Редактировать профиль",
-    "memberSince": "На CapitalReach с {date}"
+    "memberSince": "На CapitalReach с {date}",
+    "boardSeat": "Место в совете",
+    "followOn": "Политика доинвестирования"
   },
   "admin": {
     "panelTitle": "Панель администратора",
@@ -2155,7 +2165,8 @@
     "noResults": "Ничего не найдено.",
     "startups": "Стартапы",
     "investors": "Инвесторы",
-    "seeAll": "Все результаты по запросу \"{q}\""
+    "seeAll": "Все результаты по запросу \"{q}\"",
+    "keepTyping": "Продолжайте вводить для поиска…"
   },
   "presets": {
     "preseedAi": "ИИ на pre-seed",

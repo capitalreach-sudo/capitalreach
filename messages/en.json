@@ -1030,7 +1030,9 @@
     "recentSearches": "Recent searches",
     "noResultsFor": "No listings match “{query}”",
     "noResultsBody": "Try removing a filter, widening the stage or industry, or searching a broader term.",
-    "pageSubtitle_one": "{count} company currently listed"
+    "pageSubtitle_one": "{count} company currently listed",
+    "closingSoon": "Closing soon",
+    "businessModelGroup": "Business model"
   },
   "startup": {
     "back": "Back to directory",
@@ -1137,7 +1139,12 @@
     "shared": "Shared with {name}",
     "editNote": "Edit your note",
     "addNote": "Add a note",
-    "notePh": "Why is this interesting? Only you see this."
+    "notePh": "Why is this interesting? Only you see this.",
+    "location": "Location",
+    "businessModel": "Business model",
+    "companyType": "Company type",
+    "previousFunding": "Previous funding",
+    "competitors": "Competitors"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1267,7 +1274,8 @@
     "bestMatch": "Best match for me",
     "matchPct": "{pct}% match",
     "sortUpdated": "Recently updated",
-    "sortMrr": "Highest MRR"
+    "sortMrr": "Highest MRR",
+    "sortClosing": "Closing soonest"
   },
   "common": {
     "loading": "Loading...",
@@ -1837,7 +1845,9 @@
     "angelInvestor": "Angel Investor",
     "ventureCapital": "Venture Capital",
     "familyOffice": "Family Office",
-    "corporateInvestor": "Corporate Investor"
+    "corporateInvestor": "Corporate Investor",
+    "boardSeat": "Board seat",
+    "followOn": "Follow-on policy"
   },
   "admin": {
     "panelTitle": "Admin Panel",
@@ -2222,7 +2232,8 @@
     "noResults": "Nothing matches that.",
     "startups": "Startups",
     "investors": "Investors",
-    "seeAll": "See all results for \"{q}\""
+    "seeAll": "See all results for \"{q}\"",
+    "keepTyping": "Keep typing to search…"
   },
   "messages": {
     "seen": "Seen",

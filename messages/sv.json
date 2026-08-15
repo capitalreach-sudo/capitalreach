@@ -1010,7 +1010,9 @@
     "recentSearches": "Senaste sökningar",
     "noResultsFor": "Inga noteringar matchar ”{query}”",
     "noResultsBody": "Prova att ta bort ett filter, bredda fas eller bransch, eller söka på ett mer allmänt ord.",
-    "pageSubtitle_one": "{count} företag listat just nu"
+    "pageSubtitle_one": "{count} företag listat just nu",
+    "closingSoon": "Stänger snart",
+    "businessModelGroup": "Affärsmodell"
   },
   "startupDetail": {
     "overview": "Översikt",
@@ -1086,7 +1088,12 @@
     "shared": "Delad med {name}",
     "editNote": "Redigera din anteckning",
     "addNote": "Lägg till en anteckning",
-    "notePh": "Varför är det här intressant? Bara du ser detta."
+    "notePh": "Varför är det här intressant? Bara du ser detta.",
+    "location": "Plats",
+    "businessModel": "Affärsmodell",
+    "companyType": "Företagstyp",
+    "previousFunding": "Tidigare finansiering",
+    "competitors": "Konkurrenter"
   },
   "filters": {
     "industry": "Bransch",
@@ -1103,7 +1110,8 @@
     "bestMatch": "Bäst matchning för mig",
     "matchPct": "{pct}% matchning",
     "sortUpdated": "Nyligen uppdaterade",
-    "sortMrr": "Högst MRR"
+    "sortMrr": "Högst MRR",
+    "sortClosing": "Stänger snarast"
   },
   "common": {
     "loading": "Laddar...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Företagsinvesterare",
     "selfPreview": "Det här är din offentliga profil — så här ser grundare dig.",
     "editProfile": "Redigera profil",
-    "memberSince": "På CapitalReach sedan {date}"
+    "memberSince": "På CapitalReach sedan {date}",
+    "boardSeat": "Styrelseplats",
+    "followOn": "Follow-on-policy"
   },
   "admin": {
     "panelTitle": "Adminpanel",
@@ -2155,7 +2165,8 @@
     "noResults": "Inga träffar.",
     "startups": "Startups",
     "investors": "Investerare",
-    "seeAll": "Se alla resultat för \"{q}\""
+    "seeAll": "Se alla resultat för \"{q}\"",
+    "keepTyping": "Fortsätt skriva för att söka…"
   },
   "presets": {
     "preseedAi": "Pre-seed AI",

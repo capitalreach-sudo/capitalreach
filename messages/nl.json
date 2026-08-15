@@ -1010,7 +1010,9 @@
     "recentSearches": "Recente zoekopdrachten",
     "noResultsFor": "Geen aanbod komt overeen met “{query}”",
     "noResultsBody": "Probeer een filter te verwijderen, de fase of sector te verbreden, of een algemenere term te zoeken.",
-    "pageSubtitle_one": "{count} bedrijf momenteel vermeld"
+    "pageSubtitle_one": "{count} bedrijf momenteel vermeld",
+    "closingSoon": "Sluit binnenkort",
+    "businessModelGroup": "Bedrijfsmodel"
   },
   "startupDetail": {
     "overview": "Overzicht",
@@ -1086,7 +1088,12 @@
     "shared": "Gedeeld met {name}",
     "editNote": "Je notitie bewerken",
     "addNote": "Notitie toevoegen",
-    "notePh": "Waarom is dit interessant? Alleen jij ziet dit."
+    "notePh": "Waarom is dit interessant? Alleen jij ziet dit.",
+    "location": "Locatie",
+    "businessModel": "Bedrijfsmodel",
+    "companyType": "Bedrijfstype",
+    "previousFunding": "Eerdere financiering",
+    "competitors": "Concurrenten"
   },
   "filters": {
     "industry": "Industrie",
@@ -1103,7 +1110,8 @@
     "bestMatch": "Beste match voor mij",
     "matchPct": "{pct}% match",
     "sortUpdated": "Onlangs bijgewerkt",
-    "sortMrr": "Hoogste MRR"
+    "sortMrr": "Hoogste MRR",
+    "sortClosing": "Sluit het eerst"
   },
   "common": {
     "loading": "Laden...",
@@ -1826,7 +1834,9 @@
     "corporateInvestor": "Corporate investeerder",
     "selfPreview": "Dit is je openbare profiel — zo zien oprichters je.",
     "editProfile": "Profiel bewerken",
-    "memberSince": "Op CapitalReach sinds {date}"
+    "memberSince": "Op CapitalReach sinds {date}",
+    "boardSeat": "Bestuurszetel",
+    "followOn": "Follow-on-beleid"
   },
   "admin": {
     "panelTitle": "Beheerderspaneel",
@@ -2155,7 +2165,8 @@
     "noResults": "Geen resultaten.",
     "startups": "Startups",
     "investors": "Investeerders",
-    "seeAll": "Alle resultaten voor \"{q}\" bekijken"
+    "seeAll": "Alle resultaten voor \"{q}\" bekijken",
+    "keepTyping": "Blijf typen om te zoeken…"
   },
   "presets": {
     "preseedAi": "Pre-seed AI",
