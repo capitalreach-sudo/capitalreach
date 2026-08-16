@@ -1034,6 +1034,7 @@ export type Database = {
           suspended_reason: string | null
           suspended_until: string | null
           terms_accepted_at: string | null
+          tier_override: boolean
         }
         Insert: {
           account_status?: string
@@ -1067,6 +1068,7 @@ export type Database = {
           suspended_reason?: string | null
           suspended_until?: string | null
           terms_accepted_at?: string | null
+          tier_override?: boolean
         }
         Update: {
           account_status?: string
@@ -1100,6 +1102,7 @@ export type Database = {
           suspended_reason?: string | null
           suspended_until?: string | null
           terms_accepted_at?: string | null
+          tier_override?: boolean
         }
         Relationships: [
           {

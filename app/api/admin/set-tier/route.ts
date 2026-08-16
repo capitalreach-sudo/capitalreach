@@ -47,8 +47,10 @@ export async function POST(req: NextRequest) {
     : tier;
 
   const entityTable = profile.role === "startup" ? "startups" : "investors";
+  // A comp to a paid tier is an override Stripe must not undo; resetting to
+  // free hands control back to Stripe.
   const [{ error: e1 }, { error: e2 }] = await Promise.all([
-    admin.from("profiles").update({ subscription_tier: dbTier }).eq("id", userId),
+    admin.from("profiles").update({ subscription_tier: dbTier, tier_override: dbTier !== "free" }).eq("id", userId),
     admin.from(entityTable).update({ subscription_tier: dbTier }).eq("owner_id", userId),
   ]);
   if (e1 || e2) {

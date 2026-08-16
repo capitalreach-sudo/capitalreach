@@ -268,6 +268,7 @@ export default function EditStartupPage() {
       equity_offered: parseFloat(startup.equity_offered) || null,
       min_check_size: parseInt(startup.min_check_size) || null,
       use_of_funds: startup.use_of_funds || null,
+      round_close_date: startup.round_close_date || null,
       mrr: parseInt(startup.mrr) || null, arr: parseInt(startup.arr) || null,
       user_count: parseInt(startup.user_count) || null,
       growth_rate: parseFloat(startup.growth_rate) || null,

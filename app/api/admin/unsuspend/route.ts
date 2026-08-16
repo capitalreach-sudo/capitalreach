@@ -42,6 +42,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to restore account" }, { status: 500 });
   }
 
+  // Bring their listing back with them.
+  await admin.from("startups").update({ status: "active" })
+    .eq("owner_id", userId).eq("status", "suspended");
+
   await logAdminAction(admin, adminId, "unsuspend_user", "profile", userId, {
     previous_status: target.account_status,
   });

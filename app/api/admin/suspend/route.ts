@@ -65,6 +65,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to suspend account" }, { status: 500 });
   }
 
+  // A suspended founder's listing must leave the marketplace with them —
+  // otherwise it stays live, indexed, and messageable while its owner is
+  // locked out. Only active listings flip; drafts/pending are untouched, and
+  // unsuspend restores exactly these rows.
+  await admin.from("startups").update({ status: "suspended" })
+    .eq("owner_id", userId).eq("status", "active");
+
   await logAdminAction(admin, adminId, "suspend_user", "profile", userId, {
     reason: reason.trim(),
     duration: duration ?? "indefinite",

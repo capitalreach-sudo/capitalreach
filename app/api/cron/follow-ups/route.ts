@@ -137,11 +137,37 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // ── Lift expired timed suspensions ────────────────────────────────────────
+  // suspended_until was written by /api/admin/suspend and the suspension page
+  // told users "scheduled to lift on X" — but nothing ever lifted it, so every
+  // 7-day suspension was permanent. This sweep makes the promise true.
+  let lifted = 0;
+  {
+    const nowIso = new Date().toISOString();
+    const { data: expired } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("suspended", true)
+      .not("suspended_until", "is", null)
+      .lte("suspended_until", nowIso);
+    for (const p of expired ?? []) {
+      const { error } = await admin
+        .from("profiles")
+        .update({ suspended: false, account_status: "active", suspended_reason: null, suspended_at: null, suspended_until: null })
+        .eq("id", p.id);
+      if (!error) {
+        lifted++;
+        await admin.from("startups").update({ status: "active" }).eq("owner_id", p.id).eq("status", "suspended");
+      }
+    }
+    if (lifted) await logSystemEvent("cron/follow-ups", "info", `Lifted ${lifted} expired suspension(s)`);
+  }
+
   // A success heartbeat, so /admin can show when the cron last ran at all --
   // the difference between "quiet because nothing was due" and "quiet because
   // it has not run for a week" is exactly what this table exists to expose.
   await logSystemEvent("cron/follow-ups", "info", "Run completed", {
-    checked: due?.length ?? 0, notified, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified,
+    checked: due?.length ?? 0, notified, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified, suspensionsLifted: lifted,
   });
 
   // Prune info rows older than 30 days in passing; errors stay until deleted

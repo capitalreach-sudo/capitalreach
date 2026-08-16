@@ -15,9 +15,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select("slug, updated_at")
     .eq("status", "active");
 
+  // Only investors whose account is in good standing; a suspended investor's
+  // profile shouldn't be advertised to crawlers. Joined through the owner
+  // profile because suspension lives there, not on the investor row.
   const { data: investors } = await supabase
     .from("investors")
-    .select("slug, created_at");
+    .select("slug, created_at, owner:profiles!owner_id(suspended, account_status)")
+    .then((r) => ({
+      data: (r.data ?? []).filter((i) => {
+        const o = i.owner as { suspended?: boolean | null; account_status?: string | null } | null;
+        return !o?.suspended && o?.account_status !== "suspended" && o?.account_status !== "banned";
+      }),
+    }));
 
   // Every publicly reachable route. Middleware gates only /dashboard,
   // /onboarding and /admin, so everything below is crawlable. /deals is

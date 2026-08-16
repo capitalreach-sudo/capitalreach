@@ -67,6 +67,7 @@ export default async function DealsPage() {
               viewAs="startup"
               revealIdentity={revealIdentity}
               equityOffered={startup.equity_offered}
+              canExport
               ownProfile={{
                 kind: "startup",
                 fundingTarget: startup.funding_target,

@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crosshair, ExternalLink, Eye, FileText, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crosshair, ExternalLink, Eye, FileText, Handshake, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -456,6 +458,7 @@ function DocAnalyticsPanel() {
 
 export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs }: Props) {
   const { t }        = useTranslation();
+  const router       = useRouter();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
@@ -608,10 +611,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           {[
             { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye,           series: analytics.viewSeries },
             { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark,      series: analytics.saveSeries },
-            { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: MessageSquare, series: analytics.dealSeries },
+            { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: Handshake,     series: analytics.dealSeries, href: "/deals" },
             { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp   },
-          ].map(({ label, val, Icon, series }: { label: string; val: number | string; Icon: typeof Eye; series?: number[] }) => (
-            <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
+          ].map(({ label, val, Icon, series, href }: { label: string; val: number | string; Icon: typeof Eye; series?: number[]; href?: string }) => (
+            <div key={label} onClick={href ? () => router.push(href) : undefined}
+              role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
+              onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
+              style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px", cursor: href ? "pointer" : "default" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
                 <Icon style={{ width: 13, height: 13, color: "var(--cr-paper-4)" }} />
@@ -694,6 +700,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "14px" }}>{t("dashboard.quickActions")}</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                   {[
+                    { href: "/deals",                    Icon: Handshake,     label: t("dashboard.dealPipeline") },
                     { href: "/dashboard/messages",       Icon: MessageSquare, label: t("dashboard.messages")    },
                     { href: "/dashboard/startup/edit",   Icon: Settings,      label: t("dashboard.editProfile") },
                     { href: "/dashboard/team",           Icon: Users,         label: t("team.navLabel")        },

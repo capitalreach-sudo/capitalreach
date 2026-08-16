@@ -44,11 +44,22 @@ export async function POST(req: NextRequest) {
 
         const { data: profile } = await supabase
           .from("profiles")
-          .select("id, role")
+          .select("id, role, tier_override")
           .eq("stripe_customer_id", sub.customer as string)
           .single();
 
         if (!profile) break;
+
+        // An admin comp (tier_override) owns the tier; Stripe still owns the
+        // subscription metadata. Previously this update silently un-comped
+        // people on the next billing event.
+        if (profile.tier_override) {
+          await supabase
+            .from("profiles")
+            .update({ subscription_status: sub.status, stripe_subscription_id: sub.id })
+            .eq("id", profile.id);
+          break;
+        }
 
         await supabase
           .from("profiles")
