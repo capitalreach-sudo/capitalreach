@@ -1352,66 +1352,113 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
       })()}
 
       {/* ── Mobile filter bottom sheet ── */}
-      {sidebarOpen && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50 }}>
-          <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.4)" }} onClick={() => setSidebarOpen(false)} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "8px 8px 0 0", maxHeight: "75vh", overflowY: "auto" }}>
-            <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "12px auto 20px" }} />
-            <div style={{ padding: "0 20px 20px" }}>
-              <div style={{ marginBottom: "24px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>{t("filters.industry")}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+      {sidebarOpen && (() => {
+        const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" };
+        const ROW: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: "6px" };
+        const countries = Array.from(new Set(allStartups.map(x => x.country).filter((c): c is string => !!c))).sort();
+        const bmodels = Array.from(new Set(allStartups.map(x => x.business_model).filter((m): m is string => !!m))).sort();
+        return (
+        <div role="dialog" aria-modal="true" aria-label={t("filters.title")} style={{ position: "fixed", inset: 0, zIndex: 50 }}>
+          <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.45)" }} onClick={() => setSidebarOpen(false)} />
+          {/* Full-height bottom sheet: header pinned, sections scroll, footer pinned. */}
+          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "0 -12px 40px rgba(26,22,18,0.2)" }}>
+            <div style={{ padding: "10px 20px 12px", borderBottom: "1px solid var(--cr-rule)", flexShrink: 0 }}>
+              <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 12px" }} />
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("filters.title")}{activeCount > 0 ? ` · ${activeCount}` : ""}</p>
+                <button onClick={() => setSidebarOpen(false)} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: 4 }}><X style={{ width: 18, height: 18 }} /></button>
+              </div>
+            </div>
+
+            <div style={{ overflowY: "auto", flex: 1, padding: "16px 20px 8px", display: "grid", gap: "22px" }}>
+              <div>
+                <p style={SECTION}>{t("filters.industry")}</p>
+                <div style={ROW}>
                   {INDUSTRIES.map((ind) => (
                     <FilterChip key={ind} active={filters.industries.includes(ind)}
                       onClick={() => patch({ industries: filters.industries.includes(ind) ? filters.industries.filter(i => i !== ind) : [...filters.industries, ind] })}>
-                      {ind}
+                      {ind}{facets.industry?.[ind] ? ` (${facets.industry[ind]})` : ""}
                     </FilterChip>
                   ))}
                 </div>
               </div>
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>{t("filters.stage")}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {STAGES.map((s) => (
-                    <FilterChip key={s.value} active={filters.stages.includes(s.value)}
-                      onClick={() => patch({ stages: filters.stages.includes(s.value) ? filters.stages.filter(x => x !== s.value) : [...filters.stages, s.value] })}>
-                      {s.label}
+                <p style={SECTION}>{t("filters.stage")}</p>
+                <div style={ROW}>
+                  {STAGES.map((st) => (
+                    <FilterChip key={st.value} active={filters.stages.includes(st.value)}
+                      onClick={() => patch({ stages: filters.stages.includes(st.value) ? filters.stages.filter(x => x !== st.value) : [...filters.stages, st.value] })}>
+                      {st.label}{facets.stage?.[st.value] ? ` (${facets.stage[st.value]})` : ""}
                     </FilterChip>
                   ))}
                 </div>
               </div>
-            </div>
-            <div style={{ padding: "0 20px 20px" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>{t("filters.thresholds")}</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                {MRR_PRESETS.map((m) => (
-                  <FilterChip key={m.value} active={filters.mrrMin === m.value}
-                    onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
-                    {m.label}
-                  </FilterChip>
-                ))}
-                {SCORE_PRESETS.map((sc) => (
-                  <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value}
-                    onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
-                    {sc.label}
-                  </FilterChip>
-                ))}
+              <div>
+                <p style={SECTION}>{t("filters.thresholds")}</p>
+                <div style={ROW}>
+                  {MRR_PRESETS.map((m) => (
+                    <FilterChip key={m.value} active={filters.mrrMin === m.value} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>
+                  ))}
+                  {SCORE_PRESETS.map((sc) => (
+                    <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
+                  ))}
+                  {RAISING_PRESETS.map((r) => (
+                    <FilterChip key={r.value} active={filters.raisingMin === r.value} onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>{r.label}</FilterChip>
+                  ))}
+                  <FilterChip active={(filters.runwayMin ?? 0) > 0} onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>{t("startups.runway12")}</FilterChip>
+                  <FilterChip active={(filters.growthMin ?? 0) > 0} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
+                  <FilterChip active={!!filters.newOnly} onClick={() => patch({ newOnly: !filters.newOnly })}>{t("startups.newThisWeek")}</FilterChip>
+                  <FilterChip active={!!filters.closingSoon} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
+                  <FilterChip active={!!filters.hasDemo} onClick={() => patch({ hasDemo: !filters.hasDemo })}>{t("startups.hasDemo")}</FilterChip>
+                </div>
+              </div>
+              {countries.length > 0 && (
+                <div>
+                  <p style={SECTION}>{t("startups.region")}</p>
+                  <div style={ROW}>
+                    {countries.map((c) => (
+                      <FilterChip key={c} active={filters.country === c} onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                        {c}{facets.country?.[c] ? ` (${facets.country[c]})` : ""}
+                      </FilterChip>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {bmodels.length > 0 && (
+                <div>
+                  <p style={SECTION}>{t("startups.businessModelGroup")}</p>
+                  <div style={ROW}>
+                    {bmodels.map((m) => (
+                      <FilterChip key={m} active={filters.businessModel === m} onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>{m}</FilterChip>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <p style={SECTION}>{t("filters.sort")}</p>
+                <div style={ROW}>
+                  {SORT_OPTIONS.map((o) => (
+                    <FilterChip key={o.value} active={filters.sort === o.value} onClick={() => patch({ sort: o.value })}>{t(o.labelKey)}</FilterChip>
+                  ))}
+                </div>
               </div>
             </div>
-            <div style={{ position: "sticky", bottom: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "14px 20px", display: "flex", gap: "10px" }}>
+
+            <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 20px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "10px" }}>
               <button onClick={resetFilters}
                 style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                 {t("filters.reset")}
               </button>
               <button onClick={() => setSidebarOpen(false)}
                 className="btn-copper-shimmer"
-                style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer" }}>
-                {t("filters.apply")}
+                style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer" }}>
+                {t("filters.applyCount", { count: filtered.length })}
               </button>
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

@@ -1336,7 +1336,10 @@
     "sortUpdated": "最近更新",
     "sortMrr": "MRRが高い順",
     "sortClosing": "締切が近い順",
-    "sortFounded": "設立が新しい順"
+    "sortFounded": "設立が新しい順",
+    "title": "フィルター",
+    "applyCount": "{count} 件を表示",
+    "applyCount_one": "{count} 件を表示"
   },
   "common": {
     "loading": "読み込み中...",

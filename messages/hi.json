@@ -1182,7 +1182,10 @@
     "sortUpdated": "हाल ही में अपडेटेड",
     "sortMrr": "सबसे अधिक MRR",
     "sortClosing": "सबसे जल्दी बंद",
-    "sortFounded": "सबसे नई स्थापित"
+    "sortFounded": "सबसे नई स्थापित",
+    "title": "फ़िल्टर",
+    "applyCount": "{count} परिणाम दिखाएँ",
+    "applyCount_one": "{count} परिणाम दिखाएँ"
   },
   "common": {
     "loading": "लोड हो रहा है...",

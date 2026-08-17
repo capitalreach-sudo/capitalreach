@@ -1343,7 +1343,10 @@
     "sortUpdated": "Zuletzt aktualisiert",
     "sortMrr": "Höchster MRR",
     "sortClosing": "Schließt am ehesten",
-    "sortFounded": "Zuletzt gegründet"
+    "sortFounded": "Zuletzt gegründet",
+    "title": "Filter",
+    "applyCount": "{count} Ergebnisse anzeigen",
+    "applyCount_one": "{count} Ergebnis anzeigen"
   },
   "common": {
     "loading": "Laden...",

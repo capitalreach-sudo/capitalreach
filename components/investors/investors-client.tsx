@@ -294,6 +294,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   useEscapeKey(showCompare, () => setShowCompare(false));
+  useEscapeKey(sidebarOpen, () => setSidebarOpen(false));
   function exportInvestorsCsv() {
     const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
     const header = ["Name", "Firm", "Type", "Min check", "Max check", "Stages", "Industries", "Geography", "Leads rounds", "Profile"];
@@ -619,8 +620,31 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             </button>
           </div>
 
-          {/* Mobile sidebar */}
-          {sidebarOpen && <div className="lg:hidden mb-6">{Sidebar}</div>}
+          {/* Mobile: the same filter block as a full-height bottom sheet —
+              header pinned, filters scroll, Reset / Apply·n pinned. */}
+          {sidebarOpen && (
+            <div role="dialog" aria-modal="true" aria-label={t("investors.filters")} className="lg:hidden" style={{ position: "fixed", inset: 0, zIndex: 50 }}>
+              <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.45)" }} onClick={() => setSidebarOpen(false)} />
+              <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "0 -12px 40px rgba(26,22,18,0.2)" }}>
+                <div style={{ padding: "10px 20px 0", flexShrink: 0 }}>
+                  <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 4px" }} />
+                </div>
+                <div className="investor-sheet-body" style={{ overflowY: "auto", flex: 1, padding: "8px 12px 8px" }}>
+                  {Sidebar}
+                </div>
+                <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 20px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "10px" }}>
+                  <button onClick={() => setF(DEFAULT)}
+                    style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+                    {t("filters.reset")}
+                  </button>
+                  <button onClick={() => setSidebarOpen(false)} className="btn-copper-shimmer"
+                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer" }}>
+                    {t("filters.applyCount", { count: results.length })}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (

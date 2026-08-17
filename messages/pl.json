@@ -1182,7 +1182,10 @@
     "sortUpdated": "Ostatnio zaktualizowane",
     "sortMrr": "Najwyższy MRR",
     "sortClosing": "Najbliższe zamknięcie",
-    "sortFounded": "Najnowsze założone"
+    "sortFounded": "Najnowsze założone",
+    "title": "Filtry",
+    "applyCount": "Pokaż {count} wyników",
+    "applyCount_one": "Pokaż {count} wynik"
   },
   "common": {
     "loading": "Ładowanie...",

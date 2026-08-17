@@ -1336,7 +1336,10 @@
     "sortUpdated": "محدثة مؤخرا",
     "sortMrr": "أعلى MRR",
     "sortClosing": "الأقرب إغلاقا",
-    "sortFounded": "الأحدث تأسيسا"
+    "sortFounded": "الأحدث تأسيسا",
+    "title": "عوامل التصفية",
+    "applyCount": "عرض {count} نتيجة",
+    "applyCount_one": "عرض {count} نتيجة"
   },
   "common": {
     "loading": "جاري التحميل...",

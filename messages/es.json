@@ -1336,7 +1336,10 @@
     "sortUpdated": "Actualizados recientemente",
     "sortMrr": "Mayor MRR",
     "sortClosing": "Cierre más próximo",
-    "sortFounded": "Fundadas más recientes"
+    "sortFounded": "Fundadas más recientes",
+    "title": "Filtros",
+    "applyCount": "Ver {count} resultados",
+    "applyCount_one": "Ver {count} resultado"
   },
   "common": {
     "loading": "Cargando...",

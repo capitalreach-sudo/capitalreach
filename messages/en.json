@@ -1347,7 +1347,10 @@
     "sortUpdated": "Recently updated",
     "sortMrr": "Highest MRR",
     "sortClosing": "Closing soonest",
-    "sortFounded": "Newest founded"
+    "sortFounded": "Newest founded",
+    "title": "Filters",
+    "applyCount": "Show {count} results",
+    "applyCount_one": "Show {count} result"
   },
   "common": {
     "loading": "Loading...",

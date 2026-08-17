@@ -1336,7 +1336,10 @@
     "sortUpdated": "最近更新",
     "sortMrr": "最高MRR",
     "sortClosing": "最快截止",
-    "sortFounded": "最新成立"
+    "sortFounded": "最新成立",
+    "title": "筛选",
+    "applyCount": "显示 {count} 条结果",
+    "applyCount_one": "显示 {count} 条结果"
   },
   "common": {
     "loading": "加载中...",

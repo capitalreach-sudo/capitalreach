@@ -1182,7 +1182,10 @@
     "sortUpdated": "Onlangs bijgewerkt",
     "sortMrr": "Hoogste MRR",
     "sortClosing": "Sluit het eerst",
-    "sortFounded": "Recentst opgericht"
+    "sortFounded": "Recentst opgericht",
+    "title": "Filters",
+    "applyCount": "{count} resultaten tonen",
+    "applyCount_one": "{count} resultaat tonen"
   },
   "common": {
     "loading": "Laden...",

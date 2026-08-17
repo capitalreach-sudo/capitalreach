@@ -1182,7 +1182,10 @@
     "sortUpdated": "최근 업데이트순",
     "sortMrr": "최고 MRR",
     "sortClosing": "마감 임박순",
-    "sortFounded": "최근 설립순"
+    "sortFounded": "최근 설립순",
+    "title": "필터",
+    "applyCount": "{count}개 결과 보기",
+    "applyCount_one": "{count}개 결과 보기"
   },
   "common": {
     "loading": "로딩 중...",

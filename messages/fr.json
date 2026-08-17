@@ -1336,7 +1336,10 @@
     "sortUpdated": "Mis à jour récemment",
     "sortMrr": "MRR le plus élevé",
     "sortClosing": "Clôture la plus proche",
-    "sortFounded": "Fondées récemment"
+    "sortFounded": "Fondées récemment",
+    "title": "Filtres",
+    "applyCount": "Voir {count} résultats",
+    "applyCount_one": "Voir {count} résultat"
   },
   "common": {
     "loading": "Chargement...",

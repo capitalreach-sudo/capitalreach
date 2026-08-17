@@ -688,6 +688,9 @@ body::before {
   to   { transform: scale(1); }
 }
 .animate-fade-in       { animation: fadeIn 500ms ease both; }
+/* Investor filter block reused inside the mobile bottom sheet: fill the
+   sheet instead of being a sticky 16rem desktop column. */
+.investor-sheet-body > aside { width: 100% !important; position: static !important; max-height: none !important; border: none !important; border-radius: 0 !important; }
 .animate-slide-in-right{ animation: slideInRight 500ms cubic-bezier(.16,1,.3,1) both; }
 .animate-draw-bar      { animation: drawBar 1.2s cubic-bezier(.33,1,.68,1) both; }
 .animate-count-up      { animation: countUp 600ms ease both; }
