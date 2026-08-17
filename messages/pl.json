@@ -2227,7 +2227,12 @@
     "footerAck": "Korzystając z CapitalReach, przyjmujesz do wiadomości, że przeczytałeś, zrozumiałeś, i zgadzasz się przestrzegać niniejszego Regulaminu.",
     "s6l9": "Obchodzenie ustaleń platformy dotyczących prowizji od sukcesu poprzez kontaktowanie się, negocjowanie lub sfinalizowanie inwestycji poza CapitalReach ze stroną, która została ci przedstawiona za pośrednictwem Usługi, w ciągu 24 miesięcy od tego przedstawienia.",
     "s4h2p2": "Na potrzeby niniejszej sekcji inwestor jest „połączony za pośrednictwem platformy”, jeżeli obejrzał twoją ofertę będąc zalogowanym w CapitalReach, skontaktował się z tobą przez platformę lub został ci przedstawiony poprzez rekord transakcji CapitalReach — w każdym przypadku w ciągu 24 miesięcy przed zamknięciem rundy. CapitalReach przechowuje zapisy tych zdarzeń i w dobrej wierze ustala na ich podstawie fakt połączenia.",
-    "s4h2p3": "Jeśli uważasz, że prowizja od sukcesu została naliczona omyłkowo, możesz ją zakwestionować pisemnie na adres {email} w ciągu 30 dni od daty faktury. Sprawdzimy zapisy połączenia i odpowiemy w ciągu 30 dni. Opłaty objęte trwającym sporem nie są uznawane za zaległe."
+    "s4h2p3": "Jeśli uważasz, że prowizja od sukcesu została naliczona omyłkowo, możesz ją zakwestionować pisemnie na adres {email} w ciągu 30 dni od daty faktury. Sprawdzimy zapisy połączenia i odpowiemy w ciągu 30 dni. Opłaty objęte trwającym sporem nie są uznawane za zaległe.",
+    "reconsentTitle": "Nasz Regulamin został zaktualizowany.",
+    "reconsentBody": "Przejrzyj i zaakceptuj aktualną wersję, aby dalej korzystać z CapitalReach.",
+    "reconsentRead": "Przeczytaj Regulamin",
+    "reconsentAccept": "Akceptuję",
+    "reconsentDone": "Dziękujemy — obowiązuje Cię aktualny Regulamin."
   },
   "search": {
     "aria": "Szukaj startupów i inwestorów",
@@ -2625,5 +2630,12 @@
     "euDispute": "Internetowe rozstrzyganie sporów: Komisja Europejska udostępnia platformę pod adresem ec.europa.eu/consumers/odr. Nie jesteśmy zobowiązani ani gotowi do udziału w postępowaniu przed polubownym sądem konsumenckim.",
     "pendingTitle": "Nota prawna w przygotowaniu",
     "pendingBody": "Dane naszego podmiotu prawnego pojawią się tutaj po zarejestrowaniu spółki operacyjnej. Do tego czasu skontaktuj się z nami przez stronę kontaktową."
+  },
+  "unsubscribe": {
+    "doneTitle": "Wypisano Cię",
+    "doneBody": "Nie będziesz już otrzymywać e-maili od CapitalReach. Powiadomienia w aplikacji pozostają, a preferencje wg typu zmienisz w Ustawieniach.",
+    "invalidTitle": "Ten link jest nieprawidłowy",
+    "invalidBody": "Link wypisania jest błędny lub wygasł. Preferencje e-mail możesz zarządzać w ustawieniach konta.",
+    "manage": "Zarządzaj powiadomieniami"
   }
 }

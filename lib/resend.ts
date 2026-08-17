@@ -47,8 +47,35 @@ async function send(
     console.warn(`[Resend] Not configured — skipping "${subject}" to ${to}`);
     return null;
   }
+
+  // Honor the recipient's global email opt-out and give every message a real,
+  // one-click unsubscribe. Looked up by recipient address so every helper in
+  // this file inherits it without changing its signature. Missing profile
+  // (e.g. contact-form recipients) → send as normal, no footer link.
+  let unsubUrl: string | null = null;
   try {
-    return await client.emails.send({ from: FROM, to, subject, html, tags });
+    const { createAdminClient } = await import("@/lib/supabase-server");
+    const { data: p } = await createAdminClient()
+      .from("profiles")
+      .select("email_opt_out, unsubscribe_token")
+      .eq("email", to)
+      .maybeSingle();
+    if (p?.email_opt_out) {
+      console.info(`[Resend] Recipient opted out — skipping "${subject}"`);
+      return null;
+    }
+    if (p?.unsubscribe_token) unsubUrl = `${brand.url}/unsubscribe?token=${p.unsubscribe_token}`;
+  } catch { /* lookup failure must never block a send */ }
+
+  const footer = unsubUrl
+    ? `<p style="margin-top:28px;font-size:11px;color:#9C8E82">You receive this because you have a CapitalReach account. <a href="${unsubUrl}" style="color:#9C8E82">Unsubscribe</a></p>`
+    : "";
+
+  try {
+    return await client.emails.send({
+      from: FROM, to, subject, html: html + footer, tags,
+      ...(unsubUrl ? { headers: { "List-Unsubscribe": `<${unsubUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } } : {}),
+    });
   } catch (err) {
     console.error("[Resend] Email send failed:", err);
     throw err;

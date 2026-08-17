@@ -1010,6 +1010,7 @@ export type Database = {
           check_size_min: number | null
           created_at: string
           email: string
+          email_opt_out: boolean
           full_name: string | null
           id: string
           investment_thesis: string | null
@@ -1035,6 +1036,7 @@ export type Database = {
           suspended_until: string | null
           terms_accepted_at: string | null
           tier_override: boolean
+          unsubscribe_token: string
         }
         Insert: {
           account_status?: string
@@ -1044,6 +1046,7 @@ export type Database = {
           check_size_min?: number | null
           created_at?: string
           email: string
+          email_opt_out?: boolean
           full_name?: string | null
           id: string
           investment_thesis?: string | null
@@ -1069,6 +1072,7 @@ export type Database = {
           suspended_until?: string | null
           terms_accepted_at?: string | null
           tier_override?: boolean
+          unsubscribe_token?: string
         }
         Update: {
           account_status?: string
@@ -1078,6 +1082,7 @@ export type Database = {
           check_size_min?: number | null
           created_at?: string
           email?: string
+          email_opt_out?: boolean
           full_name?: string | null
           id?: string
           investment_thesis?: string | null
@@ -1103,6 +1108,7 @@ export type Database = {
           suspended_until?: string | null
           terms_accepted_at?: string | null
           tier_override?: boolean
+          unsubscribe_token?: string
         }
         Relationships: [
           {

@@ -2238,7 +2238,12 @@
     "supportLabel": "Support:",
     "footerAck": "By using CapitalReach, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
     "s4h2p2": "For the purposes of this section, an investor is \"connected through the platform\" if they viewed your listing while signed in to CapitalReach, contacted you through the platform, or were introduced to you via a CapitalReach deal record, in each case within 24 months before the round closed. CapitalReach maintains records of these events and determines connection in good faith based on them.",
-    "s4h2p3": "If you believe a success fee has been invoiced in error, you may dispute it in writing to {email} within 30 days of the invoice date. We will review the connection records and respond within 30 days. Fees under active dispute are not considered overdue."
+    "s4h2p3": "If you believe a success fee has been invoiced in error, you may dispute it in writing to {email} within 30 days of the invoice date. We will review the connection records and respond within 30 days. Fees under active dispute are not considered overdue.",
+    "reconsentTitle": "Our Terms have been updated.",
+    "reconsentBody": "Please review and accept the current version to keep using CapitalReach.",
+    "reconsentRead": "Read the Terms",
+    "reconsentAccept": "Accept",
+    "reconsentDone": "Thanks — you're on the current Terms."
   },
   "notifications": {
     "title": "Notifications",
@@ -2625,5 +2630,12 @@
     "euDispute": "Online dispute resolution: the European Commission provides a platform at ec.europa.eu/consumers/odr. We are neither obligated nor willing to participate in dispute resolution proceedings before a consumer arbitration board.",
     "pendingTitle": "Imprint pending",
     "pendingBody": "Our legal entity details will appear here once the operating company is registered. Until then, reach us via the contact page."
+  },
+  "unsubscribe": {
+    "doneTitle": "You're unsubscribed",
+    "doneBody": "You won't receive email from CapitalReach anymore. In-app notifications continue, and you can change per-type preferences in Settings.",
+    "invalidTitle": "This link isn't valid",
+    "invalidBody": "The unsubscribe link is missing or has expired. You can manage email preferences from your account settings instead.",
+    "manage": "Manage notification settings"
   }
 }

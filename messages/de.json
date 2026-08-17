@@ -2234,7 +2234,12 @@
     "footerAck": "Durch die Nutzung von CapitalReach bestätigst du, dass du diese Nutzungsbedingungen gelesen und verstanden hast und ihnen zustimmst.",
     "s6l9": "die Erfolgsgebühren-Vereinbarung der Plattform zu umgehen, indem Sie mit einer Partei, die Ihnen über den Dienst vorgestellt wurde, innerhalb von 24 Monaten nach dieser Vorstellung außerhalb von CapitalReach Kontakt aufnehmen, verhandeln oder ein Investment abschließen.",
     "s4h2p2": "Im Sinne dieses Abschnitts gilt ein Investor als „über die Plattform vermittelt“, wenn er Ihr Listing angemeldet bei CapitalReach aufgerufen, Sie über die Plattform kontaktiert hat oder Ihnen über einen CapitalReach-Deal-Datensatz vorgestellt wurde — jeweils innerhalb von 24 Monaten vor Abschluss der Runde. CapitalReach führt Aufzeichnungen über diese Ereignisse und stellt die Vermittlung nach Treu und Glauben auf deren Grundlage fest.",
-    "s4h2p3": "Wenn Sie eine Erfolgsgebühr für fehlerhaft berechnet halten, können Sie ihr innerhalb von 30 Tagen ab Rechnungsdatum schriftlich an {email} widersprechen. Wir prüfen die Vermittlungsaufzeichnungen und antworten innerhalb von 30 Tagen. Gebühren im laufenden Widerspruchsverfahren gelten nicht als überfällig."
+    "s4h2p3": "Wenn Sie eine Erfolgsgebühr für fehlerhaft berechnet halten, können Sie ihr innerhalb von 30 Tagen ab Rechnungsdatum schriftlich an {email} widersprechen. Wir prüfen die Vermittlungsaufzeichnungen und antworten innerhalb von 30 Tagen. Gebühren im laufenden Widerspruchsverfahren gelten nicht als überfällig.",
+    "reconsentTitle": "Unsere Nutzungsbedingungen wurden aktualisiert.",
+    "reconsentBody": "Bitte prüfe und akzeptiere die aktuelle Version, um CapitalReach weiter zu nutzen.",
+    "reconsentRead": "Bedingungen lesen",
+    "reconsentAccept": "Akzeptieren",
+    "reconsentDone": "Danke — du bist auf dem aktuellen Stand."
   },
   "pullQuote": {
     "text": "Jedes Listing geprüft. Jede Zahl belegt. Kapital sollte kein Vertrauensvorschuss sein müssen.",
@@ -2625,5 +2630,12 @@
     "euDispute": "Online-Streitbeilegung: Die Europäische Kommission stellt eine Plattform unter ec.europa.eu/consumers/odr bereit. Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.",
     "pendingTitle": "Impressum in Vorbereitung",
     "pendingBody": "Die Angaben zu unserer juristischen Person erscheinen hier, sobald die Betreibergesellschaft eingetragen ist. Bis dahin erreichst du uns über die Kontaktseite."
+  },
+  "unsubscribe": {
+    "doneTitle": "Du bist abgemeldet",
+    "doneBody": "Du erhältst keine E-Mails mehr von CapitalReach. In-App-Benachrichtigungen bleiben, und Präferenzen pro Typ änderst du in den Einstellungen.",
+    "invalidTitle": "Dieser Link ist ungültig",
+    "invalidBody": "Der Abmeldelink fehlt oder ist abgelaufen. Du kannst E-Mail-Präferenzen stattdessen in deinen Kontoeinstellungen verwalten.",
+    "manage": "Benachrichtigungseinstellungen verwalten"
   }
 }

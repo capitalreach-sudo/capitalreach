@@ -10,6 +10,26 @@ import { TERMS_VERSION } from "@/lib/terms-version";
  * client composes is a record the client can dispute. Append-only —
  * accepting twice records twice, which is harmless and honest.
  */
+/** Has the signed-in user accepted the *current* Terms version? Drives the
+ *  re-consent bar: a user whose latest acceptance predates TERMS_VERSION
+ *  (e.g. before the non-circumvention clause) is asked to re-accept. */
+export async function GET() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("terms_acceptances")
+    .select("version")
+    .eq("user_id", user.id)
+    .eq("version", TERMS_VERSION)
+    .limit(1)
+    .maybeSingle();
+
+  return NextResponse.json({ current: !!data, version: TERMS_VERSION });
+}
+
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

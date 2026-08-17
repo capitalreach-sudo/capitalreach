@@ -2227,7 +2227,12 @@
     "footerAck": "Ao usar a CapitalReach, reconhece que leu, compreendeu, e concorda em ficar vinculado a estes Termos de Serviço.",
     "s6l9": "Contornar o acordo de comissão de êxito da plataforma contactando, negociando ou concretizando um investimento fora da CapitalReach com uma parte que te foi apresentada através do Serviço, no prazo de 24 meses após essa apresentação.",
     "s4h2p2": "Para efeitos desta secção, considera-se que um investidor está «ligado através da plataforma» se visualizou a tua oportunidade com sessão iniciada na CapitalReach, te contactou através da plataforma, ou te foi apresentado por um registo de negócio da CapitalReach, em cada caso nos 24 meses anteriores ao fecho da ronda. A CapitalReach mantém registos destes eventos e determina a ligação de boa-fé com base neles.",
-    "s4h2p3": "Se considerares que uma comissão de êxito foi faturada por erro, podes contestá-la por escrito para {email} no prazo de 30 dias após a data da fatura. Analisaremos os registos de ligação e responderemos em 30 dias. As comissões em disputa ativa não são consideradas vencidas."
+    "s4h2p3": "Se considerares que uma comissão de êxito foi faturada por erro, podes contestá-la por escrito para {email} no prazo de 30 dias após a data da fatura. Analisaremos os registos de ligação e responderemos em 30 dias. As comissões em disputa ativa não são consideradas vencidas.",
+    "reconsentTitle": "Nossos Termos foram atualizados.",
+    "reconsentBody": "Revise e aceite a versão atual para continuar usando a CapitalReach.",
+    "reconsentRead": "Ler os Termos",
+    "reconsentAccept": "Aceitar",
+    "reconsentDone": "Obrigado — você está nos Termos atuais."
   },
   "search": {
     "aria": "Pesquisar startups e investidores",
@@ -2625,5 +2630,12 @@
     "euDispute": "Resolução de litígios online: a Comissão Europeia disponibiliza uma plataforma em ec.europa.eu/consumers/odr. Não somos obrigados nem dispostos a participar em procedimentos de resolução perante um órgão de conciliação.",
     "pendingTitle": "Informações legais pendentes",
     "pendingBody": "Os dados da nossa entidade legal aparecerão aqui assim que a empresa operadora for registrada. Até lá, fale conosco pela página de contato."
+  },
+  "unsubscribe": {
+    "doneTitle": "Você cancelou a inscrição",
+    "doneBody": "Você não receberá mais e-mails da CapitalReach. As notificações no app continuam, e você pode alterar as preferências por tipo em Configurações.",
+    "invalidTitle": "Este link não é válido",
+    "invalidBody": "O link de cancelamento está ausente ou expirou. Você pode gerenciar as preferências de e-mail nas configurações da conta.",
+    "manage": "Gerenciar notificações"
   }
 }

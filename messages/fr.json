@@ -2227,7 +2227,12 @@
     "footerAck": "En utilisant CapitalReach, vous reconnaissez avoir lu, compris et accepté d'être lié par ces Conditions d'utilisation.",
     "s6l9": "Contourner le dispositif de commission de succès de la plateforme en contactant une partie qui vous a été présentée via le Service, en négociant avec elle ou en réalisant un investissement avec elle en dehors de CapitalReach, dans les 24 mois suivant cette mise en relation.",
     "s4h2p2": "Aux fins de la présente section, un investisseur est réputé « mis en relation via la plateforme » s'il a consulté votre annonce en étant connecté à CapitalReach, vous a contacté via la plateforme, ou vous a été présenté par un enregistrement d'opération CapitalReach, dans chaque cas au cours des 24 mois précédant la clôture du tour. CapitalReach conserve les enregistrements de ces événements et détermine la mise en relation de bonne foi sur cette base.",
-    "s4h2p3": "Si vous estimez qu'une commission de succès a été facturée à tort, vous pouvez la contester par écrit à {email} dans les 30 jours suivant la date de facture. Nous examinerons les enregistrements de mise en relation et répondrons sous 30 jours. Les frais faisant l'objet d'une contestation en cours ne sont pas considérés comme échus."
+    "s4h2p3": "Si vous estimez qu'une commission de succès a été facturée à tort, vous pouvez la contester par écrit à {email} dans les 30 jours suivant la date de facture. Nous examinerons les enregistrements de mise en relation et répondrons sous 30 jours. Les frais faisant l'objet d'une contestation en cours ne sont pas considérés comme échus.",
+    "reconsentTitle": "Nos Conditions ont été mises à jour.",
+    "reconsentBody": "Veuillez consulter et accepter la version actuelle pour continuer à utiliser CapitalReach.",
+    "reconsentRead": "Lire les Conditions",
+    "reconsentAccept": "Accepter",
+    "reconsentDone": "Merci — vous êtes sur les Conditions actuelles."
   },
   "search": {
     "aria": "Rechercher des startups et des investisseurs",
@@ -2625,5 +2630,12 @@
     "euDispute": "Règlement en ligne des litiges : la Commission européenne fournit une plateforme sur ec.europa.eu/consumers/odr. Nous ne sommes ni obligés ni disposés à participer à une procédure de règlement des litiges devant un organe de conciliation.",
     "pendingTitle": "Mentions légales en préparation",
     "pendingBody": "Les informations sur notre entité juridique apparaîtront ici une fois la société d'exploitation immatriculée. En attendant, contactez-nous via la page contact."
+  },
+  "unsubscribe": {
+    "doneTitle": "Vous êtes désabonné",
+    "doneBody": "Vous ne recevrez plus d'e-mails de CapitalReach. Les notifications dans l'application continuent, et vous pouvez modifier les préférences par type dans les Paramètres.",
+    "invalidTitle": "Ce lien n'est pas valide",
+    "invalidBody": "Le lien de désabonnement est manquant ou a expiré. Vous pouvez gérer vos préférences e-mail depuis les paramètres de votre compte.",
+    "manage": "Gérer les notifications"
   }
 }

@@ -2227,7 +2227,12 @@
     "footerAck": "Door CapitalReach te gebruiken, erkent u dat u deze Servicevoorwaarden heeft gelezen, begrepen, en ermee akkoord gaat eraan gebonden te zijn.",
     "s6l9": "De successfee-regeling van het platform omzeilen door binnen 24 maanden na de introductie buiten CapitalReach om contact op te nemen met, te onderhandelen met of een investering af te ronden met een partij die via de Dienst aan je is voorgesteld.",
     "s4h2p2": "Voor deze sectie geldt een investeerder als 'via het platform in contact gekomen' indien hij je aanbod bekeek terwijl hij was ingelogd op CapitalReach, via het platform contact met je opnam, of via een CapitalReach-dealrecord aan je werd voorgesteld, telkens binnen 24 maanden voor het sluiten van de ronde. CapitalReach bewaart registraties van deze gebeurtenissen en stelt de connectie te goeder trouw op basis daarvan vast.",
-    "s4h2p3": "Als je meent dat een successfee ten onrechte is gefactureerd, kun je hiertegen schriftelijk bezwaar maken bij {email} binnen 30 dagen na de factuurdatum. Wij beoordelen de connectieregistraties en reageren binnen 30 dagen. Kosten waarover een actief geschil loopt, gelden niet als achterstallig."
+    "s4h2p3": "Als je meent dat een successfee ten onrechte is gefactureerd, kun je hiertegen schriftelijk bezwaar maken bij {email} binnen 30 dagen na de factuurdatum. Wij beoordelen de connectieregistraties en reageren binnen 30 dagen. Kosten waarover een actief geschil loopt, gelden niet als achterstallig.",
+    "reconsentTitle": "Onze Voorwaarden zijn bijgewerkt.",
+    "reconsentBody": "Bekijk en accepteer de huidige versie om CapitalReach te blijven gebruiken.",
+    "reconsentRead": "Voorwaarden lezen",
+    "reconsentAccept": "Accepteren",
+    "reconsentDone": "Bedankt — je bent op de huidige Voorwaarden."
   },
   "search": {
     "aria": "Zoek startups en investeerders",
@@ -2625,5 +2630,12 @@
     "euDispute": "Onlinegeschillenbeslechting: de Europese Commissie biedt een platform op ec.europa.eu/consumers/odr. Wij zijn niet verplicht en niet bereid deel te nemen aan geschillenbeslechting voor een consumentengeschillencommissie.",
     "pendingTitle": "Colofon in voorbereiding",
     "pendingBody": "De gegevens van onze juridische entiteit verschijnen hier zodra het exploiterende bedrijf is geregistreerd. Neem tot dan contact met ons op via de contactpagina."
+  },
+  "unsubscribe": {
+    "doneTitle": "Je bent uitgeschreven",
+    "doneBody": "Je ontvangt geen e-mail meer van CapitalReach. In-app meldingen gaan door en per-type voorkeuren pas je aan in Instellingen.",
+    "invalidTitle": "Deze link is niet geldig",
+    "invalidBody": "De uitschrijflink ontbreekt of is verlopen. Je kunt e-mailvoorkeuren beheren via je accountinstellingen.",
+    "manage": "Meldingsinstellingen beheren"
   }
 }

@@ -2227,7 +2227,12 @@
     "footerAck": "Utilizzando CapitalReach, riconosci di aver letto, compreso, e accettato di essere vincolato da questi Termini di servizio.",
     "s6l9": "Eludere l'accordo sulla commissione di successo della piattaforma contattando, negoziando o perfezionando un investimento al di fuori di CapitalReach con una parte che ti è stata presentata tramite il Servizio, entro 24 mesi da tale presentazione.",
     "s4h2p2": "Ai fini della presente sezione, un investitore è «collegato tramite la piattaforma» se ha visualizzato la tua opportunità mentre era autenticato su CapitalReach, ti ha contattato tramite la piattaforma o gli sei stato presentato tramite un record di operazione CapitalReach, in ciascun caso nei 24 mesi precedenti la chiusura del round. CapitalReach conserva i registri di tali eventi e determina il collegamento in buona fede sulla base di essi.",
-    "s4h2p3": "Se ritieni che una commissione di successo sia stata fatturata per errore, puoi contestarla per iscritto a {email} entro 30 giorni dalla data della fattura. Esamineremo i registri di collegamento e risponderemo entro 30 giorni. Le commissioni oggetto di contestazione attiva non sono considerate scadute."
+    "s4h2p3": "Se ritieni che una commissione di successo sia stata fatturata per errore, puoi contestarla per iscritto a {email} entro 30 giorni dalla data della fattura. Esamineremo i registri di collegamento e risponderemo entro 30 giorni. Le commissioni oggetto di contestazione attiva non sono considerate scadute.",
+    "reconsentTitle": "I nostri Termini sono stati aggiornati.",
+    "reconsentBody": "Rivedi e accetta la versione attuale per continuare a usare CapitalReach.",
+    "reconsentRead": "Leggi i Termini",
+    "reconsentAccept": "Accetta",
+    "reconsentDone": "Grazie — sei sui Termini attuali."
   },
   "search": {
     "aria": "Cerca startup e investitori",
@@ -2625,5 +2630,12 @@
     "euDispute": "Risoluzione delle controversie online: la Commissione europea fornisce una piattaforma su ec.europa.eu/consumers/odr. Non siamo obbligati né disposti a partecipare a procedure di risoluzione dinanzi a un organo di conciliazione.",
     "pendingTitle": "Note legali in preparazione",
     "pendingBody": "I dati della nostra entità giuridica compariranno qui una volta registrata la società operativa. Nel frattempo, contattaci dalla pagina contatti."
+  },
+  "unsubscribe": {
+    "doneTitle": "Iscrizione annullata",
+    "doneBody": "Non riceverai più email da CapitalReach. Le notifiche in-app continuano e puoi cambiare le preferenze per tipo nelle Impostazioni.",
+    "invalidTitle": "Questo link non è valido",
+    "invalidBody": "Il link di annullamento manca o è scaduto. Puoi gestire le preferenze email dalle impostazioni dell'account.",
+    "manage": "Gestisci le notifiche"
   }
 }

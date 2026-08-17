@@ -2227,7 +2227,12 @@
     "footerAck": "Genom att använda CapitalReach bekräftar du att du har läst, förstått, och godkänner att vara bunden av dessa Användarvillkor.",
     "s6l9": "Kringgå plattformens successavgift genom att inom 24 månader efter introduktionen kontakta, förhandla med eller genomföra en investering utanför CapitalReach med en part som du introducerats till via Tjänsten.",
     "s4h2p2": "I denna sektion anses en investerare vara ”kopplad via plattformen” om denne såg din notering medan hen var inloggad på CapitalReach, kontaktade dig via plattformen, eller introducerades för dig via en CapitalReach-affärspost, i varje fall inom 24 månader före rundans stängning. CapitalReach sparar loggar över dessa händelser och avgör kopplingen i god tro utifrån dem.",
-    "s4h2p3": "Om du anser att en successavgift fakturerats felaktigt kan du bestrida den skriftligen till {email} inom 30 dagar från fakturadatumet. Vi granskar kopplingsloggarna och svarar inom 30 dagar. Avgifter under pågående tvist betraktas inte som förfallna."
+    "s4h2p3": "Om du anser att en successavgift fakturerats felaktigt kan du bestrida den skriftligen till {email} inom 30 dagar från fakturadatumet. Vi granskar kopplingsloggarna och svarar inom 30 dagar. Avgifter under pågående tvist betraktas inte som förfallna.",
+    "reconsentTitle": "Våra Villkor har uppdaterats.",
+    "reconsentBody": "Granska och godkänn den aktuella versionen för att fortsätta använda CapitalReach.",
+    "reconsentRead": "Läs Villkoren",
+    "reconsentAccept": "Godkänn",
+    "reconsentDone": "Tack — du är på de aktuella Villkoren."
   },
   "search": {
     "aria": "Sök startups och investerare",
@@ -2625,5 +2630,12 @@
     "euDispute": "Tvistlösning online: EU-kommissionen tillhandahåller en plattform på ec.europa.eu/consumers/odr. Vi är varken skyldiga eller villiga att delta i tvistlösning inför en konsumenttvistnämnd.",
     "pendingTitle": "Impressum under förberedelse",
     "pendingBody": "Uppgifter om vår juridiska enhet visas här när driftbolaget har registrerats. Kontakta oss under tiden via kontaktsidan."
+  },
+  "unsubscribe": {
+    "doneTitle": "Du är avregistrerad",
+    "doneBody": "Du får inte längre e-post från CapitalReach. Aviseringar i appen fortsätter och du kan ändra inställningar per typ i Inställningar.",
+    "invalidTitle": "Länken är ogiltig",
+    "invalidBody": "Avregistreringslänken saknas eller har gått ut. Du kan hantera e-postinställningar via kontoinställningarna.",
+    "manage": "Hantera aviseringar"
   }
 }
