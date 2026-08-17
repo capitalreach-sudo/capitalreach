@@ -68,7 +68,7 @@ export default function BlogPostPage({ params }: Props) {
               <Link href="/startups" style={{ color: "var(--cr-copper)" }}>Browse live rounds</Link>
               {" "}or{" "}
               <Link href="/auth/signup" style={{ color: "var(--cr-copper)" }}>create a free account</Link>
-              {" "}— every listing is reviewed before it goes live, and the only fee is 2% at close.
+              {" "}— every listing is reviewed before it goes live, and the only fee is 2%, paid by the startup at close.
             </p>
           </div>
         </article>

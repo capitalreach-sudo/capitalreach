@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!industry) return {};
   return {
     title: `${industry} startups raising capital`,
-    description: `Vetted ${industry} startups raising on CapitalReach — funding targets, traction and stage, with a 2% success fee only at close.`,
+    description: `Vetted ${industry} startups raising on CapitalReach — funding targets, traction and stage, with a 2% success fee paid by the startup only at close.`,
   };
 }
 
@@ -70,7 +70,7 @@ export default async function SectorPage({ params }: Props) {
           </h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "60ch", lineHeight: 1.7, marginBottom: "10px" }}>
             Every listing below was reviewed by CapitalReach before going live. Funding target,
-            stage and traction are shown up front; the platform charges a 2% success fee at close
+            stage and traction are shown up front; the platform charges the startup a 2% success fee at close (investors pay nothing)
             and nothing before it.
           </p>
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "36px" }}>

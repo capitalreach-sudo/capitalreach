@@ -215,6 +215,10 @@ export function HomepageClient({ stats, listings, launch }: Props) {
               </div>
             ))}
           </div>
+          {/* Who pays — stated in one plain sentence, right under the number. */}
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "rgba(245,240,232,0.55)", textAlign: "center", padding: "0 0 16px", lineHeight: 1.5 }}>
+            {t("hero.whoPays")}
+          </p>
         </div>
       </section>
 

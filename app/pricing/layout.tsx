@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 // "use client" cannot export the metadata object itself.
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Free during launch for our first 100 members. One 2% success fee on capital raised — no upfront cost for startups, and investors pay nothing.",
+  description: "Free during launch for our first 100 members. One 2% success fee on capital raised, paid by the startup receiving the investment — no upfront cost, and investors pay nothing.",
   alternates: { canonical: "/pricing" },
 };
 
