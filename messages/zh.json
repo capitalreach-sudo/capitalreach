@@ -958,7 +958,16 @@
     "editLiveNotice": "编辑期间您的列表保持上线。更改会自动保存，并标记供管理员快速复核。",
     "editSavedLive": "已保存 — 您的列表仍在线。",
     "editSaved": "更改已保存。",
-    "tamHint": "总可寻址市场，以美元计（例如 2000000000 表示 20 亿美元）。"
+    "tamHint": "总可寻址市场，以美元计（例如 2000000000 表示 20 亿美元）。",
+    "roundStatusTitle": "融资状态",
+    "roundStatusHint": "由您决定 — 管理员不参与。",
+    "roundHelp_open": "开放：已上线，接受新的意向。",
+    "roundHelp_oversubscribed": "超额认购：仍上线并带标识；新意向进入候补名单。",
+    "roundHelp_paused": "暂停：在浏览和搜索中隐藏，不接受新意向。可随时恢复。",
+    "roundHelp_closed": "已关闭：仍可见并带“融资已关闭”标识；不接受新意向。",
+    "momentumToggle": "公开显示进度",
+    "momentumHint": "在您的列表上发布汇总进度条 — 已承诺金额与目标，以及有多少投资者感兴趣。绝不显示姓名。",
+    "roundSaved": "融资设置已保存。"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -1203,7 +1212,15 @@
     "interestSent": "已发送兴趣——交易已在您的管道中。",
     "viewInPipeline": "在管道中查看",
     "identityProtected": "与该创业公司开启交易后，将完整显示创始人姓名和资料。",
-    "marketOpportunity": "市场机会"
+    "marketOpportunity": "市场机会",
+    "round_open": "开放",
+    "round_oversubscribed": "超额认购",
+    "round_paused": "暂停",
+    "round_closed": "融资已关闭",
+    "roundClosedNotice": "本轮融资已不再接受新投资者。",
+    "roundPausedNotice": "创始人已暂停本轮融资。",
+    "momentumCommitted": "{count} 位已承诺",
+    "momentumInterested": "{count} 位感兴趣"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1929,7 +1946,13 @@
     "ckTs3": "签署条款清单",
     "ckTs4": "确认成交金额",
     "moneyWorks": "资金如何流转：投资在您与对方之间直接进行——CapitalReach 绝不保管资金。只有在双方确认成交后，才会向创始人开具 2% 费用的发票。",
-    "activityCircumventionAck": "已确认不绕过条款"
+    "activityCircumventionAck": "已确认不绕过条款",
+    "commitmentLabel": "承诺",
+    "commitInterest": "有意向",
+    "commitSoft": "软承诺",
+    "commitVerbal": "口头同意",
+    "commitCommitted": "已承诺",
+    "commitmentSaved": "承诺已更新。"
   },
   "investorProfile": {
     "back": "返回投资者列表",

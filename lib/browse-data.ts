@@ -12,7 +12,7 @@ import { createAdminClient } from "@/lib/supabase-server";
  */
 
 export const STARTUP_LIST_COLUMNS =
-  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at";
+  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state";
 
 export type BrowseStartup = {
   id: string; slug: string; name: string; tagline: string;
@@ -22,6 +22,7 @@ export type BrowseStartup = {
   vaultrise_score: number | null;
   country: string | null; business_model: string | null; round_close_date: string | null;
   demo_video_url: string | null; founded_year: number | null; verified_at: string | null;
+  round_state?: string | null;
 };
 
 export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
@@ -31,6 +32,8 @@ export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
       .from("startups")
       .select(STARTUP_LIST_COLUMNS)
       .eq("status", "active")
+      // B16: a founder-paused round is off the market until they resume it.
+      .neq("round_state", "paused")
       .order("created_at", { ascending: false });
     if (error) return null;
     return (data ?? []) as unknown as BrowseStartup[];

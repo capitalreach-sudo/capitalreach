@@ -949,7 +949,16 @@
     "editLiveNotice": "La tua scheda resta online mentre la modifichi. Le modifiche si salvano da sole e vengono segnalate per un rapido ricontrollo admin.",
     "editSavedLive": "Salvato — la tua scheda è ancora online.",
     "editSaved": "Modifiche salvate.",
-    "tamHint": "Mercato totale indirizzabile, in USD (es. 2000000000 per 2 mld $)."
+    "tamHint": "Mercato totale indirizzabile, in USD (es. 2000000000 per 2 mld $).",
+    "roundStatusTitle": "Stato del round",
+    "roundStatusHint": "Decidi tu — gli admin non intervengono.",
+    "roundHelp_open": "Aperto: in elenco, nuovo interesse accettato.",
+    "roundHelp_oversubscribed": "Sovrasottoscritto: ancora in elenco con un badge; il nuovo interesse va in lista d'attesa.",
+    "roundHelp_paused": "In pausa: nascosto da ricerca ed elenco, niente nuovo interesse. Riprendi quando vuoi.",
+    "roundHelp_closed": "Chiuso: ancora visibile con il badge «Round chiuso»; niente nuovo interesse.",
+    "momentumToggle": "Mostra lo slancio pubblicamente",
+    "momentumHint": "Pubblica una barra aggregata sulla scheda — importo impegnato vs obiettivo e quanti investitori sono interessati. Non fa mai nomi.",
+    "roundSaved": "Impostazioni del round salvate."
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -1163,7 +1172,15 @@
     "interestSent": "Interesse inviato — il deal è nella tua pipeline.",
     "viewInPipeline": "Vedi nella pipeline",
     "identityProtected": "Nomi e profili dei founder vengono mostrati per intero quando apri un'operazione con questa startup.",
-    "marketOpportunity": "Opportunità di mercato"
+    "marketOpportunity": "Opportunità di mercato",
+    "round_open": "Aperto",
+    "round_oversubscribed": "Sovrasottoscritto",
+    "round_paused": "In pausa",
+    "round_closed": "Round chiuso",
+    "roundClosedNotice": "Questo round è chiuso a nuovi investitori.",
+    "roundPausedNotice": "Questo round è in pausa per scelta del founder.",
+    "momentumCommitted": "{count} impegnati",
+    "momentumInterested": "{count} interessati"
   },
   "filters": {
     "industry": "Settore",
@@ -1929,7 +1946,13 @@
     "ckTs3": "Firmare il term sheet",
     "ckTs4": "Confermare l'importo di chiusura",
     "moneyWorks": "Come funziona il denaro: l'investimento passa direttamente tra te e la controparte — CapitalReach non custodisce mai fondi. La commissione del 2% viene fatturata al founder solo dopo che entrambe le parti confermano la chiusura.",
-    "activityCircumventionAck": "Non elusione riconosciuta"
+    "activityCircumventionAck": "Non elusione riconosciuta",
+    "commitmentLabel": "Impegno",
+    "commitInterest": "Interessato",
+    "commitSoft": "Soft-circle",
+    "commitVerbal": "Sì verbale",
+    "commitCommitted": "Impegnato",
+    "commitmentSaved": "Impegno aggiornato."
   },
   "investorProfile": {
     "back": "Torna agli investitori",

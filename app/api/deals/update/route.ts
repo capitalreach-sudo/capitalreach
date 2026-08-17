@@ -28,7 +28,15 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const { dealId, status, reason, nextFollowUp, amount, currency } = await req.json().catch(() => ({}));
+  const { dealId, status, reason, nextFollowUp, amount, currency, commitmentType } = await req.json().catch(() => ({}));
+
+  // B17: commitment level. Either party may record it (the investor says
+  // "we're in for 50k", the founder logs a verbal yes from a call); the
+  // timeline shows who set it.
+  const COMMITMENTS = ["interest", "soft_circle", "verbal", "committed"] as const;
+  if (commitmentType !== undefined && !COMMITMENTS.includes(commitmentType)) {
+    return NextResponse.json({ error: "Invalid commitment type" }, { status: 400 });
+  }
 
   // Statuses the UI can actually render. "closed" is handled by /api/deals/close
   // and rejected below; everything else must be one of these.
@@ -121,6 +129,10 @@ export async function POST(req: NextRequest) {
   // they knew was wrong.
   if (typeof amount === "number" && amount > 0) updates.amount = Math.round(amount);
   if (amount === null) updates.amount = null;
+  if (commitmentType !== undefined) {
+    updates.commitment_type = commitmentType;
+    updates.commitment_at = new Date().toISOString();
+  }
   if (typeof currency === "string" && isCurrencyCode(currency)) updates.currency = currency;
 
   if (Object.keys(updates).length > 0) {
@@ -128,6 +140,26 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("[deals/update]", error);
       return NextResponse.json({ error: "Failed to update deal" }, { status: 500 });
+    }
+  }
+
+  if (commitmentType !== undefined) {
+    const LABEL: Record<string, string> = { interest: "Interested", soft_circle: "Soft-circled", verbal: "Verbal commitment", committed: "Committed" };
+    const admin = createAdminClient();
+    await admin.from("deal_activity").insert({
+      deal_id: dealId, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: user.id,
+      type: "note",
+      body: `${LABEL[commitmentType]}${typeof amount === "number" && amount > 0 ? ` · ${(isCurrencyCode(currency) ? currency : "USD")} ${Math.round(amount).toLocaleString()}` : ""}`,
+    }).then(undefined, () => {});
+    // The other side learns the commitment moved.
+    const counterpart = user.id === deal.startup?.owner_id ? deal.investor?.owner_id : deal.startup?.owner_id;
+    if (counterpart && counterpart !== user.id) {
+      await notifyUsers([counterpart], {
+        type: "deal_stage",
+        title: `${LABEL[commitmentType]} — deal update`,
+        body: typeof amount === "number" && amount > 0 ? `${(isCurrencyCode(currency) ? currency : "USD")} ${Math.round(amount).toLocaleString()}` : null,
+        href: `/deals?deal=${dealId}`,
+      }).catch(() => {});
     }
   }
 

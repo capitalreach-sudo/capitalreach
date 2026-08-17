@@ -949,7 +949,16 @@
     "editLiveNotice": "Uw vermelding blijft live tijdens het bewerken. Wijzigingen worden automatisch opgeslagen en gemarkeerd voor een snelle admin-controle.",
     "editSavedLive": "Opgeslagen — uw vermelding is nog steeds live.",
     "editSaved": "Wijzigingen opgeslagen.",
-    "tamHint": "Totale adresseerbare markt in USD (bv. 2000000000 voor $2 mld)."
+    "tamHint": "Totale adresseerbare markt in USD (bv. 2000000000 voor $2 mld).",
+    "roundStatusTitle": "Rondestatus",
+    "roundStatusHint": "Uw keuze — admins spelen geen rol.",
+    "roundHelp_open": "Open: vermeld, nieuwe interesse welkom.",
+    "roundHelp_oversubscribed": "Overtekend: nog vermeld met een badge; nieuwe interesse komt op de wachtlijst.",
+    "roundHelp_paused": "Gepauzeerd: verborgen in zoeken en overzicht, geen nieuwe interesse. Elk moment te hervatten.",
+    "roundHelp_closed": "Gesloten: nog zichtbaar met badge 'Ronde gesloten'; geen nieuwe interesse.",
+    "momentumToggle": "Momentum publiek tonen",
+    "momentumHint": "Toont een geaggregeerde balk op uw vermelding — toegezegd bedrag vs doel en hoeveel investeerders geïnteresseerd zijn. Noemt nooit namen.",
+    "roundSaved": "Rondeinstellingen opgeslagen."
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -1163,7 +1172,15 @@
     "interestSent": "Interesse verzonden — de deal staat in je pipeline.",
     "viewInPipeline": "Bekijk in pipeline",
     "identityProtected": "Namen en profielen van oprichters worden volledig getoond zodra u een deal met deze startup opent.",
-    "marketOpportunity": "Marktkans"
+    "marketOpportunity": "Marktkans",
+    "round_open": "Open",
+    "round_oversubscribed": "Overtekend",
+    "round_paused": "Gepauzeerd",
+    "round_closed": "Ronde gesloten",
+    "roundClosedNotice": "Deze ronde is gesloten voor nieuwe investeerders.",
+    "roundPausedNotice": "Deze ronde is door de oprichter gepauzeerd.",
+    "momentumCommitted": "{count} toegezegd",
+    "momentumInterested": "{count} geïnteresseerd"
   },
   "filters": {
     "industry": "Industrie",
@@ -1929,7 +1946,13 @@
     "ckTs3": "Term sheet ondertekenen",
     "ckTs4": "Slotbedrag bevestigen",
     "moneyWorks": "Hoe het geld werkt: de investering gaat rechtstreeks tussen jou en de tegenpartij — CapitalReach houdt nooit gelden aan. De 2%-fee wordt pas aan de oprichter gefactureerd nadat beide partijen de afsluiting hebben bevestigd.",
-    "activityCircumventionAck": "Niet-omzeiling bevestigd"
+    "activityCircumventionAck": "Niet-omzeiling bevestigd",
+    "commitmentLabel": "Toezegging",
+    "commitInterest": "Geïnteresseerd",
+    "commitSoft": "Soft-circle",
+    "commitVerbal": "Mondeling ja",
+    "commitCommitted": "Toegezegd",
+    "commitmentSaved": "Toezegging bijgewerkt."
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

@@ -89,8 +89,12 @@ export async function POST(req: NextRequest) {
           { status: 403 },
         );
       }
-      const { data: st } = await admin.from("startups").select("id, status").eq("id", counterpartId).maybeSingle();
+      const { data: st } = await admin.from("startups").select("id, status, round_state").eq("id", counterpartId).maybeSingle();
       if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+      // B16: the founder closed or paused the round — no new interest.
+      if (st.round_state === "closed" || st.round_state === "paused") {
+        return NextResponse.json({ error: st.round_state === "closed" ? "This round is closed to new investors." : "This round is paused by the founder." }, { status: 409 });
+      }
       // `status` was already being selected here but never tested, so an
       // investor holding a draft/suspended/rejected listing's id could open a
       // deal against a company that isn't listed. Only active ones are open

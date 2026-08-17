@@ -55,6 +55,11 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     router.refresh();
   }
 
+  async function handleSetCommitment(dealId: string, commitmentType: string, amount?: number | null) {
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, commitmentType, ...(amount !== undefined ? { amount } : {}) }) });
+    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else { notify.success(t("deals.commitmentSaved")); router.refresh(); }
+  }
+
   async function handleSetFollowUp(dealId: string, date: string | null) {
     const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, nextFollowUp: date }) });
     if (!res.ok) notify.error(t("deals.followUpSaveFailed")); else router.refresh();
@@ -81,6 +86,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       ownProfile={ownProfile}
       canExport={canExport}
       onSetFollowUp={handleSetFollowUp}
+      onSetCommitment={handleSetCommitment}
     />
     </>
   );

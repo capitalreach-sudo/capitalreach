@@ -84,7 +84,14 @@ interface DealKanbanProps {
   // always, investors gated by canExportData(), never shown for startups).
   canExport?: boolean;
   onSetFollowUp?: (dealId: string, date: string | null) => void;
+  /** B17: record the commitment level (and optionally a new amount). */
+  onSetCommitment?: (dealId: string, commitmentType: CommitmentType, amount?: number | null) => void;
 }
+
+export type CommitmentType = "interest" | "soft_circle" | "verbal" | "committed";
+const COMMITMENT_KEY: Record<CommitmentType, string> = {
+  interest: "deals.commitInterest", soft_circle: "deals.commitSoft", verbal: "deals.commitVerbal", committed: "deals.commitCommitted",
+};
 
 // A deal's counterpart display names, computed from its joined startup/investor
 // rows. Shared between DealCard and the filter/search/export logic below.
@@ -1193,7 +1200,7 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
 
 // ── Deal card ─────────────────────────────────────────────────────────────────
 
-function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null, onSetFollowUp }: {
+function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null, onSetFollowUp, onSetCommitment }: {
   deal: Deal;
   viewAs: "startup" | "investor" | "admin";
   onStatusChange?: (id: string, status: DealStatus, reason?: string) => void;
@@ -1201,6 +1208,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   revealIdentity?: boolean;
   equityOffered?: number | null;
   onSetFollowUp?: (id: string, date: string | null) => void;
+  onSetCommitment?: (id: string, commitmentType: CommitmentType, amount?: number | null) => void;
 }) {
   const { t } = useTranslation();
   const columns = useColumns();
@@ -1374,6 +1382,29 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         />
       )}
 
+      {/* B17: commitment level — "we're in for X". Both sides can set it;
+          the raise tracker on the founder dashboard reads it from day 0. */}
+      {onSetCommitment && isActive && (() => {
+        const ct = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? "interest") as CommitmentType;
+        const chipStyle = (active: boolean): React.CSSProperties => ({
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 8px", borderRadius: "999px", cursor: "pointer",
+          background: active ? "var(--cr-copper)" : "var(--cr-paper-2)", color: active ? "#fff" : "var(--cr-ink-3)",
+          border: `1px solid ${active ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
+        });
+        return (
+          <div style={{ marginTop: "8px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "5px" }}>{t("deals.commitmentLabel")}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+              {(["interest", "soft_circle", "verbal", "committed"] as CommitmentType[]).map((c) => (
+                <button key={c} onClick={() => { if (c !== ct) onSetCommitment(deal.id, c); }} style={chipStyle(c === ct)} aria-pressed={c === ct}>
+                  {t(COMMITMENT_KEY[c])}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Follow-up date */}
       {onSetFollowUp && (
         <div style={{ marginTop: "6px" }}>
@@ -1528,7 +1559,7 @@ function csvEscape(v: unknown): string {
   return `"${String(v ?? "").replace(/"/g, '""')}"`;
 }
 
-export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp }: DealKanbanProps) {
+export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp, onSetCommitment }: DealKanbanProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const columns = useColumns();
@@ -1824,7 +1855,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {colDeals.length === 0 ? <EmptySlot /> : colDeals.map(deal => (
                       <DealCard key={deal.id} deal={deal} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
-                        onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} />
+                        onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} onSetCommitment={onSetCommitment} />
                     ))}
                   </div>
                 </div>

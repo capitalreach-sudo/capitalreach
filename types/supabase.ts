@@ -482,6 +482,8 @@ export type Database = {
           close_proposed_by: string | null
           close_proposed_currency: string | null
           closed_at: string | null
+          commitment_at: string | null
+          commitment_type: string | null
           created_at: string
           currency: string
           fee_billing_error: string | null
@@ -509,6 +511,8 @@ export type Database = {
           close_proposed_by?: string | null
           close_proposed_currency?: string | null
           closed_at?: string | null
+          commitment_at?: string | null
+          commitment_type?: string | null
           created_at?: string
           currency?: string
           fee_billing_error?: string | null
@@ -536,6 +540,8 @@ export type Database = {
           close_proposed_by?: string | null
           close_proposed_currency?: string | null
           closed_at?: string | null
+          commitment_at?: string | null
+          commitment_type?: string | null
           created_at?: string
           currency?: string
           fee_billing_error?: string | null
@@ -1535,9 +1541,12 @@ export type Database = {
           require_nda: boolean
           revenue_model: string | null
           round_close_date: string | null
+          round_state: string
+          round_state_changed_at: string | null
           runway_months: number | null
           sam: number | null
           search_vector: unknown
+          show_momentum: boolean
           slug: string
           social_proof: Json | null
           solution: string | null
@@ -1603,9 +1612,12 @@ export type Database = {
           require_nda?: boolean
           revenue_model?: string | null
           round_close_date?: string | null
+          round_state?: string
+          round_state_changed_at?: string | null
           runway_months?: number | null
           sam?: number | null
           search_vector?: unknown
+          show_momentum?: boolean
           slug: string
           social_proof?: Json | null
           solution?: string | null
@@ -1671,9 +1683,12 @@ export type Database = {
           require_nda?: boolean
           revenue_model?: string | null
           round_close_date?: string | null
+          round_state?: string
+          round_state_changed_at?: string | null
           runway_months?: number | null
           sam?: number | null
           search_vector?: unknown
+          show_momentum?: boolean
           slug?: string
           social_proof?: Json | null
           solution?: string | null

@@ -290,6 +290,59 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
   );
 }
 
+/**
+ * B16 + B19: the founder's own levers on a live round. Round state (open /
+ * oversubscribed / paused / closed) is separate from admin moderation; the
+ * momentum toggle publishes an aggregate progress bar on the listing.
+ */
+function RoundControls({ startup }: { startup: Startup }) {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const st = startup as unknown as { round_state?: string | null; show_momentum?: boolean | null; slug: string };
+  const [state, setState] = useState<string>(st.round_state ?? "open");
+  const [momentum, setMomentum] = useState<boolean>(!!st.show_momentum);
+  const [busy, setBusy] = useState(false);
+  const STATES: Array<[string, string]> = [["open", t("startupDetail.round_open")], ["oversubscribed", t("startupDetail.round_oversubscribed")], ["paused", t("startupDetail.round_paused")], ["closed", t("startupDetail.round_closed")]];
+  async function save(patch: { roundState?: string; showMomentum?: boolean }) {
+    setBusy(true);
+    const res = await fetch("/api/startups/round-state", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
+    setBusy(false);
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    if (patch.roundState) setState(patch.roundState);
+    if (patch.showMomentum !== undefined) setMomentum(patch.showMomentum);
+    notify.success(t("dashboard.roundSaved"));
+    router.refresh();
+  }
+  if (startup.status !== "active") return null;
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "10px" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.roundStatusTitle")}</h3>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("dashboard.roundStatusHint")}</span>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+        {STATES.map(([v, label]) => (
+          <button key={v} disabled={busy} onClick={() => v !== state && save({ roundState: v })} aria-pressed={v === state}
+            style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", borderRadius: "999px", cursor: "pointer",
+              background: v === state ? "var(--cr-copper)" : "var(--cr-paper-3)", color: v === state ? "#fff" : "var(--cr-ink-3)", border: `1px solid ${v === state ? "var(--cr-copper)" : "var(--cr-rule-dark)"}` }}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "12px", lineHeight: 1.5 }}>
+        {t(`dashboard.roundHelp_${state}`)}
+      </p>
+      <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+        <input type="checkbox" checked={momentum} disabled={busy} onChange={(e) => save({ showMomentum: e.target.checked })} style={{ marginTop: 3, accentColor: "var(--cr-copper)" }} />
+        <span>
+          <span style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.momentumToggle")}</span>
+          <span style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 2 }}>{t("dashboard.momentumHint")}</span>
+        </span>
+      </label>
+    </div>
+  );
+}
+
 /** The raise's other direction: investors this startup is pursuing. */
 function TargetsPanel() {
   const { t } = useTranslation();
@@ -802,6 +855,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             </div>
 
             {startup && startup.status === "active" && <ErrorBoundary labelKey="sections.updateComposer"><UpdateComposer /></ErrorBoundary>}
+            {startup && <ErrorBoundary labelKey="sections.raiseProgress"><RoundControls startup={startup} /></ErrorBoundary>}
             {startup && analytics.raise && (
               <ErrorBoundary labelKey="sections.raiseProgress">
                 <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />

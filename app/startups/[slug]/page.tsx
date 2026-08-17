@@ -154,6 +154,24 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     viewerDeal = (deal as ViewerDeal | null) ?? null;
   }
 
+  // B19: public momentum, only when the founder opted in. Aggregates only —
+  // never who. Interested = open deals; committed = soft-circle/verbal/
+  // committed sums + closed amounts.
+  let momentum: { interested: number; committedCount: number; committedAmount: number; currency: string } | null = null;
+  if (startup.show_momentum) {
+    const { data: ds } = await createAdminClient()
+      .from("deals").select("status, amount, currency, commitment_type")
+      .eq("startup_id", startup.id).neq("status", "passed");
+    const rows = ds ?? [];
+    const committedRows = rows.filter((d) => d.status === "closed" || ["soft_circle", "verbal", "committed"].includes(d.commitment_type ?? ""));
+    momentum = {
+      interested: rows.length,
+      committedCount: committedRows.length,
+      committedAmount: committedRows.reduce((sum, d) => sum + (Number(d.amount) || 0), 0),
+      currency: (rows.find((d) => d.currency)?.currency as string) || "USD",
+    };
+  }
+
   // Non-circumvention acknowledgment for this pair (Phase 1). Read with the
   // caller's client — RLS scopes acks to the investor who made them.
   let circumventionAcked = false;
@@ -271,6 +289,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         metricHistory={metricHistory}
         identityRevealed={identityRevealed}
         circumventionAcked={previewing ? false : circumventionAcked}
+        momentum={momentum}
       />
       <Footer />
     </>

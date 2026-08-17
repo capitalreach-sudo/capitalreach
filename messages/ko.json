@@ -949,7 +949,16 @@
     "editLiveNotice": "편집하는 동안에도 등록은 공개 상태로 유지됩니다. 변경 사항은 자동 저장되며 관리자의 빠른 재확인 대상으로 표시됩니다.",
     "editSavedLive": "저장됨 — 등록은 여전히 공개 중입니다.",
     "editSaved": "변경 사항이 저장되었습니다.",
-    "tamHint": "총 유효 시장(USD, 예: 20억 달러는 2000000000)."
+    "tamHint": "총 유효 시장(USD, 예: 20억 달러는 2000000000).",
+    "roundStatusTitle": "라운드 상태",
+    "roundStatusHint": "귀하의 결정입니다 — 관리자는 관여하지 않습니다.",
+    "roundHelp_open": "오픈: 등록됨, 새 관심 접수 중.",
+    "roundHelp_oversubscribed": "초과 청약: 배지와 함께 계속 등록, 새 관심은 대기 명단으로.",
+    "roundHelp_paused": "일시 중지: 탐색·검색에서 숨김, 새 관심 없음. 언제든 재개 가능.",
+    "roundHelp_closed": "마감: '라운드 마감' 배지와 함께 계속 표시, 새 관심 없음.",
+    "momentumToggle": "진행 상황 공개",
+    "momentumHint": "등록 페이지에 집계 막대를 게시합니다 — 약정 금액 대 목표, 관심 투자자 수. 이름은 절대 표시하지 않습니다.",
+    "roundSaved": "라운드 설정이 저장되었습니다."
   },
   "settings": {
     "pageTitle": "설정",
@@ -1163,7 +1172,15 @@
     "interestSent": "관심을 보냈습니다 — 딜이 파이프라인에 있습니다.",
     "viewInPipeline": "파이프라인에서 보기",
     "identityProtected": "이 스타트업과 거래를 열면 창업자의 이름과 프로필이 모두 표시됩니다.",
-    "marketOpportunity": "시장 기회"
+    "marketOpportunity": "시장 기회",
+    "round_open": "오픈",
+    "round_oversubscribed": "초과 청약",
+    "round_paused": "일시 중지",
+    "round_closed": "라운드 마감",
+    "roundClosedNotice": "이 라운드는 신규 투자자를 받지 않습니다.",
+    "roundPausedNotice": "창업자가 이 라운드를 일시 중지했습니다.",
+    "momentumCommitted": "{count}명 약정",
+    "momentumInterested": "{count}명 관심"
   },
   "filters": {
     "industry": "산업",
@@ -1929,7 +1946,13 @@
     "ckTs3": "텀시트 서명",
     "ckTs4": "마감 금액 확정",
     "moneyWorks": "자금 흐름: 투자는 당사자 간에 직접 이루어지며 — CapitalReach는 자금을 보관하지 않습니다. 2% 수수료는 양측이 마감을 확인한 후에만 창업자에게 청구됩니다.",
-    "activityCircumventionAck": "우회 금지 조항 확인됨"
+    "activityCircumventionAck": "우회 금지 조항 확인됨",
+    "commitmentLabel": "약정",
+    "commitInterest": "관심",
+    "commitSoft": "소프트 서클",
+    "commitVerbal": "구두 동의",
+    "commitCommitted": "약정 완료",
+    "commitmentSaved": "약정이 업데이트되었습니다."
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

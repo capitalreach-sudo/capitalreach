@@ -958,7 +958,16 @@
     "editLiveNotice": "Votre fiche reste en ligne pendant la modification. Les changements sont enregistrés automatiquement et signalés pour une rapide revérification admin.",
     "editSavedLive": "Enregistré — votre fiche est toujours en ligne.",
     "editSaved": "Modifications enregistrées.",
-    "tamHint": "Marché total adressable, en USD (ex. 2000000000 pour 2 Md$)."
+    "tamHint": "Marché total adressable, en USD (ex. 2000000000 pour 2 Md$).",
+    "roundStatusTitle": "Statut du tour",
+    "roundStatusHint": "Votre décision — les admins n'interviennent pas.",
+    "roundHelp_open": "Ouvert : listé, nouvelles marques d'intérêt acceptées.",
+    "roundHelp_oversubscribed": "Sursouscrit : toujours listé avec un badge ; les nouvelles marques d'intérêt rejoignent la liste d'attente.",
+    "roundHelp_paused": "En pause : masqué de la recherche, aucune nouvelle marque d'intérêt. Reprise à tout moment.",
+    "roundHelp_closed": "Clôturé : toujours visible avec le badge « Tour clôturé » ; aucune nouvelle marque d'intérêt.",
+    "momentumToggle": "Afficher la dynamique publiquement",
+    "momentumHint": "Publie une barre agrégée sur votre fiche — montant engagé vs objectif et nombre d'investisseurs intéressés. Ne nomme jamais personne.",
+    "roundSaved": "Paramètres du tour enregistrés."
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -1203,7 +1212,15 @@
     "interestSent": "Intérêt envoyé — le deal est dans votre pipeline.",
     "viewInPipeline": "Voir dans le pipeline",
     "identityProtected": "Les noms et profils des fondateurs sont affichés en entier dès que vous ouvrez une opération avec cette startup.",
-    "marketOpportunity": "Opportunité de marché"
+    "marketOpportunity": "Opportunité de marché",
+    "round_open": "Ouvert",
+    "round_oversubscribed": "Sursouscrit",
+    "round_paused": "En pause",
+    "round_closed": "Tour clôturé",
+    "roundClosedNotice": "Ce tour est fermé aux nouveaux investisseurs.",
+    "roundPausedNotice": "Ce tour est en pause par le fondateur.",
+    "momentumCommitted": "{count} engagés",
+    "momentumInterested": "{count} intéressés"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1929,7 +1946,13 @@
     "ckTs3": "Signer le term sheet",
     "ckTs4": "Confirmer le montant de clôture",
     "moneyWorks": "Comment fonctionne l'argent : l'investissement circule directement entre vous et la contrepartie — CapitalReach ne détient jamais de fonds. La commission de 2 % n'est facturée au fondateur qu'après confirmation de la clôture par les deux parties.",
-    "activityCircumventionAck": "Non-contournement reconnu"
+    "activityCircumventionAck": "Non-contournement reconnu",
+    "commitmentLabel": "Engagement",
+    "commitInterest": "Intéressé",
+    "commitSoft": "Soft-circle",
+    "commitVerbal": "Oui verbal",
+    "commitCommitted": "Engagé",
+    "commitmentSaved": "Engagement mis à jour."
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

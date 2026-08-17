@@ -85,7 +85,7 @@ export default async function StartupDashboardPage() {
     // active-deal count and the progress bar.
     const { data: dealRows } = await supabase
       .from("deals")
-      .select("status, amount, created_at")
+      .select("status, amount, created_at, commitment_type")
       .eq("startup_id", startup.id)
       .neq("status", "passed");
     dealsCount = dealRows?.length || 0;
@@ -93,9 +93,14 @@ export default async function StartupDashboardPage() {
       const idx = 29 - Math.floor((today.getTime() - new Date(d.created_at).setHours(0, 0, 0, 0)) / DAY);
       if (idx >= 0 && idx < 30) dealSeries[idx] += 1;
     }
+    // B17: the tracker reads commitment levels from day 0 — a soft-circle
+    // or verbal yes at intro counts as soft-circled; a recorded commitment
+    // or a closed deal counts as committed. Term sheets without an explicit
+    // level still count as soft-circled.
     for (const d of dealRows ?? []) {
-      if (d.status === "closed") raise.committed += d.amount ?? 0;
-      else if (d.status === "term_sheet") raise.softCircled += d.amount ?? 0;
+      const amt = d.amount ?? 0;
+      if (d.status === "closed" || d.commitment_type === "committed") raise.committed += amt;
+      else if (d.commitment_type === "soft_circle" || d.commitment_type === "verbal" || d.status === "term_sheet") raise.softCircled += amt;
     }
   }
 

@@ -949,7 +949,16 @@
     "editLiveNotice": "Twój profil pozostaje opublikowany podczas edycji. Zmiany zapisują się automatycznie i są oznaczane do szybkiej weryfikacji admina.",
     "editSavedLive": "Zapisano — profil nadal jest opublikowany.",
     "editSaved": "Zmiany zapisane.",
-    "tamHint": "Całkowity rynek docelowy w USD (np. 2000000000 dla 2 mld $)."
+    "tamHint": "Całkowity rynek docelowy w USD (np. 2000000000 dla 2 mld $).",
+    "roundStatusTitle": "Status rundy",
+    "roundStatusHint": "Twoja decyzja — admini nie biorą udziału.",
+    "roundHelp_open": "Otwarta: widoczna, przyjmuje nowe zainteresowanie.",
+    "roundHelp_oversubscribed": "Nadsubskrybowana: nadal widoczna z odznaką; nowe zainteresowanie trafia na listę oczekujących.",
+    "roundHelp_paused": "Wstrzymana: ukryta w wyszukiwaniu i przeglądaniu, bez nowego zainteresowania. Wznów w każdej chwili.",
+    "roundHelp_closed": "Zamknięta: nadal widoczna z odznaką „Runda zamknięta”; bez nowego zainteresowania.",
+    "momentumToggle": "Pokaż postęp publicznie",
+    "momentumHint": "Publikuje zbiorczy pasek na profilu — kwota zobowiązań vs cel i ilu inwestorów jest zainteresowanych. Nigdy nie podaje nazwisk.",
+    "roundSaved": "Ustawienia rundy zapisane."
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -1163,7 +1172,15 @@
     "interestSent": "Zainteresowanie wysłane — transakcja jest w Twoim pipeline.",
     "viewInPipeline": "Zobacz w pipeline",
     "identityProtected": "Imiona i profile założycieli są wyświetlane w całości po otwarciu transakcji z tym startupem.",
-    "marketOpportunity": "Potencjał rynku"
+    "marketOpportunity": "Potencjał rynku",
+    "round_open": "Otwarta",
+    "round_oversubscribed": "Nadsubskrybowana",
+    "round_paused": "Wstrzymana",
+    "round_closed": "Runda zamknięta",
+    "roundClosedNotice": "Ta runda jest zamknięta dla nowych inwestorów.",
+    "roundPausedNotice": "Ta runda została wstrzymana przez założyciela.",
+    "momentumCommitted": "{count} zobowiązanych",
+    "momentumInterested": "{count} zainteresowanych"
   },
   "filters": {
     "industry": "Branża",
@@ -1929,7 +1946,13 @@
     "ckTs3": "Podpisz term sheet",
     "ckTs4": "Potwierdź kwotę zamknięcia",
     "moneyWorks": "Jak działają pieniądze: inwestycja przepływa bezpośrednio między Tobą a drugą stroną — CapitalReach nigdy nie przechowuje środków. Prowizja 2% jest fakturowana founderowi dopiero po potwierdzeniu zamknięcia przez obie strony.",
-    "activityCircumventionAck": "Potwierdzono zakaz obchodzenia"
+    "activityCircumventionAck": "Potwierdzono zakaz obchodzenia",
+    "commitmentLabel": "Zobowiązanie",
+    "commitInterest": "Zainteresowany",
+    "commitSoft": "Soft-circle",
+    "commitVerbal": "Ustne tak",
+    "commitCommitted": "Zobowiązany",
+    "commitmentSaved": "Zobowiązanie zaktualizowane."
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

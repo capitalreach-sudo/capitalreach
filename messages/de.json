@@ -965,7 +965,16 @@
     "editLiveNotice": "Ihr Listing bleibt während der Bearbeitung live. Änderungen werden automatisch gespeichert und für eine kurze Admin-Prüfung markiert.",
     "editSavedLive": "Gespeichert — Ihr Listing ist weiterhin live.",
     "editSaved": "Änderungen gespeichert.",
-    "tamHint": "Gesamter adressierbarer Markt in USD (z. B. 2000000000 für 2 Mrd. $)."
+    "tamHint": "Gesamter adressierbarer Markt in USD (z. B. 2000000000 für 2 Mrd. $).",
+    "roundStatusTitle": "Rundenstatus",
+    "roundStatusHint": "Ihre Entscheidung — Admins sind nicht beteiligt.",
+    "roundHelp_open": "Offen: gelistet, neue Interessenten willkommen.",
+    "roundHelp_oversubscribed": "Überzeichnet: weiterhin gelistet mit Badge; neue Interessenten kommen auf die Warteliste.",
+    "roundHelp_paused": "Pausiert: nicht in Suche und Übersicht, keine neuen Interessenten. Jederzeit fortsetzbar.",
+    "roundHelp_closed": "Geschlossen: weiterhin sichtbar mit Badge „Runde geschlossen“; keine neuen Interessenten.",
+    "momentumToggle": "Fortschritt öffentlich zeigen",
+    "momentumHint": "Zeigt auf Ihrem Listing einen aggregierten Balken — zugesagter Betrag vs. Ziel und wie viele Investoren interessiert sind. Nennt nie Namen.",
+    "roundSaved": "Rundeneinstellungen gespeichert."
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -1210,7 +1219,15 @@
     "interestSent": "Interesse gesendet — der Deal ist in deiner Pipeline.",
     "viewInPipeline": "In Pipeline ansehen",
     "identityProtected": "Namen und Profile der Gründer werden vollständig angezeigt, sobald Sie einen Deal mit diesem Startup eröffnen.",
-    "marketOpportunity": "Marktpotenzial"
+    "marketOpportunity": "Marktpotenzial",
+    "round_open": "Offen",
+    "round_oversubscribed": "Überzeichnet",
+    "round_paused": "Pausiert",
+    "round_closed": "Runde geschlossen",
+    "roundClosedNotice": "Diese Runde ist für neue Investoren geschlossen.",
+    "roundPausedNotice": "Diese Runde wurde vom Gründer pausiert.",
+    "momentumCommitted": "{count} zugesagt",
+    "momentumInterested": "{count} interessiert"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1936,7 +1953,13 @@
     "ckTs3": "Term Sheet unterschreiben",
     "ckTs4": "Abschlussbetrag bestätigen",
     "moneyWorks": "So funktioniert das Geld: Die Investition fließt direkt zwischen dir und der Gegenseite — CapitalReach verwahrt niemals Gelder. Die 2 %-Gebühr wird dem Gründer erst in Rechnung gestellt, nachdem beide Seiten den Abschluss bestätigt haben.",
-    "activityCircumventionAck": "Umgehungsverbot bestätigt"
+    "activityCircumventionAck": "Umgehungsverbot bestätigt",
+    "commitmentLabel": "Commitment",
+    "commitInterest": "Interessiert",
+    "commitSoft": "Soft-Circle",
+    "commitVerbal": "Mündliche Zusage",
+    "commitCommitted": "Zugesagt",
+    "commitmentSaved": "Commitment aktualisiert."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

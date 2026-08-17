@@ -958,7 +958,16 @@
     "editLiveNotice": "編集中も掲載は公開されたままです。変更は自動保存され、管理者の簡単な再確認対象として印が付きます。",
     "editSavedLive": "保存しました — 掲載は引き続き公開中です。",
     "editSaved": "変更を保存しました。",
-    "tamHint": "総アドレス可能市場（USD、例：20 億ドルなら 2000000000）。"
+    "tamHint": "総アドレス可能市場（USD、例：20 億ドルなら 2000000000）。",
+    "roundStatusTitle": "ラウンドの状態",
+    "roundStatusHint": "あなたの判断です — 管理者は関与しません。",
+    "roundHelp_open": "オープン：掲載中、新規の関心を受付。",
+    "roundHelp_oversubscribed": "超過応募：バッジ付きで掲載継続、新規の関心はウェイトリストへ。",
+    "roundHelp_paused": "一時停止：閲覧・検索から非表示、新規の関心なし。いつでも再開可能。",
+    "roundHelp_closed": "クローズ：「ラウンド終了」バッジ付きで表示継続、新規の関心なし。",
+    "momentumToggle": "進捗を公開する",
+    "momentumHint": "掲載ページに集計バーを表示します — コミット額 vs 目標、関心を示した投資家数。名前は一切表示しません。",
+    "roundSaved": "ラウンド設定を保存しました。"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -1203,7 +1212,15 @@
     "interestSent": "関心を送信しました — ディールがパイプラインにあります。",
     "viewInPipeline": "パイプラインで見る",
     "identityProtected": "このスタートアップとディールを開始すると、創業者の氏名とプロフィールが完全に表示されます。",
-    "marketOpportunity": "市場機会"
+    "marketOpportunity": "市場機会",
+    "round_open": "オープン",
+    "round_oversubscribed": "超過応募",
+    "round_paused": "一時停止",
+    "round_closed": "ラウンド終了",
+    "roundClosedNotice": "このラウンドは新規投資家を受け付けていません。",
+    "roundPausedNotice": "このラウンドは創業者により一時停止中です。",
+    "momentumCommitted": "{count} 件コミット",
+    "momentumInterested": "{count} 件関心"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1929,7 +1946,13 @@
     "ckTs3": "タームシートに署名",
     "ckTs4": "クローズ金額を確認",
     "moneyWorks": "資金の流れ：投資はあなたと相手方の間で直接行われ、CapitalReach が資金を預かることはありません。2% の手数料は、両者がクローズを確認した後にのみ創業者に請求されます。",
-    "activityCircumventionAck": "迂回禁止条項に同意"
+    "activityCircumventionAck": "迂回禁止条項に同意",
+    "commitmentLabel": "コミットメント",
+    "commitInterest": "関心あり",
+    "commitSoft": "ソフトサークル",
+    "commitVerbal": "口頭合意",
+    "commitCommitted": "コミット済み",
+    "commitmentSaved": "コミットメントを更新しました。"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",

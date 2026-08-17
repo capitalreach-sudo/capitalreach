@@ -949,7 +949,16 @@
     "editLiveNotice": "Din annons är kvar live medan du redigerar. Ändringar sparas automatiskt och flaggas för en snabb adminkontroll.",
     "editSavedLive": "Sparat — din annons är fortfarande live.",
     "editSaved": "Ändringar sparade.",
-    "tamHint": "Total adresserbar marknad i USD (t.ex. 2000000000 för 2 mdr $)."
+    "tamHint": "Total adresserbar marknad i USD (t.ex. 2000000000 för 2 mdr $).",
+    "roundStatusTitle": "Rundans status",
+    "roundStatusHint": "Ditt beslut — admins är inte inblandade.",
+    "roundHelp_open": "Öppen: listad, nytt intresse välkommet.",
+    "roundHelp_oversubscribed": "Övertecknad: fortfarande listad med en badge; nytt intresse hamnar på väntelista.",
+    "roundHelp_paused": "Pausad: dold i sök och lista, inget nytt intresse. Återuppta när som helst.",
+    "roundHelp_closed": "Stängd: fortfarande synlig med badgen 'Rundan stängd'; inget nytt intresse.",
+    "momentumToggle": "Visa momentum offentligt",
+    "momentumHint": "Publicerar en aggregerad stapel på din annons — åtaget belopp mot mål och hur många investerare som är intresserade. Namnger aldrig någon.",
+    "roundSaved": "Rundinställningar sparade."
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1163,7 +1172,15 @@
     "interestSent": "Intresse skickat — affären finns i din pipeline.",
     "viewInPipeline": "Visa i pipeline",
     "identityProtected": "Grundarnas namn och profiler visas i sin helhet när du öppnar en affär med denna startup.",
-    "marketOpportunity": "Marknadsmöjlighet"
+    "marketOpportunity": "Marknadsmöjlighet",
+    "round_open": "Öppen",
+    "round_oversubscribed": "Övertecknad",
+    "round_paused": "Pausad",
+    "round_closed": "Rundan stängd",
+    "roundClosedNotice": "Denna runda är stängd för nya investerare.",
+    "roundPausedNotice": "Denna runda är pausad av grundaren.",
+    "momentumCommitted": "{count} åtagna",
+    "momentumInterested": "{count} intresserade"
   },
   "filters": {
     "industry": "Bransch",
@@ -1929,7 +1946,13 @@
     "ckTs3": "Signera term sheet",
     "ckTs4": "Bekräfta slutbeloppet",
     "moneyWorks": "Så fungerar pengarna: investeringen går direkt mellan dig och motparten — CapitalReach förvarar aldrig medel. 2%-avgiften faktureras grundaren först efter att båda sidor bekräftat avslutet.",
-    "activityCircumventionAck": "Icke-kringgående bekräftat"
+    "activityCircumventionAck": "Icke-kringgående bekräftat",
+    "commitmentLabel": "Åtagande",
+    "commitInterest": "Intresserad",
+    "commitSoft": "Soft-circle",
+    "commitVerbal": "Muntligt ja",
+    "commitCommitted": "Åtagit sig",
+    "commitmentSaved": "Åtagande uppdaterat."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

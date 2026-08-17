@@ -969,7 +969,16 @@
     "editLiveNotice": "Your listing stays live while you edit. Changes save automatically and are flagged for a quick admin re-check.",
     "editSavedLive": "Saved — your listing is still live.",
     "editSaved": "Changes saved.",
-    "tamHint": "Total addressable market, in USD (e.g. 2000000000 for $2B)."
+    "tamHint": "Total addressable market, in USD (e.g. 2000000000 for $2B).",
+    "roundStatusTitle": "Round status",
+    "roundStatusHint": "Your call — admins are not involved.",
+    "roundHelp_open": "Open: listed, accepting new interest.",
+    "roundHelp_oversubscribed": "Oversubscribed: still listed with a badge; new interest joins the waitlist.",
+    "roundHelp_paused": "Paused: hidden from browse and search, no new interest. Resume any time.",
+    "roundHelp_closed": "Closed: still visible with a 'Round closed' badge; no new interest.",
+    "momentumToggle": "Show momentum publicly",
+    "momentumHint": "Publishes an aggregate bar on your listing — amount committed vs target and how many investors are interested. Never names anyone.",
+    "roundSaved": "Round settings saved."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1214,7 +1223,15 @@
     "interestSent": "Interest sent — the deal is in your pipeline.",
     "viewInPipeline": "View in pipeline",
     "identityProtected": "Founder names and profiles are shown in full once you open a deal with this startup.",
-    "marketOpportunity": "Market opportunity"
+    "marketOpportunity": "Market opportunity",
+    "round_open": "Open",
+    "round_oversubscribed": "Oversubscribed",
+    "round_paused": "Paused",
+    "round_closed": "Round closed",
+    "roundClosedNotice": "This round is closed to new investors.",
+    "roundPausedNotice": "This round is paused by the founder.",
+    "momentumCommitted": "{count} committed",
+    "momentumInterested": "{count} interested"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1940,7 +1957,13 @@
     "ckTs3": "Sign the term sheet",
     "ckTs4": "Confirm the closing amount",
     "moneyWorks": "How the money works: the investment moves directly between you and the counterparty — CapitalReach never holds funds. The 2% fee is invoiced to the founder only after both sides confirm the close.",
-    "activityCircumventionAck": "Non-circumvention acknowledged"
+    "activityCircumventionAck": "Non-circumvention acknowledged",
+    "commitmentLabel": "Commitment",
+    "commitInterest": "Interested",
+    "commitSoft": "Soft-circled",
+    "commitVerbal": "Verbal yes",
+    "commitCommitted": "Committed",
+    "commitmentSaved": "Commitment updated."
   },
   "investorProfile": {
     "back": "Back to investors",

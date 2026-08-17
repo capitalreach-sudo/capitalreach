@@ -17,7 +17,7 @@ import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { ndaText } from "@/lib/nda-text";
-import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/currency";
+import { CURRENCIES, DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
@@ -55,6 +55,8 @@ interface Props {
   identityRevealed?: boolean;
   /** This investor has already accepted the non-circumvention terms here. */
   circumventionAcked?: boolean;
+  /** B19: public momentum aggregate (only when the founder opted in). */
+  momentum?: { interested: number; committedCount: number; committedAmount: number; currency: string } | null;
 }
 
 const TABS = ["overview", "team", "financials", "documents", "traction"] as const;
@@ -282,7 +284,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -292,8 +294,13 @@ export function StartupDetailClient({
   // recorded (server-side, with IP + timestamp) the message dialog opens.
   const [acked, setAcked]                       = useState(circumventionAcked);
   const [ackModalOpen, setAckModalOpen]         = useState(false);
+  // B16: founder-controlled round state. Paused/closed rounds accept no new
+  // interest; oversubscribed still does (waitlist).
+  const roundState = (startup as unknown as { round_state?: string }).round_state ?? "open";
+  const interestOpen = roundState !== "paused" && roundState !== "closed";
   function startInterest() {
     if (!investorId || viewerSuspended) return;
+    if (!interestOpen) { notify.info(roundState === "closed" ? t("startupDetail.roundClosedNotice") : t("startupDetail.roundPausedNotice")); return; }
     if (acked) setMessageOpen(true); else setAckModalOpen(true);
   }
   useEscapeKey(messageOpen, () => setMessageOpen(false));
@@ -533,6 +540,16 @@ export function StartupDetailClient({
                       Featured
                     </span>
                   )}
+                  {roundState !== "open" && (
+                    <span style={{
+                      fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em",
+                      background: roundState === "oversubscribed" ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                      border: `1px solid ${roundState === "oversubscribed" ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`,
+                      color: roundState === "oversubscribed" ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                    }}>
+                      {t(`startupDetail.round_${roundState}`)}
+                    </span>
+                  )}
                 </div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
                   {startup.tagline}
@@ -673,7 +690,7 @@ export function StartupDetailClient({
                     section when one is on it), so it says that now. */}
                 <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
-                {!viewerDeal && investorId && !viewerSuspended && (
+                {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
                   <button onClick={startInterest}
                     className="btn-copper-shimmer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
@@ -688,6 +705,30 @@ export function StartupDetailClient({
                 )}
               </div>
             </div>
+
+            {/* B19: public momentum — opt-in, aggregates only. */}
+            {momentum && (momentum.interested > 0 || momentum.committedAmount > 0) && (() => {
+              const target = startup.funding_target && startup.funding_target > 0 ? startup.funding_target : null;
+              const pct = target ? Math.min(100, Math.round((momentum.committedAmount / target) * 100)) : null;
+              return (
+                <div style={{ marginBottom: "14px", padding: "12px 14px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: pct !== null ? "8px" : 0 }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-copper)" }}>
+                      {momentum.committedAmount > 0 ? formatMoney(momentum.committedAmount, momentum.currency, { compact: true }) : "—"}
+                      {target && <span style={{ color: "var(--cr-ink-4)", fontWeight: 400 }}> / {formatMoney(target, momentum.currency, { compact: true })}</span>}
+                    </span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                      {t("startupDetail.momentumCommitted", { count: momentum.committedCount })} · {t("startupDetail.momentumInterested", { count: momentum.interested })}
+                    </span>
+                  </div>
+                  {pct !== null && (
+                    <div style={{ height: "5px", background: "var(--cr-paper-4)", borderRadius: "3px", overflow: "hidden" }}>
+                      <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-copper)" }} />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Key metrics strip */}
             <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "10px" }}>
@@ -1280,7 +1321,7 @@ export function StartupDetailClient({
         </button>
 
 
-        {!viewerDeal && investorId && !viewerSuspended && (
+        {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
           <button
             onClick={startInterest}
             style={{
