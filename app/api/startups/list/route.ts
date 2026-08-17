@@ -1,22 +1,15 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase-server";
+import { loadActiveStartups } from "@/lib/browse-data";
 
-// Without this the route is prerendered once at build time, so a startup
-// that is suspended (or newly approved) keeps showing the build-time list
-// until the next deploy.
+// Same query as the server-rendered /startups page (lib/browse-data), so a
+// client refresh can never disagree with the initial HTML. Revalidated every
+// minute so a suspended or newly approved listing shows up promptly.
 export const revalidate = 60;
 
 export async function GET() {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("startups")
-    .select("id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at")
-    .eq("status", "active")
-    .order("created_at", { ascending: false });
-
-  if (error) {
+  const startups = await loadActiveStartups();
+  if (startups === null) {
     return NextResponse.json({ error: "Could not load listings" }, { status: 500 });
   }
-
-  return NextResponse.json({ startups: data ?? [] });
+  return NextResponse.json({ startups });
 }

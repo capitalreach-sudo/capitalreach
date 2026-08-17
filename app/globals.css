@@ -657,6 +657,37 @@ body::before {
 .animate-fade-up-3 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 350ms both; }
 .animate-fade-up-4 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 500ms both; }
 
+/* ── The rest of the shared motion vocabulary. One definition each; every
+      component reuses these instead of declaring its own keyframes. ────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes drawBar {
+  from { width: 0%; }
+  to   { width: var(--bar-width, 100%); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in       { animation: fadeIn 500ms ease both; }
+.animate-slide-in-right{ animation: slideInRight 500ms cubic-bezier(.16,1,.3,1) both; }
+.animate-draw-bar      { animation: drawBar 1.2s cubic-bezier(.33,1,.68,1) both; }
+.animate-count-up      { animation: countUp 600ms ease both; }
+
+/* Staggered card reveal: initial load only (the class is dropped after the
+   first paint by the grid), 80ms per card, capped at 12 so a long page never
+   waits a full second for its last row. */
+.card-reveal { animation: fadeUp 520ms cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--reveal-i, 0) * 80ms); }
+@media (prefers-reduced-motion: reduce) {
+  .card-reveal, .animate-fade-in, .animate-slide-in-right, .animate-draw-bar, .animate-count-up { animation: none !important; }
+}
+
 /* ── FEATURE 17: Scroll progress bar ─────────────────────── */
 .scroll-progress-track {
   position: fixed;
@@ -690,83 +721,6 @@ body::before {
   color: var(--cr-copper);
   font-size: 10px;
   flex-shrink: 0;
-}
-
-/* ── FEATURE 19: Market ticker ───────────────────────────── */
-.market-ticker {
-  overflow: hidden;
-  width: 100%;
-  position: relative;
-  border-top: 1px solid var(--cr-paper-4);
-  border-bottom: 1px solid var(--cr-paper-4);
-  padding: 10px 0;
-}
-.market-ticker-fade {
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 80px;
-  z-index: 2;
-  pointer-events: none;
-}
-.market-ticker-fade-left  { left: 0;  background: linear-gradient(to right, var(--cr-paper), transparent); }
-.market-ticker-fade-right { right: 0; background: linear-gradient(to left,  var(--cr-paper), transparent); }
-.market-ticker-track {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  will-change: transform;
-  white-space: nowrap;
-}
-.market-ticker-item {
-  display: inline-flex;
-  align-items: center;
-  padding-right: 48px;
-}
-.market-ticker-dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: var(--cr-paper-4);
-  display: inline-block;
-  flex-shrink: 0;
-  margin-left: 12px;
-}
-
-/* ── FEATURE 20: Floating fee badge ──────────────────────── */
-.fee-floating-badge {
-  position: fixed;
-  bottom: calc(24px + var(--cr-tabbar-h));
-  right: 24px;
-  z-index: 150;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--cr-ink);
-  color: var(--cr-paper);
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  padding: 12px 18px;
-  border-radius: 999px;
-  text-decoration: none;
-  box-shadow: 0 8px 24px rgba(26,22,18,0.25);
-  opacity: 0;
-  transform: translateY(12px) scale(0.96);
-  pointer-events: none;
-  transition: opacity 300ms ease, transform 300ms ease;
-}
-.fee-floating-badge-visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-.fee-floating-badge:hover {
-  background: var(--cr-ink-2);
-}
-.fee-floating-badge-diamond {
-  color: var(--cr-copper-l);
-  font-size: 10px;
-}
-@media (max-width: 640px) {
-  .fee-floating-badge { bottom: calc(16px + var(--cr-tabbar-h)); right: 16px; font-size: 12px; padding: 10px 14px; }
 }
 
 /* ── Launch banner ────────────────────────────────────────
@@ -804,27 +758,6 @@ body::before {
     gap: 32px;
     align-items: stretch;
   }
-}
-
-/* ── FEATURE 21: Scroll-linked ambient background ────────── */
-.ambient-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
-}
-.ambient-bg-orb {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 900px;
-  height: 900px;
-  margin-left: -450px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(181,101,29,0.05) 0%, rgba(181,101,29,0.015) 45%, transparent 70%);
-  filter: blur(60px);
-  will-change: transform;
 }
 
 /* ── FEATURE 22: Spotlight hover on listing rows ─────────── */
@@ -936,7 +869,6 @@ body::before {
   .ruled-label::before { height: 16px; opacity: 1; animation: none; }
   .ruled-label.visible::before { animation: none; height: 16px; opacity: 1; }
   .word-reveal-word { opacity: 1 !important; transform: none !important; }
-  .fee-floating-badge { transition: opacity 150ms ease; transform: none; }
   .trace-border::before { animation: none; }
 }
 

@@ -533,7 +533,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function StartupsSearch() {
+export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[] } = {}) {
   const { t } = useTranslation();
   const searchParams  = useSearchParams();
 
@@ -570,8 +570,11 @@ export function StartupsSearch() {
   }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   useEscapeKey(sidebarOpen, () => setSidebarOpen(false));
-  const [allStartups, setAllStartups] = useState<Startup[]>([]);
-  const [loading, setLoading]         = useState(true);
+  // Server-rendered rows arrive as `initialStartups`, so the first paint is
+  // the finished directory rather than a skeleton; the client fetch below
+  // then only runs when nothing was provided (or to refresh).
+  const [allStartups, setAllStartups] = useState<Startup[]>(initialStartups ?? []);
+  const [loading, setLoading]         = useState(!initialStartups);
   const [page, setPage]               = useState(1);
   const [savedIds, setSavedIds]       = useState<Set<string>>(new Set());
   // Which listings this investor has already opened. startup_views RLS is
@@ -665,6 +668,9 @@ export function StartupsSearch() {
 
   useEffect(() => {
     async function load() {
+      // Fresh data was already rendered by the server; skip the redundant
+      // round trip (a filter change never needs it — filtering is local).
+      if (initialStartups) return;
       setLoading(true);
       try {
         const res = await fetch("/api/startups/list");

@@ -116,7 +116,7 @@ const DEFAULT: InvestorFilters = {
   minCheck: 0, maxCheck: 100_000_000, geographies: [], leadOnly: false, verifiedOnly: false, fitOnly: false, newOnly: false, sort: "recent",
 };
 
-export function InvestorsClient() {
+export function InvestorsClient({ initialInvestors }: { initialInvestors?: Investor[] } = {}) {
   const { t } = useTranslation();
   // /investors?q= mirrors /startups?q= so the global search's "see all" can
   // land on either directory pre-filtered.
@@ -139,7 +139,9 @@ export function InvestorsClient() {
     sort:         (sp.get("sort") as InvestorFilters["sort"]) || "recent",
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [investors, setInvestors] = useState<Investor[]>([]);
+  // Server-rendered rows (lib/browse-data) make the first paint the finished
+  // directory; the client query below only runs when none were provided.
+  const [investors, setInvestors] = useState<Investor[]>(initialInvestors ?? []);
   // Typeahead over the already-loaded list -- instant, no round trip.
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggestIdx, setSuggestIdx] = useState(-1);
@@ -165,7 +167,7 @@ export function InvestorsClient() {
       return next;
     });
   }
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialInvestors);
   const [loadError, setLoadError] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   // If a founder is browsing, their own stage and industry mark which
@@ -177,14 +179,15 @@ export function InvestorsClient() {
 
   useEffect(() => {
     async function fetchInvestors() {
+      if (initialInvestors) return; // already rendered by the server
       setLoading(true);
       try {
+        // display_name / firm_name are the investor's own published fields;
+        // profiles is not anonymously readable (019), so it is not joined.
         const { data } = await supabase
           .from("investors")
-          .select(`
-            id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at,
-            profiles:owner_id ( full_name, email )
-          `)
+          .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public")
+          .eq("is_public", true)
           .order("created_at", { ascending: false });
 
         if (data) {
@@ -203,8 +206,8 @@ export function InvestorsClient() {
             subscription_tier: inv.subscription_tier,
             verified_at: inv.verified_at ?? null,
             number_of_investments: inv.number_of_investments ?? null,
-            full_name: inv.profiles?.full_name || null,
-            firm: inv.firm || null,
+            full_name: inv.display_name || null,
+            firm: inv.firm_name || null,
           }));
           setInvestors(mapped);
           setLoadError(false);

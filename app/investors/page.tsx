@@ -1,18 +1,24 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { InvestorsClient } from "@/components/investors/investors-client";
+import { loadPublicInvestors } from "@/lib/browse-data";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Investor Directory",
   description: "Browse accredited angels, VCs, and institutional investors actively looking to fund startups on CapitalReach.",
 };
 
-export default function InvestorsPage() {
+export default async function InvestorsPage() {
+  // Server-fetched so the directory is in the HTML on first paint (no
+  // "Loading investors…"); the client only fetches if this returns null.
+  const initial = await loadPublicInvestors();
   return (
     <>
       <Navbar />
-      <InvestorsClient />
+      <InvestorsClient initialInvestors={initial ?? undefined} />
       <Footer />
     </>
   );

@@ -146,6 +146,51 @@ export type Database = {
         }
         Relationships: []
       }
+      circumvention_acks: {
+        Row: {
+          acknowledged_at: string
+          id: string
+          investor_id: string
+          ip_address: string | null
+          startup_id: string
+          terms_version: string
+          user_agent: string | null
+        }
+        Insert: {
+          acknowledged_at?: string
+          id?: string
+          investor_id: string
+          ip_address?: string | null
+          startup_id: string
+          terms_version?: string
+          user_agent?: string | null
+        }
+        Update: {
+          acknowledged_at?: string
+          id?: string
+          investor_id?: string
+          ip_address?: string | null
+          startup_id?: string
+          terms_version?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circumvention_acks_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "circumvention_acks_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_signatures: {
         Row: {
           content_hash: string
@@ -431,6 +476,7 @@ export type Database = {
       deals: {
         Row: {
           amount: number | null
+          circumvention_ack_id: string | null
           close_proposed_amount: number | null
           close_proposed_at: string | null
           close_proposed_by: string | null
@@ -457,6 +503,7 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          circumvention_ack_id?: string | null
           close_proposed_amount?: number | null
           close_proposed_at?: string | null
           close_proposed_by?: string | null
@@ -483,6 +530,7 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          circumvention_ack_id?: string | null
           close_proposed_amount?: number | null
           close_proposed_at?: string | null
           close_proposed_by?: string | null
@@ -508,6 +556,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "deals_circumvention_ack_id_fkey"
+            columns: ["circumvention_ack_id"]
+            isOneToOne: false
+            referencedRelation: "circumvention_acks"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "deals_investor_id_fkey"
             columns: ["investor_id"]
@@ -650,6 +705,7 @@ export type Database = {
           id: string
           industries: string[]
           investment_thesis: string | null
+          is_public: boolean
           languages: string[] | null
           lead_rounds: boolean
           linkedin_url: string | null
@@ -683,6 +739,7 @@ export type Database = {
           id?: string
           industries?: string[]
           investment_thesis?: string | null
+          is_public?: boolean
           languages?: string[] | null
           lead_rounds?: boolean
           linkedin_url?: string | null
@@ -716,6 +773,7 @@ export type Database = {
           id?: string
           industries?: string[]
           investment_thesis?: string | null
+          is_public?: boolean
           languages?: string[] | null
           lead_rounds?: boolean
           linkedin_url?: string | null
@@ -1477,15 +1535,18 @@ export type Database = {
           revenue_model: string | null
           round_close_date: string | null
           runway_months: number | null
+          sam: number | null
           search_vector: unknown
           slug: string
           social_proof: Json | null
           solution: string | null
+          som: number | null
           stage: string
           status: string
           subscription_tier: string
           tagline: string
           tags: string[] | null
+          tam: number | null
           target_markets: string[] | null
           team_size: string | null
           twitter_url: string | null
@@ -1541,15 +1602,18 @@ export type Database = {
           revenue_model?: string | null
           round_close_date?: string | null
           runway_months?: number | null
+          sam?: number | null
           search_vector?: unknown
           slug: string
           social_proof?: Json | null
           solution?: string | null
+          som?: number | null
           stage: string
           status?: string
           subscription_tier?: string
           tagline: string
           tags?: string[] | null
+          tam?: number | null
           target_markets?: string[] | null
           team_size?: string | null
           twitter_url?: string | null
@@ -1605,15 +1669,18 @@ export type Database = {
           revenue_model?: string | null
           round_close_date?: string | null
           runway_months?: number | null
+          sam?: number | null
           search_vector?: unknown
           slug?: string
           social_proof?: Json | null
           solution?: string | null
+          som?: number | null
           stage?: string
           status?: string
           subscription_tier?: string
           tagline?: string
           tags?: string[] | null
+          tam?: number | null
           target_markets?: string[] | null
           team_size?: string | null
           twitter_url?: string | null
@@ -1651,6 +1718,30 @@ export type Database = {
           id?: string
           received_at?: string
           type?: string
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          confirmed: boolean
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+        }
+        Insert: {
+          confirmed?: boolean
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          confirmed?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
         }
         Relationships: []
       }

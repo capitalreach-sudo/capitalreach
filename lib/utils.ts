@@ -14,6 +14,9 @@ export function slugify(text: string): string {
 }
 
 export function formatCurrency(amount: number, compact = false): string {
+  // Display-layer guard: a 17-digit test value must render as "—", never as
+  // "$100000000B". Same ceiling as lib/format.ts.
+  if (!Number.isFinite(amount) || amount < 0 || amount > 9_999_999_999) return "—";
   if (compact) {
     // Every tier, not just K/M -- a $100B test listing once rendered as
     // "$100000000000.0M" on production cards.

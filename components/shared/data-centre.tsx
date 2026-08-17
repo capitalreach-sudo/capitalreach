@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { LiveClock } from "@/components/ui/LiveClock";
+import { safeFormatCurrency } from "@/lib/format";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ interface TopStartup {
   stage: string;
   mrr: number | null;
   ai_score: number | null;
-  funding_target: number;
+  funding_target: number | null;
   created_at: string;
 }
 
@@ -94,16 +95,9 @@ function fmtMrr(n: number | null, preRevLabel = "Pre-rev") {
   return `$${n}`;
 }
 
-function fmtRaising(n: number) {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  return `$${(n / 1000).toFixed(0)}K`;
-}
-
-function fmtMoney(n: number) {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
-  return `$${n}`;
-}
+// Both go through the shared safety net: implausible values render "—".
+function fmtRaising(n: number | null | undefined) { return safeFormatCurrency(n); }
+function fmtMoney(n: number | null | undefined)   { return safeFormatCurrency(n); }
 
 function timeAgo(iso: string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -224,10 +218,12 @@ function ScorePill({ score }: { score: number | null }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function DataCentre() {
+export function DataCentre({ initialData }: { initialData?: PlatformData | null } = {}) {
   const { t } = useTranslation();
-  const [data, setData] = useState<PlatformData | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Server-rendered aggregate (lib/platform-data) means the first paint is
+  // the finished dashboard; the fetch below only runs for refresh/retry.
+  const [data, setData] = useState<PlatformData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState(false);
   const [barsVisible, setBarsVisible] = useState(false);
   const barsRef = useRef<HTMLDivElement>(null);
@@ -240,6 +236,7 @@ export function DataCentre() {
       const res = await fetch("/api/platform-data");
       if (!res.ok) throw new Error("Failed");
       const json = await res.json();
+      if (json.degraded) throw new Error("Degraded");
       setData(json);
       // Trigger bar animations after a short delay
       setTimeout(() => setBarsVisible(true), 120);
@@ -250,7 +247,11 @@ export function DataCentre() {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    if (initialData) { setTimeout(() => setBarsVisible(true), 120); return; }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchData]);
 
   // Intersection Observer to trigger bars when in viewport
   useEffect(() => {

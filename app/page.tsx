@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase-server";
 import { getPlatformStats }  from "@/lib/stats";
+import { getLaunchStatus }   from "@/lib/launchMode";
 import { Navbar }            from "@/components/shared/navbar";
 import { Footer }            from "@/components/shared/footer";
 import { HomepageClient }    from "@/components/homepage/homepage-client";
@@ -16,40 +17,47 @@ export const metadata: Metadata = {
 export type ListingSnippet = {
   id: string; name: string; slug: string;
   industry: string; stage: string;
-  mrr: number | null; funding_target: number; vaultrise_score: number | null;
+  mrr: number | null; funding_target: number | null; vaultrise_score: number | null;
+  logo_url?: string | null;
 };
 
+const EMPTY_STATS = { startupCount: 0, investorCount: 0, totalRaised: 0, dealsClosedCount: 0 };
+const NO_LAUNCH   = { isLaunch: false, memberCount: 0, target: 100 };
+
+/**
+ * Homepage. Four sections only: navbar, hero, proof strip (+ top listings
+ * when any exist), footer. Everything the server needs is fetched in one
+ * Promise.all — never serial awaits — and a database outage renders the
+ * shell rather than an error page.
+ */
 export default async function HomePage() {
   let listings: ListingSnippet[] = [];
+  let stats = EMPTY_STATS;
+  let launch = NO_LAUNCH;
 
   try {
     const supabase = createAdminClient();
-    const stats    = await getPlatformStats(supabase);
-
-    const listingsRes = await supabase
-      .from("startups")
-      .select("id,name,slug,industry,stage,mrr,funding_target,vaultrise_score")
-      .eq("status", "active")
-      .order("vaultrise_score", { ascending: false })
-      .limit(8);
-
-    listings = listingsRes.data ?? [];
-
-    return (
-      <>
-        <Navbar />
-        <HomepageClient stats={stats} listings={listings} />
-        <Footer />
-      </>
-    );
+    const [statsRes, launchRes, listingsRes] = await Promise.all([
+      getPlatformStats(supabase),
+      getLaunchStatus(),
+      supabase
+        .from("startups")
+        .select("id,name,slug,industry,stage,mrr,funding_target,vaultrise_score")
+        .eq("status", "active")
+        .order("vaultrise_score", { ascending: false, nullsFirst: false })
+        .limit(8),
+    ]);
+    stats    = statsRes;
+    launch   = launchRes;
+    listings = (listingsRes.data ?? []) as ListingSnippet[];
   } catch {
-    /* DB not configured — render shell */
+    /* DB not configured — render the shell with zero counts */
   }
 
   return (
     <>
       <Navbar />
-      <HomepageClient stats={{ startupCount: 0, investorCount: 0, totalRaised: 0, dealsClosedCount: 0 }} listings={[]} />
+      <HomepageClient stats={stats} listings={listings} launch={launch} />
       <Footer />
     </>
   );

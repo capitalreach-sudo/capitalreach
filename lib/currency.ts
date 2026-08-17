@@ -50,6 +50,10 @@ export function formatMoney(
 ): string {
   const cur = getCurrency(code);
 
+  // Display-layer guard (see lib/format.ts): implausible magnitudes are bad
+  // data, and bad data renders as "—" rather than as a 17-digit figure.
+  if (!Number.isFinite(amount) || Math.abs(amount) > 9_999_999_999) return "—";
+
   if (opts.compact) {
     const abs = Math.abs(amount);
     const sign = amount < 0 ? "-" : "";
