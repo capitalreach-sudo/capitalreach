@@ -356,17 +356,24 @@ export function StartupDetailClient({
 
   async function toggleSave() {
     if (!investorId) { notify.info(t("startupDetail.signInToSave")); return; }
-    if (isSaved) {
-      const { error } = await supabase.from("watchlists").delete().match({ investor_id: investorId, startup_id: startup.id });
-      if (error) { notify.error(t("errors.generic")); return; }
-      setIsSaved(false);
-      notify.info(t("toast.unsaved"));
-    } else {
-      const { error } = await supabase.from("watchlists").insert({ investor_id: investorId, startup_id: startup.id });
-      if (error) { notify.error(t("errors.generic")); return; }
-      setIsSaved(true);
-      notify.success(t("toast.saved"));
+    // Through the API rather than a direct table write, so the plan's
+    // watchlist cap (Explorer: 5) and the founder's "saved" notification apply
+    // here exactly as they do on the browse page. Optimistic, rolled back on
+    // error.
+    const next = !isSaved;
+    setIsSaved(next);
+    const res = await fetch("/api/watchlist", {
+      method: next ? "POST" : "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId: startup.id }),
+    });
+    if (!res.ok) {
+      setIsSaved(!next);
+      const data = await res.json().catch(() => ({}));
+      notify.error(data.error || t("errors.generic"));
+      return;
     }
+    if (next) notify.success(t("toast.saved")); else notify.info(t("toast.unsaved"));
   }
 
   async function expressInterest() {

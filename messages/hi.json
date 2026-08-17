@@ -310,7 +310,8 @@
     "createAccount": "खाता बनाएँ",
     "usageRemaining": "आज {limit} में से {remaining} AI रन शेष",
     "usageUnlimited": "आपके प्लान में असीमित AI रन",
-    "usageUpgrade": "और पाएँ →"
+    "usageUpgrade": "और पाएँ →",
+    "disclosureStrip": "AI-जनित विश्लेषण केवल सूचना के लिए है और निवेश सलाह नहीं है। OpenAI मॉडल द्वारा संचालित। प्रकटीकरण: यह सामग्री AI से बनाई गई है।"
   },
   "pricing": {
     "sectionLabel": "योजनाएं और मूल्य निर्धारण",
@@ -448,7 +449,19 @@
     "tipVisName": "आपकी कंपनी का नाम, टैगलाइन और उद्योग - हर प्लान में हमेशा सार्वजनिक।",
     "tipVisTeam": "आपकी सार्वजनिक लिस्टिंग पर संस्थापक परिचय और टीम प्रोफ़ाइल।",
     "tipVisDeck": "आपका पिच डेक, जिसे निवेशक आपकी प्रोफ़ाइल पर खोल सकते हैं।",
-    "notIncluded": "शामिल नहीं"
+    "notIncluded": "शामिल नहीं",
+    "feature_oneListing": "1 स्टार्टअप लिस्टिंग",
+    "feature_unlimitedListings": "असीमित स्टार्टअप लिस्टिंग",
+    "feature_unlimitedDocs": "असीमित दस्तावेज़ अपलोड",
+    "feature_seeWhoViewed": "देखें किन निवेशकों ने आपको देखा",
+    "feature_teamDocs": "टीम प्रोफ़ाइल और डेटा रूम",
+    "feature_aiDiligencePaid": "AI ड्यू डिलिजेंस ($29/रिपोर्ट)",
+    "feature_watchlistLimited": "वॉचलिस्ट: {n} स्टार्टअप",
+    "feature_watchlistUnlimited": "असीमित वॉचलिस्ट",
+    "tipWatchlist": "जिन स्टार्टअप को फ़ॉलो करना है उन्हें सहेजें और बदलाव पर सूचना पाएँ।",
+    "saveTwoMonths": "2 महीने मुफ़्त",
+    "afterLaunch": "लॉन्च के बाद",
+    "billedYearly": "${amount} वार्षिक बिल"
   },
   "cta": {
     "headline": "सही चरण में सही पूंजी।",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "हम फंडरेज़िंग रणनीति, निवेशक संबंध, और बाज़ार बुद्धिमत्ता को कवर करने वाली विस्तृत गाइड पर काम कर रहे हैं। जल्द ही वापस देखें।",
     "browseStartups": "इसके बजाय स्टार्टअप ब्राउज़ करें",
     "minRead": "{minutes} मिनट में पढ़ें",
-    "readArticle": "लेख पढ़ें"
+    "readArticle": "लेख पढ़ें",
+    "subscribeTitle": "Dispatch पाएँ",
+    "subscribeSub": "फंडरेज़िंग, यूरोपीय स्टार्टअप इकोसिस्टम और CapitalReach का निर्माण — कभी-कभार, केवल तब जब पढ़ने लायक हो।",
+    "subscribePlaceholder": "you@company.com",
+    "subscribeCta": "सब्सक्राइब करें",
+    "subscribeDone": "आप सब्सक्राइब हो गए। अपना इनबॉक्स देखें।",
+    "subscribeAlready": "आप पहले से सब्सक्राइब्ड हैं।"
   },
   "careers": {
     "metaTitle": "करियर",

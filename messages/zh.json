@@ -319,7 +319,8 @@
     "createAccount": "创建账户",
     "usageRemaining": "今日 AI 运行剩余 {remaining}/{limit} 次",
     "usageUnlimited": "你的方案包含无限次 AI 运行",
-    "usageUpgrade": "获取更多 →"
+    "usageUpgrade": "获取更多 →",
+    "disclosureStrip": "AI 生成的分析仅供参考，不构成投资建议。由 OpenAI 模型驱动。声明：本内容由 AI 生成。"
   },
   "pricing": {
     "sectionLabel": "方案与定价",
@@ -457,7 +458,19 @@
     "tipVisName": "公司名称、口号和行业——在所有套餐中始终公开。",
     "tipVisTeam": "公开主页上展示创始人简介和团队信息。",
     "tipVisDeck": "投资人可在您的主页上打开您的路演文稿。",
-    "notIncluded": "不包含"
+    "notIncluded": "不包含",
+    "feature_oneListing": "1 个创业公司列表",
+    "feature_unlimitedListings": "不限数量的创业公司列表",
+    "feature_unlimitedDocs": "不限数量的文档上传",
+    "feature_seeWhoViewed": "查看哪些投资者浏览过您",
+    "feature_teamDocs": "团队资料与资料室",
+    "feature_aiDiligencePaid": "AI 尽职调查（29 美元/份）",
+    "feature_watchlistLimited": "关注列表：{n} 家创业公司",
+    "feature_watchlistUnlimited": "不限数量的关注列表",
+    "tipWatchlist": "保存您想跟进的创业公司，并在其发生变化时收到通知。",
+    "saveTwoMonths": "免 2 个月",
+    "afterLaunch": "上线后",
+    "billedYearly": "每年计费 {amount} 美元"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "我们正在制作涵盖融资策略、投资者关系和市场情报的深度指南。请稍后再来查看。",
     "browseStartups": "改为浏览初创公司",
     "minRead": "阅读约 {minutes} 分钟",
-    "readArticle": "阅读文章"
+    "readArticle": "阅读文章",
+    "subscribeTitle": "订阅 Dispatch",
+    "subscribeSub": "融资、欧洲创业生态以及 CapitalReach 的构建 —— 偶尔发送，仅在值得一读时。",
+    "subscribePlaceholder": "you@company.com",
+    "subscribeCta": "订阅",
+    "subscribeDone": "订阅成功，请查收邮件。",
+    "subscribeAlready": "您已订阅。"
   },
   "careers": {
     "metaTitle": "招聘",

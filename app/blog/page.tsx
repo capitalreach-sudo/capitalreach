@@ -6,6 +6,7 @@ import { Footer } from "@/components/shared/footer";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { BLOG_POSTS } from "@/lib/blog-posts";
+import { SubscribeForm } from "@/components/blog/subscribe-form";
 
 export default function BlogPage() {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ export default function BlogPage() {
               </span>
             </Link>
           ))}
+          <SubscribeForm />
         </div>
       </section>
 

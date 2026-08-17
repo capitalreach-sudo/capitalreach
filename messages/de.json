@@ -326,7 +326,8 @@
     "createAccount": "Konto erstellen",
     "usageRemaining": "Noch {remaining} von {limit} KI-Durchläufen heute",
     "usageUnlimited": "Unbegrenzte KI-Durchläufe in Ihrem Tarif",
-    "usageUpgrade": "Mehr erhalten →"
+    "usageUpgrade": "Mehr erhalten →",
+    "disclosureStrip": "KI-generierte Analysen dienen nur zur Information und sind keine Anlageberatung. Basierend auf OpenAI-Modellen. Hinweis: Dieser Inhalt wurde mit KI erstellt."
   },
   "pricing": {
     "sectionLabel": "Pläne & Preise",
@@ -464,7 +465,19 @@
     "tipVisName": "Dein Firmenname, Tagline und Branche - in jedem Plan öffentlich.",
     "tipVisTeam": "Gründer-Bios und Teamprofile auf deinem öffentlichen Listing.",
     "tipVisDeck": "Dein Pitch-Deck, für Investoren auf deinem Profil einsehbar.",
-    "notIncluded": "Nicht enthalten"
+    "notIncluded": "Nicht enthalten",
+    "feature_oneListing": "1 Startup-Listing",
+    "feature_unlimitedListings": "Unbegrenzte Startup-Listings",
+    "feature_unlimitedDocs": "Unbegrenzte Dokument-Uploads",
+    "feature_seeWhoViewed": "Sehen, welche Investoren Sie angesehen haben",
+    "feature_teamDocs": "Teamprofile & Datenraum",
+    "feature_aiDiligencePaid": "KI-Due-Diligence (29 $/Bericht)",
+    "feature_watchlistLimited": "Watchlist: {n} Startups",
+    "feature_watchlistUnlimited": "Unbegrenzte Watchlist",
+    "tipWatchlist": "Speichern Sie Startups, die Sie verfolgen möchten, und werden Sie bei Änderungen benachrichtigt.",
+    "saveTwoMonths": "2 Monate gratis",
+    "afterLaunch": "nach dem Launch",
+    "billedYearly": "{amount} $ jährlich abgerechnet"
   },
   "cta": {
     "headline": "Das richtige Kapital, zur richtigen Phase.",
@@ -2012,7 +2025,13 @@
     "comingSoonDesc": "Wir arbeiten an ausführlichen Leitfäden zu Fundraising-Strategie, Investorenbeziehungen und Marktinformationen. Schau bald wieder vorbei.",
     "browseStartups": "Stattdessen Startups durchsuchen",
     "minRead": "{minutes} Min. Lesezeit",
-    "readArticle": "Artikel lesen"
+    "readArticle": "Artikel lesen",
+    "subscribeTitle": "Den Dispatch erhalten",
+    "subscribeSub": "Fundraising, das europäische Startup-Ökosystem und der Aufbau von CapitalReach — gelegentlich, nur wenn es lesenswert ist.",
+    "subscribePlaceholder": "sie@firma.de",
+    "subscribeCta": "Abonnieren",
+    "subscribeDone": "Sie sind angemeldet. Prüfen Sie Ihr Postfach.",
+    "subscribeAlready": "Sie sind bereits angemeldet."
   },
   "careers": {
     "metaTitle": "Karriere",

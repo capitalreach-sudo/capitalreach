@@ -310,7 +310,8 @@
     "createAccount": "Skapa konto",
     "usageRemaining": "{remaining} av {limit} AI-körningar kvar i dag",
     "usageUnlimited": "Obegränsade AI-körningar i din plan",
-    "usageUpgrade": "Få fler →"
+    "usageUpgrade": "Få fler →",
+    "disclosureStrip": "AI-genererad analys är endast informativ och utgör inte investeringsrådgivning. Drivs av OpenAI-modeller. Upplysning: detta innehåll har skapats med AI."
   },
   "pricing": {
     "sectionLabel": "Planer och priser",
@@ -448,7 +449,19 @@
     "tipVisName": "Ditt företagsnamn, tagline och bransch - alltid publikt i alla planer.",
     "tipVisTeam": "Grundarbios och teamprofiler på din publika listning.",
     "tipVisDeck": "Din pitch deck, öppningsbar för investerare på din profil.",
-    "notIncluded": "Ingår inte"
+    "notIncluded": "Ingår inte",
+    "feature_oneListing": "1 startup-annons",
+    "feature_unlimitedListings": "Obegränsat antal startup-annonser",
+    "feature_unlimitedDocs": "Obegränsade dokumentuppladdningar",
+    "feature_seeWhoViewed": "Se vilka investerare som tittat på dig",
+    "feature_teamDocs": "Teamprofiler & datarum",
+    "feature_aiDiligencePaid": "AI-due diligence (29 $/rapport)",
+    "feature_watchlistLimited": "Bevakningslista: {n} startups",
+    "feature_watchlistUnlimited": "Obegränsad bevakningslista",
+    "tipWatchlist": "Spara startups du vill följa och få besked när de ändras.",
+    "saveTwoMonths": "2 månader gratis",
+    "afterLaunch": "efter lanseringen",
+    "billedYearly": "{amount} $ faktureras årligen"
   },
   "cta": {
     "headline": "Rätt kapital, i rätt fas.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "Vi arbetar med djupgående guider som täcker kapitalanskaffningsstrategi, investerarrelationer och marknadsintelligens. Kom tillbaka snart.",
     "browseStartups": "Bläddra bland startups istället",
     "minRead": "{minutes} min läsning",
-    "readArticle": "Läs artikeln"
+    "readArticle": "Läs artikeln",
+    "subscribeTitle": "Få Dispatch",
+    "subscribeSub": "Kapitalanskaffning, det europeiska startup-ekosystemet och bygget av CapitalReach — då och då, bara när det är värt att läsa.",
+    "subscribePlaceholder": "du@foretag.se",
+    "subscribeCta": "Prenumerera",
+    "subscribeDone": "Du prenumererar nu. Kolla din inkorg.",
+    "subscribeAlready": "Du prenumererar redan."
   },
   "careers": {
     "metaTitle": "Karriär",

@@ -12,40 +12,59 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
+import { founderCan, investorCan } from "@/lib/access";
 
 // ── Feature row builders ──────────────────────────────────────
 
 type FeatureRow = { text: string; on: boolean; tip: string };
 type TFn = (key: string, vars?: Record<string, string | number>) => string;
 
+/**
+ * Rows are DERIVED from the same capability functions the product enforces
+ * (lib/access.ts), evaluated as a signed-in user of that plan would be. The
+ * page therefore cannot promise something a tier does not do, or hide
+ * something it does — the earlier table said Free founders had no public
+ * listing while founderCan() listed them.
+ */
 function founderFeatureRows(plan: FounderPlan, t: TFn): FeatureRow[] {
-  const f = plan.features;
+  const c = founderCan({ userId: "x", role: "startup", tier: plan.id, isLaunchMode: false, suspended: false });
   return [
-    { text: t("pricing.feature_publicListing"),   on: f.listed,           tip: t("pricing.tipPublicListing") },
-    { text: t("pricing.feature_analyticsBoard"),   on: f.analytics,        tip: t("pricing.tipAnalytics") },
-    { text: f.documentsLimit > 0 ? t("pricing.feature_uploadDocs", { n: f.documentsLimit }) : t("pricing.feature_docUploads"), on: f.documentsLimit > 0, tip: t("pricing.tipDocs") },
-    { text: t("pricing.feature_aiPitchFeedback"),  on: f.aiPitchFeedback,  tip: t("pricing.tipAiScore") },
-    { text: t("pricing.feature_demoVideo"),        on: f.demoVideo,        tip: t("pricing.tipDemoVideo") },
+    { text: c.listingLimit === Infinity ? t("pricing.feature_unlimitedListings") : t("pricing.feature_oneListing"), on: c.listStartup, tip: t("pricing.tipListings") },
+    { text: t("pricing.feature_publicListing"),   on: c.listStartup,       tip: t("pricing.tipPublicListing") },
+    { text: c.docLimit === Infinity ? t("pricing.feature_unlimitedDocs") : c.docLimit > 0 ? t("pricing.feature_uploadDocs", { n: c.docLimit }) : t("pricing.feature_docUploads"), on: c.docLimit > 0, tip: t("pricing.tipDocs") },
+    { text: t("pricing.feature_nda"),             on: c.useNDA,            tip: t("pricing.tipNda") },
+    { text: t("pricing.feature_aiPitchFeedback"), on: c.aiPitchScore,      tip: t("pricing.tipAiScore") },
+    { text: t("pricing.feature_seeWhoViewed"),    on: c.seeInvestorIdentity, tip: t("pricing.tipAnalytics") },
+    { text: t("pricing.feature_analyticsBoard"),  on: c.analyticsLevel === "full", tip: t("pricing.tipAnalytics") },
+    { text: t("pricing.feature_priority"),        on: c.priorityReview,    tip: t("pricing.tipPriority") },
+    { text: t("pricing.feature_demoVideo"),       on: c.demoVideo,         tip: t("pricing.tipDemoVideo") },
   ];
 }
 
 function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
-  const f = plan.features;
+  const c = investorCan({ userId: "x", role: "investor", tier: plan.id === "pro" ? "pro_investor" : plan.id === "institution" ? "institutional" : plan.id, isLaunchMode: false, suspended: false });
   return [
-    { text: t("pricing.feature_browseStartups"),   on: f.browseStartups,  tip: t("pricing.tipBrowse") },
-    { text: t("pricing.feature_financials"),        on: f.viewFinancials,  tip: t("pricing.tipFinancials") },
+    { text: t("pricing.feature_browseStartups"),   on: c.browse,         tip: t("pricing.tipBrowse") },
+    { text: t("pricing.feature_financials"),        on: c.viewFinancials, tip: t("pricing.tipFinancials") },
+    { text: t("pricing.feature_teamDocs"),          on: c.viewTeam,       tip: t("pricing.tipVisTeam") },
     {
-      text: !f.sendMessages
+      text: !c.message
         ? t("pricing.feature_messaging")
-        : f.messageLimit === null
+        : c.messageLimit === Infinity
           ? t("pricing.feature_unlimitedMessaging")
-          : t("pricing.feature_messagingLimit", { n: f.messageLimit }),
-      on: f.sendMessages,
+          : t("pricing.feature_messagingLimit", { n: c.messageLimit }),
+      on: c.message,
       tip: t("pricing.tipMessaging"),
     },
-    { text: t("pricing.feature_aiDiligence"),  on: f.aiDueDiligence,  tip: t("pricing.tipDiligence") },
-    { text: t("pricing.feature_exportCsv"),    on: f.exportData,      tip: t("pricing.tipExport") },
-    { text: t("pricing.feature_savedSearches"), on: f.savedSearches,  tip: t("pricing.tipSavedSearches") },
+    { text: t("pricing.feature_investorMatching"), on: c.aiMatching,     tip: t("pricing.tipMatching") },
+    {
+      text: c.aiDiligence === "paid" ? t("pricing.feature_aiDiligencePaid") : t("pricing.feature_aiDiligence"),
+      on: c.aiDiligence !== "no",
+      tip: t("pricing.tipDiligence"),
+    },
+    { text: c.watchlistLimit === Infinity ? t("pricing.feature_watchlistUnlimited") : t("pricing.feature_watchlistLimited", { n: c.watchlistLimit }), on: true, tip: t("pricing.tipWatchlist") },
+    { text: t("pricing.feature_exportCsv"),         on: c.dataExport,     tip: t("pricing.tipExport") },
+    { text: t("pricing.feature_savedSearches"),     on: c.savedSearches,  tip: t("pricing.tipSavedSearches") },
   ];
 }
 
@@ -86,8 +105,10 @@ function PlanCard({
   const { t } = useTranslation();
   const hi = plan.highlight !== undefined;
   const monthly = isInstitution ? null : plan.price;
-  const price   = monthly === null ? null : annual ? Math.round(monthly * 0.8) : monthly;
-  const saved   = monthly && annual ? monthly * 0.2 * 12 : 0;
+  // Annual = ten months for twelve ("2 months free"): shown as the effective
+  // monthly rate, and the saving is exactly two months.
+  const price   = monthly === null ? null : annual ? Math.round((monthly * 10) / 12) : monthly;
+  const saved   = monthly && annual ? monthly * 2 : 0;
   const free    = monthly === 0;
 
   async function handleClick() {
@@ -162,7 +183,7 @@ function PlanCard({
             <div>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: "var(--cr-copper)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", textDecoration: "line-through" }}>
-                ${plan.price}{t("pricing.perMonth")} after launch
+                ${plan.price}{t("pricing.perMonth")} {t("pricing.afterLaunch")}
               </p>
             </div>
           ) : price === null ? (
@@ -174,7 +195,7 @@ function PlanCard({
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
                 ${price}
               </span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>/mo</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("pricing.perMonth")}{annual ? ` · ${t("pricing.billedYearly", { amount: (monthly ?? 0) * 10 })}` : ""}</span>
             </div>
           )}
         </div>
@@ -407,7 +428,7 @@ export default function PricingPage() {
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: annual ? "var(--cr-ink)" : "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "6px" }}>
                     {t("pricing.annual")}
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 6px" }}>
-                      −20%
+                      {t("pricing.saveTwoMonths")}
                     </span>
                   </span>
                 </div>

@@ -310,7 +310,8 @@
     "createAccount": "Account aanmaken",
     "usageRemaining": "Nog {remaining} van {limit} AI-runs vandaag",
     "usageUnlimited": "Onbeperkte AI-runs in jouw plan",
-    "usageUpgrade": "Meer krijgen →"
+    "usageUpgrade": "Meer krijgen →",
+    "disclosureStrip": "AI-analyses zijn uitsluitend informatief en vormen geen beleggingsadvies. Aangedreven door OpenAI-modellen. Vermelding: deze inhoud is met AI gegenereerd."
   },
   "pricing": {
     "sectionLabel": "Plannen en prijzen",
@@ -448,7 +449,19 @@
     "tipVisName": "Je bedrijfsnaam, tagline en sector - altijd openbaar in elk plan.",
     "tipVisTeam": "Founderbio's en teamprofielen op je openbare listing.",
     "tipVisDeck": "Je pitchdeck, te openen door investeerders op je profiel.",
-    "notIncluded": "Niet inbegrepen"
+    "notIncluded": "Niet inbegrepen",
+    "feature_oneListing": "1 startup-vermelding",
+    "feature_unlimitedListings": "Onbeperkte startup-vermeldingen",
+    "feature_unlimitedDocs": "Onbeperkte documentuploads",
+    "feature_seeWhoViewed": "Zien welke investeerders u bekeken",
+    "feature_teamDocs": "Teamprofielen & dataroom",
+    "feature_aiDiligencePaid": "AI due diligence ($29/rapport)",
+    "feature_watchlistLimited": "Watchlist: {n} startups",
+    "feature_watchlistUnlimited": "Onbeperkte watchlist",
+    "tipWatchlist": "Bewaar startups die u wilt volgen en krijg bericht bij wijzigingen.",
+    "saveTwoMonths": "2 maanden gratis",
+    "afterLaunch": "na de lancering",
+    "billedYearly": "${amount} jaarlijks gefactureerd"
   },
   "cta": {
     "headline": "Het juiste kapitaal, op het juiste moment.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "We werken aan diepgaande gidsen over fondsenwervingsstrategie, investeerdersrelaties en marktinformatie. Kom binnenkort terug.",
     "browseStartups": "Bekijk in plaats daarvan startups",
     "minRead": "{minutes} min leestijd",
-    "readArticle": "Lees het artikel"
+    "readArticle": "Lees het artikel",
+    "subscribeTitle": "Ontvang de Dispatch",
+    "subscribeSub": "Fondsenwerving, het Europese startup-ecosysteem en het bouwen van CapitalReach — af en toe, alleen als het de moeite waard is.",
+    "subscribePlaceholder": "u@bedrijf.nl",
+    "subscribeCta": "Abonneren",
+    "subscribeDone": "U bent geabonneerd. Bekijk uw inbox.",
+    "subscribeAlready": "U was al geabonneerd."
   },
   "careers": {
     "metaTitle": "Vacatures",

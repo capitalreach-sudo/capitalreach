@@ -52,7 +52,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/pricing`,     changeFrequency: "weekly",  priority: 0.8 },
     { url: `${baseUrl}/ai`,          changeFrequency: "weekly",  priority: 0.7 },
     { url: `${baseUrl}/data`,        changeFrequency: "weekly",  priority: 0.6 },
-    { url: `${baseUrl}/stats`,       changeFrequency: "daily",   priority: 0.6 },
     { url: `${baseUrl}/status`,      changeFrequency: "daily",   priority: 0.3 },
     // One landing page per sector -- search traffic arrives by sector, not
     // by brand, and these are the pages built to catch it.

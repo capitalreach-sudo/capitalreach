@@ -330,7 +330,8 @@
     "createAccount": "Create account",
     "usageRemaining": "{remaining} of {limit} AI runs left today",
     "usageUnlimited": "Unlimited AI runs on your plan",
-    "usageUpgrade": "Get more →"
+    "usageUpgrade": "Get more →",
+    "disclosureStrip": "AI-generated analysis is for informational purposes only and is not investment advice. Powered by OpenAI models. Disclosure: AI was used to generate this content."
   },
   "pricing": {
     "sectionLabel": "Plans & pricing",
@@ -468,7 +469,19 @@
     "tipVisName": "Your company name, tagline and industry - always public on every plan.",
     "tipVisTeam": "Founder bios and team profiles shown on your public listing.",
     "tipVisDeck": "Your pitch deck, openable by investors on your profile.",
-    "notIncluded": "Not included"
+    "notIncluded": "Not included",
+    "feature_oneListing": "1 startup listing",
+    "feature_unlimitedListings": "Unlimited startup listings",
+    "feature_unlimitedDocs": "Unlimited document uploads",
+    "feature_seeWhoViewed": "See which investors viewed you",
+    "feature_teamDocs": "Team profiles & data room",
+    "feature_aiDiligencePaid": "AI due diligence ($29/report)",
+    "feature_watchlistLimited": "Watchlist: {n} startups",
+    "feature_watchlistUnlimited": "Unlimited watchlist",
+    "tipWatchlist": "Save startups you want to follow and get notified when they change.",
+    "saveTwoMonths": "2 months free",
+    "afterLaunch": "after launch",
+    "billedYearly": "${amount} billed yearly"
   },
   "cta": {
     "headline": "The right capital, at the right stage.",
@@ -2016,7 +2029,13 @@
     "comingSoonDesc": "We're working on in-depth guides covering fundraising strategy, investor relations, and market intelligence. Check back soon.",
     "browseStartups": "Browse startups instead",
     "minRead": "{minutes} min read",
-    "readArticle": "Read the article"
+    "readArticle": "Read the article",
+    "subscribeTitle": "Get the Dispatch",
+    "subscribeSub": "Fundraising, the European startup ecosystem, and building CapitalReach — occasionally, only when worth reading.",
+    "subscribePlaceholder": "you@company.com",
+    "subscribeCta": "Subscribe",
+    "subscribeDone": "You're subscribed. Check your inbox.",
+    "subscribeAlready": "You're already subscribed."
   },
   "careers": {
     "metaTitle": "Careers",

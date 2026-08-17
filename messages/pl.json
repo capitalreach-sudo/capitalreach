@@ -310,7 +310,8 @@
     "createAccount": "Załóż konto",
     "usageRemaining": "Zostało {remaining} z {limit} uruchomień AI dzisiaj",
     "usageUnlimited": "Nielimitowane uruchomienia AI w twoim planie",
-    "usageUpgrade": "Zdobądź więcej →"
+    "usageUpgrade": "Zdobądź więcej →",
+    "disclosureStrip": "Analiza generowana przez AI ma charakter wyłącznie informacyjny i nie stanowi porady inwestycyjnej. Oparta na modelach OpenAI. Informacja: treść wygenerowano z użyciem AI."
   },
   "pricing": {
     "sectionLabel": "Plany i cennik",
@@ -448,7 +449,19 @@
     "tipVisName": "Nazwa firmy, tagline i branża - zawsze publiczne w każdym planie.",
     "tipVisTeam": "Biogramy founderów i profile zespołu na Twoim publicznym ogłoszeniu.",
     "tipVisDeck": "Twój pitch deck, dostępny dla inwestorów na Twoim profilu.",
-    "notIncluded": "Nie obejmuje"
+    "notIncluded": "Nie obejmuje",
+    "feature_oneListing": "1 profil startupu",
+    "feature_unlimitedListings": "Nieograniczona liczba profili startupów",
+    "feature_unlimitedDocs": "Nieograniczone przesyłanie dokumentów",
+    "feature_seeWhoViewed": "Zobacz, którzy inwestorzy Cię oglądali",
+    "feature_teamDocs": "Profile zespołu i data room",
+    "feature_aiDiligencePaid": "Due diligence AI (29 $/raport)",
+    "feature_watchlistLimited": "Lista obserwowanych: {n} startupów",
+    "feature_watchlistUnlimited": "Nieograniczona lista obserwowanych",
+    "tipWatchlist": "Zapisuj startupy, które chcesz śledzić, i otrzymuj powiadomienia o zmianach.",
+    "saveTwoMonths": "2 miesiące gratis",
+    "afterLaunch": "po premierze",
+    "billedYearly": "{amount} $ rocznie"
   },
   "cta": {
     "headline": "Właściwy kapitał, na właściwym etapie.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "Pracujemy nad szczegółowymi przewodnikami dotyczącymi strategii pozyskiwania finansowania, relacji z inwestorami i analizy rynku. Zajrzyj tu wkrótce ponownie.",
     "browseStartups": "Przeglądaj startupy zamiast tego",
     "minRead": "{minutes} min czytania",
-    "readArticle": "Przeczytaj artykuł"
+    "readArticle": "Przeczytaj artykuł",
+    "subscribeTitle": "Otrzymuj Dispatch",
+    "subscribeSub": "Pozyskiwanie kapitału, europejski ekosystem startupów i budowa CapitalReach — od czasu do czasu, tylko gdy warto.",
+    "subscribePlaceholder": "ty@firma.pl",
+    "subscribeCta": "Subskrybuj",
+    "subscribeDone": "Subskrypcja aktywna. Sprawdź skrzynkę.",
+    "subscribeAlready": "Już subskrybujesz."
   },
   "careers": {
     "metaTitle": "Kariera",

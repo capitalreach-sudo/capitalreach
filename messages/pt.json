@@ -310,7 +310,8 @@
     "createAccount": "Criar conta",
     "usageRemaining": "Restam {remaining} de {limit} execuções de IA hoje",
     "usageUnlimited": "Execuções de IA ilimitadas no teu plano",
-    "usageUpgrade": "Obter mais →"
+    "usageUpgrade": "Obter mais →",
+    "disclosureStrip": "A análise gerada por IA é apenas informativa e não constitui aconselhamento de investimento. Baseada em modelos OpenAI. Aviso: este conteúdo foi gerado com IA."
   },
   "pricing": {
     "sectionLabel": "Planos e preços",
@@ -448,7 +449,19 @@
     "tipVisName": "Nome, slogan e setor da sua empresa - sempre públicos em todos os planos.",
     "tipVisTeam": "Bios dos fundadores e perfis da equipe exibidos na sua listagem pública.",
     "tipVisDeck": "Seu pitch deck, acessível aos investidores no seu perfil.",
-    "notIncluded": "Não incluído"
+    "notIncluded": "Não incluído",
+    "feature_oneListing": "1 ficha de startup",
+    "feature_unlimitedListings": "Fichas de startup ilimitadas",
+    "feature_unlimitedDocs": "Envios de documentos ilimitados",
+    "feature_seeWhoViewed": "Ver que investidores o visualizaram",
+    "feature_teamDocs": "Perfis da equipa & data room",
+    "feature_aiDiligencePaid": "Due diligence com IA (29 $/relatório)",
+    "feature_watchlistLimited": "Lista de acompanhamento: {n} startups",
+    "feature_watchlistUnlimited": "Lista de acompanhamento ilimitada",
+    "tipWatchlist": "Guarde as startups que quer seguir e seja avisado quando mudarem.",
+    "saveTwoMonths": "2 meses grátis",
+    "afterLaunch": "após o lançamento",
+    "billedYearly": "{amount} $ faturados por ano"
   },
   "cta": {
     "headline": "O capital certo, no estágio certo.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "Estamos a trabalhar em guias aprofundados sobre estratégia de angariação de fundos, relações com investidores e inteligência de mercado. Volte em breve.",
     "browseStartups": "Explorar startups em vez disso",
     "minRead": "{minutes} min de leitura",
-    "readArticle": "Ler o artigo"
+    "readArticle": "Ler o artigo",
+    "subscribeTitle": "Receber o Dispatch",
+    "subscribeSub": "Angariação, o ecossistema europeu de startups e a construção da CapitalReach — ocasionalmente, só quando vale a leitura.",
+    "subscribePlaceholder": "voce@empresa.com",
+    "subscribeCta": "Subscrever",
+    "subscribeDone": "Está subscrito. Verifique a sua caixa de entrada.",
+    "subscribeAlready": "Já estava subscrito."
   },
   "careers": {
     "metaTitle": "Carreiras",

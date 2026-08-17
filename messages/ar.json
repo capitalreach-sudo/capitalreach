@@ -319,7 +319,8 @@
     "createAccount": "إنشاء حساب",
     "usageRemaining": "بقي {remaining} من {limit} تشغيلات الذكاء الاصطناعي اليوم",
     "usageUnlimited": "تشغيلات ذكاء اصطناعي غير محدودة في خطتك",
-    "usageUpgrade": "احصل على المزيد ←"
+    "usageUpgrade": "احصل على المزيد ←",
+    "disclosureStrip": "التحليل المُنشأ بالذكاء الاصطناعي لأغراض معلوماتية فقط وليس نصيحة استثمارية. مدعوم بنماذج OpenAI. إفصاح: تم إنشاء هذا المحتوى بالذكاء الاصطناعي."
   },
   "pricing": {
     "sectionLabel": "الخطط والأسعار",
@@ -457,7 +458,19 @@
     "tipVisName": "اسم شركتك وشعارها وقطاعها - علنية دائما في كل الخطط.",
     "tipVisTeam": "سير المؤسسين وملفات الفريق تظهر في إدراجك العام.",
     "tipVisDeck": "عرضك التقديمي متاح للمستثمرين في ملفك.",
-    "notIncluded": "غير مشمول"
+    "notIncluded": "غير مشمول",
+    "feature_oneListing": "إدراج شركة ناشئة واحدة",
+    "feature_unlimitedListings": "إدراجات غير محدودة",
+    "feature_unlimitedDocs": "رفع مستندات غير محدود",
+    "feature_seeWhoViewed": "معرفة المستثمرين الذين اطّلعوا عليك",
+    "feature_teamDocs": "ملفات الفريق وغرفة البيانات",
+    "feature_aiDiligencePaid": "فحص نافٍ للجهالة بالذكاء الاصطناعي (29 $/تقرير)",
+    "feature_watchlistLimited": "قائمة المتابعة: {n} شركات",
+    "feature_watchlistUnlimited": "قائمة متابعة غير محدودة",
+    "tipWatchlist": "احفظ الشركات الناشئة التي تريد متابعتها واحصل على إشعار عند تغيّرها.",
+    "saveTwoMonths": "شهران مجانًا",
+    "afterLaunch": "بعد الإطلاق",
+    "billedYearly": "{amount} $ تُفوتر سنويًا"
   },
   "cta": {
     "headline": "رأس المال المناسب في المرحلة المناسبة.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "نحن نعمل على أدلة متعمقة تغطي استراتيجية جمع التمويل وعلاقات المستثمرين وذكاء السوق. عد قريباً.",
     "browseStartups": "تصفح الشركات الناشئة بدلاً من ذلك",
     "minRead": "{minutes} دقيقة قراءة",
-    "readArticle": "اقرأ المقال"
+    "readArticle": "اقرأ المقال",
+    "subscribeTitle": "اشترك في Dispatch",
+    "subscribeSub": "جمع التمويل، ومنظومة الشركات الناشئة الأوروبية، وبناء CapitalReach — من حين لآخر، وفقط عندما يستحق القراءة.",
+    "subscribePlaceholder": "you@company.com",
+    "subscribeCta": "اشتراك",
+    "subscribeDone": "تم الاشتراك. تحقق من بريدك.",
+    "subscribeAlready": "أنت مشترك بالفعل."
   },
   "careers": {
     "metaTitle": "الوظائف",

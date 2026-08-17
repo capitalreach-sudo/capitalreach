@@ -714,13 +714,27 @@ function TierCheck({ val }: { val: string | boolean }) {
 type Tab = "pitch" | "matching" | "diligence";
 
 // ── Main Hub ───────────────────────────────────────────────────
-export function AiToolsHub() {
+export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>("pitch");
   // The routes already answer 401 to anonymous calls; hiding the forms too
   // stops signed-out visitors from typing a pitch into a tool that can only
-  // refuse them. null = still checking (render nothing gated yet).
-  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  // refuse them. The server page passes the answer so the very first paint
+  // is right; the client re-checks in case the session changed.
+  const [isAuthed, setIsAuthed] = useState<boolean | null>(initialAuthed ?? null);
+  // Footer + homepage link to /ai#match and /ai#due-diligence (and #score):
+  // the hash selects the tab, so those links keep their promise.
+  useEffect(() => {
+    const apply = () => {
+      const h = window.location.hash;
+      if (h === "#match") setActiveTab("matching");
+      else if (h === "#due-diligence" || h === "#diligence") setActiveTab("diligence");
+      else if (h === "#score" || h === "#pitch") setActiveTab("pitch");
+    };
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+  }, []);
   // Today's allowance, so the limit is visible before a pitch is written
   // rather than discovered as a 429 afterwards.
   const [usage, setUsage] = useState<{ unlimited: boolean; used: number; limit: number; remaining: number } | null>(null);
@@ -751,20 +765,20 @@ export function AiToolsHub() {
     <div style={{ minHeight: "100vh", background: "var(--cr-paper)" }}>
       {/* Hero */}
       <div style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)", marginTop: "64px" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px 40px 56px" }}>
+        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "56px", paddingBottom: "48px" }}>
           <div className="ruled-label" style={{ marginBottom: "24px" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               {t("ai.hub.heroPowered")}
             </span>
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "58px", color: "var(--cr-ink)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "16px" }}>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(34px, 6vw, 58px)", color: "var(--cr-ink)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "16px" }}>
             {t("ai.hub.heroLine1")}<br />
             <span style={{ color: "var(--cr-copper)" }}>{t("ai.hub.heroLine2")}</span>
           </h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", maxWidth: "480px", marginBottom: "40px", lineHeight: 1.6 }}>
             {t("ai.hub.heroSub")}
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+          <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "12px" }}>
             {[
               { icon: Sparkles,   label: t("ai.hub.statPitchLabel"), val: t("ai.hub.statPitchVal") },
               { icon: Brain,      label: t("ai.hub.statMatchLabel"), val: t("ai.hub.statMatchVal") },
@@ -781,9 +795,18 @@ export function AiToolsHub() {
         </div>
       </div>
 
+      {/* AI disclosure — persistent, cannot be dismissed. Informational only,
+          not investment advice, and the required disclosure that AI produced
+          what follows. */}
+      <div role="note" style={{ background: "rgba(181,101,29,0.06)", borderBottom: "1px solid rgba(181,101,29,0.15)", padding: "9px 24px", textAlign: "center" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.5, maxWidth: "900px", margin: "0 auto" }}>
+          {t("ai.disclosureStrip")}
+        </p>
+      </div>
+
       {/* Tab bar */}
       <div style={{ position: "sticky", top: "64px", zIndex: 30, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 40px", display: "flex", gap: "4px", overflowX: "auto" }}>
+        <div className="px-4 md:px-10 scrollbar-hide" style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", gap: "4px", overflowX: "auto" }}>
           {TABS.map(({ id, label, icon: Icon, desc }) => (
             <button key={id} onClick={() => setActiveTab(id)}
               style={{
@@ -802,7 +825,7 @@ export function AiToolsHub() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px" }}>
+      <div className="px-5 py-8 md:p-10" style={{ maxWidth: "1100px", margin: "0 auto" }}>
         {usage && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 16px", marginBottom: "20px" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>

@@ -319,7 +319,8 @@
     "createAccount": "Créer un compte",
     "usageRemaining": "Il vous reste {remaining} sur {limit} utilisations d'IA aujourd'hui",
     "usageUnlimited": "Utilisations d'IA illimitées avec votre offre",
-    "usageUpgrade": "En obtenir plus →"
+    "usageUpgrade": "En obtenir plus →",
+    "disclosureStrip": "Les analyses générées par IA sont fournies à titre informatif et ne constituent pas un conseil en investissement. Propulsé par des modèles OpenAI. Mention : ce contenu a été généré par IA."
   },
   "pricing": {
     "sectionLabel": "Plans et tarifs",
@@ -457,7 +458,19 @@
     "tipVisName": "Le nom, la tagline et le secteur de votre entreprise - toujours publics sur chaque offre.",
     "tipVisTeam": "Bios des fondateurs et profils d'équipe affichés sur votre listing public.",
     "tipVisDeck": "Votre pitch deck, consultable par les investisseurs sur votre profil.",
-    "notIncluded": "Non inclus"
+    "notIncluded": "Non inclus",
+    "feature_oneListing": "1 fiche startup",
+    "feature_unlimitedListings": "Fiches startup illimitées",
+    "feature_unlimitedDocs": "Envois de documents illimités",
+    "feature_seeWhoViewed": "Voir quels investisseurs vous ont consulté",
+    "feature_teamDocs": "Profils d'équipe & data room",
+    "feature_aiDiligencePaid": "Due diligence IA (29 $/rapport)",
+    "feature_watchlistLimited": "Liste de suivi : {n} startups",
+    "feature_watchlistUnlimited": "Liste de suivi illimitée",
+    "tipWatchlist": "Enregistrez les startups à suivre et soyez averti de leurs changements.",
+    "saveTwoMonths": "2 mois offerts",
+    "afterLaunch": "après le lancement",
+    "billedYearly": "{amount} $ facturés par an"
   },
   "cta": {
     "headline": "Le bon capital, au bon stade.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "Nous travaillons sur des guides approfondis couvrant la stratégie de levée de fonds, les relations investisseurs et l'intelligence de marché. Revenez bientôt.",
     "browseStartups": "Parcourir les startups à la place",
     "minRead": "{minutes} min de lecture",
-    "readArticle": "Lire l'article"
+    "readArticle": "Lire l'article",
+    "subscribeTitle": "Recevoir la Dispatch",
+    "subscribeSub": "Levée de fonds, écosystème startup européen et coulisses de CapitalReach — occasionnellement, seulement quand ça vaut la lecture.",
+    "subscribePlaceholder": "vous@entreprise.com",
+    "subscribeCta": "S'abonner",
+    "subscribeDone": "Vous êtes abonné. Vérifiez votre boîte mail.",
+    "subscribeAlready": "Vous êtes déjà abonné."
   },
   "careers": {
     "metaTitle": "Carrières",

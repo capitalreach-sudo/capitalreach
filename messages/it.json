@@ -310,7 +310,8 @@
     "createAccount": "Crea account",
     "usageRemaining": "Ti restano {remaining} di {limit} esecuzioni IA oggi",
     "usageUnlimited": "Esecuzioni IA illimitate nel tuo piano",
-    "usageUpgrade": "Ottieni di più →"
+    "usageUpgrade": "Ottieni di più →",
+    "disclosureStrip": "L'analisi generata dall'IA è solo informativa e non costituisce consulenza finanziaria. Basata su modelli OpenAI. Avviso: questo contenuto è stato generato con l'IA."
   },
   "pricing": {
     "sectionLabel": "Piani e prezzi",
@@ -448,7 +449,19 @@
     "tipVisName": "Nome, tagline e settore della tua azienda - sempre pubblici in ogni piano.",
     "tipVisTeam": "Bio dei founder e profili del team mostrati nel tuo annuncio pubblico.",
     "tipVisDeck": "Il tuo pitch deck, apribile dagli investitori sul tuo profilo.",
-    "notIncluded": "Non incluso"
+    "notIncluded": "Non incluso",
+    "feature_oneListing": "1 scheda startup",
+    "feature_unlimitedListings": "Schede startup illimitate",
+    "feature_unlimitedDocs": "Caricamenti documenti illimitati",
+    "feature_seeWhoViewed": "Vedi quali investitori ti hanno visto",
+    "feature_teamDocs": "Profili del team & data room",
+    "feature_aiDiligencePaid": "Due diligence AI (29 $/report)",
+    "feature_watchlistLimited": "Watchlist: {n} startup",
+    "feature_watchlistUnlimited": "Watchlist illimitata",
+    "tipWatchlist": "Salva le startup da seguire e ricevi una notifica quando cambiano.",
+    "saveTwoMonths": "2 mesi gratis",
+    "afterLaunch": "dopo il lancio",
+    "billedYearly": "{amount} $ fatturati all'anno"
   },
   "cta": {
     "headline": "Il capitale giusto, nella fase giusta.",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "Stiamo lavorando a guide approfondite su strategia di raccolta fondi, relazioni con gli investitori e intelligence di mercato. Torna presto a trovarci.",
     "browseStartups": "Sfoglia le startup invece",
     "minRead": "{minutes} min di lettura",
-    "readArticle": "Leggi l'articolo"
+    "readArticle": "Leggi l'articolo",
+    "subscribeTitle": "Ricevi il Dispatch",
+    "subscribeSub": "Raccolta fondi, ecosistema startup europeo e come costruiamo CapitalReach — di tanto in tanto, solo quando vale la lettura.",
+    "subscribePlaceholder": "tu@azienda.com",
+    "subscribeCta": "Iscriviti",
+    "subscribeDone": "Sei iscritto. Controlla la posta.",
+    "subscribeAlready": "Sei già iscritto."
   },
   "careers": {
     "metaTitle": "Lavora con noi",

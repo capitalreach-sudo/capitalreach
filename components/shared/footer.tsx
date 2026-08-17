@@ -26,10 +26,9 @@ export function Footer() {
       [t("footer.listYourStartup"), "/auth/signup"],
       [t("footer.howItWorks"),      "/about#how-it-works"],
       [t("footer.pricing"),         "/pricing#founders"],
-      // Was "Success stories" -> /about#stories: an anchor that existed
-      // nowhere, pointing at content the platform does not yet have. The
-      // stats page is the honest version of the same promise.
-      [t("footer.stats"),           "/stats"],
+      // "Success stories" (/about#stories) and "Platform stats" (/stats) both
+      // used to sit here; the first pointed at content that does not exist
+      // yet and the second duplicated the Data Centre linked above.
     ]],
     [t("footer.investors"), [
       [t("footer.browseDeals"),   "/startups"],

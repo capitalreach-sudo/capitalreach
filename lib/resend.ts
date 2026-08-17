@@ -98,6 +98,21 @@ export async function sendWelcomeEmail(to: string, name: string, role: string) {
 }
 
 
+/** Blog / dispatch subscription confirmation (no account required). */
+export async function sendSubscribeWelcomeEmail(to: string) {
+  return send(
+    to,
+    "You're on the CapitalReach Dispatch",
+    `<div style="font-family:'DM Sans',Arial,sans-serif;color:#1A1612;max-width:520px">
+      <p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B5651D">◆ CapitalReach</p>
+      <h1 style="font-family:Georgia,serif;font-size:24px;margin:8px 0 12px">You're subscribed.</h1>
+      <p style="font-size:14px;line-height:1.6;color:#3D3630">We write about fundraising, the European startup ecosystem, and building CapitalReach — occasionally, and only when there is something worth reading.</p>
+      <p style="margin-top:20px"><a href="${brand.url}/blog" style="display:inline-block;background:#B5651D;color:#fff;text-decoration:none;padding:10px 18px;border-radius:4px;font-size:13px;font-weight:600">Read the Dispatch →</a></p>
+    </div>`,
+    [{ name: "type", value: "subscribe" }],
+  );
+}
+
 export async function sendProfileUnderReviewEmail(to: string, startupName: string) {
   return send(
     to,

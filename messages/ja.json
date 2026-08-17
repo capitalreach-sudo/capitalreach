@@ -319,7 +319,8 @@
     "createAccount": "アカウントを作成",
     "usageRemaining": "本日のAI実行は残り {remaining}/{limit} 回",
     "usageUnlimited": "ご利用のプランではAI実行は無制限です",
-    "usageUpgrade": "もっと使う →"
+    "usageUpgrade": "もっと使う →",
+    "disclosureStrip": "AI による分析は情報提供のみを目的とし、投資助言ではありません。OpenAI モデルを使用。開示：本コンテンツは AI により生成されています。"
   },
   "pricing": {
     "sectionLabel": "プランと料金",
@@ -457,7 +458,19 @@
     "tipVisName": "会社名、タグライン、業種はどのプランでも常に公開されます。",
     "tipVisTeam": "創業者の経歴とチーム情報が公開リスティングに表示されます。",
     "tipVisDeck": "ピッチ資料を投資家がプロフィール上で開けます。",
-    "notIncluded": "含まれません"
+    "notIncluded": "含まれません",
+    "feature_oneListing": "スタートアップ掲載 1 件",
+    "feature_unlimitedListings": "スタートアップ掲載 無制限",
+    "feature_unlimitedDocs": "ドキュメントアップロード 無制限",
+    "feature_seeWhoViewed": "閲覧した投資家を確認",
+    "feature_teamDocs": "チームプロフィール & データルーム",
+    "feature_aiDiligencePaid": "AI デューデリジェンス（29 ドル/件）",
+    "feature_watchlistLimited": "ウォッチリスト：{n} 社",
+    "feature_watchlistUnlimited": "ウォッチリスト 無制限",
+    "tipWatchlist": "注目するスタートアップを保存し、変更があれば通知を受け取れます。",
+    "saveTwoMonths": "2 か月分無料",
+    "afterLaunch": "ローンチ後",
+    "billedYearly": "年額 {amount} ドル"
   },
   "cta": {
     "headline": "適切な資本を、適切なステージで。",
@@ -2005,7 +2018,13 @@
     "comingSoonDesc": "資金調達戦略、投資家関係、市場インテリジェンスをカバーする詳細なガイドを作成中です。近日中にご確認ください。",
     "browseStartups": "代わりにスタートアップを閲覧する",
     "minRead": "読了{minutes}分",
-    "readArticle": "記事を読む"
+    "readArticle": "記事を読む",
+    "subscribeTitle": "Dispatch を受け取る",
+    "subscribeSub": "資金調達、欧州スタートアップ・エコシステム、CapitalReach の舞台裏 —— 読む価値があるときだけ、不定期に。",
+    "subscribePlaceholder": "you@company.com",
+    "subscribeCta": "登録",
+    "subscribeDone": "登録が完了しました。受信箱をご確認ください。",
+    "subscribeAlready": "すでに登録済みです。"
   },
   "careers": {
     "metaTitle": "採用情報",
