@@ -1454,6 +1454,7 @@ export type Database = {
           languages_spoken: string[] | null
           lead_investor: string | null
           lead_investor_status: string | null
+          listed_at: string | null
           looking_for: string[] | null
           market: string | null
           min_check_size: number | null
@@ -1517,6 +1518,7 @@ export type Database = {
           languages_spoken?: string[] | null
           lead_investor?: string | null
           lead_investor_status?: string | null
+          listed_at?: string | null
           looking_for?: string[] | null
           market?: string | null
           min_check_size?: number | null
@@ -1580,6 +1582,7 @@ export type Database = {
           languages_spoken?: string[] | null
           lead_investor?: string | null
           lead_investor_status?: string | null
+          listed_at?: string | null
           looking_for?: string[] | null
           market?: string | null
           min_check_size?: number | null

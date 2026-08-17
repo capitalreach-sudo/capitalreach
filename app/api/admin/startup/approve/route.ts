@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   // Approve and set active
   await adminClient
     .from("startups")
-    .update({ status: "active" })
+    .update({ status: "active", listed_at: new Date().toISOString() })
     .eq("id", startupId);
 
   // Log admin action

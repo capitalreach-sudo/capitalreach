@@ -14,6 +14,7 @@ import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { announce } from "@/lib/announce";
 import { normalizeCountry, sameCountry } from "@/lib/countries";
 import { roundCloseState } from "@/lib/round-close";
+import { matchesSavedSearch } from "@/lib/search-match";
 import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -730,22 +731,12 @@ export function StartupsSearch() {
 
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
-      const q     = filters.query.toLowerCase();
-      const score = s.vaultrise_score ?? 0;
-      if (q && !s.name.toLowerCase().includes(q) && !s.tagline.toLowerCase().includes(q)) return false;
-      if (filters.industries.length && !filters.industries.includes(s.industry)) return false;
-      if (filters.stages.length && !filters.stages.includes(s.stage)) return false;
-      if (filters.mrrMin > 0 && (s.mrr ?? 0) < filters.mrrMin) return false;
-      if (filters.aiScoreMin > 0 && score < filters.aiScoreMin) return false;
-      // Compared canonically for the same reason the facet is keyed that way.
-      if (filters.country && !sameCountry(s.country, filters.country)) return false;
+      // The saved-search matcher is the single source of truth (lib/search-
+      // match) — the alert cron uses the same function, so an alert fires
+      // iff this page would show the listing. newOnly and hidden are
+      // browse-only concerns layered on top.
+      if (!matchesSavedSearch(filters, s)) return false;
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
-      if (filters.closingSoon && roundCloseState(s.round_close_date) === null) return false;
-      if (filters.businessModel && s.business_model !== filters.businessModel) return false;
-      if (filters.hasDemo && !s.demo_video_url) return false;
-      if ((filters.raisingMin ?? 0) > 0 && s.funding_target < filters.raisingMin!) return false;
-      if ((filters.runwayMin ?? 0) > 0 && (s.runway_months ?? 0) < filters.runwayMin!) return false;
-      if ((filters.growthMin ?? 0) > 0 && (s.growth_rate ?? 0) < filters.growthMin!) return false;
       if (!showHidden && dismissedIds.has(s.id)) return false;
       if (showHidden && !dismissedIds.has(s.id)) return false;
       return true;

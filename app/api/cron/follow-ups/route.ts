@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
 import { notifyUser, notifyUsers } from "@/lib/notify-user";
 import { logSystemEvent } from "@/lib/system-events";
+import { matchesSavedSearch, type SavedSearchFilters } from "@/lib/search-match";
 
 export const dynamic = "force-dynamic";
 
@@ -94,9 +95,12 @@ export async function GET(req: NextRequest) {
   const [{ data: fresh }, { data: searches }] = await Promise.all([
     admin
       .from("startups")
-      .select("id, name, tagline, industry, stage, country, mrr, vaultrise_score")
+      .select("id, name, tagline, industry, stage, country, mrr, vaultrise_score, funding_target, runway_months, growth_rate, round_close_date, business_model, demo_video_url")
       .eq("status", "active")
-      .gte("created_at", since),
+      // listed_at, not created_at: a listing is born draft and goes live at
+      // approval, often more than a day later — matching on creation time
+      // meant most listings could never alert anyone.
+      .gte("listed_at", since),
     admin
       .from("saved_searches")
       .select("id, name, filters, investor:investors(owner_id)"),
@@ -107,19 +111,10 @@ export async function GET(req: NextRequest) {
     for (const search of searches ?? []) {
       const ownerId = search.investor?.owner_id;
       if (!ownerId) continue;
-      const f = (search.filters ?? {}) as {
-        query?: string; industries?: string[]; stages?: string[];
-        mrrMin?: number; aiScoreMin?: number; country?: string;
-      };
-      const q = (f.query ?? "").trim().toLowerCase();
-      const matches = (fresh ?? []).filter((st) =>
-        (!f.industries?.length || f.industries.includes(st.industry)) &&
-        (!f.stages?.length     || f.stages.includes(st.stage)) &&
-        (!f.country            || f.country === st.country) &&
-        ((st.mrr ?? 0)             >= (f.mrrMin ?? 0)) &&
-        ((st.vaultrise_score ?? 0) >= (f.aiScoreMin ?? 0)) &&
-        (!q || st.name.toLowerCase().includes(q) || (st.tagline ?? "").toLowerCase().includes(q))
-      );
+      const f = (search.filters ?? {}) as SavedSearchFilters;
+      // Same matcher the browse page uses — an alert fires iff the saved
+      // search would show the listing.
+      const matches = (fresh ?? []).filter((st) => matchesSavedSearch(f, st));
       if (!matches.length) continue;
 
       await notifyUser({
