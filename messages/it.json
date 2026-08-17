@@ -2541,7 +2541,8 @@
     "degraded": "Degradato",
     "down": "Non disponibile",
     "notScheduled": "Non ancora pianificato",
-    "wrongNote": "Qualcosa sembra sbagliato anche se questa pagina dice che va tutto bene? Scrivici dalla pagina contatti — una segnalazione con orario e dettagli è davvero utile."
+    "wrongNote": "Qualcosa sembra sbagliato anche se questa pagina dice che va tutto bene? Scrivici dalla pagina contatti — una segnalazione con orario e dettagli è davvero utile.",
+    "rateLimit": "Limitazione delle richieste"
   },
   "sections": {
     "recentlyViewed": "Visti di recente",

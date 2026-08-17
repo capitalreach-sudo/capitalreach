@@ -2541,7 +2541,8 @@
     "degraded": "Beeinträchtigt",
     "down": "Ausgefallen",
     "notScheduled": "Noch nicht geplant",
-    "wrongNote": "Sieht etwas falsch aus, das diese Seite für in Ordnung hält? Schreib uns über die Kontaktseite — ein Bericht mit Uhrzeit und Beobachtung hilft wirklich."
+    "wrongNote": "Sieht etwas falsch aus, das diese Seite für in Ordnung hält? Schreib uns über die Kontaktseite — ein Bericht mit Uhrzeit und Beobachtung hilft wirklich.",
+    "rateLimit": "Ratenbegrenzung"
   },
   "sections": {
     "recentlyViewed": "Zuletzt angesehen",

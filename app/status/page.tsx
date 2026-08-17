@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase-server";
+import { isRedisConfigured } from "@/lib/redis";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/shared/navbar";
@@ -94,6 +95,9 @@ async function runChecks(): Promise<Array<{ key: string; label: string; state: C
     { key: "db", label: "statusPage.database", state: db, detail: db === "ok" ? `${dbMs} ms` : undefined },
     { key: "auth", label: "statusPage.auth", state: auth },
     { key: "storage", label: "statusPage.storage", state: storage },
+    // Rate limiting silently becomes a no-op when Upstash is unset; that is a
+    // real degradation (abuse surfaces open up) and belongs on the board.
+    { key: "ratelimit", label: "statusPage.rateLimit", state: isRedisConfigured ? "ok" : "degraded" },
     { key: "cron", label: "statusPage.jobs", state: cron, detail: cronDetail },
   ];
 }

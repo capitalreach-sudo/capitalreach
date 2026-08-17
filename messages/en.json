@@ -2541,7 +2541,8 @@
     "degraded": "Degraded",
     "down": "Down",
     "notScheduled": "Not yet scheduled",
-    "wrongNote": "Something look wrong that this page says is fine? Write to us via the contact page — a report with a time and what you saw is genuinely useful."
+    "wrongNote": "Something look wrong that this page says is fine? Write to us via the contact page — a report with a time and what you saw is genuinely useful.",
+    "rateLimit": "Rate limiting"
   },
   "sections": {
     "recentlyViewed": "Recently viewed",

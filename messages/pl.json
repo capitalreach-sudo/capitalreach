@@ -2541,7 +2541,8 @@
     "degraded": "Zakłócenia",
     "down": "Awaria",
     "notScheduled": "Jeszcze nie zaplanowano",
-    "wrongNote": "Coś wygląda źle, choć ta strona twierdzi, że wszystko jest w porządku? Napisz do nas przez stronę kontaktową — zgłoszenie z godziną i opisem naprawdę pomaga."
+    "wrongNote": "Coś wygląda źle, choć ta strona twierdzi, że wszystko jest w porządku? Napisz do nas przez stronę kontaktową — zgłoszenie z godziną i opisem naprawdę pomaga.",
+    "rateLimit": "Ograniczanie żądań"
   },
   "sections": {
     "recentlyViewed": "Ostatnio oglądane",

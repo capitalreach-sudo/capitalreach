@@ -2541,7 +2541,8 @@
     "degraded": "Degradado",
     "down": "Caído",
     "notScheduled": "Aún no programado",
-    "wrongNote": "¿Algo parece mal aunque esta página diga que está bien? Escríbenos por la página de contacto — un informe con la hora y lo que viste es realmente útil."
+    "wrongNote": "¿Algo parece mal aunque esta página diga que está bien? Escríbenos por la página de contacto — un informe con la hora y lo que viste es realmente útil.",
+    "rateLimit": "Limitación de tasa"
   },
   "sections": {
     "recentlyViewed": "Vistos recientemente",

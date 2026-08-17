@@ -3,7 +3,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 
 // ─── Redis client (gracefully degrades when not configured) ─────────────────
 
-const isRedisConfigured =
+export const isRedisConfigured =
   process.env.UPSTASH_REDIS_REST_URL &&
   !process.env.UPSTASH_REDIS_REST_URL.includes("REPLACE_ME") &&
   !process.env.UPSTASH_REDIS_REST_URL.includes("placeholder");

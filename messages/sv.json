@@ -2541,7 +2541,8 @@
     "degraded": "Störd",
     "down": "Nere",
     "notScheduled": "Inte schemalagt än",
-    "wrongNote": "Ser något fel ut trots att denna sida säger att allt är bra? Skriv till oss via kontaktsidan — en rapport med tid och vad du såg är verkligen användbar."
+    "wrongNote": "Ser något fel ut trots att denna sida säger att allt är bra? Skriv till oss via kontaktsidan — en rapport med tid och vad du såg är verkligen användbar.",
+    "rateLimit": "Hastighetsbegränsning"
   },
   "sections": {
     "recentlyViewed": "Nyligen visade",

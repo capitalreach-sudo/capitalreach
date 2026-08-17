@@ -23,6 +23,24 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient();
 
+  // Idempotency: Stripe retries on any non-2xx, and this handler used to
+  // return 500 on error — so a partially-applied handler was guaranteed to
+  // replay. Record the event id first; a duplicate short-circuits to 200.
+  {
+    const { error: dupErr } = await supabase
+      .from("stripe_events")
+      .insert({ id: event.id, type: event.type });
+    if (dupErr) {
+      // 23505 = unique violation → already processed.
+      if ((dupErr as { code?: string }).code === "23505") {
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+      // Any other insert failure: proceed (never let bookkeeping block money
+      // events) but note it.
+      await logSystemEvent("webhook/stripe", "error", "stripe_events insert failed", { error: dupErr.message }).catch(() => {});
+    }
+  }
+
   // invoice.* fires for every invoice on the account, and this app raises two
   // very different kinds: recurring subscription invoices, and one-off 2%
   // success-fee invoices from /api/deals/close. Treating them alike meant

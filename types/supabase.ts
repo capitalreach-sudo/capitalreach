@@ -438,6 +438,8 @@ export type Database = {
           closed_at: string | null
           created_at: string
           currency: string
+          fee_billing_error: string | null
+          fee_billing_status: string | null
           id: string
           investor_id: string
           next_follow_up: string | null
@@ -462,6 +464,8 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           currency?: string
+          fee_billing_error?: string | null
+          fee_billing_status?: string | null
           id?: string
           investor_id: string
           next_follow_up?: string | null
@@ -486,6 +490,8 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           currency?: string
+          fee_billing_error?: string | null
+          fee_billing_status?: string | null
           id?: string
           investor_id?: string
           next_follow_up?: string | null
@@ -1629,6 +1635,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stripe_events: {
+        Row: {
+          id: string
+          received_at: string
+          type: string
+        }
+        Insert: {
+          id: string
+          received_at?: string
+          type: string
+        }
+        Update: {
+          id?: string
+          received_at?: string
+          type?: string
+        }
+        Relationships: []
       }
       system_events: {
         Row: {

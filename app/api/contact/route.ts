@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
-import { contactRatelimit } from "@/lib/redis";
+import { contactRatelimit, isRedisConfigured } from "@/lib/redis";
 import { env, isResendConfigured } from "@/lib/env";
 
 // Every value below is attacker-controlled and lands in an HTML email body.
@@ -26,6 +26,15 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       req.headers.get("x-real-ip") ||
       "unknown";
+    // This is the one unauthenticated route that sends email on every call.
+    // Everywhere else the limiter failing open is a degradation; here it is
+    // an open relay. Refuse rather than relay when the limiter isn't real.
+    if (!isRedisConfigured) {
+      return NextResponse.json(
+        { error: "Contact form is temporarily unavailable. Please email us directly." },
+        { status: 503 }
+      );
+    }
     const { success } = await contactRatelimit.limit(ip);
     if (!success) {
       return NextResponse.json(

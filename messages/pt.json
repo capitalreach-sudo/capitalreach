@@ -2541,7 +2541,8 @@
     "degraded": "Degradado",
     "down": "Fora do ar",
     "notScheduled": "Ainda não agendado",
-    "wrongNote": "Algo parece errado embora esta página diga que está tudo bem? Escreva pela página de contato — um relato com horário e o que você viu ajuda muito."
+    "wrongNote": "Algo parece errado embora esta página diga que está tudo bem? Escreva pela página de contato — um relato com horário e o que você viu ajuda muito.",
+    "rateLimit": "Limitação de taxa"
   },
   "sections": {
     "recentlyViewed": "Vistos recentemente",

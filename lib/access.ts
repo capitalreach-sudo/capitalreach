@@ -52,7 +52,6 @@ export interface FounderCapabilities {
   docLimit:            number;
   useNDA:              boolean;
   seeInvestorIdentity: boolean;
-  messageLimit:        number;   // Infinity = unlimited
   aiPitchScore:        boolean;
   aiWrittenFeedback:   boolean;
   demoVideo:           boolean;
@@ -62,7 +61,7 @@ export interface FounderCapabilities {
 
 const FOUNDER_SUSPENDED: FounderCapabilities = {
   listStartup: false, listingLimit: 0, docLimit: 0, useNDA: false,
-  seeInvestorIdentity: false, messageLimit: 0, aiPitchScore: false,
+  seeInvestorIdentity: false, aiPitchScore: false,
   aiWrittenFeedback: false, demoVideo: false,
   priorityReview: false, analyticsLevel: "none",
 };
@@ -81,7 +80,6 @@ export function founderCan(ctx: AccessContext): FounderCapabilities {
     docLimit:            tier === "growth" ? Infinity : plan.features.documentsLimit,
     useNDA:              paid,
     seeInvestorIdentity: paid,
-    messageLimit:        tier === "growth" ? Infinity : tier === "starter" ? 50 : 5,
     aiPitchScore:        plan.features.aiPitchFeedback,
     aiWrittenFeedback:   tier === "growth",
     demoVideo:           plan.features.demoVideo,

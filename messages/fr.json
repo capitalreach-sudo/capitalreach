@@ -2541,7 +2541,8 @@
     "degraded": "Dégradé",
     "down": "Hors service",
     "notScheduled": "Pas encore planifié",
-    "wrongNote": "Quelque chose semble anormal alors que cette page dit que tout va bien ? Écrivez-nous via la page contact — un signalement avec l'heure et ce que vous avez vu est vraiment utile."
+    "wrongNote": "Quelque chose semble anormal alors que cette page dit que tout va bien ? Écrivez-nous via la page contact — un signalement avec l'heure et ce que vous avez vu est vraiment utile.",
+    "rateLimit": "Limitation de débit"
   },
   "sections": {
     "recentlyViewed": "Vus récemment",

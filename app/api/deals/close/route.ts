@@ -170,6 +170,9 @@ export async function POST(req: NextRequest) {
   let invoiceUrl = "";
   // A fee is due but cannot be billed if the founder never set up Stripe.
   const feeNotBilled = !!finalAmount && finalAmount > 0 && !deal.success_fee_invoiced && !startupProfile?.stripe_customer_id;
+  if (feeNotBilled) {
+    await adminClient.from("deals").update({ fee_billing_status: "no_customer" }).eq("id", dealId).then(undefined, () => {});
+  }
   // Create success fee invoice if we have a customer ID and amount
   if (startupProfile?.stripe_customer_id && finalAmount && finalAmount > 0 && !deal.success_fee_invoiced) {
     try {
@@ -182,7 +185,7 @@ export async function POST(req: NextRequest) {
       );
       await adminClient
         .from("deals")
-        .update({ success_fee_invoiced: true, stripe_invoice_id: invoice.id })
+        .update({ success_fee_invoiced: true, stripe_invoice_id: invoice.id, fee_billing_status: "invoiced" })
         .eq("id", dealId);
       invoiceUrl = invoice.hosted_invoice_url || "";
 
@@ -199,6 +202,12 @@ export async function POST(req: NextRequest) {
       }).then(undefined, () => {});
     } catch (err) {
       console.error("Failed to create success fee invoice:", err);
+      // Persist the failure — the deal is already closed (idempotency gate),
+      // so this is the only record an admin will ever have that a fee was due
+      // and not raised.
+      await adminClient.from("deals")
+        .update({ fee_billing_status: "failed", fee_billing_error: String((err as Error)?.message ?? err).slice(0, 500) })
+        .eq("id", dealId).then(undefined, () => {});
     }
   }
 

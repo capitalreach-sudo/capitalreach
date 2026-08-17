@@ -2541,7 +2541,8 @@
     "degraded": "Verstoord",
     "down": "Offline",
     "notScheduled": "Nog niet gepland",
-    "wrongNote": "Ziet iets er verkeerd uit terwijl deze pagina zegt dat alles in orde is? Schrijf ons via de contactpagina — een melding met tijdstip en wat je zag is echt nuttig."
+    "wrongNote": "Ziet iets er verkeerd uit terwijl deze pagina zegt dat alles in orde is? Schrijf ons via de contactpagina — een melding met tijdstip en wat je zag is echt nuttig.",
+    "rateLimit": "Snelheidsbeperking"
   },
   "sections": {
     "recentlyViewed": "Onlangs bekeken",
