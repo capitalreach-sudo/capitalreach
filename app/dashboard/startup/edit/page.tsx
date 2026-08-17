@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { COUNTRIES, normalizeCountry } from "@/lib/countries";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Save, X } from "lucide-react";
+import { ArrowLeft, Save, X, Check, Loader2 } from "lucide-react";
+import { listingCompleteness } from "@/lib/listing-completeness";
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -250,57 +251,120 @@ export default function EditStartupPage() {
       if (!user) { router.push("/auth/login"); return; }
       const { data } = await supabase.from("startups").select("*").eq("owner_id", user.id).single();
       if (data) data.competitors_json = Array.isArray(data.competitors_json) ? data.competitors_json : [];
+      // A local backup newer than the database (tab closed mid-edit) is
+      // restored — the founder loses nothing.
+      if (data) {
+        try {
+          const raw = localStorage.getItem(`cr_edit_backup_${data.id}`);
+          if (raw) {
+            const b = JSON.parse(raw);
+            if (b?.at && b.startup && b.at > new Date(data.updated_at ?? 0).getTime()) {
+              setStartup({ ...b.startup, id: data.id, status: data.status, updated_at: data.updated_at });
+              dirty.current = true;
+              setLoading(false);
+              return;
+            }
+          }
+        } catch { /* corrupt backup — ignore */ }
+      }
       setStartup(data);
       setLoading(false);
     })();
   }, []);
 
+  // The column payload the form owns. Built once, used by both autosave and
+  // the explicit Save so the two can never diverge.
+  function buildPayload(st: any) {
+    return {
+      name: st.name, tagline: st.tagline, website: st.website || null,
+      booking_url: st.booking_url || null,
+      industry: st.industry, stage: st.stage, country: st.country,
+      problem: st.problem, solution: st.solution, market: st.market,
+      competitive_advantage: st.competitive_advantage,
+      funding_target: parseInt(st.funding_target) || 0,
+      equity_offered: parseFloat(st.equity_offered) || null,
+      min_check_size: parseInt(st.min_check_size) || null,
+      use_of_funds: st.use_of_funds || null,
+      round_close_date: st.round_close_date || null,
+      mrr: parseInt(st.mrr) || null, arr: parseInt(st.arr) || null,
+      user_count: parseInt(st.user_count) || null,
+      growth_rate: parseFloat(st.growth_rate) || null,
+      demo_video_url: st.demo_video_url || null,
+      require_nda: !!st.require_nda,
+      founded_date: st.founded_date || null, city: st.city || null,
+      business_model: st.business_model || null,
+      revenue_model: st.revenue_model || null,
+      team_size: st.team_size || null, company_type: st.company_type || null,
+      churn_rate: parseFloat(st.churn_rate) || null,
+      paying_customers: parseInt(st.paying_customers) || null,
+      pitch_deck_url: st.pitch_deck_url || null,
+      product_hunt_url: st.product_hunt_url || null,
+      twitter_url: st.twitter_url || null,
+      runway_months: parseInt(st.runway_months) || null,
+      competitors_json:  st.competitors_json || [],
+      target_markets:    st.target_markets || null,
+      languages:         st.languages || null,
+      previous_funding:  parseFloat(st.previous_funding) || null,
+      lead_investor:     st.lead_investor || null,
+      deck_language:     st.deck_language || null,
+      video_pitch_url:   st.video_pitch_url || null,
+      looking_for:       st.looking_for || null,
+      tam: parseFloat(st.tam) || null, sam: parseFloat(st.sam) || null, som: parseFloat(st.som) || null,
+      // A live listing STAYS live when edited. It used to flip back to
+      // pending_review — a founder fixing a typo vanished from the market
+      // until re-approved. Instead the edit is stamped for admin re-check.
+      ...(st.status === "active" ? { edited_since_review_at: new Date().toISOString() } : {}),
+    };
+  }
+
+  // Autosave: 1s after the last change, silently; "Saving… / Saved ✓" in
+  // the header. localStorage keeps a copy on each change so a closed tab
+  // loses nothing; it is restored on load if newer than the DB row.
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const dirty = useRef(false);
+  const lastSaved = useRef<string>("");
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const backupKey = startup?.id ? `cr_edit_backup_${startup.id}` : null;
+
+  const persist = useCallback(async (st: any, opts: { retry?: boolean } = {}): Promise<boolean> => {
+    const payload = buildPayload(st);
+    const sig = JSON.stringify(payload);
+    if (sig === lastSaved.current) { setSaveState("saved"); return true; }
+    setSaveState("saving");
+    const { error } = await supabase.from("startups").update(payload).eq("id", st.id);
+    if (error) {
+      if (!opts.retry) return persist(st, { retry: true });
+      setSaveState("error");
+      return false;
+    }
+    lastSaved.current = sig;
+    dirty.current = false;
+    try { if (backupKey) localStorage.removeItem(backupKey); } catch { /* ignore */ }
+    setSaveState("saved");
+    setTimeout(() => setSaveState((v) => (v === "saved" ? "idle" : v)), 2000);
+    return true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase, backupKey]);
+
+  useEffect(() => {
+    if (!startup || loading || !dirty.current) return;
+    if (timer.current) clearTimeout(timer.current);
+    try { if (backupKey) localStorage.setItem(backupKey, JSON.stringify({ at: Date.now(), startup })); } catch { /* quota */ }
+    timer.current = setTimeout(() => { persist(startup); }, 1000);
+    return () => { if (timer.current) clearTimeout(timer.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startup]);
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase.from("startups").update({
-      name: startup.name, tagline: startup.tagline, website: startup.website || null,
-      booking_url: startup.booking_url || null,
-      industry: startup.industry, stage: startup.stage, country: startup.country,
-      problem: startup.problem, solution: startup.solution, market: startup.market,
-      competitive_advantage: startup.competitive_advantage,
-      funding_target: parseInt(startup.funding_target) || 0,
-      equity_offered: parseFloat(startup.equity_offered) || null,
-      min_check_size: parseInt(startup.min_check_size) || null,
-      use_of_funds: startup.use_of_funds || null,
-      round_close_date: startup.round_close_date || null,
-      mrr: parseInt(startup.mrr) || null, arr: parseInt(startup.arr) || null,
-      user_count: parseInt(startup.user_count) || null,
-      growth_rate: parseFloat(startup.growth_rate) || null,
-      demo_video_url: startup.demo_video_url || null,
-      require_nda: !!startup.require_nda,
-      founded_date: startup.founded_date || null, city: startup.city || null,
-      business_model: startup.business_model || null,
-      revenue_model: startup.revenue_model || null,
-      team_size: startup.team_size || null, company_type: startup.company_type || null,
-      churn_rate: parseFloat(startup.churn_rate) || null,
-      paying_customers: parseInt(startup.paying_customers) || null,
-      pitch_deck_url: startup.pitch_deck_url || null,
-      product_hunt_url: startup.product_hunt_url || null,
-      twitter_url: startup.twitter_url || null,
-      runway_months: parseInt(startup.runway_months) || null,
-      competitors_json:  startup.competitors_json || [],
-      target_markets:    startup.target_markets || null,
-      languages:         startup.languages || null,
-      previous_funding:  parseFloat(startup.previous_funding) || null,
-      lead_investor:     startup.lead_investor || null,
-      deck_language:     startup.deck_language || null,
-      video_pitch_url:   startup.video_pitch_url || null,
-      looking_for:       startup.looking_for || null,
-      status: startup.status === "active" ? "pending_review" : startup.status,
-    }).eq("id", startup.id);
-
-    if (error) { notify.error(error.message); }
-    else { notify.success(t("dashboard.editChangesSubmitted")); router.push("/dashboard/startup"); }
+    const ok = await persist(startup);
+    if (!ok) { notify.error(t("errors.generic")); }
+    else { notify.success(startup.status === "active" ? t("dashboard.editSavedLive") : t("dashboard.editSaved")); router.push("/dashboard/startup"); }
     setSaving(false);
   }
 
-  function update(field: string, value: any) { setStartup((s: any) => ({ ...s, [field]: value })); }
+  function update(field: string, value: any) { dirty.current = true; setStartup((s: any) => ({ ...s, [field]: value })); }
 
   if (loading) return (
     <><Navbar />
@@ -333,17 +397,61 @@ export default function EditStartupPage() {
             </Link>
             <div style={{ width: 1, height: 14, background: "var(--cr-rule-dark)" }} />
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "24px", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>{t("dashboard.editProfile")}</h1>
+            {/* Autosave indicator — right-aligned, only when something happens. */}
+            <span aria-live="polite" style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: saveState === "error" ? "var(--cr-down)" : "var(--cr-ink-4)", minHeight: 18 }}>
+              {saveState === "saving" && (<><Loader2 style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} /> {t("common.saving")}</>)}
+              {saveState === "saved"  && (<><Check style={{ width: 12, height: 12, color: "var(--cr-up)" }} /> {t("dashboard.savedTick")}</>)}
+              {saveState === "error"  && t("dashboard.saveFailedRetrying")}
+            </span>
           </div>
 
-          {/* Review notice */}
-          <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(180,83,9,0.2)", borderRadius: "4px", padding: "12px 16px", marginBottom: "28px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#B45309" }}>
-            {t("dashboard.editReviewNotice")}
-          </div>
+          {/* Status notice: a live listing stays live while you edit. */}
+          {startup.status === "active" ? (
+            <div style={{ background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", padding: "12px 16px", marginBottom: "20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-up)" }}>
+              {t("dashboard.editLiveNotice")}
+            </div>
+          ) : (
+            <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(180,83,9,0.2)", borderRadius: "4px", padding: "12px 16px", marginBottom: "20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#B45309" }}>
+              {t("dashboard.editReviewNotice")}
+            </div>
+          )}
+
+          {/* Section nav + completeness — sticky, so long forms stay navigable. */}
+          {(() => {
+            const sections: Array<[string, string]> = [
+              ["sec-basics", t("dashboard.secCompanyBasics")], ["sec-model", t("onboarding.su.businessModel")],
+              ["sec-pitch", t("onboarding.su.step3")], ["sec-traction", t("dashboard.secTraction")],
+              ["sec-raise", t("onboarding.su.step5")], ["sec-links", t("dashboard.secLinks")],
+              ["sec-visibility", t("dashboard.secVisibility")], ["sec-settings", t("dashboard.settings")],
+            ];
+            const { percent, items } = listingCompleteness(startup);
+            const missing = items.filter((i) => !i.done).slice(0, 3);
+            return (
+              <div style={{ position: "sticky", top: "64px", zIndex: 20, background: "var(--cr-paper)", padding: "8px 0 10px", marginBottom: "16px", borderBottom: "1px solid var(--cr-rule)" }}>
+                <div className="scrollbar-hide" style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "6px" }}>
+                  {sections.map(([id, label]) => (
+                    <a key={id} href={`#${id}`} style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "999px", padding: "5px 11px", textDecoration: "none", whiteSpace: "nowrap" }}>{label}</a>
+                  ))}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "6px" }}>
+                  <div style={{ flex: 1, height: "4px", background: "var(--cr-paper-4)", borderRadius: "2px", overflow: "hidden" }}>
+                    <div style={{ width: `${percent}%`, height: "100%", background: percent >= 70 ? "var(--cr-up)" : "var(--cr-copper)", transition: "width 400ms ease" }} />
+                  </div>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", fontWeight: 600, color: "var(--cr-ink-2)" }}>{percent}/100</span>
+                  {missing.length > 0 && (
+                    <span className="hidden md:inline" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                      · {missing.map((m) => `${t(m.labelKey)} (+${m.weight})`).join(" · ")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Company Basics */}
-            <section style={sectionStyle}>
+            <section id="sec-basics" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("dashboard.secCompanyBasics")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <Field label={t("onboarding.su.companyName")}><WarmInput value={startup.name || ""} onChange={e => update("name", e.target.value)} /></Field>
@@ -406,7 +514,7 @@ export default function EditStartupPage() {
             </section>
 
             {/* Business Model */}
-            <section style={sectionStyle}>
+            <section id="sec-model" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("onboarding.su.businessModel")}</h2>
               <div className="form-row-2" style={{ gap: "14px" }}>
                 <Field label={t("onboarding.su.businessModel")}>
@@ -425,7 +533,7 @@ export default function EditStartupPage() {
             </section>
 
             {/* Pitch */}
-            <section style={sectionStyle}>
+            <section id="sec-pitch" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("onboarding.su.step3")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <Field label={t("onboarding.su.problem")}><WarmTextarea value={startup.problem || ""} onChange={e => update("problem", e.target.value)} /></Field>
@@ -435,11 +543,17 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.competitors")} hint={t("dashboard.competitorsHintEnter")}>
                   <TagInput tags={startup.competitors_json || []} onChange={tags => update("competitors_json", tags)} placeholder={t("onboarding.su.competitorNamePh")} />
                 </Field>
+              
+                <div className="form-row-2" style={{ gap: "14px" }}>
+                  <Field label="TAM" hint={t("dashboard.tamHint")}><WarmInput type="number" min={0} value={startup.tam ?? ""} onChange={e => update("tam", e.target.value)} placeholder="2000000000" /></Field>
+                  <Field label="SAM"><WarmInput type="number" min={0} value={startup.sam ?? ""} onChange={e => update("sam", e.target.value)} placeholder="400000000" /></Field>
+                </div>
+                <Field label="SOM"><WarmInput type="number" min={0} value={startup.som ?? ""} onChange={e => update("som", e.target.value)} placeholder="40000000" /></Field>
               </div>
             </section>
 
             {/* Traction & Metrics */}
-            <section style={sectionStyle}>
+            <section id="sec-traction" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("dashboard.secTraction")}</h2>
               <div className="form-row-2" style={{ gap: "14px" }}>
                 <Field label={t("onboarding.su.mrrUsd")}><WarmInput type="number" value={startup.mrr || ""} onChange={e => update("mrr", e.target.value)} /></Field>
@@ -455,7 +569,7 @@ export default function EditStartupPage() {
             <MilestonesSection startupId={startup.id} supabase={supabase} />
 
             {/* The Ask */}
-            <section style={sectionStyle}>
+            <section id="sec-raise" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("onboarding.su.step5")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <Field label={t("onboarding.su.fundingTarget")}><WarmInput type="number" value={startup.funding_target || ""} onChange={e => update("funding_target", e.target.value)} /></Field>
@@ -466,7 +580,7 @@ export default function EditStartupPage() {
             </section>
 
             {/* Links & Assets */}
-            <section style={sectionStyle}>
+            <section id="sec-links" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("dashboard.secLinks")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <Field label={t("onboarding.su.pitchDeckUrl")} hint={t("dashboard.pitchDeckHint2")}>
@@ -485,7 +599,7 @@ export default function EditStartupPage() {
             </section>
 
             {/* Visibility & Outreach */}
-            <section style={sectionStyle}>
+            <section id="sec-visibility" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("dashboard.secVisibility")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <Field label={t("dashboard.lookingFor")} hint={t("dashboard.lookingForHint")}>
@@ -551,7 +665,7 @@ export default function EditStartupPage() {
             </section>
 
             {/* Settings */}
-            <section style={sectionStyle}>
+            <section id="sec-settings" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("dashboard.settings")}</h2>
               <WarmToggle
                 checked={!!startup.require_nda}

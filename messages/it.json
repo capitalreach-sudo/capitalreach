@@ -942,7 +942,13 @@
     "thesisGapCheck": "dimensione ticket",
     "thesisBannerTitle": "Completa il profilo per migliorare il matching AI",
     "thesisBannerBody": "La tua tesi alimenta matching e alert — più è completa, migliore è il fit.",
-    "thesisMissing": "Manca"
+    "thesisMissing": "Manca",
+    "savedTick": "Salvato",
+    "saveFailedRetrying": "Salvataggio non riuscito — nuovo tentativo…",
+    "editLiveNotice": "La tua scheda resta online mentre la modifichi. Le modifiche si salvano da sole e vengono segnalate per un rapido ricontrollo admin.",
+    "editSavedLive": "Salvato — la tua scheda è ancora online.",
+    "editSaved": "Modifiche salvate.",
+    "tamHint": "Mercato totale indirizzabile, in USD (es. 2000000000 per 2 mld $)."
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -1155,7 +1161,8 @@
     "interestNeedsMessage": "Aggiungi un breve messaggio per dare contesto al founder.",
     "interestSent": "Interesse inviato — il deal è nella tua pipeline.",
     "viewInPipeline": "Vedi nella pipeline",
-    "identityProtected": "Nomi e profili dei founder vengono mostrati per intero quando apri un'operazione con questa startup."
+    "identityProtected": "Nomi e profili dei founder vengono mostrati per intero quando apri un'operazione con questa startup.",
+    "marketOpportunity": "Opportunità di mercato"
   },
   "filters": {
     "industry": "Settore",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Attivo: ogni account ha accesso al livello massimo gratis ({memberCount}/{target} membri). Disattivarlo rende vincolanti i piani a pagamento.",
     "launchOffSub": "Disattivato: i piani sono vincolanti. Gli account gratuiti vedono bloccate le funzioni riservate.",
     "launchTurnOff": "Termina il periodo di lancio",
-    "launchTurnOn": "Riattiva la modalità lancio"
+    "launchTurnOn": "Riattiva la modalità lancio",
+    "editedSinceReview": "Modificata dopo l'approvazione",
+    "editsAcked": "Segnata come ricontrollata."
   },
   "contact": {
     "title": "Contattaci",

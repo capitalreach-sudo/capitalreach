@@ -962,7 +962,13 @@
     "thesisGapCheck": "check size",
     "thesisBannerTitle": "Complete your profile to improve AI matching",
     "thesisBannerBody": "Your thesis powers matching and alerts — the more you fill in, the better the fit.",
-    "thesisMissing": "Missing"
+    "thesisMissing": "Missing",
+    "savedTick": "Saved",
+    "saveFailedRetrying": "Save failed — retrying…",
+    "editLiveNotice": "Your listing stays live while you edit. Changes save automatically and are flagged for a quick admin re-check.",
+    "editSavedLive": "Saved — your listing is still live.",
+    "editSaved": "Changes saved.",
+    "tamHint": "Total addressable market, in USD (e.g. 2000000000 for $2B)."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1206,7 +1212,8 @@
     "interestNeedsMessage": "Add a short message so the founder has context.",
     "interestSent": "Interest sent — the deal is in your pipeline.",
     "viewInPipeline": "View in pipeline",
-    "identityProtected": "Founder names and profiles are shown in full once you open a deal with this startup."
+    "identityProtected": "Founder names and profiles are shown in full once you open a deal with this startup.",
+    "marketOpportunity": "Market opportunity"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1991,7 +1998,9 @@
     "launchOnSub": "Active — every account has top-tier access free ({memberCount}/{target} members). Turning it off makes the paid tiers bind.",
     "launchOffSub": "Off — tiers are binding. Free accounts see gated features locked.",
     "launchTurnOff": "End launch period",
-    "launchTurnOn": "Re-enable launch mode"
+    "launchTurnOn": "Re-enable launch mode",
+    "editedSinceReview": "Edited since approval",
+    "editsAcked": "Marked as re-checked."
   },
   "contact": {
     "title": "Get in Touch",

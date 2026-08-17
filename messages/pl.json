@@ -942,7 +942,13 @@
     "thesisGapCheck": "wielkość czeku",
     "thesisBannerTitle": "Uzupełnij profil, aby poprawić dopasowanie AI",
     "thesisBannerBody": "Twoja teza zasila dopasowanie i alerty — im pełniejsza, tym lepsze dopasowanie.",
-    "thesisMissing": "Brakuje"
+    "thesisMissing": "Brakuje",
+    "savedTick": "Zapisano",
+    "saveFailedRetrying": "Zapis nie powiódł się — ponawiam…",
+    "editLiveNotice": "Twój profil pozostaje opublikowany podczas edycji. Zmiany zapisują się automatycznie i są oznaczane do szybkiej weryfikacji admina.",
+    "editSavedLive": "Zapisano — profil nadal jest opublikowany.",
+    "editSaved": "Zmiany zapisane.",
+    "tamHint": "Całkowity rynek docelowy w USD (np. 2000000000 dla 2 mld $)."
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -1155,7 +1161,8 @@
     "interestNeedsMessage": "Dodaj krótką wiadomość, aby founder miał kontekst.",
     "interestSent": "Zainteresowanie wysłane — transakcja jest w Twoim pipeline.",
     "viewInPipeline": "Zobacz w pipeline",
-    "identityProtected": "Imiona i profile założycieli są wyświetlane w całości po otwarciu transakcji z tym startupem."
+    "identityProtected": "Imiona i profile założycieli są wyświetlane w całości po otwarciu transakcji z tym startupem.",
+    "marketOpportunity": "Potencjał rynku"
   },
   "filters": {
     "industry": "Branża",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Aktywny — każde konto ma darmowy dostęp na najwyższym poziomie ({memberCount}/{target} członków). Wyłączenie sprawi, że plany płatne zaczną obowiązywać.",
     "launchOffSub": "Wyłączony — plany obowiązują. Konta darmowe widzą funkcje objęte limitem jako zablokowane.",
     "launchTurnOff": "Zakończ okres startowy",
-    "launchTurnOn": "Włącz ponownie tryb startowy"
+    "launchTurnOn": "Włącz ponownie tryb startowy",
+    "editedSinceReview": "Edytowany po zatwierdzeniu",
+    "editsAcked": "Oznaczono jako ponownie sprawdzony."
   },
   "contact": {
     "title": "Skontaktuj się z nami",

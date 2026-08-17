@@ -951,7 +951,13 @@
     "thesisGapCheck": "tamaño de ticket",
     "thesisBannerTitle": "Completa tu perfil para mejorar el matching con IA",
     "thesisBannerBody": "Tu tesis alimenta el matching y las alertas — cuanto más completa, mejor el encaje.",
-    "thesisMissing": "Falta"
+    "thesisMissing": "Falta",
+    "savedTick": "Guardado",
+    "saveFailedRetrying": "Error al guardar — reintentando…",
+    "editLiveNotice": "Tu ficha sigue publicada mientras editas. Los cambios se guardan automáticamente y se marcan para una rápida revisión del admin.",
+    "editSavedLive": "Guardado — tu ficha sigue publicada.",
+    "editSaved": "Cambios guardados.",
+    "tamHint": "Mercado total direccionable, en USD (p. ej. 2000000000 para 2.000 M$)."
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",
@@ -1195,7 +1201,8 @@
     "interestNeedsMessage": "Añade un mensaje breve para dar contexto al fundador.",
     "interestSent": "Interés enviado — el deal está en tu pipeline.",
     "viewInPipeline": "Ver en el pipeline",
-    "identityProtected": "Los nombres y perfiles de los fundadores se muestran completos cuando abres una operación con esta startup."
+    "identityProtected": "Los nombres y perfiles de los fundadores se muestran completos cuando abres una operación con esta startup.",
+    "marketOpportunity": "Oportunidad de mercado"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Activo: todas las cuentas tienen acceso de nivel máximo gratis ({memberCount}/{target} miembros). Desactivarlo hace que los planes de pago entren en vigor.",
     "launchOffSub": "Desactivado: los planes están en vigor. Las cuentas gratuitas ven las funciones restringidas bloqueadas.",
     "launchTurnOff": "Finalizar el periodo de lanzamiento",
-    "launchTurnOn": "Reactivar el modo lanzamiento"
+    "launchTurnOn": "Reactivar el modo lanzamiento",
+    "editedSinceReview": "Editada desde la aprobación",
+    "editsAcked": "Marcada como revisada."
   },
   "contact": {
     "title": "Ponte en contacto",

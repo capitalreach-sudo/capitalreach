@@ -1506,6 +1506,7 @@ export type Database = {
           deck_language: string | null
           demo_video_url: string | null
           description: string | null
+          edited_since_review_at: string | null
           equity_offered: number | null
           featured: boolean
           founded_date: string | null
@@ -1573,6 +1574,7 @@ export type Database = {
           deck_language?: string | null
           demo_video_url?: string | null
           description?: string | null
+          edited_since_review_at?: string | null
           equity_offered?: number | null
           featured?: boolean
           founded_date?: string | null
@@ -1640,6 +1642,7 @@ export type Database = {
           deck_language?: string | null
           demo_video_url?: string | null
           description?: string | null
+          edited_since_review_at?: string | null
           equity_offered?: number | null
           featured?: boolean
           founded_date?: string | null

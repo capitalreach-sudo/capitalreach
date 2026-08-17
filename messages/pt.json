@@ -942,7 +942,13 @@
     "thesisGapCheck": "dimensão do ticket",
     "thesisBannerTitle": "Complete o seu perfil para melhorar o matching com IA",
     "thesisBannerBody": "A sua tese alimenta o matching e os alertas — quanto mais completa, melhor o encaixe.",
-    "thesisMissing": "Em falta"
+    "thesisMissing": "Em falta",
+    "savedTick": "Guardado",
+    "saveFailedRetrying": "Falha ao guardar — a tentar novamente…",
+    "editLiveNotice": "A sua ficha continua online enquanto edita. As alterações são guardadas automaticamente e sinalizadas para uma rápida reverificação do admin.",
+    "editSavedLive": "Guardado — a sua ficha continua online.",
+    "editSaved": "Alterações guardadas.",
+    "tamHint": "Mercado total endereçável, em USD (ex.: 2000000000 para 2 mil M$)."
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -1155,7 +1161,8 @@
     "interestNeedsMessage": "Adicione uma mensagem curta para dar contexto ao founder.",
     "interestSent": "Interesse enviado — o deal está no seu pipeline.",
     "viewInPipeline": "Ver no pipeline",
-    "identityProtected": "Os nomes e perfis dos fundadores são mostrados por completo assim que abrir um negócio com esta startup."
+    "identityProtected": "Os nomes e perfis dos fundadores são mostrados por completo assim que abrir um negócio com esta startup.",
+    "marketOpportunity": "Oportunidade de mercado"
   },
   "filters": {
     "industry": "Indústria",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Ativo — todas as contas têm acesso de topo gratuito ({memberCount}/{target} membros). Desligar faz os planos pagos entrarem em vigor.",
     "launchOffSub": "Desligado — os planos estão em vigor. As contas gratuitas veem as funcionalidades restritas bloqueadas.",
     "launchTurnOff": "Terminar o período de lançamento",
-    "launchTurnOn": "Reativar o modo de lançamento"
+    "launchTurnOn": "Reativar o modo de lançamento",
+    "editedSinceReview": "Editada desde a aprovação",
+    "editsAcked": "Marcada como reverificada."
   },
   "contact": {
     "title": "Entre em contacto",

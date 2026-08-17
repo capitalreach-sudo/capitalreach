@@ -951,7 +951,13 @@
     "thesisGapCheck": "チェックサイズ",
     "thesisBannerTitle": "プロフィールを完成させて AI マッチングを改善",
     "thesisBannerBody": "テーゼがマッチングとアラートを動かします。詳しく記入するほど精度が上がります。",
-    "thesisMissing": "未入力"
+    "thesisMissing": "未入力",
+    "savedTick": "保存済み",
+    "saveFailedRetrying": "保存に失敗 — 再試行中…",
+    "editLiveNotice": "編集中も掲載は公開されたままです。変更は自動保存され、管理者の簡単な再確認対象として印が付きます。",
+    "editSavedLive": "保存しました — 掲載は引き続き公開中です。",
+    "editSaved": "変更を保存しました。",
+    "tamHint": "総アドレス可能市場（USD、例：20 億ドルなら 2000000000）。"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -1195,7 +1201,8 @@
     "interestNeedsMessage": "創業者が状況を把握できるよう、短いメッセージを添えてください。",
     "interestSent": "関心を送信しました — ディールがパイプラインにあります。",
     "viewInPipeline": "パイプラインで見る",
-    "identityProtected": "このスタートアップとディールを開始すると、創業者の氏名とプロフィールが完全に表示されます。"
+    "identityProtected": "このスタートアップとディールを開始すると、創業者の氏名とプロフィールが完全に表示されます。",
+    "marketOpportunity": "市場機会"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "有効 — すべてのアカウントが最上位機能を無料で利用できます（{memberCount}/{target} 名）。オフにすると有料プランが適用されます。",
     "launchOffSub": "無効 — プランが適用中です。無料アカウントには制限付き機能がロック表示されます。",
     "launchTurnOff": "ローンチ期間を終了",
-    "launchTurnOn": "ローンチモードを再開"
+    "launchTurnOn": "ローンチモードを再開",
+    "editedSinceReview": "承認後に編集あり",
+    "editsAcked": "再確認済みにしました。"
   },
   "contact": {
     "title": "お問い合わせ",

@@ -942,7 +942,13 @@
     "thesisGapCheck": "ticketgrootte",
     "thesisBannerTitle": "Vul uw profiel aan voor betere AI-matching",
     "thesisBannerBody": "Uw these stuurt matching en alerts — hoe vollediger, hoe beter de fit.",
-    "thesisMissing": "Ontbreekt"
+    "thesisMissing": "Ontbreekt",
+    "savedTick": "Opgeslagen",
+    "saveFailedRetrying": "Opslaan mislukt — opnieuw proberen…",
+    "editLiveNotice": "Uw vermelding blijft live tijdens het bewerken. Wijzigingen worden automatisch opgeslagen en gemarkeerd voor een snelle admin-controle.",
+    "editSavedLive": "Opgeslagen — uw vermelding is nog steeds live.",
+    "editSaved": "Wijzigingen opgeslagen.",
+    "tamHint": "Totale adresseerbare markt in USD (bv. 2000000000 voor $2 mld)."
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -1155,7 +1161,8 @@
     "interestNeedsMessage": "Voeg een kort bericht toe zodat de oprichter context heeft.",
     "interestSent": "Interesse verzonden — de deal staat in je pipeline.",
     "viewInPipeline": "Bekijk in pipeline",
-    "identityProtected": "Namen en profielen van oprichters worden volledig getoond zodra u een deal met deze startup opent."
+    "identityProtected": "Namen en profielen van oprichters worden volledig getoond zodra u een deal met deze startup opent.",
+    "marketOpportunity": "Marktkans"
   },
   "filters": {
     "industry": "Industrie",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Actief — elk account heeft gratis toegang op het hoogste niveau ({memberCount}/{target} leden). Uitschakelen laat de betaalde plannen gelden.",
     "launchOffSub": "Uit — de plannen gelden. Gratis accounts zien afgeschermde functies vergrendeld.",
     "launchTurnOff": "Lanceerperiode beëindigen",
-    "launchTurnOn": "Lanceermodus opnieuw inschakelen"
+    "launchTurnOn": "Lanceermodus opnieuw inschakelen",
+    "editedSinceReview": "Bewerkt sinds goedkeuring",
+    "editsAcked": "Gemarkeerd als opnieuw gecontroleerd."
   },
   "contact": {
     "title": "Neem contact op",

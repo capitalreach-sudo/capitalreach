@@ -951,7 +951,13 @@
     "thesisGapCheck": "taille de ticket",
     "thesisBannerTitle": "Complétez votre profil pour améliorer le matching IA",
     "thesisBannerBody": "Votre thèse alimente le matching et les alertes — plus elle est complète, meilleur est le fit.",
-    "thesisMissing": "Manque"
+    "thesisMissing": "Manque",
+    "savedTick": "Enregistré",
+    "saveFailedRetrying": "Échec de l'enregistrement — nouvelle tentative…",
+    "editLiveNotice": "Votre fiche reste en ligne pendant la modification. Les changements sont enregistrés automatiquement et signalés pour une rapide revérification admin.",
+    "editSavedLive": "Enregistré — votre fiche est toujours en ligne.",
+    "editSaved": "Modifications enregistrées.",
+    "tamHint": "Marché total adressable, en USD (ex. 2000000000 pour 2 Md$)."
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -1195,7 +1201,8 @@
     "interestNeedsMessage": "Ajoutez un court message pour donner du contexte au fondateur.",
     "interestSent": "Intérêt envoyé — le deal est dans votre pipeline.",
     "viewInPipeline": "Voir dans le pipeline",
-    "identityProtected": "Les noms et profils des fondateurs sont affichés en entier dès que vous ouvrez une opération avec cette startup."
+    "identityProtected": "Les noms et profils des fondateurs sont affichés en entier dès que vous ouvrez une opération avec cette startup.",
+    "marketOpportunity": "Opportunité de marché"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Actif — chaque compte a un accès complet gratuitement ({memberCount}/{target} membres). Le désactiver rend les offres payantes effectives.",
     "launchOffSub": "Désactivé — les offres s'appliquent. Les comptes gratuits voient les fonctionnalités réservées verrouillées.",
     "launchTurnOff": "Terminer la période de lancement",
-    "launchTurnOn": "Réactiver le mode lancement"
+    "launchTurnOn": "Réactiver le mode lancement",
+    "editedSinceReview": "Modifiée depuis l'approbation",
+    "editsAcked": "Marquée comme revérifiée."
   },
   "contact": {
     "title": "Contactez-nous",

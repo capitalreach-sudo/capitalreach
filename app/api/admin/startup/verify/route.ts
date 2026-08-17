@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
     .from("startups")
     .update({
       verified_at: verified ? new Date().toISOString() : null,
+      // Verifying is a re-check; the "edited since approval" flag is cleared.
+      ...(verified ? { edited_since_review_at: null } : {}),
       verified_by: verified ? user.id : null,
     })
     .eq("id", startupId)

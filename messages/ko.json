@@ -942,7 +942,13 @@
     "thesisGapCheck": "투자 규모",
     "thesisBannerTitle": "프로필을 완성해 AI 매칭을 개선하세요",
     "thesisBannerBody": "논지가 매칭과 알림을 구동합니다 — 자세히 채울수록 적합도가 높아집니다.",
-    "thesisMissing": "누락"
+    "thesisMissing": "누락",
+    "savedTick": "저장됨",
+    "saveFailedRetrying": "저장 실패 — 다시 시도 중…",
+    "editLiveNotice": "편집하는 동안에도 등록은 공개 상태로 유지됩니다. 변경 사항은 자동 저장되며 관리자의 빠른 재확인 대상으로 표시됩니다.",
+    "editSavedLive": "저장됨 — 등록은 여전히 공개 중입니다.",
+    "editSaved": "변경 사항이 저장되었습니다.",
+    "tamHint": "총 유효 시장(USD, 예: 20억 달러는 2000000000)."
   },
   "settings": {
     "pageTitle": "설정",
@@ -1155,7 +1161,8 @@
     "interestNeedsMessage": "창업자가 맥락을 알 수 있도록 짧은 메시지를 추가하세요.",
     "interestSent": "관심을 보냈습니다 — 딜이 파이프라인에 있습니다.",
     "viewInPipeline": "파이프라인에서 보기",
-    "identityProtected": "이 스타트업과 거래를 열면 창업자의 이름과 프로필이 모두 표시됩니다."
+    "identityProtected": "이 스타트업과 거래를 열면 창업자의 이름과 프로필이 모두 표시됩니다.",
+    "marketOpportunity": "시장 기회"
   },
   "filters": {
     "industry": "산업",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "활성 — 모든 계정이 최상위 등급을 무료로 이용합니다 ({memberCount}/{target}명). 끄면 유료 등급이 적용됩니다.",
     "launchOffSub": "꺼짐 — 등급이 적용됩니다. 무료 계정에는 제한 기능이 잠금으로 표시됩니다.",
     "launchTurnOff": "출시 기간 종료",
-    "launchTurnOn": "출시 모드 다시 켜기"
+    "launchTurnOn": "출시 모드 다시 켜기",
+    "editedSinceReview": "승인 후 수정됨",
+    "editsAcked": "재확인 완료로 표시했습니다."
   },
   "contact": {
     "title": "문의하기",

@@ -249,6 +249,18 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     {s.status.replace(/_/g, " ")}
                   </span>
                   <span className="text-xs bg-cr-p3 text-cr-i3 px-2 py-0.5 rounded-full capitalize">{s.subscription_tier}</span>
+                  {/* Live listing edited by the founder since approval: stays live,
+                      flagged here for a re-check. Clicking clears the flag. */}
+                  {s.status === "active" && s.edited_since_review_at && (
+                    <Button size="sm" variant="outline" className="text-xs h-7 text-amber-700 border-amber-400/50"
+                      title={new Date(s.edited_since_review_at).toLocaleString()}
+                      onClick={async () => {
+                        const res = await fetch("/api/admin/startup/ack-edits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: s.id }) });
+                        if (res.ok) { toast({ title: t("admin.editsAcked") }); window.location.reload(); } else toast({ title: t("errors.generic"), variant: "destructive" });
+                      }}>
+                      {t("admin.editedSinceReview")}
+                    </Button>
+                  )}
                   {s.status === "active" && (
                     <Button size="sm" variant="outline"
                       className={s.verified_at ? "text-xs h-7 text-cr-up border-cr-up/40" : "text-xs h-7"}

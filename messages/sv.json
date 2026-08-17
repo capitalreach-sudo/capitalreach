@@ -942,7 +942,13 @@
     "thesisGapCheck": "checkstorlek",
     "thesisBannerTitle": "Fyll i din profil för bättre AI-matchning",
     "thesisBannerBody": "Din tes styr matchning och aviseringar — ju mer ifylld, desto bättre träff.",
-    "thesisMissing": "Saknas"
+    "thesisMissing": "Saknas",
+    "savedTick": "Sparat",
+    "saveFailedRetrying": "Kunde inte spara — försöker igen…",
+    "editLiveNotice": "Din annons är kvar live medan du redigerar. Ändringar sparas automatiskt och flaggas för en snabb adminkontroll.",
+    "editSavedLive": "Sparat — din annons är fortfarande live.",
+    "editSaved": "Ändringar sparade.",
+    "tamHint": "Total adresserbar marknad i USD (t.ex. 2000000000 för 2 mdr $)."
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1155,7 +1161,8 @@
     "interestNeedsMessage": "Lägg till ett kort meddelande så att grundaren får sammanhang.",
     "interestSent": "Intresse skickat — affären finns i din pipeline.",
     "viewInPipeline": "Visa i pipeline",
-    "identityProtected": "Grundarnas namn och profiler visas i sin helhet när du öppnar en affär med denna startup."
+    "identityProtected": "Grundarnas namn och profiler visas i sin helhet när du öppnar en affär med denna startup.",
+    "marketOpportunity": "Marknadsmöjlighet"
   },
   "filters": {
     "industry": "Bransch",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "Aktivt — alla konton har toppnivååtkomst gratis ({memberCount}/{target} medlemmar). Stänger du av det börjar de betalda planerna gälla.",
     "launchOffSub": "Av — planerna gäller. Gratiskonton ser låsta funktioner som låsta.",
     "launchTurnOff": "Avsluta lanseringsperioden",
-    "launchTurnOn": "Aktivera lanseringsläget igen"
+    "launchTurnOn": "Aktivera lanseringsläget igen",
+    "editedSinceReview": "Redigerad efter godkännande",
+    "editsAcked": "Markerad som omkontrollerad."
   },
   "contact": {
     "title": "Kontakta oss",

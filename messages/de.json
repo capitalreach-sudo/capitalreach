@@ -958,7 +958,13 @@
     "thesisGapCheck": "Ticketgröße",
     "thesisBannerTitle": "Vervollständigen Sie Ihr Profil für besseres KI-Matching",
     "thesisBannerBody": "Ihre These steuert Matching und Alerts — je vollständiger, desto besser der Fit.",
-    "thesisMissing": "Fehlt"
+    "thesisMissing": "Fehlt",
+    "savedTick": "Gespeichert",
+    "saveFailedRetrying": "Speichern fehlgeschlagen — erneuter Versuch…",
+    "editLiveNotice": "Ihr Listing bleibt während der Bearbeitung live. Änderungen werden automatisch gespeichert und für eine kurze Admin-Prüfung markiert.",
+    "editSavedLive": "Gespeichert — Ihr Listing ist weiterhin live.",
+    "editSaved": "Änderungen gespeichert.",
+    "tamHint": "Gesamter adressierbarer Markt in USD (z. B. 2000000000 für 2 Mrd. $)."
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -1202,7 +1208,8 @@
     "interestNeedsMessage": "Füge eine kurze Nachricht hinzu, damit der Gründer Kontext hat.",
     "interestSent": "Interesse gesendet — der Deal ist in deiner Pipeline.",
     "viewInPipeline": "In Pipeline ansehen",
-    "identityProtected": "Namen und Profile der Gründer werden vollständig angezeigt, sobald Sie einen Deal mit diesem Startup eröffnen."
+    "identityProtected": "Namen und Profile der Gründer werden vollständig angezeigt, sobald Sie einen Deal mit diesem Startup eröffnen.",
+    "marketOpportunity": "Marktpotenzial"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1987,7 +1994,9 @@
     "launchOnSub": "Aktiv — jedes Konto hat kostenlosen Top-Tier-Zugriff ({memberCount}/{target} Mitglieder). Beim Abschalten greifen die bezahlten Tarife.",
     "launchOffSub": "Aus — die Tarife greifen. Kostenlose Konten sehen gesperrte Funktionen.",
     "launchTurnOff": "Launch-Phase beenden",
-    "launchTurnOn": "Launch-Modus reaktivieren"
+    "launchTurnOn": "Launch-Modus reaktivieren",
+    "editedSinceReview": "Seit Freigabe bearbeitet",
+    "editsAcked": "Als erneut geprüft markiert."
   },
   "contact": {
     "title": "Kontaktieren Sie uns",

@@ -778,6 +778,20 @@ export function StartupDetailClient({
             {startup.problem             && <Section title={t("startupDetail.problem")}>{startup.problem}</Section>}
             {startup.solution            && <Section title={t("startupDetail.solution")}>{startup.solution}</Section>}
             {startup.market              && <Section title={t("startupDetail.market")}>{startup.market}</Section>}
+            {/* Market sizing — only when at least one figure exists (never an empty card). */}
+            {(startup.tam || startup.sam || startup.som) ? (
+              <div>
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("startupDetail.marketOpportunity")}</h3>
+                <div className="grid grid-cols-3" style={{ gap: "10px" }}>
+                  {([["TAM", startup.tam], ["SAM", startup.sam], ["SOM", startup.som]] as Array<[string, number | null | undefined]>).map(([k, v]) => (
+                    <div key={k} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(16px, 2.6vw, 22px)", color: "var(--cr-copper)" }}>{safeFormatCurrencyAmount(v ?? null)}</div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{k}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}>{startup.competitive_advantage}</Section>}
             {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}>{startup.use_of_funds}</Section>}
 

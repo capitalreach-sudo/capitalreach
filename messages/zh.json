@@ -951,7 +951,13 @@
     "thesisGapCheck": "投资额",
     "thesisBannerTitle": "完善资料以提升 AI 匹配",
     "thesisBannerBody": "您的投资主张驱动匹配与提醒——填写越完整，匹配越精准。",
-    "thesisMissing": "缺少"
+    "thesisMissing": "缺少",
+    "savedTick": "已保存",
+    "saveFailedRetrying": "保存失败 — 正在重试…",
+    "editLiveNotice": "编辑期间您的列表保持上线。更改会自动保存，并标记供管理员快速复核。",
+    "editSavedLive": "已保存 — 您的列表仍在线。",
+    "editSaved": "更改已保存。",
+    "tamHint": "总可寻址市场，以美元计（例如 2000000000 表示 20 亿美元）。"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -1195,7 +1201,8 @@
     "interestNeedsMessage": "添加一条简短留言，让创始人了解背景。",
     "interestSent": "已发送兴趣——交易已在您的管道中。",
     "viewInPipeline": "在管道中查看",
-    "identityProtected": "与该创业公司开启交易后，将完整显示创始人姓名和资料。"
+    "identityProtected": "与该创业公司开启交易后，将完整显示创始人姓名和资料。",
+    "marketOpportunity": "市场机会"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1980,7 +1987,9 @@
     "launchOnSub": "已启用——所有账户免费享有最高等级权限（{memberCount}/{target} 位成员）。关闭后付费等级开始生效。",
     "launchOffSub": "已关闭——等级已生效。免费账户会看到受限功能处于锁定状态。",
     "launchTurnOff": "结束上线期",
-    "launchTurnOn": "重新启用上线模式"
+    "launchTurnOn": "重新启用上线模式",
+    "editedSinceReview": "批准后已编辑",
+    "editsAcked": "已标记为复核完成。"
   },
   "contact": {
     "title": "联系我们",
