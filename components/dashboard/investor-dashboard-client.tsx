@@ -390,6 +390,39 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 40px 64px" }}>
 
+        {/* Thesis completeness — the fields that drive matching. Shown only
+            while something is missing; each gap links straight to Settings. */}
+        {(() => {
+          const gaps: string[] = [];
+          if (!investor.investment_thesis) gaps.push(t("dashboard.thesisGapThesis"));
+          if (!investor.stages?.length) gaps.push(t("dashboard.thesisGapStages"));
+          if (!investor.industries?.length) gaps.push(t("dashboard.thesisGapIndustries"));
+          if (!investor.geography?.length) gaps.push(t("dashboard.thesisGapGeo"));
+          if (!investor.min_check && !investor.max_check) gaps.push(t("dashboard.thesisGapCheck"));
+          const total = 5, done = total - gaps.length, pct = Math.round((done / total) * 100);
+          if (gaps.length === 0) return null;
+          return (
+            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+                <div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.thesisBannerTitle")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "2px" }}>{t("dashboard.thesisBannerBody")}</p>
+                </div>
+                <Link href="/dashboard/investor/settings" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", background: "var(--cr-copper)", padding: "8px 14px", borderRadius: "4px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.completeProfile")} →</Link>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px" }}>
+                <div style={{ flex: 1, height: "5px", background: "rgba(181,101,29,0.15)", borderRadius: "3px", overflow: "hidden" }}>
+                  <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-copper)" }} />
+                </div>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-copper)", fontWeight: 600 }}>{pct}%</span>
+              </div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)", marginTop: "8px" }}>
+                {t("dashboard.thesisMissing")}: {gaps.join(" · ")}
+              </p>
+            </div>
+          );
+        })()}
+
         {/* Stats strip */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
           {/* The deal counts were plain divs, so the two most important numbers

@@ -101,6 +101,24 @@ export default async function StartupDashboardPage() {
 
   const { isLaunch } = await getLaunchStatus();
 
+  // A rejection sends the listing back to 'draft' and stores the reason as an
+  // admin action; the founder's notification carries it once, but the
+  // dashboard should keep showing it until they resubmit. Latest reject note
+  // that is newer than the last edit is the one still in force.
+  let rejectionReason: string | null = null;
+  if (startup && startup.status === "draft") {
+    const { data: rej } = await createAdminClient()
+      .from("admin_actions")
+      .select("note, created_at")
+      .eq("target_type", "startup").eq("target_id", startup.id).eq("action", "reject")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (rej?.note && (!startup.updated_at || new Date(rej.created_at) >= new Date(startup.updated_at))) {
+      rejectionReason = rej.note;
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -109,6 +127,7 @@ export default async function StartupDashboardPage() {
         startup={startup}
         analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise }}
         isLaunchMode={isLaunch}
+        rejectionReason={rejectionReason}
       />
     </>
   );

@@ -28,6 +28,8 @@ interface Props {
    * against an account that is not theirs just by clicking around.
    */
   viewingAs?: string;
+  /** Latest admin rejection reason still in force (draft listings only). */
+  rejectionReason?: string | null;
 }
 
 type StartupTab = "overview" | "documents" | "ai" | "billing";
@@ -456,7 +458,7 @@ function DocAnalyticsPanel() {
   );
 }
 
-export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs }: Props) {
+export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs, rejectionReason = null }: Props) {
   const { t }        = useTranslation();
   const router       = useRouter();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
@@ -595,13 +597,49 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 40px 64px" }}>
 
-        {/* Review banner */}
+        {/* Listing status banner — one for every state, always at the top. */}
         {startup.status === "pending_review" && (
           <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(180,83,9,0.2)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "#B45309", flexShrink: 0 }} />
             <div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#B45309" }}>{t("dashboard.profileUnderReview")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#92400E" }}>{t("dashboard.reviewNote")}</p>
+            </div>
+          </div>
+        )}
+        {startup.status === "draft" && rejectionReason && (
+          <div style={{ background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.25)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+            <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0, marginTop: 2 }} />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusRejectedTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", marginTop: "4px", lineHeight: 1.5 }}>“{rejectionReason}”</p>
+              <Link href="/dashboard/startup/edit" style={{ display: "inline-block", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.editAndResubmit")} →</Link>
+            </div>
+          </div>
+        )}
+        {startup.status === "draft" && !rejectionReason && (
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.statusDraftTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusDraftBody")}</p>
+            </div>
+            <Link href="/dashboard/startup/edit" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", background: "var(--cr-copper)", padding: "8px 14px", borderRadius: "4px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
+          </div>
+        )}
+        {startup.status === "active" && (
+          <div style={{ background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", padding: "12px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cr-up)", boxShadow: "0 0 0 4px rgba(45,106,79,0.15)", flexShrink: 0 }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-up)", flex: 1, minWidth: 160 }}>{t("dashboard.statusLiveTitle")}</p>
+            <Link href={`/startups/${startup.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", textDecoration: "none" }}>{t("dashboard.viewPublicListing")} →</Link>
+          </div>
+        )}
+        {startup.status === "suspended" && (
+          <div style={{ background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.25)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0 }} />
+            <div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusSuspendedTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusSuspendedBody")}</p>
             </div>
           </div>
         )}
