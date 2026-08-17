@@ -958,7 +958,22 @@
     "roundHelp_closed": "बंद: “राउंड बंद” बैज के साथ दिखता है; नई रुचि नहीं।",
     "momentumToggle": "प्रगति सार्वजनिक दिखाएँ",
     "momentumHint": "आपकी लिस्टिंग पर एक समेकित बार प्रकाशित करता है — प्रतिबद्ध राशि बनाम लक्ष्य और कितने निवेशक इच्छुक हैं। कभी नाम नहीं दिखाता।",
-    "roundSaved": "राउंड सेटिंग सहेजी गईं।"
+    "roundSaved": "राउंड सेटिंग सहेजी गईं।",
+    "qaQueueTitle": "निवेशकों के प्रश्न",
+    "qaOpenCount": "{count} खुले",
+    "qaAnsweredCount": "{count} उत्तरित",
+    "rosterTitle": "NDA और हस्ताक्षर सूची",
+    "rosterHint": "किसने क्या और कब हस्ताक्षर किया — वह सूची जो ड्यू डिलिजेंस में आपका वकील माँगता है। यहाँ IP छिपे हैं।",
+    "rosterType": "दस्तावेज़",
+    "rosterParty": "पक्ष",
+    "rosterWhen": "हस्ताक्षरित",
+    "rosterMethod": "तरीका",
+    "funnelTitle": "रेज़ फ़नल",
+    "funnelViews": "व्यूज़",
+    "funnelSaves": "सेव",
+    "funnelDeals": "सौदे",
+    "funnelTermSheets": "टर्म शीट",
+    "funnelClosed": "बंद"
   },
   "settings": {
     "pageTitle": "सेटिंग्स",
@@ -1180,7 +1195,10 @@
     "roundClosedNotice": "यह राउंड नए निवेशकों के लिए बंद है।",
     "roundPausedNotice": "संस्थापक ने यह राउंड रोक दिया है।",
     "momentumCommitted": "{count} प्रतिबद्ध",
-    "momentumInterested": "{count} इच्छुक"
+    "momentumInterested": "{count} इच्छुक",
+    "askedBy": "पूछा",
+    "answerPrivately": "निजी रूप से जवाब दें (केवल पूछने वाला देखेगा)",
+    "privateAnswer": "निजी"
   },
   "filters": {
     "industry": "उद्योग",
@@ -1244,7 +1262,8 @@
     "done": "हो गया",
     "exportPdf": "प्रिंट / PDF सहेजें",
     "viewPlans": "प्लान देखें",
-    "remove": "हटाएँ"
+    "remove": "हटाएँ",
+    "you": "आप"
   },
   "errors": {
     "required": "यह फ़ील्ड आवश्यक है",

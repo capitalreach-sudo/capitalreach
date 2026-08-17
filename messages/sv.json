@@ -958,7 +958,22 @@
     "roundHelp_closed": "Stängd: fortfarande synlig med badgen 'Rundan stängd'; inget nytt intresse.",
     "momentumToggle": "Visa momentum offentligt",
     "momentumHint": "Publicerar en aggregerad stapel på din annons — åtaget belopp mot mål och hur många investerare som är intresserade. Namnger aldrig någon.",
-    "roundSaved": "Rundinställningar sparade."
+    "roundSaved": "Rundinställningar sparade.",
+    "qaQueueTitle": "Investerarfrågor",
+    "qaOpenCount": "{count} öppna",
+    "qaAnsweredCount": "{count} besvarade",
+    "rosterTitle": "NDA- & signaturregister",
+    "rosterHint": "Vem som skrev under vad och när — listan din jurist ber om i due diligence. IP-adresser är maskerade här.",
+    "rosterType": "Dokument",
+    "rosterParty": "Part",
+    "rosterWhen": "Signerad",
+    "rosterMethod": "Metod",
+    "funnelTitle": "Rundans tratt",
+    "funnelViews": "Visningar",
+    "funnelSaves": "Sparade",
+    "funnelDeals": "Affärer",
+    "funnelTermSheets": "Term sheets",
+    "funnelClosed": "Stängda"
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1180,7 +1195,10 @@
     "roundClosedNotice": "Denna runda är stängd för nya investerare.",
     "roundPausedNotice": "Denna runda är pausad av grundaren.",
     "momentumCommitted": "{count} åtagna",
-    "momentumInterested": "{count} intresserade"
+    "momentumInterested": "{count} intresserade",
+    "askedBy": "Ställd av",
+    "answerPrivately": "Svara privat (bara frågeställaren ser det)",
+    "privateAnswer": "privat"
   },
   "filters": {
     "industry": "Bransch",
@@ -1244,7 +1262,8 @@
     "done": "Klar",
     "exportPdf": "Skriv ut / spara som PDF",
     "viewPlans": "Se planer",
-    "remove": "Ta bort"
+    "remove": "Ta bort",
+    "you": "du"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",

@@ -967,7 +967,22 @@
     "roundHelp_closed": "Clôturé : toujours visible avec le badge « Tour clôturé » ; aucune nouvelle marque d'intérêt.",
     "momentumToggle": "Afficher la dynamique publiquement",
     "momentumHint": "Publie une barre agrégée sur votre fiche — montant engagé vs objectif et nombre d'investisseurs intéressés. Ne nomme jamais personne.",
-    "roundSaved": "Paramètres du tour enregistrés."
+    "roundSaved": "Paramètres du tour enregistrés.",
+    "qaQueueTitle": "Questions des investisseurs",
+    "qaOpenCount": "{count} ouvertes",
+    "qaAnsweredCount": "{count} répondues",
+    "rosterTitle": "Registre NDA & signatures",
+    "rosterHint": "Qui a signé quoi, et quand — la liste que votre avocat demande en due diligence. Les IP sont masquées ici.",
+    "rosterType": "Document",
+    "rosterParty": "Partie",
+    "rosterWhen": "Signé",
+    "rosterMethod": "Méthode",
+    "funnelTitle": "Entonnoir de levée",
+    "funnelViews": "Vues",
+    "funnelSaves": "Sauvegardes",
+    "funnelDeals": "Deals",
+    "funnelTermSheets": "Term sheets",
+    "funnelClosed": "Clôturés"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -1220,7 +1235,10 @@
     "roundClosedNotice": "Ce tour est fermé aux nouveaux investisseurs.",
     "roundPausedNotice": "Ce tour est en pause par le fondateur.",
     "momentumCommitted": "{count} engagés",
-    "momentumInterested": "{count} intéressés"
+    "momentumInterested": "{count} intéressés",
+    "askedBy": "Posée par",
+    "answerPrivately": "Répondre en privé (seul l'auteur la voit)",
+    "privateAnswer": "privée"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1398,7 +1416,8 @@
     "done": "Terminé",
     "exportPdf": "Imprimer / enregistrer en PDF",
     "viewPlans": "Voir les offres",
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "you": "vous"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue sur CapitalReach",

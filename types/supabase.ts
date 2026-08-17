@@ -812,31 +812,44 @@ export type Database = {
         Row: {
           answer: string | null
           answered_at: string | null
+          answered_by: string | null
           created_at: string
           id: string
           investor_id: string
+          is_private: boolean
           question: string
           startup_id: string
         }
         Insert: {
           answer?: string | null
           answered_at?: string | null
+          answered_by?: string | null
           created_at?: string
           id?: string
           investor_id: string
+          is_private?: boolean
           question: string
           startup_id: string
         }
         Update: {
           answer?: string | null
           answered_at?: string | null
+          answered_by?: string | null
           created_at?: string
           id?: string
           investor_id?: string
+          is_private?: boolean
           question?: string
           startup_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "listing_questions_answered_by_fkey"
+            columns: ["answered_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "listing_questions_investor_id_fkey"
             columns: ["investor_id"]

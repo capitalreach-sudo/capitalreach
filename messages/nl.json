@@ -958,7 +958,22 @@
     "roundHelp_closed": "Gesloten: nog zichtbaar met badge 'Ronde gesloten'; geen nieuwe interesse.",
     "momentumToggle": "Momentum publiek tonen",
     "momentumHint": "Toont een geaggregeerde balk op uw vermelding — toegezegd bedrag vs doel en hoeveel investeerders geïnteresseerd zijn. Noemt nooit namen.",
-    "roundSaved": "Rondeinstellingen opgeslagen."
+    "roundSaved": "Rondeinstellingen opgeslagen.",
+    "qaQueueTitle": "Vragen van investeerders",
+    "qaOpenCount": "{count} open",
+    "qaAnsweredCount": "{count} beantwoord",
+    "rosterTitle": "NDA- & handtekeningenregister",
+    "rosterHint": "Wie wat wanneer tekende — de lijst die uw advocaat in due diligence vraagt. IP's zijn hier gemaskeerd.",
+    "rosterType": "Document",
+    "rosterParty": "Partij",
+    "rosterWhen": "Getekend",
+    "rosterMethod": "Methode",
+    "funnelTitle": "Ronde-funnel",
+    "funnelViews": "Weergaven",
+    "funnelSaves": "Opgeslagen",
+    "funnelDeals": "Deals",
+    "funnelTermSheets": "Term sheets",
+    "funnelClosed": "Gesloten"
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -1180,7 +1195,10 @@
     "roundClosedNotice": "Deze ronde is gesloten voor nieuwe investeerders.",
     "roundPausedNotice": "Deze ronde is door de oprichter gepauzeerd.",
     "momentumCommitted": "{count} toegezegd",
-    "momentumInterested": "{count} geïnteresseerd"
+    "momentumInterested": "{count} geïnteresseerd",
+    "askedBy": "Gesteld door",
+    "answerPrivately": "Privé beantwoorden (alleen de vraagsteller ziet het)",
+    "privateAnswer": "privé"
   },
   "filters": {
     "industry": "Industrie",
@@ -1244,7 +1262,8 @@
     "done": "Klaar",
     "exportPdf": "Afdrukken / opslaan als PDF",
     "viewPlans": "Bekijk abonnementen",
-    "remove": "Verwijderen"
+    "remove": "Verwijderen",
+    "you": "u"
   },
   "errors": {
     "required": "Dit veld is verplicht",

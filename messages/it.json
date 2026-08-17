@@ -958,7 +958,22 @@
     "roundHelp_closed": "Chiuso: ancora visibile con il badge «Round chiuso»; niente nuovo interesse.",
     "momentumToggle": "Mostra lo slancio pubblicamente",
     "momentumHint": "Pubblica una barra aggregata sulla scheda — importo impegnato vs obiettivo e quanti investitori sono interessati. Non fa mai nomi.",
-    "roundSaved": "Impostazioni del round salvate."
+    "roundSaved": "Impostazioni del round salvate.",
+    "qaQueueTitle": "Domande degli investitori",
+    "qaOpenCount": "{count} aperte",
+    "qaAnsweredCount": "{count} risposte",
+    "rosterTitle": "Registro NDA e firme",
+    "rosterHint": "Chi ha firmato cosa e quando — l'elenco che il tuo avvocato chiede in due diligence. Gli IP sono mascherati.",
+    "rosterType": "Documento",
+    "rosterParty": "Parte",
+    "rosterWhen": "Firmato",
+    "rosterMethod": "Metodo",
+    "funnelTitle": "Funnel del round",
+    "funnelViews": "Visualizzazioni",
+    "funnelSaves": "Salvataggi",
+    "funnelDeals": "Deal",
+    "funnelTermSheets": "Term sheet",
+    "funnelClosed": "Chiusi"
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -1180,7 +1195,10 @@
     "roundClosedNotice": "Questo round è chiuso a nuovi investitori.",
     "roundPausedNotice": "Questo round è in pausa per scelta del founder.",
     "momentumCommitted": "{count} impegnati",
-    "momentumInterested": "{count} interessati"
+    "momentumInterested": "{count} interessati",
+    "askedBy": "Chiesto da",
+    "answerPrivately": "Rispondi in privato (lo vede solo chi ha chiesto)",
+    "privateAnswer": "privata"
   },
   "filters": {
     "industry": "Settore",
@@ -1244,7 +1262,8 @@
     "done": "Fatto",
     "exportPdf": "Stampa / salva come PDF",
     "viewPlans": "Vedi i piani",
-    "remove": "Rimuovi"
+    "remove": "Rimuovi",
+    "you": "tu"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",

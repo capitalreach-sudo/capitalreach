@@ -978,7 +978,22 @@
     "roundHelp_closed": "Closed: still visible with a 'Round closed' badge; no new interest.",
     "momentumToggle": "Show momentum publicly",
     "momentumHint": "Publishes an aggregate bar on your listing — amount committed vs target and how many investors are interested. Never names anyone.",
-    "roundSaved": "Round settings saved."
+    "roundSaved": "Round settings saved.",
+    "qaQueueTitle": "Investor questions",
+    "qaOpenCount": "{count} open",
+    "qaAnsweredCount": "{count} answered",
+    "rosterTitle": "NDA & signature roster",
+    "rosterHint": "Who signed what, and when — the list your lawyer asks for in diligence. IPs are masked here.",
+    "rosterType": "Document",
+    "rosterParty": "Party",
+    "rosterWhen": "Signed",
+    "rosterMethod": "Method",
+    "funnelTitle": "Raise funnel",
+    "funnelViews": "Views",
+    "funnelSaves": "Saves",
+    "funnelDeals": "Deals",
+    "funnelTermSheets": "Term sheets",
+    "funnelClosed": "Closed"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1231,7 +1246,10 @@
     "roundClosedNotice": "This round is closed to new investors.",
     "roundPausedNotice": "This round is paused by the founder.",
     "momentumCommitted": "{count} committed",
-    "momentumInterested": "{count} interested"
+    "momentumInterested": "{count} interested",
+    "askedBy": "Asked by",
+    "answerPrivately": "Answer privately (only the asker sees it)",
+    "privateAnswer": "private"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1409,7 +1427,8 @@
     "done": "Done",
     "exportPdf": "Print / save as PDF",
     "viewPlans": "View plans",
-    "remove": "Remove"
+    "remove": "Remove",
+    "you": "you"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",

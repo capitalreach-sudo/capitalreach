@@ -958,7 +958,22 @@
     "roundHelp_closed": "Zamknięta: nadal widoczna z odznaką „Runda zamknięta”; bez nowego zainteresowania.",
     "momentumToggle": "Pokaż postęp publicznie",
     "momentumHint": "Publikuje zbiorczy pasek na profilu — kwota zobowiązań vs cel i ilu inwestorów jest zainteresowanych. Nigdy nie podaje nazwisk.",
-    "roundSaved": "Ustawienia rundy zapisane."
+    "roundSaved": "Ustawienia rundy zapisane.",
+    "qaQueueTitle": "Pytania inwestorów",
+    "qaOpenCount": "{count} otwartych",
+    "qaAnsweredCount": "{count} z odpowiedzią",
+    "rosterTitle": "Rejestr NDA i podpisów",
+    "rosterHint": "Kto co i kiedy podpisał — lista, o którą prosi prawnik podczas due diligence. Adresy IP są tu zamaskowane.",
+    "rosterType": "Dokument",
+    "rosterParty": "Strona",
+    "rosterWhen": "Podpisano",
+    "rosterMethod": "Metoda",
+    "funnelTitle": "Lejek rundy",
+    "funnelViews": "Wyświetlenia",
+    "funnelSaves": "Zapisane",
+    "funnelDeals": "Transakcje",
+    "funnelTermSheets": "Term sheety",
+    "funnelClosed": "Zamknięte"
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -1180,7 +1195,10 @@
     "roundClosedNotice": "Ta runda jest zamknięta dla nowych inwestorów.",
     "roundPausedNotice": "Ta runda została wstrzymana przez założyciela.",
     "momentumCommitted": "{count} zobowiązanych",
-    "momentumInterested": "{count} zainteresowanych"
+    "momentumInterested": "{count} zainteresowanych",
+    "askedBy": "Zadane przez",
+    "answerPrivately": "Odpowiedz prywatnie (widzi tylko pytający)",
+    "privateAnswer": "prywatna"
   },
   "filters": {
     "industry": "Branża",
@@ -1244,7 +1262,8 @@
     "done": "Gotowe",
     "exportPdf": "Drukuj / zapisz jako PDF",
     "viewPlans": "Zobacz plany",
-    "remove": "Usuń"
+    "remove": "Usuń",
+    "you": "ty"
   },
   "errors": {
     "required": "To pole jest wymagane",

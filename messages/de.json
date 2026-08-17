@@ -974,7 +974,22 @@
     "roundHelp_closed": "Geschlossen: weiterhin sichtbar mit Badge „Runde geschlossen“; keine neuen Interessenten.",
     "momentumToggle": "Fortschritt öffentlich zeigen",
     "momentumHint": "Zeigt auf Ihrem Listing einen aggregierten Balken — zugesagter Betrag vs. Ziel und wie viele Investoren interessiert sind. Nennt nie Namen.",
-    "roundSaved": "Rundeneinstellungen gespeichert."
+    "roundSaved": "Rundeneinstellungen gespeichert.",
+    "qaQueueTitle": "Investorenfragen",
+    "qaOpenCount": "{count} offen",
+    "qaAnsweredCount": "{count} beantwortet",
+    "rosterTitle": "NDA- & Signaturübersicht",
+    "rosterHint": "Wer was wann unterschrieben hat — die Liste, die Ihr Anwalt in der Due Diligence verlangt. IPs sind hier maskiert.",
+    "rosterType": "Dokument",
+    "rosterParty": "Partei",
+    "rosterWhen": "Unterzeichnet",
+    "rosterMethod": "Methode",
+    "funnelTitle": "Fundraising-Funnel",
+    "funnelViews": "Aufrufe",
+    "funnelSaves": "Gespeichert",
+    "funnelDeals": "Deals",
+    "funnelTermSheets": "Term Sheets",
+    "funnelClosed": "Abgeschlossen"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -1227,7 +1242,10 @@
     "roundClosedNotice": "Diese Runde ist für neue Investoren geschlossen.",
     "roundPausedNotice": "Diese Runde wurde vom Gründer pausiert.",
     "momentumCommitted": "{count} zugesagt",
-    "momentumInterested": "{count} interessiert"
+    "momentumInterested": "{count} interessiert",
+    "askedBy": "Gefragt von",
+    "answerPrivately": "Privat antworten (nur der Fragende sieht sie)",
+    "privateAnswer": "privat"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1405,7 +1423,8 @@
     "done": "Fertig",
     "exportPdf": "Drucken / als PDF speichern",
     "viewPlans": "Pläne ansehen",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "you": "Sie"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",

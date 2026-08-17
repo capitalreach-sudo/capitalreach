@@ -967,7 +967,22 @@
     "roundHelp_closed": "クローズ：「ラウンド終了」バッジ付きで表示継続、新規の関心なし。",
     "momentumToggle": "進捗を公開する",
     "momentumHint": "掲載ページに集計バーを表示します — コミット額 vs 目標、関心を示した投資家数。名前は一切表示しません。",
-    "roundSaved": "ラウンド設定を保存しました。"
+    "roundSaved": "ラウンド設定を保存しました。",
+    "qaQueueTitle": "投資家からの質問",
+    "qaOpenCount": "未回答 {count} 件",
+    "qaAnsweredCount": "回答済み {count} 件",
+    "rosterTitle": "NDA・署名一覧",
+    "rosterHint": "誰が何にいつ署名したか — デューデリジェンスで弁護士が求める一覧です。IP はマスクされています。",
+    "rosterType": "書類",
+    "rosterParty": "当事者",
+    "rosterWhen": "署名日時",
+    "rosterMethod": "方法",
+    "funnelTitle": "調達ファネル",
+    "funnelViews": "閲覧",
+    "funnelSaves": "保存",
+    "funnelDeals": "ディール",
+    "funnelTermSheets": "タームシート",
+    "funnelClosed": "成約"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -1220,7 +1235,10 @@
     "roundClosedNotice": "このラウンドは新規投資家を受け付けていません。",
     "roundPausedNotice": "このラウンドは創業者により一時停止中です。",
     "momentumCommitted": "{count} 件コミット",
-    "momentumInterested": "{count} 件関心"
+    "momentumInterested": "{count} 件関心",
+    "askedBy": "質問者",
+    "answerPrivately": "非公開で回答（質問者のみ閲覧可）",
+    "privateAnswer": "非公開"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1398,7 +1416,8 @@
     "done": "完了",
     "exportPdf": "印刷／PDF保存",
     "viewPlans": "プランを見る",
-    "remove": "削除"
+    "remove": "削除",
+    "you": "あなた"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReachへようこそ",

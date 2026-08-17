@@ -39,6 +39,8 @@ export default async function StartupDashboardPage() {
   const saveSeries: number[] = Array(30).fill(0);
   const dealSeries: number[] = Array(30).fill(0);
   const raise = { softCircled: 0, committed: 0 };
+  // B25: funnel — views → saves → deals → term sheets → closed.
+  const funnel = { termSheets: 0, closed: 0 };
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -98,6 +100,10 @@ export default async function StartupDashboardPage() {
     // or a closed deal counts as committed. Term sheets without an explicit
     // level still count as soft-circled.
     for (const d of dealRows ?? []) {
+      if (d.status === "term_sheet" || d.status === "closed") funnel.termSheets += 1;
+      if (d.status === "closed") funnel.closed += 1;
+    }
+    for (const d of dealRows ?? []) {
       const amt = d.amount ?? 0;
       if (d.status === "closed" || d.commitment_type === "committed") raise.committed += amt;
       else if (d.commitment_type === "soft_circle" || d.commitment_type === "verbal" || d.status === "term_sheet") raise.softCircled += amt;
@@ -130,7 +136,7 @@ export default async function StartupDashboardPage() {
       <StartupDashboardClient
         profile={profile}
         startup={startup}
-        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise }}
+        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise, funnel }}
         isLaunchMode={isLaunch}
         rejectionReason={rejectionReason}
       />

@@ -19,7 +19,7 @@ import { FundraiseChecklist } from "@/components/dashboard/fundraise-checklist";
 interface Props {
   profile:      Profile;
   startup:      Startup | null;
-  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number } };
+  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number }; funnel?: { termSheets: number; closed: number } };
   isLaunchMode: boolean;
   /**
    * Set when an admin is looking at someone else's dashboard. Carries the
@@ -339,6 +339,161 @@ function RoundControls({ startup }: { startup: Startup }) {
           <span style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 2 }}>{t("dashboard.momentumHint")}</span>
         </span>
       </label>
+    </div>
+  );
+}
+
+/** B25: the raise funnel from tables that already exist. */
+function RaiseFunnel({ views, saves, deals, termSheets, closed }: { views: number; saves: number; deals: number; termSheets: number; closed: number }) {
+  const { t } = useTranslation();
+  const steps: Array<[string, number]> = [[t("dashboard.funnelViews"), views], [t("dashboard.funnelSaves"), saves], [t("dashboard.funnelDeals"), deals], [t("dashboard.funnelTermSheets"), termSheets], [t("dashboard.funnelClosed"), closed]];
+  const max = Math.max(1, ...steps.map(([, v]) => v));
+  if (views === 0 && deals === 0) return null;
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("dashboard.funnelTitle")}</h3>
+      <div style={{ display: "grid", gap: "8px" }}>
+        {steps.map(([label, v], i) => {
+          const prev = i > 0 ? steps[i - 1][1] : null;
+          const conv = prev && prev > 0 ? Math.round((v / prev) * 100) : null;
+          return (
+            <div key={label} style={{ display: "grid", gridTemplateColumns: "110px 1fr 56px 44px", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>{label}</span>
+              <div style={{ height: "10px", background: "var(--cr-paper-4)", borderRadius: "5px", overflow: "hidden" }}>
+                <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${(v / max) * 100}%`, width: `${(v / max) * 100}%`, height: "100%", background: i >= 3 ? "var(--cr-up)" : "var(--cr-copper)" }} />
+              </div>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", textAlign: "right" }}>{v.toLocaleString()}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "right" }}>{conv !== null ? `${conv}%` : ""}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** B20: the founder's question queue — unanswered first, asker named. */
+function QuestionQueue() {
+  const { t } = useTranslation();
+  type Q = { id: string; question: string; answer: string | null; answered_at: string | null; is_private: boolean; created_at: string; investor: { slug: string; display_name: string | null; firm_name: string | null } | null };
+  const [items, setItems] = useState<Q[] | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, { a: string; priv: boolean; busy?: boolean }>>({});
+  useEffect(() => {
+    fetch("/api/questions").then((r) => (r.ok ? r.json() : null)).then((j) => setItems(j?.questions ?? [])).catch(() => setItems([]));
+  }, []);
+  if (!items || items.length === 0) return null;
+  const open = items.filter((q) => !q.answer);
+  const answered = items.filter((q) => !!q.answer);
+  async function answer(id: string) {
+    const d = drafts[id]; if (!d?.a.trim()) return;
+    setDrafts((p) => ({ ...p, [id]: { ...d, busy: true } }));
+    const res = await fetch("/api/questions", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, answer: d.a, isPrivate: d.priv }) });
+    if (res.ok) {
+      setItems((prev) => prev?.map((q) => q.id === id ? { ...q, answer: d.a, answered_at: new Date().toISOString(), is_private: d.priv } : q) ?? prev);
+      notify.success(t("startupDetail.answered"));
+    } else { notify.error(t("errors.generic")); setDrafts((p) => ({ ...p, [id]: { ...d, busy: false } })); }
+  }
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "12px" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.qaQueueTitle")}</h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: open.length ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t("dashboard.qaOpenCount", { count: open.length })}</span>
+      </div>
+      <div style={{ display: "grid", gap: "10px" }}>
+        {open.map((q) => {
+          const d = drafts[q.id] ?? { a: "", priv: false };
+          const who = q.investor?.display_name || q.investor?.firm_name || t("deals.investorFallback");
+          return (
+            <div key={q.id} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}><span style={{ color: "var(--cr-copper)", fontWeight: 700 }}>Q&nbsp;</span>{q.question}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
+                {t("startupDetail.askedBy")}{" "}
+                {q.investor ? <Link href={`/investors/${q.investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none", fontWeight: 500 }}>{who}</Link> : who}
+                {" · "}{formatDate(q.created_at)}
+              </p>
+              <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                <textarea value={d.a} onChange={(e) => setDrafts((p) => ({ ...p, [q.id]: { ...d, a: e.target.value } }))} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
+                  style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 11px", outline: "none", resize: "vertical" }} />
+                <button disabled={!!d.busy || !d.a.trim()} onClick={() => answer(q.id)}
+                  style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+                  {d.busy ? "…" : t("startupDetail.answerSend")}
+                </button>
+              </div>
+              <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)" }}>
+                <input type="checkbox" checked={d.priv} onChange={(e) => setDrafts((p) => ({ ...p, [q.id]: { ...d, priv: e.target.checked } }))} style={{ accentColor: "var(--cr-copper)" }} />
+                {t("startupDetail.answerPrivately")}
+              </label>
+            </div>
+          );
+        })}
+        {answered.length > 0 && (
+          <details>
+            <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.qaAnsweredCount", { count: answered.length })}</summary>
+            <div style={{ display: "grid", gap: "6px", marginTop: "8px" }}>
+              {answered.map((q) => (
+                <div key={q.id} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 10px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px" }}>
+                  <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{q.question}</span> — {q.answer}
+                  {q.is_private && <span style={{ marginLeft: 6, fontSize: "10px", color: "var(--cr-ink-4)" }}>({t("startupDetail.privateAnswer")})</span>}
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** B24: NDA & signature roster — who signed what, when. */
+function NdaRoster() {
+  const { t } = useTranslation();
+  type Row = { id: string; signedAt: string | null; method: string; version: string | null; ip: string; investor: { slug: string; name: string | null } | null };
+  type Sig = { id: string; contractType: string; contractStatus: string; signerName: string; signedAt: string; ip: string; isYou: boolean; dealId: string };
+  const [data, setData] = useState<{ nda: Row[]; signatures: Sig[] } | null>(null);
+  useEffect(() => { fetch("/api/nda/roster").then((r) => (r.ok ? r.json() : null)).then((j) => setData(j ?? { nda: [], signatures: [] })).catch(() => setData({ nda: [], signatures: [] })); }, []);
+  if (!data || (data.nda.length === 0 && data.signatures.length === 0)) return null;
+  function exportCsv() {
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const rows: string[][] = [["type", "party", "document", "status", "signed_at", "method", "version", "ip"]];
+    data!.nda.forEach((r) => rows.push(["NDA", r.investor?.name ?? "", "NDA", "signed", r.signedAt ?? "", r.method, r.version ?? "", r.ip]));
+    data!.signatures.forEach((s) => rows.push(["Contract", s.signerName + (s.isYou ? " (you)" : ""), s.contractType, s.contractStatus, s.signedAt, "e-signature", "", s.ip]));
+    const csv = rows.map((r) => r.map(esc).join(",")).join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a"); a.href = url; a.download = "capitalreach-signature-roster.csv"; a.click(); URL.revokeObjectURL(url);
+  }
+  const cell: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: "7px 8px", borderBottom: "1px solid var(--cr-rule)", whiteSpace: "nowrap" };
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "10px" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.rosterTitle")}</h3>
+        <button onClick={exportCsv} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>{t("dashboard.exportCsv")}</button>
+      </div>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginBottom: "10px" }}>{t("dashboard.rosterHint")}</p>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead><tr>{[t("dashboard.rosterType"), t("dashboard.rosterParty"), t("dashboard.rosterWhen"), t("dashboard.rosterMethod"), "IP"].map((h) => <th key={h} style={{ ...cell, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", textAlign: "left" }}>{h}</th>)}</tr></thead>
+          <tbody>
+            {data.nda.map((r) => (
+              <tr key={r.id}>
+                <td style={cell}>NDA{r.version ? ` v${r.version}` : ""}</td>
+                <td style={cell}>{r.investor ? <Link href={`/investors/${r.investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{r.investor.name || t("deals.investorFallback")}</Link> : "—"}</td>
+                <td style={{ ...cell, fontFamily: "'JetBrains Mono', monospace" }}>{r.signedAt ? new Date(r.signedAt).toLocaleString() : "—"}</td>
+                <td style={cell}>{r.method}</td>
+                <td style={{ ...cell, fontFamily: "'JetBrains Mono', monospace" }}>{r.ip}</td>
+              </tr>
+            ))}
+            {data.signatures.map((s) => (
+              <tr key={s.id}>
+                <td style={cell}>{s.contractType.replace(/_/g, " ")} · {s.contractStatus}</td>
+                <td style={cell}>{s.signerName}{s.isYou ? ` (${t("common.you")})` : ""}</td>
+                <td style={{ ...cell, fontFamily: "'JetBrains Mono', monospace" }}>{new Date(s.signedAt).toLocaleString()}</td>
+                <td style={cell}>e-signature</td>
+                <td style={{ ...cell, fontFamily: "'JetBrains Mono', monospace" }}>{s.ip}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -856,6 +1011,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
             {startup && startup.status === "active" && <ErrorBoundary labelKey="sections.updateComposer"><UpdateComposer /></ErrorBoundary>}
             {startup && <ErrorBoundary labelKey="sections.raiseProgress"><RoundControls startup={startup} /></ErrorBoundary>}
+            {startup && analytics.funnel && (
+              <ErrorBoundary labelKey="sections.raiseProgress">
+                <RaiseFunnel views={analytics.views} saves={analytics.saves} deals={analytics.deals} termSheets={analytics.funnel.termSheets} closed={analytics.funnel.closed} />
+              </ErrorBoundary>
+            )}
+            {startup && <ErrorBoundary labelKey="sections.investorInterest"><QuestionQueue /></ErrorBoundary>}
+            {startup && <ErrorBoundary labelKey="sections.documentAnalytics"><NdaRoster /></ErrorBoundary>}
             {startup && analytics.raise && (
               <ErrorBoundary labelKey="sections.raiseProgress">
                 <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />

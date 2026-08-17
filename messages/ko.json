@@ -958,7 +958,22 @@
     "roundHelp_closed": "마감: '라운드 마감' 배지와 함께 계속 표시, 새 관심 없음.",
     "momentumToggle": "진행 상황 공개",
     "momentumHint": "등록 페이지에 집계 막대를 게시합니다 — 약정 금액 대 목표, 관심 투자자 수. 이름은 절대 표시하지 않습니다.",
-    "roundSaved": "라운드 설정이 저장되었습니다."
+    "roundSaved": "라운드 설정이 저장되었습니다.",
+    "qaQueueTitle": "투자자 질문",
+    "qaOpenCount": "미답변 {count}개",
+    "qaAnsweredCount": "답변 완료 {count}개",
+    "rosterTitle": "NDA 및 서명 명부",
+    "rosterHint": "누가 언제 무엇에 서명했는지 — 실사 시 변호사가 요구하는 목록입니다. IP는 마스킹됩니다.",
+    "rosterType": "문서",
+    "rosterParty": "당사자",
+    "rosterWhen": "서명 일시",
+    "rosterMethod": "방식",
+    "funnelTitle": "라운드 퍼널",
+    "funnelViews": "조회",
+    "funnelSaves": "저장",
+    "funnelDeals": "거래",
+    "funnelTermSheets": "텀시트",
+    "funnelClosed": "마감"
   },
   "settings": {
     "pageTitle": "설정",
@@ -1180,7 +1195,10 @@
     "roundClosedNotice": "이 라운드는 신규 투자자를 받지 않습니다.",
     "roundPausedNotice": "창업자가 이 라운드를 일시 중지했습니다.",
     "momentumCommitted": "{count}명 약정",
-    "momentumInterested": "{count}명 관심"
+    "momentumInterested": "{count}명 관심",
+    "askedBy": "질문자",
+    "answerPrivately": "비공개로 답변 (질문자만 볼 수 있음)",
+    "privateAnswer": "비공개"
   },
   "filters": {
     "industry": "산업",
@@ -1244,7 +1262,8 @@
     "done": "완료",
     "exportPdf": "인쇄 / PDF 저장",
     "viewPlans": "요금제 보기",
-    "remove": "제거"
+    "remove": "제거",
+    "you": "귀하"
   },
   "errors": {
     "required": "이 필드는 필수입니다",

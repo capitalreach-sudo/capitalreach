@@ -42,7 +42,7 @@ interface Props {
   relatedStartups: StartupCardData[];
   updates?: Array<{ id: string; title: string; body: string; created_at: string }>;
   isOwner?: boolean;
-  questions?: Array<{ id: string; question: string; answer: string | null; answered_at: string | null; created_at: string }>;
+  questions?: Array<{ id: string; question: string; answer: string | null; answered_at: string | null; created_at: string; is_private?: boolean; asker?: { slug: string; name: string | null } | null }>;
   isLaunchMode:   boolean;
   /** Owner is looking at their own listing as a free investor would see it. */
   previewing?:    boolean;
@@ -261,17 +261,19 @@ function QAAskBox({ startupId }: { startupId: string }) {
 function QAAnswerBox({ questionId }: { questionId: string }) {
   const { t } = useTranslation();
   const [a, setA] = useState("");
+  const [priv, setPriv] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   if (done) return <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)" }}>{t("startupDetail.answered")}</p>;
   return (
+    <div>
     <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
       <textarea value={a} onChange={e => setA(e.target.value)} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
         style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
       <button disabled={busy || !a.trim()}
         onClick={async () => {
           setBusy(true);
-          const res = await fetch("/api/questions", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: questionId, answer: a }) });
+          const res = await fetch("/api/questions", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: questionId, answer: a, isPrivate: priv }) });
           setBusy(false);
           if (res.ok) { setDone(true); notify.success(t("startupDetail.answered")); }
           else notify.error(t("errors.generic"));
@@ -279,6 +281,13 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
         style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.answerSend")}
       </button>
+    </div>
+    {/* B20: private answers — the asker and you only. Public is the default,
+        because answered questions are the listing's living FAQ. */}
+    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)" }}>
+      <input type="checkbox" checked={priv} onChange={e => setPriv(e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
+      {t("startupDetail.answerPrivately")}
+    </label>
     </div>
   );
 }
@@ -952,12 +961,21 @@ export function StartupDetailClient({
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {questions.map((q) => (
                     <div key={q.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px" }}>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: q.answer ? "8px" : 0 }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: q.answer || q.asker ? "6px" : 0 }}>
                         <span style={{ color: "var(--cr-copper)", fontWeight: 700 }}>Q&nbsp;</span>{q.question}
                       </p>
+                      {/* B20: the founder sees who asked (investors and the public don't). */}
+                      {q.asker && (
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: q.answer ? "8px" : "8px" }}>
+                          {t("startupDetail.askedBy")}{" "}
+                          <Link href={`/investors/${q.asker.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none", fontWeight: 500 }}>{q.asker.name || t("deals.investorFallback")}</Link>
+                          {" · "}{formatDate(q.created_at)}
+                        </p>
+                      )}
                       {q.answer ? (
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           <span style={{ color: "var(--cr-up)", fontWeight: 700 }}>A&nbsp;</span>{q.answer}
+                          {q.is_private && <span style={{ marginLeft: 8, fontSize: "10px", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("startupDetail.privateAnswer")}</span>}
                         </p>
                       ) : isOwner ? (
                         <QAAnswerBox questionId={q.id} />

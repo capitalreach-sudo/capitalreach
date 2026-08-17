@@ -967,7 +967,22 @@
     "roundHelp_closed": "مغلقة: لا تزال ظاهرة مع شارة «الجولة مغلقة»؛ لا اهتمام جديد.",
     "momentumToggle": "إظهار الزخم علنًا",
     "momentumHint": "ينشر شريطًا مجمعًا على إدراجك — المبلغ الملتزم به مقابل الهدف وعدد المستثمرين المهتمين. لا يذكر أي أسماء أبدًا.",
-    "roundSaved": "تم حفظ إعدادات الجولة."
+    "roundSaved": "تم حفظ إعدادات الجولة.",
+    "qaQueueTitle": "أسئلة المستثمرين",
+    "qaOpenCount": "{count} مفتوحة",
+    "qaAnsweredCount": "{count} تمت الإجابة عنها",
+    "rosterTitle": "سجل اتفاقيات السرية والتوقيعات",
+    "rosterHint": "من وقّع ماذا ومتى — القائمة التي يطلبها محاميك في الفحص النافي للجهالة. عناوين IP مُقنَّعة هنا.",
+    "rosterType": "المستند",
+    "rosterParty": "الطرف",
+    "rosterWhen": "تاريخ التوقيع",
+    "rosterMethod": "الطريقة",
+    "funnelTitle": "قمع الجولة",
+    "funnelViews": "المشاهدات",
+    "funnelSaves": "المحفوظات",
+    "funnelDeals": "الصفقات",
+    "funnelTermSheets": "أوراق الشروط",
+    "funnelClosed": "مغلقة"
   },
   "settings": {
     "pageTitle": "إعدادات الحساب",
@@ -1220,7 +1235,10 @@
     "roundClosedNotice": "هذه الجولة مغلقة أمام المستثمرين الجدد.",
     "roundPausedNotice": "أوقف المؤسس هذه الجولة مؤقتًا.",
     "momentumCommitted": "{count} ملتزمون",
-    "momentumInterested": "{count} مهتمون"
+    "momentumInterested": "{count} مهتمون",
+    "askedBy": "سأل",
+    "answerPrivately": "الرد بشكل خاص (يراه السائل فقط)",
+    "privateAnswer": "خاص"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",
@@ -1398,7 +1416,8 @@
     "done": "تم",
     "exportPdf": "طباعة / حفظ PDF",
     "viewPlans": "عرض الخطط",
-    "remove": "إزالة"
+    "remove": "إزالة",
+    "you": "أنت"
   },
   "onboarding": {
     "welcomeTitle": "مرحباً بك في CapitalReach",

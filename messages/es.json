@@ -967,7 +967,22 @@
     "roundHelp_closed": "Cerrada: sigue visible con la insignia «Ronda cerrada»; sin nuevo interés.",
     "momentumToggle": "Mostrar el impulso públicamente",
     "momentumHint": "Publica una barra agregada en tu ficha — importe comprometido vs objetivo y cuántos inversores están interesados. Nunca nombra a nadie.",
-    "roundSaved": "Ajustes de la ronda guardados."
+    "roundSaved": "Ajustes de la ronda guardados.",
+    "qaQueueTitle": "Preguntas de inversores",
+    "qaOpenCount": "{count} abiertas",
+    "qaAnsweredCount": "{count} respondidas",
+    "rosterTitle": "Registro de NDA y firmas",
+    "rosterHint": "Quién firmó qué y cuándo — la lista que pide tu abogado en la due diligence. Las IP están enmascaradas.",
+    "rosterType": "Documento",
+    "rosterParty": "Parte",
+    "rosterWhen": "Firmado",
+    "rosterMethod": "Método",
+    "funnelTitle": "Embudo de la ronda",
+    "funnelViews": "Vistas",
+    "funnelSaves": "Guardados",
+    "funnelDeals": "Deals",
+    "funnelTermSheets": "Term sheets",
+    "funnelClosed": "Cerrados"
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",
@@ -1220,7 +1235,10 @@
     "roundClosedNotice": "Esta ronda está cerrada a nuevos inversores.",
     "roundPausedNotice": "El fundador ha pausado esta ronda.",
     "momentumCommitted": "{count} comprometidos",
-    "momentumInterested": "{count} interesados"
+    "momentumInterested": "{count} interesados",
+    "askedBy": "Preguntado por",
+    "answerPrivately": "Responder en privado (solo lo ve quien preguntó)",
+    "privateAnswer": "privada"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -1398,7 +1416,8 @@
     "done": "Hecho",
     "exportPdf": "Imprimir / guardar como PDF",
     "viewPlans": "Ver planes",
-    "remove": "Quitar"
+    "remove": "Quitar",
+    "you": "tú"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",

@@ -192,8 +192,10 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
       .eq("startup_id", startup.id)
       .order("created_at", { ascending: false })
       .limit(10),
+    // B20: the founder (RLS lets them read every question on their startup)
+    // also gets the asker's identity; everyone else sees no asker.
     supabase.from("listing_questions")
-      .select("id, question, answer, answered_at, created_at")
+      .select("id, question, answer, answered_at, created_at, is_private, investor:investors(slug, display_name, firm_name)")
       .eq("startup_id", startup.id)
       .order("created_at", { ascending: false })
       .limit(20),
@@ -282,7 +284,14 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         updates={updates ?? []}
         isOwner={previewing ? false : isOwner}
         viewerIsAdmin={previewing ? false : viewerIsAdmin}
-        questions={questions ?? []}
+        questions={(questions ?? []).map((q) => {
+          const inv = (q as unknown as { investor?: { slug: string; display_name: string | null; firm_name: string | null } | null }).investor;
+          return {
+            id: q.id, question: q.question, answer: q.answer, answered_at: q.answered_at, created_at: q.created_at,
+            is_private: (q as unknown as { is_private?: boolean }).is_private ?? false,
+            asker: isOwner || viewerIsAdmin ? (inv ? { slug: inv.slug, name: inv.display_name || inv.firm_name || null } : null) : null,
+          };
+        })}
         isLaunchMode={isLaunch}
         viewerSuspended={previewing ? false : viewerSuspended}
         previewing={previewing}

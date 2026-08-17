@@ -50,7 +50,7 @@ export async function PATCH(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id, answer } = await req.json().catch(() => ({}));
+  const { id, answer, isPrivate } = await req.json().catch(() => ({}));
   if (!isUuid(id)) return NextResponse.json({ error: "id required" }, { status: 400 });
   if (typeof answer !== "string" || !answer.trim() || answer.length > 3000) {
     return NextResponse.json({ error: "answer required (max 3000 chars)" }, { status: 400 });
@@ -62,7 +62,9 @@ export async function PATCH(req: NextRequest) {
   const admin = createAdminClient();
   const { data: q, error } = await admin
     .from("listing_questions")
-    .update({ answer: answer.trim(), answered_at: new Date().toISOString() })
+    // B20: a private answer is visible to the asker and the founder only
+    // (RLS 066); public otherwise. Records who answered.
+    .update({ answer: answer.trim(), answered_at: new Date().toISOString(), is_private: isPrivate === true, answered_by: user.id })
     .eq("id", id)
     .eq("startup_id", membership.entityId)
     .select("id, investor_id, startup:startups(name, slug)")
@@ -82,4 +84,37 @@ export async function PATCH(req: NextRequest) {
     });
   }
   return NextResponse.json({ answered: true });
+}
+
+/**
+ * GET — the founder's question queue: every question on their startup with
+ * the asker's identity (B20: founders used to answer blind), unanswered
+ * first. Investors get their own asked questions.
+ */
+export async function GET() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const admin = createAdminClient();
+  const mine = await resolveEntity(user.id, "startup");
+  if (mine) {
+    const { data } = await admin
+      .from("listing_questions")
+      .select("id, question, answer, answered_at, is_private, created_at, investor:investors(id, slug, display_name, firm_name, type)")
+      .eq("startup_id", mine.entityId)
+      .order("answered_at", { ascending: true, nullsFirst: true })
+      .order("created_at", { ascending: false })
+      .limit(100);
+    return NextResponse.json({ role: "startup", questions: data ?? [] });
+  }
+  const { data: inv } = await admin.from("investors").select("id").eq("owner_id", user.id).maybeSingle();
+  if (!inv) return NextResponse.json({ role: null, questions: [] });
+  const { data } = await admin
+    .from("listing_questions")
+    .select("id, question, answer, answered_at, is_private, created_at, startup:startups(name, slug)")
+    .eq("investor_id", inv.id)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  return NextResponse.json({ role: "investor", questions: data ?? [] });
 }

@@ -967,7 +967,22 @@
     "roundHelp_closed": "已关闭：仍可见并带“融资已关闭”标识；不接受新意向。",
     "momentumToggle": "公开显示进度",
     "momentumHint": "在您的列表上发布汇总进度条 — 已承诺金额与目标，以及有多少投资者感兴趣。绝不显示姓名。",
-    "roundSaved": "融资设置已保存。"
+    "roundSaved": "融资设置已保存。",
+    "qaQueueTitle": "投资者提问",
+    "qaOpenCount": "{count} 个待回答",
+    "qaAnsweredCount": "{count} 个已回答",
+    "rosterTitle": "NDA 与签署记录",
+    "rosterHint": "谁在何时签署了什么 — 尽调时律师需要的清单。此处 IP 已脱敏。",
+    "rosterType": "文件",
+    "rosterParty": "签署方",
+    "rosterWhen": "签署时间",
+    "rosterMethod": "方式",
+    "funnelTitle": "融资漏斗",
+    "funnelViews": "浏览",
+    "funnelSaves": "收藏",
+    "funnelDeals": "交易",
+    "funnelTermSheets": "条款书",
+    "funnelClosed": "已成交"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -1220,7 +1235,10 @@
     "roundClosedNotice": "本轮融资已不再接受新投资者。",
     "roundPausedNotice": "创始人已暂停本轮融资。",
     "momentumCommitted": "{count} 位已承诺",
-    "momentumInterested": "{count} 位感兴趣"
+    "momentumInterested": "{count} 位感兴趣",
+    "askedBy": "提问者",
+    "answerPrivately": "私下回答（仅提问者可见）",
+    "privateAnswer": "私密"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1398,7 +1416,8 @@
     "done": "完成",
     "exportPdf": "打印 / 另存为 PDF",
     "viewPlans": "查看套餐",
-    "remove": "移除"
+    "remove": "移除",
+    "you": "您"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
