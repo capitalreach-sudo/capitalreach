@@ -2354,7 +2354,8 @@
     "searchInThread": "この会話内を検索…",
     "clearSearch": "検索をクリア",
     "unreadAria": "未読",
-    "noMatches": "「{query}」に一致するメッセージはありません"
+    "noMatches": "「{query}」に一致するメッセージはありません",
+    "legalNote": "メッセージは CapitalReach のディール記録の一部であり、手数料に関する紛争で参照される場合があります。"
   },
   "completeness": {
     "nextBest": "次にやること",

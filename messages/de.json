@@ -2360,7 +2360,8 @@
     "searchInThread": "In dieser Unterhaltung suchen…",
     "clearSearch": "Suche löschen",
     "unreadAria": "Ungelesen",
-    "noMatches": "Keine Nachrichten passen zu \"{query}\""
+    "noMatches": "Keine Nachrichten passen zu \"{query}\"",
+    "legalNote": "Nachrichten sind Teil Ihrer CapitalReach-Deal-Akte und können bei Gebührenstreitigkeiten herangezogen werden."
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",

@@ -2354,7 +2354,8 @@
     "searchInThread": "Sök i den här konversationen…",
     "clearSearch": "Rensa sökning",
     "unreadAria": "Oläst",
-    "noMatches": "Inga meddelanden matchar \"{query}\""
+    "noMatches": "Inga meddelanden matchar \"{query}\"",
+    "legalNote": "Meddelanden är en del av ditt CapitalReach-affärsunderlag och kan åberopas vid avgiftstvister."
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",

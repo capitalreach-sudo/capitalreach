@@ -2354,7 +2354,8 @@
     "searchInThread": "Zoeken in dit gesprek…",
     "clearSearch": "Zoekopdracht wissen",
     "unreadAria": "Ongelezen",
-    "noMatches": "Geen berichten voor \"{query}\""
+    "noMatches": "Geen berichten voor \"{query}\"",
+    "legalNote": "Berichten maken deel uit van uw CapitalReach-dealdossier en kunnen worden aangehaald bij geschillen over de fee."
   },
   "completeness": {
     "nextBest": "Doe dit hierna",

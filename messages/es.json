@@ -2354,7 +2354,8 @@
     "searchInThread": "Buscar en esta conversación…",
     "clearSearch": "Borrar búsqueda",
     "unreadAria": "No leído",
-    "noMatches": "Ningún mensaje coincide con \"{query}\""
+    "noMatches": "Ningún mensaje coincide con \"{query}\"",
+    "legalNote": "Los mensajes forman parte de tu expediente de operación en CapitalReach y pueden usarse en disputas sobre comisiones."
   },
   "completeness": {
     "nextBest": "Haz esto ahora",

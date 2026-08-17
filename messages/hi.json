@@ -2354,7 +2354,8 @@
     "searchInThread": "इस बातचीत में खोजें…",
     "clearSearch": "खोज साफ़ करें",
     "unreadAria": "अपठित",
-    "noMatches": "\"{query}\" से मेल खाता कोई संदेश नहीं"
+    "noMatches": "\"{query}\" से मेल खाता कोई संदेश नहीं",
+    "legalNote": "संदेश आपके CapitalReach डील रिकॉर्ड का हिस्सा हैं और शुल्क विवादों में संदर्भित किए जा सकते हैं।"
   },
   "completeness": {
     "nextBest": "अगला यह करें",

@@ -2354,7 +2354,8 @@
     "searchInThread": "Pesquisar nesta conversa…",
     "clearSearch": "Limpar busca",
     "unreadAria": "Não lido",
-    "noMatches": "Nenhuma mensagem corresponde a \"{query}\""
+    "noMatches": "Nenhuma mensagem corresponde a \"{query}\"",
+    "legalNote": "As mensagens fazem parte do seu registo de negócio na CapitalReach e podem ser referidas em disputas sobre comissões."
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",

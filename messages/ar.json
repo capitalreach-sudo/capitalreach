@@ -2354,7 +2354,8 @@
     "searchInThread": "ابحث في هذه المحادثة…",
     "clearSearch": "مسح البحث",
     "unreadAria": "غير مقروء",
-    "noMatches": "لا توجد رسائل تطابق \"{query}\""
+    "noMatches": "لا توجد رسائل تطابق \"{query}\"",
+    "legalNote": "الرسائل جزء من سجل صفقتك في CapitalReach وقد يُشار إليها في نزاعات الرسوم."
   },
   "completeness": {
     "nextBest": "التالي",

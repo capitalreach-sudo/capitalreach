@@ -2354,7 +2354,8 @@
     "searchInThread": "Rechercher dans cette conversation…",
     "clearSearch": "Effacer la recherche",
     "unreadAria": "Non lu",
-    "noMatches": "Aucun message ne correspond à \"{query}\""
+    "noMatches": "Aucun message ne correspond à \"{query}\"",
+    "legalNote": "Les messages font partie de votre dossier de deal CapitalReach et peuvent être invoqués en cas de litige sur les frais."
   },
   "completeness": {
     "nextBest": "À faire ensuite",

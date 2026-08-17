@@ -2354,7 +2354,8 @@
     "searchInThread": "Cerca in questa conversazione…",
     "clearSearch": "Cancella ricerca",
     "unreadAria": "Non letto",
-    "noMatches": "Nessun messaggio corrisponde a \"{query}\""
+    "noMatches": "Nessun messaggio corrisponde a \"{query}\"",
+    "legalNote": "I messaggi fanno parte del fascicolo dell'operazione su CapitalReach e possono essere richiamati in caso di controversie sulle fee."
   },
   "completeness": {
     "nextBest": "Fai questo ora",

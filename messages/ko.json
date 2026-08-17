@@ -2354,7 +2354,8 @@
     "searchInThread": "이 대화에서 검색…",
     "clearSearch": "검색 지우기",
     "unreadAria": "읽지 않음",
-    "noMatches": "\"{query}\"와 일치하는 메시지가 없습니다"
+    "noMatches": "\"{query}\"와 일치하는 메시지가 없습니다",
+    "legalNote": "메시지는 CapitalReach 거래 기록의 일부이며 수수료 분쟁 시 참조될 수 있습니다."
   },
   "completeness": {
     "nextBest": "다음에 할 일",

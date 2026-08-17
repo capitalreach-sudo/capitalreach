@@ -2354,7 +2354,8 @@
     "searchInThread": "Szukaj w tej rozmowie…",
     "clearSearch": "Wyczyść wyszukiwanie",
     "unreadAria": "Nieprzeczytane",
-    "noMatches": "Brak wiadomości pasujących do \"{query}\""
+    "noMatches": "Brak wiadomości pasujących do \"{query}\"",
+    "legalNote": "Wiadomości są częścią Twojej dokumentacji transakcji w CapitalReach i mogą być przywoływane w sporach o prowizję."
   },
   "completeness": {
     "nextBest": "Zrób to teraz",

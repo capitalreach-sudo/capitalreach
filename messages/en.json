@@ -2360,7 +2360,8 @@
     "searchInThread": "Search this conversation…",
     "clearSearch": "Clear search",
     "unreadAria": "Unread",
-    "noMatches": "No messages match \"{query}\""
+    "noMatches": "No messages match \"{query}\"",
+    "legalNote": "Messages are part of your CapitalReach deal record and may be referenced in fee disputes."
   },
   "presets": {
     "preseedAi": "Pre-seed AI",

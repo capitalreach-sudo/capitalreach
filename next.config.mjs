@@ -8,7 +8,11 @@ const nextConfig = {
   // edge). Nothing here duplicates them so they cannot drift.
   async redirects() {
     // Guessed-URL courtesy: the real route is /auth/signup.
-    return [{ source: "/auth/register", destination: "/auth/signup", permanent: true }];
+    return [
+      { source: "/auth/register", destination: "/auth/signup", permanent: true },
+      // /stats duplicated the Data Centre; edge-level 308 so it costs no function.
+      { source: "/stats", destination: "/data", permanent: true },
+    ];
   },
   images: {
     remotePatterns: [

@@ -2354,7 +2354,8 @@
     "searchInThread": "在此会话中搜索…",
     "clearSearch": "清除搜索",
     "unreadAria": "未读",
-    "noMatches": "没有与\"{query}\"匹配的消息"
+    "noMatches": "没有与\"{query}\"匹配的消息",
+    "legalNote": "消息属于您在 CapitalReach 的交易记录，在费用争议中可能被引用。"
   },
   "completeness": {
     "nextBest": "下一步",

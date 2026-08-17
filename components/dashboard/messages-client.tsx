@@ -300,19 +300,22 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       return;
     }
 
+    // Through the API (not a direct insert): the reply route notifies the
+    // other participant (bell + email preview), enforces the length cap, and
+    // bumps the thread — a browser-side insert did none of that.
     const body = newMessage.trim();
-    const { data, error } = await supabase
-      .from("messages")
-      .insert({ thread_id: selectedThread.id, sender_id: profile.id, body })
-      .select()
-      .single();
-    if (error) {
-      notify.error(t("dashboard.errSendMessageFailed"));
+    const res = await fetch("/api/messages/reply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId: selectedThread.id, body }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.message) {
+      notify.error(json.error || t("dashboard.errSendMessageFailed"));
     } else {
-      const sent = data as Message;
+      const sent = json.message as Message;
       setMessages(prev => prev.some(m => m.id === sent.id) ? prev : [...prev, sent]);
       setNewMessage("");
-      await supabase.from("threads").update({ updated_at: sent.created_at }).eq("id", selectedThread.id);
     }
     setSending(false);
   }
@@ -669,7 +672,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   style={{ width: 38, height: 38, background: attachedFile ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: attachedFile ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
                   <Paperclip style={{ width: 14, height: 14, color: attachedFile ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
                 </button>
-                <textarea value={newMessage} onChange={e => setNewMessage(e.target.value)}
+                <textarea value={newMessage} onChange={e => setNewMessage(e.target.value.slice(0, 2000))}
+                  maxLength={2000}
                   placeholder={attachedFile ? t("messages.attachCaptionPh", { name: attachedFile.name }) : t("dashboard.composePlaceholder")}
                   rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", resize: "none", minHeight: "38px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
                   onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
@@ -682,6 +686,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   {sending ? <Loader2 style={{ width: 15, height: 15, color: "#fff" }} /> : <Send style={{ width: 15, height: 15, color: "#fff" }} />}
                 </button>
               </form>
+              {/* Character budget only when it matters (>1500 of 2000). */}
+              {newMessage.length > 1500 && (
+                <p aria-live="polite" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: newMessage.length >= 2000 ? "var(--cr-down)" : "var(--cr-ink-4)", textAlign: "right", padding: "4px 12px 0" }}>
+                  {newMessage.length} / 2000
+                </p>
+              )}
+              {/* Messages are part of the deal record — say so where they are written. */}
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "center", padding: "6px 12px 8px" }}>
+                {t("messages.legalNote")}
+              </p>
             </div>
           ) : (
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-paper)" }}>
