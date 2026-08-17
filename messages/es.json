@@ -580,7 +580,14 @@
     "passwordBreached": "Esta contraseña ha aparecido en {count} filtraciones conocidas: los atacantes la prueban primero. Elige otra.",
     "passwordBreachedShort": "Esa contraseña aparece en filtraciones conocidas: elige otra.",
     "showPassword": "Mostrar contraseña",
-    "hidePassword": "Ocultar contraseña"
+    "hidePassword": "Ocultar contraseña",
+    "strengthWeak": "Débil",
+    "strengthFair": "Aceptable",
+    "strengthStrong": "Fuerte",
+    "strengthVeryStrong": "Muy fuerte",
+    "passwordsMismatch": "Las contraseñas no coinciden.",
+    "ageConfirm": "Tengo 18 años o más.",
+    "mustConfirmAge": "Confirma que tienes 18 años o más."
   },
   "dashboard": {
     "overview": "Resumen",
@@ -2689,5 +2696,19 @@
     "investorPays": "Tú pagas",
     "footnote": "Los costes legales de la prospección en frío y los intermediarios suelen ser de 5.000–20.000 € antes de que se abra una ronda.",
     "detailNote": "La comisión de éxito del 2% se factura a la startup solo cuando una ronda se cierra a través de CapitalReach. Los inversores no pagan nada."
+  },
+  "welcome": {
+    "eyebrow": "Bienvenido a CapitalReach",
+    "founderTitle": "Tu ficha está en camino.",
+    "founderBody": "Revisamos cada ficha antes de publicarla — normalmente en 24–48 horas. Mientras tanto, esto marca la diferencia:",
+    "f1": "Completa tu ficha (puntuación ≥ 70)",
+    "f2": "Sube tu deck al data room",
+    "f3": "Ve qué inversores encajan con tu ronda",
+    "investorTitle": "Empieza por el deal flow verificado.",
+    "investorBody": "Cada ficha ha sido revisada. Tu tesis alimenta el matching: cuanto más completa, mejor el encaje.",
+    "i1": "Explorar rondas activas",
+    "i2": "Completar tu tesis de inversión",
+    "i3": "Ejecutar el matching con IA",
+    "cta": "Vamos"
   }
 }

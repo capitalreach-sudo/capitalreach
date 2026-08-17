@@ -240,7 +240,7 @@ export default function StartupOnboardingPage() {
     }).catch(() => {});
 
     notify.success(t("onboarding.su.submitted"));
-    router.push("/dashboard/startup");
+    router.push("/dashboard/startup?welcome=1");
     setLoading(false);
     return true;
   }

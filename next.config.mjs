@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Gzip/brotli on by default in Next, stated explicitly so it can't be lost.
+  compress: true,
+  // React strict mode surfaces double-effect bugs in dev; harmless in prod.
+  reactStrictMode: true,
+  // Security headers live in vercel.json (single source, applied at the
+  // edge). Nothing here duplicates them so they cannot drift.
   async redirects() {
     // Guessed-URL courtesy: the real route is /auth/signup.
     return [{ source: "/auth/register", destination: "/auth/signup", permanent: true }];

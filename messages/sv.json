@@ -571,7 +571,14 @@
     "passwordBreached": "Det här lösenordet har förekommit i {count} kända dataläckor — angripare provar det först. Välj ett annat.",
     "passwordBreachedShort": "Lösenordet förekommer i kända läckor — välj ett annat.",
     "showPassword": "Visa lösenord",
-    "hidePassword": "Dölj lösenord"
+    "hidePassword": "Dölj lösenord",
+    "strengthWeak": "Svagt",
+    "strengthFair": "Okej",
+    "strengthStrong": "Starkt",
+    "strengthVeryStrong": "Mycket starkt",
+    "passwordsMismatch": "Lösenorden matchar inte.",
+    "ageConfirm": "Jag är 18 år eller äldre.",
+    "mustConfirmAge": "Bekräfta att du är 18 år eller äldre."
   },
   "dashboard": {
     "overview": "Översikt",
@@ -2689,5 +2696,19 @@
     "investorPays": "Du betalar",
     "footnote": "Juridiska kostnader för kall kontakt och mellanhänder brukar landa på 5 000–20 000 € innan en runda ens öppnar.",
     "detailNote": "Framgångsavgiften på 2% faktureras startupen först efter att en runda stängts via CapitalReach. Investerare betalar ingenting."
+  },
+  "welcome": {
+    "eyebrow": "Välkommen till CapitalReach",
+    "founderTitle": "Din annons är på väg.",
+    "founderBody": "Vi granskar varje annons innan den publiceras — vanligtvis inom 24–48 timmar. Under tiden gör detta skillnad:",
+    "f1": "Färdigställ annonsen (poäng ≥ 70)",
+    "f2": "Ladda upp ditt deck i datarummet",
+    "f3": "Se vilka investerare som passar",
+    "investorTitle": "Börja med granskat dealflow.",
+    "investorBody": "Varje annons har granskats. Din tes styr matchningen — ju mer ifylld, desto bättre träff.",
+    "i1": "Bläddra bland aktiva rundor",
+    "i2": "Färdigställ din investeringstes",
+    "i3": "Kör AI-matchning",
+    "cta": "Kör igång"
   }
 }

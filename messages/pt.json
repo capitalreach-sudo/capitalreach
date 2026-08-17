@@ -571,7 +571,14 @@
     "passwordBreached": "Esta palavra-passe apareceu em {count} fugas de dados conhecidas — os atacantes tentam-na primeiro. Escolhe outra.",
     "passwordBreachedShort": "Essa palavra-passe aparece em fugas conhecidas — escolhe outra.",
     "showPassword": "Mostrar senha",
-    "hidePassword": "Ocultar senha"
+    "hidePassword": "Ocultar senha",
+    "strengthWeak": "Fraca",
+    "strengthFair": "Razoável",
+    "strengthStrong": "Forte",
+    "strengthVeryStrong": "Muito forte",
+    "passwordsMismatch": "As palavras-passe não coincidem.",
+    "ageConfirm": "Tenho 18 anos ou mais.",
+    "mustConfirmAge": "Confirme que tem 18 anos ou mais."
   },
   "dashboard": {
     "overview": "Visão geral",
@@ -2689,5 +2696,19 @@
     "investorPays": "Você paga",
     "footnote": "Os custos legais de prospeção e intermediários rondam normalmente 5.000–20.000 € antes de uma ronda sequer abrir.",
     "detailNote": "A comissão de sucesso de 2% é faturada à startup apenas após o fecho de uma ronda através da CapitalReach. Os investidores não pagam nada."
+  },
+  "welcome": {
+    "eyebrow": "Bem-vindo à CapitalReach",
+    "founderTitle": "A sua ficha está a caminho.",
+    "founderBody": "Revemos cada ficha antes de ficar online — normalmente em 24–48 horas. Entretanto, isto faz a diferença:",
+    "f1": "Complete a sua ficha (pontuação ≥ 70)",
+    "f2": "Carregue o deck para o data room",
+    "f3": "Veja que investidores encaixam na ronda",
+    "investorTitle": "Comece pelo deal flow verificado.",
+    "investorBody": "Cada ficha foi revista. A sua tese alimenta o matching: quanto mais completa, melhor o encaixe.",
+    "i1": "Explorar rondas ativas",
+    "i2": "Completar a tese de investimento",
+    "i3": "Executar matching com IA",
+    "cta": "Vamos"
   }
 }

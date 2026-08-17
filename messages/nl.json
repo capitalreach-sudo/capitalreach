@@ -571,7 +571,14 @@
     "passwordBreached": "Dit wachtwoord kwam voor in {count} bekende datalekken — aanvallers proberen het als eerste. Kies een ander.",
     "passwordBreachedShort": "Dat wachtwoord komt voor in bekende lekken — kies een ander.",
     "showPassword": "Wachtwoord tonen",
-    "hidePassword": "Wachtwoord verbergen"
+    "hidePassword": "Wachtwoord verbergen",
+    "strengthWeak": "Zwak",
+    "strengthFair": "Redelijk",
+    "strengthStrong": "Sterk",
+    "strengthVeryStrong": "Zeer sterk",
+    "passwordsMismatch": "Wachtwoorden komen niet overeen.",
+    "ageConfirm": "Ik ben 18 jaar of ouder.",
+    "mustConfirmAge": "Bevestig dat u 18 jaar of ouder bent."
   },
   "dashboard": {
     "overview": "Overzicht",
@@ -2689,5 +2696,19 @@
     "investorPays": "U betaalt",
     "footnote": "Juridische kosten voor koude acquisitie en tussenpersonen lopen doorgaans op tot € 5.000–20.000 voordat een ronde zelfs maar opent.",
     "detailNote": "De succesfee van 2% wordt pas aan de startup gefactureerd nadat een ronde via CapitalReach is gesloten. Investeerders betalen niets."
+  },
+  "welcome": {
+    "eyebrow": "Welkom bij CapitalReach",
+    "founderTitle": "Uw vermelding is onderweg.",
+    "founderBody": "We beoordelen elke vermelding voordat die live gaat — meestal binnen 24–48 uur. Dit maakt intussen het verschil:",
+    "f1": "Vermelding afmaken (score ≥ 70)",
+    "f2": "Deck naar de dataroom uploaden",
+    "f3": "Zien welke investeerders passen",
+    "investorTitle": "Begin met geverifieerde dealflow.",
+    "investorBody": "Elke vermelding is beoordeeld. Uw these stuurt de matching — hoe vollediger, hoe beter de fit.",
+    "i1": "Actieve rondes bekijken",
+    "i2": "Investeringsthese afmaken",
+    "i3": "AI-matching uitvoeren",
+    "cta": "Aan de slag"
   }
 }

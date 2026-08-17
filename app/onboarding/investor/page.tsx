@@ -196,7 +196,7 @@ export default function InvestorOnboardingPage() {
       router.push(`/api/checkout/investor?tier=${tier}`);
     } else {
       notify.success(t("onboarding.inv.created"));
-      router.push("/dashboard/investor");
+      router.push("/dashboard/investor?welcome=1");
     }
     setLoading(false);
   }

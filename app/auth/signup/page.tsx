@@ -92,6 +92,22 @@ function SignupForm() {
   // Terms §1 says use constitutes acceptance, which is weak. Require an
   // explicit act and record when it happened.
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [ageConfirmed, setAgeConfirmed]   = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  // Password strength: length + character classes, 0–4. Purely advisory —
+  // the breach check below is the real gate.
+  const strength = (() => {
+    let sc = 0;
+    if (password.length >= 8) sc++;
+    if (password.length >= 12) sc++;
+    if (/[A-Z]/.test(password) && /[a-z]/.test(password)) sc++;
+    if (/\d/.test(password) && /[^A-Za-z0-9]/.test(password)) sc++;
+    return password ? Math.max(1, sc) : 0;
+  })();
+  const strengthLabel = [null, t("auth.strengthWeak"), t("auth.strengthFair"), t("auth.strengthStrong"), t("auth.strengthVeryStrong")][strength];
+  const strengthColor = ["transparent", "var(--cr-down)", "#B8860B", "var(--cr-copper)", "var(--cr-up)"][strength];
+  const passwordsMatch = confirmPassword.length === 0 || confirmPassword === password;
+  const canSubmit = termsAccepted && ageConfirmed && password.length >= 8 && confirmPassword === password;
   const router = useRouter();
   const supabase = createClient();
 
@@ -99,6 +115,8 @@ function SignupForm() {
     e.preventDefault();
     if (!role) return;
     if (!termsAccepted) { setSignupError(t("auth.mustAcceptTerms")); return; }
+    if (!ageConfirmed) { setSignupError(t("auth.mustConfirmAge")); return; }
+    if (confirmPassword !== password) { setSignupError(t("auth.passwordsMismatch")); return; }
     setLoading(true); setSignupError("");
     try {
       // k-anonymity breach check (lib/password-check): only five hex chars of
@@ -118,6 +136,7 @@ function SignupForm() {
           data: {
             full_name: fullName, role,
             terms_accepted_at: new Date().toISOString(),
+            age_confirmed_at: new Date().toISOString(),
             // Which plan they clicked, so the intent survives signup and is
             // there when launch pricing ends. Deliberately in user_metadata
             // rather than a profiles column: it is a record of what they
@@ -137,7 +156,7 @@ function SignupForm() {
         fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
         notify.success(t("auth.welcomeToast"));
         router.push(`/onboarding/${role}`);
-      } else { setStep("confirm"); }
+      } else { router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`); }
     } catch (err: unknown) {
       // The mapper covers the unreachable-host case that used to be sniffed
       // for here by hand.
@@ -387,9 +406,38 @@ function SignupForm() {
               <label htmlFor={id} style={labelSt}>{label}</label>
               <input id={id} type={type} placeholder={placeholder} value={value}
                 onChange={e => onChange(e.target.value)} required minLength={minLength}
+                autoComplete={id === "password" ? "new-password" : id === "email" ? "email" : "name"}
                 onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+              {id === "password" && password.length > 0 && (
+                <div aria-live="polite" style={{ marginTop: "6px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "4px" }}>
+                    {[1, 2, 3, 4].map((n) => (
+                      <div key={n} style={{ height: "3px", borderRadius: "2px", background: n <= strength ? strengthColor : "var(--cr-paper-4)", transition: "background 200ms" }} />
+                    ))}
+                  </div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: strengthColor, marginTop: "4px" }}>{strengthLabel}</p>
+                </div>
+              )}
             </div>
           ))}
+          <div>
+            <label htmlFor="confirm" style={labelSt}>{t("auth.confirmPassword")}</label>
+            <input id="confirm" type="password" value={confirmPassword} required minLength={8} autoComplete="new-password"
+              onChange={e => setConfirmPassword(e.target.value)}
+              onFocus={onFocusCopper} onBlur={onBlurRule}
+              style={{ ...iStyle, borderColor: passwordsMatch ? undefined : "var(--cr-down)" }} />
+            {!passwordsMatch && (
+              <p role="alert" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: "4px" }}>{t("auth.passwordsMismatch")}</p>
+            )}
+          </div>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", cursor: "pointer", marginTop: "2px" }}>
+            <input type="checkbox" checked={ageConfirmed} required
+              onChange={e => setAgeConfirmed(e.target.checked)}
+              style={{ marginTop: "2px", accentColor: "var(--cr-copper)", cursor: "pointer", flexShrink: 0 }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
+              {t("auth.ageConfirm")}
+            </span>
+          </label>
           <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", cursor: "pointer", marginTop: "2px" }}>
             <input type="checkbox" checked={termsAccepted} required
               onChange={e => setTermsAccepted(e.target.checked)}
@@ -401,8 +449,8 @@ function SignupForm() {
               <Link href="/privacy" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{t("auth.privacy")}</Link>.
             </span>
           </label>
-          <button type="submit" disabled={loading || !isSupabaseConfigured || !termsAccepted} className="btn-copper-shimmer"
-            style={{ ...primaryBtn, opacity: loading || !isSupabaseConfigured || !termsAccepted ? 0.5 : 1, cursor: loading || !isSupabaseConfigured || !termsAccepted ? "not-allowed" : "pointer", marginTop: "4px" }}>
+          <button type="submit" disabled={loading || !isSupabaseConfigured || !canSubmit} className="btn-copper-shimmer"
+            style={{ ...primaryBtn, opacity: loading || !isSupabaseConfigured || !canSubmit ? 0.5 : 1, cursor: loading || !isSupabaseConfigured || !canSubmit ? "not-allowed" : "pointer", marginTop: "4px" }}>
             {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
           </button>
         </form>

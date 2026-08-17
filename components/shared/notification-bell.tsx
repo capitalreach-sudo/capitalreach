@@ -36,7 +36,9 @@ export function NotificationBell() {
   const [items, setItems]   = useState<Notification[] | null>(null);
   const [unread, setUnread] = useState(0);
   const [open, setOpen]     = useState(false);
+  const [pulse, setPulse]   = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const lastUnread = useRef<number | null>(null);
 
   async function load() {
     try {
@@ -44,13 +46,29 @@ export function NotificationBell() {
       if (!res.ok) { setItems(null); return; }
       const data = await res.json();
       setItems(data.notifications ?? []);
-      setUnread(data.unread ?? 0);
+      const n = data.unread ?? 0;
+      // A NEW unread arrival (not the initial load) pulses the bell once.
+      if (lastUnread.current !== null && n > lastUnread.current) {
+        setPulse(true);
+        setTimeout(() => setPulse(false), 900);
+      }
+      lastUnread.current = n;
+      setUnread(n);
     } catch {
       setItems(null);
     }
   }
 
-  useEffect(() => { load(); }, []);
+  // Initial load, then poll every 30s while the tab is visible — a founder
+  // leaving the dashboard open should see the bell move when an investor
+  // acts, without a full page reload.
+  useEffect(() => {
+    load();
+    const id = setInterval(() => { if (document.visibilityState === "visible") load(); }, 30_000);
+    const onVis = () => { if (document.visibilityState === "visible") load(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
+  }, []);
 
   // Close on outside click. Without this the panel stays open behind whatever
   // the user clicks next, which reads as the page being stuck.
@@ -94,9 +112,9 @@ export function NotificationBell() {
         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
       >
-        <Bell className="h-4 w-4" />
+        <Bell className="h-4 w-4" style={pulse ? { animation: "bellPulse 800ms ease" } : undefined} />
         {unread > 0 && (
-          <span style={{ position: "absolute", top: "-5px", right: "-6px", minWidth: "15px", height: "15px", padding: "0 3px", borderRadius: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+          <span style={{ position: "absolute", top: "-5px", right: "-6px", animation: pulse ? "badgePop 500ms cubic-bezier(.16,1,.3,1)" : undefined, minWidth: "15px", height: "15px", padding: "0 3px", borderRadius: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
             {unread > 9 ? "9+" : unread}
           </span>
         )}

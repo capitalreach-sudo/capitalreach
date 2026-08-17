@@ -591,7 +591,14 @@
     "passwordBreached": "This password has appeared in {count} known data breaches — attackers try it first. Pick a different one.",
     "passwordBreachedShort": "That password appears in known breaches — pick a different one.",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "strengthWeak": "Weak",
+    "strengthFair": "Fair",
+    "strengthStrong": "Strong",
+    "strengthVeryStrong": "Very strong",
+    "passwordsMismatch": "Passwords do not match.",
+    "ageConfirm": "I am 18 years or older.",
+    "mustConfirmAge": "Please confirm you are 18 or older."
   },
   "dashboard": {
     "overview": "Overview",
@@ -2689,5 +2696,19 @@
     "investorPays": "You pay",
     "footnote": "Legal costs for cold outreach and intermediaries typically run €5,000–€20,000 before a round even opens.",
     "detailNote": "The 2% success fee is invoiced to the startup only after a round closes through CapitalReach. Investors pay nothing."
+  },
+  "welcome": {
+    "eyebrow": "Welcome to CapitalReach",
+    "founderTitle": "Your listing is on its way.",
+    "founderBody": "We review every listing before it goes live — typically within 24–48 hours. Here is what moves the needle in the meantime:",
+    "f1": "Complete your listing (score ≥ 70)",
+    "f2": "Upload your deck to the data room",
+    "f3": "See which investors fit your round",
+    "investorTitle": "Start with the vetted deal flow.",
+    "investorBody": "Every listing here has been reviewed. Your thesis powers matching, so the more you fill in, the better the fit.",
+    "i1": "Browse active rounds",
+    "i2": "Complete your investment thesis",
+    "i3": "Run AI matching on your thesis",
+    "cta": "Let's go"
   }
 }

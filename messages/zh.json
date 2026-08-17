@@ -580,7 +580,14 @@
     "passwordBreached": "该密码已在 {count} 次已知数据泄露中出现——攻击者会最先尝试它。请换一个。",
     "passwordBreachedShort": "该密码存在于已知泄露中——请换一个。",
     "showPassword": "显示密码",
-    "hidePassword": "隐藏密码"
+    "hidePassword": "隐藏密码",
+    "strengthWeak": "弱",
+    "strengthFair": "一般",
+    "strengthStrong": "强",
+    "strengthVeryStrong": "非常强",
+    "passwordsMismatch": "两次输入的密码不一致。",
+    "ageConfirm": "我已年满 18 周岁。",
+    "mustConfirmAge": "请确认您已年满 18 周岁。"
   },
   "dashboard": {
     "overview": "概览",
@@ -2689,5 +2696,19 @@
     "investorPays": "您支付",
     "footnote": "陌生拓展与中介的法律成本通常在融资开始前就达 5,000–20,000 欧元。",
     "detailNote": "2% 成功费仅在通过 CapitalReach 完成融资后向创业公司开具。投资者无需支付任何费用。"
+  },
+  "welcome": {
+    "eyebrow": "欢迎来到 CapitalReach",
+    "founderTitle": "您的列表正在审核中。",
+    "founderBody": "每个列表上线前都会经过审核，通常在 24–48 小时内完成。与此同时，以下事项最能提升效果：",
+    "f1": "完善您的列表（评分 ≥ 70）",
+    "f2": "将路演材料上传至资料室",
+    "f3": "查看哪些投资者匹配您的融资",
+    "investorTitle": "从经审核的项目开始。",
+    "investorBody": "这里的每个列表都经过审核。您的投资主张驱动匹配，填写越完整，匹配越精准。",
+    "i1": "浏览进行中的融资",
+    "i2": "完善您的投资主张",
+    "i3": "运行 AI 匹配",
+    "cta": "开始"
   }
 }

@@ -571,7 +571,14 @@
     "passwordBreached": "이 비밀번호는 알려진 유출 사고에 {count}회 등장했습니다. 공격자가 가장 먼저 시도합니다. 다른 것을 선택하세요.",
     "passwordBreachedShort": "해당 비밀번호는 알려진 유출에 포함되어 있습니다. 다른 것을 선택하세요.",
     "showPassword": "비밀번호 표시",
-    "hidePassword": "비밀번호 숨기기"
+    "hidePassword": "비밀번호 숨기기",
+    "strengthWeak": "약함",
+    "strengthFair": "보통",
+    "strengthStrong": "강함",
+    "strengthVeryStrong": "매우 강함",
+    "passwordsMismatch": "비밀번호가 일치하지 않습니다.",
+    "ageConfirm": "본인은 만 18세 이상입니다.",
+    "mustConfirmAge": "만 18세 이상임을 확인해 주세요."
   },
   "dashboard": {
     "overview": "개요",
@@ -2689,5 +2696,19 @@
     "investorPays": "귀하의 부담",
     "footnote": "콜드 아웃리치와 중개인에 드는 법률 비용은 라운드가 열리기도 전에 보통 5,000–20,000유로에 이릅니다.",
     "detailNote": "2% 성공 수수료는 CapitalReach를 통해 라운드가 마감된 후에만 스타트업에 청구됩니다. 투자자는 아무것도 지불하지 않습니다."
+  },
+  "welcome": {
+    "eyebrow": "CapitalReach에 오신 것을 환영합니다",
+    "founderTitle": "등록이 검토 중입니다.",
+    "founderBody": "모든 등록은 공개 전에 검토됩니다 — 보통 24–48시간 이내입니다. 그동안 다음이 큰 차이를 만듭니다:",
+    "f1": "등록 정보 완성하기 (점수 ≥ 70)",
+    "f2": "데이터룸에 덱 업로드",
+    "f3": "라운드에 맞는 투자자 확인",
+    "investorTitle": "검증된 딜 플로우로 시작하세요.",
+    "investorBody": "이곳의 모든 등록은 검토를 거쳤습니다. 투자 논지가 매칭을 구동하므로, 자세히 채울수록 적합도가 높아집니다.",
+    "i1": "진행 중인 라운드 둘러보기",
+    "i2": "투자 논지 완성하기",
+    "i3": "AI 매칭 실행",
+    "cta": "시작하기"
   }
 }

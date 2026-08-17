@@ -580,7 +580,14 @@
     "passwordBreached": "Ce mot de passe figure dans {count} fuites de données connues — les attaquants l'essaient en premier. Choisissez-en un autre.",
     "passwordBreachedShort": "Ce mot de passe figure dans des fuites connues — choisissez-en un autre.",
     "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "hidePassword": "Masquer le mot de passe",
+    "strengthWeak": "Faible",
+    "strengthFair": "Moyen",
+    "strengthStrong": "Fort",
+    "strengthVeryStrong": "Très fort",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas.",
+    "ageConfirm": "J'ai 18 ans ou plus.",
+    "mustConfirmAge": "Veuillez confirmer que vous avez 18 ans ou plus."
   },
   "dashboard": {
     "overview": "Aperçu",
@@ -2689,5 +2696,19 @@
     "investorPays": "Vous payez",
     "footnote": "Les frais juridiques liés à la prospection et aux intermédiaires atteignent généralement 5 000–20 000 € avant même l'ouverture d'un tour.",
     "detailNote": "La commission de succès de 2% est facturée à la startup uniquement après la clôture d'un tour via CapitalReach. Les investisseurs ne paient rien."
+  },
+  "welcome": {
+    "eyebrow": "Bienvenue sur CapitalReach",
+    "founderTitle": "Votre fiche est en route.",
+    "founderBody": "Nous relisons chaque fiche avant sa mise en ligne — en général sous 24 à 48 h. En attendant, ce qui compte :",
+    "f1": "Compléter votre fiche (score ≥ 70)",
+    "f2": "Déposer votre deck dans la data room",
+    "f3": "Voir quels investisseurs correspondent",
+    "investorTitle": "Commencez par le deal flow vérifié.",
+    "investorBody": "Chaque fiche ici a été relue. Votre thèse alimente le matching : plus elle est complète, meilleur est le fit.",
+    "i1": "Parcourir les tours en cours",
+    "i2": "Compléter votre thèse d'investissement",
+    "i3": "Lancer le matching IA",
+    "cta": "C'est parti"
   }
 }

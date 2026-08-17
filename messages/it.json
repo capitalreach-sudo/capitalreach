@@ -571,7 +571,14 @@
     "passwordBreached": "Questa password è comparsa in {count} violazioni note: gli attaccanti la provano per prima. Scegline un'altra.",
     "passwordBreachedShort": "Quella password compare in violazioni note: scegline un'altra.",
     "showPassword": "Mostra password",
-    "hidePassword": "Nascondi password"
+    "hidePassword": "Nascondi password",
+    "strengthWeak": "Debole",
+    "strengthFair": "Discreta",
+    "strengthStrong": "Forte",
+    "strengthVeryStrong": "Molto forte",
+    "passwordsMismatch": "Le password non coincidono.",
+    "ageConfirm": "Ho almeno 18 anni.",
+    "mustConfirmAge": "Conferma di avere almeno 18 anni."
   },
   "dashboard": {
     "overview": "Panoramica",
@@ -2689,5 +2696,19 @@
     "investorPays": "Tu paghi",
     "footnote": "I costi legali per outreach a freddo e intermediari sono in genere di 5.000–20.000 € prima ancora che un round si apra.",
     "detailNote": "La success fee del 2% viene fatturata alla startup solo dopo la chiusura di un round tramite CapitalReach. Gli investitori non pagano nulla."
+  },
+  "welcome": {
+    "eyebrow": "Benvenuto su CapitalReach",
+    "founderTitle": "La tua scheda è in arrivo.",
+    "founderBody": "Rivediamo ogni scheda prima della pubblicazione — di solito entro 24–48 ore. Nel frattempo, ecco cosa conta:",
+    "f1": "Completa la scheda (punteggio ≥ 70)",
+    "f2": "Carica il deck nella data room",
+    "f3": "Scopri quali investitori sono adatti",
+    "investorTitle": "Parti dal deal flow verificato.",
+    "investorBody": "Ogni scheda è stata rivista. La tua tesi alimenta il matching: più è completa, migliore è il fit.",
+    "i1": "Esplora i round attivi",
+    "i2": "Completa la tesi di investimento",
+    "i3": "Avvia il matching AI",
+    "cta": "Iniziamo"
   }
 }

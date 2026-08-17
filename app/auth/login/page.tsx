@@ -57,7 +57,13 @@ function LoginForm() {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      notify.error(authErrorMessage(error, t));
+      // An unconfirmed address is not a wrong password: send them to the
+      // verify screen (with resend) instead of a toast they cannot act on.
+      if (/email not confirmed|email_not_confirmed/i.test(error.message)) {
+        router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+      } else {
+        notify.error(authErrorMessage(error, t));
+      }
     } else {
       // 2FA gate. With a verified factor, the session issued by the password
       // alone is AAL1 -- middleware and RLS see it as not-fully-authenticated
@@ -88,7 +94,9 @@ function LoginForm() {
     } else {
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).single();
       const role = profile?.role;
-      router.push(role === "startup" ? "/dashboard/startup" : role === "investor" ? "/dashboard/investor" : role === "admin" ? "/admin" : "/");
+      // No role yet (e.g. Google sign-up that never finished) → the role
+      // fork, not the homepage.
+      router.push(role === "startup" ? "/dashboard/startup" : role === "investor" ? "/dashboard/investor" : role === "admin" ? "/admin" : "/onboarding");
       router.refresh();
     }
   }

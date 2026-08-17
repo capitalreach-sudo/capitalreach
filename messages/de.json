@@ -587,7 +587,14 @@
     "passwordBreached": "Dieses Passwort tauchte in {count} bekannten Datenlecks auf — Angreifer probieren es zuerst. Wähle ein anderes.",
     "passwordBreachedShort": "Dieses Passwort taucht in bekannten Lecks auf — wähle ein anderes.",
     "showPassword": "Passwort anzeigen",
-    "hidePassword": "Passwort verbergen"
+    "hidePassword": "Passwort verbergen",
+    "strengthWeak": "Schwach",
+    "strengthFair": "Okay",
+    "strengthStrong": "Stark",
+    "strengthVeryStrong": "Sehr stark",
+    "passwordsMismatch": "Die Passwörter stimmen nicht überein.",
+    "ageConfirm": "Ich bin mindestens 18 Jahre alt.",
+    "mustConfirmAge": "Bitte bestätigen Sie, dass Sie mindestens 18 sind."
   },
   "dashboard": {
     "overview": "Übersicht",
@@ -2689,5 +2696,19 @@
     "investorPays": "Sie zahlen",
     "footnote": "Rechtskosten für Kaltakquise und Intermediäre liegen typischerweise bei 5.000–20.000 €, bevor eine Runde überhaupt startet.",
     "detailNote": "Die Erfolgsgebühr von 2% wird dem Startup erst nach Abschluss einer Runde über CapitalReach in Rechnung gestellt. Investoren zahlen nichts."
+  },
+  "welcome": {
+    "eyebrow": "Willkommen bei CapitalReach",
+    "founderTitle": "Ihr Listing ist unterwegs.",
+    "founderBody": "Wir prüfen jedes Listing, bevor es live geht — in der Regel innerhalb von 24–48 Stunden. Das bringt Sie inzwischen weiter:",
+    "f1": "Listing vervollständigen (Score ≥ 70)",
+    "f2": "Deck in den Datenraum laden",
+    "f3": "Passende Investoren finden",
+    "investorTitle": "Starten Sie mit geprüftem Dealflow.",
+    "investorBody": "Jedes Listing hier wurde geprüft. Ihre These steuert das Matching — je vollständiger, desto besser der Fit.",
+    "i1": "Aktive Runden durchsuchen",
+    "i2": "Investment-These vervollständigen",
+    "i3": "KI-Matching starten",
+    "cta": "Los geht's"
   }
 }

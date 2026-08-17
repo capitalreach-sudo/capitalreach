@@ -675,6 +675,18 @@ body::before {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes bellPulse {
+  0%   { transform: rotate(0); }
+  20%  { transform: rotate(-14deg); }
+  40%  { transform: rotate(12deg); }
+  60%  { transform: rotate(-8deg); }
+  80%  { transform: rotate(5deg); }
+  100% { transform: rotate(0); }
+}
+@keyframes badgePop {
+  from { transform: scale(1.6); }
+  to   { transform: scale(1); }
+}
 .animate-fade-in       { animation: fadeIn 500ms ease both; }
 .animate-slide-in-right{ animation: slideInRight 500ms cubic-bezier(.16,1,.3,1) both; }
 .animate-draw-bar      { animation: drawBar 1.2s cubic-bezier(.33,1,.68,1) both; }

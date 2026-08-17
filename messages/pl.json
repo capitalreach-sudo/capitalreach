@@ -571,7 +571,14 @@
     "passwordBreached": "To hasło pojawiło się w {count} znanych wyciekach — atakujący próbują go najpierw. Wybierz inne.",
     "passwordBreachedShort": "To hasło występuje w znanych wyciekach — wybierz inne.",
     "showPassword": "Pokaż hasło",
-    "hidePassword": "Ukryj hasło"
+    "hidePassword": "Ukryj hasło",
+    "strengthWeak": "Słabe",
+    "strengthFair": "Przeciętne",
+    "strengthStrong": "Silne",
+    "strengthVeryStrong": "Bardzo silne",
+    "passwordsMismatch": "Hasła nie są zgodne.",
+    "ageConfirm": "Mam ukończone 18 lat.",
+    "mustConfirmAge": "Potwierdź, że masz ukończone 18 lat."
   },
   "dashboard": {
     "overview": "Przegląd",
@@ -2689,5 +2696,19 @@
     "investorPays": "Płacisz",
     "footnote": "Koszty prawne zimnego outreachu i pośredników zwykle wynoszą 5 000–20 000 € zanim runda w ogóle się otworzy.",
     "detailNote": "Prowizja od sukcesu 2% jest fakturowana startupowi dopiero po zamknięciu rundy przez CapitalReach. Inwestorzy nie płacą nic."
+  },
+  "welcome": {
+    "eyebrow": "Witamy w CapitalReach",
+    "founderTitle": "Twój profil jest w drodze.",
+    "founderBody": "Sprawdzamy każdy profil przed publikacją — zwykle w ciągu 24–48 godzin. Tymczasem to robi różnicę:",
+    "f1": "Uzupełnij profil (wynik ≥ 70)",
+    "f2": "Wgraj deck do data roomu",
+    "f3": "Zobacz, którzy inwestorzy pasują",
+    "investorTitle": "Zacznij od zweryfikowanego deal flow.",
+    "investorBody": "Każdy profil został sprawdzony. Twoja teza zasila dopasowanie — im pełniejsza, tym lepsze dopasowanie.",
+    "i1": "Przeglądaj aktywne rundy",
+    "i2": "Uzupełnij tezę inwestycyjną",
+    "i3": "Uruchom dopasowanie AI",
+    "cta": "Zaczynamy"
   }
 }
