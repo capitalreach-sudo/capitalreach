@@ -4,6 +4,7 @@ import { isTeamMemberOfEither } from "@/lib/membership";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { isCurrencyCode } from "@/lib/currency";
 import { notifyUsers } from "@/lib/notify-user";
+import { maskIp } from "@/lib/identity";
 
 // Human-readable stage names for notification copy. Kept here rather than
 // imported from the kanban because that is a client component and this is a
@@ -56,6 +57,39 @@ export async function POST(req: NextRequest) {
     await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
 
   if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  // Phase 1: an investor advancing a deal (into diligence or a term sheet)
+  // must have accepted the non-circumvention terms for this startup. Deals the
+  // investor opened already carry the ack; founder-opened deals reach this
+  // gate the first time the investor acts. 428 → client shows the modal,
+  // records the ack, and retries. Founders, admins and "passed" are exempt.
+  const investorActing = deal.investor?.owner_id === user.id && deal.startup?.owner_id !== user.id;
+  if (investorActing && (status === "due_diligence" || status === "term_sheet")) {
+    const { data: ack } = await supabase
+      .from("circumvention_acks")
+      .select("id")
+      .match({ investor_id: user.id, startup_id: deal.startup_id })
+      .maybeSingle();
+    if (!ack) {
+      const { data: st } = await supabase.from("startups").select("name").eq("id", deal.startup_id).maybeSingle();
+      return NextResponse.json(
+        { error: "Please acknowledge the non-circumvention terms first.", code: "ACK_REQUIRED", startupId: deal.startup_id, startupName: st?.name ?? null },
+        { status: 428 },
+      );
+    }
+    // Link the ack to the deal (once) and put it on the timeline.
+    const admin = createAdminClient();
+    const { data: dealRow } = await admin.from("deals").select("circumvention_ack_id").eq("id", dealId).maybeSingle();
+    if (dealRow && !dealRow.circumvention_ack_id) {
+      await admin.from("deals").update({ circumvention_ack_id: ack.id }).eq("id", dealId).then(undefined, () => {});
+      const { data: full } = await admin.from("circumvention_acks").select("acknowledged_at, ip_address").eq("id", ack.id).maybeSingle();
+      await admin.from("deal_activity").insert({
+        deal_id: dealId, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: user.id,
+        type: "circumvention_acknowledged",
+        body: full ? `${new Date(full.acknowledged_at).toISOString().replace("T", " ").slice(0, 16)} UTC · IP ${maskIp(full.ip_address)}` : null,
+      }).then(undefined, () => {});
+    }
+  }
 
   // Use close endpoint for closed status (triggers invoice)
   if (status === "closed") {

@@ -1157,7 +1157,8 @@
     "interestAmountPlaceholder": "金額（任意）",
     "interestNeedsMessage": "創業者が状況を把握できるよう、短いメッセージを添えてください。",
     "interestSent": "関心を送信しました — ディールがパイプラインにあります。",
-    "viewInPipeline": "パイプラインで見る"
+    "viewInPipeline": "パイプラインで見る",
+    "identityProtected": "このスタートアップとディールを開始すると、創業者の氏名とプロフィールが完全に表示されます。"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1879,7 +1880,8 @@
     "ckTs2": "条件を交渉",
     "ckTs3": "タームシートに署名",
     "ckTs4": "クローズ金額を確認",
-    "moneyWorks": "資金の流れ：投資はあなたと相手方の間で直接行われ、CapitalReach が資金を預かることはありません。2% の手数料は、両者がクローズを確認した後にのみ創業者に請求されます。"
+    "moneyWorks": "資金の流れ：投資はあなたと相手方の間で直接行われ、CapitalReach が資金を預かることはありません。2% の手数料は、両者がクローズを確認した後にのみ創業者に請求されます。",
+    "activityCircumventionAck": "迂回禁止条項に同意"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "このリンクは無効です",
     "invalidBody": "配信停止リンクがないか期限切れです。メール設定はアカウント設定から管理できます。",
     "manage": "通知設定を管理"
+  },
+  "circumvention": {
+    "eyebrow": "連絡の前に",
+    "title": "{name} に連絡する前に",
+    "intro": "連絡を開始することで、以下を正式に承認したものとみなされます：",
+    "bullet1": "この紹介は CapitalReach が仲介しています。",
+    "bullet2": "本日から {months} か月間、このつながりを通じてスタートアップが調達した資金に {fee}% の成功報酬が適用されます。",
+    "bullet3": "取引がプラットフォーム内外どちらで成立しても適用されます。報酬はスタートアップが負担し、投資家の負担はありません。",
+    "bullet4": "この承認はタイムスタンプ付きで法的記録として保存されます。IP アドレスも記録されます。",
+    "checkbox": "上記の条件を読み、同意します",
+    "checkboxHint": "続行するには必須です",
+    "confirm": "確認して続行",
+    "footer": "タイムスタンプ {time} · IP 記録済み"
+  },
+  "feeCalc": {
+    "title": "CapitalReach の手数料を計算",
+    "titleCheck": "このディールにかかる費用",
+    "sectionTitle": "費用の仕組み",
+    "inputRaise": "調達額",
+    "inputCheck": "投資額",
+    "rowCapitalReach": "CapitalReach（{fee}%）",
+    "rowBroker": "従来の仲介業者（{fee}%）",
+    "rowSave": "節約額",
+    "yourPortion": "投資額に対する成功報酬（{fee}%、スタートアップが負担）",
+    "investorPays": "あなたの負担",
+    "footnote": "コールドアプローチや仲介業者にかかる法務費用は、ラウンド開始前で通常 5,000〜20,000 ユーロに上ります。",
+    "detailNote": "2% の成功報酬は、CapitalReach 経由でラウンドが成立した後にのみスタートアップへ請求されます。投資家の負担はありません。"
   }
 }

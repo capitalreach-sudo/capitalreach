@@ -6,6 +6,7 @@ import { PrintButton } from "@/components/ui/PrintButton";
 import { safeFormatCurrencyAmount, safeFormatMRR } from "@/lib/validators";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { roundCloseState } from "@/lib/round-close";
+import { protectFounders } from "@/lib/identity";
 
 /**
  * The one-pager: the single sheet investors ask for by email.
@@ -47,6 +48,28 @@ export default async function OnePagerPage({ params }: Props) {
     .single();
 
   if (!startup) notFound();
+
+  // Identity protection (Phase 1): the printable one-pager is the easiest
+  // artefact to hand around, so founder names are masked ("Sarah K.") unless
+  // the viewer owns the listing, is an admin, or has a live deal on it.
+  const { data: { user } } = await supabase.auth.getUser();
+  let reveal = false;
+  if (user) {
+    const [{ data: owner }, { data: prof }, { data: inv }] = await Promise.all([
+      supabase.from("startups").select("owner_id").eq("slug", params.slug).maybeSingle(),
+      supabase.from("profiles").select("role").eq("id", user.id).maybeSingle(),
+      supabase.from("investors").select("id").eq("owner_id", user.id).maybeSingle(),
+    ]);
+    reveal = owner?.owner_id === user.id || prof?.role === "admin";
+    if (!reveal && inv?.id && owner) {
+      const { data: st } = await supabase.from("startups").select("id").eq("slug", params.slug).maybeSingle();
+      if (st) {
+        const { data: deal } = await supabase.from("deals").select("id").match({ startup_id: st.id, investor_id: inv.id }).neq("status", "passed").limit(1).maybeSingle();
+        reveal = !!deal;
+      }
+    }
+  }
+  const founders = protectFounders(startup.founders ?? [], reveal);
 
   const closing = roundCloseState(startup.round_close_date);
   const metrics: Array<[string, string]> = [];
@@ -151,11 +174,11 @@ export default async function OnePagerPage({ params }: Props) {
               </p>
             </div>
           ))}
-          {(startup.founders?.length ?? 0) > 0 && (
+          {founders.length > 0 && (
             <div style={{ breakInside: "avoid", marginBottom: "16px" }}>
               <p style={label}>Founders</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", lineHeight: 1.65, color: "var(--cr-ink-2)" }}>
-                {startup.founders!.map((f) => [f.name, f.role].filter(Boolean).join(" — ")).join("\n")}
+                {founders.map((f) => [f.name, f.role].filter(Boolean).join(" — ")).join("\n")}
               </p>
             </div>
           )}

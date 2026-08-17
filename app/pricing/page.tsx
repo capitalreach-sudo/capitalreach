@@ -11,6 +11,7 @@ import { useLaunchMode } from "@/hooks/useLaunchMode";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
+import { FeeCalculator } from "@/components/ui/FeeCalculator";
 
 // ── Feature row builders ──────────────────────────────────────
 
@@ -536,7 +537,15 @@ export default function PricingPage() {
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: "12px" }}>
+            {/* Interactive 2% calculator (Phase 1, mechanism D): the same
+                comparison as the columns above, but on the reader's own number. */}
+            <div className="grid-plans-3" style={{ marginBottom: "40px", alignItems: "start" }}>
+              <div style={{ gridColumn: "1 / -1", maxWidth: "560px" }}>
+                <FeeCalculator variant="raise" currency="EUR" defaultAmount={500_000} />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               <Link href="/auth/signup"
                 className="btn-copper-shimmer"
                 style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}

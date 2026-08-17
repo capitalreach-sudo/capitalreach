@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { protectFounders } from "@/lib/identity";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { checkAiAllowance, logAiUsage } from "@/lib/ai-limits";
 import { generateDueDiligenceReport, isOpenAIConfigured } from "@/lib/openai";
@@ -74,6 +75,20 @@ export async function POST(req: NextRequest) {
     .eq("owner_id", user.id)
     .single();
 
+  // Identity protection (Phase 1): the report names founders in full only
+  // when this investor already has a live deal on the startup — the same rule
+  // as the listing page. Otherwise the model sees "Sarah K." and no links,
+  // so the report cannot become a lookup tool for going around the platform.
+  let reveal = profile?.role === "admin";
+  if (!reveal && investor?.id) {
+    const { data: deal } = await supabase
+      .from("deals").select("id, status")
+      .match({ startup_id: startupId, investor_id: investor.id })
+      .neq("status", "passed")
+      .limit(1).maybeSingle();
+    reveal = !!deal;
+  }
+
   const report = await generateDueDiligenceReport({
     name: startup.name,
     tagline: startup.tagline,
@@ -90,7 +105,7 @@ export async function POST(req: NextRequest) {
     growth_rate: startup.growth_rate,
     funding_target: startup.funding_target,
     equity_offered: startup.equity_offered,
-    founders: startup.founders,
+    founders: protectFounders(startup.founders, reveal),
   });
 
   const adminClient = createAdminClient();

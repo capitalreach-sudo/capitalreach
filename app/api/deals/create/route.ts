@@ -5,6 +5,7 @@ import { isAccountSuspended } from "@/lib/suspension-guard";
 import { resolveEntity } from "@/lib/membership";
 import { sendDealOpenedEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
+import { maskIp } from "@/lib/identity";
 
 // Creates a deal. Startups/investors pick a single counterpart and their own
 // side is derived from their profile — never trusted from the request body.
@@ -46,6 +47,9 @@ export async function POST(req: NextRequest) {
 
   let startup_id: string;
   let investor_id: string;
+  // Set when the caller is the investor side: the non-circumvention ack this
+  // deal was opened under (Phase 1). Founders/admins opening deals need none.
+  let ack: { id: string; acknowledged_at: string; ip_address: string | null } | null = null;
 
   if (startupId && investorId) {
     const { data: profile } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
@@ -94,6 +98,22 @@ export async function POST(req: NextRequest) {
       if (st.status !== "active") {
         return NextResponse.json({ error: "That startup is not currently listed" }, { status: 409 });
       }
+      // The investor must have accepted the non-circumvention terms for THIS
+      // startup before a deal can open. Enforced here, not just in the UI, so
+      // no client can route around the acknowledgment. 428 = the client
+      // should show the modal and retry.
+      const { data: existingAck } = await admin
+        .from("circumvention_acks")
+        .select("id, acknowledged_at, ip_address")
+        .match({ investor_id: user.id, startup_id: st.id })
+        .maybeSingle();
+      if (!existingAck) {
+        return NextResponse.json(
+          { error: "Please acknowledge the non-circumvention terms first.", code: "ACK_REQUIRED", startupId: st.id },
+          { status: 428 },
+        );
+      }
+      ack = existingAck;
       startup_id  = st.id;
       investor_id = myInvestor.entityId;
     } else {
@@ -125,6 +145,7 @@ export async function POST(req: NextRequest) {
       currency: dealCurrency,
       status: startStatus,
       next_follow_up: followUp,
+      circumvention_ack_id: ack?.id ?? null,
     })
     .select()
     .single();
@@ -143,6 +164,19 @@ export async function POST(req: NextRequest) {
   // until someone happens to act on it, so there is no record of who opened it,
   // when, or on what terms -- and the first entry ends up being a status change
   // out of a stage nobody can see was ever set.
+  // First line of an investor-opened deal: the timestamped acknowledgment.
+  // Both parties can read it; the IP is masked on the shared timeline (the
+  // full value stays in circumvention_acks, service-role only).
+  if (ack) {
+    await admin.from("deal_activity").insert({
+      deal_id:     deal.id,
+      startup_id,
+      investor_id,
+      actor_id:    user.id,
+      type:        "circumvention_acknowledged",
+      body:        `${new Date(ack.acknowledged_at).toISOString().replace("T", " ").slice(0, 16)} UTC · IP ${maskIp(ack.ip_address)}`,
+    }).then(undefined, () => {});
+  }
   await admin.from("deal_activity").insert({
     deal_id:     deal.id,
     startup_id,

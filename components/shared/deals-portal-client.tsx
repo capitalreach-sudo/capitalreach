@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DealKanban, type OwnProfile } from "@/components/shared/deal-kanban";
+import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
 import type { Deal, DealStatus } from "@/types";
@@ -20,8 +22,24 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   const { t } = useTranslation();
   const router = useRouter();
 
+  // Phase 1: an investor's first stage move on a founder-opened deal must be
+  // preceded by the non-circumvention acknowledgment. The server answers 428
+  // with the startup; we show the modal, record the ack, and retry the move.
+  const [ackPending, setAckPending] = useState<{ startupId: string; startupName: string; retry: () => Promise<void> } | null>(null);
+
   async function handleDealStatusChange(dealId: string, status: DealStatus, reason?: string) {
     const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status, reason }) });
+    if (res.status === 428) {
+      const data = await res.json().catch(() => ({}));
+      if (data.code === "ACK_REQUIRED" && data.startupId) {
+        setAckPending({
+          startupId: data.startupId,
+          startupName: data.startupName || t("deals.startupFallback"),
+          retry: () => handleDealStatusChange(dealId, status, reason),
+        });
+        return;
+      }
+    }
     if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else router.refresh();
   }
 
@@ -43,6 +61,16 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   }
 
   return (
+    <>
+    {ackPending && (
+      <NonCircumventionModal
+        open
+        startupId={ackPending.startupId}
+        startupName={ackPending.startupName}
+        onCancel={() => setAckPending(null)}
+        onConfirmed={() => { const r = ackPending.retry; setAckPending(null); r(); }}
+      />
+    )}
     <DealKanban
       deals={deals}
       onStatusChange={handleDealStatusChange}
@@ -54,5 +82,6 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       canExport={canExport}
       onSetFollowUp={handleSetFollowUp}
     />
+    </>
   );
 }

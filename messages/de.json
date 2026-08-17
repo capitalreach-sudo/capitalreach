@@ -1164,7 +1164,8 @@
     "interestAmountPlaceholder": "Betrag (optional)",
     "interestNeedsMessage": "Füge eine kurze Nachricht hinzu, damit der Gründer Kontext hat.",
     "interestSent": "Interesse gesendet — der Deal ist in deiner Pipeline.",
-    "viewInPipeline": "In Pipeline ansehen"
+    "viewInPipeline": "In Pipeline ansehen",
+    "identityProtected": "Namen und Profile der Gründer werden vollständig angezeigt, sobald Sie einen Deal mit diesem Startup eröffnen."
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1886,7 +1887,8 @@
     "ckTs2": "Bedingungen verhandeln",
     "ckTs3": "Term Sheet unterschreiben",
     "ckTs4": "Abschlussbetrag bestätigen",
-    "moneyWorks": "So funktioniert das Geld: Die Investition fließt direkt zwischen dir und der Gegenseite — CapitalReach verwahrt niemals Gelder. Die 2 %-Gebühr wird dem Gründer erst in Rechnung gestellt, nachdem beide Seiten den Abschluss bestätigt haben."
+    "moneyWorks": "So funktioniert das Geld: Die Investition fließt direkt zwischen dir und der Gegenseite — CapitalReach verwahrt niemals Gelder. Die 2 %-Gebühr wird dem Gründer erst in Rechnung gestellt, nachdem beide Seiten den Abschluss bestätigt haben.",
+    "activityCircumventionAck": "Umgehungsverbot bestätigt"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "Dieser Link ist ungültig",
     "invalidBody": "Der Abmeldelink fehlt oder ist abgelaufen. Du kannst E-Mail-Präferenzen stattdessen in deinen Kontoeinstellungen verwalten.",
     "manage": "Benachrichtigungseinstellungen verwalten"
+  },
+  "circumvention": {
+    "eyebrow": "Bevor Sie Kontakt aufnehmen",
+    "title": "Bevor Sie {name} kontaktieren",
+    "intro": "Mit der Kontaktaufnahme bestätigen Sie ausdrücklich:",
+    "bullet1": "Diese Vorstellung wird durch CapitalReach vermittelt.",
+    "bullet2": "Auf Kapital, das das Startup über diese Verbindung einwirbt, fällt {months} Monate lang ab heute eine Erfolgsgebühr von {fee}% an.",
+    "bullet3": "Das gilt unabhängig davon, ob der Deal auf oder außerhalb der Plattform abgeschlossen wird. Die Gebühr trägt das Startup, nie Sie.",
+    "bullet4": "Diese Bestätigung wird mit Zeitstempel als rechtlicher Nachweis gespeichert. Ihre IP-Adresse wird erfasst.",
+    "checkbox": "Ich habe die obigen Bedingungen gelesen und stimme zu",
+    "checkboxHint": "Erforderlich, um fortzufahren",
+    "confirm": "Bestätigen und fortfahren",
+    "footer": "Zeitstempel {time} · IP erfasst"
+  },
+  "feeCalc": {
+    "title": "Berechnen Sie Ihre CapitalReach-Gebühr",
+    "titleCheck": "Was dieser Deal Sie kostet",
+    "sectionTitle": "Die Ökonomie",
+    "inputRaise": "Rundengröße",
+    "inputCheck": "Ihre Ticketgröße",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Klassischer Vermittler ({fee}%)",
+    "rowSave": "Sie sparen",
+    "yourPortion": "Erfolgsgebühr auf Ihr Ticket ({fee}%, zahlt das Startup)",
+    "investorPays": "Sie zahlen",
+    "footnote": "Rechtskosten für Kaltakquise und Intermediäre liegen typischerweise bei 5.000–20.000 €, bevor eine Runde überhaupt startet.",
+    "detailNote": "Die Erfolgsgebühr von 2% wird dem Startup erst nach Abschluss einer Runde über CapitalReach in Rechnung gestellt. Investoren zahlen nichts."
   }
 }

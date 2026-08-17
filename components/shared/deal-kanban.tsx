@@ -934,6 +934,9 @@ const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
   // adding the variant to DealActivityType made the compiler point straight at
   // this map, which is how it should work.
   success_fee:     "deals.activitySuccessFee",
+  // The first line of every investor-opened deal: the timestamped record that
+  // the 2% terms were accepted before contact (see circumvention_acks).
+  circumvention_acknowledged: "deals.activityCircumventionAck",
 };
 
 /**
@@ -1447,9 +1450,18 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           {/* The exact invoice, live, before the click that triggers it.
               Nobody should learn the number from the invoice email. */}
           {parseFloat(closeAmount) > 0 && (
-            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "6px 10px", marginBottom: "8px" }}>
-              {t("deals.feePreview", { fee: formatMoney(parseFloat(closeAmount) * 0.02, closeCurrency) })}
-            </p>
+            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "6px 10px", marginBottom: "8px" }}>
+              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>
+                {t("deals.feePreview", { fee: formatMoney(parseFloat(closeAmount) * 0.02, closeCurrency) })}
+              </p>
+              {/* Value framing (Phase 1, mechanism D): the same number next to
+                  what a broker would have taken makes 2% read as the cheap
+                  option at the exact moment the fee is triggered. */}
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10.5px", color: "var(--cr-ink-3)", marginTop: "3px" }}>
+                {t("feeCalc.rowBroker", { fee: 6 })}: <s>{formatMoney(parseFloat(closeAmount) * 0.06, closeCurrency)}</s>
+                {" · "}{t("feeCalc.rowSave")}: <span style={{ color: "var(--cr-up)", fontWeight: 500 }}>{formatMoney(parseFloat(closeAmount) * 0.04, closeCurrency)}</span>
+              </p>
+            </div>
           )}
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>
             {t("deals.feeNotice")}

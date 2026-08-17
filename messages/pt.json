@@ -1117,7 +1117,8 @@
     "interestAmountPlaceholder": "Valor (opcional)",
     "interestNeedsMessage": "Adicione uma mensagem curta para dar contexto ao founder.",
     "interestSent": "Interesse enviado — o deal está no seu pipeline.",
-    "viewInPipeline": "Ver no pipeline"
+    "viewInPipeline": "Ver no pipeline",
+    "identityProtected": "Os nomes e perfis dos fundadores são mostrados por completo assim que abrir um negócio com esta startup."
   },
   "filters": {
     "industry": "Indústria",
@@ -1879,7 +1880,8 @@
     "ckTs2": "Negociar os termos",
     "ckTs3": "Assinar o term sheet",
     "ckTs4": "Confirmar o valor de fechamento",
-    "moneyWorks": "Como o dinheiro funciona: o investimento passa diretamente entre você e a contraparte — a CapitalReach nunca retém fundos. A taxa de 2% é faturada ao fundador somente depois que ambos os lados confirmam o fechamento."
+    "moneyWorks": "Como o dinheiro funciona: o investimento passa diretamente entre você e a contraparte — a CapitalReach nunca retém fundos. A taxa de 2% é faturada ao fundador somente depois que ambos os lados confirmam o fechamento.",
+    "activityCircumventionAck": "Não contorno reconhecido"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "Este link não é válido",
     "invalidBody": "O link de cancelamento está ausente ou expirou. Você pode gerenciar as preferências de e-mail nas configurações da conta.",
     "manage": "Gerenciar notificações"
+  },
+  "circumvention": {
+    "eyebrow": "Antes de entrar em contacto",
+    "title": "Antes de contactar a {name}",
+    "intro": "Ao iniciar o contacto, reconhece formalmente que:",
+    "bullet1": "Esta apresentação é facilitada pela CapitalReach.",
+    "bullet2": "Aplica-se uma comissão de sucesso de {fee}% sobre o capital que a startup angariar através desta ligação durante {months} meses a partir de hoje.",
+    "bullet3": "Aplica-se quer o negócio feche dentro ou fora da plataforma. A comissão é paga pela startup, nunca por si.",
+    "bullet4": "Este reconhecimento fica registado com data e hora como prova legal. O seu endereço IP é registado.",
+    "checkbox": "Li e aceito os termos acima",
+    "checkboxHint": "Obrigatório para continuar",
+    "confirm": "Confirmar e continuar",
+    "footer": "Registado {time} · IP guardado"
+  },
+  "feeCalc": {
+    "title": "Calcule a sua comissão CapitalReach",
+    "titleCheck": "Quanto este negócio lhe custa",
+    "sectionTitle": "A economia",
+    "inputRaise": "Montante da ronda",
+    "inputCheck": "O seu ticket",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Intermediário tradicional ({fee}%)",
+    "rowSave": "Poupa",
+    "yourPortion": "Comissão sobre o seu ticket ({fee}%, paga pela startup)",
+    "investorPays": "Você paga",
+    "footnote": "Os custos legais de prospeção e intermediários rondam normalmente 5.000–20.000 € antes de uma ronda sequer abrir.",
+    "detailNote": "A comissão de sucesso de 2% é faturada à startup apenas após o fecho de uma ronda através da CapitalReach. Os investidores não pagam nada."
   }
 }

@@ -1117,7 +1117,8 @@
     "interestAmountPlaceholder": "Importo (facoltativo)",
     "interestNeedsMessage": "Aggiungi un breve messaggio per dare contesto al founder.",
     "interestSent": "Interesse inviato — il deal è nella tua pipeline.",
-    "viewInPipeline": "Vedi nella pipeline"
+    "viewInPipeline": "Vedi nella pipeline",
+    "identityProtected": "Nomi e profili dei founder vengono mostrati per intero quando apri un'operazione con questa startup."
   },
   "filters": {
     "industry": "Settore",
@@ -1879,7 +1880,8 @@
     "ckTs2": "Negoziare i termini",
     "ckTs3": "Firmare il term sheet",
     "ckTs4": "Confermare l'importo di chiusura",
-    "moneyWorks": "Come funziona il denaro: l'investimento passa direttamente tra te e la controparte — CapitalReach non custodisce mai fondi. La commissione del 2% viene fatturata al founder solo dopo che entrambe le parti confermano la chiusura."
+    "moneyWorks": "Come funziona il denaro: l'investimento passa direttamente tra te e la controparte — CapitalReach non custodisce mai fondi. La commissione del 2% viene fatturata al founder solo dopo che entrambe le parti confermano la chiusura.",
+    "activityCircumventionAck": "Non elusione riconosciuta"
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "Questo link non è valido",
     "invalidBody": "Il link di annullamento manca o è scaduto. Puoi gestire le preferenze email dalle impostazioni dell'account.",
     "manage": "Gestisci le notifiche"
+  },
+  "circumvention": {
+    "eyebrow": "Prima di contattare",
+    "title": "Prima di contattare {name}",
+    "intro": "Avviando il contatto, riconosci formalmente che:",
+    "bullet1": "Questa presentazione è facilitata da CapitalReach.",
+    "bullet2": "Una success fee del {fee}% si applica al capitale raccolto dalla startup tramite questo contatto per {months} mesi da oggi.",
+    "bullet3": "Vale sia che l'operazione si chiuda sulla piattaforma sia al di fuori. La fee è a carico della startup, mai tua.",
+    "bullet4": "Questo riconoscimento è registrato con data e ora come prova legale. Il tuo indirizzo IP viene registrato.",
+    "checkbox": "Ho letto e accetto i termini sopra indicati",
+    "checkboxHint": "Obbligatorio per continuare",
+    "confirm": "Conferma e prosegui",
+    "footer": "Registrato {time} · IP salvato"
+  },
+  "feeCalc": {
+    "title": "Calcola la tua fee CapitalReach",
+    "titleCheck": "Quanto ti costa questa operazione",
+    "sectionTitle": "L'economia",
+    "inputRaise": "Importo del round",
+    "inputCheck": "Il tuo ticket",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Intermediario tradizionale ({fee}%)",
+    "rowSave": "Risparmi",
+    "yourPortion": "Success fee sul tuo ticket ({fee}%, pagata dalla startup)",
+    "investorPays": "Tu paghi",
+    "footnote": "I costi legali per outreach a freddo e intermediari sono in genere di 5.000–20.000 € prima ancora che un round si apra.",
+    "detailNote": "La success fee del 2% viene fatturata alla startup solo dopo la chiusura di un round tramite CapitalReach. Gli investitori non pagano nulla."
   }
 }

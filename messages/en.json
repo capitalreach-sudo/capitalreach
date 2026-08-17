@@ -1168,7 +1168,8 @@
     "interestAmountPlaceholder": "Amount (optional)",
     "interestNeedsMessage": "Add a short message so the founder has context.",
     "interestSent": "Interest sent — the deal is in your pipeline.",
-    "viewInPipeline": "View in pipeline"
+    "viewInPipeline": "View in pipeline",
+    "identityProtected": "Founder names and profiles are shown in full once you open a deal with this startup."
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1890,7 +1891,8 @@
     "ckTs2": "Negotiate terms",
     "ckTs3": "Sign the term sheet",
     "ckTs4": "Confirm the closing amount",
-    "moneyWorks": "How the money works: the investment moves directly between you and the counterparty — CapitalReach never holds funds. The 2% fee is invoiced to the founder only after both sides confirm the close."
+    "moneyWorks": "How the money works: the investment moves directly between you and the counterparty — CapitalReach never holds funds. The 2% fee is invoiced to the founder only after both sides confirm the close.",
+    "activityCircumventionAck": "Non-circumvention acknowledged"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "This link isn't valid",
     "invalidBody": "The unsubscribe link is missing or has expired. You can manage email preferences from your account settings instead.",
     "manage": "Manage notification settings"
+  },
+  "circumvention": {
+    "eyebrow": "Before you connect",
+    "title": "Before you connect with {name}",
+    "intro": "By initiating contact, you formally acknowledge:",
+    "bullet1": "This introduction is facilitated by CapitalReach.",
+    "bullet2": "A {fee}% success fee applies on capital the startup raises through this connection for {months} months from today.",
+    "bullet3": "This applies whether the deal closes on or off this platform. The fee is charged to the startup, never to you.",
+    "bullet4": "This acknowledgment is timestamped and stored as a legal record. Your IP address is recorded.",
+    "checkbox": "I have read and agree to the above terms",
+    "checkboxHint": "Required to continue",
+    "confirm": "Confirm and proceed",
+    "footer": "Timestamped {time} · IP recorded"
+  },
+  "feeCalc": {
+    "title": "Calculate your CapitalReach fee",
+    "titleCheck": "What this deal costs you",
+    "sectionTitle": "The economics",
+    "inputRaise": "Raise amount",
+    "inputCheck": "Your check size",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Traditional broker ({fee}%)",
+    "rowSave": "You save",
+    "yourPortion": "Success fee on your check ({fee}%, paid by the startup)",
+    "investorPays": "You pay",
+    "footnote": "Legal costs for cold outreach and intermediaries typically run €5,000–€20,000 before a round even opens.",
+    "detailNote": "The 2% success fee is invoiced to the startup only after a round closes through CapitalReach. Investors pay nothing."
   }
 }

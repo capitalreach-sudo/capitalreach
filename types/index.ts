@@ -156,7 +156,7 @@ export interface Contract extends Omit<ContractRow, "status" | "contract_type"> 
   contract_type: ContractType;
 }
 
-export type DealActivityType = "note" | "status_change" | "contract_status" | "nda_signed" | "success_fee";
+export type DealActivityType = "note" | "status_change" | "contract_status" | "nda_signed" | "success_fee" | "circumvention_acknowledged";
 
 export interface DealActivity {
   id: string;

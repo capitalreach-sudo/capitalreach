@@ -1157,7 +1157,8 @@
     "interestAmountPlaceholder": "Montant (facultatif)",
     "interestNeedsMessage": "Ajoutez un court message pour donner du contexte au fondateur.",
     "interestSent": "Intérêt envoyé — le deal est dans votre pipeline.",
-    "viewInPipeline": "Voir dans le pipeline"
+    "viewInPipeline": "Voir dans le pipeline",
+    "identityProtected": "Les noms et profils des fondateurs sont affichés en entier dès que vous ouvrez une opération avec cette startup."
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1879,7 +1880,8 @@
     "ckTs2": "Négocier les termes",
     "ckTs3": "Signer le term sheet",
     "ckTs4": "Confirmer le montant de clôture",
-    "moneyWorks": "Comment fonctionne l'argent : l'investissement circule directement entre vous et la contrepartie — CapitalReach ne détient jamais de fonds. La commission de 2 % n'est facturée au fondateur qu'après confirmation de la clôture par les deux parties."
+    "moneyWorks": "Comment fonctionne l'argent : l'investissement circule directement entre vous et la contrepartie — CapitalReach ne détient jamais de fonds. La commission de 2 % n'est facturée au fondateur qu'après confirmation de la clôture par les deux parties.",
+    "activityCircumventionAck": "Non-contournement reconnu"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "Ce lien n'est pas valide",
     "invalidBody": "Le lien de désabonnement est manquant ou a expiré. Vous pouvez gérer vos préférences e-mail depuis les paramètres de votre compte.",
     "manage": "Gérer les notifications"
+  },
+  "circumvention": {
+    "eyebrow": "Avant de prendre contact",
+    "title": "Avant de contacter {name}",
+    "intro": "En initiant le contact, vous reconnaissez formellement :",
+    "bullet1": "Cette mise en relation est facilitée par CapitalReach.",
+    "bullet2": "Une commission de succès de {fee}% s'applique au capital levé par la startup via cette relation pendant {months} mois à compter d'aujourd'hui.",
+    "bullet3": "Cela s'applique que l'opération se conclue sur ou hors de la plateforme. La commission est à la charge de la startup, jamais de vous.",
+    "bullet4": "Cette reconnaissance est horodatée et conservée comme preuve légale. Votre adresse IP est enregistrée.",
+    "checkbox": "J'ai lu et j'accepte les conditions ci-dessus",
+    "checkboxHint": "Obligatoire pour continuer",
+    "confirm": "Confirmer et continuer",
+    "footer": "Horodaté {time} · IP enregistrée"
+  },
+  "feeCalc": {
+    "title": "Calculez votre commission CapitalReach",
+    "titleCheck": "Ce que cette opération vous coûte",
+    "sectionTitle": "L'économie",
+    "inputRaise": "Montant levé",
+    "inputCheck": "Votre ticket",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Courtier traditionnel ({fee}%)",
+    "rowSave": "Vous économisez",
+    "yourPortion": "Commission sur votre ticket ({fee}%, payée par la startup)",
+    "investorPays": "Vous payez",
+    "footnote": "Les frais juridiques liés à la prospection et aux intermédiaires atteignent généralement 5 000–20 000 € avant même l'ouverture d'un tour.",
+    "detailNote": "La commission de succès de 2% est facturée à la startup uniquement après la clôture d'un tour via CapitalReach. Les investisseurs ne paient rien."
   }
 }

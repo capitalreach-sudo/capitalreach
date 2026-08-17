@@ -1117,7 +1117,8 @@
     "interestAmountPlaceholder": "Kwota (opcjonalnie)",
     "interestNeedsMessage": "Dodaj krótką wiadomość, aby founder miał kontekst.",
     "interestSent": "Zainteresowanie wysłane — transakcja jest w Twoim pipeline.",
-    "viewInPipeline": "Zobacz w pipeline"
+    "viewInPipeline": "Zobacz w pipeline",
+    "identityProtected": "Imiona i profile założycieli są wyświetlane w całości po otwarciu transakcji z tym startupem."
   },
   "filters": {
     "industry": "Branża",
@@ -1879,7 +1880,8 @@
     "ckTs2": "Negocjuj warunki",
     "ckTs3": "Podpisz term sheet",
     "ckTs4": "Potwierdź kwotę zamknięcia",
-    "moneyWorks": "Jak działają pieniądze: inwestycja przepływa bezpośrednio między Tobą a drugą stroną — CapitalReach nigdy nie przechowuje środków. Prowizja 2% jest fakturowana founderowi dopiero po potwierdzeniu zamknięcia przez obie strony."
+    "moneyWorks": "Jak działają pieniądze: inwestycja przepływa bezpośrednio między Tobą a drugą stroną — CapitalReach nigdy nie przechowuje środków. Prowizja 2% jest fakturowana founderowi dopiero po potwierdzeniu zamknięcia przez obie strony.",
+    "activityCircumventionAck": "Potwierdzono zakaz obchodzenia"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "Ten link jest nieprawidłowy",
     "invalidBody": "Link wypisania jest błędny lub wygasł. Preferencje e-mail możesz zarządzać w ustawieniach konta.",
     "manage": "Zarządzaj powiadomieniami"
+  },
+  "circumvention": {
+    "eyebrow": "Zanim nawiążesz kontakt",
+    "title": "Zanim skontaktujesz się z {name}",
+    "intro": "Nawiązując kontakt, formalnie potwierdzasz, że:",
+    "bullet1": "To przedstawienie jest pośredniczone przez CapitalReach.",
+    "bullet2": "Od kapitału pozyskanego przez startup dzięki temu kontaktowi przez {months} miesięcy od dziś naliczana jest prowizja od sukcesu w wysokości {fee}%.",
+    "bullet3": "Dotyczy to zarówno transakcji zamkniętych na platformie, jak i poza nią. Prowizję ponosi startup, nigdy Ty.",
+    "bullet4": "To potwierdzenie jest opatrzone znacznikiem czasu i przechowywane jako dowód prawny. Twój adres IP jest rejestrowany.",
+    "checkbox": "Przeczytałem/am i akceptuję powyższe warunki",
+    "checkboxHint": "Wymagane, aby kontynuować",
+    "confirm": "Potwierdź i kontynuuj",
+    "footer": "Znacznik czasu {time} · IP zarejestrowane"
+  },
+  "feeCalc": {
+    "title": "Oblicz swoją prowizję CapitalReach",
+    "titleCheck": "Ile kosztuje Cię ta transakcja",
+    "sectionTitle": "Ekonomia",
+    "inputRaise": "Wielkość rundy",
+    "inputCheck": "Twój czek",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Tradycyjny pośrednik ({fee}%)",
+    "rowSave": "Oszczędzasz",
+    "yourPortion": "Prowizja od Twojego czeku ({fee}%, płaci startup)",
+    "investorPays": "Płacisz",
+    "footnote": "Koszty prawne zimnego outreachu i pośredników zwykle wynoszą 5 000–20 000 € zanim runda w ogóle się otworzy.",
+    "detailNote": "Prowizja od sukcesu 2% jest fakturowana startupowi dopiero po zamknięciu rundy przez CapitalReach. Inwestorzy nie płacą nic."
   }
 }

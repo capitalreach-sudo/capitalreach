@@ -27,6 +27,8 @@ import { ScoreRing } from "@/components/ui/ScoreRing";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { roundCloseState } from "@/lib/round-close";
 import { TractionChart, type MetricPoint } from "@/components/startup/traction-chart";
+import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
+import { FeeCalculator } from "@/components/ui/FeeCalculator";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -49,6 +51,10 @@ interface Props {
   /** Monthly snapshots; server sends them only when this viewer may see them. */
   metricHistory?: MetricPoint[];
   viewerSuspended?: boolean;
+  /** Founder full names + social links are visible (owner/admin/deal). */
+  identityRevealed?: boolean;
+  /** This investor has already accepted the non-circumvention terms here. */
+  circumventionAcked?: boolean;
 }
 
 const TABS = ["overview", "team", "financials", "documents", "traction"] as const;
@@ -276,12 +282,20 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [],
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
   const [viewerCount, setViewerCount]           = useState(1);
   const [messageOpen, setMessageOpen]           = useState(false);
+  // Phase 1: the non-circumvention acknowledgment gates first contact. Once
+  // recorded (server-side, with IP + timestamp) the message dialog opens.
+  const [acked, setAcked]                       = useState(circumventionAcked);
+  const [ackModalOpen, setAckModalOpen]         = useState(false);
+  function startInterest() {
+    if (!investorId || viewerSuspended) return;
+    if (acked) setMessageOpen(true); else setAckModalOpen(true);
+  }
   useEscapeKey(messageOpen, () => setMessageOpen(false));
   const [messageBody, setMessageBody]           = useState("");
   const [sendingMessage, setSendingMessage]     = useState(false);
@@ -372,6 +386,12 @@ export function StartupDetailClient({
         }),
       });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 428 && data.code === "ACK_REQUIRED") {
+        // Server-side gate: the acknowledgment is missing (e.g. cleared in
+        // another tab). Show the modal; the message stays in the textarea.
+        setAcked(false); setMessageOpen(false); setAckModalOpen(true);
+        return;
+      }
       if (!res.ok || !data.deal) { notify.error(data.error || t("errors.generic")); return; }
       notify.success(t("startupDetail.interestSent"));
       setMessageOpen(false);
@@ -647,7 +667,7 @@ export function StartupDetailClient({
                 <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
                 {!viewerDeal && investorId && !viewerSuspended && (
-                  <button onClick={() => setMessageOpen(true)}
+                  <button onClick={startInterest}
                     className="btn-copper-shimmer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
                     <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.expressInterest")}
@@ -888,6 +908,21 @@ export function StartupDetailClient({
                 </div>
               </div>
             )}
+
+            {/* The economics of this deal: the 2% success fee is on the founder,
+                at close, and nothing before. Investors see their share of it on
+                their own check size (it is zero); founders see 2% vs a broker. */}
+            <div style={{ marginTop: "8px" }}>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("feeCalc.sectionTitle")}</h3>
+              <FeeCalculator
+                variant={isOwner ? "raise" : "check"}
+                currency={interestCurrency}
+                defaultAmount={isOwner ? (startup.funding_target ?? 500_000) : (startup.min_check_size ?? 50_000)}
+              />
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "8px", lineHeight: 1.5 }}>
+                {t("feeCalc.detailNote")}
+              </p>
+            </div>
           </div>
         )}
 
@@ -910,6 +945,19 @@ export function StartupDetailClient({
           </GateBlur>
         )}
 
+        {activeTab === "team" && canTeam && !identityRevealed && startup.founders && startup.founders.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", marginBottom: "14px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
+            <Lock style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12.5px", color: "var(--cr-ink-2)", lineHeight: 1.5 }}>
+              {t("startupDetail.identityProtected")}{" "}
+              {investorId && !viewerDeal && !viewerSuspended && (
+                <button onClick={startInterest} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--cr-copper)" }}>
+                  {t("startupDetail.expressInterest")} →
+                </button>
+              )}
+            </p>
+          </div>
+        )}
         {activeTab === "team" && canTeam && (
           startup.founders && startup.founders.length > 0 ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
@@ -1131,6 +1179,15 @@ export function StartupDetailClient({
         </div>
       )}
 
+      {/* ── Non-circumvention acknowledgment (first contact only) ── */}
+      <NonCircumventionModal
+        open={ackModalOpen}
+        startupId={startup.id}
+        startupName={startup.name}
+        onCancel={() => setAckModalOpen(false)}
+        onConfirmed={() => { setAcked(true); setAckModalOpen(false); setMessageOpen(true); }}
+      />
+
       {/* ── Message dialog ── */}
       {messageOpen && (
         <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
@@ -1204,7 +1261,7 @@ export function StartupDetailClient({
 
         {!viewerDeal && investorId && !viewerSuspended && (
           <button
-            onClick={() => setMessageOpen(true)}
+            onClick={startInterest}
             style={{
               flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
               height: "44px", minWidth: 0,

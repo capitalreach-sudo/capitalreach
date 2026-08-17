@@ -6,6 +6,7 @@ import { StartupDetailClient } from "@/components/startup/startup-detail-client"
 import { stripLockedUrl } from "@/lib/document-access";
 import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
+import { protectFounders } from "@/lib/identity";
 import type { Startup, SubscriptionTier } from "@/types";
 import type { Metadata } from "next";
 import type { StartupCardData } from "@/components/startup/startup-card";
@@ -153,6 +154,18 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     viewerDeal = (deal as ViewerDeal | null) ?? null;
   }
 
+  // Non-circumvention acknowledgment for this pair (Phase 1). Read with the
+  // caller's client — RLS scopes acks to the investor who made them.
+  let circumventionAcked = false;
+  if (user && investorId) {
+    const { data: ack } = await supabase
+      .from("circumvention_acks")
+      .select("id")
+      .match({ investor_id: user.id, startup_id: startup.id })
+      .maybeSingle();
+    circumventionAcked = !!ack;
+  }
+
   // Updates feed + Q&A (RLS: answered questions are public; the caller's own
   // unanswered ones come back too when they asked them).
   const [{ data: updates }, { data: questions }] = await Promise.all([
@@ -211,8 +224,16 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     startupRequiresNda: !!startup.require_nda,
     ndaSigned: previewing ? false : ndaSigned,
   };
+  // Identity protection (Phase 1): founders' full names and social links are
+  // revealed only to the owner, admins, or an investor with a live deal on
+  // this startup — the deal that required the non-circumvention ack. Masked
+  // on the server so the hidden fields never reach the browser.
+  const identityRevealed = !previewing && (
+    isOwner || viewerIsAdmin || (!!viewerDeal && viewerDeal.status !== "passed")
+  );
   const safeStartup = {
     ...startup,
+    founders: protectFounders(startup.founders, identityRevealed),
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx)),
   };
 
@@ -248,6 +269,8 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         viewerSuspended={previewing ? false : viewerSuspended}
         previewing={previewing}
         metricHistory={metricHistory}
+        identityRevealed={identityRevealed}
+        circumventionAcked={previewing ? false : circumventionAcked}
       />
       <Footer />
     </>

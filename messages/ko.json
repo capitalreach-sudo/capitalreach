@@ -1117,7 +1117,8 @@
     "interestAmountPlaceholder": "금액(선택)",
     "interestNeedsMessage": "창업자가 맥락을 알 수 있도록 짧은 메시지를 추가하세요.",
     "interestSent": "관심을 보냈습니다 — 딜이 파이프라인에 있습니다.",
-    "viewInPipeline": "파이프라인에서 보기"
+    "viewInPipeline": "파이프라인에서 보기",
+    "identityProtected": "이 스타트업과 거래를 열면 창업자의 이름과 프로필이 모두 표시됩니다."
   },
   "filters": {
     "industry": "산업",
@@ -1879,7 +1880,8 @@
     "ckTs2": "조건 협상",
     "ckTs3": "텀시트 서명",
     "ckTs4": "마감 금액 확정",
-    "moneyWorks": "자금 흐름: 투자는 당사자 간에 직접 이루어지며 — CapitalReach는 자금을 보관하지 않습니다. 2% 수수료는 양측이 마감을 확인한 후에만 창업자에게 청구됩니다."
+    "moneyWorks": "자금 흐름: 투자는 당사자 간에 직접 이루어지며 — CapitalReach는 자금을 보관하지 않습니다. 2% 수수료는 양측이 마감을 확인한 후에만 창업자에게 청구됩니다.",
+    "activityCircumventionAck": "우회 금지 조항 확인됨"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "유효하지 않은 링크입니다",
     "invalidBody": "수신 거부 링크가 없거나 만료되었습니다. 계정 설정에서 이메일 설정을 관리할 수 있습니다.",
     "manage": "알림 설정 관리"
+  },
+  "circumvention": {
+    "eyebrow": "연락하기 전에",
+    "title": "{name}에 연락하기 전에",
+    "intro": "연락을 시작하면 다음 사항을 공식적으로 확인하는 것입니다:",
+    "bullet1": "이 소개는 CapitalReach를 통해 이루어집니다.",
+    "bullet2": "오늘부터 {months}개월 동안 이 연결을 통해 스타트업이 유치한 자본에 {fee}%의 성공 수수료가 적용됩니다.",
+    "bullet3": "거래가 플랫폼 안에서 성사되든 밖에서 성사되든 동일하게 적용됩니다. 수수료는 스타트업이 부담하며 투자자는 부담하지 않습니다.",
+    "bullet4": "이 확인은 타임스탬프와 함께 법적 기록으로 저장됩니다. IP 주소가 기록됩니다.",
+    "checkbox": "위 조건을 읽었으며 동의합니다",
+    "checkboxHint": "계속하려면 필수",
+    "confirm": "확인하고 계속",
+    "footer": "타임스탬프 {time} · IP 기록됨"
+  },
+  "feeCalc": {
+    "title": "CapitalReach 수수료 계산",
+    "titleCheck": "이 거래에 드는 비용",
+    "sectionTitle": "비용 구조",
+    "inputRaise": "조달 금액",
+    "inputCheck": "투자 금액",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "전통적 중개인 ({fee}%)",
+    "rowSave": "절약액",
+    "yourPortion": "투자 금액에 대한 성공 수수료 ({fee}%, 스타트업 부담)",
+    "investorPays": "귀하의 부담",
+    "footnote": "콜드 아웃리치와 중개인에 드는 법률 비용은 라운드가 열리기도 전에 보통 5,000–20,000유로에 이릅니다.",
+    "detailNote": "2% 성공 수수료는 CapitalReach를 통해 라운드가 마감된 후에만 스타트업에 청구됩니다. 투자자는 아무것도 지불하지 않습니다."
   }
 }

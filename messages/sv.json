@@ -1117,7 +1117,8 @@
     "interestAmountPlaceholder": "Belopp (valfritt)",
     "interestNeedsMessage": "Lägg till ett kort meddelande så att grundaren får sammanhang.",
     "interestSent": "Intresse skickat — affären finns i din pipeline.",
-    "viewInPipeline": "Visa i pipeline"
+    "viewInPipeline": "Visa i pipeline",
+    "identityProtected": "Grundarnas namn och profiler visas i sin helhet när du öppnar en affär med denna startup."
   },
   "filters": {
     "industry": "Bransch",
@@ -1879,7 +1880,8 @@
     "ckTs2": "Förhandla villkor",
     "ckTs3": "Signera term sheet",
     "ckTs4": "Bekräfta slutbeloppet",
-    "moneyWorks": "Så fungerar pengarna: investeringen går direkt mellan dig och motparten — CapitalReach förvarar aldrig medel. 2%-avgiften faktureras grundaren först efter att båda sidor bekräftat avslutet."
+    "moneyWorks": "Så fungerar pengarna: investeringen går direkt mellan dig och motparten — CapitalReach förvarar aldrig medel. 2%-avgiften faktureras grundaren först efter att båda sidor bekräftat avslutet.",
+    "activityCircumventionAck": "Icke-kringgående bekräftat"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -2641,5 +2643,32 @@
     "invalidTitle": "Länken är ogiltig",
     "invalidBody": "Avregistreringslänken saknas eller har gått ut. Du kan hantera e-postinställningar via kontoinställningarna.",
     "manage": "Hantera aviseringar"
+  },
+  "circumvention": {
+    "eyebrow": "Innan du tar kontakt",
+    "title": "Innan du kontaktar {name}",
+    "intro": "Genom att ta kontakt bekräftar du formellt:",
+    "bullet1": "Denna introduktion förmedlas av CapitalReach.",
+    "bullet2": "En framgångsavgift på {fee}% gäller på kapital som startupen reser via denna kontakt i {months} månader från idag.",
+    "bullet3": "Detta gäller oavsett om affären stängs på eller utanför plattformen. Avgiften debiteras startupen, aldrig dig.",
+    "bullet4": "Denna bekräftelse tidsstämplas och sparas som juridiskt underlag. Din IP-adress registreras.",
+    "checkbox": "Jag har läst och godkänner villkoren ovan",
+    "checkboxHint": "Krävs för att fortsätta",
+    "confirm": "Bekräfta och fortsätt",
+    "footer": "Tidsstämplat {time} · IP registrerad"
+  },
+  "feeCalc": {
+    "title": "Beräkna din CapitalReach-avgift",
+    "titleCheck": "Vad denna affär kostar dig",
+    "sectionTitle": "Ekonomin",
+    "inputRaise": "Rundans storlek",
+    "inputCheck": "Din check",
+    "rowCapitalReach": "CapitalReach ({fee}%)",
+    "rowBroker": "Traditionell mäklare ({fee}%)",
+    "rowSave": "Du sparar",
+    "yourPortion": "Framgångsavgift på din check ({fee}%, betalas av startupen)",
+    "investorPays": "Du betalar",
+    "footnote": "Juridiska kostnader för kall kontakt och mellanhänder brukar landa på 5 000–20 000 € innan en runda ens öppnar.",
+    "detailNote": "Framgångsavgiften på 2% faktureras startupen först efter att en runda stängts via CapitalReach. Investerare betalar ingenting."
   }
 }
