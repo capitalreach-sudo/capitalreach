@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
   const { success } = await aiRatelimit.limit(user.id);
   if (!success) return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
 
-  const { startupId } = await req.json();
+  const { startupId } = await req.json().catch(() => ({}));
+  if (!/^[0-9a-f-]{36}$/i.test(String(startupId))) return NextResponse.json({ error: "Invalid startup" }, { status: 400 });
 
   const { data: startup } = await supabase
     .from("startups")

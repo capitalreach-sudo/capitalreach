@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { startupId, note } = await req.json() as { startupId: string; note?: string | null };
+  const { startupId, note } = (await req.json().catch(() => ({}))) as { startupId: string; note?: string | null };
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);
@@ -123,7 +123,7 @@ export async function DELETE(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { startupId } = await req.json() as { startupId: string };
+  const { startupId } = (await req.json().catch(() => ({}))) as { startupId: string };
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);

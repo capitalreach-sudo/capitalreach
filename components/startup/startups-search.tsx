@@ -604,7 +604,13 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
   useEffect(() => {
     try { localStorage.setItem("cr_compare", JSON.stringify(compareIds)); } catch { /* quota */ }
   }, [compareIds]);
+  // /compare (and /startups?compare=1) opens the comparison directly when a
+  // tray already has listings in it; otherwise the page simply shows browse.
   const [showCompare, setShowCompare] = useState(false);
+  useEffect(() => {
+    if (searchParams.get("compare") === "1" && compareIds.length >= 2) setShowCompare(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compareIds.length]);
   useEscapeKey(showCompare, () => setShowCompare(false));
   function exportStartupsCsv() {
     // Neutralize spreadsheet formula injection (=,+,-,@ leading a cell) with a

@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
 
-  const { type: rawType, email, role } = await req.json();
+  const { type: rawType, email, role } = await req.json().catch(() => ({}));
   const type = parseType(rawType);
   if (!type) return NextResponse.json({ error: "type must be startup or investor" }, { status: 400 });
   if (typeof email !== "string" || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {

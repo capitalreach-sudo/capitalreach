@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
   const guard = await requireAdmin();
   if (!guard.ok) return guard.response;
 
-  const { enabled } = await req.json();
+  const { enabled } = await req.json().catch(() => ({}));
+  if (typeof enabled !== "boolean") return NextResponse.json({ error: "enabled must be a boolean" }, { status: 400 });
   if (typeof enabled !== "boolean") {
     return NextResponse.json({ error: "enabled must be a boolean" }, { status: 400 });
   }

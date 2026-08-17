@@ -69,8 +69,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
-    const pitch_text: string = body.pitch_text ?? "";
+    const body = await req.json().catch(() => ({}));
+    const pitch_text: string = typeof body?.pitch_text === "string" ? body.pitch_text.slice(0, 20_000) : "";
 
     if (pitch_text.trim().length < 30) {
       return NextResponse.json(

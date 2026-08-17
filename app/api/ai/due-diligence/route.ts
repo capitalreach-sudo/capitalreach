@@ -41,7 +41,8 @@ export async function POST(req: NextRequest) {
     // Redis unavailable — fail open and allow the request through
   }
 
-  const { startupId } = await req.json();
+  const { startupId } = await req.json().catch(() => ({}));
+  if (!/^[0-9a-f-]{36}$/i.test(String(startupId))) return NextResponse.json({ error: "Invalid startup" }, { status: 400 });
 
   const [profileRes, startupRes, { isLaunch }] = await Promise.all([
     supabase.from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", user.id).single(),
