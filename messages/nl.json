@@ -58,7 +58,10 @@
   "trustIndicators": {
     "startupsListed": "startups geplaatst",
     "verifiedInvestors": "geverifieerde investeerders",
-    "dealsClosed": "deals gesloten"
+    "dealsClosed": "deals gesloten",
+    "startupsListed_one": "startup geplaatst",
+    "verifiedInvestors_one": "geverifieerde investeerder",
+    "dealsClosed_one": "deal gesloten"
   },
   "stats": {
     "raised": "opgehaald",

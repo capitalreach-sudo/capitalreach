@@ -67,7 +67,10 @@
   "trustIndicators": {
     "startupsListed": "社が掲載",
     "verifiedInvestors": "名の認定投資家",
-    "dealsClosed": "件の成約"
+    "dealsClosed": "件の成約",
+    "startupsListed_one": "社が掲載",
+    "verifiedInvestors_one": "名の認定投資家",
+    "dealsClosed_one": "件の成約"
   },
   "stats": {
     "raised": "調達済み",

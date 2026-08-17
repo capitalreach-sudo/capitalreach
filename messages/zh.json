@@ -67,7 +67,10 @@
   "trustIndicators": {
     "startupsListed": "个创业公司上线",
     "verifiedInvestors": "位经认证投资者",
-    "dealsClosed": "笔交易完成"
+    "dealsClosed": "笔交易完成",
+    "startupsListed_one": "个创业公司上线",
+    "verifiedInvestors_one": "位经认证投资者",
+    "dealsClosed_one": "笔交易完成"
   },
   "stats": {
     "raised": "已筹集",

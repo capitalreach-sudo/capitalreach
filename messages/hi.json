@@ -58,7 +58,10 @@
   "trustIndicators": {
     "startupsListed": "स्टार्टअप सूचीबद्ध",
     "verifiedInvestors": "सत्यापित निवेशक",
-    "dealsClosed": "सौदे बंद"
+    "dealsClosed": "सौदे बंद",
+    "startupsListed_one": "स्टार्टअप सूचीबद्ध",
+    "verifiedInvestors_one": "सत्यापित निवेशक",
+    "dealsClosed_one": "सौदा बंद"
   },
   "stats": {
     "raised": "जुटाई गई",

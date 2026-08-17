@@ -67,7 +67,10 @@
   "trustIndicators": {
     "startupsListed": "startups listadas",
     "verifiedInvestors": "inversores verificados",
-    "dealsClosed": "deals cerrados"
+    "dealsClosed": "deals cerrados",
+    "startupsListed_one": "startup listada",
+    "verifiedInvestors_one": "inversor verificado",
+    "dealsClosed_one": "deal cerrado"
   },
   "stats": {
     "raised": "recaudados",

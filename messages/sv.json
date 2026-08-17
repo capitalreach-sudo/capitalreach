@@ -58,7 +58,10 @@
   "trustIndicators": {
     "startupsListed": "startups listade",
     "verifiedInvestors": "verifierade investerare",
-    "dealsClosed": "affärer avslutade"
+    "dealsClosed": "affärer avslutade",
+    "startupsListed_one": "startup listad",
+    "verifiedInvestors_one": "verifierad investerare",
+    "dealsClosed_one": "affär avslutad"
   },
   "stats": {
     "raised": "insamlat",

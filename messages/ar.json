@@ -67,7 +67,10 @@
   "trustIndicators": {
     "startupsListed": "شركة ناشئة مدرجة",
     "verifiedInvestors": "مستثمر معتمد",
-    "dealsClosed": "صفقة مُغلقة"
+    "dealsClosed": "صفقة مُغلقة",
+    "startupsListed_one": "شركة ناشئة مدرجة",
+    "verifiedInvestors_one": "مستثمر معتمد",
+    "dealsClosed_one": "صفقة مُغلقة"
   },
   "stats": {
     "raised": "تم جمعه",

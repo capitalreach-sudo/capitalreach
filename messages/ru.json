@@ -58,7 +58,10 @@
   "trustIndicators": {
     "startupsListed": "стартапов размещено",
     "verifiedInvestors": "верифицированных инвесторов",
-    "dealsClosed": "сделок закрыто"
+    "dealsClosed": "сделок закрыто",
+    "startupsListed_one": "стартап размещён",
+    "verifiedInvestors_one": "верифицированный инвестор",
+    "dealsClosed_one": "сделка закрыта"
   },
   "stats": {
     "raised": "привлечено",

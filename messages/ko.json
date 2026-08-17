@@ -58,7 +58,10 @@
   "trustIndicators": {
     "startupsListed": "개 스타트업 등록",
     "verifiedInvestors": "명의 인증 투자자",
-    "dealsClosed": "건의 거래 성사"
+    "dealsClosed": "건의 거래 성사",
+    "startupsListed_one": "개 스타트업 등록",
+    "verifiedInvestors_one": "명의 인증 투자자",
+    "dealsClosed_one": "건의 거래 성사"
   },
   "stats": {
     "raised": "조달 완료",

@@ -62,10 +62,11 @@ export function HomepageClient({ stats, listings, launch }: Props) {
   const router  = useRouter();
   const listRef = useReveal();
 
+  // Pluralised per locale ("1 startup listed", "2 startups listed").
   const trustCounts: [number, string][] = [
-    [stats.startupCount,     t("trustIndicators.startupsListed")],
-    [stats.investorCount,    t("trustIndicators.verifiedInvestors")],
-    [stats.dealsClosedCount, t("trustIndicators.dealsClosed")],
+    [stats.startupCount,     t("trustIndicators.startupsListed",    { count: stats.startupCount })],
+    [stats.investorCount,    t("trustIndicators.verifiedInvestors", { count: stats.investorCount })],
+    [stats.dealsClosedCount, t("trustIndicators.dealsClosed",       { count: stats.dealsClosedCount })],
   ].filter(([v]) => (v as number) > 0) as [number, string][];
 
   const proof: [string, string][] = [
@@ -86,7 +87,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
         <div className="hero-noise" aria-hidden />
 
         <div
-          className="max-w-[900px] mx-auto w-full px-6 md:px-10 py-16 md:py-0 flex flex-col items-center text-center"
+          className="max-w-[1040px] mx-auto w-full px-6 md:px-10 py-16 md:py-0 flex flex-col items-center text-center"
           style={{ position: "relative", zIndex: 1 }}
         >
           {launch.isLaunch ? (
@@ -116,9 +117,10 @@ export function HomepageClient({ stats, listings, launch }: Props) {
               fontFamily:    "'Playfair Display', Georgia, serif",
               fontWeight:    700,
               fontStyle:     "italic",
-              fontSize:      "clamp(40px, 8.5vw, 88px)",
+              fontSize:      "clamp(38px, 6.6vw, 78px)",
               color:         "#1A1612",
-              lineHeight:    0.98,
+              lineHeight:    1.02,
+              textWrap:      "balance",
               letterSpacing: "-0.02em",
               marginBottom:  "28px",
             }}
