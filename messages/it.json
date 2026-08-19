@@ -2877,5 +2877,29 @@
     "add": "Aggiungi alla pipeline",
     "added": "Contatto aggiunto alla pipeline.",
     "badge": "esterno"
+  },
+  "funding": {
+    "title": "Finanziamento",
+    "fundedTitle": "Finanziato",
+    "sent": "Fondi inviati",
+    "received": "Fondi ricevuti",
+    "confirm": "Conferma",
+    "recorded": "Conferma registrata.",
+    "funded": "Finanziato — confermato da entrambe le parti.",
+    "refPh": "Riferimento di pagamento (facoltativo)",
+    "ref": "Rif",
+    "fraudWarning": "Non accettare mai coordinate bancarie inviate via messaggio o email. Conferma il conto per telefono con qualcuno che già conosci dall'altra parte: le istruzioni di bonifico modificate sono la frode più comune in un round."
+  },
+  "contracts": {
+    "backToDeal": "Torna al deal",
+    "amount": "Importo",
+    "equity": "Quota",
+    "created": "Creato",
+    "noTerms": "Nessuna condizione registrata su questo contratto.",
+    "certificate": "Certificato di firma",
+    "unsigned": "Non ancora firmato.",
+    "certificateNote": "Ogni firma registra il nome digitato, l'ora in UTC, un IP mascherato e l'hash SHA-256 del testo esatto firmato — così si può dimostrare in seguito che le condizioni non sono state modificate dopo la firma.",
+    "viewExecuted": "Contratto firmato",
+    "viewDocument": "Vedi documento"
   }
 }

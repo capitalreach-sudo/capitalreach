@@ -2877,5 +2877,29 @@
     "add": "Toevoegen aan pipeline",
     "added": "Contact toegevoegd aan uw pipeline.",
     "badge": "extern"
+  },
+  "funding": {
+    "title": "Financiering",
+    "fundedTitle": "Gefinancierd",
+    "sent": "Geld verzonden",
+    "received": "Geld ontvangen",
+    "confirm": "Bevestigen",
+    "recorded": "Bevestiging vastgelegd.",
+    "funded": "Gefinancierd — door beide partijen bevestigd.",
+    "refPh": "Betalingskenmerk (optioneel)",
+    "ref": "Ref",
+    "fraudWarning": "Accepteer nooit bankgegevens uit een bericht of e-mail. Bevestig de rekening telefonisch met iemand die u al kent aan de andere kant — gewijzigde overschrijvingsgegevens zijn de meest voorkomende fraude in een ronde."
+  },
+  "contracts": {
+    "backToDeal": "Terug naar de deal",
+    "amount": "Bedrag",
+    "equity": "Aandeel",
+    "created": "Aangemaakt",
+    "noTerms": "Voor dit contract zijn geen voorwaarden vastgelegd.",
+    "certificate": "Handtekeningcertificaat",
+    "unsigned": "Nog niet getekend.",
+    "certificateNote": "Elke handtekening legt de ingetypte naam vast, de tijd in UTC, een gemaskeerd IP en de SHA-256-hash van de exact ondertekende tekst — zodat later aantoonbaar is dat de voorwaarden na ondertekening niet zijn gewijzigd.",
+    "viewExecuted": "Getekend contract",
+    "viewDocument": "Document bekijken"
   }
 }

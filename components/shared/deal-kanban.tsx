@@ -17,7 +17,7 @@ const INVESTOR_TYPE_KEYS: Record<string, string> = {
   corporate: "investors.typeCorporate",
 };
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
-import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List } from "lucide-react";
+import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List, Circle } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
@@ -639,6 +639,12 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                 {c.amount != null && ` · ${formatMoney(c.amount, c.currency, { compact: true })}`}
                 {c.equity_percent != null && ` · ${c.equity_percent}%`}
               </p>
+              {/* D38: the executed document plus its signature certificate —
+                  the artefact a lawyer asks for, printable to PDF. */}
+              <a href={`/contracts/${c.id}`} target="_blank" rel="noopener noreferrer"
+                style={{ display: "inline-block", marginTop: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10.5px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                {c.status === "signed" ? t("contracts.viewExecuted") : t("contracts.viewDocument")} →
+              </a>
 
               {c.contract_type === "nda" && (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", marginTop: "6px", paddingTop: "6px", borderTop: "1px solid var(--cr-rule)" }}>
@@ -926,6 +932,73 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * D37: a closed deal is not a funded deal. Two one-way confirmations —
+ * the investor says the money left, the founder says it arrived — and the
+ * round is done when both are in.
+ *
+ * The warning is not decoration: a compromised account editing wire
+ * details is the most common fraud in this flow, and the platform
+ * deliberately never holds or transmits bank details.
+ */
+function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "investor" | "admin" }) {
+  const { t } = useTranslation();
+  const d = deal as unknown as { funds_sent_at?: string | null; funds_received_at?: string | null; funded_at?: string | null; funding_reference?: string | null };
+  const [sentAt, setSentAt] = useState<string | null>(d.funds_sent_at ?? null);
+  const [recvAt, setRecvAt] = useState<string | null>(d.funds_received_at ?? null);
+  const [fundedAt, setFundedAt] = useState<string | null>(d.funded_at ?? null);
+  const [ref, setRef] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function confirm(step: "sent" | "received") {
+    if (busy) return;
+    setBusy(true);
+    const res = await fetch("/api/deals/funding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId: deal.id, step, reference: ref || undefined }) });
+    const j = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    setSentAt(j.fundsSentAt ?? sentAt); setRecvAt(j.fundsReceivedAt ?? recvAt); setFundedAt(j.fundedAt ?? null);
+    notify.success(j.fundedAt ? t("funding.funded") : t("funding.recorded"));
+  }
+
+  const row = (label: string, at: string | null, canAct: boolean, step: "sent" | "received") => (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "5px 0" }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11.5px", color: at ? "var(--cr-up)" : "var(--cr-ink-3)" }}>
+        {at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
+        {label}
+        {at && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{formatDate(at)}</span>}
+      </span>
+      {!at && canAct && (
+        <button onClick={() => confirm(step)} disabled={busy}
+          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", padding: "3px 9px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
+          {t("funding.confirm")}
+        </button>
+      )}
+    </div>
+  );
+
+  const isExternalInv = !!(deal.investor as unknown as { is_external?: boolean } | null)?.is_external;
+  return (
+    <div style={{ marginTop: "10px", background: fundedAt ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: `1px solid ${fundedAt ? "rgba(45,106,79,0.25)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", padding: "10px 12px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
+        {fundedAt ? t("funding.fundedTitle") : t("funding.title")}
+      </p>
+      {row(t("funding.sent"), sentAt, viewAs === "investor" || (isExternalInv && viewAs === "startup"), "sent")}
+      {row(t("funding.received"), recvAt, viewAs === "startup", "received")}
+      {!fundedAt && (viewAs === "startup" || viewAs === "investor") && (
+        <>
+          <input value={ref} onChange={(e) => setRef(e.target.value.slice(0, 120))} placeholder={t("funding.refPh")}
+            style={{ width: "100%", boxSizing: "border-box", marginTop: 6, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "5px 8px", outline: "none" }} />
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10.5px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
+            {t("funding.fraudWarning")}
+          </p>
+        </>
+      )}
+      {d.funding_reference && <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("funding.ref")}: {d.funding_reference}</p>}
     </div>
   );
 }
@@ -1689,6 +1762,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           </div>
         </div>
       )}
+
+      {/* D37: closed → funded. */}
+      {deal.status === "closed" && <FundingBlock deal={deal} viewAs={viewAs} />}
 
       {deal.success_fee_invoiced && (
         <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>

@@ -2877,5 +2877,29 @@
     "add": "Add to pipeline",
     "added": "Contact added to your pipeline.",
     "badge": "off-platform"
+  },
+  "funding": {
+    "title": "Funding",
+    "fundedTitle": "Funded",
+    "sent": "Funds sent",
+    "received": "Funds received",
+    "confirm": "Confirm",
+    "recorded": "Confirmation recorded.",
+    "funded": "Funded — both sides confirmed.",
+    "refPh": "Payment reference (optional)",
+    "ref": "Ref",
+    "fraudWarning": "Never accept bank details sent by message or email. Confirm the account by phone with someone you already know at the other side — changed wire instructions are the most common fraud in a round."
+  },
+  "contracts": {
+    "backToDeal": "Back to the deal",
+    "amount": "Amount",
+    "equity": "Equity",
+    "created": "Created",
+    "noTerms": "No terms were recorded on this contract.",
+    "certificate": "Signature certificate",
+    "unsigned": "Not signed yet.",
+    "certificateNote": "Each signature records the signer's typed name, the time in UTC, a masked IP, and the SHA-256 hash of the exact text signed — so it can be shown later that the terms were not altered after signature.",
+    "viewExecuted": "Executed contract",
+    "viewDocument": "View document"
   }
 }

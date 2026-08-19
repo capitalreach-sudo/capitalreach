@@ -2877,5 +2877,29 @@
     "add": "Dodaj do pipeline",
     "added": "Kontakt dodany do pipeline.",
     "badge": "spoza platformy"
+  },
+  "funding": {
+    "title": "Finansowanie",
+    "fundedTitle": "Sfinansowane",
+    "sent": "Środki wysłane",
+    "received": "Środki otrzymane",
+    "confirm": "Potwierdź",
+    "recorded": "Potwierdzenie zapisane.",
+    "funded": "Sfinansowane — potwierdzone przez obie strony.",
+    "refPh": "Referencja płatności (opcjonalnie)",
+    "ref": "Ref",
+    "fraudWarning": "Nigdy nie akceptuj danych bankowych przesłanych wiadomością ani e-mailem. Potwierdź konto telefonicznie z osobą, którą już znasz po drugiej stronie — zmienione instrukcje przelewu to najczęstsze oszustwo w rundzie."
+  },
+  "contracts": {
+    "backToDeal": "Powrót do transakcji",
+    "amount": "Kwota",
+    "equity": "Udział",
+    "created": "Utworzono",
+    "noTerms": "Nie zapisano warunków tej umowy.",
+    "certificate": "Certyfikat podpisu",
+    "unsigned": "Jeszcze niepodpisane.",
+    "certificateNote": "Każdy podpis zapisuje wpisane imię i nazwisko, czas UTC, zamaskowany adres IP oraz skrót SHA-256 dokładnie podpisanego tekstu — aby móc później wykazać, że warunki nie zostały zmienione po podpisaniu.",
+    "viewExecuted": "Podpisana umowa",
+    "viewDocument": "Zobacz dokument"
   }
 }

@@ -2877,5 +2877,29 @@
     "add": "Lägg till i pipeline",
     "added": "Kontakten lades till i din pipeline.",
     "badge": "extern"
+  },
+  "funding": {
+    "title": "Finansiering",
+    "fundedTitle": "Finansierad",
+    "sent": "Medel skickade",
+    "received": "Medel mottagna",
+    "confirm": "Bekräfta",
+    "recorded": "Bekräftelsen registrerad.",
+    "funded": "Finansierad — bekräftad av båda parter.",
+    "refPh": "Betalningsreferens (valfritt)",
+    "ref": "Ref",
+    "fraudWarning": "Acceptera aldrig bankuppgifter som skickas via meddelande eller e-post. Bekräfta kontot per telefon med någon du redan känner på andra sidan — ändrade betalningsinstruktioner är det vanligaste bedrägeriet i en runda."
+  },
+  "contracts": {
+    "backToDeal": "Tillbaka till affären",
+    "amount": "Belopp",
+    "equity": "Andel",
+    "created": "Skapad",
+    "noTerms": "Inga villkor registrerades på det här avtalet.",
+    "certificate": "Signaturcertifikat",
+    "unsigned": "Inte signerat än.",
+    "certificateNote": "Varje signatur registrerar det skrivna namnet, tiden i UTC, en maskerad IP och SHA-256-hashen av exakt den text som signerades — så att det senare går att visa att villkoren inte ändrats efter signering.",
+    "viewExecuted": "Signerat avtal",
+    "viewDocument": "Visa dokument"
   }
 }

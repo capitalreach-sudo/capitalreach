@@ -2877,5 +2877,29 @@
     "add": "加入交易管道",
     "added": "联系人已加入您的交易管道。",
     "badge": "平台外"
+  },
+  "funding": {
+    "title": "资金到账",
+    "fundedTitle": "已到账",
+    "sent": "资金已汇出",
+    "received": "资金已收到",
+    "confirm": "确认",
+    "recorded": "确认已记录。",
+    "funded": "已完成出资 —— 双方均已确认。",
+    "refPh": "付款参考号（可选）",
+    "ref": "参考号",
+    "fraudWarning": "切勿接受通过消息或邮件发来的银行信息。请与对方您已熟识的人电话核对账户 —— 被篡改的汇款信息是融资过程中最常见的诈骗。"
+  },
+  "contracts": {
+    "backToDeal": "返回交易",
+    "amount": "金额",
+    "equity": "股权",
+    "created": "创建于",
+    "noTerms": "本合同未记录条款。",
+    "certificate": "签署证书",
+    "unsigned": "尚未签署。",
+    "certificateNote": "每次签署都会记录签署人输入的姓名、UTC 时间、脱敏 IP，以及所签署文本的 SHA-256 哈希值 —— 以便日后证明条款在签署后未被更改。",
+    "viewExecuted": "已签署合同",
+    "viewDocument": "查看文件"
   }
 }

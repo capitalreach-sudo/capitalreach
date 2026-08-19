@@ -497,6 +497,12 @@ export type Database = {
           currency: string
           fee_billing_error: string | null
           fee_billing_status: string | null
+          funded_at: string | null
+          funding_reference: string | null
+          funds_received_at: string | null
+          funds_received_by: string | null
+          funds_sent_at: string | null
+          funds_sent_by: string | null
           id: string
           investor_id: string
           next_follow_up: string | null
@@ -527,6 +533,12 @@ export type Database = {
           currency?: string
           fee_billing_error?: string | null
           fee_billing_status?: string | null
+          funded_at?: string | null
+          funding_reference?: string | null
+          funds_received_at?: string | null
+          funds_received_by?: string | null
+          funds_sent_at?: string | null
+          funds_sent_by?: string | null
           id?: string
           investor_id: string
           next_follow_up?: string | null
@@ -557,6 +569,12 @@ export type Database = {
           currency?: string
           fee_billing_error?: string | null
           fee_billing_status?: string | null
+          funded_at?: string | null
+          funding_reference?: string | null
+          funds_received_at?: string | null
+          funds_received_by?: string | null
+          funds_sent_at?: string | null
+          funds_sent_by?: string | null
           id?: string
           investor_id?: string
           next_follow_up?: string | null
@@ -579,6 +597,20 @@ export type Database = {
             columns: ["circumvention_ack_id"]
             isOneToOne: false
             referencedRelation: "circumvention_acks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_funds_received_by_fkey"
+            columns: ["funds_received_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_funds_sent_by_fkey"
+            columns: ["funds_sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {

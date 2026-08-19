@@ -2877,5 +2877,29 @@
     "add": "Ajouter au pipeline",
     "added": "Contact ajouté à votre pipeline.",
     "badge": "hors plateforme"
+  },
+  "funding": {
+    "title": "Financement",
+    "fundedTitle": "Financé",
+    "sent": "Fonds envoyés",
+    "received": "Fonds reçus",
+    "confirm": "Confirmer",
+    "recorded": "Confirmation enregistrée.",
+    "funded": "Financé — confirmé des deux côtés.",
+    "refPh": "Référence de paiement (facultatif)",
+    "ref": "Réf",
+    "fraudWarning": "N'acceptez jamais de coordonnées bancaires envoyées par message ou e-mail. Confirmez le compte par téléphone avec une personne que vous connaissez déjà en face — la modification des instructions de virement est la fraude la plus courante dans un tour."
+  },
+  "contracts": {
+    "backToDeal": "Retour au deal",
+    "amount": "Montant",
+    "equity": "Participation",
+    "created": "Créé",
+    "noTerms": "Aucune condition n'a été enregistrée sur ce contrat.",
+    "certificate": "Certificat de signature",
+    "unsigned": "Pas encore signé.",
+    "certificateNote": "Chaque signature enregistre le nom saisi, l'heure en UTC, une IP masquée et le hachage SHA-256 du texte exact signé — pour prouver ensuite que les conditions n'ont pas été modifiées après signature.",
+    "viewExecuted": "Contrat signé",
+    "viewDocument": "Voir le document"
   }
 }

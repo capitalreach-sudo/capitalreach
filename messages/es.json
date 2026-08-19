@@ -2877,5 +2877,29 @@
     "add": "Añadir al pipeline",
     "added": "Contacto añadido a tu pipeline.",
     "badge": "externo"
+  },
+  "funding": {
+    "title": "Financiación",
+    "fundedTitle": "Financiado",
+    "sent": "Fondos enviados",
+    "received": "Fondos recibidos",
+    "confirm": "Confirmar",
+    "recorded": "Confirmación registrada.",
+    "funded": "Financiado — confirmado por ambas partes.",
+    "refPh": "Referencia de pago (opcional)",
+    "ref": "Ref",
+    "fraudWarning": "Nunca aceptes datos bancarios enviados por mensaje o email. Confirma la cuenta por teléfono con alguien que ya conozcas del otro lado: cambiar las instrucciones de transferencia es el fraude más común en una ronda."
+  },
+  "contracts": {
+    "backToDeal": "Volver a la operación",
+    "amount": "Importe",
+    "equity": "Participación",
+    "created": "Creado",
+    "noTerms": "No se registraron términos en este contrato.",
+    "certificate": "Certificado de firma",
+    "unsigned": "Sin firmar todavía.",
+    "certificateNote": "Cada firma registra el nombre escrito, la hora en UTC, una IP enmascarada y el hash SHA-256 del texto exacto firmado, para poder demostrar después que los términos no se alteraron tras la firma.",
+    "viewExecuted": "Contrato ejecutado",
+    "viewDocument": "Ver documento"
   }
 }
