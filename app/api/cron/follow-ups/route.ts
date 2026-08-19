@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase-server";
 import { notifyUser, notifyUsers } from "@/lib/notify-user";
 import { logSystemEvent } from "@/lib/system-events";
 import { matchesSavedSearch, type SavedSearchFilters } from "@/lib/search-match";
+import { listingCompleteness, type CompletenessInput } from "@/lib/listing-completeness";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,61 @@ export async function GET(req: NextRequest) {
     notified++;
   }
 
+  // ── F: unfinished drafts ────────────────────────────────────────────────
+  // A founder starts a listing, fills in half of it, gets pulled into a
+  // customer call, and the draft sits there. Nothing ever mentioned it again.
+  // Drafts are the cheapest supply this marketplace will ever have — the
+  // person already decided to be here.
+  //
+  // Two nudges, at three days and at fourteen, then silence. A third would be
+  // nagging, and the ones that go quiet after two were never going to finish.
+  const NUDGE_DAYS = [3, 14];
+  const { data: drafts } = await admin
+    .from("startups")
+    .select(`
+      id, name, slug, owner_id, created_at, draft_nudged_at, draft_nudge_count,
+      tagline, problem, solution, market, competitive_advantage, use_of_funds,
+      website, pitch_deck_url, funding_target, equity_offered, min_check_size,
+      booking_url, mrr, arr, paying_customers, user_count,
+      founders:startup_founders(linkedin_url),
+      documents:startup_documents(id),
+      milestones:startup_milestones(id)
+    `)
+    .eq("status", "draft")
+    .lt("draft_nudge_count", NUDGE_DAYS.length)
+    .limit(500);
+
+  let nudged = 0;
+  const nowMs = Date.now();
+  for (const draft of drafts ?? []) {
+    if (!draft.owner_id) continue;
+    const sent = draft.draft_nudge_count ?? 0;
+    const ageDays = Math.floor((nowMs - new Date(draft.created_at).getTime()) / 86_400_000);
+    if (ageDays < NUDGE_DAYS[sent]) continue;
+    // Never twice in a day, whatever the cron does.
+    if (draft.draft_nudged_at && nowMs - new Date(draft.draft_nudged_at).getTime() < 86_400_000) continue;
+
+    // The nudge names the single most valuable missing thing rather than
+    // saying "your listing is incomplete", which a founder already knows.
+    const { percent, next } = listingCompleteness(draft as unknown as CompletenessInput);
+
+    await notifyUser({
+      userId: draft.owner_id,
+      type: "listing_update",
+      title: `${draft.name || "Your listing"} is ${percent}% ready`,
+      body: next
+        ? "One thing would move it furthest — open it and see what."
+        : "Everything is filled in. Submit it for review to go live.",
+      href: "/dashboard/startup/edit",
+    });
+
+    await admin.from("startups").update({
+      draft_nudged_at: new Date().toISOString(),
+      draft_nudge_count: sent + 1,
+    }).eq("id", draft.id);
+    nudged++;
+  }
+
   // ── Saved-search matches ────────────────────────────────────────────────
   // The alert half of saved searches: compare startups listed since the last
   // daily run against every saved search and tell each search's owner. The
@@ -162,7 +218,7 @@ export async function GET(req: NextRequest) {
   // the difference between "quiet because nothing was due" and "quiet because
   // it has not run for a week" is exactly what this table exists to expose.
   await logSystemEvent("cron/follow-ups", "info", "Run completed", {
-    checked: due?.length ?? 0, notified, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified, suspensionsLifted: lifted,
+    checked: due?.length ?? 0, notified, draftNudges: nudged, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified, suspensionsLifted: lifted,
   });
 
   // Prune info rows older than 30 days in passing; errors stay until deleted
@@ -211,6 +267,7 @@ export async function GET(req: NextRequest) {
     docNudges,
     checked: due?.length ?? 0,
     notified,
+    draftNudges: nudged,
     freshStartups: fresh?.length ?? 0,
     searchAlerts: searchNotified,
   });

@@ -2048,6 +2048,8 @@ export type Database = {
           deck_language: string | null
           demo_video_url: string | null
           description: string | null
+          draft_nudge_count: number
+          draft_nudged_at: string | null
           edited_since_review_at: string | null
           equity_offered: number | null
           featured: boolean
@@ -2124,6 +2126,8 @@ export type Database = {
           deck_language?: string | null
           demo_video_url?: string | null
           description?: string | null
+          draft_nudge_count?: number
+          draft_nudged_at?: string | null
           edited_since_review_at?: string | null
           equity_offered?: number | null
           featured?: boolean
@@ -2200,6 +2204,8 @@ export type Database = {
           deck_language?: string | null
           demo_video_url?: string | null
           description?: string | null
+          draft_nudge_count?: number
+          draft_nudged_at?: string | null
           edited_since_review_at?: string | null
           equity_offered?: number | null
           featured?: boolean
