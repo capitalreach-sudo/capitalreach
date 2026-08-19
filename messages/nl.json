@@ -2901,5 +2901,38 @@
     "certificateNote": "Elke handtekening legt de ingetypte naam vast, de tijd in UTC, een gemaskeerd IP en de SHA-256-hash van de exact ondertekende tekst — zodat later aantoonbaar is dat de voorwaarden na ondertekening niet zijn gewijzigd.",
     "viewExecuted": "Getekend contract",
     "viewDocument": "Document bekijken"
+  },
+  "round": {
+    "title": "Rondeberekening",
+    "valuation": "Waardering",
+    "valuationHint": "Laat leeg als u die liever niet noemt — investeerders leiden hem toch af uit uw percentage.",
+    "valuationType": "Pre of post",
+    "pre": "Pre-money",
+    "post": "Post-money",
+    "instrument": "Instrument",
+    "equity": "Equity",
+    "safe": "SAFE",
+    "note": "Converteerbare lening",
+    "cap": "Cap",
+    "discount": "Korting %",
+    "discountShort": "korting",
+    "postMoney": "Post-money",
+    "preMoney": "Pre-money",
+    "impliedPost": "Impliciete post-money",
+    "impliedNote": "uit het aangeboden aandeel",
+    "dilution": "Verwatering deze ronde",
+    "perCheque": "Per ticket",
+    "perChequeNote": "voor een ticket van {amount}",
+    "mismatch": "Uw vermelding zegt {stated}% aandeel, maar de waardering impliceert {implied}%. Investeerders zien dat — corrigeer het verkeerde getal."
+  },
+  "allocation": {
+    "title": "Allocatie",
+    "set": "Allocatiedoel instellen",
+    "setHint": "Volg wat u wilde inzetten tegenover wat al vastligt.",
+    "targetPh": "Doel",
+    "periodPh": "Periode",
+    "deployed": "Ingezet",
+    "committed": "Toegezegd",
+    "remaining": "Resterend"
   }
 }

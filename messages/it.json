@@ -2901,5 +2901,38 @@
     "certificateNote": "Ogni firma registra il nome digitato, l'ora in UTC, un IP mascherato e l'hash SHA-256 del testo esatto firmato — così si può dimostrare in seguito che le condizioni non sono state modificate dopo la firma.",
     "viewExecuted": "Contratto firmato",
     "viewDocument": "Vedi documento"
+  },
+  "round": {
+    "title": "Matematica del round",
+    "valuation": "Valutazione",
+    "valuationHint": "Lascia vuoto se preferisci non indicarla — gli investitori la dedurranno comunque dalla percentuale.",
+    "valuationType": "Pre o post",
+    "pre": "Pre-money",
+    "post": "Post-money",
+    "instrument": "Strumento",
+    "equity": "Equity",
+    "safe": "SAFE",
+    "note": "Nota convertibile",
+    "cap": "Cap",
+    "discount": "Sconto %",
+    "discountShort": "sconto",
+    "postMoney": "Post-money",
+    "preMoney": "Pre-money",
+    "impliedPost": "Post-money implicito",
+    "impliedNote": "dall'equity offerta",
+    "dilution": "Diluizione di questo round",
+    "perCheque": "Per ticket",
+    "perChequeNote": "per un ticket da {amount}",
+    "mismatch": "La tua scheda indica {stated}% di equity, ma la valutazione implica {implied}%. Gli investitori se ne accorgeranno: correggi il numero sbagliato."
+  },
+  "allocation": {
+    "title": "Allocazione",
+    "set": "Imposta un obiettivo di allocazione",
+    "setHint": "Traccia quanto volevi impiegare rispetto a quanto è già impegnato.",
+    "targetPh": "Obiettivo",
+    "periodPh": "Periodo",
+    "deployed": "Impiegato",
+    "committed": "Impegnato",
+    "remaining": "Residuo"
   }
 }

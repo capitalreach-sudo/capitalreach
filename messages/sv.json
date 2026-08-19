@@ -2901,5 +2901,38 @@
     "certificateNote": "Varje signatur registrerar det skrivna namnet, tiden i UTC, en maskerad IP och SHA-256-hashen av exakt den text som signerades — så att det senare går att visa att villkoren inte ändrats efter signering.",
     "viewExecuted": "Signerat avtal",
     "viewDocument": "Visa dokument"
+  },
+  "round": {
+    "title": "Rundans matematik",
+    "valuation": "Värdering",
+    "valuationHint": "Lämna tomt om du hellre inte anger den — investerare räknar ut den ändå från din andel.",
+    "valuationType": "Pre eller post",
+    "pre": "Pre-money",
+    "post": "Post-money",
+    "instrument": "Instrument",
+    "equity": "Equity",
+    "safe": "SAFE",
+    "note": "Konvertibel",
+    "cap": "Cap",
+    "discount": "Rabatt %",
+    "discountShort": "rabatt",
+    "postMoney": "Post-money",
+    "preMoney": "Pre-money",
+    "impliedPost": "Implicit post-money",
+    "impliedNote": "utifrån erbjuden andel",
+    "dilution": "Utspädning denna runda",
+    "perCheque": "Per check",
+    "perChequeNote": "för en check på {amount}",
+    "mismatch": "Din annons säger {stated}% andel, men värderingen innebär {implied}%. Investerare märker det — rätta siffran som är fel."
+  },
+  "allocation": {
+    "title": "Allokering",
+    "set": "Sätt ett allokeringsmål",
+    "setHint": "Följ vad du tänkt investera mot vad som redan är intecknat.",
+    "targetPh": "Mål",
+    "periodPh": "Period",
+    "deployed": "Investerat",
+    "committed": "Åtagit",
+    "remaining": "Kvar"
   }
 }

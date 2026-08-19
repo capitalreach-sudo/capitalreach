@@ -27,6 +27,7 @@ import { ScoreRing } from "@/components/ui/ScoreRing";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { roundCloseState } from "@/lib/round-close";
 import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
+import { postMoney, preMoney, impliedDilutionPct, ownershipForCheque, impliedPostFromEquity, equityValuationMismatch, type ValuationType } from "@/lib/round-math";
 import { TractionChart, type MetricPoint } from "@/components/startup/traction-chart";
 import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
@@ -1127,6 +1128,52 @@ export function StartupDetailClient({
 
             {/* C27: your own read on this company, kept private to you. */}
             {investorId && !viewerSuspended && <ScorecardPanel startupId={startup.id} />}
+
+            {/* D44: the round's arithmetic, done once, here — instead of every
+                investor reverse-engineering it from "€500k for 8%". */}
+            {(() => {
+              const st = startup as unknown as { valuation?: number | null; valuation_type?: string | null; instrument?: string | null; safe_cap?: number | null; safe_discount?: number | null };
+              const inputs = { raise: startup.funding_target, equityOffered: startup.equity_offered, valuation: st.valuation ?? null, valuationType: (st.valuation_type as ValuationType | null) ?? null };
+              const post = postMoney(inputs) ?? impliedPostFromEquity(inputs);
+              const isImplied = postMoney(inputs) === null && post !== null;
+              if (post === null && !st.safe_cap) return null;
+              const pre = postMoney(inputs) !== null ? preMoney(inputs) : null;
+              const dil = postMoney(inputs) !== null ? impliedDilutionPct(inputs) : (startup.equity_offered ?? null);
+              const cheque = startup.min_check_size ?? 50_000;
+              const own = post !== null ? ownershipForCheque(cheque, { ...inputs, valuation: post, valuationType: "post" }) : null;
+              const gap = equityValuationMismatch(inputs);
+              const cur = interestCurrency;
+              const cell = (label: string, value: string, note?: string) => (
+                <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(15px, 2.4vw, 19px)", color: "var(--cr-copper)" }}>{value}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{label}</div>
+                  {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
+                </div>
+              );
+              return (
+                <div>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("round.title")}</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "10px" }}>
+                    {post !== null && cell(isImplied ? t("round.impliedPost") : t("round.postMoney"), formatMoney(post, cur, { compact: true }), isImplied ? t("round.impliedNote") : undefined)}
+                    {pre !== null && cell(t("round.preMoney"), formatMoney(pre, cur, { compact: true }))}
+                    {dil != null && cell(t("round.dilution"), `${dil.toFixed(1)}%`)}
+                    {own != null && cell(t("round.perCheque"), `${own.toFixed(2)}%`, t("round.perChequeNote", { amount: formatMoney(cheque, cur, { compact: true }) }))}
+                    {st.safe_cap ? cell(t("round.cap"), formatMoney(st.safe_cap, cur, { compact: true }), st.safe_discount ? `${st.safe_discount}% ${t("round.discountShort")}` : undefined) : null}
+                  </div>
+                  {st.instrument && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
+                      {t(st.instrument === "safe" ? "round.safe" : st.instrument === "convertible_note" ? "round.note" : "round.equity")}
+                    </p>
+                  )}
+                  {/* Owners see the contradiction before investors do. */}
+                  {isOwner && gap !== null && gap > 0.5 && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11.5px", color: "var(--cr-down)", marginTop: "8px", lineHeight: 1.5 }}>
+                      {t("round.mismatch", { stated: String(startup.equity_offered), implied: (impliedDilutionPct(inputs) ?? 0).toFixed(1) })}
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* The economics of this deal: the 2% success fee is on the founder,
                 at close, and nothing before. Investors see their share of it on

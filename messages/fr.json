@@ -2901,5 +2901,38 @@
     "certificateNote": "Chaque signature enregistre le nom saisi, l'heure en UTC, une IP masquée et le hachage SHA-256 du texte exact signé — pour prouver ensuite que les conditions n'ont pas été modifiées après signature.",
     "viewExecuted": "Contrat signé",
     "viewDocument": "Voir le document"
+  },
+  "round": {
+    "title": "Calculs du tour",
+    "valuation": "Valorisation",
+    "valuationHint": "Laissez vide si vous préférez ne pas l'indiquer — les investisseurs la déduiront de votre pourcentage.",
+    "valuationType": "Pre ou post",
+    "pre": "Pre-money",
+    "post": "Post-money",
+    "instrument": "Instrument",
+    "equity": "Equity",
+    "safe": "SAFE",
+    "note": "Obligation convertible",
+    "cap": "Cap",
+    "discount": "Décote %",
+    "discountShort": "décote",
+    "postMoney": "Post-money",
+    "preMoney": "Pre-money",
+    "impliedPost": "Post-money implicite",
+    "impliedNote": "d'après l'equity proposée",
+    "dilution": "Dilution de ce tour",
+    "perCheque": "Par ticket",
+    "perChequeNote": "pour un ticket de {amount}",
+    "mismatch": "Votre fiche indique {stated}% d'equity, mais la valorisation implique {implied}%. Les investisseurs le verront — corrigez le chiffre erroné."
+  },
+  "allocation": {
+    "title": "Allocation",
+    "set": "Définir un objectif d'allocation",
+    "setHint": "Suivez ce que vous vouliez déployer face à ce qui est déjà engagé.",
+    "targetPh": "Objectif",
+    "periodPh": "Période",
+    "deployed": "Déployé",
+    "committed": "Engagé",
+    "remaining": "Restant"
   }
 }

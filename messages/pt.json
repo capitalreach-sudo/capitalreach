@@ -2901,5 +2901,38 @@
     "certificateNote": "Cada assinatura regista o nome escrito, a hora em UTC, um IP mascarado e o hash SHA-256 do texto exato assinado — para se poder demonstrar depois que os termos não foram alterados após a assinatura.",
     "viewExecuted": "Contrato assinado",
     "viewDocument": "Ver documento"
+  },
+  "round": {
+    "title": "Matemática da ronda",
+    "valuation": "Avaliação",
+    "valuationHint": "Deixe em branco se preferir não indicar — os investidores vão deduzi-la da percentagem de qualquer forma.",
+    "valuationType": "Pre ou post",
+    "pre": "Pre-money",
+    "post": "Post-money",
+    "instrument": "Instrumento",
+    "equity": "Equity",
+    "safe": "SAFE",
+    "note": "Nota convertível",
+    "cap": "Cap",
+    "discount": "Desconto %",
+    "discountShort": "desconto",
+    "postMoney": "Post-money",
+    "preMoney": "Pre-money",
+    "impliedPost": "Post-money implícito",
+    "impliedNote": "a partir do equity oferecido",
+    "dilution": "Diluição desta ronda",
+    "perCheque": "Por cheque",
+    "perChequeNote": "para um cheque de {amount}",
+    "mismatch": "A sua ficha diz {stated}% de equity, mas a avaliação implica {implied}%. Os investidores vão notar — corrija o número errado."
+  },
+  "allocation": {
+    "title": "Alocação",
+    "set": "Definir um objetivo de alocação",
+    "setHint": "Acompanhe o que pretendia aplicar face ao que já está comprometido.",
+    "targetPh": "Objetivo",
+    "periodPh": "Período",
+    "deployed": "Aplicado",
+    "committed": "Comprometido",
+    "remaining": "Restante"
   }
 }

@@ -2901,5 +2901,38 @@
     "certificateNote": "每次签署都会记录签署人输入的姓名、UTC 时间、脱敏 IP，以及所签署文本的 SHA-256 哈希值 —— 以便日后证明条款在签署后未被更改。",
     "viewExecuted": "已签署合同",
     "viewDocument": "查看文件"
+  },
+  "round": {
+    "title": "本轮测算",
+    "valuation": "估值",
+    "valuationHint": "若不愿公开可留空 —— 投资者仍会从您的股权比例推算出来。",
+    "valuationType": "投前或投后",
+    "pre": "投前估值",
+    "post": "投后估值",
+    "instrument": "工具",
+    "equity": "股权融资",
+    "safe": "SAFE",
+    "note": "可转债",
+    "cap": "上限",
+    "discount": "折扣 %",
+    "discountShort": "折扣",
+    "postMoney": "投后估值",
+    "preMoney": "投前估值",
+    "impliedPost": "推算投后估值",
+    "impliedNote": "根据出让股权推算",
+    "dilution": "本轮稀释",
+    "perCheque": "每笔投资",
+    "perChequeNote": "按 {amount} 计算",
+    "mismatch": "您的列表写明出让 {stated}% 股权，但估值对应 {implied}%。投资者会发现 —— 请修正错误的数字。"
+  },
+  "allocation": {
+    "title": "配置",
+    "set": "设置配置目标",
+    "setHint": "跟踪计划投出的金额与已被占用的金额。",
+    "targetPh": "目标",
+    "periodPh": "周期",
+    "deployed": "已投出",
+    "committed": "已承诺",
+    "remaining": "剩余"
   }
 }

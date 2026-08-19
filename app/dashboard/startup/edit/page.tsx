@@ -310,6 +310,12 @@ export default function EditStartupPage() {
       video_pitch_url:   st.video_pitch_url || null,
       looking_for:       st.looking_for || null,
       tam: parseFloat(st.tam) || null, sam: parseFloat(st.sam) || null, som: parseFloat(st.som) || null,
+      // D44: the round's own numbers.
+      valuation: parseFloat(st.valuation) || null,
+      valuation_type: st.valuation_type || null,
+      instrument: st.instrument || null,
+      safe_cap: parseFloat(st.safe_cap) || null,
+      safe_discount: parseFloat(st.safe_discount) || null,
       // A live listing STAYS live when edited. It used to flip back to
       // pending_review — a founder fixing a typo vanished from the market
       // until re-approved. Instead the edit is stamped for admin re-check.
@@ -576,6 +582,35 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.equityOffered")}><WarmInput type="number" step="0.1" value={startup.equity_offered || ""} onChange={e => update("equity_offered", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.minCheckSize")}><WarmInput type="number" value={startup.min_check_size || ""} onChange={e => update("min_check_size", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.useOfFunds")}><WarmTextarea value={startup.use_of_funds || ""} onChange={e => update("use_of_funds", e.target.value)} /></Field>
+              
+                {/* D44: valuation, so investors do not have to reverse-engineer
+                    it from the equity number (and so the two can be checked). */}
+                <div className="form-row-2" style={{ gap: "14px" }}>
+                  <Field label={t("round.valuation")} hint={t("round.valuationHint")}>
+                    <WarmInput type="number" min={0} value={startup.valuation ?? ""} onChange={e => update("valuation", e.target.value)} placeholder="4500000" />
+                  </Field>
+                  <Field label={t("round.valuationType")}>
+                    <WarmSelect value={startup.valuation_type || ""} onChange={e => update("valuation_type", e.target.value)}>
+                      <option value="">—</option>
+                      <option value="pre">{t("round.pre")}</option>
+                      <option value="post">{t("round.post")}</option>
+                    </WarmSelect>
+                  </Field>
+                </div>
+                <Field label={t("round.instrument")}>
+                  <WarmSelect value={startup.instrument || ""} onChange={e => update("instrument", e.target.value)}>
+                    <option value="">—</option>
+                    <option value="equity">{t("round.equity")}</option>
+                    <option value="safe">{t("round.safe")}</option>
+                    <option value="convertible_note">{t("round.note")}</option>
+                  </WarmSelect>
+                </Field>
+                {(startup.instrument === "safe" || startup.instrument === "convertible_note") && (
+                  <div className="form-row-2" style={{ gap: "14px" }}>
+                    <Field label={t("round.cap")}><WarmInput type="number" min={0} value={startup.safe_cap ?? ""} onChange={e => update("safe_cap", e.target.value)} placeholder="6000000" /></Field>
+                    <Field label={t("round.discount")}><WarmInput type="number" min={0} max={99} value={startup.safe_discount ?? ""} onChange={e => update("safe_discount", e.target.value)} placeholder="20" /></Field>
+                  </div>
+                )}
               </div>
             </section>
 

@@ -2901,5 +2901,38 @@
     "certificateNote": "Jede Unterschrift erfasst den eingegebenen Namen, die Zeit in UTC, eine maskierte IP und den SHA-256-Hash des exakt unterzeichneten Textes — damit später belegbar ist, dass die Konditionen nach der Unterschrift nicht geändert wurden.",
     "viewExecuted": "Unterzeichneter Vertrag",
     "viewDocument": "Dokument ansehen"
+  },
+  "round": {
+    "title": "Runden-Mathematik",
+    "valuation": "Bewertung",
+    "valuationHint": "Leer lassen, wenn Sie keine nennen möchten — Investoren leiten sie ohnehin aus Ihrem Anteil ab.",
+    "valuationType": "Pre oder Post",
+    "pre": "Pre-Money",
+    "post": "Post-Money",
+    "instrument": "Instrument",
+    "equity": "Priced Equity",
+    "safe": "SAFE",
+    "note": "Wandeldarlehen",
+    "cap": "Cap",
+    "discount": "Discount %",
+    "discountShort": "Discount",
+    "postMoney": "Post-Money",
+    "preMoney": "Pre-Money",
+    "impliedPost": "Impliziertes Post-Money",
+    "impliedNote": "aus dem angebotenen Anteil",
+    "dilution": "Verwässerung dieser Runde",
+    "perCheque": "Pro Ticket",
+    "perChequeNote": "für ein Ticket von {amount}",
+    "mismatch": "Ihr Listing nennt {stated}% Anteil, die Bewertung impliziert aber {implied}%. Investoren merken das — korrigieren Sie die falsche Zahl."
+  },
+  "allocation": {
+    "title": "Allokation",
+    "set": "Allokationsziel festlegen",
+    "setHint": "Verfolgen Sie, was Sie einsetzen wollten, gegenüber dem bereits Gebundenen.",
+    "targetPh": "Ziel",
+    "periodPh": "Zeitraum",
+    "deployed": "Eingesetzt",
+    "committed": "Zugesagt",
+    "remaining": "Verbleibend"
   }
 }

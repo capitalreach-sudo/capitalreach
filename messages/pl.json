@@ -2901,5 +2901,38 @@
     "certificateNote": "Każdy podpis zapisuje wpisane imię i nazwisko, czas UTC, zamaskowany adres IP oraz skrót SHA-256 dokładnie podpisanego tekstu — aby móc później wykazać, że warunki nie zostały zmienione po podpisaniu.",
     "viewExecuted": "Podpisana umowa",
     "viewDocument": "Zobacz dokument"
+  },
+  "round": {
+    "title": "Matematyka rundy",
+    "valuation": "Wycena",
+    "valuationHint": "Zostaw puste, jeśli wolisz jej nie podawać — inwestorzy i tak wyliczą ją z Twojego udziału.",
+    "valuationType": "Pre czy post",
+    "pre": "Pre-money",
+    "post": "Post-money",
+    "instrument": "Instrument",
+    "equity": "Equity",
+    "safe": "SAFE",
+    "note": "Obligacja zamienna",
+    "cap": "Cap",
+    "discount": "Dyskonto %",
+    "discountShort": "dyskonto",
+    "postMoney": "Post-money",
+    "preMoney": "Pre-money",
+    "impliedPost": "Implikowane post-money",
+    "impliedNote": "z oferowanego udziału",
+    "dilution": "Rozwodnienie w tej rundzie",
+    "perCheque": "Na czek",
+    "perChequeNote": "dla czeku {amount}",
+    "mismatch": "Twój profil podaje {stated}% udziału, ale wycena implikuje {implied}%. Inwestorzy to zauważą — popraw błędną liczbę."
+  },
+  "allocation": {
+    "title": "Alokacja",
+    "set": "Ustaw cel alokacji",
+    "setHint": "Śledź, ile chciałeś zainwestować wobec tego, co już jest zarezerwowane.",
+    "targetPh": "Cel",
+    "periodPh": "Okres",
+    "deployed": "Zainwestowane",
+    "committed": "Zadeklarowane",
+    "remaining": "Pozostało"
   }
 }

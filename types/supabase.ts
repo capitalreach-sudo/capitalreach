@@ -894,6 +894,8 @@ export type Database = {
       }
       investors: {
         Row: {
+          allocation_period: string | null
+          allocation_target: number | null
           aum: string | null
           avatar_url: string | null
           avg_hold_period: string | null
@@ -932,6 +934,8 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          allocation_period?: string | null
+          allocation_target?: number | null
           aum?: string | null
           avatar_url?: string | null
           avg_hold_period?: string | null
@@ -970,6 +974,8 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          allocation_period?: string | null
+          allocation_target?: number | null
           aum?: string | null
           avatar_url?: string | null
           avg_hold_period?: string | null
@@ -1821,6 +1827,7 @@ export type Database = {
           growth_rate: number | null
           id: string
           industry: string
+          instrument: string | null
           languages: string[] | null
           languages_spoken: string[] | null
           lead_investor: string | null
@@ -1844,6 +1851,8 @@ export type Database = {
           round_state: string
           round_state_changed_at: string | null
           runway_months: number | null
+          safe_cap: number | null
+          safe_discount: number | null
           sam: number | null
           search_vector: unknown
           show_momentum: boolean
@@ -1863,6 +1872,8 @@ export type Database = {
           updated_at: string
           use_of_funds: string | null
           user_count: number | null
+          valuation: number | null
+          valuation_type: string | null
           vaultrise_score: number | null
           verified_at: string | null
           verified_by: string | null
@@ -1892,6 +1903,7 @@ export type Database = {
           growth_rate?: number | null
           id?: string
           industry: string
+          instrument?: string | null
           languages?: string[] | null
           languages_spoken?: string[] | null
           lead_investor?: string | null
@@ -1915,6 +1927,8 @@ export type Database = {
           round_state?: string
           round_state_changed_at?: string | null
           runway_months?: number | null
+          safe_cap?: number | null
+          safe_discount?: number | null
           sam?: number | null
           search_vector?: unknown
           show_momentum?: boolean
@@ -1934,6 +1948,8 @@ export type Database = {
           updated_at?: string
           use_of_funds?: string | null
           user_count?: number | null
+          valuation?: number | null
+          valuation_type?: string | null
           vaultrise_score?: number | null
           verified_at?: string | null
           verified_by?: string | null
@@ -1963,6 +1979,7 @@ export type Database = {
           growth_rate?: number | null
           id?: string
           industry?: string
+          instrument?: string | null
           languages?: string[] | null
           languages_spoken?: string[] | null
           lead_investor?: string | null
@@ -1986,6 +2003,8 @@ export type Database = {
           round_state?: string
           round_state_changed_at?: string | null
           runway_months?: number | null
+          safe_cap?: number | null
+          safe_discount?: number | null
           sam?: number | null
           search_vector?: unknown
           show_momentum?: boolean
@@ -2005,6 +2024,8 @@ export type Database = {
           updated_at?: string
           use_of_funds?: string | null
           user_count?: number | null
+          valuation?: number | null
+          valuation_type?: string | null
           vaultrise_score?: number | null
           verified_at?: string | null
           verified_by?: string | null

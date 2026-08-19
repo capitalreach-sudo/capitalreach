@@ -2901,5 +2901,38 @@
     "certificateNote": "각 서명에는 입력한 이름, UTC 시각, 마스킹된 IP, 그리고 서명한 본문의 SHA-256 해시가 기록됩니다 — 서명 이후 조건이 변경되지 않았음을 나중에 입증할 수 있습니다.",
     "viewExecuted": "체결된 계약",
     "viewDocument": "문서 보기"
+  },
+  "round": {
+    "title": "라운드 계산",
+    "valuation": "기업가치",
+    "valuationHint": "밝히고 싶지 않다면 비워 두세요 — 투자자는 지분율에서 역산합니다.",
+    "valuationType": "프리/포스트",
+    "pre": "프리머니",
+    "post": "포스트머니",
+    "instrument": "형태",
+    "equity": "지분 투자",
+    "safe": "SAFE",
+    "note": "전환사채",
+    "cap": "캡",
+    "discount": "할인 %",
+    "discountShort": "할인",
+    "postMoney": "포스트머니",
+    "preMoney": "프리머니",
+    "impliedPost": "추정 포스트머니",
+    "impliedNote": "제시 지분 기준",
+    "dilution": "이번 라운드 희석",
+    "perCheque": "건당",
+    "perChequeNote": "{amount} 투자 기준",
+    "mismatch": "등록에는 지분 {stated}%로 되어 있으나 기업가치 기준으로는 {implied}%입니다. 투자자가 알아챕니다 — 잘못된 숫자를 고치세요."
+  },
+  "allocation": {
+    "title": "배분",
+    "set": "배분 목표 설정",
+    "setHint": "집행하려던 금액과 이미 약정된 금액을 함께 추적하세요.",
+    "targetPh": "목표",
+    "periodPh": "기간",
+    "deployed": "집행",
+    "committed": "약정",
+    "remaining": "잔여"
   }
 }

@@ -2901,5 +2901,38 @@
     "certificateNote": "各署名には、入力された氏名、UTC の時刻、マスクした IP、そして署名した本文の SHA-256 ハッシュが記録されます — 署名後に条件が変更されていないことを後から示せます。",
     "viewExecuted": "署名済み契約",
     "viewDocument": "書類を見る"
+  },
+  "round": {
+    "title": "ラウンドの計算",
+    "valuation": "バリュエーション",
+    "valuationHint": "書きたくなければ空欄で構いません — 投資家は持分比率から逆算します。",
+    "valuationType": "プレ／ポスト",
+    "pre": "プレマネー",
+    "post": "ポストマネー",
+    "instrument": "形態",
+    "equity": "エクイティ",
+    "safe": "SAFE",
+    "note": "転換社債",
+    "cap": "キャップ",
+    "discount": "ディスカウント %",
+    "discountShort": "割引",
+    "postMoney": "ポストマネー",
+    "preMoney": "プレマネー",
+    "impliedPost": "推定ポストマネー",
+    "impliedNote": "提示持分から算出",
+    "dilution": "今回の希薄化",
+    "perCheque": "1件あたり",
+    "perChequeNote": "{amount} の出資の場合",
+    "mismatch": "掲載では持分 {stated}% ですが、バリュエーションからは {implied}% になります。投資家は気づきます — 誤っている方を直してください。"
+  },
+  "allocation": {
+    "title": "アロケーション",
+    "set": "アロケーション目標を設定",
+    "setHint": "投じる予定額と、すでに約束済みの額を並べて把握できます。",
+    "targetPh": "目標",
+    "periodPh": "期間",
+    "deployed": "投下済み",
+    "committed": "コミット済み",
+    "remaining": "残り"
   }
 }

@@ -56,10 +56,25 @@ export default async function InvestorDashboardPage() {
     .limit(10)
     .returns<AiReport[]>();
 
+  // D43: allocation for the period. Committed = live deals carrying a
+  // commitment; deployed = money that has actually moved (funded), falling
+  // back to closed when the funding step was never recorded.
+  const allocation = (() => {
+    let committed = 0, deployed = 0;
+    for (const d of deals ?? []) {
+      const amt = Number((d as unknown as { amount?: number | null }).amount ?? 0) || 0;
+      const dd = d as unknown as { status: string; commitment_type?: string | null; funded_at?: string | null };
+      if (dd.status === "closed") deployed += amt;
+      else if (dd.commitment_type === "committed" || dd.commitment_type === "soft_circle" || dd.commitment_type === "verbal") committed += amt;
+    }
+    return { committed, deployed };
+  })();
+
   return (
     <>
       <Navbar />
       <InvestorDashboardClient
+        allocation={allocation}
         profile={profile}
         investor={investor}
         watchlist={watchlist ?? []}

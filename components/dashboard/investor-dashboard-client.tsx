@@ -11,6 +11,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { buildAccessContext, investorCan } from "@/lib/access";
 import { formatDate } from "@/lib/utils";
 import { formatMoney } from "@/lib/currency";
+import { allocationSummary } from "@/lib/round-math";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
@@ -23,6 +24,8 @@ interface Props {
   aiReports:  AiReport[];
   /** Set when an admin is viewing this investor's dashboard. See read-only.tsx. */
   viewingAs?: string;
+  /** D43: committed and deployed, derived server-side from deals. */
+  allocation?: { committed: number; deployed: number };
 }
 
 type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
@@ -72,6 +75,76 @@ const FEATURE_ROWS = [
  * Saves on blur rather than behind a button: this is a scratchpad, and asking
  * someone to press Save on a one-line thought is how the field goes unused.
  */
+/**
+ * D43: allocation for the period — what you meant to deploy, what is spoken
+ * for, and what is left. The target is yours to set; the rest is computed
+ * from your deals so it cannot drift out of date.
+ */
+function AllocationTracker({ investor, committed, deployed }: { investor: Investor; committed: number; deployed: number }) {
+  const { t } = useTranslation();
+  const readOnly = useReadOnly();
+  const inv = investor as unknown as { allocation_target?: number | null; allocation_period?: string | null };
+  const [target, setTarget] = useState<number | null>(inv.allocation_target ?? null);
+  const [period, setPeriod] = useState(inv.allocation_period ?? "");
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(inv.allocation_target ?? ""));
+
+  const summary = allocationSummary(target, committed, deployed);
+  const cur = (investor as unknown as { currency?: string }).currency || "USD";
+
+  async function save() {
+    const n = Number(draft.replace(/[^0-9.]/g, ""));
+    const next = draft.trim() === "" ? null : (Number.isFinite(n) ? n : null);
+    setEditing(false);
+    const res = await fetch("/api/investors/allocation", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ target: next, period: period || null }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    setTarget(next);
+  }
+
+  if (summary.target === null && !editing) {
+    if (readOnly) return null;
+    return (
+      <div style={{ background: "var(--cr-paper-2)", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px", marginBottom: "16px" }}>
+        <button onClick={() => setEditing(true)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}>
+          + {t("allocation.set")}
+        </button>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("allocation.setHint")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("allocation.title")}</h3>
+        {editing ? (
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <input value={draft} onChange={(e) => setDraft(e.target.value)} inputMode="decimal" placeholder={t("allocation.targetPh")} autoFocus
+              style={{ width: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 3, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+            <input value={period} onChange={(e) => setPeriod(e.target.value.slice(0, 40))} placeholder={t("allocation.periodPh")}
+              style={{ width: 90, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 3, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+            <button onClick={save} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>{t("common.save")}</button>
+          </div>
+        ) : (
+          <button onClick={() => { setDraft(String(target ?? "")); setEditing(true); }} disabled={readOnly}
+            style={{ background: "none", border: "none", padding: 0, cursor: readOnly ? "default" : "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "var(--cr-ink-3)" }}>
+            {formatMoney(summary.target ?? 0, cur, { compact: true })}{period ? ` · ${period}` : ""}
+          </button>
+        )}
+      </div>
+      <div style={{ display: "flex", height: 10, borderRadius: 5, overflow: "hidden", background: "var(--cr-paper-4)" }}>
+        <div style={{ width: `${summary.target ? Math.min(100, (deployed / summary.target) * 100) : 0}%`, background: "var(--cr-up)" }} />
+        <div style={{ width: `${summary.target ? Math.min(100, (committed / summary.target) * 100) : 0}%`, background: "var(--cr-copper)" }} />
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", marginTop: 8, fontFamily: "'DM Sans', sans-serif", fontSize: 11.5 }}>
+        <span style={{ color: "var(--cr-up)" }}>● {t("allocation.deployed")} {formatMoney(deployed, cur, { compact: true })}</span>
+        <span style={{ color: "var(--cr-copper)" }}>● {t("allocation.committed")} {formatMoney(committed, cur, { compact: true })}</span>
+        <span style={{ color: "var(--cr-ink-4)" }}>● {t("allocation.remaining")} {summary.remaining === null ? "—" : formatMoney(summary.remaining, cur, { compact: true })}</span>
+      </div>
+    </div>
+  );
+}
+
 /** C31: listings other investors sent you, with the note and the thread. */
 function SharedWithYou() {
   const { t } = useTranslation();
@@ -342,7 +415,7 @@ function SavedSearchManager() {
   );
 }
 
-export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs }: Props) {
+export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
@@ -585,6 +658,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {activeTab === "watchlist" && (
           <div>
             <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>
+            {allocation && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
             <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
