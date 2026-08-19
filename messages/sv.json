@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Avgifter ej fakturerbara",
     "unbillableNote": "En framgångsavgift tjänades in på dessa affärer men kunde inte faktureras — grundaren hade ingen betalningsmetod registrerad.",
     "mixedCurrencies": "blandade valutor: {list}"
+  },
+  "tranches": {
+    "title": "Utbetalningsplan",
+    "fundedTitle": "Fullt utbetald",
+    "add": "Betalas i trancher?",
+    "addRow": "Lägg till en tranche",
+    "editorTitle": "Ange en utbetalningsplan",
+    "labelPh": "Etikett (t.ex. Vid closing)",
+    "amountPh": "Belopp",
+    "conditionPh": "Villkor (valfritt)",
+    "mismatch": "Trancherna måste summera till affärens belopp.",
+    "needTwo": "En plan behöver minst två trancher.",
+    "save": "Spara plan",
+    "saved": "Utbetalningsplan sparad",
+    "nth": "Tranche {n}",
+    "due": "Förfaller",
+    "sentAwaiting": "skickad, väntar på mottagande",
+    "receivedOf": "{received} av {total} mottagna",
+    "fullyFunded": "Fullt utbetald — alla trancher mottagna"
   }
 }

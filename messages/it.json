@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Fee non fatturabili",
     "unbillableNote": "Su queste operazioni è maturata una success fee che non è stato possibile fatturare: il founder non aveva un metodo di pagamento registrato.",
     "mixedCurrencies": "valute miste: {list}"
+  },
+  "tranches": {
+    "title": "Piano di erogazione",
+    "fundedTitle": "Interamente erogato",
+    "add": "Pagamento a tranche?",
+    "addRow": "Aggiungi una tranche",
+    "editorTitle": "Imposta un piano di erogazione",
+    "labelPh": "Etichetta (es. Al closing)",
+    "amountPh": "Importo",
+    "conditionPh": "Condizione (facoltativa)",
+    "mismatch": "La somma delle tranche deve corrispondere all'importo dell'operazione.",
+    "needTwo": "Un piano richiede almeno due tranche.",
+    "save": "Salva piano",
+    "saved": "Piano di erogazione salvato",
+    "nth": "Tranche {n}",
+    "due": "Scadenza",
+    "sentAwaiting": "inviata, ricezione in attesa",
+    "receivedOf": "{received} di {total} ricevuti",
+    "fullyFunded": "Interamente erogato — tutte le tranche ricevute"
   }
 }

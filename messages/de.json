@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Gebühren nicht fakturierbar",
     "unbillableNote": "Bei diesen Deals ist eine Erfolgsgebühr entstanden, konnte aber nicht in Rechnung gestellt werden — der Gründer hatte keine Zahlungsmethode hinterlegt.",
     "mixedCurrencies": "gemischte Währungen: {list}"
+  },
+  "tranches": {
+    "title": "Auszahlungsplan",
+    "fundedTitle": "Vollständig ausgezahlt",
+    "add": "In Tranchen gezahlt?",
+    "addRow": "Tranche hinzufügen",
+    "editorTitle": "Auszahlungsplan festlegen",
+    "labelPh": "Bezeichnung (z. B. Bei Closing)",
+    "amountPh": "Betrag",
+    "conditionPh": "Bedingung (optional)",
+    "mismatch": "Die Tranchen müssen in Summe dem Deal-Betrag entsprechen.",
+    "needTwo": "Ein Plan braucht mindestens zwei Tranchen.",
+    "save": "Plan speichern",
+    "saved": "Auszahlungsplan gespeichert",
+    "nth": "Tranche {n}",
+    "due": "Fällig",
+    "sentAwaiting": "gesendet, Eingang ausstehend",
+    "receivedOf": "{received} von {total} erhalten",
+    "fullyFunded": "Vollständig ausgezahlt — alle Tranchen erhalten"
   }
 }

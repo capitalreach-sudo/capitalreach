@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Fees unbillable",
     "unbillableNote": "A success fee was earned on these deals but could not be invoiced — the founder had no payment method on file.",
     "mixedCurrencies": "mixed currencies: {list}"
+  },
+  "tranches": {
+    "title": "Funding schedule",
+    "fundedTitle": "Fully funded",
+    "add": "Paid in tranches?",
+    "addRow": "Add a tranche",
+    "editorTitle": "Set a funding schedule",
+    "labelPh": "Label (e.g. On close)",
+    "amountPh": "Amount",
+    "conditionPh": "Condition (optional)",
+    "mismatch": "The tranches must add up to the deal amount.",
+    "needTwo": "A schedule needs at least two tranches.",
+    "save": "Save schedule",
+    "saved": "Funding schedule saved",
+    "nth": "Tranche {n}",
+    "due": "Due",
+    "sentAwaiting": "sent, awaiting receipt",
+    "receivedOf": "{received} of {total} received",
+    "fullyFunded": "Fully funded — every tranche received"
   }
 }

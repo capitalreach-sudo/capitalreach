@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Comissões não faturáveis",
     "unbillableNote": "Foi ganha uma comissão nestes negócios mas não foi possível faturá-la — o fundador não tinha método de pagamento registado.",
     "mixedCurrencies": "moedas mistas: {list}"
+  },
+  "tranches": {
+    "title": "Calendário de desembolso",
+    "fundedTitle": "Totalmente desembolsado",
+    "add": "Pago em tranches?",
+    "addRow": "Adicionar uma tranche",
+    "editorTitle": "Definir um calendário de desembolso",
+    "labelPh": "Etiqueta (ex. No fecho)",
+    "amountPh": "Montante",
+    "conditionPh": "Condição (opcional)",
+    "mismatch": "A soma das tranches tem de corresponder ao montante do negócio.",
+    "needTwo": "Um calendário precisa de pelo menos duas tranches.",
+    "save": "Guardar calendário",
+    "saved": "Calendário guardado",
+    "nth": "Tranche {n}",
+    "due": "Vencimento",
+    "sentAwaiting": "enviada, receção pendente",
+    "receivedOf": "{received} de {total} recebidos",
+    "fullyFunded": "Totalmente desembolsado — todas as tranches recebidas"
   }
 }

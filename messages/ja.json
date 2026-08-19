@@ -2954,5 +2954,24 @@
     "feesUnbillable": "請求不能な手数料",
     "unbillableNote": "これらのディールでは成功報酬が発生しましたが請求できませんでした — 創業者に支払い方法が登録されていません。",
     "mixedCurrencies": "複数通貨: {list}"
+  },
+  "tranches": {
+    "title": "支払スケジュール",
+    "fundedTitle": "全額入金済み",
+    "add": "分割払いですか？",
+    "addRow": "トランシェを追加",
+    "editorTitle": "支払スケジュールを設定",
+    "labelPh": "ラベル（例: クロージング時）",
+    "amountPh": "金額",
+    "conditionPh": "条件（任意）",
+    "mismatch": "各トランシェの合計はディール金額と一致する必要があります。",
+    "needTwo": "スケジュールには最低 2 つのトランシェが必要です。",
+    "save": "スケジュールを保存",
+    "saved": "支払スケジュールを保存しました",
+    "nth": "トランシェ {n}",
+    "due": "期日",
+    "sentAwaiting": "送金済み、入金待ち",
+    "receivedOf": "{total} のうち {received} 入金済み",
+    "fullyFunded": "全額入金済み — すべてのトランシェを受領"
   }
 }

@@ -482,6 +482,62 @@ export type Database = {
           },
         ]
       }
+      deal_tranches: {
+        Row: {
+          amount: number
+          condition: string | null
+          created_at: string
+          deal_id: string
+          due_date: string | null
+          funds_received_at: string | null
+          funds_received_by: string | null
+          funds_sent_at: string | null
+          funds_sent_by: string | null
+          id: string
+          label: string | null
+          position: number
+          reference: string | null
+        }
+        Insert: {
+          amount: number
+          condition?: string | null
+          created_at?: string
+          deal_id: string
+          due_date?: string | null
+          funds_received_at?: string | null
+          funds_received_by?: string | null
+          funds_sent_at?: string | null
+          funds_sent_by?: string | null
+          id?: string
+          label?: string | null
+          position?: number
+          reference?: string | null
+        }
+        Update: {
+          amount?: number
+          condition?: string | null
+          created_at?: string
+          deal_id?: string
+          due_date?: string | null
+          funds_received_at?: string | null
+          funds_received_by?: string | null
+          funds_sent_at?: string | null
+          funds_sent_by?: string | null
+          id?: string
+          label?: string | null
+          position?: number
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_tranches_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           amount: number | null
@@ -2347,6 +2403,7 @@ export type Database = {
         }[]
       }
       increment_pageview: { Args: { startup_id: string }; Returns: undefined }
+      is_deal_counterparty: { Args: { p_startup_id: string }; Returns: boolean }
       is_investor_member: { Args: { iid: string }; Returns: boolean }
       is_startup_member: { Args: { sid: string }; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }

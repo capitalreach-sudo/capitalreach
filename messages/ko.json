@@ -2954,5 +2954,24 @@
     "feesUnbillable": "청구 불가 수수료",
     "unbillableNote": "이 거래들에서 성공 수수료가 발생했지만 청구할 수 없었습니다 — 창업자에게 결제 수단이 등록되어 있지 않습니다.",
     "mixedCurrencies": "혼합 통화: {list}"
+  },
+  "tranches": {
+    "title": "지급 일정",
+    "fundedTitle": "전액 입금 완료",
+    "add": "분할 지급인가요?",
+    "addRow": "트랜치 추가",
+    "editorTitle": "지급 일정 설정",
+    "labelPh": "라벨 (예: 클로징 시)",
+    "amountPh": "금액",
+    "conditionPh": "조건 (선택)",
+    "mismatch": "트랜치 합계가 거래 금액과 같아야 합니다.",
+    "needTwo": "일정에는 최소 두 개의 트랜치가 필요합니다.",
+    "save": "일정 저장",
+    "saved": "지급 일정이 저장되었습니다",
+    "nth": "트랜치 {n}",
+    "due": "기한",
+    "sentAwaiting": "송금됨, 입금 대기",
+    "receivedOf": "{total} 중 {received} 입금",
+    "fullyFunded": "전액 입금 완료 — 모든 트랜치 수령"
   }
 }

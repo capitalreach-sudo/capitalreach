@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Commissions non facturables",
     "unbillableNote": "Une commission a été acquise sur ces opérations mais n'a pas pu être facturée — le fondateur n'avait aucun moyen de paiement enregistré.",
     "mixedCurrencies": "devises mixtes : {list}"
+  },
+  "tranches": {
+    "title": "Échéancier de versement",
+    "fundedTitle": "Intégralement versé",
+    "add": "Versé en tranches ?",
+    "addRow": "Ajouter une tranche",
+    "editorTitle": "Définir un échéancier",
+    "labelPh": "Libellé (ex. À la clôture)",
+    "amountPh": "Montant",
+    "conditionPh": "Condition (facultatif)",
+    "mismatch": "Le total des tranches doit correspondre au montant de l'opération.",
+    "needTwo": "Un échéancier comporte au moins deux tranches.",
+    "save": "Enregistrer l'échéancier",
+    "saved": "Échéancier enregistré",
+    "nth": "Tranche {n}",
+    "due": "Échéance",
+    "sentAwaiting": "envoyé, réception en attente",
+    "receivedOf": "{received} reçus sur {total}",
+    "fullyFunded": "Intégralement versé — toutes les tranches reçues"
   }
 }

@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Comisiones no facturables",
     "unbillableNote": "Se devengó una comisión en estas operaciones pero no se pudo facturar: el fundador no tenía método de pago registrado.",
     "mixedCurrencies": "monedas mixtas: {list}"
+  },
+  "tranches": {
+    "title": "Calendario de desembolso",
+    "fundedTitle": "Totalmente desembolsado",
+    "add": "¿Pago por tramos?",
+    "addRow": "Añadir un tramo",
+    "editorTitle": "Definir un calendario de desembolso",
+    "labelPh": "Etiqueta (p. ej. Al cierre)",
+    "amountPh": "Importe",
+    "conditionPh": "Condición (opcional)",
+    "mismatch": "La suma de los tramos debe coincidir con el importe de la operación.",
+    "needTwo": "Un calendario necesita al menos dos tramos.",
+    "save": "Guardar calendario",
+    "saved": "Calendario guardado",
+    "nth": "Tramo {n}",
+    "due": "Vence",
+    "sentAwaiting": "enviado, pendiente de recepción",
+    "receivedOf": "{received} de {total} recibidos",
+    "fullyFunded": "Totalmente desembolsado: todos los tramos recibidos"
   }
 }

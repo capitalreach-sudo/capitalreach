@@ -2954,5 +2954,24 @@
     "feesUnbillable": "Prowizje niefakturowalne",
     "unbillableNote": "Na tych transakcjach należna była prowizja, której nie dało się zafakturować — założyciel nie miał zapisanej metody płatności.",
     "mixedCurrencies": "waluty mieszane: {list}"
+  },
+  "tranches": {
+    "title": "Harmonogram wypłat",
+    "fundedTitle": "W pełni wypłacone",
+    "add": "Płatność w transzach?",
+    "addRow": "Dodaj transzę",
+    "editorTitle": "Ustaw harmonogram wypłat",
+    "labelPh": "Etykieta (np. Przy zamknięciu)",
+    "amountPh": "Kwota",
+    "conditionPh": "Warunek (opcjonalnie)",
+    "mismatch": "Suma transz musi być równa kwocie transakcji.",
+    "needTwo": "Harmonogram wymaga co najmniej dwóch transz.",
+    "save": "Zapisz harmonogram",
+    "saved": "Harmonogram zapisany",
+    "nth": "Transza {n}",
+    "due": "Termin",
+    "sentAwaiting": "wysłana, oczekuje na wpływ",
+    "receivedOf": "Otrzymano {received} z {total}",
+    "fullyFunded": "W pełni wypłacone — wszystkie transze otrzymane"
   }
 }

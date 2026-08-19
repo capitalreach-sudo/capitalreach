@@ -22,6 +22,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { scheduleTotal, scheduleReconciles, receivedTotal, allReceived } from "@/lib/tranches";
 
 const CONTRACT_TYPES: ContractType[] = ["term_sheet", "safe", "convertible_note", "nda", "custom"];
 const CONTRACT_TYPE_KEY: Record<ContractType, string> = {
@@ -953,6 +954,16 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
   const [fundedAt, setFundedAt] = useState<string | null>(d.funded_at ?? null);
   const [ref, setRef] = useState("");
   const [busy, setBusy] = useState(false);
+  const [tranches, setTranches] = useState<Tranche[] | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    fetch(`/api/deals/tranches?dealId=${deal.id}`)
+      .then(r => r.ok ? r.json() : { tranches: [] })
+      .then(j => { if (live) setTranches(j.tranches ?? []); })
+      .catch(() => { if (live) setTranches([]); });
+    return () => { live = false; };
+  }, [deal.id]);
 
   async function confirm(step: "sent" | "received") {
     if (busy) return;
@@ -982,6 +993,17 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
   );
 
   const isExternalInv = !!(deal.investor as unknown as { is_external?: boolean } | null)?.is_external;
+
+  // D39: when a schedule exists it replaces the single pair of confirmations
+  // — confirming "the money arrived" once would be false for a deal that is
+  // being paid in instalments.
+  if (tranches === null) return null;
+  if (tranches.length > 0) {
+    return (
+      <TrancheBlock deal={deal} viewAs={viewAs} initial={tranches} onChange={setTranches} isExternalInv={isExternalInv} />
+    );
+  }
+
   return (
     <div style={{ marginTop: "10px", background: fundedAt ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: `1px solid ${fundedAt ? "rgba(45,106,79,0.25)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", padding: "10px 12px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
@@ -999,6 +1021,185 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
         </>
       )}
       {d.funding_reference && <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("funding.ref")}: {d.funding_reference}</p>}
+      {!sentAt && !recvAt && (viewAs === "startup" || viewAs === "investor") && (
+        <TrancheEditor deal={deal} onSaved={setTranches} />
+      )}
+    </div>
+  );
+}
+
+export type Tranche = {
+  id: string; position: number; label: string | null; amount: number;
+  due_date: string | null; condition: string | null;
+  funds_sent_at: string | null; funds_received_at: string | null; reference: string | null;
+};
+
+/**
+ * D39: propose a schedule. Only offered before either side has confirmed
+ * anything — once money has moved, the schedule is history, not a draft.
+ * The total is checked against the deal amount here as well as on the
+ * server, so the mismatch is visible while it is still being typed.
+ */
+function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) => void }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState<{ label: string; amount: string; dueDate: string; condition: string }[]>([
+    { label: "", amount: "", dueDate: "", condition: "" },
+    { label: "", amount: "", dueDate: "", condition: "" },
+  ]);
+  const [busy, setBusy] = useState(false);
+
+  const total = scheduleTotal(rows.map(r => r.amount));
+  const target = deal.amount != null ? Number(deal.amount) : null;
+  const mismatch = total > 0 && !scheduleReconciles(rows.map(r => r.amount).filter(a => Number(a) > 0), target);
+
+  async function save() {
+    if (busy) return;
+    const payload = rows.filter(r => Number(r.amount) > 0).map(r => ({
+      label: r.label || undefined, amount: Number(r.amount),
+      dueDate: r.dueDate || undefined, condition: r.condition || undefined,
+    }));
+    if (payload.length < 2) { notify.error(t("tranches.needTwo")); return; }
+    setBusy(true);
+    const res = await fetch("/api/deals/tranches", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dealId: deal.id, action: "save", tranches: payload }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    onSaved(j.tranches ?? []);
+    notify.success(t("tranches.saved"));
+  }
+
+  const cell: React.CSSProperties = { background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 7px", outline: "none", minWidth: 0 };
+
+  if (!open) {
+    return (
+      <button onClick={() => setOpen(true)}
+        style={{ marginTop: 8, background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", cursor: "pointer", padding: 0 }}>
+        {t("tranches.add")}
+      </button>
+    );
+  }
+  return (
+    <div style={{ marginTop: 8, borderTop: "1px solid var(--cr-rule)", paddingTop: 8 }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", color: "var(--cr-ink)", marginBottom: 6 }}>{t("tranches.editorTitle")}</p>
+      {rows.map((r, i) => (
+        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, marginBottom: 5 }}>
+          <input value={r.label} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, label: e.target.value.slice(0, 80) } : x))} placeholder={t("tranches.labelPh")} style={cell} />
+          <input value={r.amount} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, amount: e.target.value } : x))} inputMode="decimal" placeholder={t("tranches.amountPh")} style={cell} />
+          <input type="date" value={r.dueDate} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, dueDate: e.target.value } : x))} style={cell} />
+          <input value={r.condition} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, condition: e.target.value.slice(0, 200) } : x))} placeholder={t("tranches.conditionPh")} style={cell} />
+        </div>
+      ))}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
+        <button onClick={() => setRows([...rows, { label: "", amount: "", dueDate: "", condition: "" }])} disabled={rows.length >= 12}
+          style={{ background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", cursor: "pointer", padding: 0, opacity: rows.length >= 12 ? 0.4 : 1 }}>
+          {t("tranches.addRow")}
+        </button>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: mismatch ? "var(--cr-down)" : "var(--cr-ink-4)" }}>
+          {formatMoney(total, deal.currency, { compact: true })}
+          {target != null && ` / ${formatMoney(target, deal.currency, { compact: true })}`}
+        </span>
+      </div>
+      {mismatch && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-down)", marginTop: 5 }}>{t("tranches.mismatch")}</p>}
+      <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+        <button onClick={save} disabled={busy || mismatch}
+          style={{ background: "var(--cr-ink)", border: "none", color: "var(--cr-paper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", padding: "4px 12px", cursor: busy || mismatch ? "not-allowed" : "pointer", opacity: busy || mismatch ? 0.5 : 1 }}>
+          {t("tranches.save")}
+        </button>
+        <button onClick={() => setOpen(false)}
+          style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", padding: "4px 12px", cursor: "pointer" }}>
+          {t("common.cancel")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * D39: the schedule itself. Each tranche carries the same two one-way
+ * confirmations as a single-payment deal; the deal is funded only when the
+ * last one is received. The header reports what has actually arrived, which
+ * is the number a founder needs and the one a commitment total hides.
+ */
+function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
+  deal: Deal; viewAs: "startup" | "investor" | "admin";
+  initial: Tranche[]; onChange: (t: Tranche[]) => void; isExternalInv: boolean;
+}) {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<Tranche[]>(initial);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const received = receivedTotal(rows);
+  const total = scheduleTotal(rows.map(r => r.amount));
+  const allIn = allReceived(rows);
+
+  async function confirm(tr: Tranche, step: "sent" | "received") {
+    if (busy) return;
+    setBusy(tr.id);
+    const res = await fetch("/api/deals/tranches", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dealId: deal.id, action: "confirm", trancheId: tr.id, step }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(null);
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    const next = rows.map(r => r.id === tr.id ? { ...r, ...(step === "sent" ? { funds_sent_at: new Date().toISOString() } : { funds_received_at: new Date().toISOString() }) } : r);
+    setRows(next); onChange(next);
+    notify.success(j.fundedAt ? t("tranches.fullyFunded") : t("funding.recorded"));
+  }
+
+  const canSend = viewAs === "investor" || (isExternalInv && viewAs === "startup");
+  const canReceive = viewAs === "startup";
+
+  return (
+    <div style={{ marginTop: "10px", background: allIn ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: `1px solid ${allIn ? "rgba(45,106,79,0.25)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", padding: "10px 12px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: allIn ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          {allIn ? t("tranches.fundedTitle") : t("tranches.title")}
+        </p>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>
+          {t("tranches.receivedOf", { received: formatMoney(received, deal.currency, { compact: true }), total: formatMoney(total, deal.currency, { compact: true }) })}
+        </span>
+      </div>
+      {rows.map((r, i) => (
+        <div key={r.id} style={{ padding: "6px 0", borderTop: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: "11.5px", color: r.funds_received_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
+              {r.funds_received_at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
+              <span style={{ fontWeight: 600 }}>{r.label || t("tranches.nth", { n: i + 1 })}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", color: "var(--cr-ink-3)" }}>{formatMoney(Number(r.amount), deal.currency, { compact: true })}</span>
+            </span>
+            <span style={{ display: "inline-flex", gap: 5 }}>
+              {!r.funds_sent_at && canSend && (
+                <button onClick={() => confirm(r, "sent")} disabled={busy === r.id}
+                  style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "2px 8px", cursor: "pointer" }}>
+                  {t("funding.sent")}
+                </button>
+              )}
+              {!r.funds_received_at && canReceive && (
+                <button onClick={() => confirm(r, "received")} disabled={busy === r.id}
+                  style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "2px 8px", cursor: "pointer" }}>
+                  {t("funding.received")}
+                </button>
+              )}
+            </span>
+          </div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: 2, paddingLeft: 18 }}>
+            {r.due_date && <span>{t("tranches.due")}: {formatDate(r.due_date)}</span>}
+            {r.due_date && r.condition && " · "}
+            {r.condition}
+            {r.funds_sent_at && !r.funds_received_at && <span style={{ color: "var(--cr-ink-3)" }}>{(r.due_date || r.condition) ? " · " : ""}{t("tranches.sentAwaiting")}</span>}
+          </p>
+        </div>
+      ))}
+      {!allIn && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
+          {t("funding.fraudWarning")}
+        </p>
+      )}
     </div>
   );
 }
