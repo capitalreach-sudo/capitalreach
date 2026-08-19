@@ -2943,5 +2943,16 @@
     "markChange": "변화",
     "latestUpdate": "최근 업데이트",
     "noUpdates": "이 창업자의 업데이트가 아직 없습니다"
+  },
+  "revenue": {
+    "title": "매출",
+    "subscriptionMrr": "구독 MRR",
+    "payingAccounts": "유료 계정 {count}개",
+    "feesBilled": "청구된 수수료",
+    "feesCollected": "수금된 수수료",
+    "feesOutstanding": "미수 수수료",
+    "feesUnbillable": "청구 불가 수수료",
+    "unbillableNote": "이 거래들에서 성공 수수료가 발생했지만 청구할 수 없었습니다 — 창업자에게 결제 수단이 등록되어 있지 않습니다.",
+    "mixedCurrencies": "혼합 통화: {list}"
   }
 }

@@ -2943,5 +2943,16 @@
     "markChange": "Change",
     "latestUpdate": "Latest update",
     "noUpdates": "No updates from this founder yet"
+  },
+  "revenue": {
+    "title": "Revenue",
+    "subscriptionMrr": "Subscription MRR",
+    "payingAccounts": "{count} paying accounts",
+    "feesBilled": "Fees billed",
+    "feesCollected": "Fees collected",
+    "feesOutstanding": "Fees outstanding",
+    "feesUnbillable": "Fees unbillable",
+    "unbillableNote": "A success fee was earned on these deals but could not be invoiced — the founder had no payment method on file.",
+    "mixedCurrencies": "mixed currencies: {list}"
   }
 }

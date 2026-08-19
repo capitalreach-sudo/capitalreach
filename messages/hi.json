@@ -2943,5 +2943,16 @@
     "markChange": "बदलाव",
     "latestUpdate": "नवीनतम अपडेट",
     "noUpdates": "इस संस्थापक से अभी कोई अपडेट नहीं"
+  },
+  "revenue": {
+    "title": "राजस्व",
+    "subscriptionMrr": "सब्सक्रिप्शन MRR",
+    "payingAccounts": "{count} भुगतान खाते",
+    "feesBilled": "बिल किया गया शुल्क",
+    "feesCollected": "वसूला गया शुल्क",
+    "feesOutstanding": "बकाया शुल्क",
+    "feesUnbillable": "बिल न होने योग्य शुल्क",
+    "unbillableNote": "इन सौदों पर सफलता शुल्क बना पर बिल नहीं हो सका — संस्थापक की कोई भुगतान विधि दर्ज नहीं थी।",
+    "mixedCurrencies": "मिश्रित मुद्राएँ: {list}"
   }
 }

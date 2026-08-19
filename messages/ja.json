@@ -2943,5 +2943,16 @@
     "markChange": "変化",
     "latestUpdate": "最新の更新",
     "noUpdates": "この創業者からの更新はまだありません"
+  },
+  "revenue": {
+    "title": "収益",
+    "subscriptionMrr": "サブスク MRR",
+    "payingAccounts": "有料アカウント {count} 件",
+    "feesBilled": "請求済み手数料",
+    "feesCollected": "回収済み手数料",
+    "feesOutstanding": "未回収手数料",
+    "feesUnbillable": "請求不能な手数料",
+    "unbillableNote": "これらのディールでは成功報酬が発生しましたが請求できませんでした — 創業者に支払い方法が登録されていません。",
+    "mixedCurrencies": "複数通貨: {list}"
   }
 }

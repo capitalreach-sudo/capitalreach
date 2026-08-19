@@ -2943,5 +2943,16 @@
     "markChange": "变化",
     "latestUpdate": "最新动态",
     "noUpdates": "该创始人暂无动态"
+  },
+  "revenue": {
+    "title": "收入",
+    "subscriptionMrr": "订阅 MRR",
+    "payingAccounts": "{count} 个付费账户",
+    "feesBilled": "已开票费用",
+    "feesCollected": "已收取费用",
+    "feesOutstanding": "未收费用",
+    "feesUnbillable": "无法开票的费用",
+    "unbillableNote": "这些交易已产生成功费，但无法开票 —— 创始人未绑定支付方式。",
+    "mixedCurrencies": "混合币种：{list}"
   }
 }

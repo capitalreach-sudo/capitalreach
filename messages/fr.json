@@ -2943,5 +2943,16 @@
     "markChange": "Évolution",
     "latestUpdate": "Dernière mise à jour",
     "noUpdates": "Aucune mise à jour de ce fondateur"
+  },
+  "revenue": {
+    "title": "Revenus",
+    "subscriptionMrr": "MRR abonnements",
+    "payingAccounts": "{count} comptes payants",
+    "feesBilled": "Commissions facturées",
+    "feesCollected": "Commissions encaissées",
+    "feesOutstanding": "Commissions en attente",
+    "feesUnbillable": "Commissions non facturables",
+    "unbillableNote": "Une commission a été acquise sur ces opérations mais n'a pas pu être facturée — le fondateur n'avait aucun moyen de paiement enregistré.",
+    "mixedCurrencies": "devises mixtes : {list}"
   }
 }

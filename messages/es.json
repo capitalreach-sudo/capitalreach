@@ -2943,5 +2943,16 @@
     "markChange": "Variación",
     "latestUpdate": "Última actualización",
     "noUpdates": "Aún no hay actualizaciones de este fundador"
+  },
+  "revenue": {
+    "title": "Ingresos",
+    "subscriptionMrr": "MRR de suscripción",
+    "payingAccounts": "{count} cuentas de pago",
+    "feesBilled": "Comisiones facturadas",
+    "feesCollected": "Comisiones cobradas",
+    "feesOutstanding": "Comisiones pendientes",
+    "feesUnbillable": "Comisiones no facturables",
+    "unbillableNote": "Se devengó una comisión en estas operaciones pero no se pudo facturar: el fundador no tenía método de pago registrado.",
+    "mixedCurrencies": "monedas mixtas: {list}"
   }
 }

@@ -2943,5 +2943,16 @@
     "markChange": "Variazione",
     "latestUpdate": "Ultimo aggiornamento",
     "noUpdates": "Nessun aggiornamento da questo founder"
+  },
+  "revenue": {
+    "title": "Ricavi",
+    "subscriptionMrr": "MRR abbonamenti",
+    "payingAccounts": "{count} account paganti",
+    "feesBilled": "Fee fatturate",
+    "feesCollected": "Fee incassate",
+    "feesOutstanding": "Fee da incassare",
+    "feesUnbillable": "Fee non fatturabili",
+    "unbillableNote": "Su queste operazioni è maturata una success fee che non è stato possibile fatturare: il founder non aveva un metodo di pagamento registrato.",
+    "mixedCurrencies": "valute miste: {list}"
   }
 }

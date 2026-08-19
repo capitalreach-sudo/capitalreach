@@ -2943,5 +2943,16 @@
     "markChange": "Veränderung",
     "latestUpdate": "Letztes Update",
     "noUpdates": "Noch keine Updates von diesem Gründer"
+  },
+  "revenue": {
+    "title": "Umsatz",
+    "subscriptionMrr": "Abo-MRR",
+    "payingAccounts": "{count} zahlende Konten",
+    "feesBilled": "Gebühren fakturiert",
+    "feesCollected": "Gebühren eingegangen",
+    "feesOutstanding": "Gebühren offen",
+    "feesUnbillable": "Gebühren nicht fakturierbar",
+    "unbillableNote": "Bei diesen Deals ist eine Erfolgsgebühr entstanden, konnte aber nicht in Rechnung gestellt werden — der Gründer hatte keine Zahlungsmethode hinterlegt.",
+    "mixedCurrencies": "gemischte Währungen: {list}"
   }
 }

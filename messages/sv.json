@@ -2943,5 +2943,16 @@
     "markChange": "Förändring",
     "latestUpdate": "Senaste uppdatering",
     "noUpdates": "Inga uppdateringar från den här grundaren än"
+  },
+  "revenue": {
+    "title": "Intäkter",
+    "subscriptionMrr": "Prenumerations-MRR",
+    "payingAccounts": "{count} betalande konton",
+    "feesBilled": "Avgifter fakturerade",
+    "feesCollected": "Avgifter inbetalda",
+    "feesOutstanding": "Avgifter utestående",
+    "feesUnbillable": "Avgifter ej fakturerbara",
+    "unbillableNote": "En framgångsavgift tjänades in på dessa affärer men kunde inte faktureras — grundaren hade ingen betalningsmetod registrerad.",
+    "mixedCurrencies": "blandade valutor: {list}"
   }
 }

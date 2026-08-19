@@ -2943,5 +2943,16 @@
     "markChange": "Verandering",
     "latestUpdate": "Laatste update",
     "noUpdates": "Nog geen updates van deze oprichter"
+  },
+  "revenue": {
+    "title": "Omzet",
+    "subscriptionMrr": "Abonnements-MRR",
+    "payingAccounts": "{count} betalende accounts",
+    "feesBilled": "Fees gefactureerd",
+    "feesCollected": "Fees geïnd",
+    "feesOutstanding": "Fees openstaand",
+    "feesUnbillable": "Fees niet factureerbaar",
+    "unbillableNote": "Op deze deals is een succesfee verdiend die niet gefactureerd kon worden — de oprichter had geen betaalmethode vastgelegd.",
+    "mixedCurrencies": "gemengde valuta: {list}"
   }
 }

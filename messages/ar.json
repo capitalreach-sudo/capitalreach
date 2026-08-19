@@ -2943,5 +2943,16 @@
     "markChange": "التغير",
     "latestUpdate": "آخر تحديث",
     "noUpdates": "لا توجد تحديثات من هذا المؤسس بعد"
+  },
+  "revenue": {
+    "title": "الإيرادات",
+    "subscriptionMrr": "إيراد الاشتراكات الشهري",
+    "payingAccounts": "{count} حسابات مدفوعة",
+    "feesBilled": "رسوم مُفوترة",
+    "feesCollected": "رسوم محصّلة",
+    "feesOutstanding": "رسوم مستحقة",
+    "feesUnbillable": "رسوم غير قابلة للفوترة",
+    "unbillableNote": "استُحقت رسوم نجاح على هذه الصفقات لكن تعذّرت فوترتها — لم يكن لدى المؤسس وسيلة دفع مسجّلة.",
+    "mixedCurrencies": "عملات مختلطة: {list}"
   }
 }

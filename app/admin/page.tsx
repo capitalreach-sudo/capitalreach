@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { AdminClient } from "@/components/admin/admin-client";
 import type { Profile, Startup, Investor, Deal } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
+import { summariseRevenue } from "@/lib/revenue";
 import { AdminPulse, type PulseMetric, type HealthListing, type AdminAction } from "@/components/admin/admin-pulse";
 import { SystemHealth, type SystemEvent } from "@/components/admin/system-health";
 
@@ -122,8 +123,15 @@ export default async function AdminPage() {
     institution: 0,
     institutional: 0,
   };
-  const startupMrr = (allStartups || []).reduce((sum, s) => sum + (tierPrices[s.subscription_tier] || 0), 0);
-  const investorMrr = (allInvestors || []).reduce((sum, i) => sum + (tierPrices[i.subscription_tier] || 0), 0);
+  // E45: revenue over every account and every deal, not the fifty rows the
+  // table below happens to show. summariseRevenue also separates the 2% fees
+  // into billed / collected / outstanding / unbillable — the business model
+  // did not appear on this page at all before.
+  const [{ data: allTiers }, { data: feeDeals }] = await Promise.all([
+    supabase.from("profiles").select("subscription_tier").limit(10000),
+    supabase.from("deals").select("success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, currency").not("success_fee_amount", "is", null).limit(5000),
+  ]);
+  const revenue = summariseRevenue(allTiers ?? [], feeDeals ?? []);
 
   return (
     <>
@@ -143,9 +151,10 @@ export default async function AdminPage() {
         stats={{
           totalStartups: startupCount || 0,
           totalInvestors: investorCount || 0,
-          startupMrr,
-          investorMrr,
+          startupMrr: revenue.subscriptionMrr,
+          investorMrr: 0,
         }}
+        revenue={revenue}
       />
     </>
   );

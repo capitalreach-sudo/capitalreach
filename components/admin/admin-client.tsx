@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { CheckCircle2, XCircle, AlertCircle, DollarSign, Users, Building2, TrendingUp } from "lucide-react";
 import { formatCurrency, formatDate, STATUS_COLORS } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+import type { RevenueSummary } from "@/lib/revenue";
 import type { Startup, Investor, Deal } from "@/types";
 
 interface Props {
@@ -20,9 +21,11 @@ interface Props {
   allInvestors: (Investor & { owner: { email: string; full_name: string; subscription_tier: string } })[];
   allDeals: (Deal & { startup: { name: string }; investor: { slug: string } })[];
   stats: { totalStartups: number; totalInvestors: number; startupMrr: number; investorMrr: number };
+  /** E45: real revenue, computed over every account and every deal. */
+  revenue?: RevenueSummary;
 }
 
-export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats }: Props) {
+export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue }: Props) {
   // Launch mode: the everyone-gets-top-tier state. null until loaded.
   const [launch, setLaunch] = useState<{ isLaunch: boolean; memberCount: number; target: number } | null>(null);
   const [savingLaunch, setSavingLaunch] = useState(false);
@@ -138,13 +141,54 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         </div>
       )}
 
+      {/* E45: the business model, on the operator's own page at last. */}
+      {revenue && (
+        <Card className="mb-8">
+          <CardContent className="p-5">
+            <div className="flex items-baseline justify-between gap-3 flex-wrap mb-4">
+              <h2 className="font-bold text-cr-ink">{t("revenue.title")}</h2>
+              <span className="text-[11px] text-cr-i4">
+                {t("revenue.payingAccounts", { count: revenue.payingAccounts })}
+                {revenue.feeCurrencies.length > 1 && ` · ${t("revenue.mixedCurrencies", { list: revenue.feeCurrencies.join(", ") })}`}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { k: "revenue.feesBilled", v: revenue.feesBilled, cls: "text-cr-ink" },
+                { k: "revenue.feesCollected", v: revenue.feesCollected, cls: "text-emerald-600" },
+                { k: "revenue.feesOutstanding", v: revenue.feesOutstanding, cls: revenue.feesOutstanding > 0 ? "text-amber-600" : "text-cr-i3" },
+                { k: "revenue.feesUnbillable", v: revenue.feesUnbillable, cls: revenue.feesUnbillable > 0 ? "text-red-600" : "text-cr-i3" },
+              ].map(({ k, v, cls }) => (
+                <div key={k}>
+                  <p className={`text-xl font-bold ${cls}`}>{formatCurrency(v)}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-1">{t(k)}</p>
+                </div>
+              ))}
+            </div>
+            {revenue.feesUnbillable > 0 && (
+              <p className="text-[11px] text-red-600 mt-3">{t("revenue.unbillableNote")}</p>
+            )}
+            {revenue.byTier.length > 0 && (
+              <div className="flex flex-wrap gap-x-5 gap-y-1 mt-4 pt-3 border-t border-cr-p4">
+                {revenue.byTier.map((row) => (
+                  <span key={row.tier} className="text-[11px] text-cr-i3">
+                    <span className="font-semibold text-cr-ink capitalize">{row.tier.replace(/_/g, " ")}</span>
+                    {" "}×{row.count} · {formatCurrency(row.mrr)}/mo
+                  </span>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
           { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-blue-600" },
           { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-emerald-400" },
-          { label: t("admin.statStartupMrr"), value: formatCurrency(stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
-          { label: t("admin.statInvestorMrr"), value: formatCurrency(stats.investorMrr), icon: TrendingUp, color: "text-purple-600" },
+          { label: t("revenue.subscriptionMrr"), value: formatCurrency(revenue?.subscriptionMrr ?? stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
+          { label: t("revenue.feesCollected"), value: formatCurrency(revenue?.feesCollected ?? 0), icon: TrendingUp, color: "text-emerald-600" },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4">

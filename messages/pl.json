@@ -2943,5 +2943,16 @@
     "markChange": "Zmiana",
     "latestUpdate": "Ostatnia aktualizacja",
     "noUpdates": "Brak aktualizacji od tego założyciela"
+  },
+  "revenue": {
+    "title": "Przychody",
+    "subscriptionMrr": "MRR z subskrypcji",
+    "payingAccounts": "{count} płacących kont",
+    "feesBilled": "Prowizje zafakturowane",
+    "feesCollected": "Prowizje pobrane",
+    "feesOutstanding": "Prowizje nieopłacone",
+    "feesUnbillable": "Prowizje niefakturowalne",
+    "unbillableNote": "Na tych transakcjach należna była prowizja, której nie dało się zafakturować — założyciel nie miał zapisanej metody płatności.",
+    "mixedCurrencies": "waluty mieszane: {list}"
   }
 }
