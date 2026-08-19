@@ -4,6 +4,8 @@ import { AdminClient } from "@/components/admin/admin-client";
 import type { Profile, Startup, Investor, Deal } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { summariseRevenue } from "@/lib/revenue";
+import { summariseFunnel } from "@/lib/funnel";
+import { AdminFunnel } from "@/components/admin/admin-funnel";
 import { AdminPulse, type PulseMetric, type HealthListing, type AdminAction } from "@/components/admin/admin-pulse";
 import { SystemHealth, type SystemEvent } from "@/components/admin/system-health";
 
@@ -132,6 +134,18 @@ export default async function AdminPage() {
   ]);
   const revenue = summariseRevenue(allTiers ?? [], feeDeals ?? []);
 
+  // E56: totals say how big the platform is; the funnel says where it leaks.
+  const [{ data: founderRows }, { data: listingRows }, { data: dealRows }] = await Promise.all([
+    supabase.from("profiles").select("id").eq("role", "startup").limit(10000),
+    supabase.from("startups").select("id, owner_id, status, listed_at").limit(10000),
+    supabase.from("deals").select("startup_id, status, closed_at, funded_at").limit(10000),
+  ]);
+  const funnel = summariseFunnel({
+    founders: founderRows ?? [],
+    listings: listingRows ?? [],
+    deals: dealRows ?? [],
+  });
+
   return (
     <>
       <Navbar />
@@ -141,6 +155,7 @@ export default async function AdminPage() {
           knownSources={["cron/follow-ups", "cron/fee-dunning"]}
         />
         <AdminPulse metrics={pulse} listings={healthRows ?? []} actions={adminActions ?? []} />
+        <AdminFunnel steps={funnel} />
       </div>
       <AdminClient
         pendingStartups={pendingStartups ?? []}

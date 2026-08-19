@@ -2751,7 +2751,11 @@
     "kicker": "Admin",
     "pageTitle": "Nutzerverwaltung",
     "pageSubtitle": "{n} Konten. Die Sperre wirkt sofort und meldet den Nutzer ab.",
-    "levelChanged": "Admin-Stufe geändert"
+    "levelChanged": "Admin-Stufe geändert",
+    "resetMfa": "2FA zurücksetzen",
+    "resetMfaConfirm": "Zweiten Faktor bei {email} entfernen? Die Person wird darüber informiert.",
+    "mfaReset": "Zweiter Faktor entfernt",
+    "noMfa": "Dieses Konto hat keinen zweiten Faktor."
   },
   "imprint": {
     "metaTitle": "Impressum — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "Dein Konto und alles darin wird dauerhaft gelöscht. Das lässt sich nicht rückgängig machen.",
     "closedDeals": "{count} abgeschlossene Deals",
     "openFees": "{count} offene Gebühren"
+  },
+  "funnel": {
+    "title": "Gründer-Funnel",
+    "legend": "Balken = Anteil aller Gründer-Anmeldungen. Zahl rechts = Anteil des Schritts darüber.",
+    "biggestDrop": "Größter Abfall: {step}, {pct} %",
+    "step": {
+      "signedUp": "Angemeldet",
+      "createdListing": "Listing begonnen",
+      "wentLive": "Live gegangen",
+      "gotInterest": "Investorenkontakt erhalten",
+      "reachedDiligence": "Due Diligence erreicht",
+      "reachedTermSheet": "Term Sheet erreicht",
+      "closed": "Abgeschlossen",
+      "funded": "Geld erhalten"
+    }
   }
 }

@@ -2751,7 +2751,11 @@
     "kicker": "Admin",
     "pageTitle": "Gebruikersbeheer",
     "pageSubtitle": "{n} accounts. Schorsing gaat meteen in en meldt de gebruiker af.",
-    "levelChanged": "Adminniveau bijgewerkt"
+    "levelChanged": "Adminniveau bijgewerkt",
+    "resetMfa": "2FA resetten",
+    "resetMfaConfirm": "Tweede factor van {email} verwijderen? De persoon krijgt hier bericht van.",
+    "mfaReset": "Tweede factor verwijderd",
+    "noMfa": "Dat account heeft geen tweede factor."
   },
   "imprint": {
     "metaTitle": "Colofon — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "Je account en alles erin wordt permanent verwijderd. Dit kan niet ongedaan worden gemaakt.",
     "closedDeals": "{count} afgeronde deals",
     "openFees": "{count} onbetaalde fees"
+  },
+  "funnel": {
+    "title": "Oprichters-funnel",
+    "legend": "Balk = aandeel van alle oprichter-aanmeldingen. Getal rechts = aandeel van de stap erboven.",
+    "biggestDrop": "Grootste uitval: {step}, {pct}%",
+    "step": {
+      "signedUp": "Aangemeld",
+      "createdListing": "Listing begonnen",
+      "wentLive": "Live gegaan",
+      "gotInterest": "Contact van een investeerder",
+      "reachedDiligence": "Due diligence bereikt",
+      "reachedTermSheet": "Term sheet bereikt",
+      "closed": "Gesloten",
+      "funded": "Geld ontvangen"
+    }
   }
 }

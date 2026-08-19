@@ -2751,7 +2751,11 @@
     "kicker": "Admin",
     "pageTitle": "Gestão de usuários",
     "pageSubtitle": "{n} contas. A suspensão tem efeito imediato e desconecta o usuário.",
-    "levelChanged": "Nível de admin atualizado"
+    "levelChanged": "Nível de admin atualizado",
+    "resetMfa": "Repor 2FA",
+    "resetMfaConfirm": "Remover o segundo fator de {email}? A pessoa será avisada.",
+    "mfaReset": "Segundo fator removido",
+    "noMfa": "Essa conta não tem segundo fator."
   },
   "imprint": {
     "metaTitle": "Informações legais — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "A sua conta e tudo o que contém serão apagados definitivamente. Não é reversível.",
     "closedDeals": "{count} negócios fechados",
     "openFees": "{count} comissões por pagar"
+  },
+  "funnel": {
+    "title": "Funil de fundadores",
+    "legend": "Barra = quota de todas as inscrições de fundadores. Número à direita = quota do passo acima.",
+    "biggestDrop": "Maior queda: {step}, {pct}%",
+    "step": {
+      "signedUp": "Inscritos",
+      "createdListing": "Anúncio iniciado",
+      "wentLive": "Publicado",
+      "gotInterest": "Contactados por um investidor",
+      "reachedDiligence": "Chegaram à diligência",
+      "reachedTermSheet": "Chegaram ao term sheet",
+      "closed": "Fechados",
+      "funded": "Dinheiro recebido"
+    }
   }
 }

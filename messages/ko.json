@@ -2751,7 +2751,11 @@
     "kicker": "관리자",
     "pageTitle": "사용자 관리",
     "pageSubtitle": "{n}개 계정. 정지는 즉시 적용되며 사용자를 로그아웃시킵니다.",
-    "levelChanged": "관리자 등급이 변경되었습니다"
+    "levelChanged": "관리자 등급이 변경되었습니다",
+    "resetMfa": "2FA 초기화",
+    "resetMfaConfirm": "{email}의 2단계 인증을 제거할까요? 본인에게 통지됩니다.",
+    "mfaReset": "2단계 인증이 제거되었습니다",
+    "noMfa": "해당 계정에는 2단계 인증이 없습니다."
   },
   "imprint": {
     "metaTitle": "법적 고지 — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "계정과 그 안의 모든 것이 영구 삭제됩니다. 되돌릴 수 없습니다.",
     "closedDeals": "마감된 거래 {count}건",
     "openFees": "미납 수수료 {count}건"
+  },
+  "funnel": {
+    "title": "창업자 퍼널",
+    "legend": "막대 = 전체 창업자 가입 대비 비율. 오른쪽 숫자 = 바로 위 단계 대비 비율.",
+    "biggestDrop": "가장 큰 이탈: {step}, {pct}%",
+    "step": {
+      "signedUp": "가입",
+      "createdListing": "리스팅 작성 시작",
+      "wentLive": "공개",
+      "gotInterest": "투자자 연락 받음",
+      "reachedDiligence": "실사 진입",
+      "reachedTermSheet": "텀시트 진입",
+      "closed": "마감",
+      "funded": "입금 완료"
+    }
   }
 }

@@ -54,5 +54,58 @@ export async function incrementMemberCount(): Promise<void> {
       .from("platform_config")
       .update({ value: "false" })
       .eq("key", "launch_mode");
+    await announceLaunchEnd("member_target");
   }
+}
+
+/**
+ * E59: launch mode used to end in silence.
+ *
+ * Everyone who joined during it was told "free for our first 100 members".
+ * The hundredth signup flipped the flag and that was the whole event — the
+ * next time a member noticed was when a feature they had been using stopped
+ * working. Ending the free period is a promise expiring, and a promise
+ * expiring has to be announced.
+ *
+ * Announced exactly once: launch_ended_at is written first and the write is
+ * conditional on it being empty, so two members signing up in the same second
+ * cannot produce two announcements.
+ */
+export async function announceLaunchEnd(reason: "member_target" | "admin"): Promise<boolean> {
+  const admin = createAdminClient();
+
+  const { data: existing } = await admin
+    .from("platform_config").select("value").eq("key", "launch_ended_at").maybeSingle();
+  if (existing?.value) return false;
+
+  const now = new Date().toISOString();
+  if (existing) {
+    const { data: claimed } = await admin
+      .from("platform_config")
+      .update({ value: now })
+      .eq("key", "launch_ended_at")
+      .eq("value", "")
+      .select("key");
+    if (!claimed?.length) return false;
+  } else {
+    const { error } = await admin.from("platform_config").insert({ key: "launch_ended_at", value: now });
+    // 23505 = another request got there first.
+    if (error) return false;
+  }
+
+  const { data: members } = await admin
+    .from("profiles").select("id").neq("account_status", "deleted").limit(5000);
+  const ids = (members ?? []).map(m => m.id);
+  if (ids.length) {
+    const { notifyUsers } = await import("@/lib/notify-user");
+    await notifyUsers(ids, {
+      type: "tier_changed",
+      title: "The free launch period has ended",
+      body: reason === "member_target"
+        ? "We reached 100 members. Everything you have stays; paid features now need a plan."
+        : "The launch period is over. Everything you have stays; paid features now need a plan.",
+      href: "/pricing",
+    }).catch(() => {});
+  }
+  return true;
 }

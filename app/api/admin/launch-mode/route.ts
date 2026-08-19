@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, logAdminAction } from "@/lib/admin-guard";
 import { createAdminClient } from "@/lib/supabase-server";
-import { getLaunchStatus } from "@/lib/launchMode";
+import { getLaunchStatus, announceLaunchEnd } from "@/lib/launchMode";
 
 /**
  * Launch mode is the everyone-gets-top-tier state the platform starts in.
@@ -21,9 +21,6 @@ export async function POST(req: NextRequest) {
 
   const { enabled } = await req.json().catch(() => ({}));
   if (typeof enabled !== "boolean") return NextResponse.json({ error: "enabled must be a boolean" }, { status: 400 });
-  if (typeof enabled !== "boolean") {
-    return NextResponse.json({ error: "enabled must be a boolean" }, { status: 400 });
-  }
 
   const admin = createAdminClient();
   const { error } = await admin
@@ -34,6 +31,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not update launch mode" }, { status: 500 });
   }
 
-  await logAdminAction(guard.admin, guard.adminId, enabled ? "launch_mode_on" : "launch_mode_off", "platform", null);
-  return NextResponse.json(await getLaunchStatus());
+  // E59: ending it by hand is the same promise expiring, so it announces
+  // itself the same way. announceLaunchEnd is idempotent — turning launch
+  // mode off twice does not tell everyone twice.
+  let announced = false;
+  if (!enabled) announced = await announceLaunchEnd("admin");
+
+  await logAdminAction(guard.admin, guard.adminId, enabled ? "launch_mode_on" : "launch_mode_off", "platform", null, { announced });
+  return NextResponse.json({ ...(await getLaunchStatus()), announced });
 }

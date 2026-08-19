@@ -2751,7 +2751,11 @@
     "kicker": "管理者",
     "pageTitle": "ユーザー管理",
     "pageSubtitle": "{n} 件のアカウント。停止は即時に有効になり、ユーザーをサインアウトさせます。",
-    "levelChanged": "管理者レベルを更新しました"
+    "levelChanged": "管理者レベルを更新しました",
+    "resetMfa": "2FA をリセット",
+    "resetMfaConfirm": "{email} の第二要素を削除しますか？本人に通知されます。",
+    "mfaReset": "第二要素を削除しました",
+    "noMfa": "このアカウントに第二要素はありません。"
   },
   "imprint": {
     "metaTitle": "インプリント — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "アカウントとその中身はすべて完全に削除されます。取り消せません。",
     "closedDeals": "クローズ済みディール {count} 件",
     "openFees": "未払い手数料 {count} 件"
+  },
+  "funnel": {
+    "title": "ファウンダー・ファネル",
+    "legend": "バー = 全ファウンダー登録に対する割合。右の数字 = 直前ステップに対する割合。",
+    "biggestDrop": "最大の離脱: {step}、{pct}%",
+    "step": {
+      "signedUp": "登録",
+      "createdListing": "掲載を作成開始",
+      "wentLive": "公開",
+      "gotInterest": "投資家から連絡",
+      "reachedDiligence": "デューデリジェンス到達",
+      "reachedTermSheet": "タームシート到達",
+      "closed": "クローズ",
+      "funded": "入金完了"
+    }
   }
 }

@@ -2751,7 +2751,11 @@
     "kicker": "Admin",
     "pageTitle": "Zarządzanie użytkownikami",
     "pageSubtitle": "Konta: {n}. Zawieszenie działa natychmiast i wylogowuje użytkownika.",
-    "levelChanged": "Poziom administratora zmieniony"
+    "levelChanged": "Poziom administratora zmieniony",
+    "resetMfa": "Zresetuj 2FA",
+    "resetMfaConfirm": "Usunąć drugi składnik dla {email}? Ta osoba zostanie o tym poinformowana.",
+    "mfaReset": "Drugi składnik usunięty",
+    "noMfa": "To konto nie ma drugiego składnika."
   },
   "imprint": {
     "metaTitle": "Nota prawna — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "Twoje konto i wszystko w nim zostanie trwale usunięte. Tego nie da się cofnąć.",
     "closedDeals": "Zamknięte transakcje: {count}",
     "openFees": "Nieopłacone prowizje: {count}"
+  },
+  "funnel": {
+    "title": "Lejek założycieli",
+    "legend": "Pasek = udział wszystkich rejestracji założycieli. Liczba po prawej = udział poprzedniego kroku.",
+    "biggestDrop": "Największy spadek: {step}, {pct}%",
+    "step": {
+      "signedUp": "Zarejestrowani",
+      "createdListing": "Zaczęli ogłoszenie",
+      "wentLive": "Opublikowali",
+      "gotInterest": "Odezwał się inwestor",
+      "reachedDiligence": "Doszli do due diligence",
+      "reachedTermSheet": "Doszli do term sheet",
+      "closed": "Zamknięte",
+      "funded": "Pieniądze otrzymane"
+    }
   }
 }

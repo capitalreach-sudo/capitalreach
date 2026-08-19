@@ -2751,7 +2751,11 @@
     "kicker": "Admin",
     "pageTitle": "Användarhantering",
     "pageSubtitle": "{n} konton. Avstängning gäller direkt och loggar ut användaren.",
-    "levelChanged": "Adminnivå uppdaterad"
+    "levelChanged": "Adminnivå uppdaterad",
+    "resetMfa": "Återställ 2FA",
+    "resetMfaConfirm": "Ta bort andra faktorn för {email}? Personen får veta det.",
+    "mfaReset": "Andra faktorn borttagen",
+    "noMfa": "Det kontot har ingen andra faktor."
   },
   "imprint": {
     "metaTitle": "Impressum — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "Ditt konto och allt i det raderas permanent. Det går inte att ångra.",
     "closedDeals": "{count} avslutade affärer",
     "openFees": "{count} obetalda avgifter"
+  },
+  "funnel": {
+    "title": "Grundartratt",
+    "legend": "Stapel = andel av alla grundarregistreringar. Siffran till höger = andel av steget ovanför.",
+    "biggestDrop": "Största tappet: {step}, {pct} %",
+    "step": {
+      "signedUp": "Registrerade",
+      "createdListing": "Påbörjade annons",
+      "wentLive": "Publicerade",
+      "gotInterest": "Hörde från en investerare",
+      "reachedDiligence": "Nådde due diligence",
+      "reachedTermSheet": "Nådde term sheet",
+      "closed": "Avslutade",
+      "funded": "Pengar mottagna"
+    }
   }
 }

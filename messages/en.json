@@ -2751,7 +2751,11 @@
     "kicker": "Admin",
     "pageTitle": "User management",
     "pageSubtitle": "{n} accounts. Suspension takes effect immediately and signs the user out.",
-    "levelChanged": "Admin level updated"
+    "levelChanged": "Admin level updated",
+    "resetMfa": "Reset 2FA",
+    "resetMfaConfirm": "Remove the second factor on {email}? They will be told it happened.",
+    "mfaReset": "Second factor removed",
+    "noMfa": "That account has no second factor."
   },
   "imprint": {
     "metaTitle": "Imprint — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "Your account and everything on it will be permanently deleted. This cannot be undone.",
     "closedDeals": "{count} closed deals",
     "openFees": "{count} unpaid fees"
+  },
+  "funnel": {
+    "title": "Founder funnel",
+    "legend": "Bar = share of all founder signups. Right-hand figure = share of the step above.",
+    "biggestDrop": "Biggest drop: {step}, {pct}%",
+    "step": {
+      "signedUp": "Signed up",
+      "createdListing": "Started a listing",
+      "wentLive": "Went live",
+      "gotInterest": "Heard from an investor",
+      "reachedDiligence": "Reached diligence",
+      "reachedTermSheet": "Reached term sheet",
+      "closed": "Closed",
+      "funded": "Money received"
+    }
   }
 }

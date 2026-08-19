@@ -2751,7 +2751,11 @@
     "kicker": "管理员",
     "pageTitle": "用户管理",
     "pageSubtitle": "{n} 个账户。暂停立即生效并将用户登出。",
-    "levelChanged": "管理员级别已更新"
+    "levelChanged": "管理员级别已更新",
+    "resetMfa": "重置双因素认证",
+    "resetMfaConfirm": "要移除 {email} 的第二因素吗？对方会收到通知。",
+    "mfaReset": "第二因素已移除",
+    "noMfa": "该账户未设置第二因素。"
   },
   "imprint": {
     "metaTitle": "法律声明 — CapitalReach",
@@ -3082,5 +3086,20 @@
     "willErase": "你的账户及其中的一切将被永久删除，且无法恢复。",
     "closedDeals": "{count} 笔已交割交易",
     "openFees": "{count} 笔未付费用"
+  },
+  "funnel": {
+    "title": "创始人漏斗",
+    "legend": "进度条 = 占全部创始人注册的比例。右侧数字 = 占上一步的比例。",
+    "biggestDrop": "流失最大：{step}，{pct}%",
+    "step": {
+      "signedUp": "已注册",
+      "createdListing": "开始创建项目页",
+      "wentLive": "已上线",
+      "gotInterest": "收到投资人联系",
+      "reachedDiligence": "进入尽调",
+      "reachedTermSheet": "进入投资条款书",
+      "closed": "已交割",
+      "funded": "已收到资金"
+    }
   }
 }

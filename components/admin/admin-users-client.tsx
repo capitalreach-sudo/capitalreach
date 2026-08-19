@@ -55,6 +55,22 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
   const { t } = useTranslation();
   const [notesFor, setNotesFor] = useState<string | null>(null);
 
+  async function resetMfa(u: AdminUser) {
+    const check = await fetch(`/api/admin/mfa-reset?userId=${u.id}`);
+    const info = await check.json().catch(() => ({}));
+    if (!check.ok) { notify.error(info.error || t("errors.generic")); return; }
+    const count = (info.factors ?? []).length;
+    if (!count) { notify.error(t("adminUsers.noMfa")); return; }
+    if (!window.confirm(t("adminUsers.resetMfaConfirm", { email: u.email }))) return;
+    const res = await fetch("/api/admin/mfa-reset", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: u.id }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    notify.success(t("adminUsers.mfaReset"));
+  }
+
   async function changeLevel(u: AdminUser, level: string) {
     const res = await fetch("/api/admin/level", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -311,6 +327,14 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
                       style={{ ...linkBtn, color: "var(--cr-copper)" }}>
                       {notesFor === u.id ? t("adminNotes.hide") : t("adminNotes.show")}
                     </button>
+                    {/* E52: a member who lost their authenticator has no way
+                        back on their own, and should not have one. */}
+                    {myLevel === "owner" && !self && (
+                      <button onClick={() => resetMfa(u)}
+                        style={{ ...linkBtn, color: "var(--cr-ink-4)", marginLeft: 8 }}>
+                        {t("adminUsers.resetMfa")}
+                      </button>
+                    )}
                   </td>
                 </tr>
                 {notesFor === u.id && (
