@@ -2956,7 +2956,8 @@
     "unbillableNote": "이 거래들에서 성공 수수료가 발생했지만 청구할 수 없었습니다 — 창업자에게 결제 수단이 등록되어 있지 않습니다.",
     "mixedCurrencies": "혼합 통화: {list}",
     "feesWaived": "상각한 수수료",
-    "feesDisputed": "이의 제기된 수수료"
+    "feesDisputed": "이의 제기된 수수료",
+    "feesReversed": "환불 / 지급 거절"
   },
   "tranches": {
     "title": "지급 일정",
@@ -2997,7 +2998,8 @@
       "outstanding": "미수",
       "unbillable": "청구 불가",
       "waived": "상각",
-      "disputed": "이의 제기됨"
+      "disputed": "이의 제기됨",
+      "reversed": "취소됨"
     },
     "resolve": "처리",
     "resolvePrompt": "이 이의는 어떻게 처리되었나요?"

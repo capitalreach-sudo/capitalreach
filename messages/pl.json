@@ -2956,7 +2956,8 @@
     "unbillableNote": "Na tych transakcjach należna była prowizja, której nie dało się zafakturować — założyciel nie miał zapisanej metody płatności.",
     "mixedCurrencies": "waluty mieszane: {list}",
     "feesWaived": "Odpisane prowizje",
-    "feesDisputed": "Prowizje zakwestionowane"
+    "feesDisputed": "Prowizje zakwestionowane",
+    "feesReversed": "Zwrócone / obciążenia zwrotne"
   },
   "tranches": {
     "title": "Harmonogram wypłat",
@@ -2997,7 +2998,8 @@
       "outstanding": "Nieopłacone",
       "unbillable": "Niefakturowalne",
       "waived": "Odpisane",
-      "disputed": "Zakwestionowana"
+      "disputed": "Zakwestionowana",
+      "reversed": "Cofnięta"
     },
     "resolve": "Rozstrzygnij",
     "resolvePrompt": "Jak rozstrzygnięto tę sprawę?"

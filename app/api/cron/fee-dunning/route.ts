@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
 import { logSystemEvent } from "@/lib/system-events";
 import { createSuccessFeeInvoice } from "@/lib/stripe";
-import { feeState, feeMajor, reminderDue, retryable, DUNNING_DAYS, type FeeDeal } from "@/lib/fees";
+import { feeState, feeMajor, reminderDue, autoRetryable, DUNNING_DAYS, type FeeDeal } from "@/lib/fees";
 import { formatMoney } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     // ── 1. Self-heal ────────────────────────────────────────────────────
     if (feeState(fd) === "unbillable") {
       const { data: profile } = await admin.from("profiles").select("stripe_customer_id").eq("id", startup.owner_id).maybeSingle();
-      if (!retryable(fd, !!profile?.stripe_customer_id)) continue;
+      if (!autoRetryable(fd, !!profile?.stripe_customer_id)) continue;
       const raised = Number(deal.amount) || 0;
       if (raised <= 0) continue;
       try {

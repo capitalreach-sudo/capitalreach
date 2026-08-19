@@ -11,6 +11,7 @@
 export type FeeState =
   | "none"        // no fee on this deal
   | "collected"   // paid, through Stripe or recorded offline
+  | "reversed"    // refunded or charged back — the money came back out
   | "disputed"    // the founder says the amount is wrong; chasing stops
   | "outstanding" // invoiced, not paid
   | "unbillable"  // earned but never invoiced — no Stripe customer, or Stripe refused
@@ -27,17 +28,27 @@ export interface FeeDeal {
   fee_reminder_last_at?: string | null;
   fee_disputed_at?: string | null;
   fee_dispute_resolved_at?: string | null;
+  fee_refunded_at?: string | null;
+  fee_chargeback_at?: string | null;
+  fee_chargeback_resolved_at?: string | null;
 }
 
 export function feeState(d: FeeDeal): FeeState {
   if (d.success_fee_amount == null || Number(d.success_fee_amount) <= 0) return "none";
   if (d.fee_waived_at || d.fee_billing_status === "waived") return "waived";
+  // A reversal outranks payment: the invoice was paid and then the money went
+  // back out. Counting it as revenue is counting money the platform no longer
+  // has. A chargeback that the platform won is resolved and collected again.
+  if (d.fee_refunded_at || d.fee_billing_status === "refunded") return "reversed";
+  if (d.fee_chargeback_at && !d.fee_chargeback_resolved_at) return "reversed";
+  if (d.fee_billing_status === "charged_back") return "reversed";
   if (d.success_fee_paid_at || d.fee_billing_status === "paid_offline") return "collected";
   // An open dispute outranks the billing status. Payment settles it, and a
   // write-off settles it — but while it is open the platform stops asserting
   // that this money is simply owed.
   if (d.fee_disputed_at && !d.fee_dispute_resolved_at) return "disputed";
-  if (d.fee_billing_status === "no_customer" || d.fee_billing_status === "failed") return "unbillable";
+  if (d.fee_billing_status === "no_customer" || d.fee_billing_status === "failed"
+      || d.fee_billing_status === "uncollectible" || d.fee_billing_status === "voided") return "unbillable";
   if (d.success_fee_invoiced) return "outstanding";
   // Amount recorded, never invoiced, no failure noted: still unbillable — the
   // platform is owed money and no invoice exists. Silence is not "collected".
@@ -87,10 +98,22 @@ export function retryable(d: FeeDeal, hasStripeCustomer: boolean): boolean {
   return feeState(d) === "unbillable" && hasStripeCustomer;
 }
 
-export interface LedgerTotals { outstanding: number; unbillable: number; waived: number; collected: number; disputed: number }
+/**
+ * What the CRON may re-invoice without a human. Narrower than retryable() on
+ * purpose: 'no_customer' and 'failed' mean no invoice was ever successfully
+ * raised, so raising one is a rescue. 'uncollectible' means Stripe raised one
+ * and gave up collecting — re-invoicing that on a schedule would just mint
+ * duplicate invoices at the founder. An operator can still retry it by hand.
+ */
+export function autoRetryable(d: FeeDeal, hasStripeCustomer: boolean): boolean {
+  if (!retryable(d, hasStripeCustomer)) return false;
+  return d.fee_billing_status === "no_customer" || d.fee_billing_status === "failed" || d.fee_billing_status == null;
+}
+
+export interface LedgerTotals { outstanding: number; unbillable: number; waived: number; collected: number; disputed: number; reversed: number }
 
 export function ledgerTotals(deals: FeeDeal[]): LedgerTotals {
-  const totals: LedgerTotals = { outstanding: 0, unbillable: 0, waived: 0, collected: 0, disputed: 0 };
+  const totals: LedgerTotals = { outstanding: 0, unbillable: 0, waived: 0, collected: 0, disputed: 0, reversed: 0 };
   for (const d of deals) {
     const s = feeState(d);
     if (s === "none") continue;

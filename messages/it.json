@@ -2956,7 +2956,8 @@
     "unbillableNote": "Su queste operazioni è maturata una success fee che non è stato possibile fatturare: il founder non aveva un metodo di pagamento registrato.",
     "mixedCurrencies": "valute miste: {list}",
     "feesWaived": "Fee stralciate",
-    "feesDisputed": "Fee contestate"
+    "feesDisputed": "Fee contestate",
+    "feesReversed": "Rimborsate / stornate"
   },
   "tranches": {
     "title": "Piano di erogazione",
@@ -2997,7 +2998,8 @@
       "outstanding": "In sospeso",
       "unbillable": "Non fatturabili",
       "waived": "Stralciate",
-      "disputed": "Contestata"
+      "disputed": "Contestata",
+      "reversed": "Stornata"
     },
     "resolve": "Chiudi il caso",
     "resolvePrompt": "Come è stata risolta la contestazione?"

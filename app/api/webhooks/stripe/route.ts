@@ -4,9 +4,31 @@ import { constructWebhookEvent, TIER_MAP } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase-server";
 import { incrementMemberCount } from "@/lib/launchMode";
 import { sendPaymentFailedEmail, sendSubscriptionCancelledEmail } from "@/lib/resend";
+import { notifyUser, notifyUsers } from "@/lib/notify-user";
+import { stripe } from "@/lib/stripe";
 import type Stripe from "stripe";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Dispute events carry a charge, not an invoice. One extra Stripe call gets
+ * from the charge to the invoice the fee was raised on.
+ */
+async function dealForCharge(
+  supabase: ReturnType<typeof createAdminClient>,
+  chargeId: string | undefined,
+): Promise<{ id: string } | null> {
+  if (!chargeId) return null;
+  try {
+    const charge = await stripe.charges.retrieve(chargeId);
+    const invoiceId = typeof charge.invoice === "string" ? charge.invoice : charge.invoice?.id;
+    if (!invoiceId) return null;
+    const { data } = await supabase.from("deals").select("id").eq("stripe_invoice_id", invoiceId).maybeSingle();
+    return data ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.arrayBuffer();
@@ -152,9 +174,13 @@ export async function POST(req: NextRequest) {
         // subscription. It must not send the subscription-dunning email and
         // must not suspend the founder's listing.
         if (isSuccessFeeInvoice(invoice)) {
-          console.warn(
-            `[stripe] success-fee invoice ${invoice.id} unpaid (attempt ${attemptCount}) — needs manual follow-up`
-          );
+          // E48: "needs manual follow-up" used to mean a console line nobody
+          // reads. The fee ledger exists now, so the failure lands there.
+          await supabase
+            .from("deals")
+            .update({ fee_billing_error: `Stripe collection failed (attempt ${attemptCount})` })
+            .eq("stripe_invoice_id", invoice.id);
+          await logSystemEvent("webhook/stripe", "error", "Success-fee invoice unpaid", { invoice: invoice.id, attemptCount }).catch(() => {});
           break;
         }
 
@@ -214,6 +240,100 @@ export async function POST(req: NextRequest) {
           .update({ status: "active" })
           .eq("owner_id", profile.id)
           .eq("status", "suspended");
+        break;
+      }
+
+      // ── SCA: the customer has to authenticate before the money moves ────────
+      // Stripe raises this and then waits. Nothing told the customer, so a
+      // payment could sit unauthenticated until the invoice expired and the
+      // account looked like a deadbeat.
+      case "invoice.payment_action_required": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const { data: profile } = await supabase
+          .from("profiles").select("id").eq("stripe_customer_id", invoice.customer as string).maybeSingle();
+        if (!profile) break;
+        await notifyUser({
+          userId: profile.id,
+          type: "fee_due",
+          title: "Your bank needs to authorise this payment",
+          body: "The payment is on hold until you confirm it with your bank.",
+          href: invoice.hosted_invoice_url || "/dashboard/startup/billing",
+        }).catch(() => {});
+        await logSystemEvent("webhook/stripe", "info", "Payment action required", { invoice: invoice.id }).catch(() => {});
+        break;
+      }
+
+      // ── Stripe gave up collecting, or the invoice was voided ────────────────
+      case "invoice.marked_uncollectible":
+      case "invoice.voided": {
+        const invoice = event.data.object as Stripe.Invoice;
+        if (!isSuccessFeeInvoice(invoice)) break;
+        await supabase
+          .from("deals")
+          .update({ fee_billing_status: event.type === "invoice.voided" ? "voided" : "uncollectible" })
+          .eq("stripe_invoice_id", invoice.id);
+        break;
+      }
+
+      // ── Money going back out ────────────────────────────────────────────────
+      // A refunded or charged-back success fee stayed marked collected
+      // forever, so the ledger and the revenue page kept counting money the
+      // platform no longer had.
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge;
+        const invoiceId = typeof charge.invoice === "string" ? charge.invoice : charge.invoice?.id;
+        if (!invoiceId) break;
+        const { data: deal } = await supabase
+          .from("deals").select("id, startup_id, investor_id").eq("stripe_invoice_id", invoiceId).maybeSingle();
+        if (!deal) break;
+        await supabase.from("deals").update({
+          fee_refunded_at: new Date().toISOString(),
+          fee_refund_amount: charge.amount_refunded ?? null,
+          fee_billing_status: "refunded",
+        }).eq("id", deal.id);
+        await logSystemEvent("webhook/stripe", "error", "Success fee refunded", { deal: deal.id, amount: charge.amount_refunded }).catch(() => {});
+        break;
+      }
+
+      case "charge.dispute.created": {
+        const dispute = event.data.object as Stripe.Dispute;
+        const chargeId = typeof dispute.charge === "string" ? dispute.charge : dispute.charge?.id;
+        const deal = await dealForCharge(supabase, chargeId);
+        if (!deal) break;
+        await supabase.from("deals").update({
+          fee_chargeback_at: new Date().toISOString(),
+          fee_chargeback_resolved_at: null,
+          fee_billing_status: "charged_back",
+        }).eq("id", deal.id);
+        // A chargeback has a deadline. It is the one payment event that has to
+        // reach a person the same day.
+        const { data: admins } = await supabase.from("profiles").select("id").eq("role", "admin").limit(20);
+        const adminIds = (admins ?? []).map(a => a.id);
+        if (adminIds.length) {
+          await notifyUsers(adminIds, {
+            type: "fee_due",
+            title: "Chargeback on a success fee",
+            body: "The bank has pulled the money back. Evidence is due to Stripe.",
+            href: "/admin",
+          }).catch(() => {});
+        }
+        await logSystemEvent("webhook/stripe", "error", "Success fee charged back", { deal: deal.id, dispute: dispute.id }).catch(() => {});
+        break;
+      }
+
+      case "charge.dispute.closed": {
+        const dispute = event.data.object as Stripe.Dispute;
+        const chargeId = typeof dispute.charge === "string" ? dispute.charge : dispute.charge?.id;
+        const deal = await dealForCharge(supabase, chargeId);
+        if (!deal) break;
+        // won → the money is the platform's again; lost/warning_closed → it is
+        // not, and the row stays reversed.
+        const won = dispute.status === "won";
+        await supabase.from("deals").update({
+          fee_chargeback_resolved_at: won ? new Date().toISOString() : null,
+          fee_billing_status: won ? "invoiced" : "charged_back",
+        }).eq("id", deal.id);
+        await logSystemEvent("webhook/stripe", won ? "info" : "error", `Chargeback ${dispute.status}`, { deal: deal.id }).catch(() => {});
         break;
       }
 

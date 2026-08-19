@@ -2956,7 +2956,8 @@
     "unbillableNote": "Op deze deals is een succesfee verdiend die niet gefactureerd kon worden — de oprichter had geen betaalmethode vastgelegd.",
     "mixedCurrencies": "gemengde valuta: {list}",
     "feesWaived": "Afgeboekte fees",
-    "feesDisputed": "Fees betwist"
+    "feesDisputed": "Fees betwist",
+    "feesReversed": "Terugbetaald / teruggeboekt"
   },
   "tranches": {
     "title": "Uitbetalingsschema",
@@ -2997,7 +2998,8 @@
       "outstanding": "Openstaand",
       "unbillable": "Niet factureerbaar",
       "waived": "Afgeboekt",
-      "disputed": "Betwist"
+      "disputed": "Betwist",
+      "reversed": "Teruggedraaid"
     },
     "resolve": "Afhandelen",
     "resolvePrompt": "Hoe is dit geschil afgehandeld?"

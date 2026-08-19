@@ -2956,7 +2956,8 @@
     "unbillableNote": "En framgångsavgift tjänades in på dessa affärer men kunde inte faktureras — grundaren hade ingen betalningsmetod registrerad.",
     "mixedCurrencies": "blandade valutor: {list}",
     "feesWaived": "Avskrivna avgifter",
-    "feesDisputed": "Avgifter bestridda"
+    "feesDisputed": "Avgifter bestridda",
+    "feesReversed": "Återbetalda / återförda"
   },
   "tranches": {
     "title": "Utbetalningsplan",
@@ -2997,7 +2998,8 @@
       "outstanding": "Utestående",
       "unbillable": "Ej fakturerbara",
       "waived": "Avskrivna",
-      "disputed": "Bestridd"
+      "disputed": "Bestridd",
+      "reversed": "Återförd"
     },
     "resolve": "Avsluta",
     "resolvePrompt": "Hur löstes tvisten?"

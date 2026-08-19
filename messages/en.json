@@ -2956,7 +2956,8 @@
     "unbillableNote": "A success fee was earned on these deals but could not be invoiced — the founder had no payment method on file.",
     "mixedCurrencies": "mixed currencies: {list}",
     "feesWaived": "Fees written off",
-    "feesDisputed": "Fees disputed"
+    "feesDisputed": "Fees disputed",
+    "feesReversed": "Refunded / charged back"
   },
   "tranches": {
     "title": "Funding schedule",
@@ -2997,7 +2998,8 @@
       "outstanding": "Outstanding",
       "unbillable": "Unbillable",
       "waived": "Written off",
-      "disputed": "Disputed"
+      "disputed": "Disputed",
+      "reversed": "Reversed"
     },
     "resolve": "Resolve",
     "resolvePrompt": "How was this dispute resolved?"

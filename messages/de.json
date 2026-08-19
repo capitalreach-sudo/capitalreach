@@ -2956,7 +2956,8 @@
     "unbillableNote": "Bei diesen Deals ist eine Erfolgsgebühr entstanden, konnte aber nicht in Rechnung gestellt werden — der Gründer hatte keine Zahlungsmethode hinterlegt.",
     "mixedCurrencies": "gemischte Währungen: {list}",
     "feesWaived": "Ausgebuchte Gebühren",
-    "feesDisputed": "Gebühren bestritten"
+    "feesDisputed": "Gebühren bestritten",
+    "feesReversed": "Erstattet / zurückgebucht"
   },
   "tranches": {
     "title": "Auszahlungsplan",
@@ -2997,7 +2998,8 @@
       "outstanding": "Offen",
       "unbillable": "Nicht fakturierbar",
       "waived": "Ausgebucht",
-      "disputed": "Bestritten"
+      "disputed": "Bestritten",
+      "reversed": "Rückabgewickelt"
     },
     "resolve": "Klären",
     "resolvePrompt": "Wie wurde dieser Fall geklärt?"

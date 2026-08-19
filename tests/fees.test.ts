@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { feeState, feeMajor, reminderDue, retryable, ledgerTotals, DUNNING_DAYS } from "@/lib/fees";
+import { feeState, feeMajor, reminderDue, retryable, autoRetryable, ledgerTotals, DUNNING_DAYS } from "@/lib/fees";
 
 const base = { success_fee_amount: 100000, success_fee_invoiced: true, success_fee_paid_at: null, fee_billing_status: "invoiced" as string | null };
 
@@ -34,6 +34,23 @@ describe("fee state", () => {
 
   it("never chases a disputed fee", () => {
     expect(reminderDue({ ...base, closed_at: "2026-07-01T00:00:00Z", fee_disputed_at: "2026-07-02" }, new Date("2026-09-01"))).toBe(false);
+  });
+
+  it("a reversal outranks payment — refunded money is not revenue", () => {
+    expect(feeState({ ...base, success_fee_paid_at: "2026-08-01", fee_refunded_at: "2026-08-10" })).toBe("reversed");
+    expect(feeState({ ...base, success_fee_paid_at: "2026-08-01", fee_chargeback_at: "2026-08-10" })).toBe("reversed");
+  });
+
+  it("a chargeback the platform won is collected again", () => {
+    expect(feeState({
+      ...base, success_fee_paid_at: "2026-08-01",
+      fee_chargeback_at: "2026-08-10", fee_chargeback_resolved_at: "2026-08-20",
+    })).toBe("collected");
+  });
+
+  it("Stripe giving up on collection is unbillable, not collected", () => {
+    expect(feeState({ ...base, fee_billing_status: "uncollectible" })).toBe("unbillable");
+    expect(feeState({ ...base, fee_billing_status: "voided" })).toBe("unbillable");
   });
 
   it("a waive beats every other state", () => {
@@ -73,6 +90,21 @@ describe("dunning", () => {
   });
 });
 
+describe("automatic retry is narrower than manual", () => {
+  it("rescues a fee that was never invoiced", () => {
+    expect(autoRetryable({ ...base, success_fee_invoiced: false, fee_billing_status: "no_customer" }, true)).toBe(true);
+    expect(autoRetryable({ ...base, fee_billing_status: "failed" }, true)).toBe(true);
+  });
+
+  it("never re-invoices one Stripe already gave up collecting", () => {
+    // retryable() allows it — an operator may decide to. The cron must not,
+    // or it mints a duplicate invoice at the founder every night.
+    const d = { ...base, fee_billing_status: "uncollectible" };
+    expect(retryable(d, true)).toBe(true);
+    expect(autoRetryable(d, true)).toBe(false);
+  });
+});
+
 describe("retry", () => {
   it("becomes billable once the founder has a Stripe customer", () => {
     const d = { ...base, success_fee_invoiced: false, fee_billing_status: "no_customer" };
@@ -95,6 +127,6 @@ describe("ledger totals", () => {
       { ...base, fee_waived_at: "2026-08-02" },
       { ...base, success_fee_amount: null },
     ]);
-    expect(totals).toEqual({ collected: 1000, outstanding: 1000, unbillable: 1000, waived: 1000, disputed: 0 });
+    expect(totals).toEqual({ collected: 1000, outstanding: 1000, unbillable: 1000, waived: 1000, disputed: 0, reversed: 0 });
   });
 });

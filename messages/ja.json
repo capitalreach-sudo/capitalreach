@@ -2956,7 +2956,8 @@
     "unbillableNote": "これらのディールでは成功報酬が発生しましたが請求できませんでした — 創業者に支払い方法が登録されていません。",
     "mixedCurrencies": "複数通貨: {list}",
     "feesWaived": "償却した手数料",
-    "feesDisputed": "異議のある手数料"
+    "feesDisputed": "異議のある手数料",
+    "feesReversed": "返金 / チャージバック"
   },
   "tranches": {
     "title": "支払スケジュール",
@@ -2997,7 +2998,8 @@
       "outstanding": "未回収",
       "unbillable": "請求不能",
       "waived": "償却済み",
-      "disputed": "異議あり"
+      "disputed": "異議あり",
+      "reversed": "取消済み"
     },
     "resolve": "対応する",
     "resolvePrompt": "この異議はどう解決しましたか？"

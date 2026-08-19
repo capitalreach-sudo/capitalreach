@@ -2956,7 +2956,8 @@
     "unbillableNote": "Se devengó una comisión en estas operaciones pero no se pudo facturar: el fundador no tenía método de pago registrado.",
     "mixedCurrencies": "monedas mixtas: {list}",
     "feesWaived": "Comisiones dadas de baja",
-    "feesDisputed": "Comisiones en disputa"
+    "feesDisputed": "Comisiones en disputa",
+    "feesReversed": "Reembolsadas / retrocedidas"
   },
   "tranches": {
     "title": "Calendario de desembolso",
@@ -2997,7 +2998,8 @@
       "outstanding": "Pendientes",
       "unbillable": "No facturables",
       "waived": "Dadas de baja",
-      "disputed": "En disputa"
+      "disputed": "En disputa",
+      "reversed": "Revertida"
     },
     "resolve": "Resolver",
     "resolvePrompt": "¿Cómo se resolvió esta disputa?"

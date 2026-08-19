@@ -2956,7 +2956,8 @@
     "unbillableNote": "इन सौदों पर सफलता शुल्क बना पर बिल नहीं हो सका — संस्थापक की कोई भुगतान विधि दर्ज नहीं थी।",
     "mixedCurrencies": "मिश्रित मुद्राएँ: {list}",
     "feesWaived": "बट्टे खाते डाले गए शुल्क",
-    "feesDisputed": "विवादित शुल्क"
+    "feesDisputed": "विवादित शुल्क",
+    "feesReversed": "वापस / चार्जबैक"
   },
   "tranches": {
     "title": "भुगतान अनुसूची",
@@ -2997,7 +2998,8 @@
       "outstanding": "बकाया",
       "unbillable": "बिल न होने योग्य",
       "waived": "बट्टे खाते",
-      "disputed": "विवादित"
+      "disputed": "विवादित",
+      "reversed": "पलटा गया"
     },
     "resolve": "निपटाएँ",
     "resolvePrompt": "यह विवाद कैसे सुलझाया गया?"

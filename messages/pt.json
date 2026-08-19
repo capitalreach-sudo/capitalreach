@@ -2956,7 +2956,8 @@
     "unbillableNote": "Foi ganha uma comissão nestes negócios mas não foi possível faturá-la — o fundador não tinha método de pagamento registado.",
     "mixedCurrencies": "moedas mistas: {list}",
     "feesWaived": "Comissões abatidas",
-    "feesDisputed": "Comissões contestadas"
+    "feesDisputed": "Comissões contestadas",
+    "feesReversed": "Reembolsadas / estornadas"
   },
   "tranches": {
     "title": "Calendário de desembolso",
@@ -2997,7 +2998,8 @@
       "outstanding": "Pendentes",
       "unbillable": "Não faturáveis",
       "waived": "Abatidas",
-      "disputed": "Contestada"
+      "disputed": "Contestada",
+      "reversed": "Revertida"
     },
     "resolve": "Resolver",
     "resolvePrompt": "Como foi resolvida esta contestação?"

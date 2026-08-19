@@ -2956,7 +2956,8 @@
     "unbillableNote": "استُحقت رسوم نجاح على هذه الصفقات لكن تعذّرت فوترتها — لم يكن لدى المؤسس وسيلة دفع مسجّلة.",
     "mixedCurrencies": "عملات مختلطة: {list}",
     "feesWaived": "رسوم مشطوبة",
-    "feesDisputed": "رسوم متنازع عليها"
+    "feesDisputed": "رسوم متنازع عليها",
+    "feesReversed": "مستردة / مستعادة"
   },
   "tranches": {
     "title": "جدول الدفعات",
@@ -2997,7 +2998,8 @@
       "outstanding": "مستحقة",
       "unbillable": "غير قابلة للفوترة",
       "waived": "مشطوبة",
-      "disputed": "متنازع عليها"
+      "disputed": "متنازع عليها",
+      "reversed": "مُلغاة"
     },
     "resolve": "إغلاق النزاع",
     "resolvePrompt": "كيف تمت تسوية هذا النزاع؟"

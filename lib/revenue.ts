@@ -1,4 +1,5 @@
 import { getFounderPlan, getInvestorPlan } from "@/lib/plans";
+import { feeState, feeMajor, type FeeDeal } from "@/lib/fees";
 
 /**
  * E45: the operator's revenue, computed rather than estimated.
@@ -21,6 +22,8 @@ export interface RevenueSummary {
   feesCollected: number;
   feesOutstanding: number;
   feesUnbillable: number;
+  /** Refunded or charged back — money that came back out after being paid. */
+  feesReversed: number;
   feeCurrencies: string[];
 }
 
@@ -37,7 +40,7 @@ export function tierPrice(tier: string | null | undefined): number {
 
 export function summariseRevenue(
   tiers: Array<{ subscription_tier: string | null }>,
-  deals: Array<{ success_fee_amount: number | null; success_fee_invoiced: boolean | null; success_fee_paid_at: string | null; fee_billing_status: string | null; currency: string | null }>,
+  deals: Array<FeeDeal & { currency: string | null }>,
 ): RevenueSummary {
   const counts = new Map<string, { count: number; mrr: number }>();
   let subscriptionMrr = 0, payingAccounts = 0;
@@ -51,24 +54,30 @@ export function summariseRevenue(
     payingAccounts += 1;
   }
 
-  let feesBilled = 0, feesCollected = 0, feesOutstanding = 0, feesUnbillable = 0;
+  // The buckets come from feeState() rather than a second reading of the same
+  // columns. This function had its own copy of the rules and would have gone
+  // on counting a refunded fee as collected — exactly the drift that having
+  // one state machine is meant to prevent.
+  let feesBilled = 0, feesCollected = 0, feesOutstanding = 0, feesUnbillable = 0, feesReversed = 0;
   const currencies = new Set<string>();
   for (const d of deals) {
-    // success_fee_amount is stored in minor units, as Stripe holds it.
-    const amount = (Number(d.success_fee_amount) || 0) / 100;
+    const amount = feeMajor(d);
     if (amount <= 0) continue;
     if (d.currency) currencies.add(d.currency);
-    if (d.fee_billing_status === "no_customer" || d.fee_billing_status === "failed") { feesUnbillable += amount; continue; }
-    if (d.success_fee_invoiced) {
-      feesBilled += amount;
-      if (d.success_fee_paid_at) feesCollected += amount; else feesOutstanding += amount;
+    switch (feeState(d)) {
+      case "collected":   feesBilled += amount; feesCollected += amount; break;
+      case "outstanding": feesBilled += amount; feesOutstanding += amount; break;
+      case "disputed":    feesBilled += amount; feesOutstanding += amount; break;
+      case "reversed":    feesBilled += amount; feesReversed += amount; break;
+      case "unbillable":  feesUnbillable += amount; break;
+      default: break;   // waived and none are not revenue and not a shortfall
     }
   }
 
   return {
     subscriptionMrr, payingAccounts,
     byTier: Array.from(counts.entries()).map(([tier, v]) => ({ tier, ...v })).sort((a, b) => b.mrr - a.mrr),
-    feesBilled, feesCollected, feesOutstanding, feesUnbillable,
+    feesBilled, feesCollected, feesOutstanding, feesUnbillable, feesReversed,
     feeCurrencies: Array.from(currencies),
   };
 }

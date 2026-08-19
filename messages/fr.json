@@ -2956,7 +2956,8 @@
     "unbillableNote": "Une commission a été acquise sur ces opérations mais n'a pas pu être facturée — le fondateur n'avait aucun moyen de paiement enregistré.",
     "mixedCurrencies": "devises mixtes : {list}",
     "feesWaived": "Commissions passées en perte",
-    "feesDisputed": "Commissions contestées"
+    "feesDisputed": "Commissions contestées",
+    "feesReversed": "Remboursées / rejetées"
   },
   "tranches": {
     "title": "Échéancier de versement",
@@ -2997,7 +2998,8 @@
       "outstanding": "En attente",
       "unbillable": "Non facturables",
       "waived": "Passées en perte",
-      "disputed": "Contestée"
+      "disputed": "Contestée",
+      "reversed": "Annulée"
     },
     "resolve": "Clore",
     "resolvePrompt": "Comment ce litige a-t-il été réglé ?"

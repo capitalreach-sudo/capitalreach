@@ -42,3 +42,24 @@ describe("revenue (E45)", () => {
     expect(r.feeCurrencies.sort()).toEqual(["EUR", "USD"]);
   });
 });
+
+describe("revenue never counts money that came back out", () => {
+  it("puts a refunded fee in its own bucket, not in collected", () => {
+    const r = summariseRevenue([], [
+      { success_fee_amount: 100000, success_fee_invoiced: true, success_fee_paid_at: "2026-08-01", fee_billing_status: "invoiced", currency: "EUR" },
+      { success_fee_amount: 100000, success_fee_invoiced: true, success_fee_paid_at: "2026-08-01", fee_billing_status: "refunded", fee_refunded_at: "2026-08-09", currency: "EUR" },
+    ]);
+    expect(r.feesCollected).toBe(1000);
+    expect(r.feesReversed).toBe(1000);
+    // Both were genuinely billed; only one is money the platform still has.
+    expect(r.feesBilled).toBe(2000);
+  });
+
+  it("counts a disputed fee as outstanding, not as lost", () => {
+    const r = summariseRevenue([], [
+      { success_fee_amount: 50000, success_fee_invoiced: true, success_fee_paid_at: null, fee_billing_status: "invoiced", fee_disputed_at: "2026-08-05", currency: "EUR" },
+    ]);
+    expect(r.feesOutstanding).toBe(500);
+    expect(r.feesUnbillable).toBe(0);
+  });
+});

@@ -153,12 +153,13 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 {revenue.feeCurrencies.length > 1 && ` · ${t("revenue.mixedCurrencies", { list: revenue.feeCurrencies.join(", ") })}`}
               </span>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
                 { k: "revenue.feesBilled", v: revenue.feesBilled, cls: "text-cr-ink" },
                 { k: "revenue.feesCollected", v: revenue.feesCollected, cls: "text-emerald-600" },
                 { k: "revenue.feesOutstanding", v: revenue.feesOutstanding, cls: revenue.feesOutstanding > 0 ? "text-amber-600" : "text-cr-i3" },
                 { k: "revenue.feesUnbillable", v: revenue.feesUnbillable, cls: revenue.feesUnbillable > 0 ? "text-red-600" : "text-cr-i3" },
+                { k: "revenue.feesReversed", v: revenue.feesReversed, cls: revenue.feesReversed > 0 ? "text-red-600" : "text-cr-i3" },
               ].map(({ k, v, cls }) => (
                 <div key={k}>
                   <p className={`text-xl font-bold ${cls}`}>{formatCurrency(v)}</p>
@@ -396,7 +397,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
 
 type LedgerRow = {
   id: string; currency: string | null; closed_at: string | null;
-  state: "collected" | "outstanding" | "unbillable" | "waived" | "disputed";
+  state: "collected" | "outstanding" | "unbillable" | "waived" | "disputed" | "reversed";
   feeMajor: number; startupName: string | null; startupSlug: string | null;
   fee_billing_status: string | null; fee_billing_error: string | null;
   fee_reminder_count: number | null; fee_waive_reason: string | null;
@@ -409,6 +410,7 @@ const STATE_STYLE: Record<LedgerRow["state"], string> = {
   unbillable:  "bg-red-50 text-red-700 border-red-200",
   waived:      "bg-cr-p3 text-cr-i3 border-cr-p4",
   disputed:    "bg-cr-copper/10 text-cr-copper border-cr-copper/30",
+  reversed:    "bg-red-100 text-red-800 border-red-300",
 };
 
 /**
@@ -455,13 +457,13 @@ function FeeLedger() {
 
   if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
   // A dispute is open business too — it is the one state that needs a person.
-  const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable" || r.state === "disputed") : rows;
+  const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable" || r.state === "disputed" || r.state === "reversed") : rows;
 
   return (
     <div>
       {totals && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          {(["outstanding", "unbillable", "disputed", "collected"] as const).map(k => (
+          {(["outstanding", "unbillable", "disputed", "reversed"] as const).map(k => (
             <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
               <p className="text-lg font-bold text-cr-ink">{formatCurrency(totals[k] ?? 0)}</p>
               <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
