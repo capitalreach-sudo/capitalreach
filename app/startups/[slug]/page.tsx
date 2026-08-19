@@ -178,6 +178,24 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     };
   }
 
+  // C33: who else is looking — only investors who explicitly opted in, and
+  // only shown to other investors. Never to the public, never amounts.
+  let coInvestors: Array<{ slug: string; name: string | null; type: string | null }> = [];
+  if (investorId) {
+    const { data: pub } = await createAdminClient()
+      .from("deals")
+      .select("investor:investors(slug, display_name, firm_name, type)")
+      .eq("startup_id", startup.id)
+      .eq("public_interest", true)
+      .neq("status", "passed")
+      .neq("investor_id", investorId)
+      .limit(24);
+    coInvestors = (pub ?? []).map((d) => {
+      const i = d.investor as unknown as { slug: string; display_name: string | null; firm_name: string | null; type: string | null } | null;
+      return i ? { slug: i.slug, name: i.display_name || i.firm_name || null, type: i.type } : null;
+    }).filter((x): x is { slug: string; name: string | null; type: string | null } => !!x);
+  }
+
   // Non-circumvention acknowledgment for this pair (Phase 1). Read with the
   // caller's client — RLS scopes acks to the investor who made them.
   let circumventionAcked = false;
@@ -305,6 +323,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         identityRevealed={identityRevealed}
         circumventionAcked={previewing ? false : circumventionAcked}
         momentum={momentum}
+        coInvestors={coInvestors}
       />
       <Footer />
     </>

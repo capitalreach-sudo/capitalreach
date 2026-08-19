@@ -1217,7 +1217,8 @@
     "askedBy": "Ställd av",
     "answerPrivately": "Svara privat (bara frågeställaren ser det)",
     "privateAnswer": "privat",
-    "momentumSoft": "{amount} soft-circle"
+    "momentumSoft": "{amount} soft-circle",
+    "shareNotePh": "Varför de bör titta…"
   },
   "filters": {
     "industry": "Bransch",
@@ -2837,5 +2838,14 @@
     "notePh": "Varför detta betyg…",
     "yourScore": "Ditt betyg",
     "yourNote": "Din anteckning"
+  },
+  "coInvestors": {
+    "title": "{count} investerare tittar också",
+    "hint": "Här visas bara investerare som valt att vara synliga. Belopp och faser visas aldrig.",
+    "toggle": "Låt andra investerare se att jag tittar",
+    "toggleHint": "Visar ditt namn på den här annonsen för andra investerare. Aldrig ditt belopp, aldrig för grundaren eller allmänheten.",
+    "sharedTitle": "{count} delade med dig",
+    "sharedBy": "Delad av",
+    "continueThread": "Fortsätt samtalet"
   }
 }

@@ -72,6 +72,44 @@ const FEATURE_ROWS = [
  * Saves on blur rather than behind a button: this is a scratchpad, and asking
  * someone to press Save on a one-line thought is how the field goes unused.
  */
+/** C31: listings other investors sent you, with the note and the thread. */
+function SharedWithYou() {
+  const { t } = useTranslation();
+  type Share = { id: string; note: string | null; created_at: string; thread_id: string | null; startup: { name: string; slug: string } | null; from_investor?: { slug: string; display_name: string | null; firm_name: string | null } | null };
+  const [received, setReceived] = useState<Share[]>([]);
+  useEffect(() => {
+    fetch("/api/deals/share").then(r => r.ok ? r.json() : null).then(j => setReceived(j?.received ?? [])).catch(() => {});
+  }, []);
+  if (received.length === 0) return null;
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("coInvestors.sharedTitle", { count: received.length })}</h3>
+      <div style={{ display: "grid", gap: "8px" }}>
+        {received.map((sh) => (
+          <div key={sh.id} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px 12px" }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+              <Link href={`/startups/${sh.startup?.slug ?? ""}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                {sh.startup?.name ?? "—"}
+              </Link>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{formatDate(sh.created_at)}</span>
+            </div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 2 }}>
+              {t("coInvestors.sharedBy")}{" "}
+              {sh.from_investor ? <Link href={`/investors/${sh.from_investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{sh.from_investor.display_name || sh.from_investor.firm_name || t("deals.investorFallback")}</Link> : t("deals.investorFallback")}
+            </p>
+            {sh.note && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink-2)", marginTop: 6, lineHeight: 1.5 }}>“{sh.note}”</p>}
+            {sh.thread_id && (
+              <Link href={`/dashboard/messages?thread=${sh.thread_id}`} style={{ display: "inline-block", marginTop: 6, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11.5px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                {t("coInvestors.continueThread")} →
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /**
  * C26: the watchlist is a pipeline, not a pile. Status moves a save through
  * triage; priority stars it. Both persist through PATCH /api/watchlist.
@@ -547,6 +585,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {activeTab === "watchlist" && (
           <div>
             <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>

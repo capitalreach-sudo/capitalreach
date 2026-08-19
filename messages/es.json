@@ -1257,7 +1257,8 @@
     "askedBy": "Preguntado por",
     "answerPrivately": "Responder en privado (solo lo ve quien preguntó)",
     "privateAnswer": "privada",
-    "momentumSoft": "{amount} en soft-circle"
+    "momentumSoft": "{amount} en soft-circle",
+    "shareNotePh": "Por qué deberían mirarlo…"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -2837,5 +2838,14 @@
     "notePh": "Por qué esta valoración…",
     "yourScore": "Tu puntuación",
     "yourNote": "Tu nota"
+  },
+  "coInvestors": {
+    "title": "{count} inversores también lo están mirando",
+    "hint": "Aquí solo aparecen los inversores que eligieron ser visibles. Nunca se muestran importes ni etapas.",
+    "toggle": "Dejar que otros inversores vean que lo estoy mirando",
+    "toggleHint": "Muestra tu nombre en esta ficha a otros inversores. Nunca tu importe, nunca al fundador ni al público.",
+    "sharedTitle": "{count} compartidos contigo",
+    "sharedBy": "Compartido por",
+    "continueThread": "Continuar la conversación"
   }
 }

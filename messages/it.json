@@ -1217,7 +1217,8 @@
     "askedBy": "Chiesto da",
     "answerPrivately": "Rispondi in privato (lo vede solo chi ha chiesto)",
     "privateAnswer": "privata",
-    "momentumSoft": "{amount} soft-circle"
+    "momentumSoft": "{amount} soft-circle",
+    "shareNotePh": "Perché dovrebbero guardarla…"
   },
   "filters": {
     "industry": "Settore",
@@ -2837,5 +2838,14 @@
     "notePh": "Perché questa valutazione…",
     "yourScore": "Il tuo punteggio",
     "yourNote": "La tua nota"
+  },
+  "coInvestors": {
+    "title": "{count} investitori la stanno guardando",
+    "hint": "Qui compaiono solo gli investitori che hanno scelto di essere visibili. Importi e fasi non vengono mai mostrati.",
+    "toggle": "Fai sapere agli altri investitori che la sto guardando",
+    "toggleHint": "Mostra il tuo nome su questa scheda agli altri investitori. Mai il tuo importo, mai al founder o al pubblico.",
+    "sharedTitle": "{count} condivisi con te",
+    "sharedBy": "Condiviso da",
+    "continueThread": "Continua la conversazione"
   }
 }

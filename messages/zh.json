@@ -1257,7 +1257,8 @@
     "askedBy": "提问者",
     "answerPrivately": "私下回答（仅提问者可见）",
     "privateAnswer": "私密",
-    "momentumSoft": "{amount} 软承诺"
+    "momentumSoft": "{amount} 软承诺",
+    "shareNotePh": "为什么值得一看…"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -2837,5 +2838,14 @@
     "notePh": "为何这样评分…",
     "yourScore": "您的评分",
     "yourNote": "您的备注"
+  },
+  "coInvestors": {
+    "title": "另有 {count} 位投资者在关注",
+    "hint": "此处仅显示选择公开的投资者。金额与阶段从不显示。",
+    "toggle": "让其他投资者看到我在关注",
+    "toggleHint": "向其他投资者显示您的名字。绝不显示金额，也不会对创始人或公众显示。",
+    "sharedTitle": "{count} 个分享给您",
+    "sharedBy": "分享者",
+    "continueThread": "继续对话"
   }
 }

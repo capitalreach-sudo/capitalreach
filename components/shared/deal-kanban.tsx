@@ -930,6 +930,30 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
   );
 }
 
+/** C33: opt in to co-investor visibility for one deal. */
+function PublicInterestToggle({ deal }: { deal: Deal }) {
+  const { t } = useTranslation();
+  const [on, setOn] = useState(!!(deal as unknown as { public_interest?: boolean }).public_interest);
+  const [busy, setBusy] = useState(false);
+  async function toggle() {
+    if (busy) return;
+    const next = !on;
+    setOn(next); setBusy(true);
+    const res = await fetch("/api/deals/interest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId: deal.id, publicInterest: next }) });
+    setBusy(false);
+    if (!res.ok) { setOn(!next); notify.error(t("errors.generic")); }
+  }
+  return (
+    <label style={{ display: "flex", alignItems: "flex-start", gap: "7px", marginTop: "8px", cursor: "pointer" }}>
+      <input type="checkbox" checked={on} onChange={toggle} disabled={busy} style={{ marginTop: 2, accentColor: "var(--cr-copper)", width: 13, height: 13 }} />
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.45 }}>
+        {t("coInvestors.toggle")}
+        <span style={{ display: "block", color: "var(--cr-ink-4)", fontWeight: 300, fontSize: "10.5px" }}>{t("coInvestors.toggleHint")}</span>
+      </span>
+    </label>
+  );
+}
+
 // ── Activity section (inside a deal card) ──────────────────────────────────────
 
 const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
@@ -1381,6 +1405,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           onCancel={() => setShowPassedPicker(false)}
         />
       )}
+
+      {/* C33: let other investors see you are looking at this company.
+          Off by default, investor-side only, never shows the amount. */}
+      {viewAs === "investor" && isActive && <PublicInterestToggle deal={deal} />}
 
       {/* B17: commitment level — "we're in for X". Both sides can set it;
           the raise tracker on the founder dashboard reads it from day 0. */}

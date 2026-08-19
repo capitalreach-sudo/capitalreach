@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient();
   const { data: thread } = await admin
     .from("threads")
-    .select("id, status, startup_id, investor_id, recipient_startup_id, startup:startups!threads_startup_id_fkey(name, owner_id), investor:investors(owner_id, display_name)")
+    .select("id, status, startup_id, investor_id, recipient_startup_id, recipient_investor_id, startup:startups!threads_startup_id_fkey(name, owner_id), investor:investors!threads_investor_id_fkey(owner_id, display_name), recipient_investor:investors!threads_recipient_investor_id_fkey(owner_id, display_name)")
     .eq("id", threadId)
     .maybeSingle();
   if (!thread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
@@ -52,9 +52,15 @@ export async function POST(req: NextRequest) {
   }
   const startupOwner = thread.startup?.owner_id ?? null;
   const investorOwner = thread.investor?.owner_id ?? null;
-  const isParty =
-    user.id === startupOwner || user.id === investorOwner || user.id === recipientStartupOwner ||
-    (await isTeamMemberOfEither(user.id, thread.startup_id, thread.investor_id ?? ""));
+  // C32: co-investor threads have a second investor as a participant. On
+  // those, the startup owner is NOT a party — two investors talking about a
+  // company is not a conversation the company is in.
+  const coInvestorThread = !!thread.recipient_investor_id;
+  const recipientInvestorOwner = (thread.recipient_investor as unknown as { owner_id: string } | null)?.owner_id ?? null;
+  const isParty = coInvestorThread
+    ? user.id === investorOwner || user.id === recipientInvestorOwner
+    : (user.id === startupOwner || user.id === investorOwner || user.id === recipientStartupOwner ||
+       (await isTeamMemberOfEither(user.id, thread.startup_id, thread.investor_id ?? "")));
   if (!isParty) {
     const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
     if (prof?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -71,7 +77,10 @@ export async function POST(req: NextRequest) {
 
   // Tell everyone on the thread who isn't the sender. Awaited: on Vercel an
   // un-awaited promise after the response is simply never run.
-  const recipients = Array.from(new Set([startupOwner, investorOwner, recipientStartupOwner].filter((id): id is string => !!id && id !== user.id)));
+  const recipients = Array.from(new Set(
+    (coInvestorThread ? [investorOwner, recipientInvestorOwner] : [startupOwner, investorOwner, recipientStartupOwner])
+      .filter((id): id is string => !!id && id !== user.id),
+  ));
   if (recipients.length) {
     const [{ data: sender }, { data: profiles }] = await Promise.all([
       admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),

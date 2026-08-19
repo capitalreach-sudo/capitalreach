@@ -1268,7 +1268,8 @@
     "askedBy": "Asked by",
     "answerPrivately": "Answer privately (only the asker sees it)",
     "privateAnswer": "private",
-    "momentumSoft": "{amount} soft-circled"
+    "momentumSoft": "{amount} soft-circled",
+    "shareNotePh": "Why they should look…"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -2837,5 +2838,14 @@
     "notePh": "Why this score…",
     "yourScore": "Your score",
     "yourNote": "Your note"
+  },
+  "coInvestors": {
+    "title": "{count} investors are also looking",
+    "hint": "Only investors who chose to be visible appear here. Amounts and stages are never shown.",
+    "toggle": "Let other investors see I'm looking",
+    "toggleHint": "Shows your name on this listing to other investors. Never your amount, never to the founder or the public.",
+    "sharedTitle": "{count} shared with you",
+    "sharedBy": "Shared by",
+    "continueThread": "Continue the conversation"
   }
 }

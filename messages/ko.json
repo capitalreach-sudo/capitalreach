@@ -1217,7 +1217,8 @@
     "askedBy": "질문자",
     "answerPrivately": "비공개로 답변 (질문자만 볼 수 있음)",
     "privateAnswer": "비공개",
-    "momentumSoft": "{amount} 소프트 서클"
+    "momentumSoft": "{amount} 소프트 서클",
+    "shareNotePh": "봐야 하는 이유…"
   },
   "filters": {
     "industry": "산업",
@@ -2837,5 +2838,14 @@
     "notePh": "이 평가의 이유…",
     "yourScore": "내 점수",
     "yourNote": "내 메모"
+  },
+  "coInvestors": {
+    "title": "{count}명의 투자자도 검토 중",
+    "hint": "공개를 선택한 투자자만 여기에 표시됩니다. 금액과 단계는 절대 표시되지 않습니다.",
+    "toggle": "다른 투자자에게 내가 검토 중임을 표시",
+    "toggleHint": "이 등록에 다른 투자자에게 이름을 표시합니다. 금액은 표시되지 않으며 창업자나 일반에는 공개되지 않습니다.",
+    "sharedTitle": "{count}건이 공유됨",
+    "sharedBy": "공유한 사람",
+    "continueThread": "대화 계속하기"
   }
 }

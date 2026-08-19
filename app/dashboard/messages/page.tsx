@@ -7,6 +7,7 @@ export default async function MessagesPage() {
   let profile: any = null;
   let threads: any[] = [];
   let myStartupId: string | null = null;
+  let myInvestorId: string | null = null;
 
   try {
     const supabase = await createServerSupabaseClient();
@@ -37,7 +38,7 @@ export default async function MessagesPage() {
         myStartupId = startup.id;
         const { data } = await supabase
           .from("threads")
-          .select("*, investor:investors(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug), recipient_startup:startups!threads_recipient_startup_id_fkey(name, slug)")
+          .select("*, investor:investors!threads_investor_id_fkey(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug), recipient_startup:startups!threads_recipient_startup_id_fkey(name, slug)")
           .or(`startup_id.eq.${startup.id},recipient_startup_id.eq.${startup.id}`)
           .order("updated_at", { ascending: false });
         threads = data || [];
@@ -49,10 +50,13 @@ export default async function MessagesPage() {
         .eq("owner_id", user.id)
         .single();
       if (investor) {
+        myInvestorId = investor.id;
         const { data } = await supabase
           .from("threads")
-          .select("*, investor:investors(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug)")
-          .eq("investor_id", investor.id)
+          .select("*, investor:investors!threads_investor_id_fkey(slug, type, display_name, firm_name), recipient_investor:investors!threads_recipient_investor_id_fkey(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug)")
+          // C32: an investor is a participant either as the deal-side
+          // investor or as the recipient of a co-investor share.
+          .or(`investor_id.eq.${investor.id},recipient_investor_id.eq.${investor.id}`)
           .order("updated_at", { ascending: false });
         threads = data || [];
       }
@@ -81,7 +85,7 @@ export default async function MessagesPage() {
   return (
     <>
       <Navbar />
-      <MessagesClient profile={profile} threads={threads} myStartupId={myStartupId} unreadThreadIds={unreadThreadIds} />
+      <MessagesClient profile={profile} threads={threads} myStartupId={myStartupId} myInvestorId={myInvestorId} unreadThreadIds={unreadThreadIds} />
     </>
   );
 }

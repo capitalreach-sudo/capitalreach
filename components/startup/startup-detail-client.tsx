@@ -56,6 +56,8 @@ interface Props {
   identityRevealed?: boolean;
   /** This investor has already accepted the non-circumvention terms here. */
   circumventionAcked?: boolean;
+  /** C33: other investors who opted in to being visible here. */
+  coInvestors?: Array<{ slug: string; name: string | null; type: string | null }>;
   /** B19: public momentum aggregate (only when the founder opted in). */
   momentum?: { interested: number; committedCount: number; committedAmount: number; softAmount: number; currency: string } | null;
 }
@@ -99,6 +101,7 @@ function SharePicker({ startupId }: { startupId: string }) {
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Array<{ id?: string; slug: string; name: string }>>([]);
   const [busy, setBusy] = useState(false);
+  const [shareNote, setShareNote] = useState("");
 
   useEffect(() => {
     if (!open || q.trim().length < 2) { setHits([]); return; }
@@ -122,9 +125,11 @@ function SharePicker({ startupId }: { startupId: string }) {
       const { data } = await createClient().from("investors").select("id").eq("slug", inv.slug).maybeSingle();
       invId = data?.id;
     }
-    const res = invId ? await fetch("/api/deals/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, toInvestorId: invId }) }) : null;
+    // C31: the note travels — it becomes the first message of the thread the
+    // share opens, so "look at this" has somewhere to continue.
+    const res = invId ? await fetch("/api/deals/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, toInvestorId: invId, note: shareNote.trim() || undefined }) }) : null;
     setBusy(false);
-    if (res?.ok) { notify.success(t("startupDetail.shared", { name: inv.name })); setOpen(false); setQ(""); }
+    if (res?.ok) { notify.success(t("startupDetail.shared", { name: inv.name })); setOpen(false); setQ(""); setShareNote(""); }
     else notify.error(t("errors.generic"));
   }
 
@@ -138,6 +143,8 @@ function SharePicker({ startupId }: { startupId: string }) {
         <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "260px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "10px", zIndex: 55 }}>
           <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder={t("startupDetail.shareSearchPh")}
             style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
+          <textarea value={shareNote} onChange={e => setShareNote(e.target.value.slice(0, 2000))} rows={2} placeholder={t("startupDetail.shareNotePh")}
+            style={{ width: "100%", boxSizing: "border-box", marginTop: "6px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "7px 10px", outline: "none", resize: "vertical" }} />
           <div style={{ marginTop: hits.length ? "8px" : 0, display: "flex", flexDirection: "column" }}>
             {hits.map(h => (
               <button key={h.slug} disabled={busy} onClick={() => share(h)}
@@ -380,7 +387,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [],
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -1075,6 +1082,24 @@ export function StartupDetailClient({
                   ))}
                   {investorId && !viewerSuspended && <QAAskBox startupId={startup.id} />}
                 </div>
+              </div>
+            )}
+
+            {/* C33: co-investors who chose to be visible. Investor-only. */}
+            {investorId && coInvestors.length > 0 && (
+              <div style={{ marginTop: "8px", padding: "12px 14px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "6px" }}>
+                  {t("coInvestors.title", { count: coInvestors.length })}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {coInvestors.map((c) => (
+                    <Link key={c.slug} href={`/investors/${c.slug}`}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "4px 10px", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-2)" }}>
+                      {c.name || t("deals.investorFallback")}
+                    </Link>
+                  ))}
+                </div>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "8px" }}>{t("coInvestors.hint")}</p>
               </div>
             )}
 

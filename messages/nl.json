@@ -1217,7 +1217,8 @@
     "askedBy": "Gesteld door",
     "answerPrivately": "Privé beantwoorden (alleen de vraagsteller ziet het)",
     "privateAnswer": "privé",
-    "momentumSoft": "{amount} soft-circle"
+    "momentumSoft": "{amount} soft-circle",
+    "shareNotePh": "Waarom ze moeten kijken…"
   },
   "filters": {
     "industry": "Industrie",
@@ -2837,5 +2838,14 @@
     "notePh": "Waarom deze score…",
     "yourScore": "Uw score",
     "yourNote": "Uw notitie"
+  },
+  "coInvestors": {
+    "title": "{count} investeerders kijken hier ook naar",
+    "hint": "Hier verschijnen alleen investeerders die ervoor kozen zichtbaar te zijn. Bedragen en fases worden nooit getoond.",
+    "toggle": "Andere investeerders laten zien dat ik kijk",
+    "toggleHint": "Toont uw naam bij deze vermelding aan andere investeerders. Nooit uw bedrag, nooit aan de oprichter of het publiek.",
+    "sharedTitle": "{count} met u gedeeld",
+    "sharedBy": "Gedeeld door",
+    "continueThread": "Gesprek voortzetten"
   }
 }

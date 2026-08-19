@@ -1257,7 +1257,8 @@
     "askedBy": "Posée par",
     "answerPrivately": "Répondre en privé (seul l'auteur la voit)",
     "privateAnswer": "privée",
-    "momentumSoft": "{amount} en soft-circle"
+    "momentumSoft": "{amount} en soft-circle",
+    "shareNotePh": "Pourquoi ils devraient regarder…"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -2837,5 +2838,14 @@
     "notePh": "Pourquoi cette note…",
     "yourScore": "Votre note",
     "yourNote": "Votre commentaire"
+  },
+  "coInvestors": {
+    "title": "{count} investisseurs regardent aussi",
+    "hint": "Seuls les investisseurs qui ont choisi d'être visibles apparaissent ici. Les montants et les étapes ne sont jamais affichés.",
+    "toggle": "Laisser les autres investisseurs voir que je regarde",
+    "toggleHint": "Affiche votre nom sur cette fiche aux autres investisseurs. Jamais votre montant, jamais au fondateur ni au public.",
+    "sharedTitle": "{count} partagés avec vous",
+    "sharedBy": "Partagé par",
+    "continueThread": "Poursuivre la conversation"
   }
 }

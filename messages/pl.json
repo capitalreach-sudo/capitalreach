@@ -1217,7 +1217,8 @@
     "askedBy": "Zadane przez",
     "answerPrivately": "Odpowiedz prywatnie (widzi tylko pytający)",
     "privateAnswer": "prywatna",
-    "momentumSoft": "{amount} w soft-circle"
+    "momentumSoft": "{amount} w soft-circle",
+    "shareNotePh": "Dlaczego warto, by spojrzeli…"
   },
   "filters": {
     "industry": "Branża",
@@ -2837,5 +2838,14 @@
     "notePh": "Dlaczego taka ocena…",
     "yourScore": "Twoja ocena",
     "yourNote": "Twoja notatka"
+  },
+  "coInvestors": {
+    "title": "{count} inwestorów też się temu przygląda",
+    "hint": "Pojawiają się tu tylko inwestorzy, którzy zdecydowali się być widoczni. Kwoty i etapy nigdy nie są pokazywane.",
+    "toggle": "Pozwól innym inwestorom zobaczyć, że się temu przyglądam",
+    "toggleHint": "Pokazuje Twoje imię przy tym profilu innym inwestorom. Nigdy kwoty, nigdy założycielowi ani publicznie.",
+    "sharedTitle": "{count} udostępnionych Tobie",
+    "sharedBy": "Udostępnił",
+    "continueThread": "Kontynuuj rozmowę"
   }
 }

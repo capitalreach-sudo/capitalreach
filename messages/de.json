@@ -1264,7 +1264,8 @@
     "askedBy": "Gefragt von",
     "answerPrivately": "Privat antworten (nur der Fragende sieht sie)",
     "privateAnswer": "privat",
-    "momentumSoft": "{amount} soft-circled"
+    "momentumSoft": "{amount} soft-circled",
+    "shareNotePh": "Warum sie es ansehen sollten…"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -2837,5 +2838,14 @@
     "notePh": "Warum diese Bewertung…",
     "yourScore": "Ihre Bewertung",
     "yourNote": "Ihre Notiz"
+  },
+  "coInvestors": {
+    "title": "{count} Investoren schauen sich das ebenfalls an",
+    "hint": "Hier erscheinen nur Investoren, die sich sichtbar gemacht haben. Beträge und Phasen werden nie gezeigt.",
+    "toggle": "Andere Investoren sehen lassen, dass ich prüfe",
+    "toggleHint": "Zeigt anderen Investoren Ihren Namen bei diesem Listing. Nie Ihren Betrag, nie gegenüber dem Gründer oder der Öffentlichkeit.",
+    "sharedTitle": "{count} für Sie geteilt",
+    "sharedBy": "Geteilt von",
+    "continueThread": "Gespräch fortsetzen"
   }
 }

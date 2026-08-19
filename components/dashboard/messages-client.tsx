@@ -44,6 +44,8 @@ interface Props {
   profile: Profile;
   threads: Thread[];
   myStartupId?: string | null;
+  /** C32: the caller's own investor id, for naming investor↔investor threads. */
+  myInvestorId?: string | null;
   unreadThreadIds?: string[];
 }
 
@@ -57,7 +59,7 @@ const labelStyle: React.CSSProperties = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function MessagesClient({ profile, threads: initialThreads, myStartupId, unreadThreadIds = [] }: Props) {
+export function MessagesClient({ profile, threads: initialThreads, myStartupId, myInvestorId = null, unreadThreadIds = [] }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -200,7 +202,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
   const otherStartup = (th: Thread) => th.startup_id === myStartupId ? th.recipient_startup : th.startup;
 
+  // C32: an investor↔investor thread is named after the *other* investor,
+  // with the company it is about as the sub-label.
+  const otherInvestor = (th: Thread) => {
+    const t2 = th as unknown as { investor_id?: string; recipient_investor_id?: string; investor?: { slug: string; display_name: string | null; firm_name: string | null; type?: string } | null; recipient_investor?: { slug: string; display_name: string | null; firm_name: string | null; type?: string } | null };
+    if (!t2.recipient_investor_id) return null;
+    return t2.investor_id === myInvestorId ? t2.recipient_investor ?? null : t2.investor ?? null;
+  };
+
   const getLabel = (th: Thread) => {
+    const co = otherInvestor(th);
+    if (co) return co.display_name || co.firm_name || co.slug?.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()) || t("dashboard.investorLabel");
     if (th.recipient_startup_id) {
       return otherStartup(th)?.name || t("dashboard.startupLabel");
     }
@@ -211,6 +223,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     return th.startup?.name || t("dashboard.startupLabel");
   };
   const getSubLabel = (th: Thread) => {
+    if (otherInvestor(th)) return th.startup?.name || "";
     if (th.recipient_startup_id) {
       return otherStartup(th)?.slug || "";
     }

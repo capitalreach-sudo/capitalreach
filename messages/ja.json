@@ -1257,7 +1257,8 @@
     "askedBy": "質問者",
     "answerPrivately": "非公開で回答（質問者のみ閲覧可）",
     "privateAnswer": "非公開",
-    "momentumSoft": "{amount} ソフトサークル"
+    "momentumSoft": "{amount} ソフトサークル",
+    "shareNotePh": "注目すべき理由…"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -2837,5 +2838,14 @@
     "notePh": "この評価の理由…",
     "yourScore": "あなたの評価",
     "yourNote": "あなたのメモ"
+  },
+  "coInvestors": {
+    "title": "他に {count} 名の投資家が検討中",
+    "hint": "公開を選んだ投資家のみ表示されます。金額やステージは一切表示されません。",
+    "toggle": "検討中であることを他の投資家に見せる",
+    "toggleHint": "この掲載であなたの名前を他の投資家に表示します。金額は表示されず、創業者や一般には公開されません。",
+    "sharedTitle": "{count} 件が共有されました",
+    "sharedBy": "共有者",
+    "continueThread": "会話を続ける"
   }
 }

@@ -493,6 +493,7 @@ export type Database = {
           next_follow_up: string | null
           notes: string | null
           passed_at: string | null
+          public_interest: boolean
           stage_entered_at: string | null
           startup_id: string
           status: string
@@ -522,6 +523,7 @@ export type Database = {
           next_follow_up?: string | null
           notes?: string | null
           passed_at?: string | null
+          public_interest?: boolean
           stage_entered_at?: string | null
           startup_id: string
           status?: string
@@ -551,6 +553,7 @@ export type Database = {
           next_follow_up?: string | null
           notes?: string | null
           passed_at?: string | null
+          public_interest?: boolean
           stage_entered_at?: string | null
           startup_id?: string
           status?: string
@@ -1566,6 +1569,65 @@ export type Database = {
           },
         ]
       }
+      startup_shares: {
+        Row: {
+          created_at: string
+          from_investor_id: string
+          id: string
+          note: string | null
+          startup_id: string
+          thread_id: string | null
+          to_investor_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_investor_id: string
+          id?: string
+          note?: string | null
+          startup_id: string
+          thread_id?: string | null
+          to_investor_id: string
+        }
+        Update: {
+          created_at?: string
+          from_investor_id?: string
+          id?: string
+          note?: string | null
+          startup_id?: string
+          thread_id?: string | null
+          to_investor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_shares_from_investor_id_fkey"
+            columns: ["from_investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "startup_shares_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "startup_shares_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "startup_shares_to_investor_id_fkey"
+            columns: ["to_investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       startup_updates: {
         Row: {
           audience: string
@@ -2033,6 +2095,7 @@ export type Database = {
           created_at: string
           id: string
           investor_id: string | null
+          recipient_investor_id: string | null
           recipient_startup_id: string | null
           startup_id: string
           status: string
@@ -2042,6 +2105,7 @@ export type Database = {
           created_at?: string
           id?: string
           investor_id?: string | null
+          recipient_investor_id?: string | null
           recipient_startup_id?: string | null
           startup_id: string
           status?: string
@@ -2051,6 +2115,7 @@ export type Database = {
           created_at?: string
           id?: string
           investor_id?: string | null
+          recipient_investor_id?: string | null
           recipient_startup_id?: string | null
           startup_id?: string
           status?: string
@@ -2060,6 +2125,13 @@ export type Database = {
           {
             foreignKeyName: "threads_investor_id_fkey"
             columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "threads_recipient_investor_id_fkey"
+            columns: ["recipient_investor_id"]
             isOneToOne: false
             referencedRelation: "investors"
             referencedColumns: ["id"]
