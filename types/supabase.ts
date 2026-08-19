@@ -658,6 +658,7 @@ export type Database = {
           created_at: string
           id: string
           investor_id: string
+          next_contact_at: string | null
           note: string | null
           startup_id: string
           status: string
@@ -666,6 +667,7 @@ export type Database = {
           created_at?: string
           id?: string
           investor_id: string
+          next_contact_at?: string | null
           note?: string | null
           startup_id: string
           status?: string
@@ -674,6 +676,7 @@ export type Database = {
           created_at?: string
           id?: string
           investor_id?: string
+          next_contact_at?: string | null
           note?: string | null
           startup_id?: string
           status?: string
@@ -1444,25 +1447,31 @@ export type Database = {
       }
       startup_updates: {
         Row: {
+          audience: string
           body: string
           created_at: string
           id: string
           startup_id: string
           title: string
+          updated_at: string | null
         }
         Insert: {
+          audience?: string
           body: string
           created_at?: string
           id?: string
           startup_id: string
           title: string
+          updated_at?: string | null
         }
         Update: {
+          audience?: string
           body?: string
           created_at?: string
           id?: string
           startup_id?: string
           title?: string
+          updated_at?: string | null
         }
         Relationships: [
           {

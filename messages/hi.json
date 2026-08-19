@@ -973,7 +973,17 @@
     "funnelSaves": "सेव",
     "funnelDeals": "सौदे",
     "funnelTermSheets": "टर्म शीट",
-    "funnelClosed": "बंद"
+    "funnelClosed": "बंद",
+    "audienceLabel": "भेजें",
+    "audWatchers": "निवेशक जिन्होंने आपको सहेजा",
+    "audDeals": "सौदे वाले निवेशक (बंद सहित)",
+    "audAll": "दोनों",
+    "updHistory": "{count} पिछले अपडेट",
+    "updEdited": "अपडेट संपादित।",
+    "updEditedTag": "संपादित",
+    "updDeleteConfirm": "यह अपडेट हटाएँ? जिन निवेशकों को सूचना मिल चुकी है, उनकी सूचना बनी रहेगी।",
+    "tgNotePh": "नोट जोड़ें…",
+    "tgNextContact": "अगला संपर्क"
   },
   "settings": {
     "pageTitle": "सेटिंग्स",
@@ -2783,5 +2793,13 @@
     "i2": "अपनी निवेश थीसिस पूरी करें",
     "i3": "AI मैचिंग चलाएँ",
     "cta": "चलिए शुरू करें"
+  },
+  "outreach": {
+    "message": "{name} को संदेश",
+    "addToPipeline": "पाइपलाइन में जोड़ें",
+    "placeholder": "{name} को लिखें… (उन्हें आपके स्टार्टअप का नाम दिखेगा)",
+    "send": "भेजें",
+    "sent": "संदेश भेजा गया।",
+    "addedToPipeline": "आपकी पाइपलाइन में जोड़ा गया।"
   }
 }

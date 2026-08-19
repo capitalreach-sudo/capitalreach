@@ -29,7 +29,7 @@ export async function GET() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("investor_targets")
-    .select("id, note, status, created_at, investor_id, investor:investors(slug, display_name, firm_name, type)")
+    .select("id, note, status, created_at, investor_id, next_contact_at, investor:investors(slug, display_name, firm_name, type)")
     .eq("startup_id", startupId)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -41,6 +41,7 @@ export async function GET() {
       note: r.note,
       status: r.status ?? "to_contact",
       createdAt: r.created_at,
+      nextContactAt: r.next_contact_at ?? null,
       slug: r.investor?.slug ?? null,
       name: r.investor?.display_name ?? r.investor?.firm_name ?? null,
       firm: r.investor?.firm_name ?? null,
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { investorId, note, status } = await req.json().catch(() => ({}));
+  const { investorId, note, status, nextContactAt } = await req.json().catch(() => ({}));
   if (!isUuid(investorId)) return NextResponse.json({ error: "investorId required" }, { status: 400 });
 
   const startupId = await callerStartup(user.id);
@@ -74,6 +75,14 @@ export async function POST(req: NextRequest) {
   }
   // Same only-sent-keys-write rule; the CHECK constraint is the arbiter of
   // valid values, mirrored here so a typo answers 400 rather than a DB error.
+  // B22: next-contact date drives the founder's reminders. Plain YYYY-MM-DD
+  // or null to clear; anything else is rejected rather than guessed.
+  if (nextContactAt !== undefined) {
+    if (nextContactAt !== null && !/^\d{4}-\d{2}-\d{2}$/.test(String(nextContactAt))) {
+      return NextResponse.json({ error: "invalid nextContactAt" }, { status: 400 });
+    }
+    row.next_contact_at = nextContactAt;
+  }
   if (status !== undefined) {
     if (!["to_contact", "contacted", "replied", "passed"].includes(status)) {
       return NextResponse.json({ error: "invalid status" }, { status: 400 });

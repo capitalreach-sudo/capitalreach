@@ -973,7 +973,17 @@
     "funnelSaves": "Opgeslagen",
     "funnelDeals": "Deals",
     "funnelTermSheets": "Term sheets",
-    "funnelClosed": "Gesloten"
+    "funnelClosed": "Gesloten",
+    "audienceLabel": "Verzenden naar",
+    "audWatchers": "Investeerders die u bewaarden",
+    "audDeals": "Investeerders met een deal (incl. gesloten)",
+    "audAll": "Beide",
+    "updHistory": "{count} eerdere updates",
+    "updEdited": "Update bewerkt.",
+    "updEditedTag": "bewerkt",
+    "updDeleteConfirm": "Deze update verwijderen? Al genotificeerde investeerders houden hun melding.",
+    "tgNotePh": "Notitie toevoegen…",
+    "tgNextContact": "Volgend contact"
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -2783,5 +2793,13 @@
     "i2": "Investeringsthese afmaken",
     "i3": "AI-matching uitvoeren",
     "cta": "Aan de slag"
+  },
+  "outreach": {
+    "message": "Bericht aan {name}",
+    "addToPipeline": "Toevoegen aan pipeline",
+    "placeholder": "Schrijf aan {name}… (uw startupnaam is zichtbaar)",
+    "send": "Verzenden",
+    "sent": "Bericht verzonden.",
+    "addedToPipeline": "Toegevoegd aan uw pipeline."
   }
 }

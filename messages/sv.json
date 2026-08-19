@@ -973,7 +973,17 @@
     "funnelSaves": "Sparade",
     "funnelDeals": "Affärer",
     "funnelTermSheets": "Term sheets",
-    "funnelClosed": "Stängda"
+    "funnelClosed": "Stängda",
+    "audienceLabel": "Skicka till",
+    "audWatchers": "Investerare som sparat dig",
+    "audDeals": "Investerare med en affär (inkl. stängda)",
+    "audAll": "Båda",
+    "updHistory": "{count} tidigare uppdateringar",
+    "updEdited": "Uppdatering redigerad.",
+    "updEditedTag": "redigerad",
+    "updDeleteConfirm": "Ta bort uppdateringen? Redan aviserade investerare behåller sin avisering.",
+    "tgNotePh": "Lägg till anteckning…",
+    "tgNextContact": "Nästa kontakt"
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -2783,5 +2793,13 @@
     "i2": "Färdigställ din investeringstes",
     "i3": "Kör AI-matchning",
     "cta": "Kör igång"
+  },
+  "outreach": {
+    "message": "Skriv till {name}",
+    "addToPipeline": "Lägg till i pipeline",
+    "placeholder": "Skriv till {name}… (ditt startupnamn visas)",
+    "send": "Skicka",
+    "sent": "Meddelande skickat.",
+    "addedToPipeline": "Tillagd i din pipeline."
   }
 }

@@ -982,7 +982,17 @@
     "funnelSaves": "المحفوظات",
     "funnelDeals": "الصفقات",
     "funnelTermSheets": "أوراق الشروط",
-    "funnelClosed": "مغلقة"
+    "funnelClosed": "مغلقة",
+    "audienceLabel": "إرسال إلى",
+    "audWatchers": "المستثمرون الذين حفظوك",
+    "audDeals": "المستثمرون ذوو صفقة (بما فيها المغلقة)",
+    "audAll": "كلاهما",
+    "updHistory": "{count} تحديثات سابقة",
+    "updEdited": "تم تعديل التحديث.",
+    "updEditedTag": "مُعدَّل",
+    "updDeleteConfirm": "حذف هذا التحديث؟ يحتفظ المستثمرون الذين أُبلغوا بإشعارهم.",
+    "tgNotePh": "أضف ملاحظة…",
+    "tgNextContact": "الاتصال التالي"
   },
   "settings": {
     "pageTitle": "إعدادات الحساب",
@@ -2783,5 +2793,13 @@
     "i2": "أكمل أطروحتك الاستثمارية",
     "i3": "شغّل المطابقة بالذكاء الاصطناعي",
     "cta": "لنبدأ"
+  },
+  "outreach": {
+    "message": "مراسلة {name}",
+    "addToPipeline": "إضافة إلى المسار",
+    "placeholder": "اكتب إلى {name}… (سيرى اسم شركتك)",
+    "send": "إرسال",
+    "sent": "تم إرسال الرسالة.",
+    "addedToPipeline": "تمت الإضافة إلى المسار."
   }
 }

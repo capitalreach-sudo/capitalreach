@@ -989,7 +989,17 @@
     "funnelSaves": "Gespeichert",
     "funnelDeals": "Deals",
     "funnelTermSheets": "Term Sheets",
-    "funnelClosed": "Abgeschlossen"
+    "funnelClosed": "Abgeschlossen",
+    "audienceLabel": "Senden an",
+    "audWatchers": "Investoren, die Sie gespeichert haben",
+    "audDeals": "Investoren mit Deal (inkl. abgeschlossene)",
+    "audAll": "Beide",
+    "updHistory": "{count} bisherige Updates",
+    "updEdited": "Update bearbeitet.",
+    "updEditedTag": "bearbeitet",
+    "updDeleteConfirm": "Dieses Update löschen? Bereits benachrichtigte Investoren behalten ihre Benachrichtigung.",
+    "tgNotePh": "Notiz hinzufügen…",
+    "tgNextContact": "Nächster Kontakt"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -2783,5 +2793,13 @@
     "i2": "Investment-These vervollständigen",
     "i3": "KI-Matching starten",
     "cta": "Los geht's"
+  },
+  "outreach": {
+    "message": "{name} schreiben",
+    "addToPipeline": "Zur Pipeline hinzufügen",
+    "placeholder": "Schreiben Sie {name}… (Ihr Startup-Name ist sichtbar)",
+    "send": "Senden",
+    "sent": "Nachricht gesendet.",
+    "addedToPipeline": "Zur Pipeline hinzugefügt."
   }
 }

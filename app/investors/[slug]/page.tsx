@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { TargetButton } from "@/components/investors/target-button";
+import { FounderOutreach } from "@/components/investors/founder-outreach";
 import { resolveEntity } from "@/lib/membership";
 import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
@@ -228,6 +229,10 @@ export default async function InvestorProfilePage({ params }: Props) {
                 <Badge className="bg-emerald-100 text-emerald-700 border-0">{t("investors.leadsRounds")}</Badge>
               )}
             </div>
+            {/* B23: founder outbound — message / add to pipeline, right here. */}
+            {viewerIsFounder && !isOwnProfile && (
+              <FounderOutreach investorId={investor.id} investorName={displayName} hasDeal={!!viewerDeal} />
+            )}
             {investor.bio && (
               <p className="text-cr-i3 leading-relaxed text-sm">{investor.bio}</p>
             )}

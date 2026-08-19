@@ -993,7 +993,17 @@
     "funnelSaves": "Saves",
     "funnelDeals": "Deals",
     "funnelTermSheets": "Term sheets",
-    "funnelClosed": "Closed"
+    "funnelClosed": "Closed",
+    "audienceLabel": "Send to",
+    "audWatchers": "Investors who saved you",
+    "audDeals": "Investors with a deal (incl. closed)",
+    "audAll": "Both",
+    "updHistory": "{count} past updates",
+    "updEdited": "Update edited.",
+    "updEditedTag": "edited",
+    "updDeleteConfirm": "Delete this update? Investors who were notified keep their notification.",
+    "tgNotePh": "Add a note…",
+    "tgNextContact": "Next contact"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -2783,5 +2793,13 @@
     "i2": "Complete your investment thesis",
     "i3": "Run AI matching on your thesis",
     "cta": "Let's go"
+  },
+  "outreach": {
+    "message": "Message {name}",
+    "addToPipeline": "Add to pipeline",
+    "placeholder": "Write to {name}… (they'll see your startup name)",
+    "send": "Send",
+    "sent": "Message sent.",
+    "addedToPipeline": "Added to your pipeline."
   }
 }

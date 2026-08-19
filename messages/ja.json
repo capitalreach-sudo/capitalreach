@@ -982,7 +982,17 @@
     "funnelSaves": "保存",
     "funnelDeals": "ディール",
     "funnelTermSheets": "タームシート",
-    "funnelClosed": "成約"
+    "funnelClosed": "成約",
+    "audienceLabel": "送信先",
+    "audWatchers": "保存した投資家",
+    "audDeals": "ディールのある投資家（成約済み含む）",
+    "audAll": "両方",
+    "updHistory": "過去の更新 {count} 件",
+    "updEdited": "更新を編集しました。",
+    "updEditedTag": "編集済み",
+    "updDeleteConfirm": "この更新を削除しますか？既に通知された投資家の通知は残ります。",
+    "tgNotePh": "メモを追加…",
+    "tgNextContact": "次回連絡"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -2783,5 +2793,13 @@
     "i2": "投資テーゼを完成させる",
     "i3": "AI マッチングを実行",
     "cta": "はじめる"
+  },
+  "outreach": {
+    "message": "{name} にメッセージ",
+    "addToPipeline": "パイプラインに追加",
+    "placeholder": "{name} へ…（御社名が表示されます）",
+    "send": "送信",
+    "sent": "送信しました。",
+    "addedToPipeline": "パイプラインに追加しました。"
   }
 }

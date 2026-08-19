@@ -973,7 +973,17 @@
     "funnelSaves": "저장",
     "funnelDeals": "거래",
     "funnelTermSheets": "텀시트",
-    "funnelClosed": "마감"
+    "funnelClosed": "마감",
+    "audienceLabel": "보낼 대상",
+    "audWatchers": "나를 저장한 투자자",
+    "audDeals": "거래가 있는 투자자 (마감 포함)",
+    "audAll": "둘 다",
+    "updHistory": "지난 업데이트 {count}개",
+    "updEdited": "업데이트를 수정했습니다.",
+    "updEditedTag": "수정됨",
+    "updDeleteConfirm": "이 업데이트를 삭제할까요? 이미 알림을 받은 투자자의 알림은 유지됩니다.",
+    "tgNotePh": "메모 추가…",
+    "tgNextContact": "다음 연락"
   },
   "settings": {
     "pageTitle": "설정",
@@ -2783,5 +2793,13 @@
     "i2": "투자 논지 완성하기",
     "i3": "AI 매칭 실행",
     "cta": "시작하기"
+  },
+  "outreach": {
+    "message": "{name}에게 메시지",
+    "addToPipeline": "파이프라인에 추가",
+    "placeholder": "{name}에게 쓰기… (스타트업 이름이 표시됩니다)",
+    "send": "보내기",
+    "sent": "메시지를 보냈습니다.",
+    "addedToPipeline": "파이프라인에 추가되었습니다."
   }
 }

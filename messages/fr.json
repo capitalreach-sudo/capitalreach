@@ -982,7 +982,17 @@
     "funnelSaves": "Sauvegardes",
     "funnelDeals": "Deals",
     "funnelTermSheets": "Term sheets",
-    "funnelClosed": "Clôturés"
+    "funnelClosed": "Clôturés",
+    "audienceLabel": "Envoyer à",
+    "audWatchers": "Investisseurs qui vous ont sauvegardé",
+    "audDeals": "Investisseurs avec un deal (clôturés inclus)",
+    "audAll": "Les deux",
+    "updHistory": "{count} mises à jour passées",
+    "updEdited": "Mise à jour modifiée.",
+    "updEditedTag": "modifiée",
+    "updDeleteConfirm": "Supprimer cette mise à jour ? Les investisseurs déjà notifiés gardent leur notification.",
+    "tgNotePh": "Ajouter une note…",
+    "tgNextContact": "Prochain contact"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -2783,5 +2793,13 @@
     "i2": "Compléter votre thèse d'investissement",
     "i3": "Lancer le matching IA",
     "cta": "C'est parti"
+  },
+  "outreach": {
+    "message": "Écrire à {name}",
+    "addToPipeline": "Ajouter au pipeline",
+    "placeholder": "Écrivez à {name}… (le nom de votre startup sera visible)",
+    "send": "Envoyer",
+    "sent": "Message envoyé.",
+    "addedToPipeline": "Ajouté à votre pipeline."
   }
 }

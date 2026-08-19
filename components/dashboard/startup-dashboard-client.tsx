@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crosshair, ExternalLink, Eye, FileText, Handshake, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crosshair, ExternalLink, Eye, FileText, Handshake, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, X, Zap } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -501,7 +501,20 @@ function NdaRoster() {
 /** The raise's other direction: investors this startup is pursuing. */
 function TargetsPanel() {
   const { t } = useTranslation();
-  const [targets, setTargets] = useState<Array<{ id: string; slug: string; name: string | null; firm: string | null; note: string | null; status: string; investorId?: string }> | null>(null);
+  const [targets, setTargets] = useState<Array<{ id: string; slug: string; name: string | null; firm: string | null; note: string | null; status: string; investorId?: string; nextContactAt?: string | null }> | null>(null);
+  const [editingNote, setEditingNote] = useState<string | null>(null);
+  const [noteDraft, setNoteDraft] = useState("");
+  async function patchTarget(tg: { id: string; investorId?: string }, patch: { note?: string | null; nextContactAt?: string | null }) {
+    const res = await fetch("/api/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: tg.investorId, ...patch }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return false; }
+    setTargets((prev) => prev?.map((x) => x.id === tg.id ? { ...x, ...(patch.note !== undefined ? { note: patch.note } : {}), ...(patch.nextContactAt !== undefined ? { nextContactAt: patch.nextContactAt } : {}) } : x) ?? prev);
+    return true;
+  }
+  async function removeTarget(tg: { id: string; investorId?: string }) {
+    const res = await fetch("/api/targets", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: tg.investorId }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    setTargets((prev) => prev?.filter((x) => x.id !== tg.id) ?? prev);
+  }
   const STATUS_ORDER = ["to_contact", "contacted", "replied", "passed"] as const;
   const STATUS_STYLE: Record<string, { label: string; color: string }> = {
     to_contact: { label: "dashboard.tsToContact", color: "var(--cr-ink-4)"  },
@@ -539,10 +552,28 @@ function TargetsPanel() {
                   <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {tg.firm}</span>
                 )}
               </span>
-              {tg.note && (
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{tg.note}</span>
-              )}
             </Link>
+            {/* B22: inline note + next-contact date + remove. */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1, minWidth: 0 }}>
+              {editingNote === tg.id ? (
+                <div style={{ display: "flex", gap: 6 }}>
+                  <input value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} maxLength={1000} placeholder={t("dashboard.tgNotePh")} autoFocus
+                    onKeyDown={async (e) => { if (e.key === "Enter") { if (await patchTarget(tg, { note: noteDraft })) setEditingNote(null); } if (e.key === "Escape") setEditingNote(null); }}
+                    style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+                  <button onClick={async () => { if (await patchTarget(tg, { note: noteDraft })) setEditingNote(null); }} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)" }}>{t("common.save")}</button>
+                </div>
+              ) : (
+                <button onClick={() => { setEditingNote(tg.id); setNoteDraft(tg.note ?? ""); }} title={t("common.edit")}
+                  style={{ background: "none", border: "none", padding: 0, cursor: "text", textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: tg.note ? "var(--cr-ink-4)" : "var(--cr-paper-4)" }}>
+                  {tg.note || t("dashboard.tgNotePh")}
+                </button>
+              )}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input type="date" value={tg.nextContactAt ?? ""} onChange={(e) => patchTarget(tg, { nextContactAt: e.target.value || null })} title={t("dashboard.tgNextContact")}
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: tg.nextContactAt && new Date(tg.nextContactAt) < new Date() ? "var(--cr-down)" : "var(--cr-ink-3)", padding: "2px 6px", outline: "none" }} />
+                <button onClick={() => removeTarget(tg)} title={t("common.delete")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: 0 }}><X style={{ width: 12, height: 12 }} /></button>
+              </div>
+            </div>
             <button
               onClick={async () => {
                 const prevStatus = tg.status;
@@ -576,17 +607,41 @@ function UpdateComposer() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [audience, setAudience] = useState<"watchers" | "deals" | "all">("all");
   const [busy, setBusy] = useState(false);
+  // B21: history with edit / delete. Write-only before.
+  type Upd = { id: string; title: string; body: string; audience: string; created_at: string; updated_at: string | null };
+  const [history, setHistory] = useState<Upd[]>([]);
+  const [editing, setEditing] = useState<{ id: string; title: string; body: string } | null>(null);
+  useEffect(() => { fetch("/api/updates").then((r) => (r.ok ? r.json() : null)).then((j) => setHistory(j?.updates ?? [])).catch(() => {}); }, []);
 
   async function publish() {
     if (busy || !title.trim() || !body.trim()) return;
     setBusy(true);
-    const res = await fetch("/api/updates", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body }) });
+    const res = await fetch("/api/updates", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body, audience }) });
+    const j = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) { notify.error(t("dashboard.updFailed")); return; }
     notify.success(t("dashboard.updPosted"));
+    if (j.update) setHistory((h) => [{ ...j.update, audience }, ...h]);
     setTitle(""); setBody(""); setOpen(false);
   }
+  async function saveEdit() {
+    if (!editing || !editing.title.trim() || !editing.body.trim()) return;
+    const res = await fetch("/api/updates", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editing.id, title: editing.title, body: editing.body }) });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || !j.update) { notify.error(t("errors.generic")); return; }
+    setHistory((h) => h.map((u) => (u.id === editing.id ? j.update : u)));
+    setEditing(null);
+    notify.success(t("dashboard.updEdited"));
+  }
+  async function remove(id: string) {
+    if (!window.confirm(t("dashboard.updDeleteConfirm"))) return;
+    const res = await fetch("/api/updates", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    setHistory((h) => h.filter((u) => u.id !== id));
+  }
+  const AUD_KEY: Record<string, string> = { watchers: "dashboard.audWatchers", deals: "dashboard.audDeals", all: "dashboard.audAll" };
 
   return (
     <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
@@ -608,6 +663,16 @@ function UpdateComposer() {
             style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none" }} />
           <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={5000} rows={4} placeholder={t("dashboard.updBody")}
             style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+          {/* Audience: savers, deal investors (closed included), or both. */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginRight: 4 }}>{t("dashboard.audienceLabel")}</span>
+            {(["all", "watchers", "deals"] as const).map((a) => (
+              <button key={a} type="button" onClick={() => setAudience(a)} aria-pressed={audience === a}
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 10px", borderRadius: "999px", cursor: "pointer", background: audience === a ? "var(--cr-copper)" : "var(--cr-paper-3)", color: audience === a ? "#fff" : "var(--cr-ink-3)", border: `1px solid ${audience === a ? "var(--cr-copper)" : "var(--cr-rule-dark)"}` }}>
+                {t(AUD_KEY[a])}
+              </button>
+            ))}
+          </div>
           <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
             <button onClick={() => setOpen(false)}
               style={{ border: "1px solid var(--cr-rule-dark)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", padding: "8px 14px", cursor: "pointer" }}>
@@ -619,6 +684,42 @@ function UpdateComposer() {
             </button>
           </div>
         </div>
+      )}
+      {history.length > 0 && (
+        <details style={{ marginTop: "14px" }}>
+          <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.updHistory", { count: history.length })}</summary>
+          <div style={{ display: "grid", gap: "8px", marginTop: "10px" }}>
+            {history.map((u) => (
+              <div key={u.id} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px 12px" }}>
+                {editing?.id === u.id ? (
+                  <div style={{ display: "grid", gap: "6px" }}>
+                    <input value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} maxLength={150}
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
+                    <textarea value={editing.body} onChange={(e) => setEditing({ ...editing, body: e.target.value })} maxLength={5000} rows={3}
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
+                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                      <button onClick={() => setEditing(null)} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>{t("common.cancel")}</button>
+                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#fff", padding: "5px 12px", cursor: "pointer" }}>{t("common.save")}</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{u.title}</p>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{formatDate(u.created_at)}{u.updated_at ? ` · ${t("dashboard.updEditedTag")}` : ""}</span>
+                    </div>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: 3, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{u.body}</p>
+                    <div style={{ display: "flex", gap: 10, marginTop: 6, alignItems: "center" }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t(AUD_KEY[u.audience] ?? "dashboard.audWatchers")}</span>
+                      <button onClick={() => setEditing({ id: u.id, title: u.title, body: u.body })} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", padding: 0 }}>{t("common.edit")}</button>
+                      <button onClick={() => remove(u.id)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", padding: 0 }}>{t("common.delete")}</button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </details>
       )}
     </div>
   );

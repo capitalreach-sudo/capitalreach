@@ -982,7 +982,17 @@
     "funnelSaves": "收藏",
     "funnelDeals": "交易",
     "funnelTermSheets": "条款书",
-    "funnelClosed": "已成交"
+    "funnelClosed": "已成交",
+    "audienceLabel": "发送给",
+    "audWatchers": "收藏了您的投资者",
+    "audDeals": "有交易的投资者（含已成交）",
+    "audAll": "两者",
+    "updHistory": "{count} 条历史动态",
+    "updEdited": "动态已编辑。",
+    "updEditedTag": "已编辑",
+    "updDeleteConfirm": "删除此动态？已收到通知的投资者将保留通知。",
+    "tgNotePh": "添加备注…",
+    "tgNextContact": "下次联系"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -2783,5 +2793,13 @@
     "i2": "完善您的投资主张",
     "i3": "运行 AI 匹配",
     "cta": "开始"
+  },
+  "outreach": {
+    "message": "给 {name} 发消息",
+    "addToPipeline": "加入交易管道",
+    "placeholder": "写给 {name}…（对方将看到您的公司名称）",
+    "send": "发送",
+    "sent": "消息已发送。",
+    "addedToPipeline": "已加入您的交易管道。"
   }
 }
