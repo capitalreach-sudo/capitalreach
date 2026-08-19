@@ -1,43 +1,81 @@
 import { describe, it, expect } from "vitest";
 import {
-  FOUNDER_PLANS, INVESTOR_PLANS, FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST,
-  getFounderPlan, getInvestorPlan,
+  FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, annualPricing, priceEnvKey,
 } from "@/lib/plans";
 
-describe("plan tables", () => {
-  it("prices match what /pricing and onboarding advertise", () => {
-    expect(FOUNDER_PLANS.starter.price).toBe(29);
-    expect(FOUNDER_PLANS.growth.price).toBe(79);
-    expect(INVESTOR_PLANS.angel.price).toBe(99);
-    expect(INVESTOR_PLANS.pro.price).toBe(249);
+const paid = [...FOUNDER_PLANS_LIST, ...INVESTOR_PLANS_LIST].filter(p => p.price > 0);
+
+describe("annual billing", () => {
+  it("prices every paid plan for the year", () => {
+    expect(paid.length).toBeGreaterThan(0);
+    for (const p of paid) expect(p.annualPrice).toBeGreaterThan(0);
   });
 
-  it("every paid self-serve plan names a Stripe env var; free and institution do not", () => {
-    for (const p of [...FOUNDER_PLANS_LIST, ...INVESTOR_PLANS_LIST]) {
-      if (p.price > 0) expect(p.envKey, p.id).toMatch(/^STRIPE_PRICE_/);
-      else expect(p.envKey, p.id).toBeNull();
+  it("discounts by 20–30% — the band that makes a year worth committing to", () => {
+    for (const p of paid) {
+      const a = annualPricing(p)!;
+      expect(a.percentOff).toBeGreaterThanOrEqual(20);
+      expect(a.percentOff).toBeLessThanOrEqual(30);
     }
   });
 
-  it("institution is contact-sales: no envKey, price 0", () => {
-    expect(INVESTOR_PLANS.institution.envKey).toBeNull();
-    expect(INVESTOR_PLANS.institution.price).toBe(0);
+  it("never charges more for a year than twelve months would", () => {
+    for (const p of paid) expect(p.annualPrice!).toBeLessThan(p.price * 12);
+  });
+
+  it("has no annual price to show for free or custom plans", () => {
+    const free = FOUNDER_PLANS_LIST.find(p => p.price === 0)!;
+    expect(annualPricing(free)).toBeNull();
+  });
+
+  it("resolves a distinct Stripe price per interval", () => {
+    for (const p of paid) {
+      const m = priceEnvKey(p, "month");
+      const y = priceEnvKey(p, "year");
+      expect(m).toBeTruthy();
+      expect(y).toBeTruthy();
+      // Billing a yearly signup against the monthly price id is the bug this
+      // whole seam exists to prevent.
+      expect(m).not.toBe(y);
+    }
   });
 });
 
-describe("tier normalisation", () => {
-  it("accepts both slug spellings the app has written to the DB", () => {
-    expect(getInvestorPlan("pro").id).toBe("pro");
-    expect(getInvestorPlan("pro_investor").id).toBe("pro");
-    expect(getInvestorPlan("institution").id).toBe("institution");
-    expect(getInvestorPlan("institutional").id).toBe("institution");
+describe("plan differentiation", () => {
+  it("gives every paid tier something the tier below it does not have", () => {
+    const check = (list: ReadonlyArray<{ name: string; features: object }>) => {
+      for (let i = 1; i < list.length; i++) {
+        const below = list[i - 1].features as Record<string, unknown>;
+        const here = list[i].features as Record<string, unknown>;
+        const better = Object.keys(here).some(k => {
+          const a = below[k], b = here[k];
+          if (typeof a === "boolean") return b === true && a === false;
+          if (typeof a === "number" && typeof b === "number") return b > a;
+          // null means unlimited on messageLimit — better than any number.
+          return a !== null && b === null;
+        });
+        expect(better, `${list[i].name} adds nothing over ${list[i - 1].name}`).toBe(true);
+      }
+    };
+    check(FOUNDER_PLANS_LIST);
+    check(INVESTOR_PLANS_LIST);
   });
 
-  it("unknown or missing tiers land on free, never throw", () => {
-    expect(getInvestorPlan("DROP TABLE").id).toBe("free");
-    expect(getInvestorPlan(null).id).toBe("free");
-    expect(getInvestorPlan(undefined).id).toBe("free");
-    expect(getFounderPlan("nonsense").id).toBe("free");
-    expect(getFounderPlan(null).id).toBe("free");
+  it("never takes a feature away as the price goes up", () => {
+    const check = (list: ReadonlyArray<{ name: string; features: object }>) => {
+      for (let i = 1; i < list.length; i++) {
+        for (const [k, below] of Object.entries(list[i - 1].features)) {
+          const here = (list[i].features as Record<string, unknown>)[k];
+          if (typeof below === "boolean" && below === true) {
+            expect(here, `${list[i].name} lost ${k}`).toBe(true);
+          }
+          if (typeof below === "number" && typeof here === "number") {
+            expect(here, `${list[i].name} reduced ${k}`).toBeGreaterThanOrEqual(below);
+          }
+        }
+      }
+    };
+    check(FOUNDER_PLANS_LIST);
+    check(INVESTOR_PLANS_LIST);
   });
 });

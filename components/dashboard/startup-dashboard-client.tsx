@@ -9,6 +9,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
+import { InfoTip } from "@/components/shared/info-tip";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
@@ -960,14 +961,20 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye,           series: analytics.viewSeries },
             { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark,      series: analytics.saveSeries },
             { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: Handshake,     series: analytics.dealSeries, href: "/deals" },
-            { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp   },
-          ].map(({ label, val, Icon, series, href }: { label: string; val: number | string; Icon: typeof Eye; series?: number[]; href?: string }) => (
+            { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp, info: "glossary.aiScore" },
+          ].map(({ label, val, Icon, series, href, info }: { label: string; val: number | string; Icon: typeof Eye; series?: number[]; href?: string; info?: string }) => (
             <div key={label} onClick={href ? () => router.push(href) : undefined}
               role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
               onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
               style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px", cursor: href ? "pointer" : "default" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  {label}
+                  {/* The founder is being shown a number about their own
+                      company that a model produced. They deserve to know what
+                      it measures without leaving the page. */}
+                  {info && <InfoTip termKey={info} />}
+                </p>
                 <Icon style={{ width: 13, height: 13, color: "var(--cr-paper-4)" }} />
               </div>
               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{val}</p>

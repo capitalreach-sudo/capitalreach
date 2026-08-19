@@ -462,7 +462,8 @@
     "tipWatchlist": "Salva le startup da seguire e ricevi una notifica quando cambiano.",
     "saveTwoMonths": "2 mesi gratis",
     "afterLaunch": "dopo il lancio",
-    "billedYearly": "{amount} $ fatturati all'anno"
+    "billedYearly": "{amount} $ fatturati all'anno",
+    "saveUpTo": "Risparmia fino al {percent} %"
   },
   "cta": {
     "headline": "Il capitale giusto, nella fase giusta.",
@@ -1288,7 +1289,9 @@
     "exportPdf": "Stampa / salva come PDF",
     "viewPlans": "Vedi i piani",
     "remove": "Rimuovi",
-    "you": "tu"
+    "you": "tu",
+    "yes": "Sì",
+    "no": "No"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -3120,5 +3123,85 @@
     "asFounder": "Il tuo account sarà creato come founder che sta raccogliendo un round.",
     "asInvestor": "Il tuo account sarà creato come investitore.",
     "expired": "Questo link di invito è scaduto o già usato. Puoi comunque registrarti."
+  },
+  "compare": {
+    "show": "Confronta tutte le funzioni →",
+    "hide": "Nascondi il confronto",
+    "feature": "Funzione",
+    "unlimited": "Illimitato",
+    "payPerReport": "A report",
+    "orYearly": "oppure {total} $/anno · {percent} % in meno",
+    "group": {
+      "visibility": "Farsi vedere",
+      "insight": "Capire cosa funziona",
+      "pipeline": "Gestire il round",
+      "diligence": "Due diligence",
+      "access": "Cosa puoi vedere",
+      "outreach": "Trovare e contattare founder",
+      "analysis": "Analisi",
+      "portfolio": "Portafoglio e amministrazione"
+    },
+    "f": {
+      "listed": "Annuncio pubblico nella directory",
+      "listings": "Annunci attivi in contemporanea",
+      "customSlug": "Link personalizzato (capitalreach.com/il-tuo-nome)",
+      "demoVideo": "Video demo sull'annuncio",
+      "priorityReview": "Revisione prioritaria",
+      "analytics": "Analytics completi dell'annuncio",
+      "aiScore": "Punteggio di maturità AI",
+      "aiWritten": "Feedback scritto dell'AI sul pitch",
+      "exportData": "Esporta la pipeline in CSV",
+      "identity": "Vedere quale investitore è interessato",
+      "teamSeats": "Posti nel team",
+      "externalContacts": "Tracciare investitori fuori piattaforma",
+      "investorUpdates": "Inviare aggiornamenti ai tuoi investitori",
+      "documents": "Documenti sull'annuncio",
+      "dataRoom": "Data room",
+      "nda": "Richiedere un NDA prima di condividere"
+    },
+    "i": {
+      "browse": "Sfogliare tutti i round aperti",
+      "financials": "Dati finanziari e trazione",
+      "documents": "Documenti del founder",
+      "team": "Dettaglio founder e team",
+      "nda": "Firmare un NDA in piattaforma",
+      "message": "Founder contattabili al mese",
+      "watchlist": "Dimensione della watchlist",
+      "savedSearches": "Ricerche salvate con avvisi",
+      "advancedFilters": "Filtri avanzati",
+      "coInvestors": "Vedere chi altro è nel round",
+      "aiScore": "Punteggio di maturità AI su ogni annuncio",
+      "aiMatching": "Matching AI con la tua tesi",
+      "aiDiligence": "Report di due diligence AI",
+      "scorecards": "Scorecard con i tuoi criteri",
+      "checklists": "Checklist di diligence riutilizzabili",
+      "portfolio": "Monitoraggio del portafoglio",
+      "allocation": "Monitoraggio dell'allocazione",
+      "export": "Esportare i dati in CSV",
+      "support": "Referente di supporto dedicato"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "Che cos'è?",
+    "aiScore": "Una stima da 0 a 100 di quanto un round appare pronto: quanto è completo l'annuncio, quanta trazione è documentata e quanto tornano i numeri. La produce un modello da ciò che il founder ha pubblicato. Non è un giudizio sull'azienda, non è consulenza finanziaria e nessuno in CapitalReach l'ha verificata.",
+    "aiMatching": "Ordina i round aperti in base alla tesi del tuo profilo — stadio, settore, taglio del ticket, area geografica — così i più rilevanti vengono per primi. Legge solo ciò che i founder hanno pubblicato.",
+    "aiDiligence": "Un report strutturato che un modello scrive dall'annuncio e dai documenti condivisi: cosa spicca, cosa manca e quali domande vale la pena fare. Un punto di partenza per la tua due diligence, mai un sostituto.",
+    "nda": "Un accordo di riservatezza. Il founder può richiederlo prima di condividere numeri o documenti; lo firmi in piattaforma e la firma resta registrata sull'operazione.",
+    "scorecard": "I tuoi criteri di valutazione — team, mercato, trazione, quello che pesi tu — applicati a un'azienda, così due opportunità si confrontano sulla stessa base e non in base all'umore del giorno.",
+    "savedSearch": "Un insieme di filtri salvato come ricerca permanente. Quando un nuovo round corrisponde, te lo diciamo, invece di farti controllare.",
+    "coInvestor": "Se altri investitori hanno dichiarato interesse per lo stesso round. I founder lo attivano operazione per operazione; nessuna identità viene condivisa senza consenso.",
+    "allocation": "Quanto del capitale che volevi impiegare nel periodo hai davvero impegnato. Imposta un obiettivo e la dashboard mostra la differenza.",
+    "investorIdentity": "Nel piano gratuito l'interesse arriva in forma anonima. In un piano a pagamento vedi quale investitore è e puoi decidere se vale la conversazione.",
+    "externalContacts": "Investitori che conosci fuori dalla piattaforma. Puoi inserirli nella tua pipeline e seguire qui la conversazione senza che abbiano un account. Restano privati e non compaiono mai nella directory pubblica.",
+    "dataRoom": "Chiedi documenti specifici a un investitore, o condividi i tuoi, e vedi cosa è stato aperto e quando — invece di un link a una cartella che non puoi verificare.",
+    "priorityReview": "Il tuo annuncio va in cima alla coda di revisione quando lo invii, invece di essere esaminato in ordine di arrivo.",
+    "mrr": "Ricavi ricorrenti mensili: i ricavi prevedibili che l'azienda fattura ogni mese. Esclude i pagamenti una tantum.",
+    "arr": "Ricavi ricorrenti annuali, di solito MRR × 12. Un run rate prospettico, non il fatturato dell'anno scorso.",
+    "runway": "Per quanti mesi l'azienda può continuare a operare al ritmo di spesa attuale prima di finire la cassa.",
+    "preMoney": "Quanto si concorda che valga l'azienda prima che entri il nuovo investimento. La post-money è quella cifra più il capitale raccolto.",
+    "safe": "Un Simple Agreement for Future Equity: soldi ora, quote poi, convertite al prossimo round con prezzo — di solito con cap, sconto o entrambi.",
+    "softCircle": "Un investitore ha detto che intende investire, e quanto, ma non c'è nulla di firmato. Interesse reale, non denaro impegnato.",
+    "leadInvestor": "L'investitore che fissa i termini e di solito mette il ticket più grande. Molti round restano fermi finché non ce n'è uno.",
+    "successFee": "CapitalReach applica il 2% di un round alla chiusura. La paga la startup che riceve l'investimento — mai l'investitore."
   }
 }

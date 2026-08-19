@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
+import { investorGate, planRequired } from "@/lib/plan-gate";
 
 /**
  * C30: an investor's reusable diligence checklists. Saved per investor and
@@ -33,6 +34,10 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Plan gate: reusable diligence checklists are a Pro feature.
+  const caps = await investorGate(user.id);
+  if (!caps.checklistTemplates) return NextResponse.json(planRequired("Checklist templates", "Pro Investor"), { status: 402 });
   const invId = await investorId(supabase, user.id);
   if (!invId) return NextResponse.json({ error: "Investors only" }, { status: 403 });
 

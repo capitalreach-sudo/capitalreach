@@ -57,6 +57,11 @@ export interface FounderCapabilities {
   demoVideo:           boolean;
   priorityReview:      boolean;
   analyticsLevel:      "none" | "basic" | "full";
+  teamSeats:           number;
+  investorUpdates:     boolean;
+  dataRoom:            boolean;
+  externalContacts:    boolean;
+  exportData:          boolean;
 }
 
 const FOUNDER_SUSPENDED: FounderCapabilities = {
@@ -64,6 +69,8 @@ const FOUNDER_SUSPENDED: FounderCapabilities = {
   seeInvestorIdentity: false, aiPitchScore: false,
   aiWrittenFeedback: false, demoVideo: false,
   priorityReview: false, analyticsLevel: "none",
+  teamSeats: 0, investorUpdates: false, dataRoom: false,
+  externalContacts: false, exportData: false,
 };
 
 export function founderCan(ctx: AccessContext): FounderCapabilities {
@@ -85,6 +92,11 @@ export function founderCan(ctx: AccessContext): FounderCapabilities {
     demoVideo:           plan.features.demoVideo,
     priorityReview:      plan.features.priorityReview,
     analyticsLevel:      !plan.features.analytics ? "basic" : "full",
+    teamSeats:           plan.features.teamSeats,
+    investorUpdates:     plan.features.investorUpdates,
+    dataRoom:            plan.features.dataRoom,
+    externalContacts:    plan.features.externalContacts,
+    exportData:          plan.features.exportData,
   };
 }
 
@@ -105,6 +117,11 @@ export interface InvestorCapabilities {
   dataExport:      boolean;
   savedSearches:   boolean;
   advancedFilters: boolean;
+  scorecards:      boolean;
+  checklistTemplates: boolean;
+  portfolio:       boolean;
+  allocationTracking: boolean;
+  coInvestorVisibility: boolean;
 }
 
 const INVESTOR_SUSPENDED: InvestorCapabilities = {
@@ -112,6 +129,8 @@ const INVESTOR_SUSPENDED: InvestorCapabilities = {
   ndaRequest: false, message: false, messageLimit: 0, watchlistLimit: 0,
   aiScore: false, aiDiligence: "no", aiMatching: false, dataExport: false,
   savedSearches: false, advancedFilters: false,
+  scorecards: false, checklistTemplates: false, portfolio: false,
+  allocationTracking: false, coInvestorVisibility: false,
 };
 
 export function investorCan(ctx: AccessContext): InvestorCapabilities {
@@ -139,6 +158,11 @@ export function investorCan(ctx: AccessContext): InvestorCapabilities {
     dataExport:      f.exportData,
     savedSearches:   f.savedSearches,
     advancedFilters: f.advancedFilters,
+    scorecards:      f.scorecards,
+    checklistTemplates: f.checklistTemplates,
+    portfolio:       f.portfolio,
+    allocationTracking: f.allocationTracking,
+    coInvestorVisibility: f.coInvestorVisibility,
   };
 }
 

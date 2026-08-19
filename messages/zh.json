@@ -471,7 +471,8 @@
     "tipWatchlist": "保存您想跟进的创业公司，并在其发生变化时收到通知。",
     "saveTwoMonths": "免 2 个月",
     "afterLaunch": "上线后",
-    "billedYearly": "每年计费 {amount} 美元"
+    "billedYearly": "每年计费 {amount} 美元",
+    "saveUpTo": "最多省 {percent}%"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",
@@ -1442,7 +1443,9 @@
     "exportPdf": "打印 / 另存为 PDF",
     "viewPlans": "查看套餐",
     "remove": "移除",
-    "you": "您"
+    "you": "您",
+    "yes": "是",
+    "no": "否"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
@@ -3120,5 +3123,85 @@
     "asFounder": "你的账户将以正在融资的创始人身份创建。",
     "asInvestor": "你的账户将以投资人身份创建。",
     "expired": "该邀请链接已过期或已被使用。你仍然可以注册。"
+  },
+  "compare": {
+    "show": "比较全部功能 →",
+    "hide": "收起比较",
+    "feature": "功能",
+    "unlimited": "无限制",
+    "payPerReport": "按报告付费",
+    "orYearly": "或 {total} 美元/年 · 省 {percent}%",
+    "group": {
+      "visibility": "被看见",
+      "insight": "了解什么有效",
+      "pipeline": "推进这一轮",
+      "diligence": "尽职调查",
+      "access": "你能看到什么",
+      "outreach": "寻找并联系创始人",
+      "analysis": "分析",
+      "portfolio": "投资组合与管理"
+    },
+    "f": {
+      "listed": "在目录中公开展示",
+      "listings": "同时进行的项目页",
+      "customSlug": "专属链接（capitalreach.com/你的名称）",
+      "demoVideo": "项目页上的演示视频",
+      "priorityReview": "优先审核",
+      "analytics": "完整项目页分析",
+      "aiScore": "AI 就绪评分",
+      "aiWritten": "AI 对你 pitch 的书面反馈",
+      "exportData": "把管线导出为 CSV",
+      "identity": "看到是哪位投资人感兴趣",
+      "teamSeats": "团队席位",
+      "externalContacts": "跟踪平台外的投资人",
+      "investorUpdates": "向你的投资人发送进展",
+      "documents": "项目页上的文件",
+      "dataRoom": "数据室",
+      "nda": "分享前要求签署保密协议"
+    },
+    "i": {
+      "browse": "浏览全部进行中的轮次",
+      "financials": "财务与增长数据",
+      "documents": "创始人文件",
+      "team": "创始人与团队详情",
+      "nda": "在平台内签署保密协议",
+      "message": "每月可联系的创始人数",
+      "watchlist": "关注列表容量",
+      "savedSearches": "带提醒的已保存搜索",
+      "advancedFilters": "高级筛选",
+      "coInvestors": "看到还有谁在这一轮",
+      "aiScore": "每个项目页的 AI 就绪评分",
+      "aiMatching": "按你的投资主题进行 AI 匹配",
+      "aiDiligence": "AI 尽调报告",
+      "scorecards": "按你自己的标准打分",
+      "checklists": "可复用的尽调清单",
+      "portfolio": "投资组合跟踪",
+      "allocation": "额度跟踪",
+      "export": "导出数据为 CSV",
+      "support": "专属支持联系人"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "这是什么？",
+    "aiScore": "对一轮融资准备程度的 0–100 估计：项目页有多完整、增长数据有多少佐证、各项数字是否自洽。它由模型根据创始人公开的内容生成。它不是对公司的评级，不构成投资建议，CapitalReach 也没有人工复核过。",
+    "aiMatching": "按你资料中的投资主题——阶段、行业、支票规模、地域——对进行中的轮次排序，让值得你花时间的排在前面。它只读取创始人已公开的内容。",
+    "aiDiligence": "模型根据项目页和创始人分享的文件写出的结构化报告：哪些突出、哪些缺失、值得追问什么。这是你自己尽调的起点，绝不是替代。",
+    "nda": "保密协议。创始人可以要求先签署再分享财务或文件；你在平台内签署，签署记录会保存在这笔交易上。",
+    "scorecard": "把你自己的评分标准——团队、市场、增长，凡是你看重的——套用到一家公司上，让两个机会在同一基准上比较，而不是看你当天的心情。",
+    "savedSearch": "一组作为常设搜索保存的筛选条件。有新轮次符合时会通知你，不用自己反复查看。",
+    "coInvestor": "其他投资人是否已对同一轮表达兴趣。创始人按每笔交易决定是否公开；未经本人同意不会透露任何人的身份。",
+    "allocation": "本期你计划投出的资金中，实际已承诺的比例。设定目标后，仪表盘会显示差距。",
+    "investorIdentity": "免费方案下，兴趣是匿名到达的。付费方案可以看到具体是哪位投资人，从而判断这场对话是否值得。",
+    "externalContacts": "你在平台之外认识的投资人。你可以把他们加入管线并在这里跟踪对话，而无需他们注册账户。他们始终对你私有，永远不会出现在公开目录中。",
+    "dataRoom": "向投资人索取特定文件，或分享你的文件，并看到什么时候被打开过 —— 而不是一个无法审计的文件夹链接。",
+    "priorityReview": "提交时你的项目页会排到审核队列最前面，而不是按提交先后审核。",
+    "mrr": "月度经常性收入 —— 公司每月可预期开出的账单收入，不含一次性付款。",
+    "arr": "年度经常性收入，通常为 MRR × 12。这是前瞻性的年化口径，不是去年的实际营收。",
+    "runway": "按当前烧钱速度，公司还能维持运营多少个月。",
+    "preMoney": "新投资进入之前，各方认可的公司估值。投后估值等于这个数加上本轮募集金额。",
+    "safe": "Simple Agreement for Future Equity：现在给钱、以后拿股份，在下一次定价轮时转换 —— 通常带估值上限、折扣，或两者兼有。",
+    "softCircle": "投资人表示打算投资并说了金额，但尚未签署任何文件。是真实兴趣，不是已承诺的资金。",
+    "leadInvestor": "设定条款并通常出最大一张支票的投资人。很多轮次在没有领投前会一直停滞。",
+    "successFee": "融资交割时 CapitalReach 收取 2%。这笔费用由获得投资的初创公司支付 —— 绝不由投资人承担。"
   }
 }

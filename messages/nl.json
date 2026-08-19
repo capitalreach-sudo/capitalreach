@@ -462,7 +462,8 @@
     "tipWatchlist": "Bewaar startups die u wilt volgen en krijg bericht bij wijzigingen.",
     "saveTwoMonths": "2 maanden gratis",
     "afterLaunch": "na de lancering",
-    "billedYearly": "${amount} jaarlijks gefactureerd"
+    "billedYearly": "${amount} jaarlijks gefactureerd",
+    "saveUpTo": "Bespaar tot {percent} %"
   },
   "cta": {
     "headline": "Het juiste kapitaal, op het juiste moment.",
@@ -1288,7 +1289,9 @@
     "exportPdf": "Afdrukken / opslaan als PDF",
     "viewPlans": "Bekijk abonnementen",
     "remove": "Verwijderen",
-    "you": "u"
+    "you": "u",
+    "yes": "Ja",
+    "no": "Nee"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -3120,5 +3123,85 @@
     "asFounder": "Je account wordt aangemaakt als oprichter die ophaalt.",
     "asInvestor": "Je account wordt aangemaakt als investeerder.",
     "expired": "Die uitnodigingslink is verlopen of al gebruikt. Je kunt je alsnog aanmelden."
+  },
+  "compare": {
+    "show": "Vergelijk alle functies →",
+    "hide": "Vergelijking verbergen",
+    "feature": "Functie",
+    "unlimited": "Onbeperkt",
+    "payPerReport": "Per rapport",
+    "orYearly": "of {total} $/jaar · {percent} % korting",
+    "group": {
+      "visibility": "Gezien worden",
+      "insight": "Weten wat werkt",
+      "pipeline": "De ronde leiden",
+      "diligence": "Due diligence",
+      "access": "Wat je kunt zien",
+      "outreach": "Oprichters vinden en benaderen",
+      "analysis": "Analyse",
+      "portfolio": "Portefeuille en beheer"
+    },
+    "f": {
+      "listed": "Publieke listing in de directory",
+      "listings": "Gelijktijdige listings",
+      "customSlug": "Eigen link (capitalreach.com/jouw-naam)",
+      "demoVideo": "Demovideo op je listing",
+      "priorityReview": "Voorrang bij beoordeling",
+      "analytics": "Volledige listing-analytics",
+      "aiScore": "AI-gereedheidsscore",
+      "aiWritten": "Geschreven AI-feedback op je pitch",
+      "exportData": "Je pijplijn naar CSV exporteren",
+      "identity": "Zien welke investeerder geïnteresseerd is",
+      "teamSeats": "Teamplekken",
+      "externalContacts": "Investeerders buiten het platform volgen",
+      "investorUpdates": "Updates naar je investeerders sturen",
+      "documents": "Documenten op je listing",
+      "dataRoom": "Dataroom",
+      "nda": "Een NDA vragen voor je deelt"
+    },
+    "i": {
+      "browse": "Alle lopende rondes doorzoeken",
+      "financials": "Financiën en tractie",
+      "documents": "Documenten van de oprichter",
+      "team": "Details over oprichters en team",
+      "nda": "Een NDA in het platform tekenen",
+      "message": "Oprichters die je per maand kunt benaderen",
+      "watchlist": "Omvang van de volglijst",
+      "savedSearches": "Opgeslagen zoekopdrachten met meldingen",
+      "advancedFilters": "Geavanceerde filters",
+      "coInvestors": "Zien wie er nog meer in de ronde zit",
+      "aiScore": "AI-gereedheidsscore op elke listing",
+      "aiMatching": "AI-matching op jouw thesis",
+      "aiDiligence": "AI-diligencerapporten",
+      "scorecards": "Scorecards op je eigen criteria",
+      "checklists": "Herbruikbare diligence-checklists",
+      "portfolio": "Portefeuille bijhouden",
+      "allocation": "Allocatie bijhouden",
+      "export": "Gegevens naar CSV exporteren",
+      "support": "Vaste supportcontactpersoon"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "Wat is dit?",
+    "aiScore": "Een schatting van 0–100 van hoe klaar een ronde oogt: hoe compleet de listing is, hoeveel tractie is onderbouwd en hoe consistent de cijfers zijn. Een model maakt hem op basis van wat de oprichter heeft gepubliceerd. Het is geen oordeel over het bedrijf, geen beleggingsadvies, en niemand bij CapitalReach heeft het nagekeken.",
+    "aiMatching": "Rangschikt lopende rondes tegen de thesis in je profiel — fase, sector, ticketgrootte en regio — zodat wat je tijd waard is bovenaan komt. Leest alleen wat oprichters publiceren.",
+    "aiDiligence": "Een gestructureerd rapport dat een model schrijft op basis van de listing en gedeelde documenten: wat opvalt, wat ontbreekt en welke vragen de moeite waard zijn. Een startpunt voor je eigen onderzoek, nooit een vervanging.",
+    "nda": "Een geheimhoudingsovereenkomst. De oprichter kan die eisen voordat cijfers of documenten worden gedeeld; je tekent hem in het platform en de handtekening wordt bij de deal vastgelegd.",
+    "scorecard": "Je eigen scoringscriteria — team, markt, tractie, wat je ook weegt — toegepast op een bedrijf, zodat twee kansen op dezelfde basis vergelijkbaar zijn in plaats van op je humeur die dag.",
+    "savedSearch": "Een set filters bewaard als staande zoekopdracht. Past een nieuwe ronde erbij, dan krijg je bericht in plaats van zelf te moeten kijken.",
+    "coInvestor": "Of andere investeerders interesse in dezelfde ronde hebben getoond. Oprichters zetten dit per deal aan; niemands identiteit wordt zonder toestemming gedeeld.",
+    "allocation": "Hoeveel van het kapitaal dat je deze periode wilde inzetten je daadwerkelijk hebt toegezegd. Stel een doel in en het dashboard toont het gat.",
+    "investorIdentity": "Op een gratis plan komt interesse anoniem binnen. Op een betaald plan zie je welke investeerder het is en kun je bepalen of het gesprek je tijd waard is.",
+    "externalContacts": "Investeerders die je buiten het platform kent. Je kunt ze aan je pijplijn toevoegen en het gesprek hier volgen zonder dat zij een account hebben. Ze blijven privé en verschijnen nooit in de openbare directory.",
+    "dataRoom": "Vraag specifieke documenten aan een investeerder, of deel de jouwe, en zie wat wanneer is geopend — in plaats van een maplink die je niet kunt controleren.",
+    "priorityReview": "Je listing gaat vooraan in de beoordelingsrij zodra je hem indient, in plaats van op volgorde van binnenkomst.",
+    "mrr": "Maandelijks terugkerende omzet — de voorspelbare omzet die het bedrijf elke maand factureert. Eenmalige betalingen tellen niet mee.",
+    "arr": "Jaarlijks terugkerende omzet, meestal MRR × 12. Een vooruitkijkende run rate, niet de omzet van vorig jaar.",
+    "runway": "Hoeveel maanden het bedrijf bij de huidige burn kan doorgaan voordat het geld op is.",
+    "preMoney": "Wat het bedrijf waard heet te zijn vóór de nieuwe investering. Post-money is dat plus het opgehaalde bedrag.",
+    "safe": "Een Simple Agreement for Future Equity: geld nu, aandelen later, omgezet bij de volgende geprijsde ronde — meestal met een cap, een korting, of beide.",
+    "softCircle": "Een investeerder heeft gezegd te willen investeren, en hoeveel, maar er is niets getekend. Echte interesse, geen toegezegd geld.",
+    "leadInvestor": "De investeerder die de voorwaarden bepaalt en meestal de grootste cheque schrijft. Rondes blijven vaak steken tot er één is.",
+    "successFee": "CapitalReach rekent 2% van een ronde bij closing. Die wordt betaald door de startup die de investering ontvangt — nooit door de investeerder."
   }
 }

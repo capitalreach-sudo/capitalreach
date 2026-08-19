@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { resolveEntity } from "@/lib/membership";
 import { isUuid } from "@/lib/utils";
+import { founderGate, planRequired } from "@/lib/plan-gate";
 
 /**
  * The founder's target list: investors this startup wants in the round.
@@ -56,6 +57,10 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Plan gate: tracking investors you know off-platform is a Starter feature.
+  const caps = await founderGate(user.id);
+  if (!caps.externalContacts) return NextResponse.json(planRequired("Off-platform investor tracking", "Starter"), { status: 402 });
 
   const { investorId, note, status, nextContactAt } = await req.json().catch(() => ({}));
   if (!isUuid(investorId)) return NextResponse.json({ error: "investorId required" }, { status: 400 });

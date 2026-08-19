@@ -5,12 +5,13 @@ import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Zap, TrendingUp, Info, Building2, ArrowRight, Brain, X, Sparkles } from "lucide-react";
-import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
+import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, annualPricing } from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
+import { PlanComparison } from "@/components/pricing/plan-comparison";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
 import { founderCan, investorCan } from "@/lib/access";
 
@@ -70,12 +71,21 @@ function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
 
 // ── Checkout ───────────────────────────────────────────────────
 
-async function startCheckout(planId: string, userType: "founder" | "investor", errorMessage: string) {
+/**
+ * The largest annual discount on offer, so the toggle badge advertises a
+ * number that is true of at least one plan and never more than any.
+ */
+const BEST_ANNUAL_DISCOUNT = Math.max(
+  ...[...FOUNDER_PLANS_LIST, ...INVESTOR_PLANS_LIST]
+    .map(p => annualPricing(p)?.percentOff ?? 0),
+);
+
+async function startCheckout(planId: string, userType: "founder" | "investor", errorMessage: string, interval: "month" | "year" = "month") {
   try {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId, userType }),
+      body: JSON.stringify({ planId, userType, interval }),
     });
     if (res.status === 401) {
       window.location.href = "/auth/signup";
@@ -105,10 +115,13 @@ function PlanCard({
   const { t } = useTranslation();
   const hi = plan.highlight !== undefined;
   const monthly = isInstitution ? null : plan.price;
-  // Annual = ten months for twelve ("2 months free"): shown as the effective
-  // monthly rate, and the saving is exactly two months.
-  const price   = monthly === null ? null : annual ? Math.round((monthly * 10) / 12) : monthly;
-  const saved   = monthly && annual ? monthly * 2 : 0;
+  // The annual figures come from the plan itself, and the same numbers are
+  // what the checkout charges. This used to be a formula in the component
+  // ("ten months for twelve") while the checkout billed the monthly price —
+  // the discount was decoration.
+  const yearly  = annualPricing(plan);
+  const price   = monthly === null ? null : annual && yearly ? yearly.effectiveMonthly : monthly;
+  const saved   = annual && yearly ? yearly.saved : 0;
   const free    = monthly === 0;
 
   async function handleClick() {
@@ -135,7 +148,7 @@ function PlanCard({
     const signupUrl = `/auth/signup?plan=${encodeURIComponent(plan.id)}&role=${userType === "founder" ? "startup" : "investor"}`;
     if (free || isLaunch) { window.location.href = signupUrl; return; }
 
-    startCheckout(plan.id, userType, t("errors.generic"));
+    startCheckout(plan.id, userType, t("errors.generic"), annual ? "year" : "month");
   }
 
   const ctaLabel = isCurrent
@@ -195,12 +208,12 @@ function PlanCard({
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
                 ${price}
               </span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("pricing.perMonth")}{annual ? ` · ${t("pricing.billedYearly", { amount: (monthly ?? 0) * 10 })}` : ""}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("pricing.perMonth")}{annual && yearly ? ` · ${t("pricing.billedYearly", { amount: yearly.total })}` : ""}</span>
             </div>
           )}
         </div>
         {!isLaunch && annual && saved > 0 && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: Math.round(saved) })}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: Math.round(saved) })} · {yearly?.percentOff}%</p>
         )}
 
         <div style={{ height: "1px", background: "var(--cr-rule)", margin: "16px 0 24px" }} />
@@ -428,7 +441,7 @@ export default function PricingPage() {
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: annual ? "var(--cr-ink)" : "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "6px" }}>
                     {t("pricing.annual")}
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 6px" }}>
-                      {t("pricing.saveTwoMonths")}
+                      {t("pricing.saveUpTo", { percent: BEST_ANNUAL_DISCOUNT })}
                     </span>
                   </span>
                 </div>
@@ -477,18 +490,24 @@ export default function PricingPage() {
             </div>
 
             {activeTab === "startup" && (
-              <div className="grid-plans-3" style={{ maxWidth: "900px", marginBottom: "24px" }}>
-                {FOUNDER_PLANS_LIST.map((p) => (
-                  <PlanCard key={p.id} plan={p} features={founderFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
-                ))}
-              </div>
+              <>
+                <div className="grid-plans-3" style={{ maxWidth: "900px", marginBottom: "24px" }}>
+                  {FOUNDER_PLANS_LIST.map((p) => (
+                    <PlanCard key={p.id} plan={p} features={founderFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
+                  ))}
+                </div>
+                <PlanComparison side="founder" isLaunch={isLaunch} />
+              </>
             )}
             {activeTab === "investor" && (
-              <div className="grid-plans-4" style={{ marginBottom: "24px" }}>
-                {INVESTOR_PLANS_LIST.map((p) => (
-                  <PlanCard key={p.id} plan={p} features={investorFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
-                ))}
-              </div>
+              <>
+                <div className="grid-plans-4" style={{ marginBottom: "24px" }}>
+                  {INVESTOR_PLANS_LIST.map((p) => (
+                    <PlanCard key={p.id} plan={p} features={investorFeatureRows(p, t)} annual={annual} isLaunch={isLaunch} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
+                  ))}
+                </div>
+                <PlanComparison side="investor" isLaunch={isLaunch} />
+              </>
             )}
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

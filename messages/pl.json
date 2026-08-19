@@ -462,7 +462,8 @@
     "tipWatchlist": "Zapisuj startupy, które chcesz śledzić, i otrzymuj powiadomienia o zmianach.",
     "saveTwoMonths": "2 miesiące gratis",
     "afterLaunch": "po premierze",
-    "billedYearly": "{amount} $ rocznie"
+    "billedYearly": "{amount} $ rocznie",
+    "saveUpTo": "Oszczędzasz do {percent} %"
   },
   "cta": {
     "headline": "Właściwy kapitał, na właściwym etapie.",
@@ -1288,7 +1289,9 @@
     "exportPdf": "Drukuj / zapisz jako PDF",
     "viewPlans": "Zobacz plany",
     "remove": "Usuń",
-    "you": "ty"
+    "you": "ty",
+    "yes": "Tak",
+    "no": "Nie"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -3120,5 +3123,85 @@
     "asFounder": "Twoje konto zostanie założone jako założyciel zbierający rundę.",
     "asInvestor": "Twoje konto zostanie założone jako inwestor.",
     "expired": "Ten link wygasł lub został już użyty. Nadal możesz się zarejestrować."
+  },
+  "compare": {
+    "show": "Porównaj wszystkie funkcje →",
+    "hide": "Ukryj porównanie",
+    "feature": "Funkcja",
+    "unlimited": "Bez limitu",
+    "payPerReport": "Za raport",
+    "orYearly": "albo {total} $/rok · {percent} % taniej",
+    "group": {
+      "visibility": "Widoczność",
+      "insight": "Wiedzieć, co działa",
+      "pipeline": "Prowadzenie rundy",
+      "diligence": "Due diligence",
+      "access": "Co widzisz",
+      "outreach": "Znajdowanie i kontakt z założycielami",
+      "analysis": "Analiza",
+      "portfolio": "Portfel i administracja"
+    },
+    "f": {
+      "listed": "Publiczne ogłoszenie w katalogu",
+      "listings": "Jednocześnie prowadzone ogłoszenia",
+      "customSlug": "Własny link (capitalreach.com/twoja-nazwa)",
+      "demoVideo": "Wideo demo w ogłoszeniu",
+      "priorityReview": "Priorytetowa weryfikacja",
+      "analytics": "Pełna analityka ogłoszenia",
+      "aiScore": "Ocena gotowości AI",
+      "aiWritten": "Pisemna opinia AI o pitchu",
+      "exportData": "Eksport pipeline'u do CSV",
+      "identity": "Widzisz, który inwestor jest zainteresowany",
+      "teamSeats": "Miejsca w zespole",
+      "externalContacts": "Śledzenie inwestorów spoza platformy",
+      "investorUpdates": "Wysyłanie aktualizacji inwestorom",
+      "documents": "Dokumenty w ogłoszeniu",
+      "dataRoom": "Data room",
+      "nda": "Wymaganie NDA przed udostępnieniem"
+    },
+    "i": {
+      "browse": "Przeglądanie wszystkich otwartych rund",
+      "financials": "Finanse i trakcja",
+      "documents": "Dokumenty założycieli",
+      "team": "Szczegóły o założycielach i zespole",
+      "nda": "Podpisanie NDA na platformie",
+      "message": "Założyciele do kontaktu miesięcznie",
+      "watchlist": "Rozmiar listy obserwowanych",
+      "savedSearches": "Zapisane wyszukiwania z powiadomieniami",
+      "advancedFilters": "Filtry zaawansowane",
+      "coInvestors": "Widzisz, kto jeszcze jest w rundzie",
+      "aiScore": "Ocena gotowości AI przy każdym ogłoszeniu",
+      "aiMatching": "Dopasowanie AI do Twojej tezy",
+      "aiDiligence": "Raporty due diligence od AI",
+      "scorecards": "Scorecardy według Twoich kryteriów",
+      "checklists": "Wielokrotne listy kontrolne due diligence",
+      "portfolio": "Śledzenie portfela",
+      "allocation": "Śledzenie alokacji",
+      "export": "Eksport danych do CSV",
+      "support": "Wyznaczony kontakt wsparcia"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "Co to jest?",
+    "aiScore": "Szacunek 0–100 tego, jak gotowa wygląda runda: jak kompletne jest ogłoszenie, ile trakcji jest udokumentowane i na ile spójne są liczby. Wylicza go model na podstawie tego, co opublikował założyciel. To nie ocena spółki, nie porada inwestycyjna, i nikt w CapitalReach tego nie sprawdzał.",
+    "aiMatching": "Porządkuje otwarte rundy według tezy z Twojego profilu — etap, sektor, wielkość czeku i region — żeby najpierw pokazać te warte Twojego czasu. Czyta wyłącznie to, co założyciele opublikowali.",
+    "aiDiligence": "Ustrukturyzowany raport, który model pisze na podstawie ogłoszenia i udostępnionych dokumentów: co się wyróżnia, czego brakuje i jakie pytania warto zadać. Punkt wyjścia do własnego badania, nigdy jego zamiennik.",
+    "nda": "Umowa o zachowaniu poufności. Założyciel może jej wymagać przed udostępnieniem liczb lub dokumentów; podpisujesz ją na platformie, a podpis zostaje odnotowany przy transakcji.",
+    "scorecard": "Twoje własne kryteria oceny — zespół, rynek, trakcja, cokolwiek ważysz — zastosowane do spółki, żeby dwie okazje dało się porównać na tej samej podstawie, a nie według nastroju dnia.",
+    "savedSearch": "Zestaw filtrów zapisany jako stałe wyszukiwanie. Gdy nowa runda pasuje, dostajesz powiadomienie, zamiast sprawdzać samodzielnie.",
+    "coInvestor": "Czy inni inwestorzy zgłosili zainteresowanie tą samą rundą. Założyciele włączają to per transakcja; niczyja tożsamość nie jest ujawniana bez zgody.",
+    "allocation": "Ile z kapitału, który planowałeś ulokować w tym okresie, faktycznie zadeklarowałeś. Ustaw cel, a pulpit pokaże różnicę.",
+    "investorIdentity": "W planie darmowym zainteresowanie przychodzi anonimowo. W planie płatnym widzisz, który to inwestor, i możesz zdecydować, czy rozmowa jest warta czasu.",
+    "externalContacts": "Inwestorzy, których znasz poza platformą. Możesz dodać ich do swojego pipeline'u i prowadzić tu rozmowę bez zakładania im konta. Pozostają prywatni i nigdy nie trafiają do publicznego katalogu.",
+    "dataRoom": "Poproś inwestora o konkretne dokumenty albo udostępnij swoje i sprawdź, co i kiedy zostało otwarte — zamiast linku do folderu, którego nie da się skontrolować.",
+    "priorityReview": "Twoje ogłoszenie trafia na początek kolejki weryfikacji w chwili zgłoszenia, zamiast być sprawdzane według kolejności wpływu.",
+    "mrr": "Miesięczne powtarzalne przychody — przewidywalny przychód fakturowany co miesiąc. Nie obejmuje płatności jednorazowych.",
+    "arr": "Roczne powtarzalne przychody, zwykle MRR × 12. Wskaźnik patrzący w przód, a nie ubiegłoroczna sprzedaż.",
+    "runway": "Ile miesięcy spółka może działać przy obecnym tempie wydatków, zanim skończy jej się gotówka.",
+    "preMoney": "Ile spółka ma być warta przed wejściem nowej inwestycji. Post-money to ta kwota plus pozyskane środki.",
+    "safe": "Simple Agreement for Future Equity: pieniądze teraz, udziały później, konwertowane przy następnej wycenionej rundzie — zwykle z capem, dyskontem albo obydwoma.",
+    "softCircle": "Inwestor zadeklarował zamiar inwestycji i kwotę, ale nic nie jest podpisane. Realne zainteresowanie, nie zobowiązane pieniądze.",
+    "leadInvestor": "Inwestor, który ustala warunki i zwykle wykłada największy czek. Wiele rund stoi w miejscu, dopóki się nie pojawi.",
+    "successFee": "CapitalReach pobiera 2% rundy przy jej zamknięciu. Płaci je startup otrzymujący inwestycję — nigdy inwestor."
   }
 }

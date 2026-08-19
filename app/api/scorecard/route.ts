@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
+import { investorGate, planRequired } from "@/lib/plan-gate";
 import { sanitizeScores, sanitizeWeights, scorecardTotal } from "@/lib/scorecard";
 
 /**
@@ -38,6 +39,10 @@ export async function PUT(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Plan gate: scoring a company against your own criteria is an Angel feature.
+  const caps = await investorGate(user.id);
+  if (!caps.scorecards) return NextResponse.json(planRequired("Scorecards", "Angel"), { status: 402 });
   const body = await req.json().catch(() => ({}));
   const startupId = typeof body.startupId === "string" ? body.startupId : "";
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });

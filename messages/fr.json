@@ -471,7 +471,8 @@
     "tipWatchlist": "Enregistrez les startups à suivre et soyez averti de leurs changements.",
     "saveTwoMonths": "2 mois offerts",
     "afterLaunch": "après le lancement",
-    "billedYearly": "{amount} $ facturés par an"
+    "billedYearly": "{amount} $ facturés par an",
+    "saveUpTo": "Jusqu'à {percent} % d'économie"
   },
   "cta": {
     "headline": "Le bon capital, au bon stade.",
@@ -1442,7 +1443,9 @@
     "exportPdf": "Imprimer / enregistrer en PDF",
     "viewPlans": "Voir les offres",
     "remove": "Supprimer",
-    "you": "vous"
+    "you": "vous",
+    "yes": "Oui",
+    "no": "Non"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue sur CapitalReach",
@@ -3120,5 +3123,85 @@
     "asFounder": "Votre compte sera créé comme fondateur en levée de fonds.",
     "asInvestor": "Votre compte sera créé comme investisseur.",
     "expired": "Ce lien d'invitation a expiré ou a déjà servi. Vous pouvez tout de même vous inscrire."
+  },
+  "compare": {
+    "show": "Comparer toutes les fonctions →",
+    "hide": "Masquer la comparaison",
+    "feature": "Fonction",
+    "unlimited": "Illimité",
+    "payPerReport": "À l'unité",
+    "orYearly": "ou {total} $/an · {percent} % de remise",
+    "group": {
+      "visibility": "Être vu",
+      "insight": "Savoir ce qui marche",
+      "pipeline": "Mener la levée",
+      "diligence": "Due diligence",
+      "access": "Ce que vous voyez",
+      "outreach": "Trouver et contacter des fondateurs",
+      "analysis": "Analyse",
+      "portfolio": "Portefeuille et administration"
+    },
+    "f": {
+      "listed": "Annonce publique dans l'annuaire",
+      "listings": "Annonces simultanées",
+      "customSlug": "Lien personnalisé (capitalreach.com/votre-nom)",
+      "demoVideo": "Vidéo de démo sur l'annonce",
+      "priorityReview": "Examen prioritaire",
+      "analytics": "Analytics complets de l'annonce",
+      "aiScore": "Score de maturité IA",
+      "aiWritten": "Retour écrit de l'IA sur votre pitch",
+      "exportData": "Exporter votre pipeline en CSV",
+      "identity": "Voir quel investisseur s'intéresse",
+      "teamSeats": "Sièges d'équipe",
+      "externalContacts": "Suivre des investisseurs hors plateforme",
+      "investorUpdates": "Envoyer des mises à jour à vos investisseurs",
+      "documents": "Documents sur votre annonce",
+      "dataRoom": "Data room",
+      "nda": "Demander un NDA avant de partager"
+    },
+    "i": {
+      "browse": "Parcourir toutes les levées en cours",
+      "financials": "Finances et traction",
+      "documents": "Documents des fondateurs",
+      "team": "Détail fondateurs et équipe",
+      "nda": "Signer un NDA sur la plateforme",
+      "message": "Fondateurs contactables par mois",
+      "watchlist": "Taille de la liste de suivi",
+      "savedSearches": "Recherches enregistrées avec alertes",
+      "advancedFilters": "Filtres avancés",
+      "coInvestors": "Voir qui d'autre est dans la levée",
+      "aiScore": "Score de maturité IA sur chaque annonce",
+      "aiMatching": "Matching IA avec votre thèse",
+      "aiDiligence": "Rapports de due diligence IA",
+      "scorecards": "Scorecards selon vos propres critères",
+      "checklists": "Checklists de diligence réutilisables",
+      "portfolio": "Suivi de portefeuille",
+      "allocation": "Suivi d'allocation",
+      "export": "Exporter les données en CSV",
+      "support": "Contact support dédié"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "Qu'est-ce que c'est ?",
+    "aiScore": "Une estimation de 0 à 100 du degré de préparation d'une levée : complétude de l'annonce, traction démontrée, cohérence des chiffres. Elle est produite par un modèle à partir de ce que le fondateur a publié. Ce n'est pas une notation de l'entreprise, ni un conseil en investissement, et personne chez CapitalReach ne l'a relue.",
+    "aiMatching": "Classe les levées en cours selon la thèse de votre profil — stade, secteur, ticket, géographie — pour que les plus pertinentes remontent. Ne lit que ce que les fondateurs ont publié.",
+    "aiDiligence": "Un rapport structuré qu'un modèle rédige à partir de l'annonce et des documents partagés : ce qui ressort, ce qui manque, les questions à poser. Un point de départ pour votre diligence, jamais un substitut.",
+    "nda": "Un accord de confidentialité. Le fondateur peut l'exiger avant de partager ses chiffres ou ses documents ; vous le signez sur la plateforme et la signature est consignée sur l'opération.",
+    "scorecard": "Vos propres critères de notation — équipe, marché, traction, ce que vous pondérez — appliqués à une société, pour comparer deux dossiers sur la même base plutôt que selon l'humeur du jour.",
+    "savedSearch": "Un jeu de filtres conservé comme recherche permanente. Quand une nouvelle levée y correspond, vous êtes prévenu au lieu de devoir vérifier.",
+    "coInvestor": "Indique si d'autres investisseurs ont déclaré leur intérêt pour la même levée. Les fondateurs l'activent opération par opération ; aucune identité n'est partagée sans consentement.",
+    "allocation": "La part du capital que vous comptiez déployer sur la période et que vous avez réellement engagée. Fixez un objectif et le tableau de bord affiche l'écart.",
+    "investorIdentity": "En formule gratuite, l'intérêt arrive de façon anonyme. En formule payante, vous voyez de quel investisseur il s'agit et pouvez décider si la conversation vaut votre temps.",
+    "externalContacts": "Des investisseurs que vous connaissez hors plateforme. Vous pouvez les ajouter à votre pipeline et suivre l'échange ici sans qu'ils aient de compte. Ils restent privés et n'apparaissent jamais dans l'annuaire public.",
+    "dataRoom": "Demandez des documents précis à un investisseur, ou partagez les vôtres, et voyez ce qui a été ouvert et quand — au lieu d'un lien de dossier impossible à auditer.",
+    "priorityReview": "Votre annonce passe en tête de la file de revue au moment où vous la soumettez, au lieu d'être traitée dans l'ordre d'arrivée.",
+    "mrr": "Revenu récurrent mensuel : le revenu prévisible facturé chaque mois. Il exclut les paiements ponctuels.",
+    "arr": "Revenu récurrent annuel, en général MRR × 12. Un rythme projeté, pas le chiffre d'affaires de l'an dernier.",
+    "runway": "Le nombre de mois pendant lesquels la société peut continuer à son rythme de dépenses actuel avant d'être à court de trésorerie.",
+    "preMoney": "La valeur convenue de la société avant l'arrivée du nouvel investissement. La post-money, c'est cela plus les fonds levés.",
+    "safe": "Un Simple Agreement for Future Equity : de l'argent maintenant, des titres plus tard, convertis au prochain tour valorisé — souvent avec un plafond, une décote, ou les deux.",
+    "softCircle": "Un investisseur a annoncé son intention d'investir, et le montant, mais rien n'est signé. Un intérêt réel, pas un engagement ferme.",
+    "leadInvestor": "L'investisseur qui fixe les conditions et met généralement le plus gros ticket. Beaucoup de levées stagnent tant qu'il n'existe pas.",
+    "successFee": "CapitalReach prélève 2 % d'une levée à sa clôture. Cette commission est payée par la startup qui reçoit l'investissement — jamais par l'investisseur."
   }
 }

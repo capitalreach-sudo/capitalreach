@@ -18,6 +18,7 @@ import { matchesSavedSearch } from "@/lib/search-match";
 import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
+import { InfoTip } from "@/components/shared/info-tip";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -1450,7 +1451,14 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
                 </div>
               </div>
               <div>
-                <p style={SECTION}>{t("filters.thresholds")}</p>
+                {/* Jargon carries an explanation. "AI score ≥ 70" is
+                    meaningless to a founder who does not know what the number
+                    is or who produced it, and nobody clicks a filter they do
+                    not understand. */}
+                <p style={SECTION}>
+                  {t("filters.thresholds")}
+                  <InfoTip termKey="glossary.aiScore" label={t("glossary.whatIsThis")} />
+                </p>
                 <div style={ROW}>
                   {MRR_PRESETS.map((m) => (
                     <FilterChip key={m.value} active={filters.mrrMin === m.value} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>

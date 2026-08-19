@@ -478,7 +478,8 @@
     "tipWatchlist": "Speichern Sie Startups, die Sie verfolgen möchten, und werden Sie bei Änderungen benachrichtigt.",
     "saveTwoMonths": "2 Monate gratis",
     "afterLaunch": "nach dem Launch",
-    "billedYearly": "{amount} $ jährlich abgerechnet"
+    "billedYearly": "{amount} $ jährlich abgerechnet",
+    "saveUpTo": "Bis zu {percent} % sparen"
   },
   "cta": {
     "headline": "Das richtige Kapital, zur richtigen Phase.",
@@ -1449,7 +1450,9 @@
     "exportPdf": "Drucken / als PDF speichern",
     "viewPlans": "Pläne ansehen",
     "remove": "Entfernen",
-    "you": "Sie"
+    "you": "Sie",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",
@@ -3120,5 +3123,85 @@
     "asFounder": "Dein Konto wird als Gründer angelegt, der eine Runde aufnimmt.",
     "asInvestor": "Dein Konto wird als Investor angelegt.",
     "expired": "Dieser Einladungslink ist abgelaufen oder bereits benutzt. Du kannst dich trotzdem registrieren."
+  },
+  "compare": {
+    "show": "Alle Funktionen vergleichen →",
+    "hide": "Vergleich ausblenden",
+    "feature": "Funktion",
+    "unlimited": "Unbegrenzt",
+    "payPerReport": "Pro Bericht",
+    "orYearly": "oder {total} $/Jahr · {percent} % günstiger",
+    "group": {
+      "visibility": "Gesehen werden",
+      "insight": "Wissen, was wirkt",
+      "pipeline": "Die Runde führen",
+      "diligence": "Due Diligence",
+      "access": "Was du siehst",
+      "outreach": "Gründer finden und ansprechen",
+      "analysis": "Analyse",
+      "portfolio": "Portfolio und Verwaltung"
+    },
+    "f": {
+      "listed": "Öffentliches Listing im Verzeichnis",
+      "listings": "Gleichzeitige Listings",
+      "customSlug": "Eigener Link (capitalreach.com/dein-name)",
+      "demoVideo": "Demo-Video im Listing",
+      "priorityReview": "Bevorzugte Prüfung",
+      "analytics": "Vollständige Listing-Analytics",
+      "aiScore": "KI-Reifegrad-Score",
+      "aiWritten": "Schriftliches KI-Feedback zum Pitch",
+      "exportData": "Pipeline als CSV exportieren",
+      "identity": "Sehen, welcher Investor interessiert ist",
+      "teamSeats": "Team-Plätze",
+      "externalContacts": "Investoren außerhalb der Plattform verfolgen",
+      "investorUpdates": "Updates an deine Investoren senden",
+      "documents": "Dokumente im Listing",
+      "dataRoom": "Datenraum",
+      "nda": "NDA vor dem Teilen anfordern"
+    },
+    "i": {
+      "browse": "Alle laufenden Runden durchsuchen",
+      "financials": "Finanzzahlen und Traktion",
+      "documents": "Gründer-Dokumente",
+      "team": "Gründer- und Teamdetails",
+      "nda": "NDA direkt auf der Plattform unterschreiben",
+      "message": "Gründer pro Monat kontaktieren",
+      "watchlist": "Größe der Merkliste",
+      "savedSearches": "Gespeicherte Suchen mit Benachrichtigung",
+      "advancedFilters": "Erweiterte Filter",
+      "coInvestors": "Sehen, wer sonst in der Runde ist",
+      "aiScore": "KI-Reifegrad-Score bei jedem Listing",
+      "aiMatching": "KI-Matching zu deiner These",
+      "aiDiligence": "KI-Due-Diligence-Berichte",
+      "scorecards": "Scorecards nach deinen eigenen Kriterien",
+      "checklists": "Wiederverwendbare Diligence-Checklisten",
+      "portfolio": "Portfolio-Tracking",
+      "allocation": "Allokations-Tracking",
+      "export": "Daten als CSV exportieren",
+      "support": "Fester Ansprechpartner"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "Was ist das?",
+    "aiScore": "Eine Schätzung von 0–100, wie startklar eine Runde wirkt — wie vollständig das Listing ist, wie belegt die Traktion und wie stimmig die Zahlen sind. Ein Modell erzeugt sie aus dem, was der Gründer veröffentlicht hat. Sie bewertet nicht das Unternehmen, ist keine Anlageberatung, und niemand bei CapitalReach hat sie geprüft.",
+    "aiMatching": "Sortiert laufende Runden nach der These in deinem Profil — Phase, Branche, Ticketgröße, Region — damit die relevanten zuerst kommen. Es liest nur, was Gründer veröffentlicht haben.",
+    "aiDiligence": "Ein strukturierter Bericht, den ein Modell aus dem Listing und geteilten Dokumenten schreibt: was auffällt, was fehlt und welche Fragen sich lohnen. Ein Ausgangspunkt für deine eigene Prüfung, nie ein Ersatz dafür.",
+    "nda": "Eine Vertraulichkeitsvereinbarung. Der Gründer kann sie verlangen, bevor er Zahlen oder Dokumente teilt; du unterschreibst sie auf der Plattform und die Unterschrift wird am Deal festgehalten.",
+    "scorecard": "Deine eigenen Bewertungskriterien — Team, Markt, Traktion, was auch immer du gewichtest — angewendet auf ein Unternehmen, damit zwei Gelegenheiten auf derselben Grundlage vergleichbar sind statt nach Tagesform.",
+    "savedSearch": "Ein Satz Filter als stehende Suche. Passt eine neue Runde dazu, wirst du benachrichtigt, statt selbst nachsehen zu müssen.",
+    "coInvestor": "Ob andere Investoren Interesse an derselben Runde erklärt haben. Gründer geben das pro Deal frei; niemandes Identität wird ohne Zustimmung geteilt.",
+    "allocation": "Wie viel des Kapitals, das du in dieser Periode einsetzen wolltest, du tatsächlich zugesagt hast. Setz ein Ziel, und das Dashboard zeigt die Lücke.",
+    "investorIdentity": "Im kostenlosen Plan kommt Interesse anonym an. Im bezahlten Plan siehst du, welcher Investor es ist, und kannst entscheiden, ob sich das Gespräch lohnt.",
+    "externalContacts": "Investoren, die du außerhalb der Plattform kennst. Du kannst sie in deine Pipeline aufnehmen und das Gespräch hier verfolgen, ohne dass sie ein Konto haben. Sie bleiben privat und tauchen nie im öffentlichen Verzeichnis auf.",
+    "dataRoom": "Fordere gezielt Dokumente von einem Investor an oder teile deine, und sieh, was wann geöffnet wurde — statt eines Ordner-Links, den du nicht nachvollziehen kannst.",
+    "priorityReview": "Dein Listing kommt bei der Einreichung an den Anfang der Prüfschlange, statt in der Reihenfolge des Eingangs geprüft zu werden.",
+    "mrr": "Monatlich wiederkehrender Umsatz — der planbare Umsatz, den das Unternehmen jeden Monat abrechnet. Einmalzahlungen zählen nicht dazu.",
+    "arr": "Jährlich wiederkehrender Umsatz, meist MRR × 12. Eine vorausschauende Run-Rate, nicht der Umsatz des letzten Jahres.",
+    "runway": "Wie viele Monate das Unternehmen beim aktuellen Verbrauch noch weiterarbeiten kann, bevor das Geld ausgeht.",
+    "preMoney": "Was das Unternehmen vor dem neuen Investment wert sein soll. Post-Money ist das plus das eingesammelte Geld.",
+    "safe": "Ein Simple Agreement for Future Equity: Geld jetzt, Anteile später, umgewandelt bei der nächsten bepreisten Runde — meist mit Cap, Discount oder beidem.",
+    "softCircle": "Ein Investor hat angekündigt, investieren zu wollen, und wie viel — unterschrieben ist nichts. Echtes Interesse, kein zugesagtes Geld.",
+    "leadInvestor": "Der Investor, der die Konditionen setzt und meist den größten Scheck schreibt. Ohne ihn kommen Runden oft nicht voran.",
+    "successFee": "CapitalReach berechnet 2 % einer Runde beim Abschluss. Sie zahlt das Startup, das die Investition erhält — nie der Investor."
   }
 }

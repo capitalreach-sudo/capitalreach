@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 import { getLaunchStatus } from "@/lib/launchMode";
-import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
+import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, priceEnvKey, type BillingInterval } from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 
 type AnyPlan = FounderPlan | InvestorPlan;
@@ -12,7 +12,12 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { planId, userType } = await req.json().catch(() => ({}));
+  const { planId, userType, interval: rawInterval } = await req.json().catch(() => ({}));
+  // Annual is a real charge against a different Stripe price, not a display
+  // toggle. The pricing page has advertised "2 months free" for a while while
+  // sending every checkout to the monthly price id — the discount was
+  // decoration.
+  const interval: BillingInterval = rawInterval === "year" ? "year" : "month";
   if (userType !== "founder" && userType !== "investor") {
     return NextResponse.json({ error: "Invalid userType" }, { status: 400 });
   }
@@ -50,9 +55,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Stripe price must be configured
-  const priceId = process.env[plan.envKey];
+  const envKey = priceEnvKey(plan, interval) ?? plan.envKey;
+  const priceId = process.env[envKey];
   if (!priceId) {
-    console.error(`Stripe price not configured: ${plan.envKey}`);
+    console.error(`Stripe price not configured: ${envKey}`);
     return NextResponse.json(
       { error: "This plan is not available right now. Please contact support." },
       { status: 503 },
@@ -78,7 +84,7 @@ export async function POST(req: NextRequest) {
     priceId,
     successUrl: `${process.env.NEXT_PUBLIC_APP_URL}${dashboardPath}?upgraded=1`,
     cancelUrl:  `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    metadata:   { userId: user.id, role: userType, tier: plan.id },
+    metadata:   { userId: user.id, role: userType, tier: plan.id, interval },
   });
 
   return NextResponse.json({ url: session.url });

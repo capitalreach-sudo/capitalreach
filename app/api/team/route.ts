@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { resolveEntity, canManageTeam } from "@/lib/membership";
+import { founderGate } from "@/lib/plan-gate";
 import type { EntityType } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
 
@@ -118,6 +119,26 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
+
+  // Plan gate: seats. A founder on Free works alone; Starter is three, Growth
+  // is ten. Counted before the invitee is resolved so the answer does not
+  // depend on whether the person they typed happens to have an account.
+  if (type === "startup") {
+    const caps = await founderGate(user.id);
+    const { count } = await admin
+      .from("team_members")
+      .select("id", { count: "exact", head: true })
+      .eq("entity_type", "startup")
+      .eq("entity_id", me.entityId);
+    // The owner holds a seat too, and is not a team_members row.
+    const used = (count ?? 0) + 1;
+    if (used >= caps.teamSeats) {
+      return NextResponse.json(
+        { error: `Your plan includes ${caps.teamSeats} ${caps.teamSeats === 1 ? "seat" : "seats"}. Upgrade to add more.`, upgrade: true },
+        { status: 402 },
+      );
+    }
+  }
 
   // Only existing accounts can be added. Inviting a stranger by email would
   // mean sending mail, which does not work on this deployment yet -- so rather

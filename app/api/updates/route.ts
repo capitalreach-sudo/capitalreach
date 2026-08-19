@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { resolveEntity } from "@/lib/membership";
 import { isUuid } from "@/lib/utils";
+import { founderGate, planRequired } from "@/lib/plan-gate";
 
 /**
  * Investor updates (migration 035): the founder's periodic post. POST
@@ -12,6 +13,10 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Plan gate: posting an update to your investors is a Starter feature.
+  const caps = await founderGate(user.id);
+  if (!caps.investorUpdates) return NextResponse.json(planRequired("Investor updates", "Starter"), { status: 402 });
 
   const { title, body, audience: rawAudience } = await req.json().catch(() => ({}));
   // B21: who hears about it. watchers = savers (the old behaviour); deals =

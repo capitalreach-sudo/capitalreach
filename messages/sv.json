@@ -462,7 +462,8 @@
     "tipWatchlist": "Spara startups du vill följa och få besked när de ändras.",
     "saveTwoMonths": "2 månader gratis",
     "afterLaunch": "efter lanseringen",
-    "billedYearly": "{amount} $ faktureras årligen"
+    "billedYearly": "{amount} $ faktureras årligen",
+    "saveUpTo": "Spara upp till {percent} %"
   },
   "cta": {
     "headline": "Rätt kapital, i rätt fas.",
@@ -1288,7 +1289,9 @@
     "exportPdf": "Skriv ut / spara som PDF",
     "viewPlans": "Se planer",
     "remove": "Ta bort",
-    "you": "du"
+    "you": "du",
+    "yes": "Ja",
+    "no": "Nej"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",
@@ -3120,5 +3123,85 @@
     "asFounder": "Ditt konto skapas som grundare som reser kapital.",
     "asInvestor": "Ditt konto skapas som investerare.",
     "expired": "Den inbjudningslänken har gått ut eller är redan använd. Du kan registrera dig ändå."
+  },
+  "compare": {
+    "show": "Jämför alla funktioner →",
+    "hide": "Dölj jämförelsen",
+    "feature": "Funktion",
+    "unlimited": "Obegränsat",
+    "payPerReport": "Per rapport",
+    "orYearly": "eller {total} $/år · {percent} % rabatt",
+    "group": {
+      "visibility": "Att synas",
+      "insight": "Veta vad som fungerar",
+      "pipeline": "Driva rundan",
+      "diligence": "Due diligence",
+      "access": "Vad du kan se",
+      "outreach": "Hitta och nå grundare",
+      "analysis": "Analys",
+      "portfolio": "Portfölj och administration"
+    },
+    "f": {
+      "listed": "Publik annons i katalogen",
+      "listings": "Samtidiga annonser",
+      "customSlug": "Egen länk (capitalreach.com/ditt-namn)",
+      "demoVideo": "Demovideo på annonsen",
+      "priorityReview": "Förtur i granskningen",
+      "analytics": "Fullständig annonsstatistik",
+      "aiScore": "AI-mognadspoäng",
+      "aiWritten": "Skriftlig AI-återkoppling på din pitch",
+      "exportData": "Exportera din pipeline till CSV",
+      "identity": "Se vilken investerare som är intresserad",
+      "teamSeats": "Teamplatser",
+      "externalContacts": "Följ investerare utanför plattformen",
+      "investorUpdates": "Skicka uppdateringar till dina investerare",
+      "documents": "Dokument på annonsen",
+      "dataRoom": "Datarum",
+      "nda": "Begära NDA innan du delar"
+    },
+    "i": {
+      "browse": "Bläddra bland alla pågående rundor",
+      "financials": "Ekonomi och traktion",
+      "documents": "Grundarens dokument",
+      "team": "Detaljer om grundare och team",
+      "nda": "Skriva under NDA i plattformen",
+      "message": "Grundare du kan kontakta per månad",
+      "watchlist": "Bevakningslistans storlek",
+      "savedSearches": "Sparade sökningar med aviseringar",
+      "advancedFilters": "Avancerade filter",
+      "coInvestors": "Se vilka andra som är med i rundan",
+      "aiScore": "AI-mognadspoäng på varje annons",
+      "aiMatching": "AI-matchning mot din tes",
+      "aiDiligence": "AI-rapporter för due diligence",
+      "scorecards": "Scorecards efter dina egna kriterier",
+      "checklists": "Återanvändbara diligence-checklistor",
+      "portfolio": "Portföljuppföljning",
+      "allocation": "Allokeringsuppföljning",
+      "export": "Exportera data till CSV",
+      "support": "Namngiven supportkontakt"
+    }
+  },
+  "glossary": {
+    "whatIsThis": "Vad är det här?",
+    "aiScore": "En uppskattning 0–100 av hur redo en runda ser ut: hur komplett annonsen är, hur väl traktionen är belagd och hur sammanhängande siffrorna är. Den skapas av en modell utifrån det grundaren publicerat. Den betygsätter inte bolaget, är inte investeringsrådgivning, och ingen på CapitalReach har granskat den.",
+    "aiMatching": "Rangordnar pågående rundor mot tesen i din profil — skede, sektor, checkstorlek och geografi — så att de som är värda din tid kommer först. Läser bara det grundarna publicerat.",
+    "aiDiligence": "En strukturerad rapport som en modell skriver utifrån annonsen och delade dokument: vad som sticker ut, vad som saknas och vilka frågor som är värda att ställa. En utgångspunkt för din egen granskning, aldrig en ersättning.",
+    "nda": "Ett sekretessavtal. Grundaren kan kräva ett innan siffror eller dokument delas; du skriver under i plattformen och signaturen registreras på affären.",
+    "scorecard": "Dina egna bedömningskriterier — team, marknad, traktion, vad du nu viktar — tillämpade på ett bolag, så att två möjligheter kan jämföras på samma grund i stället för efter dagsform.",
+    "savedSearch": "En uppsättning filter sparad som stående sökning. När en ny runda matchar får du besked i stället för att behöva kolla själv.",
+    "coInvestor": "Om andra investerare har anmält intresse för samma runda. Grundare aktiverar detta per affär; ingens identitet delas utan samtycke.",
+    "allocation": "Hur mycket av kapitalet du tänkte investera under perioden som du faktiskt har åtagit dig. Sätt ett mål så visar panelen gapet.",
+    "investorIdentity": "På gratisplanen kommer intresset anonymt. På en betald plan ser du vilken investerare det är och kan avgöra om samtalet är värt tiden.",
+    "externalContacts": "Investerare du känner utanför plattformen. Du kan lägga in dem i din pipeline och följa samtalet här utan att de har konto. De förblir privata och syns aldrig i den publika katalogen.",
+    "dataRoom": "Begär specifika dokument från en investerare, eller dela dina, och se vad som öppnats och när — i stället för en mapplänk du inte kan granska.",
+    "priorityReview": "Din annons hamnar först i granskningskön när du skickar in den, i stället för att granskas i den ordning den kom.",
+    "mrr": "Månatligen återkommande intäkter — de förutsägbara intäkter bolaget fakturerar varje månad. Engångsbetalningar räknas inte.",
+    "arr": "Årligen återkommande intäkter, oftast MRR × 12. En framåtblickande takt, inte förra årets omsättning.",
+    "runway": "Hur många månader bolaget kan fortsätta i nuvarande takt innan pengarna tar slut.",
+    "preMoney": "Vad bolaget är överens om att vara värt innan den nya investeringen landar. Post-money är det plus det som tas in.",
+    "safe": "Ett Simple Agreement for Future Equity: pengar nu, aktier senare, som konverteras vid nästa prissatta runda — vanligen med tak, rabatt eller båda.",
+    "softCircle": "En investerare har sagt sig avse att investera, och hur mycket, men inget är påskrivet. Verkligt intresse, inte utlovade pengar.",
+    "leadInvestor": "Investeraren som sätter villkoren och oftast tar den största checken. Rundor står ofta still tills en sådan finns.",
+    "successFee": "CapitalReach tar 2 % av en runda när den stängs. Avgiften betalas av startupen som tar emot investeringen — aldrig av investeraren."
   }
 }
