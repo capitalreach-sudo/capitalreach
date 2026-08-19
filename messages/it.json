@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Fee non fatturabili",
     "unbillableNote": "Su queste operazioni è maturata una success fee che non è stato possibile fatturare: il founder non aveva un metodo di pagamento registrato.",
     "mixedCurrencies": "valute miste: {list}",
-    "feesWaived": "Fee stralciate"
+    "feesWaived": "Fee stralciate",
+    "feesDisputed": "Fee contestate"
   },
   "tranches": {
     "title": "Piano di erogazione",
@@ -2995,7 +2996,29 @@
       "collected": "Incassate",
       "outstanding": "In sospeso",
       "unbillable": "Non fatturabili",
-      "waived": "Stralciate"
+      "waived": "Stralciate",
+      "disputed": "Contestata"
+    },
+    "resolve": "Chiudi il caso",
+    "resolvePrompt": "Come è stata risolta la contestazione?"
+  },
+  "myFees": {
+    "title": "Success fee",
+    "intro": "La success fee del 2% è a carico della startup che riceve l'investimento, su ogni round chiuso. Se un importo sembra sbagliato, segnalalo qui: i solleciti si fermano fino alla verifica.",
+    "anInvestor": "Un investitore",
+    "disputeCta": "Questo importo non torna",
+    "disputePlaceholder": "Che cosa non torna in questo importo? Indicaci a quanto si è chiuso davvero il round.",
+    "submitDispute": "Apri la contestazione",
+    "disputeNeedsReason": "Indica che cosa non torna nell'importo.",
+    "disputeOpened": "Contestazione aperta — la esamineremo",
+    "underReview": "In verifica",
+    "resolved": "Verificata",
+    "state": {
+      "collected": "Pagata",
+      "outstanding": "Fatturata",
+      "unbillable": "Non ancora fatturata",
+      "waived": "Stralciata",
+      "disputed": "In verifica"
     }
   }
 }

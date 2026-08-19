@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Prowizje niefakturowalne",
     "unbillableNote": "Na tych transakcjach należna była prowizja, której nie dało się zafakturować — założyciel nie miał zapisanej metody płatności.",
     "mixedCurrencies": "waluty mieszane: {list}",
-    "feesWaived": "Odpisane prowizje"
+    "feesWaived": "Odpisane prowizje",
+    "feesDisputed": "Prowizje zakwestionowane"
   },
   "tranches": {
     "title": "Harmonogram wypłat",
@@ -2995,7 +2996,29 @@
       "collected": "Pobrane",
       "outstanding": "Nieopłacone",
       "unbillable": "Niefakturowalne",
-      "waived": "Odpisane"
+      "waived": "Odpisane",
+      "disputed": "Zakwestionowana"
+    },
+    "resolve": "Rozstrzygnij",
+    "resolvePrompt": "Jak rozstrzygnięto tę sprawę?"
+  },
+  "myFees": {
+    "title": "Prowizje od sukcesu",
+    "intro": "Prowizję 2% płaci startup otrzymujący inwestycję, od każdej zamkniętej rundy. Jeśli kwota wygląda źle, napisz tutaj — monity zatrzymują się do czasu weryfikacji.",
+    "anInvestor": "Inwestor",
+    "disputeCta": "Ta kwota wygląda na błędną",
+    "disputePlaceholder": "Co jest nie tak z tą kwotą? Napisz, na jakiej kwocie runda faktycznie się zamknęła.",
+    "submitDispute": "Zgłoś zastrzeżenie",
+    "disputeNeedsReason": "Napisz, co jest nie tak z kwotą.",
+    "disputeOpened": "Zastrzeżenie zgłoszone — sprawdzimy je",
+    "underReview": "W weryfikacji",
+    "resolved": "Zweryfikowano",
+    "state": {
+      "collected": "Opłacona",
+      "outstanding": "Zafakturowana",
+      "unbillable": "Jeszcze nie zafakturowana",
+      "waived": "Odpisana",
+      "disputed": "W weryfikacji"
     }
   }
 }

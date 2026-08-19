@@ -11,6 +11,7 @@
 export type FeeState =
   | "none"        // no fee on this deal
   | "collected"   // paid, through Stripe or recorded offline
+  | "disputed"    // the founder says the amount is wrong; chasing stops
   | "outstanding" // invoiced, not paid
   | "unbillable"  // earned but never invoiced — no Stripe customer, or Stripe refused
   | "waived";     // written off on purpose
@@ -24,12 +25,18 @@ export interface FeeDeal {
   closed_at?: string | null;
   fee_reminder_count?: number | null;
   fee_reminder_last_at?: string | null;
+  fee_disputed_at?: string | null;
+  fee_dispute_resolved_at?: string | null;
 }
 
 export function feeState(d: FeeDeal): FeeState {
   if (d.success_fee_amount == null || Number(d.success_fee_amount) <= 0) return "none";
   if (d.fee_waived_at || d.fee_billing_status === "waived") return "waived";
   if (d.success_fee_paid_at || d.fee_billing_status === "paid_offline") return "collected";
+  // An open dispute outranks the billing status. Payment settles it, and a
+  // write-off settles it — but while it is open the platform stops asserting
+  // that this money is simply owed.
+  if (d.fee_disputed_at && !d.fee_dispute_resolved_at) return "disputed";
   if (d.fee_billing_status === "no_customer" || d.fee_billing_status === "failed") return "unbillable";
   if (d.success_fee_invoiced) return "outstanding";
   // Amount recorded, never invoiced, no failure noted: still unbillable — the
@@ -80,10 +87,10 @@ export function retryable(d: FeeDeal, hasStripeCustomer: boolean): boolean {
   return feeState(d) === "unbillable" && hasStripeCustomer;
 }
 
-export interface LedgerTotals { outstanding: number; unbillable: number; waived: number; collected: number }
+export interface LedgerTotals { outstanding: number; unbillable: number; waived: number; collected: number; disputed: number }
 
 export function ledgerTotals(deals: FeeDeal[]): LedgerTotals {
-  const totals: LedgerTotals = { outstanding: 0, unbillable: 0, waived: 0, collected: 0 };
+  const totals: LedgerTotals = { outstanding: 0, unbillable: 0, waived: 0, collected: 0, disputed: 0 };
   for (const d of deals) {
     const s = feeState(d);
     if (s === "none") continue;

@@ -21,7 +21,7 @@ import { isUuid } from "@/lib/utils";
  */
 
 const LEDGER_COLUMNS =
-  "id, amount, currency, closed_at, success_fee_amount, success_fee_invoiced, success_fee_paid_at, stripe_invoice_id, fee_billing_status, fee_billing_error, fee_reminder_count, fee_reminder_last_at, fee_retry_count, fee_retry_last_at, fee_waived_at, fee_waived_by, fee_waive_reason, startup:startups(id, name, slug, owner_id), investor:investors(display_name)";
+  "id, amount, currency, closed_at, fee_disputed_at, fee_dispute_reason, fee_dispute_resolved_at, fee_dispute_resolution, success_fee_amount, success_fee_invoiced, success_fee_paid_at, stripe_invoice_id, fee_billing_status, fee_billing_error, fee_reminder_count, fee_reminder_last_at, fee_retry_count, fee_retry_last_at, fee_waived_at, fee_waived_by, fee_waive_reason, startup:startups(id, name, slug, owner_id), investor:investors(display_name)";
 
 export async function GET() {
   const guard = await requireAdmin();
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
   const { dealId, action, reason } = await req.json().catch(() => ({}));
   if (!isUuid(dealId ?? "")) return NextResponse.json({ error: "dealId required" }, { status: 400 });
-  if (!["retry", "waive", "markPaid"].includes(action)) {
+  if (!["retry", "waive", "markPaid", "resolveDispute"].includes(action)) {
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   }
 
@@ -68,6 +68,30 @@ export async function POST(req: NextRequest) {
 
   const startup = deal.startup as unknown as { id: string; name: string; owner_id: string } | null;
   const now = new Date().toISOString();
+
+  // E47: a dispute has to be closed by a person either way. Resolving it does
+  // not decide the fee — it just puts the deal back in a state the ledger can
+  // act on, with the reasoning on record.
+  if (action === "resolveDispute") {
+    if (state !== "disputed") return NextResponse.json({ error: "This fee is not under dispute." }, { status: 409 });
+    const note = typeof reason === "string" && reason.trim() ? reason.trim().slice(0, 500) : null;
+    if (!note) return NextResponse.json({ error: "Record how the dispute was resolved." }, { status: 400 });
+    const { error } = await admin.from("deals")
+      .update({ fee_dispute_resolved_at: now, fee_dispute_resolution: note })
+      .eq("id", dealId);
+    if (error) return NextResponse.json({ error: "Could not resolve it" }, { status: 500 });
+    await logAdminAction(admin, guard.adminId, "fee_dispute_resolved", "startup", startup?.id ?? null, { dealId, resolution: note });
+    if (startup?.owner_id) {
+      await notifyUser({
+        userId: startup.owner_id,
+        type: "fee_due",
+        title: "Your fee dispute was reviewed",
+        body: note.slice(0, 140),
+        href: "/dashboard/startup/billing",
+      }).catch(() => {});
+    }
+    return NextResponse.json({ success: true, state: "outstanding" });
+  }
 
   if (action === "waive") {
     const why = typeof reason === "string" && reason.trim() ? reason.trim().slice(0, 300) : null;

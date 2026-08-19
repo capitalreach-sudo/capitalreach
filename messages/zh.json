@@ -2955,7 +2955,8 @@
     "feesUnbillable": "无法开票的费用",
     "unbillableNote": "这些交易已产生成功费，但无法开票 —— 创始人未绑定支付方式。",
     "mixedCurrencies": "混合币种：{list}",
-    "feesWaived": "已核销费用"
+    "feesWaived": "已核销费用",
+    "feesDisputed": "争议中的费用"
   },
   "tranches": {
     "title": "付款计划",
@@ -2995,7 +2996,29 @@
       "collected": "已收取",
       "outstanding": "未收",
       "unbillable": "无法开票",
-      "waived": "已核销"
+      "waived": "已核销",
+      "disputed": "有争议"
+    },
+    "resolve": "处理",
+    "resolvePrompt": "这项争议是如何处理的？"
+  },
+  "myFees": {
+    "title": "成功费",
+    "intro": "2% 的成功费由获得投资的初创公司支付，按每个已交割的轮次计收。如果金额有误，请在此说明——审核期间将暂停催收。",
+    "anInvestor": "一位投资人",
+    "disputeCta": "这个金额有误",
+    "disputePlaceholder": "这个金额哪里不对？请告诉我们本轮实际交割的金额。",
+    "submitDispute": "提出异议",
+    "disputeNeedsReason": "请说明金额哪里不对。",
+    "disputeOpened": "异议已提交 —— 我们会核实",
+    "underReview": "审核中",
+    "resolved": "已审核",
+    "state": {
+      "collected": "已付",
+      "outstanding": "已开票",
+      "unbillable": "尚未开票",
+      "waived": "已核销",
+      "disputed": "审核中"
     }
   }
 }

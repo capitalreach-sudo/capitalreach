@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Comissões não faturáveis",
     "unbillableNote": "Foi ganha uma comissão nestes negócios mas não foi possível faturá-la — o fundador não tinha método de pagamento registado.",
     "mixedCurrencies": "moedas mistas: {list}",
-    "feesWaived": "Comissões abatidas"
+    "feesWaived": "Comissões abatidas",
+    "feesDisputed": "Comissões contestadas"
   },
   "tranches": {
     "title": "Calendário de desembolso",
@@ -2995,7 +2996,29 @@
       "collected": "Cobradas",
       "outstanding": "Pendentes",
       "unbillable": "Não faturáveis",
-      "waived": "Abatidas"
+      "waived": "Abatidas",
+      "disputed": "Contestada"
+    },
+    "resolve": "Resolver",
+    "resolvePrompt": "Como foi resolvida esta contestação?"
+  },
+  "myFees": {
+    "title": "Comissões de sucesso",
+    "intro": "A comissão de sucesso de 2% é paga pela startup que recebe o investimento, em cada ronda fechada. Se um valor parecer errado, diga-o aqui — as cobranças param até à análise.",
+    "anInvestor": "Um investidor",
+    "disputeCta": "Este valor parece errado",
+    "disputePlaceholder": "O que está errado neste valor? Diga-nos com que valor a ronda fechou realmente.",
+    "submitDispute": "Abrir contestação",
+    "disputeNeedsReason": "Diga o que está errado no valor.",
+    "disputeOpened": "Contestação aberta — vamos analisá-la",
+    "underReview": "Em análise",
+    "resolved": "Analisada",
+    "state": {
+      "collected": "Paga",
+      "outstanding": "Faturada",
+      "unbillable": "Ainda não faturada",
+      "waived": "Abatida",
+      "disputed": "Em análise"
     }
   }
 }

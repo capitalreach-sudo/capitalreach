@@ -553,6 +553,10 @@ export type Database = {
           currency: string
           fee_billing_error: string | null
           fee_billing_status: string | null
+          fee_dispute_reason: string | null
+          fee_dispute_resolution: string | null
+          fee_dispute_resolved_at: string | null
+          fee_disputed_at: string | null
           fee_reminder_count: number
           fee_reminder_last_at: string | null
           fee_retry_count: number
@@ -598,6 +602,10 @@ export type Database = {
           currency?: string
           fee_billing_error?: string | null
           fee_billing_status?: string | null
+          fee_dispute_reason?: string | null
+          fee_dispute_resolution?: string | null
+          fee_dispute_resolved_at?: string | null
+          fee_disputed_at?: string | null
           fee_reminder_count?: number
           fee_reminder_last_at?: string | null
           fee_retry_count?: number
@@ -643,6 +651,10 @@ export type Database = {
           currency?: string
           fee_billing_error?: string | null
           fee_billing_status?: string | null
+          fee_dispute_reason?: string | null
+          fee_dispute_resolution?: string | null
+          fee_dispute_resolved_at?: string | null
+          fee_disputed_at?: string | null
           fee_reminder_count?: number
           fee_reminder_last_at?: string | null
           fee_retry_count?: number

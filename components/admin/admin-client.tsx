@@ -396,10 +396,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
 
 type LedgerRow = {
   id: string; currency: string | null; closed_at: string | null;
-  state: "collected" | "outstanding" | "unbillable" | "waived";
+  state: "collected" | "outstanding" | "unbillable" | "waived" | "disputed";
   feeMajor: number; startupName: string | null; startupSlug: string | null;
   fee_billing_status: string | null; fee_billing_error: string | null;
   fee_reminder_count: number | null; fee_waive_reason: string | null;
+  fee_dispute_reason: string | null;
 };
 
 const STATE_STYLE: Record<LedgerRow["state"], string> = {
@@ -407,6 +408,7 @@ const STATE_STYLE: Record<LedgerRow["state"], string> = {
   outstanding: "bg-amber-50 text-amber-700 border-amber-200",
   unbillable:  "bg-red-50 text-red-700 border-red-200",
   waived:      "bg-cr-p3 text-cr-i3 border-cr-p4",
+  disputed:    "bg-cr-copper/10 text-cr-copper border-cr-copper/30",
 };
 
 /**
@@ -430,10 +432,10 @@ function FeeLedger() {
   }, []);
   useEffect(() => { void load(); }, [load]);
 
-  async function act(row: LedgerRow, action: "retry" | "waive" | "markPaid") {
+  async function act(row: LedgerRow, action: "retry" | "waive" | "markPaid" | "resolveDispute") {
     let reason: string | null = null;
-    if (action === "waive") {
-      reason = window.prompt(t("fees.waivePrompt"));
+    if (action === "waive" || action === "resolveDispute") {
+      reason = window.prompt(action === "waive" ? t("fees.waivePrompt") : t("fees.resolvePrompt"));
       if (!reason?.trim()) return;
     }
     if (action === "markPaid") {
@@ -452,13 +454,14 @@ function FeeLedger() {
   }
 
   if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
-  const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable") : rows;
+  // A dispute is open business too — it is the one state that needs a person.
+  const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable" || r.state === "disputed") : rows;
 
   return (
     <div>
       {totals && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          {(["outstanding", "unbillable", "collected", "waived"] as const).map(k => (
+          {(["outstanding", "unbillable", "disputed", "collected"] as const).map(k => (
             <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
               <p className="text-lg font-bold text-cr-ink">{formatCurrency(totals[k] ?? 0)}</p>
               <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
@@ -495,6 +498,10 @@ function FeeLedger() {
                   <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full border ${STATE_STYLE[row.state]}`}>
                     {t(`fees.state.${row.state}`)}
                   </span>
+                  {row.state === "disputed" && (
+                    <button onClick={() => act(row, "resolveDispute")} disabled={busy === row.id}
+                      className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("fees.resolve")}</button>
+                  )}
                   {row.state === "unbillable" && (
                     <button onClick={() => act(row, "retry")} disabled={busy === row.id}
                       className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("fees.retry")}</button>
@@ -511,6 +518,9 @@ function FeeLedger() {
               </div>
               {row.fee_billing_error && (
                 <p className="text-[11px] text-red-600 mt-1.5 break-words">{row.fee_billing_error}</p>
+              )}
+              {row.state === "disputed" && row.fee_dispute_reason && (
+                <p className="text-[11px] text-cr-copper mt-1.5 break-words">“{row.fee_dispute_reason}”</p>
               )}
               {row.state === "waived" && row.fee_waive_reason && (
                 <p className="text-[11px] text-cr-i4 mt-1.5">{t("fees.waivedFor")}: {row.fee_waive_reason}</p>

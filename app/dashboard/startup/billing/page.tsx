@@ -6,10 +6,11 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, CreditCard, Sparkles, Check } from "lucide-react";
+import { ArrowLeft, CreditCard, Sparkles, Check, Receipt } from "lucide-react";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
 import { getFounderPlan, FOUNDER_PLANS_LIST } from "@/lib/plans";
 import { notify } from "@/components/ui/toast-notify";
+import { formatMoney } from "@/lib/currency";
 import type { Profile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -121,6 +122,8 @@ export default function StartupBillingPage() {
           </div>
         </section>
 
+        <SuccessFees />
+
         {!isLaunch && currentPlan.id !== "growth" && (
           <section className="bg-cr-paper border rounded-2xl p-6">
             <h2 className="font-semibold text-cr-ink mb-4">{t("dashboard.upgradeYourPlan")}</h2>
@@ -139,5 +142,109 @@ export default function StartupBillingPage() {
         )}
       </main>
     </>
+  );
+}
+
+type MyFee = {
+  id: string; currency: string | null; closedAt: string | null;
+  feeMajor: number; state: "collected" | "outstanding" | "unbillable" | "waived" | "disputed";
+  investorName: string | null; disputeReason: string | null;
+  disputeResolution: string | null; resolvedAt: string | null;
+};
+
+/**
+ * E47: what the 2% actually is, on the page the fee notification links to.
+ *
+ * A founder used to receive an invoice for 2% of their round with nothing on
+ * the platform explaining what it was for or what to do if the amount looked
+ * wrong — the only way to disagree was to ignore the reminders, which the
+ * platform then read as non-payment. Disputing here pauses the chasing and
+ * puts a human on it.
+ */
+function SuccessFees() {
+  const { t } = useTranslation();
+  const [fees, setFees] = useState<MyFee[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+
+  async function load() {
+    const res = await fetch("/api/fees/mine");
+    setFees(res.ok ? (await res.json()).fees ?? [] : []);
+  }
+  useEffect(() => { void load(); }, []);
+
+  async function dispute(id: string) {
+    if (!reason.trim()) { notify.error(t("myFees.disputeNeedsReason")); return; }
+    setBusy(id);
+    const res = await fetch("/api/fees/mine", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dealId: id, reason }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(null);
+    if (!res.ok) { notify.error(j.error || t("common.error")); return; }
+    setOpenId(null); setReason("");
+    notify.success(t("myFees.disputeOpened"));
+    void load();
+  }
+
+  if (!fees || fees.length === 0) return null;
+
+  const tone: Record<MyFee["state"], string> = {
+    collected: "text-emerald-700", outstanding: "text-amber-700",
+    unbillable: "text-cr-i3", waived: "text-cr-i4", disputed: "text-cr-copper",
+  };
+
+  return (
+    <section className="bg-cr-paper border rounded-2xl p-6 mb-6">
+      <div className="flex items-center gap-2 mb-2">
+        <Receipt className="h-4 w-4 text-cr-copper" />
+        <h2 className="font-semibold text-cr-ink">{t("myFees.title")}</h2>
+      </div>
+      <p className="text-sm text-cr-i4 mb-5">{t("myFees.intro")}</p>
+
+      <div className="space-y-3">
+        {fees.map(f => (
+          <div key={f.id} className="border rounded-xl p-4">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div className="min-w-0">
+                <p className="font-semibold text-cr-ink">{formatMoney(f.feeMajor, f.currency)}</p>
+                <p className="text-xs text-cr-i4 mt-0.5">
+                  {f.investorName ?? t("myFees.anInvestor")}
+                  {f.closedAt && ` · ${t("fees.closed")} ${new Date(f.closedAt).toLocaleDateString()}`}
+                </p>
+              </div>
+              <span className={`text-xs font-semibold ${tone[f.state]}`}>{t(`myFees.state.${f.state}`)}</span>
+            </div>
+
+            {f.state === "disputed" && (
+              <p className="text-xs text-cr-i3 mt-2">{t("myFees.underReview")}{f.disputeReason ? ` — “${f.disputeReason}”` : ""}</p>
+            )}
+            {f.resolvedAt && f.disputeResolution && (
+              <p className="text-xs text-cr-i3 mt-2">{t("myFees.resolved")}: {f.disputeResolution}</p>
+            )}
+
+            {(f.state === "outstanding" || f.state === "unbillable") && (
+              openId === f.id ? (
+                <div className="mt-3">
+                  <textarea value={reason} onChange={e => setReason(e.target.value.slice(0, 1000))}
+                    rows={3} placeholder={t("myFees.disputePlaceholder")}
+                    className="w-full text-sm border rounded-lg p-2 bg-cr-paper-2 text-cr-ink" />
+                  <div className="flex gap-2 mt-2">
+                    <Button size="sm" onClick={() => dispute(f.id)} disabled={busy === f.id}>{t("myFees.submitDispute")}</Button>
+                    <Button size="sm" variant="ghost" onClick={() => { setOpenId(null); setReason(""); }}>{t("common.cancel")}</Button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => setOpenId(f.id)} className="text-xs font-semibold text-cr-copper mt-2">
+                  {t("myFees.disputeCta")}
+                </button>
+              )
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

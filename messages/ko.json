@@ -2955,7 +2955,8 @@
     "feesUnbillable": "청구 불가 수수료",
     "unbillableNote": "이 거래들에서 성공 수수료가 발생했지만 청구할 수 없었습니다 — 창업자에게 결제 수단이 등록되어 있지 않습니다.",
     "mixedCurrencies": "혼합 통화: {list}",
-    "feesWaived": "상각한 수수료"
+    "feesWaived": "상각한 수수료",
+    "feesDisputed": "이의 제기된 수수료"
   },
   "tranches": {
     "title": "지급 일정",
@@ -2995,7 +2996,29 @@
       "collected": "수금 완료",
       "outstanding": "미수",
       "unbillable": "청구 불가",
-      "waived": "상각"
+      "waived": "상각",
+      "disputed": "이의 제기됨"
+    },
+    "resolve": "처리",
+    "resolvePrompt": "이 이의는 어떻게 처리되었나요?"
+  },
+  "myFees": {
+    "title": "성공 수수료",
+    "intro": "2% 성공 수수료는 투자를 받는 스타트업이 마감된 라운드마다 부담합니다. 금액이 잘못돼 보이면 여기에 알려주세요 — 검토가 끝날 때까지 독촉을 멈춥니다.",
+    "anInvestor": "한 투자자",
+    "disputeCta": "이 금액이 잘못돼 보입니다",
+    "disputePlaceholder": "이 금액의 어디가 잘못되었나요? 라운드가 실제로 마감된 금액을 알려주세요.",
+    "submitDispute": "이의 제기",
+    "disputeNeedsReason": "금액의 어디가 잘못되었는지 알려주세요.",
+    "disputeOpened": "이의가 접수되었습니다 — 검토하겠습니다",
+    "underReview": "검토 중",
+    "resolved": "검토 완료",
+    "state": {
+      "collected": "납부됨",
+      "outstanding": "청구됨",
+      "unbillable": "아직 청구되지 않음",
+      "waived": "상각",
+      "disputed": "검토 중"
     }
   }
 }

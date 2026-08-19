@@ -2955,7 +2955,8 @@
     "feesUnbillable": "請求不能な手数料",
     "unbillableNote": "これらのディールでは成功報酬が発生しましたが請求できませんでした — 創業者に支払い方法が登録されていません。",
     "mixedCurrencies": "複数通貨: {list}",
-    "feesWaived": "償却した手数料"
+    "feesWaived": "償却した手数料",
+    "feesDisputed": "異議のある手数料"
   },
   "tranches": {
     "title": "支払スケジュール",
@@ -2995,7 +2996,29 @@
       "collected": "回収済み",
       "outstanding": "未回収",
       "unbillable": "請求不能",
-      "waived": "償却済み"
+      "waived": "償却済み",
+      "disputed": "異議あり"
+    },
+    "resolve": "対応する",
+    "resolvePrompt": "この異議はどう解決しましたか？"
+  },
+  "myFees": {
+    "title": "成功報酬",
+    "intro": "2% の成功報酬は、投資を受けるスタートアップが各クローズ済みラウンドについて負担します。金額が違うと思われる場合はここでお知らせください — 確認中は督促を止めます。",
+    "anInvestor": "ある投資家",
+    "disputeCta": "この金額は違うようです",
+    "disputePlaceholder": "この金額のどこが違いますか？ラウンドが実際にいくらでクローズしたかをお知らせください。",
+    "submitDispute": "異議を申し立てる",
+    "disputeNeedsReason": "金額のどこが違うかをお書きください。",
+    "disputeOpened": "異議を受け付けました — 確認します",
+    "underReview": "確認中",
+    "resolved": "確認済み",
+    "state": {
+      "collected": "支払済み",
+      "outstanding": "請求済み",
+      "unbillable": "未請求",
+      "waived": "償却済み",
+      "disputed": "確認中"
     }
   }
 }

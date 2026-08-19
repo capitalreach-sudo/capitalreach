@@ -24,6 +24,18 @@ describe("fee state", () => {
     expect(feeState({ ...base, success_fee_invoiced: false, fee_billing_status: null })).toBe("unbillable");
   });
 
+  it("an open dispute stops the platform asserting the money is simply owed", () => {
+    expect(feeState({ ...base, fee_disputed_at: "2026-08-01" })).toBe("disputed");
+    // Resolved, and still unpaid: back to outstanding, and chaseable again.
+    expect(feeState({ ...base, fee_disputed_at: "2026-08-01", fee_dispute_resolved_at: "2026-08-05" })).toBe("outstanding");
+    // Payment settles a dispute without anyone resolving it.
+    expect(feeState({ ...base, fee_disputed_at: "2026-08-01", success_fee_paid_at: "2026-08-03" })).toBe("collected");
+  });
+
+  it("never chases a disputed fee", () => {
+    expect(reminderDue({ ...base, closed_at: "2026-07-01T00:00:00Z", fee_disputed_at: "2026-07-02" }, new Date("2026-09-01"))).toBe(false);
+  });
+
   it("a waive beats every other state", () => {
     expect(feeState({ ...base, fee_waived_at: "2026-08-01" })).toBe("waived");
   });
@@ -83,6 +95,6 @@ describe("ledger totals", () => {
       { ...base, fee_waived_at: "2026-08-02" },
       { ...base, success_fee_amount: null },
     ]);
-    expect(totals).toEqual({ collected: 1000, outstanding: 1000, unbillable: 1000, waived: 1000 });
+    expect(totals).toEqual({ collected: 1000, outstanding: 1000, unbillable: 1000, waived: 1000, disputed: 0 });
   });
 });

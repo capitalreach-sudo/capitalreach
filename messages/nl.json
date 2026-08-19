@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Fees niet factureerbaar",
     "unbillableNote": "Op deze deals is een succesfee verdiend die niet gefactureerd kon worden — de oprichter had geen betaalmethode vastgelegd.",
     "mixedCurrencies": "gemengde valuta: {list}",
-    "feesWaived": "Afgeboekte fees"
+    "feesWaived": "Afgeboekte fees",
+    "feesDisputed": "Fees betwist"
   },
   "tranches": {
     "title": "Uitbetalingsschema",
@@ -2995,7 +2996,29 @@
       "collected": "Geïnd",
       "outstanding": "Openstaand",
       "unbillable": "Niet factureerbaar",
-      "waived": "Afgeboekt"
+      "waived": "Afgeboekt",
+      "disputed": "Betwist"
+    },
+    "resolve": "Afhandelen",
+    "resolvePrompt": "Hoe is dit geschil afgehandeld?"
+  },
+  "myFees": {
+    "title": "Succesfees",
+    "intro": "De succesfee van 2% wordt betaald door de startup die de investering ontvangt, per afgeronde ronde. Klopt een bedrag niet, zeg het hier — het herinneren stopt tot het bekeken is.",
+    "anInvestor": "Een investeerder",
+    "disputeCta": "Dit bedrag klopt niet",
+    "disputePlaceholder": "Wat klopt er niet aan dit bedrag? Vertel ons waarop de ronde werkelijk is afgesloten.",
+    "submitDispute": "Geschil openen",
+    "disputeNeedsReason": "Zeg wat er niet klopt aan het bedrag.",
+    "disputeOpened": "Geschil geopend — we bekijken het",
+    "underReview": "In behandeling",
+    "resolved": "Behandeld",
+    "state": {
+      "collected": "Betaald",
+      "outstanding": "Gefactureerd",
+      "unbillable": "Nog niet gefactureerd",
+      "waived": "Afgeboekt",
+      "disputed": "In behandeling"
     }
   }
 }

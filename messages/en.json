@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Fees unbillable",
     "unbillableNote": "A success fee was earned on these deals but could not be invoiced — the founder had no payment method on file.",
     "mixedCurrencies": "mixed currencies: {list}",
-    "feesWaived": "Fees written off"
+    "feesWaived": "Fees written off",
+    "feesDisputed": "Fees disputed"
   },
   "tranches": {
     "title": "Funding schedule",
@@ -2995,7 +2996,29 @@
       "collected": "Collected",
       "outstanding": "Outstanding",
       "unbillable": "Unbillable",
-      "waived": "Written off"
+      "waived": "Written off",
+      "disputed": "Disputed"
+    },
+    "resolve": "Resolve",
+    "resolvePrompt": "How was this dispute resolved?"
+  },
+  "myFees": {
+    "title": "Success fees",
+    "intro": "The 2% success fee is charged to the startup receiving the investment, on each closed round. If an amount looks wrong, say so here — chasing stops until it is reviewed.",
+    "anInvestor": "An investor",
+    "disputeCta": "This amount looks wrong",
+    "disputePlaceholder": "What is wrong with this amount? Tell us what the round actually closed at.",
+    "submitDispute": "Open dispute",
+    "disputeNeedsReason": "Say what is wrong with the amount.",
+    "disputeOpened": "Dispute opened — we will review it",
+    "underReview": "Under review",
+    "resolved": "Reviewed",
+    "state": {
+      "collected": "Paid",
+      "outstanding": "Invoiced",
+      "unbillable": "Not yet invoiced",
+      "waived": "Written off",
+      "disputed": "Under review"
     }
   }
 }

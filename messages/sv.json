@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Avgifter ej fakturerbara",
     "unbillableNote": "En framgångsavgift tjänades in på dessa affärer men kunde inte faktureras — grundaren hade ingen betalningsmetod registrerad.",
     "mixedCurrencies": "blandade valutor: {list}",
-    "feesWaived": "Avskrivna avgifter"
+    "feesWaived": "Avskrivna avgifter",
+    "feesDisputed": "Avgifter bestridda"
   },
   "tranches": {
     "title": "Utbetalningsplan",
@@ -2995,7 +2996,29 @@
       "collected": "Inbetalda",
       "outstanding": "Utestående",
       "unbillable": "Ej fakturerbara",
-      "waived": "Avskrivna"
+      "waived": "Avskrivna",
+      "disputed": "Bestridd"
+    },
+    "resolve": "Avsluta",
+    "resolvePrompt": "Hur löstes tvisten?"
+  },
+  "myFees": {
+    "title": "Framgångsavgifter",
+    "intro": "Framgångsavgiften på 2 % betalas av startupen som tar emot investeringen, per avslutad runda. Ser ett belopp fel ut, säg till här — påminnelserna pausas tills det granskats.",
+    "anInvestor": "En investerare",
+    "disputeCta": "Det här beloppet ser fel ut",
+    "disputePlaceholder": "Vad är fel med beloppet? Berätta vad rundan faktiskt stängde på.",
+    "submitDispute": "Bestrid beloppet",
+    "disputeNeedsReason": "Berätta vad som är fel med beloppet.",
+    "disputeOpened": "Bestridandet är registrerat — vi granskar det",
+    "underReview": "Under granskning",
+    "resolved": "Granskad",
+    "state": {
+      "collected": "Betald",
+      "outstanding": "Fakturerad",
+      "unbillable": "Ännu inte fakturerad",
+      "waived": "Avskriven",
+      "disputed": "Under granskning"
     }
   }
 }

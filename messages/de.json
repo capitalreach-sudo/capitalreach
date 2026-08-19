@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Gebühren nicht fakturierbar",
     "unbillableNote": "Bei diesen Deals ist eine Erfolgsgebühr entstanden, konnte aber nicht in Rechnung gestellt werden — der Gründer hatte keine Zahlungsmethode hinterlegt.",
     "mixedCurrencies": "gemischte Währungen: {list}",
-    "feesWaived": "Ausgebuchte Gebühren"
+    "feesWaived": "Ausgebuchte Gebühren",
+    "feesDisputed": "Gebühren bestritten"
   },
   "tranches": {
     "title": "Auszahlungsplan",
@@ -2995,7 +2996,29 @@
       "collected": "Eingegangen",
       "outstanding": "Offen",
       "unbillable": "Nicht fakturierbar",
-      "waived": "Ausgebucht"
+      "waived": "Ausgebucht",
+      "disputed": "Bestritten"
+    },
+    "resolve": "Klären",
+    "resolvePrompt": "Wie wurde dieser Fall geklärt?"
+  },
+  "myFees": {
+    "title": "Erfolgsgebühren",
+    "intro": "Die 2 % Erfolgsgebühr zahlt das Startup, das die Investition erhält — je abgeschlossener Runde. Wenn ein Betrag falsch aussieht, sag es hier; die Mahnungen pausieren bis zur Prüfung.",
+    "anInvestor": "Ein Investor",
+    "disputeCta": "Dieser Betrag stimmt nicht",
+    "disputePlaceholder": "Was stimmt an diesem Betrag nicht? Sag uns, mit welchem Betrag die Runde tatsächlich abgeschlossen wurde.",
+    "submitDispute": "Einspruch einlegen",
+    "disputeNeedsReason": "Sag, was am Betrag nicht stimmt.",
+    "disputeOpened": "Einspruch eingelegt — wir prüfen ihn",
+    "underReview": "In Prüfung",
+    "resolved": "Geprüft",
+    "state": {
+      "collected": "Bezahlt",
+      "outstanding": "In Rechnung gestellt",
+      "unbillable": "Noch nicht fakturiert",
+      "waived": "Ausgebucht",
+      "disputed": "In Prüfung"
     }
   }
 }

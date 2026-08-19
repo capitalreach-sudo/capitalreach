@@ -2955,7 +2955,8 @@
     "feesUnbillable": "Commissions non facturables",
     "unbillableNote": "Une commission a été acquise sur ces opérations mais n'a pas pu être facturée — le fondateur n'avait aucun moyen de paiement enregistré.",
     "mixedCurrencies": "devises mixtes : {list}",
-    "feesWaived": "Commissions passées en perte"
+    "feesWaived": "Commissions passées en perte",
+    "feesDisputed": "Commissions contestées"
   },
   "tranches": {
     "title": "Échéancier de versement",
@@ -2995,7 +2996,29 @@
       "collected": "Encaissées",
       "outstanding": "En attente",
       "unbillable": "Non facturables",
-      "waived": "Passées en perte"
+      "waived": "Passées en perte",
+      "disputed": "Contestée"
+    },
+    "resolve": "Clore",
+    "resolvePrompt": "Comment ce litige a-t-il été réglé ?"
+  },
+  "myFees": {
+    "title": "Commissions de succès",
+    "intro": "La commission de succès de 2 % est payée par la startup qui reçoit l'investissement, à chaque tour clôturé. Si un montant semble erroné, dites-le ici : les relances s'arrêtent le temps de l'examen.",
+    "anInvestor": "Un investisseur",
+    "disputeCta": "Ce montant semble erroné",
+    "disputePlaceholder": "Qu'est-ce qui ne va pas dans ce montant ? Indiquez le montant réel de clôture du tour.",
+    "submitDispute": "Ouvrir un litige",
+    "disputeNeedsReason": "Indiquez ce qui ne va pas dans le montant.",
+    "disputeOpened": "Litige ouvert — nous l'examinons",
+    "underReview": "En cours d'examen",
+    "resolved": "Examiné",
+    "state": {
+      "collected": "Payée",
+      "outstanding": "Facturée",
+      "unbillable": "Pas encore facturée",
+      "waived": "Passée en perte",
+      "disputed": "En cours d'examen"
     }
   }
 }
