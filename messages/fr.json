@@ -2863,5 +2863,19 @@
     "ownerStartup": "Fondateur",
     "due": "Échéance",
     "evidencePh": "Ce qui l'a prouvé…"
+  },
+  "external": {
+    "button": "Investisseur hors plateforme",
+    "title": "Ajouter un investisseur hors plateforme",
+    "intro": "Quelqu'un de votre réseau qui ne créera pas de compte. Il apparaît sur votre tableau et compte dans votre levée — mais ne reçoit ni messages, ni notifications, ni accès à votre data room.",
+    "namePh": "Nom",
+    "firmPh": "Société (facultatif)",
+    "emailPh": "E-mail (facultatif, pour vos archives)",
+    "amountPh": "Montant évoqué (facultatif)",
+    "notePh": "Note — d'où il vient, ce qu'il a dit…",
+    "privacyNote": "Vous seul voyez ce contact. Il n'est jamais listé publiquement ni montré aux autres investisseurs.",
+    "add": "Ajouter au pipeline",
+    "added": "Contact ajouté à votre pipeline.",
+    "badge": "hors plateforme"
   }
 }

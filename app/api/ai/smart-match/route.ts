@@ -64,6 +64,8 @@ export async function POST(req: NextRequest) {
         profiles:owner_id ( full_name )
       `)
       .not("stages", "is", null)
+      // B18: match against real investors only.
+      .eq("is_external", false)
       .limit(CAP);
 
     if (!investors || investors.length === 0) {

@@ -954,6 +954,64 @@ function PublicInterestToggle({ deal }: { deal: Deal }) {
   );
 }
 
+/**
+ * B18: add an investor who will never make an account. They become a
+ * contact only this startup can see, and (optionally) a deal on the board
+ * straight away, so the raise total finally includes the angel from the
+ * founder's own network.
+ */
+function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const { t } = useTranslation();
+  const [name, setName] = useState("");
+  const [firm, setFirm] = useState("");
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEscapeKey(true, onClose);
+
+  async function submit() {
+    if (!name.trim() || busy) return;
+    setBusy(true);
+    const amt = Number(amount.replace(/[^0-9.]/g, ""));
+    const res = await fetch("/api/investors/external", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, firm: firm || undefined, email: email || undefined, note: note || undefined, openDeal: true, amount: Number.isFinite(amt) && amt > 0 ? amt : undefined }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    notify.success(t("external.added"));
+    onCreated(); onClose();
+  }
+
+  const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 11px", outline: "none" };
+  return (
+    <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: 16 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="animate-fade-up"
+        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, width: "100%", maxWidth: 420, padding: 24 }}>
+        <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: 20, color: "var(--cr-ink)", marginBottom: 4 }}>{t("external.title")}</h3>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 12.5, color: "var(--cr-ink-3)", marginBottom: 16, lineHeight: 1.5 }}>{t("external.intro")}</p>
+        <div style={{ display: "grid", gap: 10 }}>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("external.namePh")} autoFocus maxLength={120} style={input} />
+          <input value={firm} onChange={(e) => setFirm(e.target.value)} placeholder={t("external.firmPh")} maxLength={120} style={input} />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("external.emailPh")} maxLength={254} style={input} />
+          <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" placeholder={t("external.amountPh")} style={input} />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder={t("external.notePh")} maxLength={1000} style={{ ...input, resize: "vertical" }} />
+        </div>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", margin: "10px 0 0", lineHeight: 1.5 }}>{t("external.privacyNote")}</p>
+        <div className="flex flex-col-reverse sm:flex-row" style={{ gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
+          <button onClick={onClose} style={{ height: 40, padding: "0 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 13, color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
+          <button onClick={submit} disabled={!name.trim() || busy} className="btn-copper-shimmer"
+            style={{ height: 40, padding: "0 20px", background: "var(--cr-copper)", border: "none", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "#fff", cursor: "pointer", opacity: !name.trim() || busy ? 0.5 : 1 }}>
+            {busy ? t("common.saving") : t("external.add")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Activity section (inside a deal card) ──────────────────────────────────────
 
 const ACTIVITY_ICON_KEY: Record<DealActivity["type"], string> = {
@@ -1327,6 +1385,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [pendingMove, setPendingMove] = useState<DealStatus | null>(null);
 
   const { investorName, startupName } = dealNames(deal, t);
+  // B18: an off-platform contact has no account — anything that needs one
+  // (messaging, notifications) is hidden rather than offered and broken.
+  const isExternal = !!(deal.investor as unknown as { is_external?: boolean } | null)?.is_external;
 
   const realName = viewAs === "admin" ? `${startupName} × ${investorName}`
     : viewAs === "startup" ? investorName
@@ -1339,8 +1400,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   // pill. Both slugs are already in the query; the name was just dead text.
   // No link while masked (the whole point is not knowing who), none for the
   // admin composite name.
+  // An external contact has no public profile to link to (RLS hides the row
+  // from everyone but this startup), so the name stays plain text.
   const counterpartHref = masked || viewAs === "admin" ? null
-    : viewAs === "startup" ? (deal.investor?.slug ? `/investors/${deal.investor.slug}` : null)
+    : viewAs === "startup" ? (deal.investor?.slug && !isExternal ? `/investors/${deal.investor.slug}` : null)
     : (deal.startup?.slug ? `/startups/${deal.startup.slug}` : null);
 
   const isActive = deal.status !== "closed" && deal.status !== "passed";
@@ -1374,6 +1437,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             {name}
           </Link>
         ) : name}
+        {/* B18: say plainly that this one is not on the platform. */}
+        {isExternal && (
+          <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 5px" }}>
+            {t("external.badge")}
+          </span>
+        )}
       </p>
       {masked && (
         <a href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>
@@ -1627,7 +1696,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </span>
       )}
 
-      {viewAs !== "admin" && (
+      {viewAs !== "admin" && !isExternal && (
         <a href={`/dashboard/messages?startupId=${deal.startup_id}&investorId=${deal.investor_id}`}
           style={{ display: "inline-block", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
           {t("deals.messageCounterpart")}
@@ -1672,6 +1741,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const router = useRouter();
   const columns = useColumns();
   const [showNewDeal, setShowNewDeal] = useState(false);
+  const [showExternal, setShowExternal] = useState(false);
   const [search, setSearch]           = useState("");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
@@ -1845,14 +1915,26 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   }
 
   const newDealButton = (
-    <button onClick={() => setShowNewDeal(true)}
-      style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 16px", cursor: "pointer" }}>
-      <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
-    </button>
+    <div style={{ display: "inline-flex", gap: "8px", flexWrap: "wrap" }}>
+      <button onClick={() => setShowNewDeal(true)}
+        style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 16px", cursor: "pointer" }}>
+        <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
+      </button>
+      {/* B18: founders only — an off-platform contact belongs to a startup. */}
+      {viewAs === "startup" && (
+        <button onClick={() => setShowExternal(true)}
+          style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "transparent", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", padding: "9px 16px", cursor: "pointer" }}>
+          <Plus style={{ width: 14, height: 14 }} /> {t("external.button")}
+        </button>
+      )}
+    </div>
   );
 
-  const modal = showNewDeal && (
-    <NewDealModal viewAs={viewAs} ownProfile={ownProfile} onClose={() => setShowNewDeal(false)} onCreated={() => router.refresh()} />
+  const modal = (
+    <>
+      {showNewDeal && <NewDealModal viewAs={viewAs} ownProfile={ownProfile} onClose={() => setShowNewDeal(false)} onCreated={() => router.refresh()} />}
+      {showExternal && <ExternalInvestorModal onClose={() => setShowExternal(false)} onCreated={() => router.refresh()} />}
+    </>
   );
 
   if (deals.length === 0) {

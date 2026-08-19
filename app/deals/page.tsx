@@ -41,7 +41,7 @@ export default async function DealsPage() {
 
     const { data: deals } = await supabase
       .from("deals")
-      .select("*, investor:investors(slug, type, display_name, firm_name)")
+      .select("*, investor:investors(slug, type, display_name, firm_name, is_external)")
       .eq("startup_id", startup.id)
       .order("updated_at", { ascending: false });
 
@@ -133,7 +133,7 @@ export default async function DealsPage() {
   if (profile.role === "admin") {
     const { data: deals } = await supabase
       .from("deals")
-      .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name)")
+      .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name, is_external)")
       .order("updated_at", { ascending: false });
 
     return (

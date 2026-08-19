@@ -2863,5 +2863,19 @@
     "ownerStartup": "Założyciel",
     "due": "Termin",
     "evidencePh": "Co to potwierdziło…"
+  },
+  "external": {
+    "button": "Inwestor spoza platformy",
+    "title": "Dodaj inwestora spoza platformy",
+    "intro": "Ktoś z Twojej sieci, kto nie założy konta. Pojawia się na tablicy i liczy się do rundy — ale nie dostaje wiadomości, powiadomień ani dostępu do data roomu.",
+    "namePh": "Imię i nazwisko",
+    "firmPh": "Firma (opcjonalnie)",
+    "emailPh": "E-mail (opcjonalnie, do Twoich notatek)",
+    "amountPh": "Omawiana kwota (opcjonalnie)",
+    "notePh": "Notatka — skąd, co powiedział…",
+    "privacyNote": "Tylko Ty widzisz ten kontakt. Nigdy nie jest publiczny ani pokazywany innym inwestorom.",
+    "add": "Dodaj do pipeline",
+    "added": "Kontakt dodany do pipeline.",
+    "badge": "spoza platformy"
   }
 }

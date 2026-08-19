@@ -2863,5 +2863,19 @@
     "ownerStartup": "Oprichter",
     "due": "Deadline",
     "evidencePh": "Wat het aantoonde…"
+  },
+  "external": {
+    "button": "Investeerder buiten het platform",
+    "title": "Investeerder buiten het platform toevoegen",
+    "intro": "Iemand uit uw netwerk die geen account aanmaakt. Hij verschijnt op uw board en telt mee voor uw ronde — maar krijgt geen berichten, meldingen of toegang tot uw dataroom.",
+    "namePh": "Naam",
+    "firmPh": "Firma (optioneel)",
+    "emailPh": "E-mail (optioneel, voor uw administratie)",
+    "amountPh": "Besproken bedrag (optioneel)",
+    "notePh": "Notitie — waar vandaan, wat gezegd…",
+    "privacyNote": "Alleen u ziet dit contact. Het wordt nooit openbaar getoond of aan andere investeerders laten zien.",
+    "add": "Toevoegen aan pipeline",
+    "added": "Contact toegevoegd aan uw pipeline.",
+    "badge": "extern"
   }
 }

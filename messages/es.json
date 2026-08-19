@@ -2863,5 +2863,19 @@
     "ownerStartup": "Fundador",
     "due": "Vence",
     "evidencePh": "Qué lo demostró…"
+  },
+  "external": {
+    "button": "Inversor externo",
+    "title": "Añadir un inversor externo",
+    "intro": "Alguien de tu red que no creará una cuenta. Aparece en tu tablero y cuenta para tu ronda, pero no recibe mensajes, ni notificaciones, ni acceso a tu data room.",
+    "namePh": "Nombre",
+    "firmPh": "Firma (opcional)",
+    "emailPh": "Email (opcional, para tus registros)",
+    "amountPh": "Importe hablado (opcional)",
+    "notePh": "Nota — de dónde vino, qué dijo…",
+    "privacyNote": "Solo tú ves este contacto. Nunca se publica ni se muestra a otros inversores.",
+    "add": "Añadir al pipeline",
+    "added": "Contacto añadido a tu pipeline.",
+    "badge": "externo"
   }
 }

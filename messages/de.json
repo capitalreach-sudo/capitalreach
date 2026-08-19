@@ -2863,5 +2863,19 @@
     "ownerStartup": "Gründer",
     "due": "Fällig",
     "evidencePh": "Was es belegt hat…"
+  },
+  "external": {
+    "button": "Externer Investor",
+    "title": "Externen Investor hinzufügen",
+    "intro": "Jemand aus Ihrem Netzwerk, der kein Konto anlegen wird. Er erscheint auf Ihrem Board und zählt zur Runde — erhält aber keine Nachrichten, keine Benachrichtigungen und keinen Zugriff auf Ihren Datenraum.",
+    "namePh": "Name",
+    "firmPh": "Firma (optional)",
+    "emailPh": "E-Mail (optional, für Ihre Unterlagen)",
+    "amountPh": "Besprochener Betrag (optional)",
+    "notePh": "Notiz — woher er kam, was er sagte…",
+    "privacyNote": "Nur Sie sehen diesen Kontakt. Er wird nie öffentlich gelistet und nie anderen Investoren gezeigt.",
+    "add": "Zur Pipeline hinzufügen",
+    "added": "Kontakt zur Pipeline hinzugefügt.",
+    "badge": "extern"
   }
 }

@@ -2863,5 +2863,19 @@
     "ownerStartup": "Fundador",
     "due": "Prazo",
     "evidencePh": "O que o comprovou…"
+  },
+  "external": {
+    "button": "Investidor externo",
+    "title": "Adicionar um investidor externo",
+    "intro": "Alguém da sua rede que não vai criar conta. Aparece no seu quadro e conta para a ronda — mas não recebe mensagens, notificações nem acesso ao data room.",
+    "namePh": "Nome",
+    "firmPh": "Firma (opcional)",
+    "emailPh": "Email (opcional, para os seus registos)",
+    "amountPh": "Montante falado (opcional)",
+    "notePh": "Nota — de onde veio, o que disse…",
+    "privacyNote": "Só você vê este contacto. Nunca é listado publicamente nem mostrado a outros investidores.",
+    "add": "Adicionar ao pipeline",
+    "added": "Contacto adicionado ao pipeline.",
+    "badge": "externo"
   }
 }

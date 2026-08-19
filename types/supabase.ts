@@ -868,6 +868,8 @@ export type Database = {
           bio: string | null
           board_seat_pref: string | null
           booking_url: string | null
+          contact_email: string | null
+          contact_note: string | null
           created_at: string
           display_name: string | null
           firm_name: string | null
@@ -876,14 +878,16 @@ export type Database = {
           id: string
           industries: string[]
           investment_thesis: string | null
+          is_external: boolean
           is_public: boolean
           languages: string[] | null
           lead_rounds: boolean
           linkedin_url: string | null
+          managed_by_startup_id: string | null
           max_check: number | null
           min_check: number | null
           number_of_investments: number | null
-          owner_id: string
+          owner_id: string | null
           portfolio_json: Json
           search_vector: unknown
           slug: string
@@ -902,6 +906,8 @@ export type Database = {
           bio?: string | null
           board_seat_pref?: string | null
           booking_url?: string | null
+          contact_email?: string | null
+          contact_note?: string | null
           created_at?: string
           display_name?: string | null
           firm_name?: string | null
@@ -910,14 +916,16 @@ export type Database = {
           id?: string
           industries?: string[]
           investment_thesis?: string | null
+          is_external?: boolean
           is_public?: boolean
           languages?: string[] | null
           lead_rounds?: boolean
           linkedin_url?: string | null
+          managed_by_startup_id?: string | null
           max_check?: number | null
           min_check?: number | null
           number_of_investments?: number | null
-          owner_id: string
+          owner_id?: string | null
           portfolio_json?: Json
           search_vector?: unknown
           slug: string
@@ -936,6 +944,8 @@ export type Database = {
           bio?: string | null
           board_seat_pref?: string | null
           booking_url?: string | null
+          contact_email?: string | null
+          contact_note?: string | null
           created_at?: string
           display_name?: string | null
           firm_name?: string | null
@@ -944,14 +954,16 @@ export type Database = {
           id?: string
           industries?: string[]
           investment_thesis?: string | null
+          is_external?: boolean
           is_public?: boolean
           languages?: string[] | null
           lead_rounds?: boolean
           linkedin_url?: string | null
+          managed_by_startup_id?: string | null
           max_check?: number | null
           min_check?: number | null
           number_of_investments?: number | null
-          owner_id?: string
+          owner_id?: string | null
           portfolio_json?: Json
           search_vector?: unknown
           slug?: string
@@ -964,6 +976,13 @@ export type Database = {
           website?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "investors_managed_by_startup_id_fkey"
+            columns: ["managed_by_startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "investors_owner_id_fkey"
             columns: ["owner_id"]

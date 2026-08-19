@@ -2863,5 +2863,19 @@
     "ownerStartup": "Founder",
     "due": "Due",
     "evidencePh": "What proved it…"
+  },
+  "external": {
+    "button": "Off-platform investor",
+    "title": "Add an off-platform investor",
+    "intro": "Someone from your own network who won't create an account. They appear on your board and count toward your raise — but they get no messages, no notifications and no access to your data room.",
+    "namePh": "Name",
+    "firmPh": "Firm (optional)",
+    "emailPh": "Email (optional, for your records)",
+    "amountPh": "Amount discussed (optional)",
+    "notePh": "Note — where they came from, what they said…",
+    "privacyNote": "Only you can see this contact. It is never listed publicly and never shown to other investors.",
+    "add": "Add to pipeline",
+    "added": "Contact added to your pipeline.",
+    "badge": "off-platform"
   }
 }

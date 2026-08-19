@@ -57,12 +57,16 @@ export async function GET(req: NextRequest) {
         ? admin
             .from("investors")
             .select("slug, display_name, firm_name, type")
+            // B18: off-platform contacts are a founder's private list. This
+            // route runs as the service role, so RLS does not exclude them.
+            .eq("is_external", false)
             .textSearch("search_vector", ftsQuery, { type: "websearch", config: "simple" })
             .limit(5)
         : Promise.resolve({ data: [] as Array<{ slug: string; display_name: string | null; firm_name: string | null; type: string }> }),
       admin
         .from("investors")
         .select("slug, display_name, firm_name, type")
+        .eq("is_external", false)
         .or(`display_name.ilike.${term},firm_name.ilike.${term}`)
         .limit(5),
     ]);

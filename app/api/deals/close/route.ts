@@ -103,11 +103,12 @@ export async function POST(req: NextRequest) {
     .eq("id", deal.startup?.owner_id)
     .single();
 
-  const { data: investorProfile } = await adminClient
-    .from("profiles")
-    .select("email, full_name")
-    .eq("id", deal.investor?.owner_id)
-    .single();
+  // B18: an off-platform investor has no account. Everything below that
+  // targets them (profile lookup, notification, congratulations email) is
+  // skipped rather than failing the close — the fee still bills the founder.
+  const { data: investorProfile } = investorOwnerId
+    ? await adminClient.from("profiles").select("email, full_name").eq("id", investorOwnerId).single()
+    : { data: null };
 
   // Mark deal as closed.
   //

@@ -2863,5 +2863,19 @@
     "ownerStartup": "Grundare",
     "due": "Deadline",
     "evidencePh": "Vad som styrkte det…"
+  },
+  "external": {
+    "button": "Investerare utanför plattformen",
+    "title": "Lägg till investerare utanför plattformen",
+    "intro": "Någon i ditt nätverk som inte kommer skapa konto. Hen syns på din tavla och räknas i rundan — men får inga meddelanden, aviseringar eller åtkomst till ditt datarum.",
+    "namePh": "Namn",
+    "firmPh": "Bolag (valfritt)",
+    "emailPh": "E-post (valfritt, för dina anteckningar)",
+    "amountPh": "Diskuterat belopp (valfritt)",
+    "notePh": "Anteckning — varifrån, vad som sades…",
+    "privacyNote": "Bara du ser den här kontakten. Den listas aldrig publikt och visas aldrig för andra investerare.",
+    "add": "Lägg till i pipeline",
+    "added": "Kontakten lades till i din pipeline.",
+    "badge": "extern"
   }
 }

@@ -41,7 +41,11 @@ export default async function AdminViewInvestorPage({
   if (!investor) notFound();
 
   const [{ data: owner }, { data: watchlist }, { data: deals }, { data: aiReports }] = await Promise.all([
-    admin.from("profiles").select("*").eq("id", investor.owner_id).single().returns<Profile>(),
+    // B18: an off-platform contact has no account, so there is no profile
+    // to load — the page renders the investor row on its own.
+    investor.owner_id
+      ? admin.from("profiles").select("*").eq("id", investor.owner_id).single().returns<Profile>()
+      : Promise.resolve({ data: null as Profile | null }),
     admin.from("watchlists").select("*, startup:startups(*)").eq("investor_id", investor.id)
       .order("created_at", { ascending: false }).limit(20).returns<Watchlist[]>(),
     admin.from("deals").select("*, startup:startups(name, slug, tagline, industry, stage)")

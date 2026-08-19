@@ -65,6 +65,9 @@ export async function loadPublicInvestors(): Promise<BrowseInvestor[] | null> {
       .from("investors")
       .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public")
       .eq("is_public", true)
+      // B18: off-platform contacts are private to the startup that created
+      // them; is_public is already false on them, this is belt and braces.
+      .eq("is_external", false)
       .order("created_at", { ascending: false });
     if (error) return null;
     return (data ?? []).map((inv) => ({

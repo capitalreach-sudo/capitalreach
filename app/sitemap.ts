@@ -21,6 +21,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: investors } = await supabase
     .from("investors")
     .select("slug, created_at, owner:profiles!owner_id(suspended, account_status)")
+    // B18: never advertise a founder's private off-platform contact.
+    .eq("is_external", false)
     .then((r) => ({
       data: (r.data ?? []).filter((i) => {
         const o = i.owner as { suspended?: boolean | null; account_status?: string | null } | null;

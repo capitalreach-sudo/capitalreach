@@ -57,11 +57,10 @@ export async function POST(req: NextRequest) {
     .select("email, full_name")
     .eq("id", startup.owner_id)
     .single();
-  const { data: investorOwner } = await adminClient
-    .from("profiles")
-    .select("email, full_name")
-    .eq("id", investor.owner_id)
-    .single();
+  // B18: an off-platform contact has no account to send an envelope to.
+  const { data: investorOwner } = investor.owner_id
+    ? await adminClient.from("profiles").select("email, full_name").eq("id", investor.owner_id).single()
+    : { data: null };
 
   if (!startupOwner || !investorOwner) {
     return NextResponse.json({ error: "Could not find user details" }, { status: 400 });
