@@ -83,6 +83,10 @@ export async function generateDueDiligenceReport(startup: {
   funding_target: number;
   equity_offered?: number | null;
   founders?: Array<{ name: string; role: string }>;
+  /** C29: text pulled from the data-room files this investor may open. */
+  documents?: Array<{ label: string; type: string; text: string; truncated: boolean }>;
+  /** Questions the investor typed; answered in their own section. */
+  questions?: string[];
 }): Promise<string> {
   const prompt = `You are a senior venture capital analyst. Write a structured 500-word investment due diligence report for the following startup.
 
@@ -105,7 +109,20 @@ TRACTION:
 - MoM Growth: ${startup.growth_rate ? startup.growth_rate + "%" : "Not disclosed"}
 
 TEAM: ${startup.founders?.map(f => `${f.name} (${f.role})`).join(", ") || "Not provided"}
+${startup.documents?.length ? `
+DATA ROOM — the following are verbatim excerpts from documents the founder
+shared. Treat them as the primary source: where an excerpt contradicts the
+summary fields above, say so explicitly and trust the document. Cite the
+document label in brackets when a claim comes from one.
 
+${startup.documents.map(d => `--- BEGIN ${d.label} (${d.type})${d.truncated ? " — TRUNCATED" : ""} ---\n${d.text}\n--- END ${d.label} ---`).join("\n\n")}
+` : `
+DATA ROOM: no readable documents were shared with this investor. Say so in
+the report rather than inferring document contents.`}
+${startup.questions?.length ? `
+THE INVESTOR ASKED:
+${startup.questions.map((q, i) => `${i + 1}. ${q}`).join("\n")}
+` : ""}
 Structure your report with these sections:
 1. Executive Summary (2-3 sentences)
 2. Market Opportunity (evaluate size, timing, and tailwinds)
@@ -114,15 +131,21 @@ Structure your report with these sections:
 5. Competitive Landscape (identify key risks and moat strength)
 6. Key Risks (top 3 risks an investor should consider)
 7. Comparable Companies (2-3 relevant comps with outcomes)
-8. Investment Verdict (Buy/Pass/Watch with clear rationale)
+8. Investment Verdict (Buy/Pass/Watch with clear rationale)${startup.questions?.length ? `
+9. Answers to the investor's questions (answer each one numbered; if the
+   material does not support an answer, say "not answerable from what was
+   shared" rather than guessing)` : ""}
 
-Write professionally and objectively. Be specific and data-driven where possible.`;
+Write professionally and objectively. Be specific and data-driven where
+possible. Never invent a number that is not in the material above.`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.6,
-    max_tokens: 1000,
+    // Reading real documents and answering questions needs more room than a
+    // 500-word summary of six fields did.
+    max_tokens: startup.documents?.length || startup.questions?.length ? 2200 : 1000,
   });
 
   return response.choices[0].message.content!;

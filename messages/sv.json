@@ -1218,7 +1218,11 @@
     "answerPrivately": "Svara privat (bara frågeställaren ser det)",
     "privateAnswer": "privat",
     "momentumSoft": "{amount} soft-circle",
-    "shareNotePh": "Varför de bör titta…"
+    "shareNotePh": "Varför de bör titta…",
+    "ddQuestionsPh": "Dina frågor för den här rapporten — en per rad (valfritt)",
+    "ddRead": "Läst: {docs}",
+    "ddReadNone": "Inga läsbara dokument delades med dig, så rapporten bygger enbart på annonsen.",
+    "ddSkipped": "Hoppades över: {docs}"
   },
   "filters": {
     "industry": "Bransch",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} delade med dig",
     "sharedBy": "Delad av",
     "continueThread": "Fortsätt samtalet"
+  },
+  "checklist": {
+    "templateApplied": "Checklista tillämpad.",
+    "templateSaved": "Mall sparad.",
+    "templateNamePrompt": "Namnge den här checklistmallen",
+    "applyTemplate": "Tillämpa en mall…",
+    "saveAsTemplate": "Spara som mall",
+    "owner": "Ansvarig",
+    "ownerInvestor": "Du",
+    "ownerStartup": "Grundare",
+    "due": "Deadline",
+    "evidencePh": "Vad som styrkte det…"
   }
 }

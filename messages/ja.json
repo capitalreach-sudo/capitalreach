@@ -1258,7 +1258,11 @@
     "answerPrivately": "非公開で回答（質問者のみ閲覧可）",
     "privateAnswer": "非公開",
     "momentumSoft": "{amount} ソフトサークル",
-    "shareNotePh": "注目すべき理由…"
+    "shareNotePh": "注目すべき理由…",
+    "ddQuestionsPh": "このレポートへの質問 — 1行に1つ（任意）",
+    "ddRead": "読み取り: {docs}",
+    "ddReadNone": "閲覧可能な資料が共有されていないため、本レポートは掲載情報のみに基づいています。",
+    "ddSkipped": "スキップ: {docs}"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} 件が共有されました",
     "sharedBy": "共有者",
     "continueThread": "会話を続ける"
+  },
+  "checklist": {
+    "templateApplied": "チェックリストを適用しました。",
+    "templateSaved": "テンプレートを保存しました。",
+    "templateNamePrompt": "このチェックリスト テンプレートの名前",
+    "applyTemplate": "テンプレートを適用…",
+    "saveAsTemplate": "テンプレートとして保存",
+    "owner": "担当",
+    "ownerInvestor": "あなた",
+    "ownerStartup": "創業者",
+    "due": "期限",
+    "evidencePh": "根拠となったもの…"
   }
 }

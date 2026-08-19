@@ -1258,7 +1258,11 @@
     "answerPrivately": "私下回答（仅提问者可见）",
     "privateAnswer": "私密",
     "momentumSoft": "{amount} 软承诺",
-    "shareNotePh": "为什么值得一看…"
+    "shareNotePh": "为什么值得一看…",
+    "ddQuestionsPh": "您对本报告的提问 — 每行一个（可选）",
+    "ddRead": "已读取：{docs}",
+    "ddReadNone": "未向您共享任何可读文档，本报告仅基于列表信息。",
+    "ddSkipped": "已跳过：{docs}"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} 个分享给您",
     "sharedBy": "分享者",
     "continueThread": "继续对话"
+  },
+  "checklist": {
+    "templateApplied": "清单已应用。",
+    "templateSaved": "模板已保存。",
+    "templateNamePrompt": "为此清单模板命名",
+    "applyTemplate": "应用模板…",
+    "saveAsTemplate": "另存为模板",
+    "owner": "负责人",
+    "ownerInvestor": "您",
+    "ownerStartup": "创始人",
+    "due": "截止",
+    "evidencePh": "以何为证…"
   }
 }

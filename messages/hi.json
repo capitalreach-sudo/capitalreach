@@ -1218,7 +1218,11 @@
     "answerPrivately": "निजी रूप से जवाब दें (केवल पूछने वाला देखेगा)",
     "privateAnswer": "निजी",
     "momentumSoft": "{amount} सॉफ्ट-सर्कल",
-    "shareNotePh": "उन्हें क्यों देखना चाहिए…"
+    "shareNotePh": "उन्हें क्यों देखना चाहिए…",
+    "ddQuestionsPh": "इस रिपोर्ट के लिए आपके प्रश्न — प्रति पंक्ति एक (वैकल्पिक)",
+    "ddRead": "पढ़ा गया: {docs}",
+    "ddReadNone": "आपके साथ कोई पठनीय दस्तावेज़ साझा नहीं किया गया, इसलिए यह रिपोर्ट केवल लिस्टिंग पर आधारित है।",
+    "ddSkipped": "छोड़ा गया: {docs}"
   },
   "filters": {
     "industry": "उद्योग",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} आपके साथ साझा",
     "sharedBy": "साझा किया",
     "continueThread": "बातचीत जारी रखें"
+  },
+  "checklist": {
+    "templateApplied": "चेकलिस्ट लागू की गई।",
+    "templateSaved": "टेम्पलेट सहेजा गया।",
+    "templateNamePrompt": "इस चेकलिस्ट टेम्पलेट का नाम",
+    "applyTemplate": "टेम्पलेट लागू करें…",
+    "saveAsTemplate": "टेम्पलेट के रूप में सहेजें",
+    "owner": "ज़िम्मेदार",
+    "ownerInvestor": "आप",
+    "ownerStartup": "संस्थापक",
+    "due": "नियत",
+    "evidencePh": "किससे सिद्ध हुआ…"
   }
 }

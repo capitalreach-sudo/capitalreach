@@ -1218,7 +1218,11 @@
     "answerPrivately": "비공개로 답변 (질문자만 볼 수 있음)",
     "privateAnswer": "비공개",
     "momentumSoft": "{amount} 소프트 서클",
-    "shareNotePh": "봐야 하는 이유…"
+    "shareNotePh": "봐야 하는 이유…",
+    "ddQuestionsPh": "이 리포트에 대한 질문 — 한 줄에 하나씩 (선택)",
+    "ddRead": "읽음: {docs}",
+    "ddReadNone": "열람 가능한 자료가 공유되지 않아 이 리포트는 등록 정보만을 근거로 합니다.",
+    "ddSkipped": "건너뜀: {docs}"
   },
   "filters": {
     "industry": "산업",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count}건이 공유됨",
     "sharedBy": "공유한 사람",
     "continueThread": "대화 계속하기"
+  },
+  "checklist": {
+    "templateApplied": "체크리스트를 적용했습니다.",
+    "templateSaved": "템플릿을 저장했습니다.",
+    "templateNamePrompt": "이 체크리스트 템플릿의 이름",
+    "applyTemplate": "템플릿 적용…",
+    "saveAsTemplate": "템플릿으로 저장",
+    "owner": "담당",
+    "ownerInvestor": "나",
+    "ownerStartup": "창업자",
+    "due": "기한",
+    "evidencePh": "무엇으로 확인했는지…"
   }
 }

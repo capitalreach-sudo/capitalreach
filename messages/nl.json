@@ -1218,7 +1218,11 @@
     "answerPrivately": "Privé beantwoorden (alleen de vraagsteller ziet het)",
     "privateAnswer": "privé",
     "momentumSoft": "{amount} soft-circle",
-    "shareNotePh": "Waarom ze moeten kijken…"
+    "shareNotePh": "Waarom ze moeten kijken…",
+    "ddQuestionsPh": "Uw vragen voor dit rapport — één per regel (optioneel)",
+    "ddRead": "Gelezen: {docs}",
+    "ddReadNone": "Er zijn geen leesbare documenten met u gedeeld; dit rapport is alleen op de vermelding gebaseerd.",
+    "ddSkipped": "Overgeslagen: {docs}"
   },
   "filters": {
     "industry": "Industrie",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} met u gedeeld",
     "sharedBy": "Gedeeld door",
     "continueThread": "Gesprek voortzetten"
+  },
+  "checklist": {
+    "templateApplied": "Checklist toegepast.",
+    "templateSaved": "Sjabloon opgeslagen.",
+    "templateNamePrompt": "Geef dit checklist-sjabloon een naam",
+    "applyTemplate": "Sjabloon toepassen…",
+    "saveAsTemplate": "Opslaan als sjabloon",
+    "owner": "Eigenaar",
+    "ownerInvestor": "U",
+    "ownerStartup": "Oprichter",
+    "due": "Deadline",
+    "evidencePh": "Wat het aantoonde…"
   }
 }

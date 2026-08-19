@@ -1269,7 +1269,11 @@
     "answerPrivately": "Answer privately (only the asker sees it)",
     "privateAnswer": "private",
     "momentumSoft": "{amount} soft-circled",
-    "shareNotePh": "Why they should look…"
+    "shareNotePh": "Why they should look…",
+    "ddQuestionsPh": "Your questions for this report — one per line (optional)",
+    "ddRead": "Read: {docs}",
+    "ddReadNone": "No readable documents were shared with you, so this report is based on the listing only.",
+    "ddSkipped": "Skipped: {docs}"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} shared with you",
     "sharedBy": "Shared by",
     "continueThread": "Continue the conversation"
+  },
+  "checklist": {
+    "templateApplied": "Checklist applied.",
+    "templateSaved": "Template saved.",
+    "templateNamePrompt": "Name this checklist template",
+    "applyTemplate": "Apply a template…",
+    "saveAsTemplate": "Save as template",
+    "owner": "Owner",
+    "ownerInvestor": "You",
+    "ownerStartup": "Founder",
+    "due": "Due",
+    "evidencePh": "What proved it…"
   }
 }

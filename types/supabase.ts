@@ -379,24 +379,33 @@ export type Database = {
           created_at: string
           deal_id: string
           done: boolean
+          due_date: string | null
+          evidence: string | null
           id: string
           label: string
+          owner_side: string | null
           position: number
         }
         Insert: {
           created_at?: string
           deal_id: string
           done?: boolean
+          due_date?: string | null
+          evidence?: string | null
           id?: string
           label: string
+          owner_side?: string | null
           position?: number
         }
         Update: {
           created_at?: string
           deal_id?: string
           done?: boolean
+          due_date?: string | null
+          evidence?: string | null
           id?: string
           label?: string
+          owner_side?: string | null
           position?: number
         }
         Relationships: [
@@ -716,6 +725,41 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      investor_checklist_templates: {
+        Row: {
+          created_at: string
+          id: string
+          investor_id: string
+          is_default: boolean
+          items: Json
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_id: string
+          is_default?: boolean
+          items?: Json
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_id?: string
+          is_default?: boolean
+          items?: Json
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_checklist_templates_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
             referencedColumns: ["id"]
           },
         ]

@@ -23,7 +23,8 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverComponentsExternalPackages: ["@trigger.dev/sdk", "docusign-esign"],
+    // pdf-parse ships CJS + a test fixture; bundling it breaks the import.
+    serverComponentsExternalPackages: ["@trigger.dev/sdk", "docusign-esign", "pdf-parse"],
   },
 };
 

@@ -984,10 +984,48 @@ const STAGE_CHECKLIST_KEYS: Record<string, string[]> = {
   term_sheet:    ["deals.ckTs1", "deals.ckTs2", "deals.ckTs3", "deals.ckTs4"],
 };
 
-function ChecklistSection({ dealId, stage, onOpenCount }: { dealId: string; stage: string; onOpenCount?: (n: number) => void }) {
+type ChecklistItem = { id: string; label: string; done: boolean; due_date?: string | null; owner_side?: string | null; evidence?: string | null };
+
+function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: string; stage: string; viewAs?: "startup" | "investor" | "admin"; onOpenCount?: (n: number) => void }) {
   const { t } = useTranslation();
-  const [items, setItems] = useState<Array<{ id: string; label: string; done: boolean }> | null>(null);
+  const [items, setItems] = useState<ChecklistItem[] | null>(null);
   const [label, setLabel] = useState("");
+  // C30: reusable templates, saved per investor and applied in one action.
+  const [templates, setTemplates] = useState<Array<{ id: string; name: string; items: unknown[] }>>([]);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  useEffect(() => {
+    if (viewAs !== "investor") return;
+    fetch("/api/checklist-templates").then(r => r.ok ? r.json() : null).then(j => setTemplates(j?.templates ?? [])).catch(() => {});
+  }, [viewAs]);
+
+  async function applyTemplate(templateId: string) {
+    const res = await fetch("/api/deals/checklist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, templateId }) });
+    const j = await res.json().catch(() => null);
+    if (!res.ok) { notify.error(j?.error || t("errors.generic")); return; }
+    setItems(prev => [...(prev ?? []), ...((j?.items ?? []) as ChecklistItem[])]);
+    notify.success(t("checklist.templateApplied"));
+  }
+  async function saveAsTemplate() {
+    const list = items ?? [];
+    if (!list.length) return;
+    const name = window.prompt(t("checklist.templateNamePrompt"));
+    if (!name?.trim()) return;
+    const res = await fetch("/api/checklist-templates", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, items: list.map(i => ({ label: i.label, owner_side: i.owner_side ?? undefined })) }),
+    });
+    const j = await res.json().catch(() => null);
+    if (!res.ok || !j?.template) { notify.error(j?.error || t("errors.generic")); return; }
+    setTemplates(prev => [j.template, ...prev]);
+    notify.success(t("checklist.templateSaved"));
+  }
+  async function patchItem(id: string, patch: { dueDate?: string | null; ownerSide?: string | null; evidence?: string | null }) {
+    const key = patch.dueDate !== undefined ? "due_date" : patch.ownerSide !== undefined ? "owner_side" : "evidence";
+    const val = patch.dueDate ?? patch.ownerSide ?? patch.evidence ?? null;
+    setItems(prev => prev?.map(i => i.id === id ? { ...i, [key]: val } : i) ?? prev);
+    const res = await fetch("/api/deals/checklist", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, ...patch }) });
+    if (!res.ok) notify.error(t("errors.generic"));
+  }
 
   useEffect(() => {
     fetch(`/api/deals/checklist?dealId=${dealId}`).then(r => r.ok ? r.json() : null)
@@ -1052,14 +1090,39 @@ function ChecklistSection({ dealId, stage, onOpenCount }: { dealId: string; stag
         </button>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        {(items ?? []).map(i => (
-          <div key={i.id} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <input type="checkbox" checked={i.done} onChange={e => toggle(i.id, e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
-            <span style={{ flex: 1, fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: i.done ? "var(--cr-ink-4)" : "var(--cr-ink-2)", textDecoration: i.done ? "line-through" : "none" }}>{i.label}</span>
-            <button onClick={() => remove(i.id)} aria-label={`remove ${i.label}`}
-              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "12px", lineHeight: 1, padding: 0 }}>×</button>
+        {(items ?? []).map(i => {
+          const overdue = !i.done && i.due_date && new Date(i.due_date) < new Date();
+          return (
+          <div key={i.id}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <input type="checkbox" checked={i.done} onChange={e => toggle(i.id, e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
+              <button onClick={() => setExpanded(x => x === i.id ? null : i.id)}
+                style={{ flex: 1, textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: i.done ? "var(--cr-ink-4)" : "var(--cr-ink-2)", textDecoration: i.done ? "line-through" : "none" }}>
+                {i.label}
+                {i.owner_side && <span style={{ marginLeft: 6, fontSize: "9.5px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--cr-ink-4)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
+                {i.due_date && <span style={{ marginLeft: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: overdue ? "var(--cr-down)" : "var(--cr-ink-4)" }}>{i.due_date}</span>}
+              </button>
+              <button onClick={() => remove(i.id)} aria-label={`remove ${i.label}`}
+                style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "12px", lineHeight: 1, padding: 0 }}>×</button>
+            </div>
+            {expanded === i.id && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", padding: "6px 0 8px 24px" }}>
+                <select value={i.owner_side ?? ""} onChange={e => patchItem(i.id, { ownerSide: e.target.value || null })} aria-label={t("checklist.owner")}
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-ink-3)", padding: "3px 5px" }}>
+                  <option value="">{t("checklist.owner")}</option>
+                  <option value="investor">{t("checklist.ownerInvestor")}</option>
+                  <option value="startup">{t("checklist.ownerStartup")}</option>
+                </select>
+                <input type="date" value={i.due_date ?? ""} onChange={e => patchItem(i.id, { dueDate: e.target.value || null })} aria-label={t("checklist.due")}
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", padding: "2px 5px" }} />
+                <input defaultValue={i.evidence ?? ""} placeholder={t("checklist.evidencePh")} maxLength={500}
+                  onBlur={e => { if ((e.target.value || null) !== (i.evidence ?? null)) patchItem(i.id, { evidence: e.target.value }); }}
+                  style={{ flex: 1, minWidth: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "3px 7px", outline: "none" }} />
+              </div>
+            )}
           </div>
-        ))}
+          );
+        })}
       </div>
       <div style={{ display: "flex", gap: "6px", marginTop: "8px" }}>
         <input value={label} onChange={e => setLabel(e.target.value)} maxLength={200} placeholder={t("deals.addItem")}
@@ -1070,6 +1133,23 @@ function ChecklistSection({ dealId, stage, onOpenCount }: { dealId: string; stag
           {t("deals.checkAdd")}
         </button>
       </div>
+      {viewAs === "investor" && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "8px" }}>
+          {templates.length > 0 && (
+            <select defaultValue="" onChange={e => { if (e.target.value) { applyTemplate(e.target.value); e.target.value = ""; } }} aria-label={t("checklist.applyTemplate")}
+              style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 6px", cursor: "pointer" }}>
+              <option value="">{t("checklist.applyTemplate")}</option>
+              {templates.map(tp => <option key={tp.id} value={tp.id}>{tp.name}</option>)}
+            </select>
+          )}
+          {(items ?? []).length > 0 && (
+            <button onClick={saveAsTemplate}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)" }}>
+              {t("checklist.saveAsTemplate")}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1563,7 +1643,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         startupId={deal.startup_id}
         investorId={deal.investor_id}
       />
-      <ChecklistSection dealId={deal.id} stage={deal.status} onOpenCount={setChecklistOpen} />
+      <ChecklistSection dealId={deal.id} stage={deal.status} viewAs={viewAs} onOpenCount={setChecklistOpen} />
       <ActivitySection dealId={deal.id} />
     </div>
   );

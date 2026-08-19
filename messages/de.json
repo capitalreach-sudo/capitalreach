@@ -1265,7 +1265,11 @@
     "answerPrivately": "Privat antworten (nur der Fragende sieht sie)",
     "privateAnswer": "privat",
     "momentumSoft": "{amount} soft-circled",
-    "shareNotePh": "Warum sie es ansehen sollten…"
+    "shareNotePh": "Warum sie es ansehen sollten…",
+    "ddQuestionsPh": "Ihre Fragen für diesen Bericht — eine pro Zeile (optional)",
+    "ddRead": "Gelesen: {docs}",
+    "ddReadNone": "Es wurden keine lesbaren Dokumente mit Ihnen geteilt; dieser Bericht basiert nur auf dem Listing.",
+    "ddSkipped": "Übersprungen: {docs}"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} für Sie geteilt",
     "sharedBy": "Geteilt von",
     "continueThread": "Gespräch fortsetzen"
+  },
+  "checklist": {
+    "templateApplied": "Checkliste angewendet.",
+    "templateSaved": "Vorlage gespeichert.",
+    "templateNamePrompt": "Name für diese Checklisten-Vorlage",
+    "applyTemplate": "Vorlage anwenden…",
+    "saveAsTemplate": "Als Vorlage speichern",
+    "owner": "Zuständig",
+    "ownerInvestor": "Sie",
+    "ownerStartup": "Gründer",
+    "due": "Fällig",
+    "evidencePh": "Was es belegt hat…"
   }
 }

@@ -1218,7 +1218,11 @@
     "answerPrivately": "Rispondi in privato (lo vede solo chi ha chiesto)",
     "privateAnswer": "privata",
     "momentumSoft": "{amount} soft-circle",
-    "shareNotePh": "Perché dovrebbero guardarla…"
+    "shareNotePh": "Perché dovrebbero guardarla…",
+    "ddQuestionsPh": "Le tue domande per questo report — una per riga (facoltativo)",
+    "ddRead": "Letti: {docs}",
+    "ddReadNone": "Non ti è stato condiviso alcun documento leggibile, quindi il report si basa solo sulla scheda.",
+    "ddSkipped": "Saltati: {docs}"
   },
   "filters": {
     "industry": "Settore",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} condivisi con te",
     "sharedBy": "Condiviso da",
     "continueThread": "Continua la conversazione"
+  },
+  "checklist": {
+    "templateApplied": "Checklist applicata.",
+    "templateSaved": "Modello salvato.",
+    "templateNamePrompt": "Dai un nome a questo modello di checklist",
+    "applyTemplate": "Applica un modello…",
+    "saveAsTemplate": "Salva come modello",
+    "owner": "Responsabile",
+    "ownerInvestor": "Tu",
+    "ownerStartup": "Founder",
+    "due": "Scadenza",
+    "evidencePh": "Cosa lo ha dimostrato…"
   }
 }

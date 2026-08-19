@@ -1258,7 +1258,11 @@
     "answerPrivately": "Responder en privado (solo lo ve quien preguntó)",
     "privateAnswer": "privada",
     "momentumSoft": "{amount} en soft-circle",
-    "shareNotePh": "Por qué deberían mirarlo…"
+    "shareNotePh": "Por qué deberían mirarlo…",
+    "ddQuestionsPh": "Tus preguntas para este informe — una por línea (opcional)",
+    "ddRead": "Leído: {docs}",
+    "ddReadNone": "No se compartió contigo ningún documento legible, así que este informe se basa solo en la ficha.",
+    "ddSkipped": "Omitido: {docs}"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} compartidos contigo",
     "sharedBy": "Compartido por",
     "continueThread": "Continuar la conversación"
+  },
+  "checklist": {
+    "templateApplied": "Checklist aplicada.",
+    "templateSaved": "Plantilla guardada.",
+    "templateNamePrompt": "Nombra esta plantilla de checklist",
+    "applyTemplate": "Aplicar una plantilla…",
+    "saveAsTemplate": "Guardar como plantilla",
+    "owner": "Responsable",
+    "ownerInvestor": "Tú",
+    "ownerStartup": "Fundador",
+    "due": "Vence",
+    "evidencePh": "Qué lo demostró…"
   }
 }

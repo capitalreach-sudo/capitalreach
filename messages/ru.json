@@ -1218,7 +1218,11 @@
     "answerPrivately": "Ответить приватно (видит только автор вопроса)",
     "privateAnswer": "приватный",
     "momentumSoft": "{amount} предварительно",
-    "shareNotePh": "Почему им стоит посмотреть…"
+    "shareNotePh": "Почему им стоит посмотреть…",
+    "ddQuestionsPh": "Ваши вопросы для этого отчёта — по одному в строке (необязательно)",
+    "ddRead": "Прочитано: {docs}",
+    "ddReadNone": "Вам не открыли ни одного читаемого документа, поэтому отчёт основан только на карточке.",
+    "ddSkipped": "Пропущено: {docs}"
   },
   "filters": {
     "industry": "Отрасль",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} поделились с вами",
     "sharedBy": "Поделился",
     "continueThread": "Продолжить разговор"
+  },
+  "checklist": {
+    "templateApplied": "Чек-лист применён.",
+    "templateSaved": "Шаблон сохранён.",
+    "templateNamePrompt": "Название шаблона чек-листа",
+    "applyTemplate": "Применить шаблон…",
+    "saveAsTemplate": "Сохранить как шаблон",
+    "owner": "Ответственный",
+    "ownerInvestor": "Вы",
+    "ownerStartup": "Основатель",
+    "due": "Срок",
+    "evidencePh": "Что это подтвердило…"
   }
 }

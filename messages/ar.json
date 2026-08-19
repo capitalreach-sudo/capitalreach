@@ -1258,7 +1258,11 @@
     "answerPrivately": "الرد بشكل خاص (يراه السائل فقط)",
     "privateAnswer": "خاص",
     "momentumSoft": "{amount} التزام مبدئي",
-    "shareNotePh": "لماذا يستحق اطّلاعهم…"
+    "shareNotePh": "لماذا يستحق اطّلاعهم…",
+    "ddQuestionsPh": "أسئلتك لهذا التقرير — سؤال في كل سطر (اختياري)",
+    "ddRead": "تمت القراءة: {docs}",
+    "ddReadNone": "لم تُشارك معك أي مستندات قابلة للقراءة، لذا يستند هذا التقرير إلى الإدراج فقط.",
+    "ddSkipped": "تم التخطي: {docs}"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} تمت مشاركتها معك",
     "sharedBy": "شاركها",
     "continueThread": "متابعة المحادثة"
+  },
+  "checklist": {
+    "templateApplied": "تم تطبيق قائمة التحقق.",
+    "templateSaved": "تم حفظ القالب.",
+    "templateNamePrompt": "سمِّ قالب قائمة التحقق هذا",
+    "applyTemplate": "تطبيق قالب…",
+    "saveAsTemplate": "حفظ كقالب",
+    "owner": "المسؤول",
+    "ownerInvestor": "أنت",
+    "ownerStartup": "المؤسس",
+    "due": "الاستحقاق",
+    "evidencePh": "ما الذي أثبته…"
   }
 }

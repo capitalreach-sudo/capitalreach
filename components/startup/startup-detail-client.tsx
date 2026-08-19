@@ -415,6 +415,8 @@ export function StartupDetailClient({
   const [generatingReport, setGeneratingReport] = useState(false);
   const [ndaLoading, setNdaLoading]             = useState(false);
   const [ndaModalOpen, setNdaModalOpen]         = useState(false);
+  const [ddQuestions, setDdQuestions]           = useState("");
+  const [ddSources, setDdSources]               = useState<{ read: string[]; skipped: string[] } | null>(null);
   useEscapeKey(ndaModalOpen, () => setNdaModalOpen(false));
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
@@ -529,7 +531,11 @@ export function StartupDetailClient({
       const res = await fetch("/api/ai/due-diligence", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startupId: startup.id }),
+        body: JSON.stringify({
+          startupId: startup.id,
+          // C29: your own questions, answered in their own section.
+          questions: ddQuestions.split("\n").map((q) => q.trim()).filter(Boolean).slice(0, 5),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.report) {
@@ -537,6 +543,7 @@ export function StartupDetailClient({
         return;
       }
       setAiReport(data.report);
+      setDdSources({ read: data.documentsRead ?? [], skipped: data.documentsSkipped ?? [] });
     } catch {
       notify.error(t("errors.generic"));
     } finally {
@@ -886,6 +893,11 @@ export function StartupDetailClient({
               style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
               {generatingReport ? t("startupDetail.generating") : t("startupDetail.generateReport")}
             </button>
+            {/* C29: your own questions, answered in their own section. The
+                report reads the data-room files you are entitled to open. */}
+            <textarea value={ddQuestions} onChange={(e) => setDdQuestions(e.target.value.slice(0, 1500))} rows={2}
+              placeholder={t("startupDetail.ddQuestionsPh")}
+              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", resize: "vertical" }} />
           </div>
         )}
 
@@ -897,6 +909,16 @@ export function StartupDetailClient({
               <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Claude</span>
             </div>
             <AiReportDisclaimer />
+            {/* What the model could actually read. A report that silently
+                skipped the financial model must not look complete. */}
+            {ddSources && (ddSources.read.length > 0 || ddSources.skipped.length > 0) && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginBottom: "12px", lineHeight: 1.5 }}>
+                {ddSources.read.length > 0
+                  ? t("startupDetail.ddRead", { docs: ddSources.read.join(", ") })
+                  : t("startupDetail.ddReadNone")}
+                {ddSources.skipped.length > 0 && ` · ${t("startupDetail.ddSkipped", { docs: ddSources.skipped.join(", ") })}`}
+              </p>
+            )}
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{aiReport}</p>
           </div>
         )}

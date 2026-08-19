@@ -1258,7 +1258,11 @@
     "answerPrivately": "Répondre en privé (seul l'auteur la voit)",
     "privateAnswer": "privée",
     "momentumSoft": "{amount} en soft-circle",
-    "shareNotePh": "Pourquoi ils devraient regarder…"
+    "shareNotePh": "Pourquoi ils devraient regarder…",
+    "ddQuestionsPh": "Vos questions pour ce rapport — une par ligne (facultatif)",
+    "ddRead": "Lu : {docs}",
+    "ddReadNone": "Aucun document lisible ne vous a été partagé ; ce rapport se fonde uniquement sur la fiche.",
+    "ddSkipped": "Ignoré : {docs}"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -2847,5 +2851,17 @@
     "sharedTitle": "{count} partagés avec vous",
     "sharedBy": "Partagé par",
     "continueThread": "Poursuivre la conversation"
+  },
+  "checklist": {
+    "templateApplied": "Checklist appliquée.",
+    "templateSaved": "Modèle enregistré.",
+    "templateNamePrompt": "Nommez ce modèle de checklist",
+    "applyTemplate": "Appliquer un modèle…",
+    "saveAsTemplate": "Enregistrer comme modèle",
+    "owner": "Responsable",
+    "ownerInvestor": "Vous",
+    "ownerStartup": "Fondateur",
+    "due": "Échéance",
+    "evidencePh": "Ce qui l'a prouvé…"
   }
 }
