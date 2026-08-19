@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
+import { ReportButton } from "@/components/shared/report-button";
 import { StartupDetailClient } from "@/components/startup/startup-detail-client";
 import { stripLockedUrl } from "@/lib/document-access";
 import { investorCan } from "@/lib/access";
@@ -325,6 +326,13 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         momentum={momentum}
         coInvestors={coInvestors}
       />
+      {/* E50: reporting a listing needs someone to come back to, so it is
+          offered to signed-in visitors who are not the owner. */}
+      {user && !isOwner && !previewing && (
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 32px", textAlign: "center" }}>
+          <ReportButton targetType="startup" targetId={safeStartup.id} />
+        </div>
+      )}
       <Footer />
     </>
   );

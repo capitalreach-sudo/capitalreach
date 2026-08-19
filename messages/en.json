@@ -3041,5 +3041,40 @@
     "deleteOwn": "Only the admin who wrote a note can delete it",
     "show": "Notes",
     "hide": "Hide"
+  },
+  "report": {
+    "cta": "Report",
+    "tab": "Reports",
+    "title": "Report this",
+    "intro": "Tell us what is wrong. Reports are private — the person you are reporting never sees them or who filed them.",
+    "detailPh": "Anything else we should know? (optional)",
+    "submit": "Send report",
+    "thanks": "Thanks — we will look at it",
+    "queueEmpty": "Nothing to review.",
+    "action": "Acted on it",
+    "dismiss": "No action",
+    "resolved": "Report closed",
+    "resolvePrompt": "What was done about this? (optional)",
+    "resolutionLabel": "Outcome",
+    "filter": {
+      "open": "Open",
+      "actioned": "Actioned",
+      "dismissed": "Dismissed",
+      "all": "All"
+    },
+    "reason": {
+      "spam": "Spam or promotion",
+      "misleading": "Misleading or false claims",
+      "impersonation": "Not who they say they are",
+      "abuse": "Abusive or harassing",
+      "not_raising": "Not actually raising",
+      "other": "Something else"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Your account has closed deals on the platform, so it cannot simply be erased — the other side of those deals has a record too, and any fee still owed does not disappear with the account. Instead your name, email, photo and profile text are permanently removed and the listing comes down. What is left is a transaction record with nothing personal on it.",
+    "willErase": "Your account and everything on it will be permanently deleted. This cannot be undone.",
+    "closedDeals": "{count} closed deals",
+    "openFees": "{count} unpaid fees"
   }
 }

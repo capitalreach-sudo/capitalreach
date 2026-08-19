@@ -3041,5 +3041,40 @@
     "deleteOwn": "Nur wer die Notiz geschrieben hat, kann sie löschen",
     "show": "Notizen",
     "hide": "Ausblenden"
+  },
+  "report": {
+    "cta": "Melden",
+    "tab": "Meldungen",
+    "title": "Das hier melden",
+    "intro": "Sag uns, was nicht stimmt. Meldungen sind vertraulich — die gemeldete Person sieht weder die Meldung noch, wer sie eingereicht hat.",
+    "detailPh": "Sonst noch etwas? (optional)",
+    "submit": "Meldung senden",
+    "thanks": "Danke — wir sehen es uns an",
+    "queueEmpty": "Nichts zu prüfen.",
+    "action": "Bearbeitet",
+    "dismiss": "Keine Maßnahme",
+    "resolved": "Meldung geschlossen",
+    "resolvePrompt": "Was wurde unternommen? (optional)",
+    "resolutionLabel": "Ergebnis",
+    "filter": {
+      "open": "Offen",
+      "actioned": "Bearbeitet",
+      "dismissed": "Abgewiesen",
+      "all": "Alle"
+    },
+    "reason": {
+      "spam": "Spam oder Werbung",
+      "misleading": "Irreführende oder falsche Angaben",
+      "impersonation": "Gibt sich als jemand anderes aus",
+      "abuse": "Beleidigend oder belästigend",
+      "not_raising": "Sammelt gar kein Kapital",
+      "other": "Etwas anderes"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Dein Konto hat abgeschlossene Deals auf der Plattform und kann deshalb nicht einfach gelöscht werden — die Gegenseite hat ebenfalls einen Beleg, und offene Gebühren verschwinden nicht mit dem Konto. Stattdessen werden Name, E-Mail, Foto und Profiltexte dauerhaft entfernt und das Listing geht offline. Übrig bleibt ein Transaktionsbeleg ohne persönliche Daten.",
+    "willErase": "Dein Konto und alles darin wird dauerhaft gelöscht. Das lässt sich nicht rückgängig machen.",
+    "closedDeals": "{count} abgeschlossene Deals",
+    "openFees": "{count} offene Gebühren"
   }
 }

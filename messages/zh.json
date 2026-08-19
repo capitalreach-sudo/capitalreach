@@ -3041,5 +3041,40 @@
     "deleteOwn": "只有写下备注的管理员可以删除",
     "show": "备注",
     "hide": "隐藏"
+  },
+  "report": {
+    "cta": "举报",
+    "tab": "举报",
+    "title": "举报此内容",
+    "intro": "告诉我们哪里有问题。举报是保密的 —— 被举报者看不到举报内容，也不知道是谁举报的。",
+    "detailPh": "还有其他需要我们了解的吗？（可选）",
+    "submit": "提交举报",
+    "thanks": "谢谢 —— 我们会查看",
+    "queueEmpty": "没有待处理项。",
+    "action": "已处理",
+    "dismiss": "不予处理",
+    "resolved": "举报已关闭",
+    "resolvePrompt": "做了什么处理？（可选）",
+    "resolutionLabel": "处理结果",
+    "filter": {
+      "open": "待处理",
+      "actioned": "已处理",
+      "dismissed": "已驳回",
+      "all": "全部"
+    },
+    "reason": {
+      "spam": "垃圾信息或推广",
+      "misleading": "误导性或虚假陈述",
+      "impersonation": "冒充他人",
+      "abuse": "辱骂或骚扰",
+      "not_raising": "实际上并未融资",
+      "other": "其他"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "你的账户在平台上有已交割的交易，因此不能直接删除 —— 对方同样保有记录，未付费用也不会随账户消失。取而代之的是：你的姓名、邮箱、照片和资料文本被永久删除，项目页下线。留下的是一条不含任何个人信息的交易记录。",
+    "willErase": "你的账户及其中的一切将被永久删除，且无法恢复。",
+    "closedDeals": "{count} 笔已交割交易",
+    "openFees": "{count} 笔未付费用"
   }
 }

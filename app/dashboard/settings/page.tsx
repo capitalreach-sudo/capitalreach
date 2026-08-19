@@ -88,6 +88,7 @@ export default function AccountSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteVerdict, setDeleteVerdict] = useState<{ mode: "erase" | "anonymise"; closedDeals: number; openFees: number } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -335,7 +336,15 @@ export default function AccountSettingsPage() {
               <Button
                 variant="outline"
                 className="border-red-500/20 text-red-600 hover:bg-red-500/10 gap-2"
-                onClick={() => setDeletingAccount(true)}
+                onClick={async () => {
+                  setDeletingAccount(true);
+                  // E49: ask the server what deleting would actually do before
+                  // the user confirms it. For an account with closed deals the
+                  // answer is "anonymised, not erased", and that is not a
+                  // detail to discover afterwards.
+                  const res = await fetch("/api/account/delete");
+                  if (res.ok) setDeleteVerdict(await res.json());
+                }}
               >
                 <Trash2 className="h-4 w-4" />
                 {t("settings.deleteAccount")}
@@ -345,6 +354,18 @@ export default function AccountSettingsPage() {
                 <p className="text-sm font-medium text-red-400">
                   {t("settings.deleteConfirm")}
                 </p>
+                {deleteVerdict && (
+                  <div className="text-sm text-cr-i3 bg-cr-p3 border border-cr-p4 rounded-lg p-3 space-y-1">
+                    <p>{deleteVerdict.mode === "anonymise" ? t("deleteAccount.willAnonymise") : t("deleteAccount.willErase")}</p>
+                    {deleteVerdict.mode === "anonymise" && (
+                      <p className="text-xs text-cr-i4">
+                        {deleteVerdict.closedDeals > 0 && t("deleteAccount.closedDeals", { count: deleteVerdict.closedDeals })}
+                        {deleteVerdict.closedDeals > 0 && deleteVerdict.openFees > 0 && " · "}
+                        {deleteVerdict.openFees > 0 && t("deleteAccount.openFees", { count: deleteVerdict.openFees })}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
@@ -353,7 +374,7 @@ export default function AccountSettingsPage() {
                     onClick={async () => {
                       setDeleteLoading(true);
                       try {
-                        const res = await fetch("/api/account/delete", { method: "DELETE" });
+                        const res = await fetch("/api/account/delete", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: "{}" });
                         const data = await res.json();
                         if (!res.ok) {
                           toast({ title: t("settings.deletionFailed"), description: data.error, variant: "destructive" });

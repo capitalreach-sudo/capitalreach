@@ -3041,5 +3041,40 @@
     "deleteOwn": "Alleen wie de notitie schreef kan die verwijderen",
     "show": "Notities",
     "hide": "Verbergen"
+  },
+  "report": {
+    "cta": "Melden",
+    "tab": "Meldingen",
+    "title": "Dit melden",
+    "intro": "Vertel ons wat er mis is. Meldingen zijn privé — de gemelde persoon ziet ze nooit, en ook niet wie ze indiende.",
+    "detailPh": "Nog iets wat we moeten weten? (optioneel)",
+    "submit": "Melding versturen",
+    "thanks": "Bedankt — we kijken ernaar",
+    "queueEmpty": "Niets te beoordelen.",
+    "action": "Actie ondernomen",
+    "dismiss": "Geen actie",
+    "resolved": "Melding gesloten",
+    "resolvePrompt": "Wat is ermee gedaan? (optioneel)",
+    "resolutionLabel": "Uitkomst",
+    "filter": {
+      "open": "Open",
+      "actioned": "Afgehandeld",
+      "dismissed": "Afgewezen",
+      "all": "Alles"
+    },
+    "reason": {
+      "spam": "Spam of promotie",
+      "misleading": "Misleidende of onjuiste beweringen",
+      "impersonation": "Doet zich voor als iemand anders",
+      "abuse": "Beledigend of intimiderend",
+      "not_raising": "Haalt helemaal niet op",
+      "other": "Iets anders"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Je account heeft afgeronde deals op het platform en kan dus niet zomaar worden gewist — de tegenpartij heeft er ook vastlegging van, en een openstaande fee verdwijnt niet met het account. In plaats daarvan worden je naam, e-mail, foto en profielteksten permanent verwijderd en gaat de listing offline. Wat overblijft is een transactievastlegging zonder persoonsgegevens.",
+    "willErase": "Je account en alles erin wordt permanent verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    "closedDeals": "{count} afgeronde deals",
+    "openFees": "{count} onbetaalde fees"
   }
 }

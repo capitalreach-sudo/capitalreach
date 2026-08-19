@@ -218,6 +218,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
           <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
           <TabsTrigger value="fees">{t("fees.tab")}</TabsTrigger>
+          <TabsTrigger value="reports">{t("report.tab")}</TabsTrigger>
         </TabsList>
 
         {/* Pending */}
@@ -405,8 +406,107 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         <TabsContent value="fees">
           <FeeLedger />
         </TabsContent>
+
+        {/* E50: the report queue. */}
+        <TabsContent value="reports">
+          <ReportQueue />
+        </TabsContent>
       </Tabs>
     </main>
+  );
+}
+
+type ReportRow = {
+  id: string; target_type: string; target_id: string; reason: string;
+  detail: string | null; status: string; created_at: string;
+  targetName: string | null; targetHref: string | null; targetStatus: string | null;
+  resolution: string | null;
+};
+
+/**
+ * E50, operator side.
+ *
+ * Two outcomes, both recorded: "actioned" means something was done about the
+ * content, "dismissed" means it was looked at and was fine. Nothing is
+ * deleted from here — suspending a listing still goes through the route that
+ * audits it. The reporter is told either way, because a report that vanishes
+ * teaches people not to file the next one.
+ */
+function ReportQueue() {
+  const { t } = useTranslation();
+  const [reports, setReports] = useState<ReportRow[] | null>(null);
+  const [status, setStatus] = useState("open");
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = useCallback(async (st: string) => {
+    const res = await fetch(`/api/admin/reports?status=${st}`);
+    setReports(res.ok ? (await res.json()).reports ?? [] : []);
+  }, []);
+  useEffect(() => { void load(status); }, [load, status]);
+
+  async function resolve(r: ReportRow, next: "actioned" | "dismissed") {
+    const resolution = window.prompt(t("report.resolvePrompt")) ?? "";
+    setBusy(r.id);
+    const res = await fetch("/api/admin/reports", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reportId: r.id, status: next, resolution }),
+    });
+    setBusy(null);
+    if (!res.ok) { notify.error((await res.json().catch(() => ({}))).error || t("errors.generic")); return; }
+    notify.success(t("report.resolved"));
+    void load(status);
+  }
+
+  if (reports === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-3">
+        {["open", "actioned", "dismissed", "all"].map(s => (
+          <button key={s} onClick={() => setStatus(s)}
+            className={`text-xs font-semibold ${status === s ? "text-cr-ink" : "text-cr-i4"}`}>
+            {t(`report.filter.${s}`)}
+          </button>
+        ))}
+      </div>
+
+      {reports.length === 0 ? (
+        <div className="text-center py-12 text-cr-i4">
+          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <p>{t("report.queueEmpty")}</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {reports.map(r => (
+            <div key={r.id} className="bg-cr-paper border rounded-xl px-4 py-3">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <p className="font-medium text-cr-ink text-sm">
+                    {r.targetHref ? (
+                      <Link href={r.targetHref} className="underline underline-offset-2">{r.targetName ?? r.target_type}</Link>
+                    ) : (r.targetName ?? r.target_type)}
+                    <span className="text-cr-i4 font-normal"> · {t(`report.reason.${r.reason}`)}</span>
+                  </p>
+                  <p className="text-xs text-cr-i4">{formatDate(r.created_at)}{r.targetStatus && ` · ${r.targetStatus.replace(/_/g, " ")}`}</p>
+                </div>
+                {r.status === "open" ? (
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => resolve(r, "actioned")} disabled={busy === r.id}
+                      className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("report.action")}</button>
+                    <button onClick={() => resolve(r, "dismissed")} disabled={busy === r.id}
+                      className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("report.dismiss")}</button>
+                  </div>
+                ) : (
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-cr-i4">{t(`report.filter.${r.status}`)}</span>
+                )}
+              </div>
+              {r.detail && <p className="text-[12px] text-cr-i3 mt-1.5 break-words">“{r.detail}”</p>}
+              {r.resolution && <p className="text-[11px] text-cr-i4 mt-1.5">{t("report.resolutionLabel")}: {r.resolution}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

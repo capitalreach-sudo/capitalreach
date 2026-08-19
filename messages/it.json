@@ -3041,5 +3041,40 @@
     "deleteOwn": "Solo chi ha scritto la nota può eliminarla",
     "show": "Note",
     "hide": "Nascondi"
+  },
+  "report": {
+    "cta": "Segnala",
+    "tab": "Segnalazioni",
+    "title": "Segnala questo",
+    "intro": "Dicci che cosa non va. Le segnalazioni sono private: la persona segnalata non le vede né sa chi le ha inviate.",
+    "detailPh": "Altro che dovremmo sapere? (facoltativo)",
+    "submit": "Invia segnalazione",
+    "thanks": "Grazie — ci diamo un'occhiata",
+    "queueEmpty": "Niente da esaminare.",
+    "action": "Intervenuto",
+    "dismiss": "Nessun intervento",
+    "resolved": "Segnalazione chiusa",
+    "resolvePrompt": "Che cosa è stato fatto? (facoltativo)",
+    "resolutionLabel": "Esito",
+    "filter": {
+      "open": "Aperte",
+      "actioned": "Con intervento",
+      "dismissed": "Archiviate",
+      "all": "Tutte"
+    },
+    "reason": {
+      "spam": "Spam o promozione",
+      "misleading": "Affermazioni ingannevoli o false",
+      "impersonation": "Si spaccia per qualcun altro",
+      "abuse": "Abusivo o molesto",
+      "not_raising": "Non sta davvero raccogliendo",
+      "other": "Altro"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Il tuo account ha operazioni chiuse sulla piattaforma, quindi non può essere semplicemente cancellato: anche la controparte ne ha traccia e una fee dovuta non sparisce con l'account. Vengono invece rimossi definitivamente nome, email, foto e testi del profilo e l'annuncio viene ritirato. Resta un record di transazione privo di dati personali.",
+    "willErase": "Il tuo account e tutto il suo contenuto saranno eliminati definitivamente. L'operazione è irreversibile.",
+    "closedDeals": "{count} operazioni chiuse",
+    "openFees": "{count} fee non pagate"
   }
 }

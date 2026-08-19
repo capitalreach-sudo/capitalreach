@@ -218,6 +218,48 @@ export type Database = {
           },
         ]
       }
+      content_reports: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          reason: string
+          reporter_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          reason: string
+          reporter_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
       contract_signatures: {
         Row: {
           content_hash: string
@@ -1445,10 +1487,13 @@ export type Database = {
           account_status: string
           accreditation_certified: boolean
           admin_level: string | null
+          anonymised_at: string | null
           avatar_url: string | null
           check_size_max: number | null
           check_size_min: number | null
           created_at: string
+          deleted_at: string | null
+          deletion_reason: string | null
           email: string
           email_opt_out: boolean
           full_name: string | null
@@ -1482,10 +1527,13 @@ export type Database = {
           account_status?: string
           accreditation_certified?: boolean
           admin_level?: string | null
+          anonymised_at?: string | null
           avatar_url?: string | null
           check_size_max?: number | null
           check_size_min?: number | null
           created_at?: string
+          deleted_at?: string | null
+          deletion_reason?: string | null
           email: string
           email_opt_out?: boolean
           full_name?: string | null
@@ -1519,10 +1567,13 @@ export type Database = {
           account_status?: string
           accreditation_certified?: boolean
           admin_level?: string | null
+          anonymised_at?: string | null
           avatar_url?: string | null
           check_size_max?: number | null
           check_size_min?: number | null
           created_at?: string
+          deleted_at?: string | null
+          deletion_reason?: string | null
           email?: string
           email_opt_out?: boolean
           full_name?: string | null

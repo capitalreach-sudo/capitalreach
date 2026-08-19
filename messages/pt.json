@@ -3041,5 +3041,40 @@
     "deleteOwn": "Só quem escreveu a nota a pode apagar",
     "show": "Notas",
     "hide": "Ocultar"
+  },
+  "report": {
+    "cta": "Denunciar",
+    "tab": "Denúncias",
+    "title": "Denunciar isto",
+    "intro": "Diga-nos o que está errado. As denúncias são privadas — a pessoa denunciada nunca as vê nem sabe quem as fez.",
+    "detailPh": "Mais alguma coisa que devamos saber? (opcional)",
+    "submit": "Enviar denúncia",
+    "thanks": "Obrigado — vamos analisar",
+    "queueEmpty": "Nada para rever.",
+    "action": "Foi tratado",
+    "dismiss": "Sem ação",
+    "resolved": "Denúncia fechada",
+    "resolvePrompt": "O que foi feito? (opcional)",
+    "resolutionLabel": "Resultado",
+    "filter": {
+      "open": "Abertas",
+      "actioned": "Tratadas",
+      "dismissed": "Rejeitadas",
+      "all": "Todas"
+    },
+    "reason": {
+      "spam": "Spam ou promoção",
+      "misleading": "Afirmações enganosas ou falsas",
+      "impersonation": "Faz-se passar por outra pessoa",
+      "abuse": "Abusivo ou assédio",
+      "not_raising": "Não está mesmo a angariar",
+      "other": "Outra coisa"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "A sua conta tem negócios fechados na plataforma, por isso não pode ser simplesmente apagada — a contraparte também tem registo e uma comissão em dívida não desaparece com a conta. Em vez disso, o seu nome, email, foto e textos de perfil são removidos definitivamente e o anúncio é retirado. Fica um registo de transação sem dados pessoais.",
+    "willErase": "A sua conta e tudo o que contém serão apagados definitivamente. Não é reversível.",
+    "closedDeals": "{count} negócios fechados",
+    "openFees": "{count} comissões por pagar"
   }
 }

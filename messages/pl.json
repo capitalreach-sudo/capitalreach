@@ -3041,5 +3041,40 @@
     "deleteOwn": "Notatkę może usunąć tylko jej autor",
     "show": "Notatki",
     "hide": "Ukryj"
+  },
+  "report": {
+    "cta": "Zgłoś",
+    "tab": "Zgłoszenia",
+    "title": "Zgłoś to",
+    "intro": "Napisz, co jest nie tak. Zgłoszenia są poufne — osoba zgłaszana ich nie widzi ani nie wie, kto je złożył.",
+    "detailPh": "Coś jeszcze, co powinniśmy wiedzieć? (opcjonalnie)",
+    "submit": "Wyślij zgłoszenie",
+    "thanks": "Dziękujemy — sprawdzimy to",
+    "queueEmpty": "Nic do przejrzenia.",
+    "action": "Podjęto działanie",
+    "dismiss": "Bez działania",
+    "resolved": "Zgłoszenie zamknięte",
+    "resolvePrompt": "Co zrobiono w tej sprawie? (opcjonalnie)",
+    "resolutionLabel": "Wynik",
+    "filter": {
+      "open": "Otwarte",
+      "actioned": "Załatwione",
+      "dismissed": "Odrzucone",
+      "all": "Wszystkie"
+    },
+    "reason": {
+      "spam": "Spam lub promocja",
+      "misleading": "Wprowadzające w błąd lub fałszywe informacje",
+      "impersonation": "Podszywa się pod kogoś",
+      "abuse": "Obraźliwe lub nękające",
+      "not_raising": "Wcale nie zbiera kapitału",
+      "other": "Coś innego"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Twoje konto ma zamknięte transakcje na platformie, więc nie da się go po prostu usunąć — druga strona też ma zapis, a nieopłacona prowizja nie znika razem z kontem. Zamiast tego trwale usuwamy imię i nazwisko, e-mail, zdjęcie i teksty profilu, a ogłoszenie znika. Zostaje zapis transakcji bez danych osobowych.",
+    "willErase": "Twoje konto i wszystko w nim zostanie trwale usunięte. Tego nie da się cofnąć.",
+    "closedDeals": "Zamknięte transakcje: {count}",
+    "openFees": "Nieopłacone prowizje: {count}"
   }
 }

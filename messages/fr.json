@@ -3041,5 +3041,40 @@
     "deleteOwn": "Seul l'auteur d'une note peut la supprimer",
     "show": "Notes",
     "hide": "Masquer"
+  },
+  "report": {
+    "cta": "Signaler",
+    "tab": "Signalements",
+    "title": "Signaler ceci",
+    "intro": "Dites-nous ce qui ne va pas. Les signalements sont confidentiels : la personne signalée ne les voit pas, ni qui les a envoyés.",
+    "detailPh": "Autre chose à nous dire ? (facultatif)",
+    "submit": "Envoyer le signalement",
+    "thanks": "Merci — nous allons regarder",
+    "queueEmpty": "Rien à examiner.",
+    "action": "Traité",
+    "dismiss": "Sans suite",
+    "resolved": "Signalement clos",
+    "resolvePrompt": "Qu'avez-vous fait ? (facultatif)",
+    "resolutionLabel": "Résultat",
+    "filter": {
+      "open": "Ouverts",
+      "actioned": "Traités",
+      "dismissed": "Sans suite",
+      "all": "Tous"
+    },
+    "reason": {
+      "spam": "Spam ou promotion",
+      "misleading": "Affirmations trompeuses ou fausses",
+      "impersonation": "Usurpation d'identité",
+      "abuse": "Abusif ou harcelant",
+      "not_raising": "Ne lève pas réellement",
+      "other": "Autre chose"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Votre compte a des opérations clôturées sur la plateforme : il ne peut donc pas être simplement effacé — la contrepartie en garde trace, et une commission due ne disparaît pas avec le compte. À la place, vos nom, e-mail, photo et textes de profil sont supprimés définitivement et l'annonce est retirée. Il ne reste qu'un enregistrement de transaction sans données personnelles.",
+    "willErase": "Votre compte et tout son contenu seront définitivement supprimés. C'est irréversible.",
+    "closedDeals": "{count} opérations clôturées",
+    "openFees": "{count} commissions impayées"
   }
 }

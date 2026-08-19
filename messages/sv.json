@@ -3041,5 +3041,40 @@
     "deleteOwn": "Bara den som skrev anteckningen kan radera den",
     "show": "Anteckningar",
     "hide": "Dölj"
+  },
+  "report": {
+    "cta": "Rapportera",
+    "tab": "Rapporter",
+    "title": "Rapportera det här",
+    "intro": "Berätta vad som är fel. Rapporter är privata — den som rapporteras ser dem aldrig, och inte heller vem som skickade dem.",
+    "detailPh": "Något mer vi bör veta? (valfritt)",
+    "submit": "Skicka rapport",
+    "thanks": "Tack — vi tittar på det",
+    "queueEmpty": "Inget att granska.",
+    "action": "Åtgärdad",
+    "dismiss": "Ingen åtgärd",
+    "resolved": "Rapporten stängd",
+    "resolvePrompt": "Vad gjordes åt det? (valfritt)",
+    "resolutionLabel": "Utfall",
+    "filter": {
+      "open": "Öppna",
+      "actioned": "Åtgärdade",
+      "dismissed": "Avfärdade",
+      "all": "Alla"
+    },
+    "reason": {
+      "spam": "Skräppost eller reklam",
+      "misleading": "Vilseledande eller falska påståenden",
+      "impersonation": "Utger sig för att vara någon annan",
+      "abuse": "Kränkande eller trakasserande",
+      "not_raising": "Reser faktiskt inte kapital",
+      "other": "Något annat"
+    }
+  },
+  "deleteAccount": {
+    "willAnonymise": "Ditt konto har avslutade affärer på plattformen och kan därför inte bara raderas — motparten har också en notering, och en obetald avgift försvinner inte med kontot. I stället tas namn, e-post, foto och profiltexter bort permanent och annonsen plockas ned. Kvar blir en transaktionsnotering utan personuppgifter.",
+    "willErase": "Ditt konto och allt i det raderas permanent. Det går inte att ångra.",
+    "closedDeals": "{count} avslutade affärer",
+    "openFees": "{count} obetalda avgifter"
   }
 }

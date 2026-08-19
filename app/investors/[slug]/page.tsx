@@ -7,6 +7,7 @@ import { FounderOutreach } from "@/components/investors/founder-outreach";
 import { resolveEntity } from "@/lib/membership";
 import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
+import { ReportButton } from "@/components/shared/report-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Linkedin, MapPin, DollarSign, Globe, Twitter,
@@ -465,6 +466,14 @@ export default async function InvestorProfilePage({ params }: Props) {
             <a href="/auth/signup?role=startup" className="text-cr-copper font-medium hover:underline">
               {t("investors.listYourStartup")} →
             </a>
+          </div>
+        )}
+        {/* E50: a signed-in visitor can say this profile is not what it
+            claims. Signed-out visitors cannot — a report needs someone to
+            come back to. */}
+        {user && (
+          <div className="mt-8 text-center">
+            <ReportButton targetType="investor" targetId={investor.id} />
           </div>
         )}
       </main>
