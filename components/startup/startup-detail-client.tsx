@@ -56,7 +56,7 @@ interface Props {
   /** This investor has already accepted the non-circumvention terms here. */
   circumventionAcked?: boolean;
   /** B19: public momentum aggregate (only when the founder opted in). */
-  momentum?: { interested: number; committedCount: number; committedAmount: number; currency: string } | null;
+  momentum?: { interested: number; committedCount: number; committedAmount: number; softAmount: number; currency: string } | null;
 }
 
 const TABS = ["overview", "team", "financials", "documents", "traction"] as const;
@@ -716,7 +716,7 @@ export function StartupDetailClient({
             </div>
 
             {/* B19: public momentum — opt-in, aggregates only. */}
-            {momentum && (momentum.interested > 0 || momentum.committedAmount > 0) && (() => {
+            {momentum && (momentum.interested > 0 || momentum.committedAmount > 0 || momentum.softAmount > 0) && (() => {
               const target = startup.funding_target && startup.funding_target > 0 ? startup.funding_target : null;
               const pct = target ? Math.min(100, Math.round((momentum.committedAmount / target) * 100)) : null;
               return (
@@ -727,7 +727,9 @@ export function StartupDetailClient({
                       {target && <span style={{ color: "var(--cr-ink-4)", fontWeight: 400 }}> / {formatMoney(target, momentum.currency, { compact: true })}</span>}
                     </span>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
-                      {t("startupDetail.momentumCommitted", { count: momentum.committedCount })} · {t("startupDetail.momentumInterested", { count: momentum.interested })}
+                      {t("startupDetail.momentumCommitted", { count: momentum.committedCount })}
+                      {momentum.softAmount > 0 && <> · {t("startupDetail.momentumSoft", { amount: formatMoney(momentum.softAmount, momentum.currency, { compact: true }) })}</>}
+                      {" · "}{t("startupDetail.momentumInterested", { count: momentum.interested })}
                     </span>
                   </div>
                   {pct !== null && (

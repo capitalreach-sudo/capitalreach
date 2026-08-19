@@ -1208,7 +1208,8 @@
     "momentumInterested": "{count} इच्छुक",
     "askedBy": "पूछा",
     "answerPrivately": "निजी रूप से जवाब दें (केवल पूछने वाला देखेगा)",
-    "privateAnswer": "निजी"
+    "privateAnswer": "निजी",
+    "momentumSoft": "{amount} सॉफ्ट-सर्कल"
   },
   "filters": {
     "industry": "उद्योग",

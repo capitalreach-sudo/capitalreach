@@ -1255,7 +1255,8 @@
     "momentumInterested": "{count} interessiert",
     "askedBy": "Gefragt von",
     "answerPrivately": "Privat antworten (nur der Fragende sieht sie)",
-    "privateAnswer": "privat"
+    "privateAnswer": "privat",
+    "momentumSoft": "{amount} soft-circled"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",

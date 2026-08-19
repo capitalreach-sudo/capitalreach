@@ -1248,7 +1248,8 @@
     "momentumInterested": "{count} 位感兴趣",
     "askedBy": "提问者",
     "answerPrivately": "私下回答（仅提问者可见）",
-    "privateAnswer": "私密"
+    "privateAnswer": "私密",
+    "momentumSoft": "{amount} 软承诺"
   },
   "investors": {
     "pageTitle": "认证投资者",

@@ -1208,7 +1208,8 @@
     "momentumInterested": "{count}명 관심",
     "askedBy": "질문자",
     "answerPrivately": "비공개로 답변 (질문자만 볼 수 있음)",
-    "privateAnswer": "비공개"
+    "privateAnswer": "비공개",
+    "momentumSoft": "{amount} 소프트 서클"
   },
   "filters": {
     "industry": "산업",

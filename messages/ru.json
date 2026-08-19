@@ -1208,7 +1208,8 @@
     "momentumInterested": "{count} заинтересованы",
     "askedBy": "Задал",
     "answerPrivately": "Ответить приватно (видит только автор вопроса)",
-    "privateAnswer": "приватный"
+    "privateAnswer": "приватный",
+    "momentumSoft": "{amount} предварительно"
   },
   "filters": {
     "industry": "Отрасль",

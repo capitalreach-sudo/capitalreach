@@ -1208,7 +1208,8 @@
     "momentumInterested": "{count} intresserade",
     "askedBy": "Ställd av",
     "answerPrivately": "Svara privat (bara frågeställaren ser det)",
-    "privateAnswer": "privat"
+    "privateAnswer": "privat",
+    "momentumSoft": "{amount} soft-circle"
   },
   "filters": {
     "industry": "Bransch",

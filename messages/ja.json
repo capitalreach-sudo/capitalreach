@@ -1248,7 +1248,8 @@
     "momentumInterested": "{count} 件関心",
     "askedBy": "質問者",
     "answerPrivately": "非公開で回答（質問者のみ閲覧可）",
-    "privateAnswer": "非公開"
+    "privateAnswer": "非公開",
+    "momentumSoft": "{amount} ソフトサークル"
   },
   "investors": {
     "pageTitle": "認定投資家",

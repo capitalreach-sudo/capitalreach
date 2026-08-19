@@ -1208,7 +1208,8 @@
     "momentumInterested": "{count} zainteresowanych",
     "askedBy": "Zadane przez",
     "answerPrivately": "Odpowiedz prywatnie (widzi tylko pytający)",
-    "privateAnswer": "prywatna"
+    "privateAnswer": "prywatna",
+    "momentumSoft": "{amount} w soft-circle"
   },
   "filters": {
     "industry": "Branża",

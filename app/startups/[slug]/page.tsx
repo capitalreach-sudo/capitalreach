@@ -157,17 +157,23 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   // B19: public momentum, only when the founder opted in. Aggregates only —
   // never who. Interested = open deals; committed = soft-circle/verbal/
   // committed sums + closed amounts.
-  let momentum: { interested: number; committedCount: number; committedAmount: number; currency: string } | null = null;
+  let momentum: { interested: number; committedCount: number; committedAmount: number; softAmount: number; currency: string } | null = null;
   if (startup.show_momentum) {
     const { data: ds } = await createAdminClient()
       .from("deals").select("status, amount, currency, commitment_type")
       .eq("startup_id", startup.id).neq("status", "passed");
     const rows = ds ?? [];
-    const committedRows = rows.filter((d) => d.status === "closed" || ["soft_circle", "verbal", "committed"].includes(d.commitment_type ?? ""));
+    // Same buckets as the founder's own raise tracker: a soft circle is NOT
+    // a commitment, and a public bar that calls it one is the kind of number
+    // this platform exists not to publish. Soft/verbal are reported
+    // separately; the bar fills on committed only.
+    const committedRows = rows.filter((d) => d.status === "closed" || d.commitment_type === "committed");
+    const softRows = rows.filter((d) => d.status !== "closed" && (d.commitment_type === "soft_circle" || d.commitment_type === "verbal"));
     momentum = {
       interested: rows.length,
       committedCount: committedRows.length,
       committedAmount: committedRows.reduce((sum, d) => sum + (Number(d.amount) || 0), 0),
+      softAmount: softRows.reduce((sum, d) => sum + (Number(d.amount) || 0), 0),
       currency: (rows.find((d) => d.currency)?.currency as string) || "USD",
     };
   }

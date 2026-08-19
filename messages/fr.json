@@ -1248,7 +1248,8 @@
     "momentumInterested": "{count} intéressés",
     "askedBy": "Posée par",
     "answerPrivately": "Répondre en privé (seul l'auteur la voit)",
-    "privateAnswer": "privée"
+    "privateAnswer": "privée",
+    "momentumSoft": "{amount} en soft-circle"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",

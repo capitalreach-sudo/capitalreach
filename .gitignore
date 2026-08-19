@@ -37,3 +37,6 @@ yarn-error.log*
 .trigger/
 .env.staging
 .env.local.production-backup
+
+# Local-only demo account credentials — never committed
+.test-accounts.local.md

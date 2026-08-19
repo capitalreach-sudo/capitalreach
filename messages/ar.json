@@ -1248,7 +1248,8 @@
     "momentumInterested": "{count} مهتمون",
     "askedBy": "سأل",
     "answerPrivately": "الرد بشكل خاص (يراه السائل فقط)",
-    "privateAnswer": "خاص"
+    "privateAnswer": "خاص",
+    "momentumSoft": "{amount} التزام مبدئي"
   },
   "investors": {
     "pageTitle": "المستثمرون المعتمدون",

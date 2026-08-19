@@ -1208,7 +1208,8 @@
     "momentumInterested": "{count} geïnteresseerd",
     "askedBy": "Gesteld door",
     "answerPrivately": "Privé beantwoorden (alleen de vraagsteller ziet het)",
-    "privateAnswer": "privé"
+    "privateAnswer": "privé",
+    "momentumSoft": "{amount} soft-circle"
   },
   "filters": {
     "industry": "Industrie",
