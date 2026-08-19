@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin-guard";
 export async function POST(req: NextRequest) {
   // Shared guard: reads the role with the service client and rejects a
   // suspended/banned admin — the hand-rolled check this replaced skipped that.
-  const guard = await requireAdmin();
+  const guard = await requireAdmin("operator");
   if (!guard.ok) return guard.response;
   const { adminId, admin: adminClient } = guard;
 

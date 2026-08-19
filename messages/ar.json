@@ -2744,7 +2744,8 @@
     "bulkRestored": "تمت استعادة {n} حسابات",
     "kicker": "مشرف",
     "pageTitle": "إدارة المستخدمين",
-    "pageSubtitle": "{n} حسابات. الإيقاف يسري فورا ويسجّل خروج المستخدم."
+    "pageSubtitle": "{n} حسابات. الإيقاف يسري فورا ويسجّل خروج المستخدم.",
+    "levelChanged": "تم تحديث مستوى المسؤول"
   },
   "imprint": {
     "metaTitle": "بيانات النشر — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "مشطوبة",
       "disputed": "قيد المراجعة"
     }
+  },
+  "adminList": {
+    "searchPh": "بحث…",
+    "showing": "عرض {shown} من {total}",
+    "noMatches": "لا توجد نتائج.",
+    "page": "صفحة {page} من {pages}",
+    "next": "التالي"
+  },
+  "adminNotes": {
+    "title": "ملاحظات",
+    "privateHint": "لا تظهر للحساب أبدًا",
+    "placeholder": "ما الذي يجب أن يعرفه المسؤول التالي؟",
+    "add": "إضافة",
+    "empty": "لا توجد ملاحظات بعد.",
+    "unknownAuthor": "أحد المسؤولين",
+    "deleteOwn": "لا يحذف الملاحظة إلا من كتبها",
+    "show": "ملاحظات",
+    "hide": "إخفاء"
   }
 }

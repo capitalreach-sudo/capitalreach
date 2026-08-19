@@ -2744,7 +2744,8 @@
     "bulkRestored": "Przywrócono konta: {n}",
     "kicker": "Admin",
     "pageTitle": "Zarządzanie użytkownikami",
-    "pageSubtitle": "Konta: {n}. Zawieszenie działa natychmiast i wylogowuje użytkownika."
+    "pageSubtitle": "Konta: {n}. Zawieszenie działa natychmiast i wylogowuje użytkownika.",
+    "levelChanged": "Poziom administratora zmieniony"
   },
   "imprint": {
     "metaTitle": "Nota prawna — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Odpisana",
       "disputed": "W weryfikacji"
     }
+  },
+  "adminList": {
+    "searchPh": "Szukaj…",
+    "showing": "{shown} z {total}",
+    "noMatches": "Brak wyników.",
+    "page": "Strona {page} z {pages}",
+    "next": "Dalej"
+  },
+  "adminNotes": {
+    "title": "Notatki",
+    "privateHint": "nigdy widoczne dla konta",
+    "placeholder": "Co powinna wiedzieć następna osoba?",
+    "add": "Dodaj",
+    "empty": "Brak notatek.",
+    "unknownAuthor": "Administrator",
+    "deleteOwn": "Notatkę może usunąć tylko jej autor",
+    "show": "Notatki",
+    "hide": "Ukryj"
   }
 }

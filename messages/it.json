@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} account ripristinati",
     "kicker": "Admin",
     "pageTitle": "Gestione utenti",
-    "pageSubtitle": "{n} account. La sospensione ha effetto immediato e disconnette l'utente."
+    "pageSubtitle": "{n} account. La sospensione ha effetto immediato e disconnette l'utente.",
+    "levelChanged": "Livello admin aggiornato"
   },
   "imprint": {
     "metaTitle": "Note legali — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Stralciata",
       "disputed": "In verifica"
     }
+  },
+  "adminList": {
+    "searchPh": "Cerca…",
+    "showing": "{shown} di {total}",
+    "noMatches": "Nessun risultato.",
+    "page": "Pagina {page} di {pages}",
+    "next": "Avanti"
+  },
+  "adminNotes": {
+    "title": "Note",
+    "privateHint": "mai visibile all'account",
+    "placeholder": "Che cosa deve sapere chi verrà dopo?",
+    "add": "Aggiungi",
+    "empty": "Ancora nessuna nota.",
+    "unknownAuthor": "Un admin",
+    "deleteOwn": "Solo chi ha scritto la nota può eliminarla",
+    "show": "Note",
+    "hide": "Nascondi"
   }
 }

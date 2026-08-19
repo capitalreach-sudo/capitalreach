@@ -21,14 +21,14 @@ export default async function AdminUsersPage() {
   const admin = createAdminClient();
   const { data: me } = await admin
     .from("profiles")
-    .select("role")
+    .select("role, admin_level")
     .eq("id", user.id)
     .maybeSingle();
   if (me?.role !== "admin") redirect("/dashboard");
 
   const { data: users } = await admin
     .from("profiles")
-    .select("id, email, full_name, role, subscription_tier, account_status, suspended, suspended_reason, suspended_at, suspended_until, created_at")
+    .select("id, email, full_name, role, admin_level, subscription_tier, account_status, suspended, suspended_reason, suspended_at, suspended_until, created_at")
     .order("created_at", { ascending: false })
     .limit(500);
 
@@ -52,7 +52,7 @@ export default async function AdminUsersPage() {
             {t("adminUsers.pageSubtitle", { n: String(users?.length ?? 0) })}
           </p>
 
-          <AdminUsersClient users={users ?? []} currentAdminId={user.id} />
+          <AdminUsersClient users={users ?? []} currentAdminId={user.id} myLevel={me.admin_level ?? "support"} />
         </div>
       </main>
     </>

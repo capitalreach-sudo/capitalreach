@@ -10,7 +10,7 @@ const DURATIONS: Record<string, number | null> = {
 };
 
 export async function POST(req: NextRequest) {
-  const guard = await requireAdmin();
+  const guard = await requireAdmin("operator");
   if (!guard.ok) return guard.response;
   const { adminId, admin } = guard;
 

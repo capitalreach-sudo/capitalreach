@@ -3,7 +3,7 @@ import { requireAdmin, logAdminAction } from "@/lib/admin-guard";
 import { sendUnsuspensionEmail } from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
-  const guard = await requireAdmin();
+  const guard = await requireAdmin("operator");
   if (!guard.ok) return guard.response;
   const { adminId, admin } = guard;
 

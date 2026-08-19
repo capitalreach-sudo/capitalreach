@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { notify } from "@/components/ui/toast-notify";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+import { AdminNotes } from "@/components/admin/admin-notes";
 
 interface AdminUser {
   id: string;
   email: string;
   full_name: string | null;
   role: string;
+  admin_level?: string | null;
   subscription_tier: string | null;
   account_status: string | null;
   suspended: boolean | null;
@@ -49,8 +51,20 @@ const linkBtn: React.CSSProperties = {
   textDecoration: "underline", padding: 0,
 };
 
-export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]; currentAdminId: string }) {
+export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: AdminUser[]; currentAdminId: string; myLevel?: string }) {
   const { t } = useTranslation();
+  const [notesFor, setNotesFor] = useState<string | null>(null);
+
+  async function changeLevel(u: AdminUser, level: string) {
+    const res = await fetch("/api/admin/level", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: u.id, level }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    notify.success(t("adminUsers.levelChanged"));
+    router.refresh();
+  }
   const router = useRouter();
   const TAB_LABEL: Record<Tab, string> = {
     all: t("adminUsers.tabAll"), startup: t("adminUsers.tabStartups"),
@@ -208,7 +222,7 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "780px" }}>
           <thead>
             <tr>
-              {[t("adminUsers.colUser"), t("adminUsers.colRole"), t("adminUsers.colPlan"), t("adminUsers.colJoined"), t("adminUsers.colStatus"), t("adminUsers.colActions")].map(h => (
+              {[t("adminUsers.colUser"), t("adminUsers.colRole"), t("adminUsers.colPlan"), t("adminUsers.colJoined"), t("adminUsers.colStatus"), t("adminUsers.colActions"), t("adminNotes.title")].map(h => (
                 <th key={h} style={{
                   textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
                   fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
@@ -219,20 +233,38 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={6} style={{ ...cellStyle, textAlign: "center", padding: "32px" }}>{t("adminUsers.noMatch")}</td></tr>
+              <tr><td colSpan={7} style={{ ...cellStyle, textAlign: "center", padding: "32px" }}>{t("adminUsers.noMatch")}</td></tr>
             )}
             {filtered.map(u => {
               const suspended = isSuspended(u);
               const self = u.id === currentAdminId;
               return (
-                <tr key={u.id}>
+                <Fragment key={u.id}>
+                <tr>
                   <td style={cellStyle}>
                     <div style={{ fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                       {u.full_name || "—"}{self && ` ${t("adminUsers.you")}`}
                     </div>
                     <div style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>{u.email}</div>
                   </td>
-                  <td style={{ ...cellStyle, textTransform: "capitalize" }}>{u.role}</td>
+                  <td style={{ ...cellStyle, textTransform: "capitalize" }}>
+                    {u.role}
+                    {/* E51: an admin's level, changeable by an owner. Everyone
+                        else sees it as a label — knowing who can do what is
+                        not itself a privilege. */}
+                    {u.role === "admin" && (
+                      myLevel === "owner" && !self ? (
+                        <select value={u.admin_level ?? "support"} onChange={e => changeLevel(u, e.target.value)}
+                          style={{ marginLeft: 6, fontSize: "11px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: 3, padding: "1px 3px" }}>
+                          <option value="support">support</option>
+                          <option value="operator">operator</option>
+                          <option value="owner">owner</option>
+                        </select>
+                      ) : (
+                        <span style={{ marginLeft: 6, fontSize: "10px", color: "var(--cr-ink-4)" }}>{u.admin_level ?? "support"}</span>
+                      )
+                    )}
+                  </td>
                   <td style={{ ...cellStyle, textTransform: "capitalize" }}>
                     {u.role === "admin" ? (
                       u.subscription_tier || "free"
@@ -272,7 +304,23 @@ export function AdminUsersClient({ users, currentAdminId }: { users: AdminUser[]
                       </button>
                     )}
                   </td>
+                  <td style={cellStyle}>
+                    {/* E53: what we know about this account, kept with the
+                        account rather than in whoever handled it last. */}
+                    <button onClick={() => setNotesFor(notesFor === u.id ? null : u.id)}
+                      style={{ ...linkBtn, color: "var(--cr-copper)" }}>
+                      {notesFor === u.id ? t("adminNotes.hide") : t("adminNotes.show")}
+                    </button>
+                  </td>
                 </tr>
+                {notesFor === u.id && (
+                  <tr>
+                    <td colSpan={7} style={{ ...cellStyle, background: "var(--cr-paper-2)" }}>
+                      <AdminNotes targetType="profile" targetId={u.id} />
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               );
             })}
           </tbody>

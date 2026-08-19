@@ -13,7 +13,7 @@ const INVESTOR_TIERS = Object.keys(INVESTOR_PLANS);
  * profiles by the access context, the entity by listing and deal surfaces.
  */
 export async function POST(req: NextRequest) {
-  const guard = await requireAdmin();
+  const guard = await requireAdmin("owner");
   if (!guard.ok) return guard.response;
 
   const { userId, tier } = await req.json().catch(() => ({}));

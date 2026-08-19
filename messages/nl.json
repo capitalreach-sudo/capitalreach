@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} accounts hersteld",
     "kicker": "Admin",
     "pageTitle": "Gebruikersbeheer",
-    "pageSubtitle": "{n} accounts. Schorsing gaat meteen in en meldt de gebruiker af."
+    "pageSubtitle": "{n} accounts. Schorsing gaat meteen in en meldt de gebruiker af.",
+    "levelChanged": "Adminniveau bijgewerkt"
   },
   "imprint": {
     "metaTitle": "Colofon — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Afgeboekt",
       "disputed": "In behandeling"
     }
+  },
+  "adminList": {
+    "searchPh": "Zoeken…",
+    "showing": "{shown} van {total}",
+    "noMatches": "Niets komt overeen.",
+    "page": "Pagina {page} van {pages}",
+    "next": "Volgende"
+  },
+  "adminNotes": {
+    "title": "Notities",
+    "privateHint": "nooit zichtbaar voor het account",
+    "placeholder": "Wat moet de volgende weten?",
+    "add": "Toevoegen",
+    "empty": "Nog geen notities.",
+    "unknownAuthor": "Een admin",
+    "deleteOwn": "Alleen wie de notitie schreef kan die verwijderen",
+    "show": "Notities",
+    "hide": "Verbergen"
   }
 }

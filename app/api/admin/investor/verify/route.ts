@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
 
@@ -12,16 +13,8 @@ import { isUuid } from "@/lib/utils";
  * exactly the founders it was meant to protect.
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  // Re-checked here, not inferred from the URL: this writes a trust signal.
-  const { data: profile } = await supabase
-    .from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const guard = await requireAdmin("operator");
+  if (!guard.ok) return guard.response;
 
   const { investorId, verified } = await req.json().catch(() => ({}));
   if (!isUuid(investorId) || typeof verified !== "boolean") {
@@ -33,7 +26,7 @@ export async function POST(req: NextRequest) {
     .from("investors")
     .update({
       verified_at: verified ? new Date().toISOString() : null,
-      verified_by: verified ? user.id : null,
+      verified_by: verified ? guard.adminId : null,
     })
     .eq("id", investorId)
     .select("id, owner_id, display_name")
@@ -44,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   // Same log as every other administrative act.
   await admin.from("admin_actions").insert({
-    admin_id: user.id,
+    admin_id: guard.adminId,
     action: verified ? "verify" : "unverify",
     target_type: "investor",
     target_id: investorId,

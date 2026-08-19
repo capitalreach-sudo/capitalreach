@@ -80,6 +80,33 @@ export type Database = {
           },
         ]
       }
+      admin_notes: {
+        Row: {
+          admin_id: string | null
+          body: string
+          created_at: string
+          id: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          admin_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          admin_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
       ai_reports: {
         Row: {
           content: string
@@ -1417,6 +1444,7 @@ export type Database = {
         Row: {
           account_status: string
           accreditation_certified: boolean
+          admin_level: string | null
           avatar_url: string | null
           check_size_max: number | null
           check_size_min: number | null
@@ -1453,6 +1481,7 @@ export type Database = {
         Insert: {
           account_status?: string
           accreditation_certified?: boolean
+          admin_level?: string | null
           avatar_url?: string | null
           check_size_max?: number | null
           check_size_min?: number | null
@@ -1489,6 +1518,7 @@ export type Database = {
         Update: {
           account_status?: string
           accreditation_certified?: boolean
+          admin_level?: string | null
           avatar_url?: string | null
           check_size_max?: number | null
           check_size_min?: number | null

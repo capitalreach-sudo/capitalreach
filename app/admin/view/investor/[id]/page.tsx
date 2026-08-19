@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboard-client";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
+import { AdminNotes } from "@/components/admin/admin-notes";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -74,6 +75,9 @@ export default async function AdminViewInvestorPage({
         aiReports={aiReports ?? []}
         viewingAs={owner?.full_name || owner?.email || investor.slug}
       />
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
+        <AdminNotes targetType="investor" targetId={investor.id} />
+      </div>
     </>
   );
 }

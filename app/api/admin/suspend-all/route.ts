@@ -14,7 +14,7 @@ import { requireAdmin, logAdminAction } from "@/lib/admin-guard";
 const CONFIRM_PHRASE = "SUSPEND ALL";
 
 export async function POST(req: NextRequest) {
-  const guard = await requireAdmin();
+  const guard = await requireAdmin("owner");
   if (!guard.ok) return guard.response;
   const { adminId, admin } = guard;
 

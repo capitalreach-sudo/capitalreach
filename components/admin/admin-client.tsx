@@ -282,8 +282,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
 
         {/* All Startups */}
         <TabsContent value="startups">
+          <AdminList entity="startups" initial={allStartups as unknown as Record<string, unknown>[]}
+            statuses={["active", "pending_review", "draft", "suspended", "rejected"]}>
+            {(rows) => (
           <div className="space-y-2">
-            {allStartups.map(s => (
+            {(rows as unknown as typeof allStartups).map(s => (
               <div key={s.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div>
@@ -324,12 +327,17 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               </div>
             ))}
           </div>
+            )}
+          </AdminList>
         </TabsContent>
 
         {/* Investors */}
         <TabsContent value="investors">
+          <AdminList entity="investors" initial={allInvestors as unknown as Record<string, unknown>[]}
+            statuses={["public", "external"]}>
+            {(rows) => (
           <div className="space-y-2">
-            {allInvestors.map(inv => (
+            {(rows as unknown as typeof allInvestors).map(inv => (
               <div key={inv.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
                 <div>
                   <p className="font-medium text-cr-ink text-sm">{inv.owner?.email}</p>
@@ -358,12 +366,17 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               </div>
             ))}
           </div>
+            )}
+          </AdminList>
         </TabsContent>
 
         {/* Deals */}
         <TabsContent value="deals">
+          <AdminList entity="deals" initial={allDeals as unknown as Record<string, unknown>[]}
+            statuses={["intro", "due_diligence", "term_sheet", "closed", "passed"]}>
+            {(rows) => (
           <div className="space-y-2">
-            {allDeals.map(deal => (
+            {(rows as unknown as typeof allDeals).map(deal => (
               <div key={deal.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
                 <div>
                   <p className="font-medium text-cr-ink text-sm">
@@ -384,6 +397,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               </div>
             ))}
           </div>
+            )}
+          </AdminList>
         </TabsContent>
 
         {/* E46: the fee ledger. */}
@@ -392,6 +407,86 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         </TabsContent>
       </Tabs>
     </main>
+  );
+}
+
+/**
+ * E54: search, paging and CSV over an admin table.
+ *
+ * These tabs used to render a hardcoded first fifty rows with nothing saying
+ * so — at 100+ accounts the operator was looking at an arbitrary slice of the
+ * platform and could not tell. The server render is still the first page, so
+ * the tab paints instantly; anything else comes from /api/admin/list.
+ */
+function AdminList({ entity, initial, statuses, children }: {
+  entity: "startups" | "investors" | "deals";
+  initial: Record<string, unknown>[];
+  statuses: string[];
+  children: (rows: Record<string, unknown>[]) => React.ReactNode;
+}) {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState(initial);
+  const [total, setTotal] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+  const PAGE_SIZE = 25;
+
+  const load = useCallback(async (p: number, query: string, st: string) => {
+    setLoading(true);
+    const res = await fetch(`/api/admin/list?entity=${entity}&page=${p}&pageSize=${PAGE_SIZE}&q=${encodeURIComponent(query)}&status=${encodeURIComponent(st)}`);
+    setLoading(false);
+    if (!res.ok) return;
+    const j = await res.json();
+    setRows(j.rows ?? []); setTotal(j.total ?? 0);
+  }, [entity]);
+
+  // First load replaces the server's page with a counted one, so the row count
+  // on screen is the real total rather than "however many fitted".
+  useEffect(() => { void load(1, "", ""); }, [load]);
+
+  // Debounced so typing does not fire a query per keystroke.
+  useEffect(() => {
+    const id = setTimeout(() => { setPage(1); void load(1, q, status); }, 300);
+    return () => clearTimeout(id);
+  }, [q, status, load]);
+
+  const pages = total == null ? 1 : Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder={t("adminList.searchPh")}
+          className="text-sm border rounded-lg px-3 py-1.5 bg-cr-paper text-cr-ink min-w-[180px]" />
+        <select value={status} onChange={e => setStatus(e.target.value)}
+          className="text-sm border rounded-lg px-2 py-1.5 bg-cr-paper text-cr-ink">
+          <option value="">{t("dashboard.filterAll")}</option>
+          {statuses.map(s => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+        </select>
+        <span className="text-xs text-cr-i4">
+          {loading ? t("common.loading")
+            : total == null ? ""
+            : t("adminList.showing", { shown: rows.length, total })}
+        </span>
+        <a href={`/api/admin/list?entity=${entity}&format=csv&q=${encodeURIComponent(q)}&status=${encodeURIComponent(status)}`}
+          className="text-xs font-semibold text-cr-copper ml-auto">{t("dashboard.exportCsv")}</a>
+      </div>
+
+      {rows.length === 0 && !loading ? (
+        <p className="text-sm text-cr-i4 text-center py-10">{t("adminList.noMatches")}</p>
+      ) : children(rows)}
+
+      {pages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-4">
+          <button disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); void load(p, q, status); }}
+            className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("common.back")}</button>
+          <span className="text-xs text-cr-i4">{t("adminList.page", { page, pages })}</span>
+          <button disabled={page >= pages} onClick={() => { const p = page + 1; setPage(p); void load(p, q, status); }}
+            className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("adminList.next")}</button>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -1,22 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { sendListingRejectedEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
 
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Admin required" }, { status: 403 });
-  }
+  const guard = await requireAdmin("operator");
+  if (!guard.ok) return guard.response;
 
   const { startupId, reason } = await req.json().catch(() => ({}));
   if (!reason) return NextResponse.json({ error: "Rejection reason required" }, { status: 400 });
@@ -37,7 +27,7 @@ export async function POST(req: NextRequest) {
     .eq("id", startupId);
 
   await adminClient.from("admin_actions").insert({
-    admin_id: user.id,
+    admin_id: guard.adminId,
     target_id: startupId,
     target_type: "startup",
     action: "reject",

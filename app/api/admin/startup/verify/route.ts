@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
 
@@ -10,15 +11,8 @@ import { isUuid } from "@/lib/utils";
  * signal on the listing.
  */
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase
-    .from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const guard = await requireAdmin("operator");
+  if (!guard.ok) return guard.response;
 
   const { startupId, verified } = await req.json().catch(() => ({}));
   if (!isUuid(startupId) || typeof verified !== "boolean") {
@@ -32,7 +26,7 @@ export async function POST(req: NextRequest) {
       verified_at: verified ? new Date().toISOString() : null,
       // Verifying is a re-check; the "edited since approval" flag is cleared.
       ...(verified ? { edited_since_review_at: null } : {}),
-      verified_by: verified ? user.id : null,
+      verified_by: verified ? guard.adminId : null,
     })
     .eq("id", startupId)
     .select("id, owner_id, name")
@@ -42,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   await admin.from("admin_actions").insert({
-    admin_id: user.id,
+    admin_id: guard.adminId,
     action: verified ? "verify" : "unverify",
     target_type: "startup",
     target_id: startupId,

@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} accounts restored",
     "kicker": "Admin",
     "pageTitle": "User management",
-    "pageSubtitle": "{n} accounts. Suspension takes effect immediately and signs the user out."
+    "pageSubtitle": "{n} accounts. Suspension takes effect immediately and signs the user out.",
+    "levelChanged": "Admin level updated"
   },
   "imprint": {
     "metaTitle": "Imprint — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Written off",
       "disputed": "Under review"
     }
+  },
+  "adminList": {
+    "searchPh": "Search…",
+    "showing": "Showing {shown} of {total}",
+    "noMatches": "Nothing matches that.",
+    "page": "Page {page} of {pages}",
+    "next": "Next"
+  },
+  "adminNotes": {
+    "title": "Notes",
+    "privateHint": "never visible to the account",
+    "placeholder": "What should the next operator know?",
+    "add": "Add",
+    "empty": "No notes yet.",
+    "unknownAuthor": "An admin",
+    "deleteOwn": "Only the admin who wrote a note can delete it",
+    "show": "Notes",
+    "hide": "Hide"
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-guard";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -11,16 +12,8 @@ import { isUuid } from "@/lib/utils";
  * remain the forensic record).
  */
 export async function DELETE(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  // Re-checked here, not assumed from middleware: this route deletes rows.
-  const { data: profile } = await supabase
-    .from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const { id } = await req.json().catch(() => ({}));
   if (!isUuid(id)) return NextResponse.json({ error: "id required" }, { status: 400 });

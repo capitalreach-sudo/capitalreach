@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const guard = await requireAdmin();
+  const guard = await requireAdmin("owner");
   if (!guard.ok) return guard.response;
 
   const { enabled } = await req.json().catch(() => ({}));

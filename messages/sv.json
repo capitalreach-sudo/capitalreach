@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} konton återställda",
     "kicker": "Admin",
     "pageTitle": "Användarhantering",
-    "pageSubtitle": "{n} konton. Avstängning gäller direkt och loggar ut användaren."
+    "pageSubtitle": "{n} konton. Avstängning gäller direkt och loggar ut användaren.",
+    "levelChanged": "Adminnivå uppdaterad"
   },
   "imprint": {
     "metaTitle": "Impressum — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Avskriven",
       "disputed": "Under granskning"
     }
+  },
+  "adminList": {
+    "searchPh": "Sök…",
+    "showing": "{shown} av {total}",
+    "noMatches": "Inget matchar.",
+    "page": "Sida {page} av {pages}",
+    "next": "Nästa"
+  },
+  "adminNotes": {
+    "title": "Anteckningar",
+    "privateHint": "syns aldrig för kontot",
+    "placeholder": "Vad behöver nästa person veta?",
+    "add": "Lägg till",
+    "empty": "Inga anteckningar än.",
+    "unknownAuthor": "En admin",
+    "deleteOwn": "Bara den som skrev anteckningen kan radera den",
+    "show": "Anteckningar",
+    "hide": "Dölj"
   }
 }

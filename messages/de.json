@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} Konten wiederhergestellt",
     "kicker": "Admin",
     "pageTitle": "Nutzerverwaltung",
-    "pageSubtitle": "{n} Konten. Die Sperre wirkt sofort und meldet den Nutzer ab."
+    "pageSubtitle": "{n} Konten. Die Sperre wirkt sofort und meldet den Nutzer ab.",
+    "levelChanged": "Admin-Stufe geändert"
   },
   "imprint": {
     "metaTitle": "Impressum — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Ausgebucht",
       "disputed": "In Prüfung"
     }
+  },
+  "adminList": {
+    "searchPh": "Suchen…",
+    "showing": "{shown} von {total}",
+    "noMatches": "Dazu passt nichts.",
+    "page": "Seite {page} von {pages}",
+    "next": "Weiter"
+  },
+  "adminNotes": {
+    "title": "Notizen",
+    "privateHint": "für das Konto nie sichtbar",
+    "placeholder": "Was sollte die nächste Person wissen?",
+    "add": "Hinzufügen",
+    "empty": "Noch keine Notizen.",
+    "unknownAuthor": "Ein Admin",
+    "deleteOwn": "Nur wer die Notiz geschrieben hat, kann sie löschen",
+    "show": "Notizen",
+    "hide": "Ausblenden"
   }
 }

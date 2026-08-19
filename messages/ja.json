@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} 件のアカウントを復元しました",
     "kicker": "管理者",
     "pageTitle": "ユーザー管理",
-    "pageSubtitle": "{n} 件のアカウント。停止は即時に有効になり、ユーザーをサインアウトさせます。"
+    "pageSubtitle": "{n} 件のアカウント。停止は即時に有効になり、ユーザーをサインアウトさせます。",
+    "levelChanged": "管理者レベルを更新しました"
   },
   "imprint": {
     "metaTitle": "インプリント — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "償却済み",
       "disputed": "確認中"
     }
+  },
+  "adminList": {
+    "searchPh": "検索…",
+    "showing": "{total} 件中 {shown} 件",
+    "noMatches": "該当なし。",
+    "page": "{pages} ページ中 {page} ページ",
+    "next": "次へ"
+  },
+  "adminNotes": {
+    "title": "メモ",
+    "privateHint": "アカウント側には表示されません",
+    "placeholder": "次の担当者が知るべきことは？",
+    "add": "追加",
+    "empty": "メモはまだありません。",
+    "unknownAuthor": "管理者",
+    "deleteOwn": "メモを削除できるのは書いた本人だけです",
+    "show": "メモ",
+    "hide": "隠す"
   }
 }

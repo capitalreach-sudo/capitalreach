@@ -2744,7 +2744,8 @@
     "bulkRestored": "{n} comptes restaurés",
     "kicker": "Admin",
     "pageTitle": "Gestion des utilisateurs",
-    "pageSubtitle": "{n} comptes. La suspension prend effet immédiatement et déconnecte l'utilisateur."
+    "pageSubtitle": "{n} comptes. La suspension prend effet immédiatement et déconnecte l'utilisateur.",
+    "levelChanged": "Niveau d'admin mis à jour"
   },
   "imprint": {
     "metaTitle": "Mentions légales — CapitalReach",
@@ -3022,5 +3023,23 @@
       "waived": "Passée en perte",
       "disputed": "En cours d'examen"
     }
+  },
+  "adminList": {
+    "searchPh": "Rechercher…",
+    "showing": "{shown} sur {total}",
+    "noMatches": "Aucun résultat.",
+    "page": "Page {page} sur {pages}",
+    "next": "Suivant"
+  },
+  "adminNotes": {
+    "title": "Notes",
+    "privateHint": "jamais visible par le compte",
+    "placeholder": "Que doit savoir la personne suivante ?",
+    "add": "Ajouter",
+    "empty": "Aucune note.",
+    "unknownAuthor": "Un admin",
+    "deleteOwn": "Seul l'auteur d'une note peut la supprimer",
+    "show": "Notes",
+    "hide": "Masquer"
   }
 }
