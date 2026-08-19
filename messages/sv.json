@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Avgifter utestående",
     "feesUnbillable": "Avgifter ej fakturerbara",
     "unbillableNote": "En framgångsavgift tjänades in på dessa affärer men kunde inte faktureras — grundaren hade ingen betalningsmetod registrerad.",
-    "mixedCurrencies": "blandade valutor: {list}"
+    "mixedCurrencies": "blandade valutor: {list}",
+    "feesWaived": "Avskrivna avgifter"
   },
   "tranches": {
     "title": "Utbetalningsplan",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "skickad, väntar på mottagande",
     "receivedOf": "{received} av {total} mottagna",
     "fullyFunded": "Fullt utbetald — alla trancher mottagna"
+  },
+  "fees": {
+    "tab": "Avgifter",
+    "allSettled": "Ingen avgift utestående.",
+    "showAll": "Visa alla",
+    "showOpen": "Visa endast öppna",
+    "count": "{count} avgifter",
+    "closed": "stängd",
+    "chased": "påmind {count}×",
+    "retry": "Försök fakturera igen",
+    "markPaid": "Markera som betald",
+    "waive": "Skriv av",
+    "waivePrompt": "Varför skrivs den här avgiften av?",
+    "markPaidPrompt": "Referens för mottagen betalning (valfritt)",
+    "waivedFor": "Avskriven",
+    "done": "Redovisningen uppdaterad",
+    "state": {
+      "collected": "Inbetalda",
+      "outstanding": "Utestående",
+      "unbillable": "Ej fakturerbara",
+      "waived": "Avskrivna"
+    }
   }
 }

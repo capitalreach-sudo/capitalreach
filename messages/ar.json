@@ -2953,7 +2953,8 @@
     "feesOutstanding": "رسوم مستحقة",
     "feesUnbillable": "رسوم غير قابلة للفوترة",
     "unbillableNote": "استُحقت رسوم نجاح على هذه الصفقات لكن تعذّرت فوترتها — لم يكن لدى المؤسس وسيلة دفع مسجّلة.",
-    "mixedCurrencies": "عملات مختلطة: {list}"
+    "mixedCurrencies": "عملات مختلطة: {list}",
+    "feesWaived": "رسوم مشطوبة"
   },
   "tranches": {
     "title": "جدول الدفعات",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "أُرسلت، بانتظار الاستلام",
     "receivedOf": "تم استلام {received} من {total}",
     "fullyFunded": "مُموّل بالكامل — تم استلام جميع الدفعات"
+  },
+  "fees": {
+    "tab": "الرسوم",
+    "allSettled": "لا توجد رسوم مستحقة.",
+    "showAll": "عرض الكل",
+    "showOpen": "عرض المفتوحة فقط",
+    "count": "{count} رسوم",
+    "closed": "أُغلقت",
+    "chased": "تمت المطالبة {count}×",
+    "retry": "إعادة محاولة الفوترة",
+    "markPaid": "تحديدها كمدفوعة",
+    "waive": "شطب",
+    "waivePrompt": "لماذا يتم شطب هذه الرسوم؟",
+    "markPaidPrompt": "مرجع الدفعة المستلمة (اختياري)",
+    "waivedFor": "مشطوبة",
+    "done": "تم تحديث السجل",
+    "state": {
+      "collected": "محصّلة",
+      "outstanding": "مستحقة",
+      "unbillable": "غير قابلة للفوترة",
+      "waived": "مشطوبة"
+    }
   }
 }

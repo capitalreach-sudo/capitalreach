@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Fee da incassare",
     "feesUnbillable": "Fee non fatturabili",
     "unbillableNote": "Su queste operazioni è maturata una success fee che non è stato possibile fatturare: il founder non aveva un metodo di pagamento registrato.",
-    "mixedCurrencies": "valute miste: {list}"
+    "mixedCurrencies": "valute miste: {list}",
+    "feesWaived": "Fee stralciate"
   },
   "tranches": {
     "title": "Piano di erogazione",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "inviata, ricezione in attesa",
     "receivedOf": "{received} di {total} ricevuti",
     "fullyFunded": "Interamente erogato — tutte le tranche ricevute"
+  },
+  "fees": {
+    "tab": "Fee",
+    "allSettled": "Nessuna fee in sospeso.",
+    "showAll": "Mostra tutte",
+    "showOpen": "Mostra solo aperte",
+    "count": "{count} fee",
+    "closed": "chiuso",
+    "chased": "sollecitata {count}×",
+    "retry": "Riprova la fatturazione",
+    "markPaid": "Segna come pagata",
+    "waive": "Stralcia",
+    "waivePrompt": "Perché questa fee viene stralciata?",
+    "markPaidPrompt": "Riferimento del pagamento ricevuto (facoltativo)",
+    "waivedFor": "Stralciata",
+    "done": "Registro aggiornato",
+    "state": {
+      "collected": "Incassate",
+      "outstanding": "In sospeso",
+      "unbillable": "Non fatturabili",
+      "waived": "Stralciate"
+    }
   }
 }

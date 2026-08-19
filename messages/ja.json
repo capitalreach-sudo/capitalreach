@@ -2953,7 +2953,8 @@
     "feesOutstanding": "未回収手数料",
     "feesUnbillable": "請求不能な手数料",
     "unbillableNote": "これらのディールでは成功報酬が発生しましたが請求できませんでした — 創業者に支払い方法が登録されていません。",
-    "mixedCurrencies": "複数通貨: {list}"
+    "mixedCurrencies": "複数通貨: {list}",
+    "feesWaived": "償却した手数料"
   },
   "tranches": {
     "title": "支払スケジュール",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "送金済み、入金待ち",
     "receivedOf": "{total} のうち {received} 入金済み",
     "fullyFunded": "全額入金済み — すべてのトランシェを受領"
+  },
+  "fees": {
+    "tab": "手数料",
+    "allSettled": "未回収の手数料はありません。",
+    "showAll": "すべて表示",
+    "showOpen": "未回収のみ表示",
+    "count": "{count} 件の手数料",
+    "closed": "クローズ",
+    "chased": "{count} 回督促",
+    "retry": "請求を再試行",
+    "markPaid": "入金済みにする",
+    "waive": "償却",
+    "waivePrompt": "この手数料を償却する理由は？",
+    "markPaidPrompt": "受領した入金の参照番号（任意）",
+    "waivedFor": "償却済み",
+    "done": "台帳を更新しました",
+    "state": {
+      "collected": "回収済み",
+      "outstanding": "未回収",
+      "unbillable": "請求不能",
+      "waived": "償却済み"
+    }
   }
 }

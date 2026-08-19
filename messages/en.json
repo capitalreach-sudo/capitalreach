@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Fees outstanding",
     "feesUnbillable": "Fees unbillable",
     "unbillableNote": "A success fee was earned on these deals but could not be invoiced — the founder had no payment method on file.",
-    "mixedCurrencies": "mixed currencies: {list}"
+    "mixedCurrencies": "mixed currencies: {list}",
+    "feesWaived": "Fees written off"
   },
   "tranches": {
     "title": "Funding schedule",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "sent, awaiting receipt",
     "receivedOf": "{received} of {total} received",
     "fullyFunded": "Fully funded — every tranche received"
+  },
+  "fees": {
+    "tab": "Fees",
+    "allSettled": "No fee is outstanding.",
+    "showAll": "Show all",
+    "showOpen": "Show open only",
+    "count": "{count} fees",
+    "closed": "closed",
+    "chased": "chased {count}×",
+    "retry": "Retry billing",
+    "markPaid": "Mark paid",
+    "waive": "Write off",
+    "waivePrompt": "Why is this fee being written off?",
+    "markPaidPrompt": "Reference for the payment received (optional)",
+    "waivedFor": "Written off",
+    "done": "Ledger updated",
+    "state": {
+      "collected": "Collected",
+      "outstanding": "Outstanding",
+      "unbillable": "Unbillable",
+      "waived": "Written off"
+    }
   }
 }

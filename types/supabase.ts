@@ -553,6 +553,13 @@ export type Database = {
           currency: string
           fee_billing_error: string | null
           fee_billing_status: string | null
+          fee_reminder_count: number
+          fee_reminder_last_at: string | null
+          fee_retry_count: number
+          fee_retry_last_at: string | null
+          fee_waive_reason: string | null
+          fee_waived_at: string | null
+          fee_waived_by: string | null
           funded_at: string | null
           funding_reference: string | null
           funds_received_at: string | null
@@ -591,6 +598,13 @@ export type Database = {
           currency?: string
           fee_billing_error?: string | null
           fee_billing_status?: string | null
+          fee_reminder_count?: number
+          fee_reminder_last_at?: string | null
+          fee_retry_count?: number
+          fee_retry_last_at?: string | null
+          fee_waive_reason?: string | null
+          fee_waived_at?: string | null
+          fee_waived_by?: string | null
           funded_at?: string | null
           funding_reference?: string | null
           funds_received_at?: string | null
@@ -629,6 +643,13 @@ export type Database = {
           currency?: string
           fee_billing_error?: string | null
           fee_billing_status?: string | null
+          fee_reminder_count?: number
+          fee_reminder_last_at?: string | null
+          fee_retry_count?: number
+          fee_retry_last_at?: string | null
+          fee_waive_reason?: string | null
+          fee_waived_at?: string | null
+          fee_waived_by?: string | null
           funded_at?: string | null
           funding_reference?: string | null
           funds_received_at?: string | null

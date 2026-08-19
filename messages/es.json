@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Comisiones pendientes",
     "feesUnbillable": "Comisiones no facturables",
     "unbillableNote": "Se devengó una comisión en estas operaciones pero no se pudo facturar: el fundador no tenía método de pago registrado.",
-    "mixedCurrencies": "monedas mixtas: {list}"
+    "mixedCurrencies": "monedas mixtas: {list}",
+    "feesWaived": "Comisiones dadas de baja"
   },
   "tranches": {
     "title": "Calendario de desembolso",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "enviado, pendiente de recepción",
     "receivedOf": "{received} de {total} recibidos",
     "fullyFunded": "Totalmente desembolsado: todos los tramos recibidos"
+  },
+  "fees": {
+    "tab": "Comisiones",
+    "allSettled": "No hay comisiones pendientes.",
+    "showAll": "Mostrar todas",
+    "showOpen": "Mostrar solo pendientes",
+    "count": "{count} comisiones",
+    "closed": "cerrado",
+    "chased": "reclamada {count}×",
+    "retry": "Reintentar facturación",
+    "markPaid": "Marcar como pagada",
+    "waive": "Dar de baja",
+    "waivePrompt": "¿Por qué se da de baja esta comisión?",
+    "markPaidPrompt": "Referencia del pago recibido (opcional)",
+    "waivedFor": "Dada de baja",
+    "done": "Registro actualizado",
+    "state": {
+      "collected": "Cobradas",
+      "outstanding": "Pendientes",
+      "unbillable": "No facturables",
+      "waived": "Dadas de baja"
+    }
   }
 }

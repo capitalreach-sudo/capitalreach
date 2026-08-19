@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Prowizje nieopłacone",
     "feesUnbillable": "Prowizje niefakturowalne",
     "unbillableNote": "Na tych transakcjach należna była prowizja, której nie dało się zafakturować — założyciel nie miał zapisanej metody płatności.",
-    "mixedCurrencies": "waluty mieszane: {list}"
+    "mixedCurrencies": "waluty mieszane: {list}",
+    "feesWaived": "Odpisane prowizje"
   },
   "tranches": {
     "title": "Harmonogram wypłat",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "wysłana, oczekuje na wpływ",
     "receivedOf": "Otrzymano {received} z {total}",
     "fullyFunded": "W pełni wypłacone — wszystkie transze otrzymane"
+  },
+  "fees": {
+    "tab": "Prowizje",
+    "allSettled": "Brak nieopłaconych prowizji.",
+    "showAll": "Pokaż wszystkie",
+    "showOpen": "Pokaż tylko otwarte",
+    "count": "Prowizje: {count}",
+    "closed": "zamknięto",
+    "chased": "monitowano {count}×",
+    "retry": "Ponów fakturowanie",
+    "markPaid": "Oznacz jako opłaconą",
+    "waive": "Odpisz",
+    "waivePrompt": "Dlaczego ta prowizja jest odpisywana?",
+    "markPaidPrompt": "Referencja otrzymanej płatności (opcjonalnie)",
+    "waivedFor": "Odpisana",
+    "done": "Rejestr zaktualizowany",
+    "state": {
+      "collected": "Pobrane",
+      "outstanding": "Nieopłacone",
+      "unbillable": "Niefakturowalne",
+      "waived": "Odpisane"
+    }
   }
 }

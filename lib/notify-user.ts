@@ -29,7 +29,9 @@ export type NotificationType =
   | "question_asked"
   | "question_answered"
   // Migration 049: an admin verified this investor.
-  | "verified";
+  | "verified"
+  // Migration 078: the platform is owed a success fee.
+  | "fee_due";
 
 interface NotifyInput {
   userId: string;

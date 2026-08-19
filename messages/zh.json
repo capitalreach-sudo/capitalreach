@@ -2953,7 +2953,8 @@
     "feesOutstanding": "未收费用",
     "feesUnbillable": "无法开票的费用",
     "unbillableNote": "这些交易已产生成功费，但无法开票 —— 创始人未绑定支付方式。",
-    "mixedCurrencies": "混合币种：{list}"
+    "mixedCurrencies": "混合币种：{list}",
+    "feesWaived": "已核销费用"
   },
   "tranches": {
     "title": "付款计划",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "已汇出，等待到账",
     "receivedOf": "已收到 {received} / {total}",
     "fullyFunded": "已全额到账 —— 所有批次均已收到"
+  },
+  "fees": {
+    "tab": "费用",
+    "allSettled": "没有未结费用。",
+    "showAll": "显示全部",
+    "showOpen": "仅显示未结",
+    "count": "{count} 笔费用",
+    "closed": "已交割",
+    "chased": "已催收 {count} 次",
+    "retry": "重新开票",
+    "markPaid": "标记为已付",
+    "waive": "核销",
+    "waivePrompt": "为什么核销这笔费用？",
+    "markPaidPrompt": "收款参考号（可选）",
+    "waivedFor": "已核销",
+    "done": "账目已更新",
+    "state": {
+      "collected": "已收取",
+      "outstanding": "未收",
+      "unbillable": "无法开票",
+      "waived": "已核销"
+    }
   }
 }

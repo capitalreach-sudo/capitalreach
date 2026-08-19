@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Gebühren offen",
     "feesUnbillable": "Gebühren nicht fakturierbar",
     "unbillableNote": "Bei diesen Deals ist eine Erfolgsgebühr entstanden, konnte aber nicht in Rechnung gestellt werden — der Gründer hatte keine Zahlungsmethode hinterlegt.",
-    "mixedCurrencies": "gemischte Währungen: {list}"
+    "mixedCurrencies": "gemischte Währungen: {list}",
+    "feesWaived": "Ausgebuchte Gebühren"
   },
   "tranches": {
     "title": "Auszahlungsplan",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "gesendet, Eingang ausstehend",
     "receivedOf": "{received} von {total} erhalten",
     "fullyFunded": "Vollständig ausgezahlt — alle Tranchen erhalten"
+  },
+  "fees": {
+    "tab": "Gebühren",
+    "allSettled": "Keine Gebühr offen.",
+    "showAll": "Alle anzeigen",
+    "showOpen": "Nur offene anzeigen",
+    "count": "{count} Gebühren",
+    "closed": "geschlossen",
+    "chased": "{count}× angemahnt",
+    "retry": "Abrechnung erneut versuchen",
+    "markPaid": "Als bezahlt markieren",
+    "waive": "Ausbuchen",
+    "waivePrompt": "Warum wird diese Gebühr ausgebucht?",
+    "markPaidPrompt": "Referenz der eingegangenen Zahlung (optional)",
+    "waivedFor": "Ausgebucht",
+    "done": "Buch aktualisiert",
+    "state": {
+      "collected": "Eingegangen",
+      "outstanding": "Offen",
+      "unbillable": "Nicht fakturierbar",
+      "waived": "Ausgebucht"
+    }
   }
 }

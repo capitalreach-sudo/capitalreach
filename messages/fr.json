@@ -2953,7 +2953,8 @@
     "feesOutstanding": "Commissions en attente",
     "feesUnbillable": "Commissions non facturables",
     "unbillableNote": "Une commission a été acquise sur ces opérations mais n'a pas pu être facturée — le fondateur n'avait aucun moyen de paiement enregistré.",
-    "mixedCurrencies": "devises mixtes : {list}"
+    "mixedCurrencies": "devises mixtes : {list}",
+    "feesWaived": "Commissions passées en perte"
   },
   "tranches": {
     "title": "Échéancier de versement",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "envoyé, réception en attente",
     "receivedOf": "{received} reçus sur {total}",
     "fullyFunded": "Intégralement versé — toutes les tranches reçues"
+  },
+  "fees": {
+    "tab": "Commissions",
+    "allSettled": "Aucune commission en attente.",
+    "showAll": "Tout afficher",
+    "showOpen": "Afficher les impayées",
+    "count": "{count} commissions",
+    "closed": "clôturé",
+    "chased": "relancée {count}×",
+    "retry": "Relancer la facturation",
+    "markPaid": "Marquer comme payée",
+    "waive": "Passer en perte",
+    "waivePrompt": "Pourquoi cette commission est-elle passée en perte ?",
+    "markPaidPrompt": "Référence du paiement reçu (facultatif)",
+    "waivedFor": "Passée en perte",
+    "done": "Registre mis à jour",
+    "state": {
+      "collected": "Encaissées",
+      "outstanding": "En attente",
+      "unbillable": "Non facturables",
+      "waived": "Passées en perte"
+    }
   }
 }

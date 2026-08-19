@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { notify } from "@/components/ui/toast-notify";
 import { CheckCircle2, XCircle, AlertCircle, DollarSign, Users, Building2, TrendingUp } from "lucide-react";
 import { formatCurrency, formatDate, STATUS_COLORS } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -215,6 +216,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <TabsTrigger value="startups">{t("admin.tabAllStartups")}</TabsTrigger>
           <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
           <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
+          <TabsTrigger value="fees">{t("fees.tab")}</TabsTrigger>
         </TabsList>
 
         {/* Pending */}
@@ -382,7 +384,141 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             ))}
           </div>
         </TabsContent>
+
+        {/* E46: the fee ledger. */}
+        <TabsContent value="fees">
+          <FeeLedger />
+        </TabsContent>
       </Tabs>
     </main>
+  );
+}
+
+type LedgerRow = {
+  id: string; currency: string | null; closed_at: string | null;
+  state: "collected" | "outstanding" | "unbillable" | "waived";
+  feeMajor: number; startupName: string | null; startupSlug: string | null;
+  fee_billing_status: string | null; fee_billing_error: string | null;
+  fee_reminder_count: number | null; fee_waive_reason: string | null;
+};
+
+const STATE_STYLE: Record<LedgerRow["state"], string> = {
+  collected:   "bg-emerald-50 text-emerald-700 border-emerald-200",
+  outstanding: "bg-amber-50 text-amber-700 border-amber-200",
+  unbillable:  "bg-red-50 text-red-700 border-red-200",
+  waived:      "bg-cr-p3 text-cr-i3 border-cr-p4",
+};
+
+/**
+ * E46: every fee the platform is owed, in one list, with the three things an
+ * operator can actually do about one. Before this, a fee that failed to bill
+ * was visible only by opening the deal it belonged to — which is to say, it
+ * was not visible.
+ */
+function FeeLedger() {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<LedgerRow[] | null>(null);
+  const [totals, setTotals] = useState<Record<string, number> | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"open" | "all">("open");
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/fees");
+    if (!res.ok) { setRows([]); return; }
+    const j = await res.json();
+    setRows(j.rows ?? []); setTotals(j.totals ?? null);
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+
+  async function act(row: LedgerRow, action: "retry" | "waive" | "markPaid") {
+    let reason: string | null = null;
+    if (action === "waive") {
+      reason = window.prompt(t("fees.waivePrompt"));
+      if (!reason?.trim()) return;
+    }
+    if (action === "markPaid") {
+      reason = window.prompt(t("fees.markPaidPrompt")) ?? "";
+    }
+    setBusy(row.id);
+    const res = await fetch("/api/admin/fees", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dealId: row.id, action, reason }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(null);
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    notify.success(t("fees.done"));
+    void load();
+  }
+
+  if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
+  const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable") : rows;
+
+  return (
+    <div>
+      {totals && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          {(["outstanding", "unbillable", "collected", "waived"] as const).map(k => (
+            <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
+              <p className="text-lg font-bold text-cr-ink">{formatCurrency(totals[k] ?? 0)}</p>
+              <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="flex items-center gap-3 mb-3">
+        <button onClick={() => setFilter(filter === "open" ? "all" : "open")}
+          className="text-xs font-semibold text-cr-copper">
+          {filter === "open" ? t("fees.showAll") : t("fees.showOpen")}
+        </button>
+        <span className="text-xs text-cr-i4">{t("fees.count", { count: shown.length })}</span>
+      </div>
+      {shown.length === 0 ? (
+        <div className="text-center py-12 text-cr-i4">
+          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <p>{t("fees.allSettled")}</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {shown.map(row => (
+            <div key={row.id} className="bg-cr-paper border rounded-xl px-4 py-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <p className="font-medium text-cr-ink text-sm truncate">{row.startupName ?? t("admin.amountTBD")}</p>
+                  <p className="text-xs text-cr-i4">
+                    {formatCurrency(row.feeMajor)}
+                    {row.closed_at && ` · ${t("fees.closed")} ${formatDate(row.closed_at)}`}
+                    {(row.fee_reminder_count ?? 0) > 0 && ` · ${t("fees.chased", { count: row.fee_reminder_count ?? 0 })}`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full border ${STATE_STYLE[row.state]}`}>
+                    {t(`fees.state.${row.state}`)}
+                  </span>
+                  {row.state === "unbillable" && (
+                    <button onClick={() => act(row, "retry")} disabled={busy === row.id}
+                      className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("fees.retry")}</button>
+                  )}
+                  {(row.state === "unbillable" || row.state === "outstanding") && (
+                    <>
+                      <button onClick={() => act(row, "markPaid")} disabled={busy === row.id}
+                        className="text-xs font-semibold text-emerald-700 disabled:opacity-50">{t("fees.markPaid")}</button>
+                      <button onClick={() => act(row, "waive")} disabled={busy === row.id}
+                        className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("fees.waive")}</button>
+                    </>
+                  )}
+                </div>
+              </div>
+              {row.fee_billing_error && (
+                <p className="text-[11px] text-red-600 mt-1.5 break-words">{row.fee_billing_error}</p>
+              )}
+              {row.state === "waived" && row.fee_waive_reason && (
+                <p className="text-[11px] text-cr-i4 mt-1.5">{t("fees.waivedFor")}: {row.fee_waive_reason}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

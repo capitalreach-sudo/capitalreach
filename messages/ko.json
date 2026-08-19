@@ -2953,7 +2953,8 @@
     "feesOutstanding": "미수 수수료",
     "feesUnbillable": "청구 불가 수수료",
     "unbillableNote": "이 거래들에서 성공 수수료가 발생했지만 청구할 수 없었습니다 — 창업자에게 결제 수단이 등록되어 있지 않습니다.",
-    "mixedCurrencies": "혼합 통화: {list}"
+    "mixedCurrencies": "혼합 통화: {list}",
+    "feesWaived": "상각한 수수료"
   },
   "tranches": {
     "title": "지급 일정",
@@ -2973,5 +2974,27 @@
     "sentAwaiting": "송금됨, 입금 대기",
     "receivedOf": "{total} 중 {received} 입금",
     "fullyFunded": "전액 입금 완료 — 모든 트랜치 수령"
+  },
+  "fees": {
+    "tab": "수수료",
+    "allSettled": "미수 수수료가 없습니다.",
+    "showAll": "전체 보기",
+    "showOpen": "미결만 보기",
+    "count": "수수료 {count}건",
+    "closed": "종료",
+    "chased": "{count}회 독촉",
+    "retry": "청구 재시도",
+    "markPaid": "입금 처리",
+    "waive": "상각",
+    "waivePrompt": "이 수수료를 상각하는 이유는?",
+    "markPaidPrompt": "수령한 입금의 참조번호 (선택)",
+    "waivedFor": "상각됨",
+    "done": "원장이 업데이트되었습니다",
+    "state": {
+      "collected": "수금 완료",
+      "outstanding": "미수",
+      "unbillable": "청구 불가",
+      "waived": "상각"
+    }
   }
 }
