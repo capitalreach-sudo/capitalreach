@@ -2934,5 +2934,14 @@
     "deployed": "已投出",
     "committed": "已承诺",
     "remaining": "剩余"
+  },
+  "portfolio": {
+    "notListed": "已下架",
+    "ownership": "您的股份",
+    "atClose": "成交时估值",
+    "nowValued": "当前估值",
+    "markChange": "变化",
+    "latestUpdate": "最新动态",
+    "noUpdates": "该创始人暂无动态"
   }
 }

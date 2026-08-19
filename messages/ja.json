@@ -2934,5 +2934,14 @@
     "deployed": "投下済み",
     "committed": "コミット済み",
     "remaining": "残り"
+  },
+  "portfolio": {
+    "notListed": "掲載終了",
+    "ownership": "あなたの持分",
+    "atClose": "成約時の評価額",
+    "nowValued": "現在の評価額",
+    "markChange": "変化",
+    "latestUpdate": "最新の更新",
+    "noUpdates": "この創業者からの更新はまだありません"
   }
 }

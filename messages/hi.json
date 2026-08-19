@@ -2934,5 +2934,14 @@
     "deployed": "लगाया गया",
     "committed": "प्रतिबद्ध",
     "remaining": "शेष"
+  },
+  "portfolio": {
+    "notListed": "अब सूचीबद्ध नहीं",
+    "ownership": "आपकी हिस्सेदारी",
+    "atClose": "क्लोज़ पर मूल्यांकन",
+    "nowValued": "अभी मूल्यांकन",
+    "markChange": "बदलाव",
+    "latestUpdate": "नवीनतम अपडेट",
+    "noUpdates": "इस संस्थापक से अभी कोई अपडेट नहीं"
   }
 }

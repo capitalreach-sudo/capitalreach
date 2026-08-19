@@ -26,6 +26,15 @@ interface Props {
   viewingAs?: string;
   /** D43: committed and deployed, derived server-side from deals. */
   allocation?: { committed: number; deployed: number };
+  /** D40: per-company position, metric curve and latest update. */
+  portfolio?: PortfolioPosition[];
+}
+
+export interface PortfolioPosition {
+  dealId: string; startupId: string; name: string; slug: string; status: string;
+  amount: number | null; currency: string; closedAt: string | null;
+  ownershipPercent: number | null; valuationAtClose: number | null; currentValuation: number | null;
+  mrr: number | null; mrrSeries: number[]; latestUpdate: { title: string; created_at: string } | null;
 }
 
 type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
@@ -415,7 +424,7 @@ function SavedSearchManager() {
   );
 }
 
-export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation }: Props) {
+export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation, portfolio = [] }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
@@ -720,9 +729,16 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {/* ── AI Reports ── */}
         {activeTab === "portfolio" && (() => {
-          const closed = deals.filter(d => d.status === "closed");
-          const total = closed.reduce((a, d) => a + (d.amount ?? 0), 0);
-          return closed.length === 0 ? (
+          const positions = portfolio;
+          const total = positions.reduce((a, p) => a + (p.amount ?? 0), 0);
+          const cur = positions[0]?.currency ?? "USD";
+          // D40: a position is worth what it grew into, not just what it cost.
+          const markUp = (p: PortfolioPosition) =>
+            p.valuationAtClose && p.currentValuation && p.valuationAtClose > 0
+              ? (p.currentValuation / p.valuationAtClose - 1) * 100
+              : null;
+
+          return positions.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
               <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noPortfolio")}</h3>
@@ -730,23 +746,76 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             </div>
           ) : (
             <div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "20px" }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{formatMoney(total, closed[0]?.currency ?? "USD")}</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("dashboard.totalDeployed")} · {closed.length}</span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{formatMoney(total, cur)}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  {t("dashboard.totalDeployed")} · {positions.length}
+                </span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {closed.map(d => (
-                  <div key={d.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px" }}>
-                    <Link href={d.startup?.slug ? `/startups/${d.startup.slug}` : `/deals?deal=${d.id}`}
-                      style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
-                      {d.startup?.name ?? t("deals.startupFallback")}
-                    </Link>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-up)", whiteSpace: "nowrap" }}>
-                      {d.amount != null ? formatMoney(d.amount, d.currency ?? "USD") : "—"}
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginLeft: "10px" }}>{t("dashboard.closedOn", { date: formatDate(d.updated_at) })}</span>
-                    </span>
-                  </div>
-                ))}
+
+              <div style={{ display: "grid", gap: "12px" }}>
+                {positions.map((p) => {
+                  const mu = markUp(p);
+                  const series = p.mrrSeries;
+                  const max = Math.max(1, ...series);
+                  return (
+                    <div key={p.dealId} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
+                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
+                          <Link href={`/startups/${p.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                            {p.name}
+                          </Link>
+                          {/* D41: a company that archived its listing is still
+                              yours — say so instead of letting it disappear. */}
+                          {p.status !== "active" && (
+                            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 6px" }}>
+                              {t("portfolio.notListed")}
+                            </span>
+                          )}
+                        </div>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-up)" }}>
+                          {p.amount != null ? formatMoney(p.amount, p.currency) : "—"}
+                        </span>
+                      </div>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))", gap: "10px", marginTop: "12px" }}>
+                        {[
+                          [t("portfolio.ownership"), p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : "—"],
+                          [t("portfolio.atClose"), p.valuationAtClose ? formatMoney(p.valuationAtClose, p.currency, { compact: true }) : "—"],
+                          [t("portfolio.nowValued"), p.currentValuation ? formatMoney(p.currentValuation, p.currency, { compact: true }) : "—"],
+                          [t("portfolio.markChange"), mu == null ? "—" : `${mu > 0 ? "+" : ""}${mu.toFixed(0)}%`],
+                          [t("startupDetail.mrr"), p.mrr != null ? formatMoney(p.mrr, p.currency, { compact: true }) : "—"],
+                        ].map(([label, value]) => (
+                          <div key={label}>
+                            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: label === t("portfolio.markChange") && mu != null ? (mu >= 0 ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)" }}>{value}</div>
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "2px" }}>{label}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Metric curve — the reason a position is worth watching. */}
+                      {series.length > 1 && (
+                        <div style={{ display: "flex", alignItems: "flex-end", gap: "2px", height: "28px", marginTop: "12px" }} aria-hidden>
+                          {series.map((v, i) => (
+                            <div key={i} style={{ flex: 1, height: `${Math.max(4, (v / max) * 100)}%`, background: "var(--cr-copper)", opacity: 0.25 + (0.75 * (i + 1)) / series.length, borderRadius: "1px" }} />
+                          ))}
+                        </div>
+                      )}
+
+                      {/* D42: the founder's latest word reaches the people who funded it. */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginTop: "12px", paddingTop: "10px", borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)" }}>
+                          {p.latestUpdate
+                            ? <>{t("portfolio.latestUpdate")}: <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{p.latestUpdate.title}</span> · {formatDate(p.latestUpdate.created_at)}</>
+                            : t("portfolio.noUpdates")}
+                        </span>
+                        <Link href={`/deals?deal=${p.dealId}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11.5px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                          {t("dashboard.reportViewDeal")} →
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );

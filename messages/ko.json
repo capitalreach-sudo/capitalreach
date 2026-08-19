@@ -2934,5 +2934,14 @@
     "deployed": "집행",
     "committed": "약정",
     "remaining": "잔여"
+  },
+  "portfolio": {
+    "notListed": "더 이상 등록되지 않음",
+    "ownership": "내 지분",
+    "atClose": "마감 시 기업가치",
+    "nowValued": "현재 기업가치",
+    "markChange": "변화",
+    "latestUpdate": "최근 업데이트",
+    "noUpdates": "이 창업자의 업데이트가 아직 없습니다"
   }
 }

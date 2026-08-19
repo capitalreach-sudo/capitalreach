@@ -507,6 +507,7 @@ export type Database = {
           investor_id: string
           next_follow_up: string | null
           notes: string | null
+          ownership_percent: number | null
           passed_at: string | null
           public_interest: boolean
           stage_entered_at: string | null
@@ -518,6 +519,7 @@ export type Database = {
           success_fee_paid_at: string | null
           term_sheet_url: string | null
           updated_at: string
+          valuation_at_close: number | null
         }
         Insert: {
           amount?: number | null
@@ -543,6 +545,7 @@ export type Database = {
           investor_id: string
           next_follow_up?: string | null
           notes?: string | null
+          ownership_percent?: number | null
           passed_at?: string | null
           public_interest?: boolean
           stage_entered_at?: string | null
@@ -554,6 +557,7 @@ export type Database = {
           success_fee_paid_at?: string | null
           term_sheet_url?: string | null
           updated_at?: string
+          valuation_at_close?: number | null
         }
         Update: {
           amount?: number | null
@@ -579,6 +583,7 @@ export type Database = {
           investor_id?: string
           next_follow_up?: string | null
           notes?: string | null
+          ownership_percent?: number | null
           passed_at?: string | null
           public_interest?: boolean
           stage_entered_at?: string | null
@@ -590,6 +595,7 @@ export type Database = {
           success_fee_paid_at?: string | null
           term_sheet_url?: string | null
           updated_at?: string
+          valuation_at_close?: number | null
         }
         Relationships: [
           {

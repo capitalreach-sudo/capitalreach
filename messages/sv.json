@@ -2934,5 +2934,14 @@
     "deployed": "Investerat",
     "committed": "Åtagit",
     "remaining": "Kvar"
+  },
+  "portfolio": {
+    "notListed": "Inte längre listad",
+    "ownership": "Din andel",
+    "atClose": "Värdering vid stängning",
+    "nowValued": "Värdering nu",
+    "markChange": "Förändring",
+    "latestUpdate": "Senaste uppdatering",
+    "noUpdates": "Inga uppdateringar från den här grundaren än"
   }
 }

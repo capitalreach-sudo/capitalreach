@@ -2934,5 +2934,14 @@
     "deployed": "مستثمَر",
     "committed": "ملتزم به",
     "remaining": "المتبقي"
+  },
+  "portfolio": {
+    "notListed": "لم تعد مدرجة",
+    "ownership": "حصتك",
+    "atClose": "التقييم عند الإغلاق",
+    "nowValued": "التقييم الآن",
+    "markChange": "التغير",
+    "latestUpdate": "آخر تحديث",
+    "noUpdates": "لا توجد تحديثات من هذا المؤسس بعد"
   }
 }

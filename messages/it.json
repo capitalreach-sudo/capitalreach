@@ -2934,5 +2934,14 @@
     "deployed": "Impiegato",
     "committed": "Impegnato",
     "remaining": "Residuo"
+  },
+  "portfolio": {
+    "notListed": "Non più in elenco",
+    "ownership": "La tua quota",
+    "atClose": "Valutazione alla chiusura",
+    "nowValued": "Valutazione attuale",
+    "markChange": "Variazione",
+    "latestUpdate": "Ultimo aggiornamento",
+    "noUpdates": "Nessun aggiornamento da questo founder"
   }
 }

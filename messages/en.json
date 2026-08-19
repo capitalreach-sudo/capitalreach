@@ -2934,5 +2934,14 @@
     "deployed": "Deployed",
     "committed": "Committed",
     "remaining": "Remaining"
+  },
+  "portfolio": {
+    "notListed": "No longer listed",
+    "ownership": "Your stake",
+    "atClose": "Valued at close",
+    "nowValued": "Valued now",
+    "markChange": "Change",
+    "latestUpdate": "Latest update",
+    "noUpdates": "No updates from this founder yet"
   }
 }

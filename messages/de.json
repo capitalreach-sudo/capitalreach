@@ -2934,5 +2934,14 @@
     "deployed": "Eingesetzt",
     "committed": "Zugesagt",
     "remaining": "Verbleibend"
+  },
+  "portfolio": {
+    "notListed": "Nicht mehr gelistet",
+    "ownership": "Ihr Anteil",
+    "atClose": "Bewertung bei Abschluss",
+    "nowValued": "Bewertung heute",
+    "markChange": "Veränderung",
+    "latestUpdate": "Letztes Update",
+    "noUpdates": "Noch keine Updates von diesem Gründer"
   }
 }

@@ -2934,5 +2934,14 @@
     "deployed": "Aplicado",
     "committed": "Comprometido",
     "remaining": "Restante"
+  },
+  "portfolio": {
+    "notListed": "Já não listada",
+    "ownership": "A sua participação",
+    "atClose": "Avaliação no fecho",
+    "nowValued": "Avaliação atual",
+    "markChange": "Variação",
+    "latestUpdate": "Última atualização",
+    "noUpdates": "Ainda sem atualizações deste fundador"
   }
 }

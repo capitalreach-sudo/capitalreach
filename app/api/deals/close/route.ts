@@ -6,6 +6,7 @@ import { sendDealClosedEmail } from "@/lib/resend";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { notifyUsers } from "@/lib/notify-user";
+import { postMoney } from "@/lib/round-math";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const { data: deal } = await adminClient
     .from("deals")
-    .select("*, startup:startups(name, owner_id), investor:investors(owner_id)")
+    .select("*, startup:startups(name, owner_id, valuation, valuation_type, funding_target), investor:investors(owner_id)")
     .eq("id", dealId)
     .single();
 
@@ -150,6 +151,18 @@ export async function POST(req: NextRequest) {
       // answering "how much have we billed?" meant querying Stripe rather than
       // our own database. Recorded in minor units to match Stripe.
       success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
+      // D40: snapshot the position as it was at close. Deriving ownership
+      // later from the company's *current* valuation would restate history
+      // every time they raised again.
+      ...(() => {
+        const st = deal.startup as unknown as { valuation?: number | null; valuation_type?: string | null; funding_target?: number | null } | null;
+        const post = postMoney({ raise: st?.funding_target ?? null, valuation: st?.valuation ?? null, valuationType: (st?.valuation_type as "pre" | "post" | null) ?? null });
+        if (!post || !finalAmount) return {};
+        return {
+          valuation_at_close: post,
+          ownership_percent: Number(((finalAmount / post) * 100).toFixed(4)),
+        };
+      })(),
     })
     .eq("id", dealId)
     .neq("status", "closed")

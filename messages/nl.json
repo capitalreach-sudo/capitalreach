@@ -2934,5 +2934,14 @@
     "deployed": "Ingezet",
     "committed": "Toegezegd",
     "remaining": "Resterend"
+  },
+  "portfolio": {
+    "notListed": "Niet meer vermeld",
+    "ownership": "Uw belang",
+    "atClose": "Waardering bij sluiting",
+    "nowValued": "Waardering nu",
+    "markChange": "Verandering",
+    "latestUpdate": "Laatste update",
+    "noUpdates": "Nog geen updates van deze oprichter"
   }
 }

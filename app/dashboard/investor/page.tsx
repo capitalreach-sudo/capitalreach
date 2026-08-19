@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboard-client";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
+import { postMoney } from "@/lib/round-math";
 
 export default async function InvestorDashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -56,6 +57,47 @@ export default async function InvestorDashboardPage() {
     .limit(10)
     .returns<AiReport[]>();
 
+  // D40 + D42: the portfolio is more than a list of receipts. For every
+  // company this investor actually funded, pull the metric curve and the
+  // latest founder update, so the position has something behind it.
+  // Scoped strictly to their own closed deals.
+  const portfolio: Array<{
+    dealId: string; startupId: string; name: string; slug: string; status: string;
+    amount: number | null; currency: string; closedAt: string | null;
+    ownershipPercent: number | null; valuationAtClose: number | null; currentValuation: number | null;
+    mrr: number | null; mrrSeries: number[]; latestUpdate: { title: string; created_at: string } | null;
+  }> = [];
+  {
+    const closed = (deals ?? []).filter((d) => d.status === "closed");
+    if (closed.length) {
+      const admin = createAdminClient();
+      const ids = closed.map((d) => d.startup_id);
+      const [{ data: sts }, { data: metrics }, { data: updates }] = await Promise.all([
+        admin.from("startups").select("id, name, slug, status, mrr, valuation, valuation_type, funding_target").in("id", ids),
+        admin.from("startup_metrics").select("startup_id, month, mrr").in("startup_id", ids).order("month", { ascending: true }).limit(400),
+        admin.from("startup_updates").select("startup_id, title, created_at").in("startup_id", ids).order("created_at", { ascending: false }).limit(100),
+      ]);
+      type PortfolioStartup = { id: string; name: string; slug: string; status: string; mrr: number | null; valuation: number | null; valuation_type: string | null; funding_target: number | null };
+      const byId = new Map<string, PortfolioStartup>(((sts ?? []) as PortfolioStartup[]).map((x) => [x.id, x]));
+      for (const d of closed) {
+        const st = byId.get(d.startup_id);
+        if (!st) continue;
+        const dd = d as unknown as { ownership_percent?: number | null; valuation_at_close?: number | null; funded_at?: string | null; closed_at?: string | null };
+        portfolio.push({
+          dealId: d.id, startupId: st.id, name: st.name, slug: st.slug, status: st.status,
+          amount: d.amount ?? null, currency: d.currency ?? "USD",
+          closedAt: dd.funded_at ?? dd.closed_at ?? d.updated_at ?? null,
+          ownershipPercent: dd.ownership_percent ?? null,
+          valuationAtClose: dd.valuation_at_close ?? null,
+          currentValuation: postMoney({ raise: st.funding_target, valuation: st.valuation, valuationType: st.valuation_type as "pre" | "post" | null }),
+          mrr: st.mrr ?? null,
+          mrrSeries: (metrics ?? []).filter((m) => m.startup_id === st.id).map((m) => Number(m.mrr) || 0).slice(-12),
+          latestUpdate: (updates ?? []).find((u) => u.startup_id === st.id) ?? null,
+        });
+      }
+    }
+  }
+
   // D43: allocation for the period. Committed = live deals carrying a
   // commitment; deployed = money that has actually moved (funded), falling
   // back to closed when the funding step was never recorded.
@@ -75,6 +117,7 @@ export default async function InvestorDashboardPage() {
       <Navbar />
       <InvestorDashboardClient
         allocation={allocation}
+        portfolio={portfolio}
         profile={profile}
         investor={investor}
         watchlist={watchlist ?? []}
