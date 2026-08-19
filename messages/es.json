@@ -3101,5 +3101,24 @@
       "closed": "Cerrada",
       "funded": "Dinero recibido"
     }
+  },
+  "invite": {
+    "title": "Invitar a alguien",
+    "intro": "Conoces a gente que el otro lado de este mercado necesita. Crea un enlace y envíalo tú — no escribimos a nadie en tu nombre.",
+    "roleInvestor": "Invitar a un inversor",
+    "roleFounder": "Invitar a un fundador",
+    "notePh": "¿Para quién es? (solo lo ves tú)",
+    "create": "Crear enlace",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar: selecciona el enlace",
+    "revoke": "Revocar",
+    "joined": "{count} se han unido con tus invitaciones",
+    "none": "Aún no hay invitaciones.",
+    "banner": "Te han invitado a CapitalReach.",
+    "bannerNamed": "{name} te ha invitado a CapitalReach.",
+    "asFounder": "Tu cuenta se creará como fundador levantando una ronda.",
+    "asInvestor": "Tu cuenta se creará como inversor.",
+    "expired": "Ese enlace ha caducado o ya se usó. Puedes registrarte igualmente."
   }
 }

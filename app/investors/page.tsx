@@ -7,6 +7,9 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  // Canonical: the app answers on more than one hostname (vercel.app plus
+  // whatever domain it ends up on), and duplicate URLs split their own ranking.
+  alternates: { canonical: "/investors" },
   title: "Investor Directory",
   description: "Browse accredited angels, VCs, and institutional investors actively looking to fund startups on CapitalReach.",
 };

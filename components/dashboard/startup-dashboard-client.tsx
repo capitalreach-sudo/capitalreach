@@ -8,6 +8,7 @@ import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crossha
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { InvitePanel } from "@/components/shared/invite-panel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
@@ -1234,6 +1235,15 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.7 }}>
               {t("dashboard.billingNote")}
             </p>
+          </div>
+        )}
+
+        {/* F: a founder's best introduction is the investor who passed on
+            them politely. Hidden when an admin is viewing as this founder —
+            an invite is theirs to send, not ours. */}
+        {!viewingAs && (
+          <div style={{ marginTop: "24px" }}>
+            <InvitePanel defaultRole="investor" />
           </div>
         )}
       </div>

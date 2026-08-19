@@ -8,6 +8,8 @@ import { resolveEntity } from "@/lib/membership";
 import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
+import { JsonLdScript } from "@/components/shared/json-ld";
+import { investorJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Linkedin, MapPin, DollarSign, Globe, Twitter,
@@ -31,6 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${name}${firm} — Investor on CapitalReach`,
     description: data.bio || `${data.type} investor on CapitalReach`,
+    alternates: { canonical: `/investors/${params.slug}` },
+    openGraph: { title: `${name}${firm} | CapitalReach`, description: data.bio ?? undefined, type: "website", url: `/investors/${params.slug}` },
   };
 }
 
@@ -468,6 +472,19 @@ export default async function InvestorProfilePage({ params }: Props) {
             </a>
           </div>
         )}
+        <JsonLdScript data={investorJsonLd({
+          slug: investor.slug,
+          displayName: investor.display_name ?? null,
+          firmName: investor.firm_name ?? null,
+          bio: investor.bio ?? null,
+          type: investor.type ?? null,
+          website: (investor as { website?: string | null }).website ?? null,
+        })} />
+        <JsonLdScript data={breadcrumbJsonLd([
+          { name: "Investors", path: "/investors" },
+          { name: investor.firm_name || investor.display_name || investor.slug, path: `/investors/${investor.slug}` },
+        ])} />
+
         {/* E50: a signed-in visitor can say this profile is not what it
             claims. Signed-out visitors cannot — a report needs someone to
             come back to. */}

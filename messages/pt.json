@@ -3101,5 +3101,24 @@
       "closed": "Fechados",
       "funded": "Dinheiro recebido"
     }
+  },
+  "invite": {
+    "title": "Convidar alguém",
+    "intro": "Conhece pessoas de que o outro lado deste mercado precisa. Crie um link e envie-o você — não escrevemos a ninguém em seu nome.",
+    "roleInvestor": "Convidar um investidor",
+    "roleFounder": "Convidar um fundador",
+    "notePh": "Para quem é? (só você vê)",
+    "create": "Criar link",
+    "copy": "Copiar link",
+    "copied": "Link copiado",
+    "copyFailed": "Não foi possível copiar — selecione o link",
+    "revoke": "Revogar",
+    "joined": "{count} entraram pelos seus convites",
+    "none": "Ainda sem convites.",
+    "banner": "Foi convidado para a CapitalReach.",
+    "bannerNamed": "{name} convidou-o para a CapitalReach.",
+    "asFounder": "A sua conta será criada como fundador a angariar uma ronda.",
+    "asInvestor": "A sua conta será criada como investidor.",
+    "expired": "Esse link de convite expirou ou já foi usado. Pode registar-se na mesma."
   }
 }

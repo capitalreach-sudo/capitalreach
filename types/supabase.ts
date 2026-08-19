@@ -1206,6 +1206,42 @@ export type Database = {
           },
         ]
       }
+      invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          code: string
+          created_at: string
+          id: string
+          invite_role: string
+          inviter_id: string
+          note: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          code: string
+          created_at?: string
+          id?: string
+          invite_role: string
+          inviter_id: string
+          note?: string | null
+          revoked_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          code?: string
+          created_at?: string
+          id?: string
+          invite_role?: string
+          inviter_id?: string
+          note?: string | null
+          revoked_at?: string | null
+        }
+        Relationships: []
+      }
       listing_questions: {
         Row: {
           answer: string | null
@@ -1501,6 +1537,8 @@ export type Database = {
           investment_thesis: string | null
           investor_declarations: Json | null
           investor_type: string | null
+          invite_code: string | null
+          invited_by: string | null
           languages: string[] | null
           lead_investor: boolean | null
           muted_notification_types: string[]
@@ -1541,6 +1579,8 @@ export type Database = {
           investment_thesis?: string | null
           investor_declarations?: Json | null
           investor_type?: string | null
+          invite_code?: string | null
+          invited_by?: string | null
           languages?: string[] | null
           lead_investor?: boolean | null
           muted_notification_types?: string[]
@@ -1581,6 +1621,8 @@ export type Database = {
           investment_thesis?: string | null
           investor_declarations?: Json | null
           investor_type?: string | null
+          invite_code?: string | null
+          invited_by?: string | null
           languages?: string[] | null
           lead_investor?: boolean | null
           muted_notification_types?: string[]

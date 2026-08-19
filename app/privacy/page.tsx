@@ -17,6 +17,7 @@ export const revalidate = 3600;
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
   return {
+    alternates: { canonical: "/privacy" },
     title: t("privacy.metaTitle"),
     description: t("privacy.metaDesc"),
   };

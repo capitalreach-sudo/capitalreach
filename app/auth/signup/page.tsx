@@ -65,6 +65,7 @@ function SignupForm() {
   // neither is used for anything but display and a pre-selection the user can
   // still change -- entitlement comes from the DB, never from a query string.
   const planParam = searchParams.get("plan");
+  const inviteParam = (searchParams.get("invite") ?? "").trim().toUpperCase();
   const roleParam = searchParams.get("role");
   const presetRole: Role | null =
     roleParam === "startup" || roleParam === "investor" ? roleParam : null;
@@ -89,6 +90,9 @@ function SignupForm() {
   // click into an opaque error.
   const [resendIn, setResendIn]   = useState(0);
   const [signupError, setSignupError] = useState("");
+  // F: who sent you here. Looked up rather than trusted from the URL — the
+  // code decides the role, so a link cannot be edited into a different one.
+  const [invite, setInvite] = useState<{ valid: boolean; role?: string; inviterName?: string | null } | null>(null);
   // Terms §1 says use constitutes acceptance, which is weak. Require an
   // explicit act and record when it happened.
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -142,6 +146,10 @@ function SignupForm() {
             // rather than a profiles column: it is a record of what they
             // *wanted*, not an entitlement, and it needs no migration.
             ...(presetPlan ? { intended_plan: presetPlan.id } : {}),
+            // F: carried through signup so the invite can be redeemed once
+            // the account exists. Metadata rather than a column for the same
+            // reason as intended_plan — it is a record of how they arrived.
+            ...(invite?.valid ? { invite_code: inviteParam } : {}),
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -164,6 +172,22 @@ function SignupForm() {
     }
     setLoading(false);
   }
+
+  // F: resolve the invite once, and let it choose the role — the code is the
+  // authority, not the ?role= in the same URL.
+  useEffect(() => {
+    if (!inviteParam) return;
+    let live = true;
+    fetch(`/api/invites/lookup?code=${encodeURIComponent(inviteParam)}`)
+      .then(r => r.json())
+      .then(j => {
+        if (!live) return;
+        setInvite(j);
+        if (j?.valid && (j.role === "startup" || j.role === "investor")) setRole(j.role);
+      })
+      .catch(() => { if (live) setInvite({ valid: false }); });
+    return () => { live = false; };
+  }, [inviteParam]);
 
   useEffect(() => {
     if (resendIn <= 0) return;
@@ -375,6 +399,27 @@ function SignupForm() {
             {t("auth.joiningAsRole")} <span style={{ color: "var(--cr-copper)", fontWeight: 500, textTransform: "capitalize" }}>{role}</span>
           </p>
         </div>
+
+        {/* F: an invite is a person vouching for the platform. Saying who,
+            by name, is the whole reason the link converts better than an ad. */}
+        {inviteParam && invite && (
+          invite.valid ? (
+            <div style={{ background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
+                {invite.inviterName
+                  ? t("invite.bannerNamed", { name: invite.inviterName })
+                  : t("invite.banner")}
+              </p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+                {t(invite.role === "investor" ? "invite.asInvestor" : "invite.asFounder")}
+              </p>
+            </div>
+          ) : (
+            <div style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("invite.expired")}</p>
+            </div>
+          )
+        )}
 
         {/* Confirms the plan click actually registered. Without this the form
             is identical whether you picked a plan or not. */}

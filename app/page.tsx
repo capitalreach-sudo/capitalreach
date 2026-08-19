@@ -9,6 +9,9 @@ import type { Metadata }     from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  // Canonical: the app answers on more than one hostname (vercel.app plus
+  // whatever domain it ends up on), and duplicate URLs split their own ranking.
+  alternates: { canonical: "/" },
   title: "CapitalReach — Private Capital Marketplace",
   description:
     "The private marketplace for founders raising capital and investors deploying it. Vetted listings. AI-powered analysis. 2% success fee, paid by the startup only after it closes a round — investors pay nothing.",

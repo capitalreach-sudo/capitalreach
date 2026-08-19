@@ -3101,5 +3101,24 @@
       "closed": "Closed",
       "funded": "Money received"
     }
+  },
+  "invite": {
+    "title": "Invite someone",
+    "intro": "You know people the other side of this market needs. Create a link and send it yourself — we do not email anyone on your behalf.",
+    "roleInvestor": "Invite an investor",
+    "roleFounder": "Invite a founder",
+    "notePh": "Who is it for? (only you see this)",
+    "create": "Create link",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy — select the link instead",
+    "revoke": "Revoke",
+    "joined": "{count} joined through your invites",
+    "none": "No invites yet.",
+    "banner": "You were invited to CapitalReach.",
+    "bannerNamed": "{name} invited you to CapitalReach.",
+    "asFounder": "Your account will be set up as a founder raising a round.",
+    "asInvestor": "Your account will be set up as an investor.",
+    "expired": "That invite link has expired or has already been used. You can still sign up."
   }
 }

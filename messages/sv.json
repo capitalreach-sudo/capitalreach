@@ -3101,5 +3101,24 @@
       "closed": "Avslutade",
       "funded": "Pengar mottagna"
     }
+  },
+  "invite": {
+    "title": "Bjud in någon",
+    "intro": "Du känner personer som andra sidan av den här marknaden behöver. Skapa en länk och skicka den själv — vi mejlar ingen å dina vägnar.",
+    "roleInvestor": "Bjud in en investerare",
+    "roleFounder": "Bjud in en grundare",
+    "notePh": "Vem är den till? (bara du ser detta)",
+    "create": "Skapa länk",
+    "copy": "Kopiera länk",
+    "copied": "Länken kopierad",
+    "copyFailed": "Kunde inte kopiera — markera länken i stället",
+    "revoke": "Återkalla",
+    "joined": "{count} har gått med via dina inbjudningar",
+    "none": "Inga inbjudningar än.",
+    "banner": "Du har blivit inbjuden till CapitalReach.",
+    "bannerNamed": "{name} har bjudit in dig till CapitalReach.",
+    "asFounder": "Ditt konto skapas som grundare som reser kapital.",
+    "asInvestor": "Ditt konto skapas som investerare.",
+    "expired": "Den inbjudningslänken har gått ut eller är redan använd. Du kan registrera dig ändå."
   }
 }

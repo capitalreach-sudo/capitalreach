@@ -3101,5 +3101,24 @@
       "closed": "已交割",
       "funded": "已收到资金"
     }
+  },
+  "invite": {
+    "title": "邀请他人",
+    "intro": "你认识这个市场另一侧需要的人。生成链接后自己发出去 —— 我们不会以你的名义给任何人发邮件。",
+    "roleInvestor": "邀请一位投资人",
+    "roleFounder": "邀请一位创始人",
+    "notePh": "这条链接给谁？（仅你可见）",
+    "create": "生成链接",
+    "copy": "复制链接",
+    "copied": "链接已复制",
+    "copyFailed": "无法复制 —— 请手动选中链接",
+    "revoke": "撤销",
+    "joined": "通过你的邀请加入：{count} 人",
+    "none": "还没有邀请。",
+    "banner": "你受邀加入 CapitalReach。",
+    "bannerNamed": "{name} 邀请你加入 CapitalReach。",
+    "asFounder": "你的账户将以正在融资的创始人身份创建。",
+    "asInvestor": "你的账户将以投资人身份创建。",
+    "expired": "该邀请链接已过期或已被使用。你仍然可以注册。"
   }
 }

@@ -3101,5 +3101,24 @@
       "closed": "Gesloten",
       "funded": "Geld ontvangen"
     }
+  },
+  "invite": {
+    "title": "Iemand uitnodigen",
+    "intro": "Je kent mensen die de andere kant van deze markt nodig heeft. Maak een link en stuur die zelf — wij mailen niemand namens jou.",
+    "roleInvestor": "Een investeerder uitnodigen",
+    "roleFounder": "Een oprichter uitnodigen",
+    "notePh": "Voor wie is het? (alleen jij ziet dit)",
+    "create": "Link maken",
+    "copy": "Link kopiëren",
+    "copied": "Link gekopieerd",
+    "copyFailed": "Kopiëren lukte niet — selecteer de link",
+    "revoke": "Intrekken",
+    "joined": "{count} aangemeld via jouw uitnodigingen",
+    "none": "Nog geen uitnodigingen.",
+    "banner": "Je bent uitgenodigd voor CapitalReach.",
+    "bannerNamed": "{name} heeft je uitgenodigd voor CapitalReach.",
+    "asFounder": "Je account wordt aangemaakt als oprichter die ophaalt.",
+    "asInvestor": "Je account wordt aangemaakt als investeerder.",
+    "expired": "Die uitnodigingslink is verlopen of al gebruikt. Je kunt je alsnog aanmelden."
   }
 }

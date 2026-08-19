@@ -3,6 +3,8 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
+import { JsonLdScript } from "@/components/shared/json-ld";
+import { startupJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { StartupDetailClient } from "@/components/startup/startup-detail-client";
 import { stripLockedUrl } from "@/lib/document-access";
 import { investorCan } from "@/lib/access";
@@ -36,15 +38,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${startup.name} | CapitalReach`,
       description: startup.tagline,
       type: "website",
+      url: `/startups/${params.slug}`,
     },
-    other: {
-      "script:ld+json": JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        name: startup.name,
-        description: startup.tagline,
-      }),
-    },
+    // The structured data used to live here, in `other`, which Next renders
+    // as <meta name="script:ld+json"> — a meta tag no crawler reads. It is a
+    // real <script type="application/ld+json"> in the page body now.
+    alternates: { canonical: `/startups/${params.slug}` },
   };
 }
 
@@ -299,6 +298,19 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   return (
     <>
       <Navbar />
+      <JsonLdScript data={startupJsonLd({
+        name: safeStartup.name,
+        slug: safeStartup.slug,
+        tagline: safeStartup.tagline,
+        website: safeStartup.website ?? null,
+        country: safeStartup.country ?? null,
+        founded_year: safeStartup.founded_year ?? null,
+        industry: safeStartup.industry ?? null,
+      })} />
+      <JsonLdScript data={breadcrumbJsonLd([
+        { name: "Startups", path: "/startups" },
+        { name: safeStartup.name, path: `/startups/${safeStartup.slug}` },
+      ])} />
       <StartupDetailClient
         startup={safeStartup}
         investorTier={previewing ? null : investorTier}

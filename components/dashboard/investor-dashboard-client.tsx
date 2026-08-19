@@ -14,6 +14,7 @@ import { formatMoney } from "@/lib/currency";
 import { allocationSummary } from "@/lib/round-math";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { InvitePanel } from "@/components/shared/invite-panel";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
 
 interface Props {
@@ -944,6 +945,11 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                 )}
               </div>
             </div>
+          </div>
+        )}
+        {!viewingAs && (
+          <div style={{ marginTop: "24px" }}>
+            <InvitePanel defaultRole="startup" />
           </div>
         )}
       </div>

@@ -18,6 +18,7 @@ export const revalidate = 3600;
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
   return {
+    alternates: { canonical: "/terms" },
     title: t("terms.metaTitle"),
     description: t("terms.metaDesc"),
   };
