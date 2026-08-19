@@ -140,5 +140,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 
+  // C28: an upload of this type fulfils every open request for it. Each
+  // requester hears that what they asked for has arrived.
+  try {
+    const { data: open } = await adminClient.from("document_requests")
+      .select("id, investor:investors(owner_id)")
+      .match({ startup_id: startupId, doc_type: docType, status: "open" });
+    if (open && open.length) {
+      await adminClient.from("document_requests")
+        .update({ status: "fulfilled", resolved_at: new Date().toISOString(), fulfilled_document_id: doc.id })
+        .in("id", open.map((r) => r.id));
+      const { data: st } = await adminClient.from("startups").select("name, slug").eq("id", startupId).maybeSingle();
+      const { notifyUsers } = await import("@/lib/notify-user");
+      const owners = Array.from(new Set(open.map((r) => (r.investor as unknown as { owner_id: string } | null)?.owner_id).filter((x): x is string => !!x)));
+      if (owners.length) {
+        await notifyUsers(owners, {
+          type: "doc_request",
+          title: `${st?.name ?? "A founder"} uploaded the document you requested`,
+          body: (label || file.name).slice(0, 120),
+          href: st ? `/startups/${st.slug}` : "/dashboard/investor",
+        }).catch(() => {});
+      }
+    }
+  } catch (e) {
+    console.error("doc-request auto-fulfil failed:", e);
+  }
+
   return NextResponse.json({ success: true, document: doc });
 }

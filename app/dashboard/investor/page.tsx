@@ -33,8 +33,10 @@ export default async function InvestorDashboardPage() {
     .from("watchlists")
     .select("*, startup:startups(*)")
     .eq("investor_id", investor.id)
+    // C26: was capped at 20 — a real shortlist outgrows that in a week.
+    .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(20)
+    .limit(300)
     .returns<Watchlist[]>();
 
   // Deals

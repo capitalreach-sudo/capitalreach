@@ -2801,5 +2801,18 @@
     "send": "送信",
     "sent": "送信しました。",
     "addedToPipeline": "パイプラインに追加しました。"
+  },
+  "watchlist": {
+    "stWatching": "ウォッチ中",
+    "stReviewing": "検討中",
+    "stContacted": "連絡済み",
+    "stPassed": "見送り",
+    "statusLabel": "パイプライン状態",
+    "priorityLabel": "優先度"
+  },
+  "docReq": {
+    "outstandingTitle": "未対応の資料リクエスト {count} 件",
+    "outstandingHint": "投資家が待っています。同じ種類の資料をアップロードすると自動的にクローズされます。",
+    "decline": "辞退"
   }
 }

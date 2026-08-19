@@ -2801,5 +2801,18 @@
     "send": "Verzenden",
     "sent": "Bericht verzonden.",
     "addedToPipeline": "Toegevoegd aan uw pipeline."
+  },
+  "watchlist": {
+    "stWatching": "Volgen",
+    "stReviewing": "In beoordeling",
+    "stContacted": "Benaderd",
+    "stPassed": "Afgevallen",
+    "statusLabel": "Pipelinestatus",
+    "priorityLabel": "Prioriteit"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} openstaande documentverzoeken",
+    "outstandingHint": "Investeerders wachten hierop. Een upload van hetzelfde type sluit het verzoek automatisch.",
+    "decline": "Afwijzen"
   }
 }

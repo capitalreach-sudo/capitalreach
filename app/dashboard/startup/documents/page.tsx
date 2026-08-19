@@ -22,6 +22,55 @@ const DOC_TYPES = [
   { value: "other",           labelKey: "dashboard.docOther"     },
 ];
 
+/**
+ * C28: outstanding document requests. A request used to be a bell and
+ * nothing else; now the founder sees exactly what is being waited on, from
+ * whom, and can mark it declined (uploading the type fulfils it
+ * automatically — see /api/upload).
+ */
+function OutstandingRequests() {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  type Req = { id: string; doc_type: string; message: string | null; status: string; created_at: string; investor: { slug: string; display_name: string | null; firm_name: string | null } | null };
+  const [reqs, setReqs] = useState<Req[] | null>(null);
+  useEffect(() => {
+    fetch("/api/documents/request").then(r => r.ok ? r.json() : null).then(j => setReqs(j?.requests ?? [])).catch(() => setReqs([]));
+  }, []);
+  const open = (reqs ?? []).filter(r => r.status === "open");
+  if (!reqs || open.length === 0) return null;
+  const LABEL: Record<string, string> = { pitch_deck: "dashboard.docPitchDeck", financial_model: "dashboard.docFinModel", cap_table: "dashboard.docCapTable", other: "dashboard.docOther" };
+  async function resolve(id: string, status: "declined") {
+    const res = await fetch("/api/documents/request", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status }) });
+    if (!res.ok) { toast({ title: t("errors.generic"), variant: "destructive" }); return; }
+    setReqs(prev => (prev ?? []).map(r => r.id === id ? { ...r, status } : r));
+  }
+  return (
+    <div className="bg-cr-copper/[0.06] border border-cr-copper/25 rounded-2xl p-5 mb-6">
+      <h2 className="font-semibold text-cr-ink mb-1">{t("docReq.outstandingTitle", { count: open.length })}</h2>
+      <p className="text-xs text-cr-i3 mb-4">{t("docReq.outstandingHint")}</p>
+      <div className="space-y-2">
+        {open.map(r => (
+          <div key={r.id} className="flex items-start justify-between gap-3 bg-cr-paper border border-cr-p4 rounded-xl px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-cr-ink">{t(LABEL[r.doc_type] ?? "dashboard.docOther")}</p>
+              <p className="text-xs text-cr-i4">
+                {r.investor
+                  ? <Link href={`/investors/${r.investor.slug}`} className="text-cr-copper no-underline">{r.investor.display_name || r.investor.firm_name || t("deals.investorFallback")}</Link>
+                  : t("deals.investorFallback")}
+                {" · "}{new Date(r.created_at).toLocaleDateString()}
+              </p>
+              {r.message && <p className="text-xs text-cr-i3 mt-1">“{r.message}”</p>}
+            </div>
+            <Button size="sm" variant="outline" className="text-xs h-7 shrink-0" onClick={() => resolve(r.id, "declined")}>
+              {t("docReq.decline")}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function DocumentsPage() {
   const { t } = useTranslation();
   const [startup, setStartup] = useState<any>(null);
@@ -105,6 +154,8 @@ export default function DocumentsPage() {
           </Link>
           <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.docManager")}</h1>
         </div>
+
+        <OutstandingRequests />
 
         {isLimitedPlan && (
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-5 flex items-center justify-between">

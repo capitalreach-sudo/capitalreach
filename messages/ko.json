@@ -2801,5 +2801,18 @@
     "send": "보내기",
     "sent": "메시지를 보냈습니다.",
     "addedToPipeline": "파이프라인에 추가되었습니다."
+  },
+  "watchlist": {
+    "stWatching": "관찰 중",
+    "stReviewing": "검토 중",
+    "stContacted": "연락함",
+    "stPassed": "보류",
+    "statusLabel": "파이프라인 상태",
+    "priorityLabel": "우선순위"
+  },
+  "docReq": {
+    "outstandingTitle": "미처리 자료 요청 {count}건",
+    "outstandingHint": "투자자들이 기다리고 있습니다. 같은 유형의 자료를 업로드하면 요청이 자동으로 종료됩니다.",
+    "decline": "거절"
   }
 }

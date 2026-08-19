@@ -2801,5 +2801,18 @@
     "send": "Skicka",
     "sent": "Meddelande skickat.",
     "addedToPipeline": "Tillagd i din pipeline."
+  },
+  "watchlist": {
+    "stWatching": "Bevakas",
+    "stReviewing": "Granskas",
+    "stContacted": "Kontaktad",
+    "stPassed": "Avfärdad",
+    "statusLabel": "Pipelinestatus",
+    "priorityLabel": "Prioritet"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} öppna dokumentförfrågningar",
+    "outstandingHint": "Investerare väntar på dessa. En uppladdning av samma typ stänger förfrågan automatiskt.",
+    "decline": "Avböj"
   }
 }

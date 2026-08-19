@@ -2801,5 +2801,18 @@
     "send": "发送",
     "sent": "消息已发送。",
     "addedToPipeline": "已加入您的交易管道。"
+  },
+  "watchlist": {
+    "stWatching": "关注中",
+    "stReviewing": "评估中",
+    "stContacted": "已联系",
+    "stPassed": "已放弃",
+    "statusLabel": "管道状态",
+    "priorityLabel": "优先级"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} 个待处理的文件请求",
+    "outstandingHint": "投资者正在等待。上传同类型文件将自动关闭该请求。",
+    "decline": "拒绝"
   }
 }

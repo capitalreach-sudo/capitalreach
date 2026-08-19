@@ -192,6 +192,9 @@ export interface Watchlist {
   startup_id: string;
   /** Why this was saved. Added in migration 020. */
   note: string | null;
+  /** C26 (migration 068): the watchlist as a pipeline. */
+  status?: "watching" | "reviewing" | "contacted" | "passed";
+  priority?: number;
   created_at: string;
   startup?: Startup;
 }

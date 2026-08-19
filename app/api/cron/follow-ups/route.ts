@@ -171,8 +171,44 @@ export async function GET(req: NextRequest) {
     .lt("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
     .then(undefined, () => {});
 
+  // ── C28: nudge on document requests still open after 3 days ──────────────
+  // One nudge per request (reminded_at), so a founder who is ignoring it
+  // hears once more and then never again from the machine.
+  let docNudges = 0;
+  try {
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: stale } = await admin
+      .from("document_requests")
+      .select("id, doc_type, startup:startups(name, owner_id)")
+      .eq("status", "open")
+      .is("reminded_at", null)
+      .lt("created_at", threeDaysAgo)
+      .limit(200);
+    for (const r of stale ?? []) {
+      const st = r.startup as unknown as { name: string; owner_id: string } | null;
+      if (!st?.owner_id) continue;
+      await notifyUser({
+        userId: st.owner_id,
+        type: "doc_request",
+        title: `Still waiting: a document request on ${st.name}`,
+        body: "An investor asked for a document three days ago. Uploading it closes the request automatically.",
+        href: "/dashboard/startup/documents",
+      }).catch(() => {});
+      docNudges += 1;
+    }
+    if (stale?.length) {
+      await admin.from("document_requests")
+        .update({ reminded_at: new Date().toISOString() })
+        .in("id", stale.map((r) => r.id))
+        .then(undefined, () => {});
+    }
+  } catch (e) {
+    console.error("[cron] doc-request nudges failed:", e);
+  }
+
   return NextResponse.json({
     ok: true,
+    docNudges,
     checked: due?.length ?? 0,
     notified,
     freshStartups: fresh?.length ?? 0,

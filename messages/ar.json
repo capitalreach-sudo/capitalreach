@@ -2801,5 +2801,18 @@
     "send": "إرسال",
     "sent": "تم إرسال الرسالة.",
     "addedToPipeline": "تمت الإضافة إلى المسار."
+  },
+  "watchlist": {
+    "stWatching": "قيد المتابعة",
+    "stReviewing": "قيد المراجعة",
+    "stContacted": "تم التواصل",
+    "stPassed": "مستبعد",
+    "statusLabel": "حالة المسار",
+    "priorityLabel": "الأولوية"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} طلبات مستندات مفتوحة",
+    "outstandingHint": "المستثمرون في انتظارها. رفع مستند من النوع نفسه يُغلق الطلب تلقائيًا.",
+    "decline": "رفض"
   }
 }

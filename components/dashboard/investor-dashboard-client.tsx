@@ -72,6 +72,55 @@ const FEATURE_ROWS = [
  * Saves on blur rather than behind a button: this is a scratchpad, and asking
  * someone to press Save on a one-line thought is how the field goes unused.
  */
+/**
+ * C26: the watchlist is a pipeline, not a pile. Status moves a save through
+ * triage; priority stars it. Both persist through PATCH /api/watchlist.
+ */
+const WL_STATUSES = ["watching", "reviewing", "contacted", "passed"] as const;
+type WlStatus = typeof WL_STATUSES[number];
+const WL_KEY: Record<WlStatus, string> = {
+  watching: "watchlist.stWatching", reviewing: "watchlist.stReviewing",
+  contacted: "watchlist.stContacted", passed: "watchlist.stPassed",
+};
+const WL_COLOR: Record<WlStatus, string> = {
+  watching: "var(--cr-ink-4)", reviewing: "var(--cr-copper)",
+  contacted: "var(--cr-up)", passed: "var(--cr-down)",
+};
+
+function WatchlistTriage({ startupId, status, priority, onChange }: { startupId: string; status: WlStatus; priority: number; onChange: (patch: { status?: WlStatus; priority?: number }) => void }) {
+  const { t } = useTranslation();
+  const readOnly = useReadOnly();
+  const [busy, setBusy] = useState(false);
+
+  async function patch(body: { status?: WlStatus; priority?: number }) {
+    if (readOnly || busy) return;
+    const prev = { status, priority };
+    onChange(body);                       // optimistic
+    setBusy(true);
+    const res = await fetch("/api/watchlist", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, ...body }) });
+    setBusy(false);
+    if (!res.ok) { onChange(prev); notify.error(t("errors.generic")); }
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
+      <select value={status} onChange={(e) => patch({ status: e.target.value as WlStatus })} disabled={readOnly}
+        aria-label={t("watchlist.statusLabel")}
+        style={{ background: "var(--cr-paper-2)", border: `1px solid ${WL_COLOR[status]}`, color: WL_COLOR[status], borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 6px", textTransform: "uppercase", letterSpacing: "0.05em", cursor: readOnly ? "default" : "pointer", outline: "none" }}>
+        {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
+      </select>
+      {/* Priority: three dots, click to set, click the current one to clear. */}
+      <div style={{ display: "inline-flex", gap: "3px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
+        {[1, 2, 3].map((n) => (
+          <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
+            aria-label={`${t("watchlist.priorityLabel")} ${n}`} aria-pressed={priority >= n}
+            style={{ width: 9, height: 9, borderRadius: "50%", padding: 0, cursor: readOnly ? "default" : "pointer", border: `1px solid ${priority >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: priority >= n ? "var(--cr-copper)" : "transparent" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function WatchlistNote({ startupId, initial }: { startupId: string; initial: string | null }) {
   const { t } = useTranslation();
   const readOnly = useReadOnly();
@@ -260,6 +309,11 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
   const [activeTab, setActiveTab] = useState<InvestorTab>("watchlist");
+  // C26: local triage state so status/priority edits are instant.
+  const [wlState, setWlState] = useState<Record<string, { status: WlStatus; priority: number }>>(() =>
+    Object.fromEntries(watchlist.map((w) => [w.id, { status: (w.status ?? "watching") as WlStatus, priority: w.priority ?? 0 }])),
+  );
+  const [wlFilter, setWlFilter] = useState<"all" | WlStatus>("all");
 
   const TABS: { value: InvestorTab; label: string; Icon: React.ElementType }[] = [
     { value: "watchlist", label: t("dashboard.watchlist"), Icon: Bookmark   },
@@ -295,6 +349,8 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   async function exportWatchlist() {
     if (!watchlist.length) return;
     const rows = watchlist.map((w) => ({
+      status: wlState[w.id]?.status ?? "watching",
+      priority: wlState[w.id]?.priority ?? 0,
       name: w.startup?.name, tagline: w.startup?.tagline,
       industry: w.startup?.industry, stage: w.startup?.stage,
       funding_target: w.startup?.funding_target, mrr: w.startup?.mrr,
@@ -483,6 +539,23 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                 </button>
               )}
             </div>
+            {/* Triage filter — counts come from live local state. */}
+            {watchlist.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "16px" }}>
+                {(["all", ...WL_STATUSES] as const).map((f) => {
+                  const n = f === "all" ? watchlist.length : watchlist.filter((w) => (wlState[w.id]?.status ?? "watching") === f).length;
+                  const active = wlFilter === f;
+                  return (
+                    <button key={f} onClick={() => setWlFilter(f)} aria-pressed={active}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "5px 11px", borderRadius: "999px", cursor: "pointer",
+                        background: active ? "var(--cr-copper)" : "var(--cr-paper-2)", color: active ? "#fff" : "var(--cr-ink-3)",
+                        border: `1px solid ${active ? "var(--cr-copper)" : "var(--cr-rule-dark)"}` }}>
+                      {f === "all" ? t("dashboard.filterAll") : t(WL_KEY[f])} {n}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             {watchlist.length === 0 ? (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
                 <Bookmark style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
@@ -494,9 +567,17 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
-                {watchlist.map((w) => w.startup && (
-                  <div key={w.id}>
+                {watchlist
+                  .filter((w) => wlFilter === "all" || (wlState[w.id]?.status ?? "watching") === wlFilter)
+                  .map((w) => w.startup && (
+                  <div key={w.id} style={{ opacity: (wlState[w.id]?.status ?? "watching") === "passed" ? 0.6 : 1 }}>
                     <StartupCard startup={w.startup} investorTier={investor.subscription_tier} />
+                    <WatchlistTriage
+                      startupId={w.startup.id}
+                      status={wlState[w.id]?.status ?? "watching"}
+                      priority={wlState[w.id]?.priority ?? 0}
+                      onChange={(patch) => setWlState((p) => ({ ...p, [w.id]: { ...(p[w.id] ?? { status: "watching", priority: 0 }), ...patch } }))}
+                    />
                     <WatchlistNote startupId={w.startup.id} initial={w.note ?? null} />
                   </div>
                 ))}

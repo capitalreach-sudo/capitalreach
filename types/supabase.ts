@@ -585,6 +585,70 @@ export type Database = {
           },
         ]
       }
+      document_requests: {
+        Row: {
+          created_at: string
+          deal_id: string | null
+          doc_type: string
+          fulfilled_document_id: string | null
+          id: string
+          investor_id: string
+          message: string | null
+          reminded_at: string | null
+          resolved_at: string | null
+          startup_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          deal_id?: string | null
+          doc_type: string
+          fulfilled_document_id?: string | null
+          id?: string
+          investor_id: string
+          message?: string | null
+          reminded_at?: string | null
+          resolved_at?: string | null
+          startup_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string | null
+          doc_type?: string
+          fulfilled_document_id?: string | null
+          id?: string
+          investor_id?: string
+          message?: string | null
+          reminded_at?: string | null
+          resolved_at?: string | null
+          startup_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_requests_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_requests_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_requests_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_views: {
         Row: {
           document_id: string
@@ -1965,21 +2029,30 @@ export type Database = {
           id: string
           investor_id: string
           note: string | null
+          priority: number
           startup_id: string
+          status: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           investor_id: string
           note?: string | null
+          priority?: number
           startup_id: string
+          status?: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           investor_id?: string
           note?: string | null
+          priority?: number
           startup_id?: string
+          status?: string
+          updated_at?: string | null
         }
         Relationships: [
           {

@@ -2801,5 +2801,18 @@
     "send": "भेजें",
     "sent": "संदेश भेजा गया।",
     "addedToPipeline": "आपकी पाइपलाइन में जोड़ा गया।"
+  },
+  "watchlist": {
+    "stWatching": "नज़र में",
+    "stReviewing": "समीक्षा में",
+    "stContacted": "संपर्क किया",
+    "stPassed": "छोड़ा",
+    "statusLabel": "पाइपलाइन स्थिति",
+    "priorityLabel": "प्राथमिकता"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} खुले दस्तावेज़ अनुरोध",
+    "outstandingHint": "निवेशक इनका इंतज़ार कर रहे हैं। उसी प्रकार का दस्तावेज़ अपलोड करने पर अनुरोध अपने आप बंद हो जाता है।",
+    "decline": "अस्वीकार करें"
   }
 }

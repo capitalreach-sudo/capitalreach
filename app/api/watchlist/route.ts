@@ -142,3 +142,32 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({ saved: false });
 }
+
+/**
+ * PATCH { startupId, status?, priority?, note? } — C26: the watchlist as a
+ * pipeline. Status (watching / reviewing / contacted / passed) and priority
+ * (0–3) on an existing save. Investor's own row only (RLS).
+ */
+export async function PATCH(req: NextRequest) {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { startupId, status, priority, note } = (await req.json().catch(() => ({}))) as { startupId?: string; status?: string; priority?: number; note?: string | null };
+  if (!isUuid(startupId ?? "")) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+  const investorId = await resolveInvestorId(supabase, user.id);
+  if (!investorId) return NextResponse.json({ error: "Complete your investor profile first." }, { status: 403 });
+  const patch: { status?: string; priority?: number; note?: string | null; updated_at: string } = { updated_at: new Date().toISOString() };
+  if (status !== undefined) {
+    if (!["watching", "reviewing", "contacted", "passed"].includes(status)) return NextResponse.json({ error: "invalid status" }, { status: 400 });
+    patch.status = status;
+  }
+  if (priority !== undefined) {
+    if (typeof priority !== "number" || !Number.isInteger(priority) || priority < 0 || priority > 3) return NextResponse.json({ error: "priority must be 0–3" }, { status: 400 });
+    patch.priority = priority;
+  }
+  if (note !== undefined) patch.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 2000) : null;
+  const { data, error } = await supabase.from("watchlists").update(patch).match({ investor_id: investorId, startup_id: startupId }).select("id, status, priority, note").maybeSingle();
+  if (error) return NextResponse.json({ error: "Could not update" }, { status: 500 });
+  if (!data) return NextResponse.json({ error: "Not on your watchlist" }, { status: 404 });
+  return NextResponse.json({ saved: true, item: data });
+}

@@ -2801,5 +2801,18 @@
     "send": "Enviar",
     "sent": "Mensagem enviada.",
     "addedToPipeline": "Adicionado ao pipeline."
+  },
+  "watchlist": {
+    "stWatching": "Em observação",
+    "stReviewing": "Em análise",
+    "stContacted": "Contactado",
+    "stPassed": "Descartado",
+    "statusLabel": "Estado do pipeline",
+    "priorityLabel": "Prioridade"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} pedidos de documentos em aberto",
+    "outstandingHint": "Há investidores à espera. Carregar um documento do mesmo tipo fecha o pedido automaticamente.",
+    "decline": "Recusar"
   }
 }

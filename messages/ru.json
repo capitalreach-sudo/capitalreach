@@ -2801,5 +2801,18 @@
     "send": "Отправить",
     "sent": "Сообщение отправлено.",
     "addedToPipeline": "Добавлено в пайплайн."
+  },
+  "watchlist": {
+    "stWatching": "Наблюдаю",
+    "stReviewing": "Изучаю",
+    "stContacted": "Связались",
+    "stPassed": "Отклонён",
+    "statusLabel": "Статус в пайплайне",
+    "priorityLabel": "Приоритет"
+  },
+  "docReq": {
+    "outstandingTitle": "{count} открытых запросов документов",
+    "outstandingHint": "Инвесторы их ждут. Загрузка документа того же типа закрывает запрос автоматически.",
+    "decline": "Отклонить"
   }
 }
