@@ -1003,7 +1003,10 @@
     "updEditedTag": "edited",
     "updDeleteConfirm": "Delete this update? Investors who were notified keep their notification.",
     "tgNotePh": "Add a note…",
-    "tgNextContact": "Next contact"
+    "tgNextContact": "Next contact",
+    "reportDeleteConfirm": "Delete this report? This cannot be undone.",
+    "reportExport": "Export",
+    "reportViewDeal": "Open deal"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1120,7 +1123,12 @@
     "closingSoon": "Closing soon",
     "businessModelGroup": "Business model",
     "hasDemo": "Has demo video",
-    "exportCsv": "Export CSV"
+    "exportCsv": "Export CSV",
+    "snoozeLabel": "How long to hide for",
+    "snoozeForever": "Hide for good",
+    "snooze30": "Hide 30 days",
+    "snooze90": "Hide 90 days",
+    "snooze180": "Hide 6 months"
   },
   "startup": {
     "back": "Back to directory",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} open document requests",
     "outstandingHint": "Investors are waiting on these. Uploading a document of the same type closes the request automatically.",
     "decline": "Decline"
+  },
+  "scorecard": {
+    "title": "Your scorecard",
+    "score": "Score it",
+    "privateHint": "Private to you — the startup never sees this.",
+    "team": "Team",
+    "market": "Market",
+    "product": "Product & moat",
+    "traction": "Traction",
+    "terms": "Terms",
+    "weight": "Weight",
+    "notePh": "Why this score…",
+    "yourScore": "Your score",
+    "yourNote": "Your note"
   }
 }

@@ -983,7 +983,10 @@
     "updEditedTag": "modificato",
     "updDeleteConfirm": "Eliminare questo aggiornamento? Gli investitori già notificati mantengono la notifica.",
     "tgNotePh": "Aggiungi una nota…",
-    "tgNextContact": "Prossimo contatto"
+    "tgNextContact": "Prossimo contatto",
+    "reportDeleteConfirm": "Eliminare questo report? Operazione irreversibile.",
+    "reportExport": "Esporta",
+    "reportViewDeal": "Apri deal"
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -1100,7 +1103,12 @@
     "closingSoon": "In chiusura",
     "businessModelGroup": "Modello di business",
     "hasDemo": "Con video demo",
-    "exportCsv": "Esporta CSV"
+    "exportCsv": "Esporta CSV",
+    "snoozeLabel": "Nascondi per",
+    "snoozeForever": "Nascondi per sempre",
+    "snooze30": "Nascondi 30 giorni",
+    "snooze90": "Nascondi 90 giorni",
+    "snooze180": "Nascondi 6 mesi"
   },
   "startupDetail": {
     "overview": "Panoramica",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} richieste di documenti aperte",
     "outstandingHint": "Ci sono investitori in attesa. Caricare un documento dello stesso tipo chiude la richiesta automaticamente.",
     "decline": "Rifiuta"
+  },
+  "scorecard": {
+    "title": "La tua valutazione",
+    "score": "Valuta",
+    "privateHint": "Privato — la startup non lo vede mai.",
+    "team": "Team",
+    "market": "Mercato",
+    "product": "Prodotto e moat",
+    "traction": "Trazione",
+    "terms": "Condizioni",
+    "weight": "Peso",
+    "notePh": "Perché questa valutazione…",
+    "yourScore": "Il tuo punteggio",
+    "yourNote": "La tua nota"
   }
 }

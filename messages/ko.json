@@ -983,7 +983,10 @@
     "updEditedTag": "수정됨",
     "updDeleteConfirm": "이 업데이트를 삭제할까요? 이미 알림을 받은 투자자의 알림은 유지됩니다.",
     "tgNotePh": "메모 추가…",
-    "tgNextContact": "다음 연락"
+    "tgNextContact": "다음 연락",
+    "reportDeleteConfirm": "이 리포트를 삭제할까요? 되돌릴 수 없습니다.",
+    "reportExport": "내보내기",
+    "reportViewDeal": "거래 열기"
   },
   "settings": {
     "pageTitle": "설정",
@@ -1100,7 +1103,12 @@
     "closingSoon": "마감 임박",
     "businessModelGroup": "비즈니스 모델",
     "hasDemo": "데모 영상 있음",
-    "exportCsv": "CSV 내보내기"
+    "exportCsv": "CSV 내보내기",
+    "snoozeLabel": "숨길 기간",
+    "snoozeForever": "계속 숨기기",
+    "snooze30": "30일 숨기기",
+    "snooze90": "90일 숨기기",
+    "snooze180": "6개월 숨기기"
   },
   "startupDetail": {
     "overview": "개요",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "미처리 자료 요청 {count}건",
     "outstandingHint": "투자자들이 기다리고 있습니다. 같은 유형의 자료를 업로드하면 요청이 자동으로 종료됩니다.",
     "decline": "거절"
+  },
+  "scorecard": {
+    "title": "내 평가",
+    "score": "평가하기",
+    "privateHint": "나만 볼 수 있음 — 스타트업에는 절대 보이지 않습니다.",
+    "team": "팀",
+    "market": "시장",
+    "product": "제품과 해자",
+    "traction": "트랙션",
+    "terms": "조건",
+    "weight": "가중치",
+    "notePh": "이 평가의 이유…",
+    "yourScore": "내 점수",
+    "yourNote": "내 메모"
   }
 }

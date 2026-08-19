@@ -992,7 +992,10 @@
     "updEditedTag": "مُعدَّل",
     "updDeleteConfirm": "حذف هذا التحديث؟ يحتفظ المستثمرون الذين أُبلغوا بإشعارهم.",
     "tgNotePh": "أضف ملاحظة…",
-    "tgNextContact": "الاتصال التالي"
+    "tgNextContact": "الاتصال التالي",
+    "reportDeleteConfirm": "حذف هذا التقرير؟ لا يمكن التراجع.",
+    "reportExport": "تصدير",
+    "reportViewDeal": "فتح الصفقة"
   },
   "settings": {
     "pageTitle": "إعدادات الحساب",
@@ -1109,7 +1112,12 @@
     "closingSoon": "يُغلق قريبا",
     "businessModelGroup": "نموذج العمل",
     "hasDemo": "به فيديو تجريبي",
-    "exportCsv": "تصدير CSV"
+    "exportCsv": "تصدير CSV",
+    "snoozeLabel": "مدة الإخفاء",
+    "snoozeForever": "إخفاء نهائيًا",
+    "snooze30": "إخفاء 30 يومًا",
+    "snooze90": "إخفاء 90 يومًا",
+    "snooze180": "إخفاء 6 أشهر"
   },
   "startup": {
     "back": "العودة إلى الدليل",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} طلبات مستندات مفتوحة",
     "outstandingHint": "المستثمرون في انتظارها. رفع مستند من النوع نفسه يُغلق الطلب تلقائيًا.",
     "decline": "رفض"
+  },
+  "scorecard": {
+    "title": "تقييمك",
+    "score": "قيّم",
+    "privateHint": "خاص بك — لا تراه الشركة الناشئة أبدًا.",
+    "team": "الفريق",
+    "market": "السوق",
+    "product": "المنتج والحاجز التنافسي",
+    "traction": "الجذب",
+    "terms": "الشروط",
+    "weight": "الوزن",
+    "notePh": "سبب هذا التقييم…",
+    "yourScore": "تقييمك",
+    "yourNote": "ملاحظتك"
   }
 }

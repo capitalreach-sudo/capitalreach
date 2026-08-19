@@ -983,7 +983,10 @@
     "updEditedTag": "изменено",
     "updDeleteConfirm": "Удалить это обновление? Уже уведомлённые инвесторы сохранят уведомление.",
     "tgNotePh": "Добавить заметку…",
-    "tgNextContact": "Следующий контакт"
+    "tgNextContact": "Следующий контакт",
+    "reportDeleteConfirm": "Удалить этот отчёт? Действие необратимо.",
+    "reportExport": "Экспорт",
+    "reportViewDeal": "Открыть сделку"
   },
   "settings": {
     "pageTitle": "Настройки",
@@ -1100,7 +1103,12 @@
     "closingSoon": "Скоро закрытие",
     "businessModelGroup": "Бизнес-модель",
     "hasDemo": "С демо-видео",
-    "exportCsv": "Экспорт CSV"
+    "exportCsv": "Экспорт CSV",
+    "snoozeLabel": "На сколько скрыть",
+    "snoozeForever": "Скрыть навсегда",
+    "snooze30": "Скрыть на 30 дней",
+    "snooze90": "Скрыть на 90 дней",
+    "snooze180": "Скрыть на 6 месяцев"
   },
   "startupDetail": {
     "overview": "Обзор",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} открытых запросов документов",
     "outstandingHint": "Инвесторы их ждут. Загрузка документа того же типа закрывает запрос автоматически.",
     "decline": "Отклонить"
+  },
+  "scorecard": {
+    "title": "Ваша оценка",
+    "score": "Оценить",
+    "privateHint": "Только для вас — стартап этого не видит.",
+    "team": "Команда",
+    "market": "Рынок",
+    "product": "Продукт и барьеры",
+    "traction": "Трэкшн",
+    "terms": "Условия",
+    "weight": "Вес",
+    "notePh": "Почему такая оценка…",
+    "yourScore": "Ваша оценка",
+    "yourNote": "Ваша заметка"
   }
 }

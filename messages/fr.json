@@ -992,7 +992,10 @@
     "updEditedTag": "modifiée",
     "updDeleteConfirm": "Supprimer cette mise à jour ? Les investisseurs déjà notifiés gardent leur notification.",
     "tgNotePh": "Ajouter une note…",
-    "tgNextContact": "Prochain contact"
+    "tgNextContact": "Prochain contact",
+    "reportDeleteConfirm": "Supprimer ce rapport ? Action irréversible.",
+    "reportExport": "Exporter",
+    "reportViewDeal": "Ouvrir le deal"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -1109,7 +1112,12 @@
     "closingSoon": "Bientôt clôturé",
     "businessModelGroup": "Modèle économique",
     "hasDemo": "Avec vidéo démo",
-    "exportCsv": "Exporter CSV"
+    "exportCsv": "Exporter CSV",
+    "snoozeLabel": "Masquer pendant",
+    "snoozeForever": "Masquer définitivement",
+    "snooze30": "Masquer 30 jours",
+    "snooze90": "Masquer 90 jours",
+    "snooze180": "Masquer 6 mois"
   },
   "startup": {
     "back": "Retour à l'annuaire",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} demandes de documents en attente",
     "outstandingHint": "Des investisseurs les attendent. Téléverser un document du même type clôt la demande automatiquement.",
     "decline": "Refuser"
+  },
+  "scorecard": {
+    "title": "Votre notation",
+    "score": "Noter",
+    "privateHint": "Privé — la startup ne le voit jamais.",
+    "team": "Équipe",
+    "market": "Marché",
+    "product": "Produit & barrière",
+    "traction": "Traction",
+    "terms": "Conditions",
+    "weight": "Poids",
+    "notePh": "Pourquoi cette note…",
+    "yourScore": "Votre note",
+    "yourNote": "Votre commentaire"
   }
 }

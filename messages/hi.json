@@ -983,7 +983,10 @@
     "updEditedTag": "संपादित",
     "updDeleteConfirm": "यह अपडेट हटाएँ? जिन निवेशकों को सूचना मिल चुकी है, उनकी सूचना बनी रहेगी।",
     "tgNotePh": "नोट जोड़ें…",
-    "tgNextContact": "अगला संपर्क"
+    "tgNextContact": "अगला संपर्क",
+    "reportDeleteConfirm": "यह रिपोर्ट हटाएँ? इसे पूर्ववत नहीं किया जा सकता।",
+    "reportExport": "निर्यात",
+    "reportViewDeal": "सौदा खोलें"
   },
   "settings": {
     "pageTitle": "सेटिंग्स",
@@ -1100,7 +1103,12 @@
     "closingSoon": "जल्द बंद",
     "businessModelGroup": "व्यवसाय मॉडल",
     "hasDemo": "डेमो वीडियो सहित",
-    "exportCsv": "CSV निर्यात करें"
+    "exportCsv": "CSV निर्यात करें",
+    "snoozeLabel": "कितने समय छिपाएँ",
+    "snoozeForever": "हमेशा के लिए छिपाएँ",
+    "snooze30": "30 दिन छिपाएँ",
+    "snooze90": "90 दिन छिपाएँ",
+    "snooze180": "6 महीने छिपाएँ"
   },
   "startupDetail": {
     "overview": "अवलोकन",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} खुले दस्तावेज़ अनुरोध",
     "outstandingHint": "निवेशक इनका इंतज़ार कर रहे हैं। उसी प्रकार का दस्तावेज़ अपलोड करने पर अनुरोध अपने आप बंद हो जाता है।",
     "decline": "अस्वीकार करें"
+  },
+  "scorecard": {
+    "title": "आपका स्कोरकार्ड",
+    "score": "स्कोर दें",
+    "privateHint": "केवल आपके लिए — स्टार्टअप इसे कभी नहीं देखता।",
+    "team": "टीम",
+    "market": "बाज़ार",
+    "product": "उत्पाद और बढ़त",
+    "traction": "ट्रैक्शन",
+    "terms": "शर्तें",
+    "weight": "भार",
+    "notePh": "यह स्कोर क्यों…",
+    "yourScore": "आपका स्कोर",
+    "yourNote": "आपकी टिप्पणी"
   }
 }

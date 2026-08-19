@@ -586,6 +586,10 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
   // out of browse behind a show-hidden escape hatch.
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [showHidden, setShowHidden]     = useState(false);
+  // C27: the viewer's own scorecards, keyed by startup — shown in compare.
+  const [scorecards, setScorecards] = useState<Record<string, { total: number | null; note: string | null }>>({});
+  // C35: how long "not for me" lasts. A pre-seed pass is not a Series A pass.
+  const [snoozeChoice, setSnoozeChoice] = useState<number | null>(null); // days, null = forever
   const myInvestorId = useRef<string | null>(null);
   // The viewer's own thesis powers the fit sort. Absent for founders and
   // anonymous visitors, which is exactly when the sort option is hidden.
@@ -696,8 +700,21 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
     // deduped to a set of ids here.
     supabase.from("startup_views").select("startup_id").limit(1000)
       .then(({ data }) => { if (data) setViewedIds(new Set(data.map(v => v.startup_id))); });
-    supabase.from("startup_dismissals").select("startup_id").limit(1000)
-      .then(({ data }) => { if (data) setDismissedIds(new Set(data.map(v => v.startup_id))); });
+    // Snoozed dismissals expire on their own: a row whose snooze_until has
+    // passed no longer hides the listing (C35).
+    supabase.from("startup_dismissals").select("startup_id, snooze_until").limit(1000)
+      .then(({ data }) => {
+        if (!data) return;
+        const today = new Date().toISOString().slice(0, 10);
+        setDismissedIds(new Set(data.filter(v => !v.snooze_until || v.snooze_until > today).map(v => v.startup_id)));
+      });
+    fetch("/api/scorecard")
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        if (!j?.scorecards) return;
+        setScorecards(Object.fromEntries(j.scorecards.map((sc: { startup_id: string; total: number | null; note: string | null }) => [sc.startup_id, { total: sc.total, note: sc.note }])));
+      })
+      .catch(() => {});
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -859,7 +876,11 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
     const { error } = hidden
       ? await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id)
       : await supabase.from("startup_dismissals").upsert(
-          { investor_id: inv, startup_id: id }, { onConflict: "investor_id,startup_id" });
+          {
+            investor_id: inv, startup_id: id,
+            snooze_until: snoozeChoice ? new Date(Date.now() + snoozeChoice * 86400000).toISOString().slice(0, 10) : null,
+          },
+          { onConflict: "investor_id,startup_id" });
     if (error) {
       // Put the set back the way it was and say so. Also drop the undo toast,
       // which otherwise lingers over an item that was never actually hidden.
@@ -1223,6 +1244,15 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
                 {lastHidden.name}: {t("startups.hiddenUndo")}
               </button>
             )}
+            {/* C35: how long the next "not for me" lasts. */}
+            <select value={snoozeChoice ?? ""} onChange={(e) => setSnoozeChoice(e.target.value ? Number(e.target.value) : null)}
+              aria-label={t("startups.snoozeLabel")} title={t("startups.snoozeLabel")}
+              style={{ marginLeft: "10px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "2px 4px", cursor: "pointer" }}>
+              <option value="">{t("startups.snoozeForever")}</option>
+              <option value="30">{t("startups.snooze30")}</option>
+              <option value="90">{t("startups.snooze90")}</option>
+              <option value="180">{t("startups.snooze180")}</option>
+            </select>
             {dismissedIds.size > 0 && (
               <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
                 style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
@@ -1299,26 +1329,49 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
       )}
       {showCompare && (() => {
         const rows = compareIds.map(id => allStartups.find(s => s.id === id)).filter((s): s is Startup => !!s);
+        // C34: the comparison a real shortlist needs — terms and team as well
+        // as traction, and your own score/note beside the AI's number.
         const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
           { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage },
           { label: t("onboarding.su.industry"),  get: (s) => s.industry },
+          { label: t("startups.region"),         get: (s) => s.country ?? "—" },
+          { label: t("startupDetail.founded"),   get: (s) => s.founded_year ? String(s.founded_year) : "—" },
+          { label: t("startupDetail.teamSize"),  get: (s) => (s as unknown as { team_size?: number | null }).team_size ? String((s as unknown as { team_size?: number | null }).team_size) : "—" },
           { label: t("startupDetail.mrr"),       get: (s) => safeFormatMRR(s.mrr) },
           { label: t("startupDetail.arr"),       get: (s) => safeFormatMRR(s.arr) },
           { label: t("startupDetail.growth"),    get: (s) => s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : "—" },
           { label: t("startups.runwayLabel"),    get: (s) => s.runway_months != null ? `${s.runway_months}mo` : "—" },
           { label: t("listings.raising"),        get: (s) => safeFormatCurrencyAmount(s.funding_target) },
+          { label: t("startupDetail.equity"),    get: (s) => { const e = (s as unknown as { equity_offered?: number | null }).equity_offered; return e != null ? `${e}%` : "—"; } },
+          { label: t("startupDetail.minCheck"),  get: (s) => { const m = (s as unknown as { min_check_size?: number | null }).min_check_size; return m ? safeFormatCurrencyAmount(m) : "—"; } },
+          { label: t("startups.closingSoon"), get: (s) => s.round_close_date ? new Date(s.round_close_date).toLocaleDateString() : "—" },
           { label: t("dashboard.aiScore"),       get: (s) => s.vaultrise_score != null ? String(s.vaultrise_score) : "—" },
+          { label: t("scorecard.yourScore"),     get: (s) => { const sc = scorecards[s.id]; return sc?.total != null ? `${sc.total}/100` : "—"; } },
+          { label: t("scorecard.yourNote"),      get: (s) => scorecards[s.id]?.note ?? "—" },
         ];
+        function exportCompareCsv() {
+          const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
+          const lines = [["", ...rows.map(r => r.name)], ...METRICS.map(m => [m.label, ...rows.map(m.get)])];
+          const csv = lines.map(l => l.map(esc).join(",")).join("\n");
+          const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+          const a = document.createElement("a"); a.href = url; a.download = "capitalreach-compare.csv"; a.click(); URL.revokeObjectURL(url);
+        }
         return (
           <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
             <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.5)" }} onClick={() => setShowCompare(false)} />
             <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button onClick={exportCompareCsv}
+                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+                  {t("dashboard.exportCsv")}
+                </button>
                 <button onClick={() => setShowCompare(false)} aria-label={t("nav.closeMenu")}
                   style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex" }}>
                   <X style={{ width: 18, height: 18 }} />
                 </button>
+                </div>
               </div>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -1338,9 +1391,12 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
                     {METRICS.map(m => (
                       <tr key={m.label}>
                         <td style={{ padding: "9px 12px 9px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
-                        {rows.map(s => (
-                          <td key={s.id} style={{ padding: "9px 12px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)" }}>{m.get(s)}</td>
-                        ))}
+                        {rows.map(s => {
+                          const isText = m.label === t("scorecard.yourNote");
+                          return (
+                            <td key={s.id} style={{ padding: "9px 12px", fontFamily: isText ? "'DM Sans', sans-serif" : "'JetBrains Mono', monospace", fontWeight: isText ? 300 : 500, fontSize: isText ? "12px" : "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)", minWidth: isText ? 160 : undefined }}>{m.get(s)}</td>
+                          );
+                        })}
                       </tr>
                     ))}
                   </tbody>

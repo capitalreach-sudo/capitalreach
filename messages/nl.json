@@ -983,7 +983,10 @@
     "updEditedTag": "bewerkt",
     "updDeleteConfirm": "Deze update verwijderen? Al genotificeerde investeerders houden hun melding.",
     "tgNotePh": "Notitie toevoegen…",
-    "tgNextContact": "Volgend contact"
+    "tgNextContact": "Volgend contact",
+    "reportDeleteConfirm": "Dit rapport verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "reportExport": "Exporteren",
+    "reportViewDeal": "Deal openen"
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -1100,7 +1103,12 @@
     "closingSoon": "Sluit binnenkort",
     "businessModelGroup": "Bedrijfsmodel",
     "hasDemo": "Met demovideo",
-    "exportCsv": "CSV exporteren"
+    "exportCsv": "CSV exporteren",
+    "snoozeLabel": "Hoe lang verbergen",
+    "snoozeForever": "Voorgoed verbergen",
+    "snooze30": "30 dagen verbergen",
+    "snooze90": "90 dagen verbergen",
+    "snooze180": "6 maanden verbergen"
   },
   "startupDetail": {
     "overview": "Overzicht",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} openstaande documentverzoeken",
     "outstandingHint": "Investeerders wachten hierop. Een upload van hetzelfde type sluit het verzoek automatisch.",
     "decline": "Afwijzen"
+  },
+  "scorecard": {
+    "title": "Uw scorekaart",
+    "score": "Beoordelen",
+    "privateHint": "Privé — de startup ziet dit nooit.",
+    "team": "Team",
+    "market": "Markt",
+    "product": "Product & moat",
+    "traction": "Tractie",
+    "terms": "Voorwaarden",
+    "weight": "Weging",
+    "notePh": "Waarom deze score…",
+    "yourScore": "Uw score",
+    "yourNote": "Uw notitie"
   }
 }

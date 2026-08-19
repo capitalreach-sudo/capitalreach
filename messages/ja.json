@@ -992,7 +992,10 @@
     "updEditedTag": "編集済み",
     "updDeleteConfirm": "この更新を削除しますか？既に通知された投資家の通知は残ります。",
     "tgNotePh": "メモを追加…",
-    "tgNextContact": "次回連絡"
+    "tgNextContact": "次回連絡",
+    "reportDeleteConfirm": "このレポートを削除しますか？取り消せません。",
+    "reportExport": "エクスポート",
+    "reportViewDeal": "ディールを開く"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -1109,7 +1112,12 @@
     "closingSoon": "まもなく締切",
     "businessModelGroup": "ビジネスモデル",
     "hasDemo": "デモ動画あり",
-    "exportCsv": "CSVをエクスポート"
+    "exportCsv": "CSVをエクスポート",
+    "snoozeLabel": "非表示にする期間",
+    "snoozeForever": "ずっと非表示",
+    "snooze30": "30日間 非表示",
+    "snooze90": "90日間 非表示",
+    "snooze180": "6か月 非表示"
   },
   "startup": {
     "back": "ディレクトリに戻る",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "未対応の資料リクエスト {count} 件",
     "outstandingHint": "投資家が待っています。同じ種類の資料をアップロードすると自動的にクローズされます。",
     "decline": "辞退"
+  },
+  "scorecard": {
+    "title": "あなたの評価",
+    "score": "評価する",
+    "privateHint": "あなただけに表示 — スタートアップには見えません。",
+    "team": "チーム",
+    "market": "市場",
+    "product": "製品と参入障壁",
+    "traction": "トラクション",
+    "terms": "条件",
+    "weight": "重み",
+    "notePh": "この評価の理由…",
+    "yourScore": "あなたの評価",
+    "yourNote": "あなたのメモ"
   }
 }

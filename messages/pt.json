@@ -983,7 +983,10 @@
     "updEditedTag": "editada",
     "updDeleteConfirm": "Eliminar esta atualização? Os investidores já notificados mantêm a notificação.",
     "tgNotePh": "Adicionar nota…",
-    "tgNextContact": "Próximo contacto"
+    "tgNextContact": "Próximo contacto",
+    "reportDeleteConfirm": "Eliminar este relatório? Não pode ser desfeito.",
+    "reportExport": "Exportar",
+    "reportViewDeal": "Abrir negócio"
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -1100,7 +1103,12 @@
     "closingSoon": "Fechando em breve",
     "businessModelGroup": "Modelo de negócio",
     "hasDemo": "Com vídeo demo",
-    "exportCsv": "Exportar CSV"
+    "exportCsv": "Exportar CSV",
+    "snoozeLabel": "Ocultar durante",
+    "snoozeForever": "Ocultar para sempre",
+    "snooze30": "Ocultar 30 dias",
+    "snooze90": "Ocultar 90 dias",
+    "snooze180": "Ocultar 6 meses"
   },
   "startupDetail": {
     "overview": "Visão geral",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} pedidos de documentos em aberto",
     "outstandingHint": "Há investidores à espera. Carregar um documento do mesmo tipo fecha o pedido automaticamente.",
     "decline": "Recusar"
+  },
+  "scorecard": {
+    "title": "A sua avaliação",
+    "score": "Avaliar",
+    "privateHint": "Privado — a startup nunca vê isto.",
+    "team": "Equipa",
+    "market": "Mercado",
+    "product": "Produto e vantagem",
+    "traction": "Tração",
+    "terms": "Termos",
+    "weight": "Peso",
+    "notePh": "Porquê esta avaliação…",
+    "yourScore": "A sua pontuação",
+    "yourNote": "A sua nota"
   }
 }

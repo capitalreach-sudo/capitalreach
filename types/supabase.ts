@@ -717,6 +717,57 @@ export type Database = {
           },
         ]
       }
+      investor_scorecards: {
+        Row: {
+          created_at: string
+          id: string
+          investor_id: string
+          note: string | null
+          scores: Json
+          startup_id: string
+          total: number | null
+          updated_at: string
+          weights: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_id: string
+          note?: string | null
+          scores?: Json
+          startup_id: string
+          total?: number | null
+          updated_at?: string
+          weights?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_id?: string
+          note?: string | null
+          scores?: Json
+          startup_id?: string
+          total?: number | null
+          updated_at?: string
+          weights?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_scorecards_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "investor_scorecards_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investor_targets: {
         Row: {
           created_at: string
@@ -1332,18 +1383,24 @@ export type Database = {
           created_at: string
           id: string
           investor_id: string
+          reason: string | null
+          snooze_until: string | null
           startup_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           investor_id: string
+          reason?: string | null
+          snooze_until?: string | null
           startup_id: string
         }
         Update: {
           created_at?: string
           id?: string
           investor_id?: string
+          reason?: string | null
+          snooze_until?: string | null
           startup_id?: string
         }
         Relationships: [

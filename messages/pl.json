@@ -983,7 +983,10 @@
     "updEditedTag": "edytowano",
     "updDeleteConfirm": "Usunąć tę aktualizację? Powiadomieni inwestorzy zachowają powiadomienie.",
     "tgNotePh": "Dodaj notatkę…",
-    "tgNextContact": "Następny kontakt"
+    "tgNextContact": "Następny kontakt",
+    "reportDeleteConfirm": "Usunąć ten raport? Tej operacji nie można cofnąć.",
+    "reportExport": "Eksportuj",
+    "reportViewDeal": "Otwórz transakcję"
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -1100,7 +1103,12 @@
     "closingSoon": "Wkrótce zamknięcie",
     "businessModelGroup": "Model biznesowy",
     "hasDemo": "Z wideo demo",
-    "exportCsv": "Eksportuj CSV"
+    "exportCsv": "Eksportuj CSV",
+    "snoozeLabel": "Jak długo ukrywać",
+    "snoozeForever": "Ukryj na stałe",
+    "snooze30": "Ukryj 30 dni",
+    "snooze90": "Ukryj 90 dni",
+    "snooze180": "Ukryj 6 miesięcy"
   },
   "startupDetail": {
     "overview": "Przegląd",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} otwartych próśb o dokumenty",
     "outstandingHint": "Inwestorzy na nie czekają. Wgranie dokumentu tego samego typu zamyka prośbę automatycznie.",
     "decline": "Odrzuć"
+  },
+  "scorecard": {
+    "title": "Twoja ocena",
+    "score": "Oceń",
+    "privateHint": "Prywatne — startup tego nie zobaczy.",
+    "team": "Zespół",
+    "market": "Rynek",
+    "product": "Produkt i przewaga",
+    "traction": "Trakcja",
+    "terms": "Warunki",
+    "weight": "Waga",
+    "notePh": "Dlaczego taka ocena…",
+    "yourScore": "Twoja ocena",
+    "yourNote": "Twoja notatka"
   }
 }

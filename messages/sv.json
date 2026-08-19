@@ -983,7 +983,10 @@
     "updEditedTag": "redigerad",
     "updDeleteConfirm": "Ta bort uppdateringen? Redan aviserade investerare behåller sin avisering.",
     "tgNotePh": "Lägg till anteckning…",
-    "tgNextContact": "Nästa kontakt"
+    "tgNextContact": "Nästa kontakt",
+    "reportDeleteConfirm": "Ta bort rapporten? Går inte att ångra.",
+    "reportExport": "Exportera",
+    "reportViewDeal": "Öppna affär"
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1100,7 +1103,12 @@
     "closingSoon": "Stänger snart",
     "businessModelGroup": "Affärsmodell",
     "hasDemo": "Med demovideo",
-    "exportCsv": "Exportera CSV"
+    "exportCsv": "Exportera CSV",
+    "snoozeLabel": "Dölj hur länge",
+    "snoozeForever": "Dölj för alltid",
+    "snooze30": "Dölj 30 dagar",
+    "snooze90": "Dölj 90 dagar",
+    "snooze180": "Dölj 6 månader"
   },
   "startupDetail": {
     "overview": "Översikt",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} öppna dokumentförfrågningar",
     "outstandingHint": "Investerare väntar på dessa. En uppladdning av samma typ stänger förfrågan automatiskt.",
     "decline": "Avböj"
+  },
+  "scorecard": {
+    "title": "Ditt omdöme",
+    "score": "Betygsätt",
+    "privateHint": "Privat — startupen ser aldrig detta.",
+    "team": "Team",
+    "market": "Marknad",
+    "product": "Produkt & vallgrav",
+    "traction": "Traktion",
+    "terms": "Villkor",
+    "weight": "Vikt",
+    "notePh": "Varför detta betyg…",
+    "yourScore": "Ditt betyg",
+    "yourNote": "Din anteckning"
   }
 }

@@ -26,6 +26,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { roundCloseState } from "@/lib/round-close";
+import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
 import { TractionChart, type MetricPoint } from "@/components/startup/traction-chart";
 import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
@@ -229,6 +230,92 @@ function DocRequestRow({ startupId }: { startupId: string }) {
         style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", cursor: "pointer" }}>
         {busy ? "…" : t("startupDetail.askSend")}
       </button>
+    </div>
+  );
+}
+
+/**
+ * C27: the investor's private scorecard. Five criteria, 0–5 each, weighted
+ * if you care about one more than the others; the total is the average of
+ * what you actually scored. Never visible to the startup — RLS scopes the
+ * row to the owning investor, and it renders only for investor viewers.
+ */
+function ScorecardPanel({ startupId }: { startupId: string }) {
+  const { t } = useTranslation();
+  const [scores, setScores] = useState<ScorecardScores>({});
+  const [weights, setWeights] = useState<ScorecardWeights>({});
+  const [note, setNote] = useState("");
+  const [total, setTotal] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/scorecard?startupId=${startupId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        const sc = j?.scorecards?.[0];
+        if (sc) { setScores(sc.scores ?? {}); setWeights(sc.weights ?? {}); setNote(sc.note ?? ""); setTotal(sc.total ?? null); setOpen(true); }
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, [startupId]);
+
+  function persist(nextScores: ScorecardScores, nextWeights: ScorecardWeights, nextNote: string) {
+    setTotal(scorecardTotal(nextScores, nextWeights));
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const res = await fetch("/api/scorecard", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, scores: nextScores, weights: nextWeights, note: nextNote }) });
+      if (!res.ok) notify.error(t("errors.generic"));
+    }, 600);
+  }
+  function setScore(k: ScorecardCriterion, v: number) {
+    const next = { ...scores, [k]: scores[k] === v ? undefined : v };
+    if (next[k] === undefined) delete next[k];
+    setScores(next); persist(next, weights, note);
+  }
+  function setWeight(k: ScorecardCriterion, v: number) {
+    const next = { ...weights, [k]: v };
+    setWeights(next); persist(scores, next, note);
+  }
+
+  if (!loaded) return null;
+  return (
+    <div style={{ marginTop: "8px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("scorecard.title")}</h3>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {total != null && (
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "16px", color: "var(--cr-copper)" }}>{total}<span style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>/100</span></span>
+          )}
+          <button onClick={() => setOpen(o => !o)} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+            {open ? t("common.close") : t("scorecard.score")}
+          </button>
+        </div>
+      </div>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("scorecard.privateHint")}</p>
+      {open && (
+        <div style={{ marginTop: "10px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 16px" }}>
+          {SCORECARD_CRITERIA.map((k) => (
+            <div key={k} style={{ display: "grid", gridTemplateColumns: "1fr auto auto", alignItems: "center", gap: "10px", padding: "7px 0", borderBottom: "1px solid var(--cr-rule)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t(CRITERION_LABEL_KEY[k])}</span>
+              <div style={{ display: "inline-flex", gap: "4px" }} role="group" aria-label={t(CRITERION_LABEL_KEY[k])}>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button key={n} onClick={() => setScore(k, n)} aria-pressed={(scores[k] ?? 0) >= n} aria-label={`${t(CRITERION_LABEL_KEY[k])} ${n}`}
+                    style={{ width: 16, height: 16, borderRadius: "3px", padding: 0, cursor: "pointer", border: `1px solid ${(scores[k] ?? 0) >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: (scores[k] ?? 0) >= n ? "var(--cr-copper)" : "transparent" }} />
+                ))}
+              </div>
+              <select value={weights[k] ?? 1} onChange={(e) => setWeight(k, Number(e.target.value))} aria-label={t("scorecard.weight")} title={t("scorecard.weight")}
+                style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", padding: "2px 4px", cursor: "pointer" }}>
+                {[0, 1, 2, 3].map((w) => <option key={w} value={w}>×{w}</option>)}
+              </select>
+            </div>
+          ))}
+          <textarea value={note} onChange={(e) => { setNote(e.target.value.slice(0, 2000)); persist(scores, weights, e.target.value.slice(0, 2000)); }}
+            rows={2} placeholder={t("scorecard.notePh")}
+            style={{ width: "100%", boxSizing: "border-box", marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
+        </div>
+      )}
     </div>
   );
 }
@@ -990,6 +1077,9 @@ export function StartupDetailClient({
                 </div>
               </div>
             )}
+
+            {/* C27: your own read on this company, kept private to you. */}
+            {investorId && !viewerSuspended && <ScorecardPanel startupId={startup.id} />}
 
             {/* The economics of this deal: the 2% success fee is on the founder,
                 at close, and nothing before. Investors see their share of it on

@@ -992,7 +992,10 @@
     "updEditedTag": "已编辑",
     "updDeleteConfirm": "删除此动态？已收到通知的投资者将保留通知。",
     "tgNotePh": "添加备注…",
-    "tgNextContact": "下次联系"
+    "tgNextContact": "下次联系",
+    "reportDeleteConfirm": "删除此报告？此操作无法撤销。",
+    "reportExport": "导出",
+    "reportViewDeal": "打开交易"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -1109,7 +1112,12 @@
     "closingSoon": "即将截止",
     "businessModelGroup": "商业模式",
     "hasDemo": "有演示视频",
-    "exportCsv": "导出CSV"
+    "exportCsv": "导出CSV",
+    "snoozeLabel": "隐藏时长",
+    "snoozeForever": "永久隐藏",
+    "snooze30": "隐藏 30 天",
+    "snooze90": "隐藏 90 天",
+    "snooze180": "隐藏 6 个月"
   },
   "startup": {
     "back": "返回目录",
@@ -2815,5 +2823,19 @@
     "outstandingTitle": "{count} 个待处理的文件请求",
     "outstandingHint": "投资者正在等待。上传同类型文件将自动关闭该请求。",
     "decline": "拒绝"
+  },
+  "scorecard": {
+    "title": "您的评分",
+    "score": "评分",
+    "privateHint": "仅您可见 — 创业公司永远看不到。",
+    "team": "团队",
+    "market": "市场",
+    "product": "产品与壁垒",
+    "traction": "增长",
+    "terms": "条款",
+    "weight": "权重",
+    "notePh": "为何这样评分…",
+    "yourScore": "您的评分",
+    "yourNote": "您的备注"
   }
 }

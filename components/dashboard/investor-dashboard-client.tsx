@@ -314,6 +314,25 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
     Object.fromEntries(watchlist.map((w) => [w.id, { status: (w.status ?? "watching") as WlStatus, priority: w.priority ?? 0 }])),
   );
   const [wlFilter, setWlFilter] = useState<"all" | WlStatus>("all");
+  // C36: reports were capped at 10 and inert. Full list, delete, export,
+  // and a link to the deal they belong to.
+  const [reports, setReports] = useState<Array<{ id: string; type: string; content: string; created_at: string; startup?: { name: string; slug: string } | null; dealId?: string | null }>>(aiReports as never[]);
+  useEffect(() => {
+    fetch("/api/ai/reports").then(r => r.ok ? r.json() : null).then(j => { if (j?.reports) setReports(j.reports); }).catch(() => {});
+  }, []);
+  async function deleteReport(id: string) {
+    if (!window.confirm(t("dashboard.reportDeleteConfirm"))) return;
+    const res = await fetch("/api/ai/reports", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    setReports(prev => prev.filter(r => r.id !== id));
+  }
+  function exportReport(r: { content: string; created_at: string; startup?: { name: string } | null; type: string }) {
+    const md = `# ${r.startup?.name ?? "Report"} — ${r.type.replace(/_/g, " ")}\n\n_${new Date(r.created_at).toLocaleString()}_\n\n${r.content}\n\n---\nAI-generated for informational purposes only. Not investment advice.\n`;
+    const url = URL.createObjectURL(new Blob([md], { type: "text/markdown;charset=utf-8;" }));
+    const a = document.createElement("a"); a.href = url;
+    a.download = `${(r.startup?.name ?? "report").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${r.type}.md`;
+    a.click(); URL.revokeObjectURL(url);
+  }
 
   const TABS: { value: InvestorTab; label: string; Icon: React.ElementType }[] = [
     { value: "watchlist", label: t("dashboard.watchlist"), Icon: Bookmark   },
@@ -490,7 +509,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             { label: t("dashboard.watchlist"),   val: watchlist.length,  Icon: Bookmark,    href: null },
             { label: t("dashboard.activeDeals"), val: activeDeals,       Icon: TrendingUp,  href: "/deals" },
             { label: t("dashboard.closedDeals"), val: closedDeals,       Icon: CheckCircle2, href: "/deals" },
-            { label: t("dashboard.aiReports"),   val: aiReports.length,  Icon: Brain,       href: null },
+            { label: t("dashboard.aiReports"),   val: reports.length,    Icon: Brain,       href: null },
           ].map(({ label, val, Icon, href }) => {
             const card = (
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px", height: "100%" }}>
@@ -621,7 +640,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         })()}
 
         {activeTab === "reports" && (
-          aiReports.length === 0 ? (
+          reports.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
               <Brain style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noAiReportsTitle")}</h3>
@@ -634,7 +653,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {aiReports.map((report) => (
+              {reports.map((report) => (
                 <div key={report.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -653,10 +672,26 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {report.content}
                   </p>
-                  <Link href={`/startups/${report.startup?.slug}`}
-                    style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", display: "block", marginTop: "12px" }}>
-                    {t("dashboard.viewStartup")} →
-                  </Link>
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "12px", flexWrap: "wrap" }}>
+                    <Link href={`/startups/${report.startup?.slug}`}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                      {t("dashboard.viewStartup")} →
+                    </Link>
+                    {report.dealId && (
+                      <Link href={`/deals?deal=${report.dealId}`}
+                        style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                        {t("dashboard.reportViewDeal")} →
+                      </Link>
+                    )}
+                    <button onClick={() => exportReport(report)}
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                      {t("dashboard.reportExport")}
+                    </button>
+                    <button onClick={() => deleteReport(report.id)}
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-down)" }}>
+                      {t("common.delete")}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
