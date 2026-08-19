@@ -1389,7 +1389,15 @@
     "stage_closed": "Closed",
     "stage_passed": "Passed",
     "multiCurrencyNote": "Closed rounds span {list}; figures are not converted to a single currency.",
-    "exportCsv": "Export CSV"
+    "exportCsv": "Export CSV",
+    "overTime": "How the platform is growing",
+    "newListings": "New listings",
+    "dealsClosed": "Deals closed",
+    "capitalSought": "Capital sought",
+    "month": "Month",
+    "showTable": "Show the numbers",
+    "showChart": "Show the chart",
+    "otherIndustries": "Other industries"
   },
   "filters": {
     "industry": "Industry",

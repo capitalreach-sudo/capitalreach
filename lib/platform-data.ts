@@ -5,6 +5,18 @@ export interface PlatformTopStartup {
   mrr: number | null; ai_score: number | null; funding_target: number | null; created_at: string;
 }
 
+/** One month of the platform's history. */
+export interface PlatformMonth {
+  /** YYYY-MM, so it sorts lexically and carries no timezone. */
+  month: string;
+  /** Listings that went live in that month. */
+  listings: number;
+  /** Deals that closed in that month. */
+  closed: number;
+  /** Capital sought by the listings that went live, in that month. */
+  sought: number;
+}
+
 export interface PlatformData {
   startupCount: number;
   investorCount: number;
@@ -18,6 +30,8 @@ export interface PlatformData {
   byStage: Record<string, number>;
   topStartups: PlatformTopStartup[];
   recentStartups: PlatformTopStartup[];
+  /** Twelve months to now, oldest first. Always twelve entries, zeros included. */
+  monthly: PlatformMonth[];
   lastUpdated: string;
 }
 
@@ -25,7 +39,7 @@ export const EMPTY_PLATFORM_DATA: PlatformData = {
   startupCount: 0, investorCount: 0, totalRaised: 0, dealsCount: 0,
   byDealStage: { intro: 0, due_diligence: 0, term_sheet: 0, closed: 0, passed: 0 },
   activeDeals: 0, closeRate: null, closedCurrencies: [],
-  byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [],
+  byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [], monthly: [],
   lastUpdated: new Date(0).toISOString(),
 };
 
@@ -57,7 +71,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       // aggregate counts leave here.
       supabase
         .from("deals")
-        .select("status, amount, currency"),
+        .select("status, amount, currency, closed_at"),
     ]);
 
     const startupData = startups.data ?? [];
@@ -88,6 +102,35 @@ export async function computePlatformData(): Promise<PlatformData | null> {
     const currencies = Array.from(
       new Set(closedDeals.map((d) => d.currency).filter(Boolean))
     );
+
+    // Twelve months of history, oldest first.
+    //
+    // Empty months are kept rather than dropped: a line that skips them draws
+    // a straight segment across the gap and reads as steady activity, which is
+    // the opposite of what happened. The window is built from the calendar
+    // rather than from the data, so a quiet platform looks quiet.
+    const MONTHS = 12;
+    const now = new Date();
+    const monthKeys: string[] = [];
+    for (let i = MONTHS - 1; i >= 0; i--) {
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+      monthKeys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`);
+    }
+    const monthOf = (iso: string | null | undefined) => (iso ? iso.slice(0, 7) : null);
+    const monthly: PlatformMonth[] = monthKeys.map((month) => ({ month, listings: 0, closed: 0, sought: 0 }));
+    const indexOfMonth = new Map(monthKeys.map((m, i) => [m, i]));
+
+    for (const s of startupData) {
+      const i = indexOfMonth.get(monthOf(s.created_at) ?? "");
+      if (i === undefined) continue;
+      monthly[i].listings += 1;
+      monthly[i].sought += s.funding_target ?? 0;
+    }
+    for (const d of closedDeals) {
+      const i = indexOfMonth.get(monthOf(d.closed_at) ?? "");
+      if (i === undefined) continue;
+      monthly[i].closed += 1;
+    }
 
     // Industry breakdown
     const byIndustry: Record<string, number> = {};
@@ -145,6 +188,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       byStage,
       topStartups,
       recentStartups,
+      monthly,
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {

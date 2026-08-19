@@ -1378,7 +1378,15 @@
     "stage_closed": "成約",
     "stage_passed": "見送り",
     "multiCurrencyNote": "成約ラウンドは {list} にまたがります。金額は単一通貨に換算していません。",
-    "exportCsv": "CSVを書き出す"
+    "exportCsv": "CSVを書き出す",
+    "overTime": "プラットフォームの成長",
+    "newListings": "新規掲載",
+    "dealsClosed": "成立したディール",
+    "capitalSought": "募集金額",
+    "month": "月",
+    "showTable": "数値で見る",
+    "showChart": "グラフで見る",
+    "otherIndustries": "その他の業種"
   },
   "filters": {
     "industry": "業界",

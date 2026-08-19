@@ -1378,7 +1378,15 @@
     "stage_closed": "Clôturée",
     "stage_passed": "Écartée",
     "multiCurrencyNote": "Les tours clôturés couvrent {list} ; les montants ne sont pas convertis dans une devise unique.",
-    "exportCsv": "Exporter en CSV"
+    "exportCsv": "Exporter en CSV",
+    "overTime": "La croissance de la plateforme",
+    "newListings": "Nouvelles annonces",
+    "dealsClosed": "Opérations clôturées",
+    "capitalSought": "Capital recherché",
+    "month": "Mois",
+    "showTable": "Afficher les chiffres",
+    "showChart": "Afficher le graphique",
+    "otherIndustries": "Autres secteurs"
   },
   "filters": {
     "industry": "Secteur",

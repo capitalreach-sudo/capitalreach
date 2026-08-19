@@ -1378,7 +1378,15 @@
     "stage_closed": "مُغلقة",
     "stage_passed": "مرفوضة",
     "multiCurrencyNote": "الجولات المغلقة تشمل {list}؛ الأرقام غير محوّلة إلى عملة واحدة.",
-    "exportCsv": "تصدير CSV"
+    "exportCsv": "تصدير CSV",
+    "overTime": "كيف تنمو المنصّة",
+    "newListings": "إدراجات جديدة",
+    "dealsClosed": "صفقات مُغلقة",
+    "capitalSought": "رأس المال المطلوب",
+    "month": "الشهر",
+    "showTable": "عرض الأرقام",
+    "showChart": "عرض الرسم البياني",
+    "otherIndustries": "قطاعات أخرى"
   },
   "filters": {
     "industry": "القطاع",

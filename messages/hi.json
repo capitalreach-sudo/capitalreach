@@ -1493,7 +1493,15 @@
     "stage_closed": "बंद",
     "stage_passed": "अस्वीकृत",
     "multiCurrencyNote": "बंद राउंड {list} में फैले हैं; आँकड़े एक ही मुद्रा में परिवर्तित नहीं हैं।",
-    "exportCsv": "CSV एक्सपोर्ट करें"
+    "exportCsv": "CSV एक्सपोर्ट करें",
+    "overTime": "प्लेटफ़ॉर्म कैसे बढ़ रहा है",
+    "newListings": "नई लिस्टिंग",
+    "dealsClosed": "बंद हुए सौदे",
+    "capitalSought": "माँगी गई पूँजी",
+    "month": "महीना",
+    "showTable": "आँकड़े दिखाएँ",
+    "showChart": "चार्ट दिखाएँ",
+    "otherIndustries": "अन्य उद्योग"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReach में आपका स्वागत है",

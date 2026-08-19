@@ -1493,7 +1493,15 @@
     "stage_closed": "완료",
     "stage_passed": "패스",
     "multiCurrencyNote": "완료된 라운드는 {list}에 걸쳐 있으며, 금액은 단일 통화로 환산하지 않았습니다.",
-    "exportCsv": "CSV 내보내기"
+    "exportCsv": "CSV 내보내기",
+    "overTime": "플랫폼 성장 추이",
+    "newListings": "신규 리스팅",
+    "dealsClosed": "마감된 거래",
+    "capitalSought": "모집 금액",
+    "month": "월",
+    "showTable": "숫자로 보기",
+    "showChart": "차트로 보기",
+    "otherIndustries": "기타 산업"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReach에 오신 것을 환영합니다",

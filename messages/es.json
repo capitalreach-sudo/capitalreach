@@ -1378,7 +1378,15 @@
     "stage_closed": "Cerrada",
     "stage_passed": "Descartada",
     "multiCurrencyNote": "Las rondas cerradas abarcan {list}; las cifras no se convierten a una sola moneda.",
-    "exportCsv": "Exportar CSV"
+    "exportCsv": "Exportar CSV",
+    "overTime": "Cómo crece la plataforma",
+    "newListings": "Fichas nuevas",
+    "dealsClosed": "Operaciones cerradas",
+    "capitalSought": "Capital buscado",
+    "month": "Mes",
+    "showTable": "Ver los números",
+    "showChart": "Ver el gráfico",
+    "otherIndustries": "Otros sectores"
   },
   "filters": {
     "industry": "Industria",

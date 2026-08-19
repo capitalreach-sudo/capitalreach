@@ -1493,7 +1493,15 @@
     "stage_closed": "Chiusa",
     "stage_passed": "Scartata",
     "multiCurrencyNote": "I round chiusi comprendono {list}; gli importi non sono convertiti in un'unica valuta.",
-    "exportCsv": "Esporta CSV"
+    "exportCsv": "Esporta CSV",
+    "overTime": "Come cresce la piattaforma",
+    "newListings": "Nuovi annunci",
+    "dealsClosed": "Operazioni chiuse",
+    "capitalSought": "Capitale cercato",
+    "month": "Mese",
+    "showTable": "Mostra i numeri",
+    "showChart": "Mostra il grafico",
+    "otherIndustries": "Altri settori"
   },
   "onboarding": {
     "welcomeTitle": "Benvenuto su CapitalReach",

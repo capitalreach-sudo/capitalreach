@@ -1493,7 +1493,15 @@
     "stage_closed": "Закрыта",
     "stage_passed": "Отклонена",
     "multiCurrencyNote": "Закрытые раунды охватывают {list}; суммы не приведены к одной валюте.",
-    "exportCsv": "Экспорт в CSV"
+    "exportCsv": "Экспорт в CSV",
+    "overTime": "Как растёт платформа",
+    "newListings": "Новые объявления",
+    "dealsClosed": "Закрытые сделки",
+    "capitalSought": "Запрашиваемый капитал",
+    "month": "Месяц",
+    "showTable": "Показать цифры",
+    "showChart": "Показать график",
+    "otherIndustries": "Другие отрасли"
   },
   "onboarding": {
     "welcomeTitle": "Добро пожаловать в CapitalReach",

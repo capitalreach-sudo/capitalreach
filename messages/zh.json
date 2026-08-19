@@ -1378,7 +1378,15 @@
     "stage_closed": "已成交",
     "stage_passed": "已放弃",
     "multiCurrencyNote": "已成交轮次涉及 {list}；金额未换算为单一货币。",
-    "exportCsv": "导出 CSV"
+    "exportCsv": "导出 CSV",
+    "overTime": "平台增长情况",
+    "newListings": "新增项目页",
+    "dealsClosed": "已交割交易",
+    "capitalSought": "寻求融资额",
+    "month": "月份",
+    "showTable": "显示数字",
+    "showChart": "显示图表",
+    "otherIndustries": "其他行业"
   },
   "filters": {
     "industry": "行业",

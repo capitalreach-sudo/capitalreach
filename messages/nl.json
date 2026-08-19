@@ -1493,7 +1493,15 @@
     "stage_closed": "Gesloten",
     "stage_passed": "Afgewezen",
     "multiCurrencyNote": "Afgesloten rondes omvatten {list}; bedragen zijn niet omgerekend naar één valuta.",
-    "exportCsv": "CSV exporteren"
+    "exportCsv": "CSV exporteren",
+    "overTime": "Hoe het platform groeit",
+    "newListings": "Nieuwe listings",
+    "dealsClosed": "Afgeronde deals",
+    "capitalSought": "Gezocht kapitaal",
+    "month": "Maand",
+    "showTable": "Toon de cijfers",
+    "showChart": "Toon de grafiek",
+    "otherIndustries": "Andere sectoren"
   },
   "onboarding": {
     "welcomeTitle": "Welkom bij CapitalReach",

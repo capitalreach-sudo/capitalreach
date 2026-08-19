@@ -11,6 +11,9 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { LiveClock } from "@/components/ui/LiveClock";
 import { safeFormatCurrency } from "@/lib/format";
+import { LineChart } from "@/components/charts/line-chart";
+import { DonutChart } from "@/components/charts/donut-chart";
+import { BarChart } from "@/components/charts/bar-chart";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -38,7 +41,28 @@ interface PlatformData {
   byStage: Record<string, number>;
   topStartups: TopStartup[];
   recentStartups: TopStartup[];
+  monthly?: Array<{ month: string; listings: number; closed: number; sought: number }>;
   lastUpdated: string;
+}
+
+const cellTd: React.CSSProperties = {
+  padding: "6px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11.5px",
+  color: "var(--cr-ink-2)", borderTop: "1px solid var(--cr-rule)",
+};
+
+/** Axis money: "$100M", never "100000000". */
+function compactMoney(n: number): string {
+  if (n >= 1_000_000_000) return `$${Math.round(n / 1_000_000_000)}B`;
+  if (n >= 1_000_000) return `$${Math.round(n / 1_000_000)}M`;
+  if (n >= 1_000) return `$${Math.round(n / 1_000)}k`;
+  return `$${Math.round(n)}`;
+}
+
+/** "2026-08" → "Aug". The year only where it changes, so twelve labels stay short. */
+function monthLabel(key: string): string {
+  const [y, m] = key.split("-");
+  const name = new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString("en", { month: "short", timeZone: "UTC" });
+  return m === "01" ? `${name} ${y.slice(2)}` : name;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -61,6 +85,13 @@ function exportPlatformCsv(d: PlatformData) {
     ...Object.entries(d.byDealStage).map(([k, v]) => ["deal_stage", k, v] as [string, string, number]),
     ...Object.entries(d.byIndustry).map(([k, v]) => ["industry", k, v] as [string, string, number]),
     ...Object.entries(d.byStage).map(([k, v]) => ["startup_stage", k, v] as [string, string, number]),
+    // The time series lands in the export too, so the shape on the chart can
+    // be checked against the numbers rather than taken on trust.
+    ...(d.monthly ?? []).flatMap(m => ([
+      ["monthly_listings", m.month, m.listings],
+      ["monthly_closed", m.month, m.closed],
+      ["monthly_sought", m.month, m.sought],
+    ] as Array<[string, string, number]>)),
   ];
   const csv = [["section", "label", "value"], ...rows].map((r) => r.map(esc).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -175,30 +206,6 @@ function SkeletonCard() {
 
 // ── Animated bar chart row ────────────────────────────────────────────────────
 
-function BarRow({ label, count, maxCount, animate }: {
-  label: string; count: number; maxCount: number; animate: boolean;
-}) {
-  const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "16px", padding: "10px 0", borderBottom: "1px solid var(--cr-rule)" }}>
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#3D3630", width: "120px", flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {label}
-      </span>
-      <div style={{ flex: 1, background: "#E4DDD2", height: "3px", borderRadius: "9999px", overflow: "hidden" }}>
-        <div style={{
-          height: "100%",
-          background: "#B5651D",
-          borderRadius: "9999px",
-          width: animate ? `${pct}%` : "0%",
-          transition: "width 800ms cubic-bezier(.16,1,.3,1)",
-        }} />
-      </div>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "#B5651D", width: "28px", textAlign: "right" }}>
-        {count}
-      </span>
-    </div>
-  );
-}
 
 // ── Score pill ────────────────────────────────────────────────────────────────
 
@@ -225,21 +232,18 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   const [data, setData] = useState<PlatformData | null>(initialData ?? null);
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState(false);
-  const [barsVisible, setBarsVisible] = useState(false);
-  const barsRef = useRef<HTMLDivElement>(null);
+  // Every chart has a table behind it, for anyone the colours fail.
+  const [showTable, setShowTable] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(false);
-    setBarsVisible(false);
     try {
       const res = await fetch("/api/platform-data");
       if (!res.ok) throw new Error("Failed");
       const json = await res.json();
       if (json.degraded) throw new Error("Degraded");
       setData(json);
-      // Trigger bar animations after a short delay
-      setTimeout(() => setBarsVisible(true), 120);
     } catch {
       setError(true);
     } finally {
@@ -248,29 +252,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   }, []);
 
   useEffect(() => {
-    if (initialData) { setTimeout(() => setBarsVisible(true), 120); return; }
+    if (initialData) return;
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchData]);
 
-  // Intersection Observer to trigger bars when in viewport
-  useEffect(() => {
-    if (!barsRef.current || loading || !data) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setBarsVisible(true); obs.disconnect(); }
-    }, { threshold: 0.2 });
-    obs.observe(barsRef.current);
-    return () => obs.disconnect();
-  }, [loading, data]);
 
+  const monthly = data?.monthly ?? [];
   const industryEntries = data
     ? Object.entries(data.byIndustry).sort((a, b) => b[1] - a[1]).slice(0, 6)
     : [];
   const stageEntries = data
     ? Object.entries(data.byStage).sort((a, b) => b[1] - a[1])
     : [];
-  const industryMax = industryEntries[0]?.[1] ?? 1;
-  const stageMax = stageEntries[0]?.[1] ?? 1;
 
   return (
     <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
@@ -375,6 +369,75 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="#B45309" />
             </div>
 
+            {/* ── Growth over time ─────────────────────────────────────────
+                Totals say how big the platform is and nothing about whether
+                it is growing. Twelve months, empty months included: dropping
+                them draws a straight line across the gap, which reads as
+                steady activity and is the opposite of what happened. */}
+            {monthly.length > 0 && (
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "18px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Activity style={{ width: 13, height: 13, color: "#B5651D" }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.overTime")}</h3>
+                  </div>
+                  <button onClick={() => setShowTable(v => !v)}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#B5651D" }}>
+                    {showTable ? t("data.showChart") : t("data.showTable")}
+                  </button>
+                </div>
+
+                {showTable ? (
+                  /* Every chart has a table behind it: some of these fills sit
+                     below 3:1 against paper, and a reader who cannot separate
+                     them still needs the numbers. */
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "420px" }}>
+                      <thead>
+                        <tr>
+                          {[t("data.month"), t("data.newListings"), t("data.dealsClosed"), t("data.capitalSought")].map(h => (
+                            <th key={h} style={{ textAlign: "left", padding: "6px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", borderBottom: "1px solid var(--cr-rule-dark)" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {monthly.map(m => (
+                          <tr key={m.month}>
+                            <td style={cellTd}>{m.month}</td>
+                            <td style={cellTd}>{m.listings}</td>
+                            <td style={cellTd}>{m.closed}</td>
+                            <td style={cellTd}>{safeFormatCurrency(m.sought)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <>
+                    <LineChart
+                      labels={monthly.map(m => monthLabel(m.month))}
+                      series={[
+                        { key: "listings", label: t("data.newListings"), values: monthly.map(m => m.listings) },
+                        { key: "closed", label: t("data.dealsClosed"), values: monthly.map(m => m.closed) },
+                      ]}
+                    />
+                    {/* Capital is a different unit, so it gets its own frame.
+                        Two scales on one axis can be made to cross wherever
+                        you like, which is the commonest way a chart lies. */}
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", margin: "22px 0 6px" }}>
+                      {t("data.capitalSought")}
+                    </p>
+                    <LineChart
+                      height={140}
+                      labels={monthly.map(m => monthLabel(m.month))}
+                      formatTick={(n) => (n === 0 ? "0" : compactMoney(n))}
+                      series={[{ key: "sought", label: t("data.capitalSought"), values: monthly.map(m => m.sought), format: (n) => safeFormatCurrency(n) ?? "—" }]}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+
             {/* ── Deal flow ────────────────────────────────────────────────
                 The pipeline is the part of this product that isn't a
                 directory, and until now it was invisible to anyone who hadn't
@@ -431,7 +494,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             )}
 
             {/* Charts */}
-            <div ref={barsRef} className="grid-half-stack" style={{ gap: "20px", marginBottom: "28px" }}>
+            <div className="grid-half-stack" style={{ gap: "20px", marginBottom: "28px" }}>
 
               {/* Industry breakdown */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
@@ -442,9 +505,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 {industryEntries.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
-                  industryEntries.map(([label, count]) => (
-                    <BarRow key={label} label={label} count={count} maxCount={industryMax} animate={barsVisible} />
-                  ))
+                  /* Share of the whole — the one question a ring answers
+                     better than bars. The tail folds into a grey "other"
+                     rather than adding unreadable slivers, and every slice
+                     carries its percentage so nothing rests on telling two
+                     colours apart. */
+                  /* The FULL breakdown, not the top six: the ring has to
+                     close, and a ring with a gap in it reads as a rendering
+                     bug rather than as "the rest". The component folds the
+                     tail into a grey "other" itself. */
+                  <DonutChart
+                    slices={Object.entries(data.byIndustry).map(([label, count]) => ({ key: label, label, value: count }))}
+                    otherLabel={t("data.otherIndustries")}
+                  />
                 )}
               </div>
 
@@ -457,9 +530,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 {stageEntries.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
-                  stageEntries.map(([label, count]) => (
-                    <BarRow key={label} label={STAGE_LABELS[label] ?? label} count={count} maxCount={stageMax} animate={barsVisible} />
-                  ))
+                  <BarChart bars={stageEntries.map(([label, count]) => ({
+                    key: label, label: STAGE_LABELS[label] ?? label, value: count,
+                  }))} />
                 )}
               </div>
             </div>

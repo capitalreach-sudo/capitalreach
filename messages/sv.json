@@ -1493,7 +1493,15 @@
     "stage_closed": "Avslutad",
     "stage_passed": "Avböjd",
     "multiCurrencyNote": "Avslutade rundor omfattar {list}; beloppen är inte omräknade till en enda valuta.",
-    "exportCsv": "Exportera CSV"
+    "exportCsv": "Exportera CSV",
+    "overTime": "Hur plattformen växer",
+    "newListings": "Nya annonser",
+    "dealsClosed": "Avslutade affärer",
+    "capitalSought": "Sökt kapital",
+    "month": "Månad",
+    "showTable": "Visa siffrorna",
+    "showChart": "Visa diagrammet",
+    "otherIndustries": "Övriga branscher"
   },
   "onboarding": {
     "welcomeTitle": "Välkommen till CapitalReach",

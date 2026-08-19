@@ -1385,7 +1385,15 @@
     "stage_closed": "Abgeschlossen",
     "stage_passed": "Abgelehnt",
     "multiCurrencyNote": "Abgeschlossene Runden umfassen {list}; die Beträge werden nicht in eine Einheitswährung umgerechnet.",
-    "exportCsv": "CSV exportieren"
+    "exportCsv": "CSV exportieren",
+    "overTime": "Wie die Plattform wächst",
+    "newListings": "Neue Listings",
+    "dealsClosed": "Abgeschlossene Deals",
+    "capitalSought": "Gesuchtes Kapital",
+    "month": "Monat",
+    "showTable": "Zahlen anzeigen",
+    "showChart": "Diagramm anzeigen",
+    "otherIndustries": "Andere Branchen"
   },
   "filters": {
     "industry": "Branche",
