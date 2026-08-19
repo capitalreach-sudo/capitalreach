@@ -2239,7 +2239,13 @@
     "contactFormLink": "Kontaktformulär →",
     "termsOfServiceLabel": "Användarvillkor",
     "footerContactUs": "Kontakta oss",
-    "footerBackHome": "Tillbaka till CapitalReach"
+    "footerBackHome": "Tillbaka till CapitalReach",
+    "cookiesTitle": "Kakor och lokal lagring",
+    "cookiesIntro": "Vi sätter inga annons- eller analyskakor och laddar inga spårningsskript från tredje part. Tre saker sparas i din webbläsare, alla för att sajten ska fungera:",
+    "cookiesAuth": "En sessionskaka när du loggar in, så att du förblir inloggad. Raderar du den loggas du ut.",
+    "cookiesLocale": "En språkkaka (cr_locale) som minns vilket av de 15 språken du valde.",
+    "cookiesLocal": "Lokal lagring för dina egna inställningar — list- eller tavelvy, senaste sökningar, din jämförelselista och en automatisk säkerhetskopia av en annons du håller på att redigera. Inget av det lämnar din enhet.",
+    "cookiesNoTracking": "Eftersom inget icke-nödvändigt lagras finns ingen samtyckesruta att klicka bort. Lägger vi någon gång till analys frågar vi först."
   },
   "disclaimer": {
     "metaTitle": "Investeringsfriskrivning",

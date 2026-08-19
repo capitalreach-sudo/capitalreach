@@ -2239,7 +2239,13 @@
     "contactFormLink": "Contactformulier →",
     "termsOfServiceLabel": "Servicevoorwaarden",
     "footerContactUs": "Neem contact op",
-    "footerBackHome": "Terug naar CapitalReach"
+    "footerBackHome": "Terug naar CapitalReach",
+    "cookiesTitle": "Cookies en lokale opslag",
+    "cookiesIntro": "We plaatsen geen advertentie- of analysecookies en laden geen trackingscripts van derden. Er worden drie dingen in je browser bewaard, alle om de site te laten werken:",
+    "cookiesAuth": "Een sessiecookie zodra je inlogt, zodat je ingelogd blijft. Verwijderen logt je uit.",
+    "cookiesLocale": "Een taalcookie (cr_locale) dat onthoudt welke van de 15 talen je koos.",
+    "cookiesLocal": "Lokale opslag voor je eigen voorkeuren — lijst- of bordweergave, recente zoekopdrachten, je vergelijkingslijst en een automatische back-up van een listing die je aan het bewerken bent. Niets daarvan verlaat je apparaat.",
+    "cookiesNoTracking": "Omdat er niets niet-essentieels wordt opgeslagen, is er geen cookiebanner om weg te klikken. Voegen we ooit analytics toe, dan vragen we het eerst."
   },
   "disclaimer": {
     "metaTitle": "Investeringsdisclaimer",

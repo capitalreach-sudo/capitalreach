@@ -2250,7 +2250,13 @@
     "contactFormLink": "Contact Form →",
     "termsOfServiceLabel": "Terms of Service",
     "footerContactUs": "Contact Us",
-    "footerBackHome": "Back to CapitalReach"
+    "footerBackHome": "Back to CapitalReach",
+    "cookiesTitle": "Cookies and local storage",
+    "cookiesIntro": "We set no advertising or analytics cookies, and load no third-party tracking script. Three things are stored in your browser, all of them to make the site work:",
+    "cookiesAuth": "A session cookie, once you sign in, so you stay signed in. Deleting it signs you out.",
+    "cookiesLocale": "A language cookie (cr_locale) remembering which of the 15 languages you chose.",
+    "cookiesLocal": "Local storage for preferences you set yourself — list or board view, your recent searches, your comparison list, and an automatic backup of a listing you are part-way through editing. None of it leaves your device.",
+    "cookiesNoTracking": "Because nothing non-essential is stored, there is no consent banner to click. If we ever add analytics, we will ask first."
   },
   "disclaimer": {
     "metaTitle": "Investment Disclaimer",

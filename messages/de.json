@@ -2246,7 +2246,13 @@
     "contactFormLink": "Kontaktformular →",
     "termsOfServiceLabel": "Nutzungsbedingungen",
     "footerContactUs": "Kontakt",
-    "footerBackHome": "Zurück zu CapitalReach"
+    "footerBackHome": "Zurück zu CapitalReach",
+    "cookiesTitle": "Cookies und lokaler Speicher",
+    "cookiesIntro": "Wir setzen keine Werbe- oder Analyse-Cookies und laden keine Tracking-Skripte Dritter. Drei Dinge werden im Browser gespeichert, alle davon zum Betrieb der Seite:",
+    "cookiesAuth": "Ein Session-Cookie nach dem Login, damit du angemeldet bleibst. Löschen meldet dich ab.",
+    "cookiesLocale": "Ein Sprach-Cookie (cr_locale), das deine Wahl unter 15 Sprachen merkt.",
+    "cookiesLocal": "Lokaler Speicher für deine eigenen Einstellungen — Listen- oder Board-Ansicht, letzte Suchen, Vergleichsliste und ein automatisches Backup eines Listings, das du gerade bearbeitest. Nichts davon verlässt dein Gerät.",
+    "cookiesNoTracking": "Da nichts Nicht-Notwendiges gespeichert wird, gibt es kein Consent-Banner zum Wegklicken. Sollten wir je Analytics einsetzen, fragen wir vorher."
   },
   "disclaimer": {
     "metaTitle": "Anlage-Haftungsausschluss",

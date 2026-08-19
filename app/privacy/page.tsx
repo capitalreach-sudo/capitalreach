@@ -98,6 +98,23 @@ export default async function PrivacyPage() {
             </ul>
           </section>
 
+          {/* E58. Audited rather than assumed: this app loads no third-party
+              script, sets no analytics or advertising cookie, and stores
+              nothing that identifies a visitor before they sign in. Under
+              GDPR/ePrivacy that means no consent banner is required — and a
+              banner asking permission for nothing would be theatre. What IS
+              stored is listed here instead, exactly. */}
+          <section>
+            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.cookiesTitle")}</h2>
+            <p className="text-sm mb-3">{t("privacy.cookiesIntro")}</p>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>{t("privacy.cookiesAuth")}</li>
+              <li>{t("privacy.cookiesLocale")}</li>
+              <li>{t("privacy.cookiesLocal")}</li>
+            </ul>
+            <p className="text-sm mt-3">{t("privacy.cookiesNoTracking")}</p>
+          </section>
+
           <section>
             <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s3Title")}</h2>
             <p className="text-sm mb-3">

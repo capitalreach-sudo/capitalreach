@@ -2239,7 +2239,13 @@
     "contactFormLink": "联系表单 →",
     "termsOfServiceLabel": "服务条款",
     "footerContactUs": "联系我们",
-    "footerBackHome": "返回 CapitalReach"
+    "footerBackHome": "返回 CapitalReach",
+    "cookiesTitle": "Cookie 与本地存储",
+    "cookiesIntro": "我们不设置广告或分析 Cookie，也不加载任何第三方跟踪脚本。浏览器中只保存三样东西，且都是为了让网站正常运行：",
+    "cookiesAuth": "登录后的会话 Cookie，用于保持登录状态。删除它即退出登录。",
+    "cookiesLocale": "语言 Cookie（cr_locale），记住你在 15 种语言中的选择。",
+    "cookiesLocal": "本地存储，用于保存你自己的偏好 —— 列表或看板视图、最近搜索、对比清单，以及正在编辑中的项目页自动备份。这些都不会离开你的设备。",
+    "cookiesNoTracking": "由于不存储任何非必要内容，这里没有需要点击的同意横幅。若将来加入分析工具，我们会先征求同意。"
   },
   "disclaimer": {
     "metaTitle": "投资免责声明",

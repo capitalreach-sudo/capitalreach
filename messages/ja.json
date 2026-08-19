@@ -2239,7 +2239,13 @@
     "contactFormLink": "お問い合わせフォーム →",
     "termsOfServiceLabel": "利用規約",
     "footerContactUs": "お問い合わせ",
-    "footerBackHome": "CapitalReachに戻る"
+    "footerBackHome": "CapitalReachに戻る",
+    "cookiesTitle": "Cookie とローカルストレージ",
+    "cookiesIntro": "広告や解析の Cookie は設定せず、第三者のトラッキングスクリプトも読み込みません。ブラウザに保存されるのは次の 3 つだけで、いずれもサイトの動作に必要なものです:",
+    "cookiesAuth": "ログイン後のセッション Cookie。ログイン状態を保つためのもので、削除するとログアウトします。",
+    "cookiesLocale": "言語 Cookie（cr_locale）。15 言語のうちどれを選んだかを記憶します。",
+    "cookiesLocal": "ローカルストレージ。リスト表示かボード表示か、最近の検索、比較リスト、編集途中の掲載内容の自動バックアップなど、ご自身の設定を保存します。いずれも端末から出ません。",
+    "cookiesNoTracking": "必須でないものを保存していないため、同意バナーはありません。将来解析を導入する場合は、事前にお尋ねします。"
   },
   "disclaimer": {
     "metaTitle": "投資に関する免責事項",

@@ -2239,7 +2239,13 @@
     "contactFormLink": "Modulo di contatto →",
     "termsOfServiceLabel": "Termini di servizio",
     "footerContactUs": "Contattaci",
-    "footerBackHome": "Torna a CapitalReach"
+    "footerBackHome": "Torna a CapitalReach",
+    "cookiesTitle": "Cookie e archiviazione locale",
+    "cookiesIntro": "Non impostiamo cookie pubblicitari o analitici e non carichiamo script di tracciamento di terze parti. Nel browser vengono salvate tre cose, tutte per far funzionare il sito:",
+    "cookiesAuth": "Un cookie di sessione dopo l'accesso, per restare connesso. Eliminandolo si esce.",
+    "cookiesLocale": "Un cookie di lingua (cr_locale) che ricorda quale delle 15 lingue hai scelto.",
+    "cookiesLocal": "L'archiviazione locale per le tue preferenze — vista elenco o board, ricerche recenti, lista di confronto e un backup automatico di un annuncio che stai modificando. Nulla di tutto ciò lascia il tuo dispositivo.",
+    "cookiesNoTracking": "Poiché non viene salvato nulla di non essenziale, non c'è alcun banner di consenso da cliccare. Se un giorno aggiungeremo analytics, lo chiederemo prima."
   },
   "disclaimer": {
     "metaTitle": "Disclaimer sugli investimenti",
