@@ -986,7 +986,8 @@
     "tgNextContact": "Próximo contacto",
     "reportDeleteConfirm": "Eliminar este relatório? Não pode ser desfeito.",
     "reportExport": "Exportar",
-    "reportViewDeal": "Abrir negócio"
+    "reportViewDeal": "Abrir negócio",
+    "unnamedAccount": "Conta sem nome"
   },
   "settings": {
     "pageTitle": "Configurações",

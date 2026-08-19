@@ -995,7 +995,8 @@
     "tgNextContact": "Próximo contacto",
     "reportDeleteConfirm": "¿Eliminar este informe? No se puede deshacer.",
     "reportExport": "Exportar",
-    "reportViewDeal": "Abrir operación"
+    "reportViewDeal": "Abrir operación",
+    "unnamedAccount": "Cuenta sin nombre"
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",

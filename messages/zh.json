@@ -995,7 +995,8 @@
     "tgNextContact": "下次联系",
     "reportDeleteConfirm": "删除此报告？此操作无法撤销。",
     "reportExport": "导出",
-    "reportViewDeal": "打开交易"
+    "reportViewDeal": "打开交易",
+    "unnamedAccount": "未命名账户"
   },
   "settings": {
     "pageTitle": "账号设置",

@@ -4,6 +4,7 @@ import { getLaunchStatus } from "@/lib/launchMode";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Deal } from "@/types";
 import { buildAccessContext, canExportData, founderCan, isSuspended } from "@/lib/access";
+import { resolveAdmin } from "@/lib/admin-guard";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { DealsPortalClient } from "@/components/shared/deals-portal-client";
@@ -131,10 +132,20 @@ export default async function DealsPage() {
   }
 
   if (profile.role === "admin") {
-    const { data: deals } = await supabase
+    // "Every deal across every startup and investor" was a promise this page
+    // could not keep: there are no admin RLS policies on deals, so reading
+    // through the admin's own session returned only the deals they personally
+    // participate in — an empty page on a platform with 42 of them. The read
+    // has to bypass RLS, so the role is re-verified with the service role
+    // rather than trusted from the session read above.
+    const resolved = await resolveAdmin();
+    if (!resolved.ok) redirect(resolved.reason === "suspended" ? "/suspended" : "/dashboard");
+
+    const { data: deals } = await resolved.admin
       .from("deals")
       .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name, is_external)")
-      .order("updated_at", { ascending: false });
+      .order("updated_at", { ascending: false })
+      .limit(500);
 
     return (
       <>

@@ -31,7 +31,6 @@ const STATUS_KEYS: Record<string, { labelKey: string; bg: string; color: string;
 interface SearchAccount {
   id: string;
   full_name: string | null;
-  email: string;
   role: string;
   avatar_url: string | null;
   entity_name?: string;
@@ -130,75 +129,28 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
   // Account search — also runs with an empty query so the dropdown shows a
   // browsable list of available accounts immediately, not just after typing.
+  //
+  // This used to query `profiles` directly from the browser and match on email
+  // address. It only worked because every signed-in user could read the whole
+  // profiles table, which is the same thing as saying any account could
+  // harvest every member's email. /api/messages/accounts does the search
+  // server-side against the directories instead, and never returns an email.
   useEffect(() => {
     if (!accountDropOpen) return;
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     searchTimeoutRef.current = setTimeout(async () => {
       setAccountSearching(true);
-      const q          = accountSearch.trim();
+      const q = accountSearch.trim();
       const targetRole = profile.role === "investor" ? "startup" : targetKind;
       try {
-        if (targetRole === "startup" && profile.role === "investor") {
-          const [profileRes, startupRes] = await Promise.all([
-            supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","startup").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(10),
-            supabase.from("startups").select("owner_id,name,slug").or(`status.eq.active,status.eq.pending_review`).ilike("name",`%${q}%`).limit(10),
-          ]);
-          const merged = new Map<string, SearchAccount>();
-          (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount), kind: "startup" }));
-          const ownerIds = (startupRes.data || []).map(s => s.owner_id).filter(Boolean);
-          if (ownerIds.length > 0) {
-            const { data: owners } = await supabase.from("profiles").select("id,full_name,email,role,avatar_url").in("id", ownerIds);
-            (owners || []).forEach(owner => {
-              const s = startupRes.data?.find(s => s.owner_id === owner.id);
-              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug, kind: "startup" });
-            });
-          }
-          setAccountResults(Array.from(merged.values()).slice(0, 10));
-        } else if (targetRole === "startup" && profile.role === "startup") {
-          // Startup searching for another startup (peer messaging)
-          const { data: startupRes } = await supabase
-            .from("startups").select("owner_id,name,slug")
-            .neq("owner_id", profile.id)
-            .or(`status.eq.active,status.eq.pending_review`)
-            .ilike("name", `%${q}%`).limit(10);
-          const ownerIds = (startupRes || []).map(s => s.owner_id).filter(Boolean);
-          const merged = new Map<string, SearchAccount>();
-          if (ownerIds.length > 0) {
-            const { data: owners } = await supabase.from("profiles").select("id,full_name,email,role,avatar_url").in("id", ownerIds);
-            (owners || []).forEach(owner => {
-              const s = startupRes?.find(s => s.owner_id === owner.id);
-              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: s?.name, entity_slug: s?.slug, kind: "startup" });
-            });
-          }
-          setAccountResults(Array.from(merged.values()).slice(0, 10));
-        } else {
-          const [profileRes, investorRes] = await Promise.all([
-            supabase.from("profiles").select("id,full_name,email,role,avatar_url").eq("role","investor").or(`full_name.ilike.%${q}%,email.ilike.%${q}%`).limit(10),
-            supabase.from("investors").select("owner_id,slug,type,display_name,firm_name").or(`display_name.ilike.%${q}%,firm_name.ilike.%${q}%`).limit(10),
-          ]);
-          const merged = new Map<string, SearchAccount>();
-          (profileRes.data || []).forEach(p => merged.set(p.id, { ...(p as SearchAccount), kind: "investor" }));
-          const ownerIds = (investorRes.data || []).map(i => i.owner_id).filter(Boolean);
-          if (ownerIds.length > 0) {
-            const { data: owners } = await supabase.from("profiles").select("id,full_name,email,role,avatar_url").in("id", ownerIds);
-            (owners || []).forEach(owner => {
-              const inv = investorRes.data?.find(i => i.owner_id === owner.id);
-              merged.set(owner.id, { ...(owner as SearchAccount), entity_name: inv?.firm_name || inv?.display_name || owner.full_name || undefined, entity_slug: inv?.slug, entity_type: inv?.type, kind: "investor" });
-            });
-          }
-          const profileIds = (profileRes.data || []).map(p => p.id);
-          if (profileIds.length > 0) {
-            const { data: invData } = await supabase.from("investors").select("owner_id,slug,type,display_name,firm_name").in("owner_id", profileIds);
-            (invData || []).forEach(inv => {
-              const ex = merged.get(inv.owner_id);
-              if (ex && !ex.entity_name) merged.set(inv.owner_id, { ...ex, entity_name: inv.firm_name || inv.display_name || undefined, entity_slug: inv.slug, entity_type: inv.type, kind: "investor" });
-            });
-          }
-          setAccountResults(Array.from(merged.values()).slice(0, 10));
-        }
+        const res = await fetch(`/api/messages/accounts?kind=${targetRole}&q=${encodeURIComponent(q)}`);
+        const j = res.ok ? await res.json() : { results: [] };
+        setAccountResults((j.results ?? []) as SearchAccount[]);
+      } catch {
+        setAccountResults([]);
       } finally { setAccountSearching(false); }
     }, 300);
-  }, [accountSearch, accountDropOpen, targetKind]);
+  }, [accountSearch, accountDropOpen, targetKind, profile.role]);
 
   const otherStartup = (th: Thread) => th.startup_id === myStartupId ? th.recipient_startup : th.startup;
 
@@ -765,11 +717,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   {selectedAccount ? (
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", border: "1px solid var(--cr-copper)", borderRadius: "4px", padding: "10px 12px", background: "var(--cr-copper-bg)" }}>
                       <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
-                        {getInitials(selectedAccount.entity_name || selectedAccount.full_name || selectedAccount.email)}
+                        {getInitials(selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount"))}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {selectedAccount.entity_name || selectedAccount.full_name || selectedAccount.email}
+                          {selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount")}
                         </p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>
                           {selectedAccount.entity_type?.replace(/_/g, " ") || selectedAccount.role}
@@ -815,11 +767,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                         >
                           <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
-                            {getInitials(a.entity_name || a.full_name || a.email)}
+                            {getInitials(a.entity_name || a.full_name || t("dashboard.unnamedAccount"))}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {a.entity_name || a.full_name || a.email}
+                              {a.entity_name || a.full_name || t("dashboard.unnamedAccount")}
                             </p>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>
                               {a.entity_type?.replace(/_/g," ") || a.role}{a.entity_name && a.full_name && a.entity_name !== a.full_name ? ` · ${a.full_name}` : ""}
@@ -851,7 +803,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               <div>
                 <span style={labelStyle}>{t("dashboard.messageLabel")}</span>
                 <textarea value={newBody} onChange={e => setNewBody(e.target.value)}
-                  placeholder={selectedAccount ? t("dashboard.messageTo", { name: selectedAccount.entity_name || selectedAccount.full_name || selectedAccount.email }) : t("dashboard.selectRecipientFirst")}
+                  placeholder={selectedAccount ? t("dashboard.messageTo", { name: selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount") }) : t("dashboard.selectRecipientFirst")}
                   rows={5} disabled={!selectedAccount}
                   style={{ width: "100%", background: selectedAccount ? "var(--cr-paper-3)" : "var(--cr-paper-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", resize: "none", outline: "none", boxSizing: "border-box", opacity: selectedAccount ? 1 : 0.5 }}
                   onFocus={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}

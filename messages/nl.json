@@ -986,7 +986,8 @@
     "tgNextContact": "Volgend contact",
     "reportDeleteConfirm": "Dit rapport verwijderen? Dit kan niet ongedaan worden gemaakt.",
     "reportExport": "Exporteren",
-    "reportViewDeal": "Deal openen"
+    "reportViewDeal": "Deal openen",
+    "unnamedAccount": "Naamloos account"
   },
   "settings": {
     "pageTitle": "Instellingen",

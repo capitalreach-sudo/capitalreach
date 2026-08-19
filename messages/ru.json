@@ -986,7 +986,8 @@
     "tgNextContact": "Следующий контакт",
     "reportDeleteConfirm": "Удалить этот отчёт? Действие необратимо.",
     "reportExport": "Экспорт",
-    "reportViewDeal": "Открыть сделку"
+    "reportViewDeal": "Открыть сделку",
+    "unnamedAccount": "Аккаунт без имени"
   },
   "settings": {
     "pageTitle": "Настройки",

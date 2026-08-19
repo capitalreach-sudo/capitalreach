@@ -1002,7 +1002,8 @@
     "tgNextContact": "Nächster Kontakt",
     "reportDeleteConfirm": "Diesen Bericht löschen? Das kann nicht rückgängig gemacht werden.",
     "reportExport": "Exportieren",
-    "reportViewDeal": "Deal öffnen"
+    "reportViewDeal": "Deal öffnen",
+    "unnamedAccount": "Unbenanntes Konto"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",

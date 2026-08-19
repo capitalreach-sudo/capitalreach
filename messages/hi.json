@@ -986,7 +986,8 @@
     "tgNextContact": "अगला संपर्क",
     "reportDeleteConfirm": "यह रिपोर्ट हटाएँ? इसे पूर्ववत नहीं किया जा सकता।",
     "reportExport": "निर्यात",
-    "reportViewDeal": "सौदा खोलें"
+    "reportViewDeal": "सौदा खोलें",
+    "unnamedAccount": "बिना नाम का खाता"
   },
   "settings": {
     "pageTitle": "सेटिंग्स",

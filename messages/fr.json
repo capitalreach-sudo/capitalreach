@@ -995,7 +995,8 @@
     "tgNextContact": "Prochain contact",
     "reportDeleteConfirm": "Supprimer ce rapport ? Action irréversible.",
     "reportExport": "Exporter",
-    "reportViewDeal": "Ouvrir le deal"
+    "reportViewDeal": "Ouvrir le deal",
+    "unnamedAccount": "Compte sans nom"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",

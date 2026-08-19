@@ -995,7 +995,8 @@
     "tgNextContact": "الاتصال التالي",
     "reportDeleteConfirm": "حذف هذا التقرير؟ لا يمكن التراجع.",
     "reportExport": "تصدير",
-    "reportViewDeal": "فتح الصفقة"
+    "reportViewDeal": "فتح الصفقة",
+    "unnamedAccount": "حساب بدون اسم"
   },
   "settings": {
     "pageTitle": "إعدادات الحساب",

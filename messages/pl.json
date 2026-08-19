@@ -986,7 +986,8 @@
     "tgNextContact": "Następny kontakt",
     "reportDeleteConfirm": "Usunąć ten raport? Tej operacji nie można cofnąć.",
     "reportExport": "Eksportuj",
-    "reportViewDeal": "Otwórz transakcję"
+    "reportViewDeal": "Otwórz transakcję",
+    "unnamedAccount": "Konto bez nazwy"
   },
   "settings": {
     "pageTitle": "Ustawienia",

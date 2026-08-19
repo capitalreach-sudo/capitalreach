@@ -986,7 +986,8 @@
     "tgNextContact": "다음 연락",
     "reportDeleteConfirm": "이 리포트를 삭제할까요? 되돌릴 수 없습니다.",
     "reportExport": "내보내기",
-    "reportViewDeal": "거래 열기"
+    "reportViewDeal": "거래 열기",
+    "unnamedAccount": "이름 없는 계정"
   },
   "settings": {
     "pageTitle": "설정",

@@ -986,7 +986,8 @@
     "tgNextContact": "Nästa kontakt",
     "reportDeleteConfirm": "Ta bort rapporten? Går inte att ångra.",
     "reportExport": "Exportera",
-    "reportViewDeal": "Öppna affär"
+    "reportViewDeal": "Öppna affär",
+    "unnamedAccount": "Namnlöst konto"
   },
   "settings": {
     "pageTitle": "Inställningar",

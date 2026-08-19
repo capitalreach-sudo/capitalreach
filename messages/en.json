@@ -1006,7 +1006,8 @@
     "tgNextContact": "Next contact",
     "reportDeleteConfirm": "Delete this report? This cannot be undone.",
     "reportExport": "Export",
-    "reportViewDeal": "Open deal"
+    "reportViewDeal": "Open deal",
+    "unnamedAccount": "Unnamed account"
   },
   "settings": {
     "pageTitle": "Account Settings",

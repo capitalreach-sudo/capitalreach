@@ -986,7 +986,8 @@
     "tgNextContact": "Prossimo contatto",
     "reportDeleteConfirm": "Eliminare questo report? Operazione irreversibile.",
     "reportExport": "Esporta",
-    "reportViewDeal": "Apri deal"
+    "reportViewDeal": "Apri deal",
+    "unnamedAccount": "Account senza nome"
   },
   "settings": {
     "pageTitle": "Impostazioni",

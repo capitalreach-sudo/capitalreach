@@ -995,7 +995,8 @@
     "tgNextContact": "次回連絡",
     "reportDeleteConfirm": "このレポートを削除しますか？取り消せません。",
     "reportExport": "エクスポート",
-    "reportViewDeal": "ディールを開く"
+    "reportViewDeal": "ディールを開く",
+    "unnamedAccount": "名称未設定のアカウント"
   },
   "settings": {
     "pageTitle": "アカウント設定",

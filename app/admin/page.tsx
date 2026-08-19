@@ -1,4 +1,5 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { redirect } from "next/navigation";
+import { resolveAdmin } from "@/lib/admin-guard";
 import { AdminClient } from "@/components/admin/admin-client";
 import type { Profile, Startup, Investor, Deal } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
@@ -17,7 +18,15 @@ type AdminDeal     = Deal     & { startup: { name: string }; investor: { slug: s
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export default async function AdminPage() {
-  const supabase = await createServerSupabaseClient();
+  // There are no admin RLS policies on this schema, so every read below has
+  // to bypass RLS or the operator sees only the rows they personally own —
+  // no pending queue, no deals, and a revenue figure computed from one
+  // profile. Middleware already keeps non-admins off the route; resolveAdmin
+  // re-checks the role with the service role before handing over a client
+  // that can read the whole platform.
+  const guard = await resolveAdmin();
+  if (!guard.ok) redirect(guard.reason === "suspended" ? "/suspended" : "/dashboard");
+  const supabase = guard.admin;
   const now = Date.now();
   const weekAgo = new Date(now - WEEK_MS).toISOString();
   const twoWeeksAgo = new Date(now - 2 * WEEK_MS).toISOString();
@@ -113,16 +122,6 @@ export default async function AdminPage() {
     { key: "closed",   labelKey: "pulse.closed",   now: closedNow   ?? 0, prev: closedPrev   ?? 0 },
   ];
 
-  // Revenue approximation (in real app, query Stripe)
-  const tierPrices: Record<string, number> = {
-    starter: 29,
-    growth: 79,
-    angel: 99,
-    pro_investor: 249,
-    pro: 249,
-    institution: 0,
-    institutional: 0,
-  };
   // E45: revenue over every account and every deal, not the fifty rows the
   // table below happens to show. summariseRevenue also separates the 2% fees
   // into billed / collected / outstanding / unbillable — the business model
@@ -139,7 +138,7 @@ export default async function AdminPage() {
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 24px 0" }}>
         <SystemHealth
           events={systemEvents ?? []}
-          knownSources={["cron/follow-ups"]}
+          knownSources={["cron/follow-ups", "cron/fee-dunning"]}
         />
         <AdminPulse metrics={pulse} listings={healthRows ?? []} actions={adminActions ?? []} />
       </div>

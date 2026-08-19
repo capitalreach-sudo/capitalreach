@@ -21,16 +21,26 @@ export interface AdminGuardFail {
 
 export type AdminGuardResult = AdminGuardOk | AdminGuardFail;
 
-export async function requireAdmin(): Promise<AdminGuardResult> {
+export type AdminDenial = "unauthenticated" | "forbidden" | "suspended";
+
+export type AdminResolution =
+  | { ok: true; adminId: string; admin: SupabaseClient }
+  | { ok: false; reason: AdminDenial };
+
+/**
+ * The shared check, without an HTTP shape. Server components need the same
+ * decision but redirect instead of returning a 403.
+ *
+ * The service-role client is the point, not an implementation detail: there
+ * are no admin RLS policies on this schema, so an admin reading platform data
+ * through their own session sees only the rows they personally participate in
+ * — which is to say, an empty platform. Every admin surface must read with
+ * this client, and must therefore verify the role with it too.
+ */
+export async function resolveAdmin(): Promise<AdminResolution> {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return {
-      ok: false,
-      response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
-    };
-  }
+  if (!user) return { ok: false, reason: "unauthenticated" };
 
   const admin = createAdminClient();
   const { data: profile } = await admin
@@ -39,22 +49,22 @@ export async function requireAdmin(): Promise<AdminGuardResult> {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.role !== "admin") {
-    return {
-      ok: false,
-      response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
-    };
-  }
-
+  if (profile?.role !== "admin") return { ok: false, reason: "forbidden" };
   // A suspended admin is still suspended.
   if (profile.suspended || profile.account_status === "suspended" || profile.account_status === "banned") {
-    return {
-      ok: false,
-      response: NextResponse.json({ error: "Account suspended" }, { status: 403 }),
-    };
+    return { ok: false, reason: "suspended" };
   }
-
   return { ok: true, adminId: user.id, admin };
+}
+
+export async function requireAdmin(): Promise<AdminGuardResult> {
+  const resolved = await resolveAdmin();
+  if (resolved.ok) return resolved;
+  const status = resolved.reason === "unauthenticated" ? 401 : 403;
+  const error =
+    resolved.reason === "unauthenticated" ? "Unauthorized" :
+    resolved.reason === "suspended" ? "Account suspended" : "Forbidden";
+  return { ok: false, response: NextResponse.json({ error }, { status }) };
 }
 
 /** Writes an entry to the admin audit log. Never throws — logging must not
