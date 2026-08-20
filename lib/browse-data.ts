@@ -12,7 +12,7 @@ import { createAdminClient } from "@/lib/supabase-server";
  */
 
 export const STARTUP_LIST_COLUMNS =
-  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state";
+  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state,logo_url,logo_color";
 
 export type BrowseStartup = {
   id: string; slug: string; name: string; tagline: string;
@@ -23,6 +23,8 @@ export type BrowseStartup = {
   country: string | null; business_model: string | null; round_close_date: string | null;
   demo_video_url: string | null; founded_year: number | null; verified_at: string | null;
   round_state?: string | null;
+  logo_url?: string | null;
+  logo_color?: string | null;
 };
 
 export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {

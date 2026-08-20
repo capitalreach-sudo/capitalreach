@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows, Clock } from "lucide-react";
-import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
+import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget } from "@/lib/validators";
 import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
 import { STARTUP_PRESETS } from "@/lib/search-presets";
@@ -19,6 +19,7 @@ import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
+import { EntityLogo } from "@/components/shared/entity-logo";
 import { ScoreBadge } from "@/components/ui/score-badge";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -459,13 +460,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
 
         {/* Logo + Name */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px", paddingRight: "24px" }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)",
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)",
-          }}>
-            {getInitials(s.name)}
-          </div>
+          <EntityLogo name={s.name} logoUrl={(s as { logo_url?: string | null }).logo_url} logoColor={(s as { logo_color?: string | null }).logo_color} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {s.name}

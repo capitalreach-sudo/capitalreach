@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Bookmark, Lock, BadgeCheck } from "lucide-react";
-import { formatCurrency, daysSince, getInitials, STAGE_LABELS } from "@/lib/utils";
+import { formatCurrency, daysSince, STAGE_LABELS } from "@/lib/utils";
+import { EntityLogo } from "@/components/shared/entity-logo";
 import { roundCloseState } from "@/lib/round-close";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import { getInvestorPlan } from "@/lib/plans";
@@ -22,7 +23,7 @@ import { ScoreBadge } from "@/components/ui/score-badge";
  */
 export type StartupCardData = Pick<Startup,
   "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
-  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date"> & { verified_at?: string | null; round_state?: string | null };
+  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date"> & { verified_at?: string | null; round_state?: string | null; logo_url?: string | null; logo_color?: string | null };
 
 interface StartupCardProps {
   startup:     StartupCardData;
@@ -115,24 +116,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
 
         {/* Row 1 — Logo + name + score */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px", paddingRight: onSave ? "24px" : 0 }}>
-          <div style={{
-            width:         40,
-            height:        40,
-            borderRadius:  "4px",
-            background:    "var(--cr-paper-3)",
-            border:        "1px solid var(--cr-rule)",
-            display:       "flex",
-            alignItems:    "center",
-            justifyContent: "center",
-            flexShrink:    0,
-            overflow:      "hidden",
-            fontFamily:    "'DM Sans', sans-serif",
-            fontWeight:    700,
-            fontSize:      "15px",
-            color:         "var(--cr-copper)",
-          }}>
-            {getInitials(startup.name)}
-          </div>
+          <EntityLogo name={startup.name} logoUrl={startup.logo_url} logoColor={startup.logo_color} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{startup.name}</span>

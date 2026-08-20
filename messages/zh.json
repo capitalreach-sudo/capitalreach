@@ -3285,5 +3285,15 @@
       "runway_months": "跑道",
       "vaultrise_score": "AI 评分"
     }
+  },
+  "logo": {
+    "fieldLabel": "Logo",
+    "upload": "上传 Logo",
+    "replace": "更换 Logo",
+    "remove": "移除 Logo",
+    "saved": "Logo 已保存",
+    "hint": "PNG、JPEG 或 WebP，最大 2 MB。方形效果最佳。",
+    "typeError": "仅支持 PNG、JPEG 或 WebP。",
+    "sizeError": "Logo 必须小于 2 MB。"
   }
 }

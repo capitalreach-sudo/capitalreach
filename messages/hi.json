@@ -3285,5 +3285,15 @@
       "runway_months": "रनवे",
       "vaultrise_score": "AI स्कोर"
     }
+  },
+  "logo": {
+    "fieldLabel": "लोगो",
+    "upload": "लोगो अपलोड करें",
+    "replace": "लोगो बदलें",
+    "remove": "लोगो हटाएँ",
+    "saved": "लोगो सहेजा गया",
+    "hint": "PNG, JPEG या WebP, अधिकतम 2 MB। वर्गाकार सबसे अच्छा दिखता है।",
+    "typeError": "केवल PNG, JPEG या WebP।",
+    "sizeError": "लोगो 2 MB से छोटा होना चाहिए।"
   }
 }

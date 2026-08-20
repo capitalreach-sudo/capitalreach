@@ -3285,5 +3285,15 @@
       "runway_months": "Runway",
       "vaultrise_score": "ИИ-оценка"
     }
+  },
+  "logo": {
+    "fieldLabel": "Логотип",
+    "upload": "Загрузить логотип",
+    "replace": "Заменить логотип",
+    "remove": "Удалить логотип",
+    "saved": "Логотип сохранён",
+    "hint": "PNG, JPEG или WebP, до 2 МБ. Квадратный смотрится лучше всего.",
+    "typeError": "Только PNG, JPEG или WebP.",
+    "sizeError": "Логотип должен быть меньше 2 МБ."
   }
 }

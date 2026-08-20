@@ -3285,5 +3285,15 @@
       "runway_months": "런웨이",
       "vaultrise_score": "AI 점수"
     }
+  },
+  "logo": {
+    "fieldLabel": "로고",
+    "upload": "로고 업로드",
+    "replace": "로고 교체",
+    "remove": "로고 삭제",
+    "saved": "로고가 저장되었습니다",
+    "hint": "PNG, JPEG 또는 WebP, 최대 2 MB. 정사각형이 가장 보기 좋습니다.",
+    "typeError": "PNG, JPEG, WebP만 가능합니다.",
+    "sizeError": "로고는 2 MB 미만이어야 합니다."
   }
 }

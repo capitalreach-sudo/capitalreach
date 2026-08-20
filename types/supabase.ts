@@ -1173,6 +1173,8 @@ export type Database = {
           languages: string[] | null
           lead_rounds: boolean
           linkedin_url: string | null
+          logo_color: string | null
+          logo_url: string | null
           managed_by_startup_id: string | null
           max_check: number | null
           min_check: number | null
@@ -1213,6 +1215,8 @@ export type Database = {
           languages?: string[] | null
           lead_rounds?: boolean
           linkedin_url?: string | null
+          logo_color?: string | null
+          logo_url?: string | null
           managed_by_startup_id?: string | null
           max_check?: number | null
           min_check?: number | null
@@ -1253,6 +1257,8 @@ export type Database = {
           languages?: string[] | null
           lead_rounds?: boolean
           linkedin_url?: string | null
+          logo_color?: string | null
+          logo_url?: string | null
           managed_by_startup_id?: string | null
           max_check?: number | null
           min_check?: number | null
@@ -2192,6 +2198,8 @@ export type Database = {
           lead_investor: string | null
           lead_investor_status: string | null
           listed_at: string | null
+          logo_color: string | null
+          logo_url: string | null
           looking_for: string[] | null
           market: string | null
           min_check_size: number | null
@@ -2270,6 +2278,8 @@ export type Database = {
           lead_investor?: string | null
           lead_investor_status?: string | null
           listed_at?: string | null
+          logo_color?: string | null
+          logo_url?: string | null
           looking_for?: string[] | null
           market?: string | null
           min_check_size?: number | null
@@ -2348,6 +2358,8 @@ export type Database = {
           lead_investor?: string | null
           lead_investor_status?: string | null
           listed_at?: string | null
+          logo_color?: string | null
+          logo_url?: string | null
           looking_for?: string[] | null
           market?: string | null
           min_check_size?: number | null

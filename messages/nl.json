@@ -3285,5 +3285,15 @@
       "runway_months": "Runway",
       "vaultrise_score": "AI-score"
     }
+  },
+  "logo": {
+    "fieldLabel": "Logo",
+    "upload": "Logo uploaden",
+    "replace": "Logo vervangen",
+    "remove": "Logo verwijderen",
+    "saved": "Logo opgeslagen",
+    "hint": "PNG, JPEG of WebP, tot 2 MB. Vierkant werkt het best.",
+    "typeError": "Alleen PNG, JPEG of WebP.",
+    "sizeError": "Het logo moet kleiner zijn dan 2 MB."
   }
 }

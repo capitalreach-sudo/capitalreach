@@ -27,6 +27,7 @@ import { ScoreBadge } from "@/components/ui/score-badge";
 import { InfoTip } from "@/components/shared/info-tip";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
+import { EntityLogo } from "@/components/shared/entity-logo";
 import { roundCloseState } from "@/lib/round-close";
 import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
 import { postMoney, preMoney, impliedDilutionPct, ownershipForCheque, impliedPostFromEquity, equityValuationMismatch, type ValuationType } from "@/lib/round-math";
@@ -633,15 +634,12 @@ export function StartupDetailClient({
             <div style={{ display: "flex", alignItems: "flex-start", gap: "20px", flexWrap: "wrap" }}>
 
               {/* Logo */}
-              <div style={{
-                width: 60, height: 60, borderRadius: "4px", flexShrink: 0,
-                background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "20px",
-                color: "var(--cr-copper)",
-              }}>
-                {getInitials(startup.name)}
-              </div>
+              <EntityLogo
+                name={startup.name}
+                logoUrl={(startup as { logo_url?: string | null }).logo_url}
+                logoColor={(startup as { logo_color?: string | null }).logo_color}
+                size={60} radius={4}
+              />
 
               {/* Name + tagline */}
               <div style={{ flex: 1, minWidth: "200px" }}>

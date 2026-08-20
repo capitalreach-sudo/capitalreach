@@ -12,6 +12,7 @@ import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
+import { LogoUploader } from "@/components/shared/logo-uploader";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -461,6 +462,17 @@ export default function EditStartupPage() {
             <section id="sec-basics" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("dashboard.secCompanyBasics")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {/* The logo saves immediately on upload (its own API), unlike
+                    the text fields — an image in a form draft is a liability. */}
+                <Field label={t("logo.fieldLabel")}>
+                  <LogoUploader
+                    entityType="startup"
+                    name={startup.name || "?"}
+                    logoUrl={(startup as { logo_url?: string | null }).logo_url ?? null}
+                    logoColor={(startup as { logo_color?: string | null }).logo_color ?? null}
+                    onChanged={(url, color) => { update("logo_url", url); update("logo_color", color); }}
+                  />
+                </Field>
                 <Field label={t("onboarding.su.companyName")}><WarmInput value={startup.name || ""} onChange={e => update("name", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.tagline")}><WarmInput value={startup.tagline || ""} onChange={e => update("tagline", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.website")}><WarmInput value={startup.website || ""} onChange={e => update("website", e.target.value)} placeholder="https://…" /></Field>

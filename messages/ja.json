@@ -3285,5 +3285,15 @@
       "runway_months": "ランウェイ",
       "vaultrise_score": "AI スコア"
     }
+  },
+  "logo": {
+    "fieldLabel": "ロゴ",
+    "upload": "ロゴをアップロード",
+    "replace": "ロゴを差し替え",
+    "remove": "ロゴを削除",
+    "saved": "ロゴを保存しました",
+    "hint": "PNG・JPEG・WebP、最大 2 MB。正方形がきれいに表示されます。",
+    "typeError": "PNG・JPEG・WebP のみ対応です。",
+    "sizeError": "ロゴは 2 MB 未満にしてください。"
   }
 }

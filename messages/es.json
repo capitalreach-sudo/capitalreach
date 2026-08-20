@@ -3285,5 +3285,15 @@
       "runway_months": "Runway",
       "vaultrise_score": "Puntuación IA"
     }
+  },
+  "logo": {
+    "fieldLabel": "Logo",
+    "upload": "Subir logo",
+    "replace": "Reemplazar logo",
+    "remove": "Quitar logo",
+    "saved": "Logo guardado",
+    "hint": "PNG, JPEG o WebP, hasta 2 MB. El formato cuadrado queda mejor.",
+    "typeError": "Solo PNG, JPEG o WebP.",
+    "sizeError": "El logo debe pesar menos de 2 MB."
   }
 }
