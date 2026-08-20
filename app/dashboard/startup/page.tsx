@@ -4,6 +4,7 @@ import type { Profile, Startup } from "@/types";
 import { StartupDashboardClient } from "@/components/dashboard/startup-dashboard-client";
 import { Navbar } from "@/components/shared/navbar";
 import { getLaunchStatus } from "@/lib/launchMode";
+import { computeBenchmarks, type BenchmarkResult } from "@/lib/benchmarks";
 
 export default async function StartupDashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -110,6 +111,25 @@ export default async function StartupDashboardPage() {
     }
   }
 
+  // F10: where this round stands against its peers. Cohort = other ACTIVE
+  // listings at the same stage — the comparison a seed investor actually
+  // makes. Percentiles only; nothing about any individual peer leaves here.
+  let benchmarks: BenchmarkResult | null = null;
+  if (startup && startup.status === "active" && startup.stage) {
+    const { data: cohort } = await createAdminClient()
+      .from("startups")
+      .select("mrr, growth_rate, runway_months, vaultrise_score")
+      .eq("status", "active")
+      .eq("stage", startup.stage)
+      .neq("id", startup.id)
+      .limit(500);
+    benchmarks = computeBenchmarks(
+      { mrr: startup.mrr, growth_rate: startup.growth_rate, runway_months: startup.runway_months, vaultrise_score: startup.vaultrise_score },
+      cohort ?? [],
+    );
+    if (benchmarks.entries.length === 0) benchmarks = null;
+  }
+
   const { isLaunch } = await getLaunchStatus();
 
   // A rejection sends the listing back to 'draft' and stores the reason as an
@@ -139,6 +159,7 @@ export default async function StartupDashboardPage() {
         analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise, funnel }}
         isLaunchMode={isLaunch}
         rejectionReason={rejectionReason}
+        benchmarks={benchmarks}
       />
     </>
   );

@@ -3273,5 +3273,16 @@
     "opens": "{n}× geopend",
     "withDocs": "documenten inbegrepen",
     "docsNeedGrowth": "Documenten via een link delen hoort bij het Growth-plan. De link is zonder gemaakt."
+  },
+  "bench": {
+    "title": "Waar je staat — {n} lopende rondes in jouw fase",
+    "explain": "Je percentiel onder listings in dezelfde fase die de betreffende metric invulden. p68 betekent boven 68% van hen. Een leeggelaten metric telt niet als nul — die ontbreekt simpelweg in die vergelijking.",
+    "ofPeers": "van {n} met opgave",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Groei",
+      "runway_months": "Runway",
+      "vaultrise_score": "AI-score"
+    }
   }
 }

@@ -3273,5 +3273,16 @@
     "opens": "opened {n}×",
     "withDocs": "documents included",
     "docsNeedGrowth": "Sharing documents through a link is part of the Growth plan. The link was created without them."
+  },
+  "bench": {
+    "title": "Where you stand — {n} live rounds at your stage",
+    "explain": "Your percentile among same-stage listings that disclosed each metric. p68 means you are above 68% of them. Companies that left a metric blank are not counted as zeros — they are simply absent from that comparison.",
+    "ofPeers": "of {n} disclosing",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Growth",
+      "runway_months": "Runway",
+      "vaultrise_score": "AI score"
+    }
   }
 }

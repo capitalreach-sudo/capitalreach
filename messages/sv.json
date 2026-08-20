@@ -3273,5 +3273,16 @@
     "opens": "öppnad {n}×",
     "withDocs": "dokument ingår",
     "docsNeedGrowth": "Att dela dokument via en länk ingår i Growth-planen. Länken skapades utan dem."
+  },
+  "bench": {
+    "title": "Var du står — {n} pågående rundor i ditt skede",
+    "explain": "Din percentil bland annonser i samma skede som uppgett respektive nyckeltal. p68 betyder över 68 % av dem. Ett tomt nyckeltal räknas inte som noll — det saknas bara i den jämförelsen.",
+    "ofPeers": "av {n} som uppgett",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Tillväxt",
+      "runway_months": "Runway",
+      "vaultrise_score": "AI-poäng"
+    }
   }
 }

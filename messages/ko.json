@@ -3273,5 +3273,16 @@
     "opens": "{n}회 열림",
     "withDocs": "자료 포함",
     "docsNeedGrowth": "링크로 자료를 공유하는 기능은 Growth 플랜입니다. 자료 없이 링크를 만들었습니다."
+  },
+  "bench": {
+    "title": "현재 위치 — 같은 단계의 진행 중 라운드 {n}건",
+    "explain": "각 지표를 공개한 같은 단계 리스팅 중에서의 백분위입니다. p68은 그중 68%보다 위라는 뜻입니다. 지표를 비워둔 회사는 0으로 계산되지 않고 해당 비교에서 제외됩니다.",
+    "ofPeers": "공개한 {n}곳 중",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "성장률",
+      "runway_months": "런웨이",
+      "vaultrise_score": "AI 점수"
+    }
   }
 }

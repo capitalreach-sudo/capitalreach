@@ -3273,5 +3273,16 @@
     "opens": "aperto {n}×",
     "withDocs": "documenti inclusi",
     "docsNeedGrowth": "Condividere i documenti tramite link fa parte del piano Growth. Il link è stato creato senza."
+  },
+  "bench": {
+    "title": "Dove ti trovi — {n} round attivi al tuo stadio",
+    "explain": "Il tuo percentile tra gli annunci dello stesso stadio che hanno dichiarato ciascuna metrica. p68 significa sopra il 68% di essi. Una metrica lasciata vuota non conta come zero: è semplicemente assente dal confronto.",
+    "ofPeers": "su {n} dichiaranti",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Crescita",
+      "runway_months": "Runway",
+      "vaultrise_score": "Punteggio AI"
+    }
   }
 }

@@ -3273,5 +3273,16 @@
     "opens": "abierto {n}×",
     "withDocs": "documentos incluidos",
     "docsNeedGrowth": "Compartir documentos por enlace es parte del plan Growth. El enlace se creó sin ellos."
+  },
+  "bench": {
+    "title": "Dónde estás — {n} rondas activas en tu etapa",
+    "explain": "Tu percentil entre fichas de la misma etapa que declararon cada métrica. p68 significa por encima del 68 % de ellas. Dejar una métrica en blanco no cuenta como cero: simplemente queda fuera de esa comparación.",
+    "ofPeers": "de {n} que declaran",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Crecimiento",
+      "runway_months": "Runway",
+      "vaultrise_score": "Puntuación IA"
+    }
   }
 }

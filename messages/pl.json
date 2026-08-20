@@ -3273,5 +3273,16 @@
     "opens": "otwarto {n}×",
     "withDocs": "z dokumentami",
     "docsNeedGrowth": "Udostępnianie dokumentów przez link należy do planu Growth. Link powstał bez nich."
+  },
+  "bench": {
+    "title": "Gdzie jesteś — {n} otwartych rund na Twoim etapie",
+    "explain": "Twój percentyl wśród ogłoszeń z tego samego etapu, które podały daną metrykę. p68 znaczy: powyżej 68% z nich. Puste pole nie liczy się jako zero — po prostu nie bierze udziału w porównaniu.",
+    "ofPeers": "z {n} podających",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Wzrost",
+      "runway_months": "Runway",
+      "vaultrise_score": "Ocena AI"
+    }
   }
 }

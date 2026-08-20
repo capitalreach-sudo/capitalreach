@@ -3273,5 +3273,16 @@
     "opens": "ouvert {n}×",
     "withDocs": "documents inclus",
     "docsNeedGrowth": "Partager des documents via un lien fait partie de l'offre Growth. Le lien a été créé sans eux."
+  },
+  "bench": {
+    "title": "Où vous en êtes — {n} levées en cours à votre stade",
+    "explain": "Votre percentile parmi les annonces du même stade ayant renseigné chaque métrique. p68 signifie au-dessus de 68 % d'entre elles. Une métrique laissée vide ne compte pas comme zéro : elle est simplement absente de la comparaison.",
+    "ofPeers": "sur {n} déclarants",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Croissance",
+      "runway_months": "Runway",
+      "vaultrise_score": "Score IA"
+    }
   }
 }

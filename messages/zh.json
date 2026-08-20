@@ -3273,5 +3273,16 @@
     "opens": "已打开 {n} 次",
     "withDocs": "含文件",
     "docsNeedGrowth": "通过链接分享文件属于 Growth 方案。此链接已在不含文件的情况下创建。"
+  },
+  "bench": {
+    "title": "你的位置 —— 同阶段共有 {n} 个进行中的轮次",
+    "explain": "你在披露了该指标的同阶段项目中的百分位。p68 表示高于其中 68%。未填写某项指标的公司不按零计算 —— 只是不参与该项比较。",
+    "ofPeers": "共 {n} 家披露",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "增长",
+      "runway_months": "跑道",
+      "vaultrise_score": "AI 评分"
+    }
   }
 }

@@ -3273,5 +3273,16 @@
     "opens": "{n}× geöffnet",
     "withDocs": "Dokumente enthalten",
     "docsNeedGrowth": "Dokumente über einen Link zu teilen gehört zum Growth-Plan. Der Link wurde ohne sie erstellt."
+  },
+  "bench": {
+    "title": "Wo du stehst — {n} laufende Runden in deiner Phase",
+    "explain": "Dein Perzentil unter Listings derselben Phase, die die jeweilige Kennzahl angegeben haben. p68 heißt: über 68 % von ihnen. Wer eine Kennzahl leer ließ, zählt nicht als Null, sondern fehlt in diesem Vergleich.",
+    "ofPeers": "von {n} mit Angabe",
+    "metric": {
+      "mrr": "MRR",
+      "growth_rate": "Wachstum",
+      "runway_months": "Runway",
+      "vaultrise_score": "KI-Score"
+    }
   }
 }

@@ -11,6 +11,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ShareLinks } from "@/components/startup/share-links";
+import type { BenchmarkResult } from "@/lib/benchmarks";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
@@ -33,6 +34,8 @@ interface Props {
   viewingAs?: string;
   /** Latest admin rejection reason still in force (draft listings only). */
   rejectionReason?: string | null;
+  /** F10: percentiles against same-stage live listings; null when the cohort is too small. */
+  benchmarks?: BenchmarkResult | null;
 }
 
 type StartupTab = "overview" | "documents" | "ai" | "billing";
@@ -770,7 +773,7 @@ function DocAnalyticsPanel() {
   );
 }
 
-export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs, rejectionReason = null }: Props) {
+export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs, rejectionReason = null, benchmarks = null }: Props) {
   const { t }        = useTranslation();
   const router       = useRouter();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
@@ -983,6 +986,31 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             </div>
           ))}
         </div>
+
+        {/* F10: the numbers above say what you have; this says whether it is
+            good. Percentiles among same-stage listings that DISCLOSED each
+            metric — never a ranking, so nobody can reverse-engineer who is
+            one place above them. */}
+        {benchmarks && benchmarks.entries.length > 0 && (
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px", marginBottom: "32px", marginTop: "-20px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+              {t("bench.title", { n: benchmarks.cohortSize })}
+              <InfoTip termKey="bench.explain" />
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "18px" }}>
+              {benchmarks.entries.map(e => (
+                <div key={e.key} style={{ minWidth: "120px" }}>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", color: e.percentile >= 60 ? "var(--cr-up)" : e.percentile <= 30 ? "var(--cr-ink-3)" : "var(--cr-ink)" }}>
+                    p{e.percentile}
+                  </p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                    {t(`bench.metric.${e.key}`)} · {t("bench.ofPeers", { n: e.peers })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tab bar */}
         <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", overflowX: "auto" }}>
