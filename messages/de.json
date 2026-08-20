@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "gemischte Währungen: {list}",
     "feesWaived": "Ausgebuchte Gebühren",
     "feesDisputed": "Gebühren bestritten",
-    "feesReversed": "Erstattet / zurückgebucht"
+    "feesReversed": "Erstattet / zurückgebucht",
+    "feeFlow": "Gebührenfluss, letzte zwölf Monate"
   },
   "tranches": {
     "title": "Auszahlungsplan",
@@ -3217,7 +3218,9 @@
     "safe": "Ein Simple Agreement for Future Equity: Geld jetzt, Anteile später, umgewandelt bei der nächsten bepreisten Runde — meist mit Cap, Discount oder beidem.",
     "softCircle": "Ein Investor hat angekündigt, investieren zu wollen, und wie viel — unterschrieben ist nichts. Echtes Interesse, kein zugesagtes Geld.",
     "leadInvestor": "Der Investor, der die Konditionen setzt und meist den größten Scheck schreibt. Ohne ihn kommen Runden oft nicht voran.",
-    "successFee": "CapitalReach berechnet 2 % einer Runde beim Abschluss. Sie zahlt das Startup, das die Investition erhält — nie der Investor."
+    "successFee": "CapitalReach berechnet 2 % einer Runde beim Abschluss. Sie zahlt das Startup, das die Investition erhält — nie der Investor.",
+    "dueDiligence": "Die Prüfung, die ein Investor vor der Zusage durchführt: Finanzzahlen lesen, mit Kunden sprechen, die Angaben im Listing gegen Belege prüfen. Rechne mit Dokumentanfragen und Fragen — eine Due Diligence ohne Rückfragen hat nicht begonnen.",
+    "termSheet": "Das Dokument, das die Konditionen des Investments festhält — Betrag, Bewertung, Rechte — vor den finalen Verträgen. Meist nicht bindend fürs Geld selbst, aber mit der Unterschrift ist die Verhandlung vorbei und die Anwälte beginnen."
   },
   "translate": {
     "offer": "Dies wurde in einer anderen Sprache verfasst.",

@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "blandade valutor: {list}",
     "feesWaived": "Avskrivna avgifter",
     "feesDisputed": "Avgifter bestridda",
-    "feesReversed": "Återbetalda / återförda"
+    "feesReversed": "Återbetalda / återförda",
+    "feeFlow": "Avgiftsflöde, senaste tolv månaderna"
   },
   "tranches": {
     "title": "Utbetalningsplan",
@@ -3217,7 +3218,9 @@
     "safe": "Ett Simple Agreement for Future Equity: pengar nu, aktier senare, som konverteras vid nästa prissatta runda — vanligen med tak, rabatt eller båda.",
     "softCircle": "En investerare har sagt sig avse att investera, och hur mycket, men inget är påskrivet. Verkligt intresse, inte utlovade pengar.",
     "leadInvestor": "Investeraren som sätter villkoren och oftast tar den största checken. Rundor står ofta still tills en sådan finns.",
-    "successFee": "CapitalReach tar 2 % av en runda när den stängs. Avgiften betalas av startupen som tar emot investeringen — aldrig av investeraren."
+    "successFee": "CapitalReach tar 2 % av en runda när den stängs. Avgiften betalas av startupen som tar emot investeringen — aldrig av investeraren.",
+    "dueDiligence": "Granskningen en investerare gör innan pengar utlovas: läsa räkenskaperna, prata med kunder, pröva annonsens påståenden mot belägg. Räkna med dokumentförfrågningar och frågor — en due diligence utan frågor har inte börjat.",
+    "termSheet": "Dokumentet som slår fast investeringens villkor — belopp, värdering, rättigheter — före de slutliga avtalen. Oftast inte bindande för själva pengarna, men när det är undertecknat är förhandlingen över och juristerna tar vid."
   },
   "translate": {
     "offer": "Det här skrevs på ett annat språk.",

@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "moedas mistas: {list}",
     "feesWaived": "Comissões abatidas",
     "feesDisputed": "Comissões contestadas",
-    "feesReversed": "Reembolsadas / estornadas"
+    "feesReversed": "Reembolsadas / estornadas",
+    "feeFlow": "Fluxo de comissões, últimos doze meses"
   },
   "tranches": {
     "title": "Calendário de desembolso",
@@ -3217,7 +3218,9 @@
     "safe": "Um Simple Agreement for Future Equity: dinheiro agora, participação depois, convertida na próxima ronda com preço — normalmente com cap, desconto, ou ambos.",
     "softCircle": "Um investidor disse que tenciona investir, e quanto, mas nada está assinado. Interesse real, não dinheiro comprometido.",
     "leadInvestor": "O investidor que define os termos e normalmente entra com o maior cheque. Muitas rondas ficam paradas até existir um.",
-    "successFee": "A CapitalReach cobra 2% de uma ronda quando fecha. É paga pela startup que recebe o investimento — nunca pelo investidor."
+    "successFee": "A CapitalReach cobra 2% de uma ronda quando fecha. É paga pela startup que recebe o investimento — nunca pelo investidor.",
+    "dueDiligence": "A investigação que um investidor faz antes de comprometer dinheiro: ler as finanças, falar com clientes, confrontar as afirmações do anúncio com provas. Conte com pedidos de documentos e perguntas — uma diligência sem perguntas não começou.",
+    "termSheet": "O documento que fixa os termos do investimento — montante, avaliação, direitos — antes dos contratos finais. Normalmente não vincula o dinheiro em si, mas assiná-lo encerra a negociação e passa a bola aos advogados."
   },
   "translate": {
     "offer": "Isto foi escrito noutro idioma.",

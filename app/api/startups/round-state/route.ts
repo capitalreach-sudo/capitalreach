@@ -36,7 +36,54 @@ export async function POST(req: NextRequest) {
   const updates: { round_state?: RoundState; round_state_changed_at?: string; show_momentum?: boolean } = {};
   if (roundState !== undefined) { updates.round_state = roundState; updates.round_state_changed_at = new Date().toISOString(); }
   if (showMomentum !== undefined) updates.show_momentum = showMomentum;
+  // Read the prior state first: watchers are told about a CHANGE, and a
+  // founder re-saving the same state must not re-notify five hundred people.
+  const { data: before } = await admin.from("startups")
+    .select("round_state, name, slug, status").eq("id", mine.entityId).maybeSingle();
+
   const { data, error } = await admin.from("startups").update(updates).eq("id", mine.entityId).select("id, round_state, show_momentum").single();
   if (error || !data) return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+
+  // The bell, for the people who saved this company. This is the one event a
+  // watchlist exists for — "closing" and "oversubscribed" are exactly the
+  // moments before it is too late to act. Awaited (serverless), best-effort,
+  // and only on a real transition of a live listing.
+  if (
+    roundState !== undefined &&
+    before && before.status === "active" && before.round_state !== roundState
+  ) {
+    try {
+      const { data: savers } = await admin
+        .from("watchlists")
+        .select("investor:investors(owner_id)")
+        .eq("startup_id", mine.entityId)
+        .limit(500);
+      const ids = Array.from(new Set(
+        ((savers ?? []) as Array<{ investor: { owner_id: string | null } | null }>)
+          .map(r => r.investor?.owner_id)
+          .filter((id): id is string => !!id && id !== user.id)
+      ));
+      if (ids.length > 0) {
+        const titles: Record<RoundState, string> = {
+          open: `${before.name} reopened its round`,
+          oversubscribed: `${before.name} is oversubscribed`,
+          paused: `${before.name} paused its round`,
+          closed: `${before.name} closed its round`,
+        };
+        await admin.from("notifications").insert(ids.map(uid => ({
+          user_id: uid,
+          type: "listing_update",
+          title: titles[roundState],
+          body: roundState === "closed" || roundState === "paused"
+            ? "You saved this company to your watchlist."
+            : "You saved this company — there may still be room.",
+          href: `/startups/${before.slug}`,
+        })));
+      }
+    } catch (e) {
+      console.error("round-state broadcast failed:", e);
+    }
+  }
+
   return NextResponse.json({ success: true, roundState: data.round_state, showMomentum: data.show_momentum });
 }

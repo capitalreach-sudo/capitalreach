@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "devises mixtes : {list}",
     "feesWaived": "Commissions passées en perte",
     "feesDisputed": "Commissions contestées",
-    "feesReversed": "Remboursées / rejetées"
+    "feesReversed": "Remboursées / rejetées",
+    "feeFlow": "Flux de commissions, douze derniers mois"
   },
   "tranches": {
     "title": "Échéancier de versement",
@@ -3217,7 +3218,9 @@
     "safe": "Un Simple Agreement for Future Equity : de l'argent maintenant, des titres plus tard, convertis au prochain tour valorisé — souvent avec un plafond, une décote, ou les deux.",
     "softCircle": "Un investisseur a annoncé son intention d'investir, et le montant, mais rien n'est signé. Un intérêt réel, pas un engagement ferme.",
     "leadInvestor": "L'investisseur qui fixe les conditions et met généralement le plus gros ticket. Beaucoup de levées stagnent tant qu'il n'existe pas.",
-    "successFee": "CapitalReach prélève 2 % d'une levée à sa clôture. Cette commission est payée par la startup qui reçoit l'investissement — jamais par l'investisseur."
+    "successFee": "CapitalReach prélève 2 % d'une levée à sa clôture. Cette commission est payée par la startup qui reçoit l'investissement — jamais par l'investisseur.",
+    "dueDiligence": "L'examen qu'un investisseur mène avant d'engager son argent : lire les comptes, parler aux clients, confronter les affirmations de l'annonce aux preuves. Attendez-vous à des demandes de documents et à des questions — une due diligence sans questions n'a pas commencé.",
+    "termSheet": "Le document qui fixe les conditions de l'investissement — montant, valorisation, droits — avant les contrats définitifs. Rarement contraignant sur l'argent lui-même, mais le signer clôt la négociation et lance les avocats."
   },
   "translate": {
     "offer": "Ceci a été rédigé dans une autre langue.",

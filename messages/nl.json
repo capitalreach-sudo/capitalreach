@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "gemengde valuta: {list}",
     "feesWaived": "Afgeboekte fees",
     "feesDisputed": "Fees betwist",
-    "feesReversed": "Terugbetaald / teruggeboekt"
+    "feesReversed": "Terugbetaald / teruggeboekt",
+    "feeFlow": "Fee-stroom, laatste twaalf maanden"
   },
   "tranches": {
     "title": "Uitbetalingsschema",
@@ -3217,7 +3218,9 @@
     "safe": "Een Simple Agreement for Future Equity: geld nu, aandelen later, omgezet bij de volgende geprijsde ronde — meestal met een cap, een korting, of beide.",
     "softCircle": "Een investeerder heeft gezegd te willen investeren, en hoeveel, maar er is niets getekend. Echte interesse, geen toegezegd geld.",
     "leadInvestor": "De investeerder die de voorwaarden bepaalt en meestal de grootste cheque schrijft. Rondes blijven vaak steken tot er één is.",
-    "successFee": "CapitalReach rekent 2% van een ronde bij closing. Die wordt betaald door de startup die de investering ontvangt — nooit door de investeerder."
+    "successFee": "CapitalReach rekent 2% van een ronde bij closing. Die wordt betaald door de startup die de investering ontvangt — nooit door de investeerder.",
+    "dueDiligence": "Het onderzoek dat een investeerder doet voordat er geld wordt toegezegd: de cijfers lezen, met klanten praten, de claims in de listing tegen bewijs houden. Reken op documentverzoeken en vragen — een due diligence zonder vragen is niet begonnen.",
+    "termSheet": "Het document dat de voorwaarden van de investering vastlegt — bedrag, waardering, rechten — vóór de definitieve contracten. Meestal niet bindend voor het geld zelf, maar met de handtekening is de onderhandeling voorbij en beginnen de juristen."
   },
   "translate": {
     "offer": "Dit is in een andere taal geschreven.",

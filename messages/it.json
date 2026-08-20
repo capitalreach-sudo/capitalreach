@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "valute miste: {list}",
     "feesWaived": "Fee stralciate",
     "feesDisputed": "Fee contestate",
-    "feesReversed": "Rimborsate / stornate"
+    "feesReversed": "Rimborsate / stornate",
+    "feeFlow": "Flusso delle fee, ultimi dodici mesi"
   },
   "tranches": {
     "title": "Piano di erogazione",
@@ -3217,7 +3218,9 @@
     "safe": "Un Simple Agreement for Future Equity: soldi ora, quote poi, convertite al prossimo round con prezzo — di solito con cap, sconto o entrambi.",
     "softCircle": "Un investitore ha detto che intende investire, e quanto, ma non c'è nulla di firmato. Interesse reale, non denaro impegnato.",
     "leadInvestor": "L'investitore che fissa i termini e di solito mette il ticket più grande. Molti round restano fermi finché non ce n'è uno.",
-    "successFee": "CapitalReach applica il 2% di un round alla chiusura. La paga la startup che riceve l'investimento — mai l'investitore."
+    "successFee": "CapitalReach applica il 2% di un round alla chiusura. La paga la startup che riceve l'investimento — mai l'investitore.",
+    "dueDiligence": "La verifica che un investitore svolge prima di impegnare denaro: leggere i conti, parlare con i clienti, confrontare le affermazioni dell'annuncio con le prove. Aspettati richieste di documenti e domande — una due diligence senza domande non è cominciata.",
+    "termSheet": "Il documento che fissa i termini dell'investimento — importo, valutazione, diritti — prima dei contratti definitivi. Di solito non vincola il denaro in sé, ma firmarlo chiude la trattativa e fa partire gli avvocati."
   },
   "translate": {
     "offer": "Questo testo è stato scritto in un'altra lingua.",

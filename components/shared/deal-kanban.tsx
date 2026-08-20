@@ -20,6 +20,7 @@ import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY 
 import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List, Circle } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
+import { InfoTip } from "@/components/shared/info-tip";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { scheduleTotal, scheduleReconciles, receivedTotal, allReceived } from "@/lib/tranches";
@@ -1870,6 +1871,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           <div style={{ marginTop: "8px" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "5px" }}>{t("deals.commitmentLabel")}</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+              <InfoTip termKey="glossary.softCircle" />
               {(["interest", "soft_circle", "verbal", "committed"] as CommitmentType[]).map((c) => (
                 <button key={c} onClick={() => { if (c !== ct) onSetCommitment(deal.id, c); }} style={chipStyle(c === ct)} aria-pressed={c === ct}>
                   {t(COMMITMENT_KEY[c])}
@@ -2370,7 +2372,13 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
               return (
                 <div key={col.status} style={{ width: "264px", flexShrink: 0, display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 260px)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                    <span style={colBadgeStyle(col.status, colDeals.length)}>{col.label}</span>
+                    <span style={{ display: "inline-flex", alignItems: "center" }}>
+                      <span style={colBadgeStyle(col.status, colDeals.length)}>{col.label}</span>
+                      {/* The jargon-heavy stages explain themselves where a
+                          first-time founder actually meets them. */}
+                      {col.status === "due_diligence" && <InfoTip termKey="glossary.dueDiligence" />}
+                      {col.status === "term_sheet" && <InfoTip termKey="glossary.termSheet" />}
+                    </span>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                       {colDeals.length}
                     </span>

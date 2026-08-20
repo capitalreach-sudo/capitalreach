@@ -2986,7 +2986,8 @@
     "mixedCurrencies": "waluty mieszane: {list}",
     "feesWaived": "Odpisane prowizje",
     "feesDisputed": "Prowizje zakwestionowane",
-    "feesReversed": "Zwrócone / obciążenia zwrotne"
+    "feesReversed": "Zwrócone / obciążenia zwrotne",
+    "feeFlow": "Przepływ prowizji, ostatnie dwanaście miesięcy"
   },
   "tranches": {
     "title": "Harmonogram wypłat",
@@ -3217,7 +3218,9 @@
     "safe": "Simple Agreement for Future Equity: pieniądze teraz, udziały później, konwertowane przy następnej wycenionej rundzie — zwykle z capem, dyskontem albo obydwoma.",
     "softCircle": "Inwestor zadeklarował zamiar inwestycji i kwotę, ale nic nie jest podpisane. Realne zainteresowanie, nie zobowiązane pieniądze.",
     "leadInvestor": "Inwestor, który ustala warunki i zwykle wykłada największy czek. Wiele rund stoi w miejscu, dopóki się nie pojawi.",
-    "successFee": "CapitalReach pobiera 2% rundy przy jej zamknięciu. Płaci je startup otrzymujący inwestycję — nigdy inwestor."
+    "successFee": "CapitalReach pobiera 2% rundy przy jej zamknięciu. Płaci je startup otrzymujący inwestycję — nigdy inwestor.",
+    "dueDiligence": "Badanie, które inwestor przeprowadza przed zaangażowaniem pieniędzy: czytanie finansów, rozmowy z klientami, konfrontowanie twierdzeń z ogłoszenia z dowodami. Spodziewaj się próśb o dokumenty i pytań — due diligence bez pytań się nie zaczęło.",
+    "termSheet": "Dokument ustalający warunki inwestycji — kwotę, wycenę, prawa — przed ostatecznymi umowami. Zwykle nie wiąże co do samych pieniędzy, ale jego podpisanie kończy negocjacje i oddaje sprawę prawnikom."
   },
   "translate": {
     "offer": "To napisano w innym języku.",

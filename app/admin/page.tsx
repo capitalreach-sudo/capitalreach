@@ -130,9 +130,33 @@ export default async function AdminPage() {
   // did not appear on this page at all before.
   const [{ data: allTiers }, { data: feeDeals }] = await Promise.all([
     supabase.from("profiles").select("subscription_tier").limit(10000),
-    supabase.from("deals").select("success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, currency").not("success_fee_amount", "is", null).limit(5000),
+    supabase.from("deals").select("success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_disputed_at, fee_dispute_resolved_at, fee_refunded_at, fee_chargeback_at, fee_chargeback_resolved_at, fee_waived_at, currency, closed_at").not("success_fee_amount", "is", null).limit(5000),
   ]);
   const revenue = summariseRevenue(allTiers ?? [], feeDeals ?? []);
+
+  // The money, over time. Twelve calendar months, zeros kept — the same rule
+  // as the public chart: a quiet month must look quiet, not vanish. MRR has no
+  // history table (tier changes are not logged), so only fees get a series;
+  // charting a reconstructed MRR would be charting a guess.
+  const feeMonths: Array<{ month: string; billed: number; collected: number }> = [];
+  {
+    const nowD = new Date();
+    const idx = new Map<string, number>();
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() - i, 1));
+      const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+      idx.set(key, feeMonths.length);
+      feeMonths.push({ month: key, billed: 0, collected: 0 });
+    }
+    for (const d of feeDeals ?? []) {
+      const amount = (Number(d.success_fee_amount) || 0) / 100;
+      if (amount <= 0) continue;
+      const bi = idx.get((d.closed_at ?? "").slice(0, 7));
+      if (bi !== undefined && d.success_fee_invoiced) feeMonths[bi].billed += amount;
+      const pi = idx.get((d.success_fee_paid_at ?? "").slice(0, 7));
+      if (pi !== undefined) feeMonths[pi].collected += amount;
+    }
+  }
 
   // E56: totals say how big the platform is; the funnel says where it leaks.
   const [{ data: founderRows }, { data: listingRows }, { data: dealRows }] = await Promise.all([
@@ -169,6 +193,7 @@ export default async function AdminPage() {
           investorMrr: 0,
         }}
         revenue={revenue}
+        feeMonths={feeMonths}
       />
     </>
   );

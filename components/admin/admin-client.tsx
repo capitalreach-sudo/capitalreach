@@ -14,6 +14,7 @@ import { CheckCircle2, XCircle, AlertCircle, DollarSign, Users, Building2, Trend
 import { formatCurrency, formatDate, STATUS_COLORS } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RevenueSummary } from "@/lib/revenue";
+import { LineChart } from "@/components/charts/line-chart";
 import type { Startup, Investor, Deal } from "@/types";
 
 interface Props {
@@ -24,9 +25,11 @@ interface Props {
   stats: { totalStartups: number; totalInvestors: number; startupMrr: number; investorMrr: number };
   /** E45: real revenue, computed over every account and every deal. */
   revenue?: RevenueSummary;
+  /** Twelve months of fee flow, oldest first. */
+  feeMonths?: Array<{ month: string; billed: number; collected: number }>;
 }
 
-export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue }: Props) {
+export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue, feeMonths = [] }: Props) {
   // Launch mode: the everyone-gets-top-tier state. null until loaded.
   const [launch, setLaunch] = useState<{ isLaunch: boolean; memberCount: number; target: number } | null>(null);
   const [savingLaunch, setSavingLaunch] = useState(false);
@@ -178,6 +181,27 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     {" "}×{row.count} · {formatCurrency(row.mrr)}/mo
                   </span>
                 ))}
+              </div>
+            )}
+
+            {/* Fee flow over time, same chart kit as the public data centre.
+                Billed and collected on ONE frame because they share a unit and
+                a scale — the gap between the lines IS the outstanding money.
+                MRR gets no line: tier changes are not logged, so an MRR
+                history would be a reconstruction, and charting a guess on the
+                page an operator bills from is how guesses become facts. */}
+            {feeMonths.length > 0 && feeMonths.some(m => m.billed > 0 || m.collected > 0) && (
+              <div className="mt-5 pt-4 border-t border-cr-p4">
+                <p className="text-[10px] uppercase tracking-wider text-cr-i4 mb-2">{t("revenue.feeFlow")}</p>
+                <LineChart
+                  height={150}
+                  labels={feeMonths.map(m => m.month.slice(5))}
+                  formatTick={(n) => (n >= 1000 ? `$${Math.round(n / 1000)}k` : `$${Math.round(n)}`)}
+                  series={[
+                    { key: "billed", label: t("revenue.feesBilled"), values: feeMonths.map(m => m.billed), format: (n) => formatCurrency(n) },
+                    { key: "collected", label: t("revenue.feesCollected"), values: feeMonths.map(m => m.collected), format: (n) => formatCurrency(n) },
+                  ]}
+                />
               </div>
             )}
           </CardContent>

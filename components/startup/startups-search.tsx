@@ -601,10 +601,18 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
   const [compareIds, setCompareIds] = useState<string[]>([]);
   // Compare tray survives reloads; unknown ids are dropped once data arrives.
   useEffect(() => {
+    // A shared link outranks local memory: opening a colleague's shortlist
+    // should show their three companies, not whatever this browser last had.
+    const cmp = searchParams.get("cmp");
+    if (cmp) {
+      const ids = cmp.split(",").filter(x => /^[0-9a-f-]{36}$/i.test(x)).slice(0, 3);
+      if (ids.length >= 2) { setCompareIds(ids); return; }
+    }
     try {
       const raw = localStorage.getItem("cr_compare");
       if (raw) setCompareIds(JSON.parse(raw).slice(0, 3));
     } catch { /* corrupted storage — start empty */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     try { localStorage.setItem("cr_compare", JSON.stringify(compareIds)); } catch { /* quota */ }
@@ -1364,6 +1372,16 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button onClick={() => {
+                  const url = `${window.location.origin}/startups?compare=1&cmp=${compareIds.join(",")}`;
+                  navigator.clipboard.writeText(url).then(
+                    () => notify.success(t("toast.linkCopied")),
+                    () => notify.error(t("share.copyFailed")),
+                  );
+                }}
+                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+                  {t("common.share")}
+                </button>
                 <button onClick={exportCompareCsv}
                   style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
                   {t("dashboard.exportCsv")}
