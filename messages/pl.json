@@ -3050,7 +3050,8 @@
       "outstanding": "Zafakturowana",
       "unbillable": "Jeszcze nie zafakturowana",
       "waived": "Odpisana",
-      "disputed": "W weryfikacji"
+      "disputed": "W weryfikacji",
+      "reversed": "Zwrócona"
     }
   },
   "adminList": {

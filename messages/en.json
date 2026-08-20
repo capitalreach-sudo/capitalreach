@@ -3050,7 +3050,8 @@
       "outstanding": "Invoiced",
       "unbillable": "Not yet invoiced",
       "waived": "Written off",
-      "disputed": "Under review"
+      "disputed": "Under review",
+      "reversed": "Refunded"
     }
   },
   "adminList": {

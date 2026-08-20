@@ -606,13 +606,15 @@ export default function PricingPage() {
         {/* AI report callout */}
         <section style={{ padding: "40px 0", borderTop: "1px solid var(--cr-rule)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px 28px", display: "flex", alignItems: "center", gap: "24px", transition: "border-color 150ms" }}
+            {/* flexWrap: three fixed-width flex children overflowed a 375px
+                screen by 23px and put a sideways scroll on the whole page. */}
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px 28px", display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", transition: "border-color 150ms" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper-br)")}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}>
               <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <Brain style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, minWidth: "220px" }}>
                 <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("pricing.aiReportTitle")}</h3>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{t("pricing.aiReportDesc")}</p>
               </div>

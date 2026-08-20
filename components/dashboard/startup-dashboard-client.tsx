@@ -1024,7 +1024,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* ── Overview ── */}
         {activeTab === "overview" && (
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,2fr)", gap: "20px" }}>
+          <div className="grid-third-stack">
             {/* Profile completion */}
             <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "16px" }}>{t("dashboard.profileCompletion")}</h3>

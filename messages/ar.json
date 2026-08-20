@@ -3050,7 +3050,8 @@
       "outstanding": "مُفوترة",
       "unbillable": "لم تُفوتر بعد",
       "waived": "مشطوبة",
-      "disputed": "قيد المراجعة"
+      "disputed": "قيد المراجعة",
+      "reversed": "مستردة"
     }
   },
   "adminList": {

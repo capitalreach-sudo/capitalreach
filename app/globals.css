@@ -1030,6 +1030,18 @@ html { scroll-behavior: smooth; }
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
+/* 1:2 overview grid that stacks on phones. Inline styles cannot carry a
+   media query, which is exactly how the founder overview ended up two columns
+   wide at 375px and scrolled the whole dashboard sideways. */
+.grid-third-stack {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,2fr);
+  gap: 20px;
+}
+@media (max-width: 760px) {
+  .grid-third-stack { grid-template-columns: minmax(0,1fr); }
+}
+
 .grid-half-stack {
   display: grid;
   grid-template-columns: 1fr 1fr;

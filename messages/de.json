@@ -3050,7 +3050,8 @@
       "outstanding": "In Rechnung gestellt",
       "unbillable": "Noch nicht fakturiert",
       "waived": "Ausgebucht",
-      "disputed": "In Prüfung"
+      "disputed": "In Prüfung",
+      "reversed": "Erstattet"
     }
   },
   "adminList": {

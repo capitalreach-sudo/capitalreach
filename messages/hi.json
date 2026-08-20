@@ -3050,7 +3050,8 @@
       "outstanding": "बिल भेजा",
       "unbillable": "अभी बिल नहीं",
       "waived": "बट्टे खाते",
-      "disputed": "समीक्षाधीन"
+      "disputed": "समीक्षाधीन",
+      "reversed": "वापस की गई"
     }
   },
   "adminList": {

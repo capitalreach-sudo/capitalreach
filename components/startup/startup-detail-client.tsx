@@ -933,7 +933,11 @@ export function StartupDetailClient({
         )}
 
         {/* ── Custom tab bar ── */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", gap: "0" }}>
+        {/* Five tabs at 13px do not fit 375px; without its own scroll the
+            strip widened the PAGE, and the whole listing scrolled sideways.
+            The strip scrolls; the page does not — same fix as every other
+            tab bar on the site. */}
+        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", gap: "0", overflowX: "auto", whiteSpace: "nowrap" }}>
           {TABS.map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               style={{

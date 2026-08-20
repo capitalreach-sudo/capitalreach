@@ -3050,7 +3050,8 @@
       "outstanding": "Fatturata",
       "unbillable": "Non ancora fatturata",
       "waived": "Stralciata",
-      "disputed": "In verifica"
+      "disputed": "In verifica",
+      "reversed": "Rimborsata"
     }
   },
   "adminList": {

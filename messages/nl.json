@@ -3050,7 +3050,8 @@
       "outstanding": "Gefactureerd",
       "unbillable": "Nog niet gefactureerd",
       "waived": "Afgeboekt",
-      "disputed": "In behandeling"
+      "disputed": "In behandeling",
+      "reversed": "Terugbetaald"
     }
   },
   "adminList": {

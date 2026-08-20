@@ -121,10 +121,18 @@ function SavedSearches({ filters, onApply, isDefault }: {
   const [busy, setBusy]         = useState(false);
 
   useEffect(() => {
-    fetch("/api/saved-searches")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setSearches(d?.searches ?? null))
-      .catch(() => setSearches(null));
+    let live = true;
+    // Signed-out visitors cannot have saved searches; asking the server for
+    // them anyway put a guaranteed 401 in every visitor's console — noise
+    // that buries real errors. The session check is a local cookie read.
+    createClient().auth.getSession().then(({ data }) => {
+      if (!live || !data.session) { if (live) setSearches(null); return; }
+      fetch("/api/saved-searches")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (live) setSearches(d?.searches ?? null); })
+        .catch(() => { if (live) setSearches(null); });
+    });
+    return () => { live = false; };
   }, []);
 
   // null means "not an investor, or not signed in" -- render nothing.
@@ -717,16 +725,18 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
         const today = new Date().toISOString().slice(0, 10);
         setDismissedIds(new Set(data.filter(v => !v.snooze_until || v.snooze_until > today).map(v => v.startup_id)));
       });
-    fetch("/api/scorecard")
-      .then(r => r.ok ? r.json() : null)
-      .then(j => {
-        if (!j?.scorecards) return;
-        setScorecards(Object.fromEntries(j.scorecards.map((sc: { startup_id: string; total: number | null; note: string | null }) => [sc.startup_id, { total: sc.total, note: sc.note }])));
-      })
-      .catch(() => {});
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      // Only now is a scorecard even possible; anonymous visitors used to
+      // fire this and collect a 401 in the console.
+      fetch("/api/scorecard")
+        .then(r => r.ok ? r.json() : null)
+        .then(j => {
+          if (!j?.scorecards) return;
+          setScorecards(Object.fromEntries(j.scorecards.map((sc: { startup_id: string; total: number | null; note: string | null }) => [sc.startup_id, { total: sc.total, note: sc.note }])));
+        })
+        .catch(() => {});
       const { data: inv } = await supabase
         .from("investors")
         .select("id, stages, industries, geography, min_check, max_check")

@@ -3050,7 +3050,8 @@
       "outstanding": "Facturée",
       "unbillable": "Pas encore facturée",
       "waived": "Passée en perte",
-      "disputed": "En cours d'examen"
+      "disputed": "En cours d'examen",
+      "reversed": "Remboursée"
     }
   },
   "adminList": {

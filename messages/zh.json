@@ -3050,7 +3050,8 @@
       "outstanding": "已开票",
       "unbillable": "尚未开票",
       "waived": "已核销",
-      "disputed": "审核中"
+      "disputed": "审核中",
+      "reversed": "已退款"
     }
   },
   "adminList": {

@@ -3050,7 +3050,8 @@
       "outstanding": "請求済み",
       "unbillable": "未請求",
       "waived": "償却済み",
-      "disputed": "確認中"
+      "disputed": "確認中",
+      "reversed": "返金済み"
     }
   },
   "adminList": {

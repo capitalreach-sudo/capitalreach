@@ -3050,7 +3050,8 @@
       "outstanding": "Выставлена",
       "unbillable": "Ещё не выставлена",
       "waived": "Списана",
-      "disputed": "На рассмотрении"
+      "disputed": "На рассмотрении",
+      "reversed": "Возвращена"
     }
   },
   "adminList": {

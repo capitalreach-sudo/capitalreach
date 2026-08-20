@@ -3050,7 +3050,8 @@
       "outstanding": "Fakturerad",
       "unbillable": "Ännu inte fakturerad",
       "waived": "Avskriven",
-      "disputed": "Under granskning"
+      "disputed": "Under granskning",
+      "reversed": "Återbetald"
     }
   },
   "adminList": {

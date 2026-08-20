@@ -3050,7 +3050,8 @@
       "outstanding": "Faturada",
       "unbillable": "Ainda não faturada",
       "waived": "Abatida",
-      "disputed": "Em análise"
+      "disputed": "Em análise",
+      "reversed": "Reembolsada"
     }
   },
   "adminList": {

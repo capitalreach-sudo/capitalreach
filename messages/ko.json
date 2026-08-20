@@ -3050,7 +3050,8 @@
       "outstanding": "청구됨",
       "unbillable": "아직 청구되지 않음",
       "waived": "상각",
-      "disputed": "검토 중"
+      "disputed": "검토 중",
+      "reversed": "환불됨"
     }
   },
   "adminList": {
