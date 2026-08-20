@@ -81,10 +81,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 // ── Metric cell ───────────────────────────────────────────────────────────────
 
-function MetricCell({ label, value, copper }: { label: string; value: string | null; copper?: boolean }) {
+function MetricCell({ label, value, copper, termKey }: { label: string; value: string | null; copper?: boolean; termKey?: string }) {
   return (
     <div style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "12px 14px 10px" }}>
-      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "6px" }}>{label}</div>
+      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "6px" }}>
+        {label}
+        {termKey && <InfoTip termKey={termKey} />}
+      </div>
       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "20px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>
         {value ?? "—"}
       </div>
@@ -838,7 +841,7 @@ export function StartupDetailClient({
                     </span>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
                       {t("startupDetail.momentumCommitted", { count: momentum.committedCount })}
-                      {momentum.softAmount > 0 && <> · {t("startupDetail.momentumSoft", { amount: formatMoney(momentum.softAmount, momentum.currency, { compact: true }) })}</>}
+                      {momentum.softAmount > 0 && <> · {t("startupDetail.momentumSoft", { amount: formatMoney(momentum.softAmount, momentum.currency, { compact: true }) })}<InfoTip termKey="glossary.softCircle" /></>}
                       {" · "}{t("startupDetail.momentumInterested", { count: momentum.interested })}
                     </span>
                   </div>
@@ -1157,10 +1160,13 @@ export function StartupDetailClient({
               const own = post !== null ? ownershipForCheque(cheque, { ...inputs, valuation: post, valuationType: "post" }) : null;
               const gap = equityValuationMismatch(inputs);
               const cur = interestCurrency;
-              const cell = (label: string, value: string, note?: string) => (
+              const cell = (label: string, value: string, note?: string, termKey?: string) => (
                 <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
                   <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(15px, 2.4vw, 19px)", color: "var(--cr-copper)" }}>{value}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{label}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>
+                    {label}
+                    {termKey && <InfoTip termKey={termKey} />}
+                  </div>
                   {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
                 </div>
               );
@@ -1168,11 +1174,11 @@ export function StartupDetailClient({
                 <div>
                   <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("round.title")}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "10px" }}>
-                    {post !== null && cell(isImplied ? t("round.impliedPost") : t("round.postMoney"), formatMoney(post, cur, { compact: true }), isImplied ? t("round.impliedNote") : undefined)}
-                    {pre !== null && cell(t("round.preMoney"), formatMoney(pre, cur, { compact: true }))}
+                    {post !== null && cell(isImplied ? t("round.impliedPost") : t("round.postMoney"), formatMoney(post, cur, { compact: true }), isImplied ? t("round.impliedNote") : undefined, "glossary.preMoney")}
+                    {pre !== null && cell(t("round.preMoney"), formatMoney(pre, cur, { compact: true }), undefined, "glossary.preMoney")}
                     {dil != null && cell(t("round.dilution"), `${dil.toFixed(1)}%`)}
                     {own != null && cell(t("round.perCheque"), `${own.toFixed(2)}%`, t("round.perChequeNote", { amount: formatMoney(cheque, cur, { compact: true }) }))}
-                    {st.safe_cap ? cell(t("round.cap"), formatMoney(st.safe_cap, cur, { compact: true }), st.safe_discount ? `${st.safe_discount}% ${t("round.discountShort")}` : undefined) : null}
+                    {st.safe_cap ? cell(t("round.cap"), formatMoney(st.safe_cap, cur, { compact: true }), st.safe_discount ? `${st.safe_discount}% ${t("round.discountShort")}` : undefined, "glossary.safe") : null}
                   </div>
                   {st.instrument && (
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
@@ -1283,8 +1289,8 @@ export function StartupDetailClient({
         {activeTab === "financials" && (
           canFinancials ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-              <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? safeFormatMRR(startup.mrr)        : null} />
-              <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? safeFormatMRR(startup.arr)        : null} />
+              <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? safeFormatMRR(startup.mrr)        : null} termKey="glossary.mrr" />
+              <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? safeFormatMRR(startup.arr)        : null} termKey="glossary.arr" />
               <MetricCell label={t("startupDetail.totalUsers")} value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
               <MetricCell label={t("startupDetail.growth")} value={startup.growth_rate  ? formatPercent(startup.growth_rate) : null} />
             </div>

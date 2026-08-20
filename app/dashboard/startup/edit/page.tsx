@@ -11,6 +11,7 @@ import { listingCompleteness } from "@/lib/listing-completeness";
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { InfoTip } from "@/components/shared/info-tip";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -154,10 +155,10 @@ function WarmToggle({ checked, onChange, label, hint }: { checked: boolean; onCh
 
 // ── Field wrapper ─────────────────────────────────────────────────────────────
 
-function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+function Field({ label, children, hint, termKey }: { label: string; children: React.ReactNode; hint?: string; termKey?: string }) {
   return (
     <div>
-      <label style={labelStyle}>{label}</label>
+      <label style={labelStyle}>{label}{termKey && <InfoTip termKey={termKey} />}</label>
       {hint && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{hint}</p>}
       {children}
     </div>
@@ -589,7 +590,7 @@ export default function EditStartupPage() {
                   <Field label={t("round.valuation")} hint={t("round.valuationHint")}>
                     <WarmInput type="number" min={0} value={startup.valuation ?? ""} onChange={e => update("valuation", e.target.value)} placeholder="4500000" />
                   </Field>
-                  <Field label={t("round.valuationType")}>
+                  <Field label={t("round.valuationType")} termKey="glossary.preMoney">
                     <WarmSelect value={startup.valuation_type || ""} onChange={e => update("valuation_type", e.target.value)}>
                       <option value="">—</option>
                       <option value="pre">{t("round.pre")}</option>
@@ -597,7 +598,7 @@ export default function EditStartupPage() {
                     </WarmSelect>
                   </Field>
                 </div>
-                <Field label={t("round.instrument")}>
+                <Field label={t("round.instrument")} termKey="glossary.safe">
                   <WarmSelect value={startup.instrument || ""} onChange={e => update("instrument", e.target.value)}>
                     <option value="">—</option>
                     <option value="equity">{t("round.equity")}</option>
@@ -607,7 +608,7 @@ export default function EditStartupPage() {
                 </Field>
                 {(startup.instrument === "safe" || startup.instrument === "convertible_note") && (
                   <div className="form-row-2" style={{ gap: "14px" }}>
-                    <Field label={t("round.cap")}><WarmInput type="number" min={0} value={startup.safe_cap ?? ""} onChange={e => update("safe_cap", e.target.value)} placeholder="6000000" /></Field>
+                    <Field label={t("round.cap")} termKey="glossary.safe"><WarmInput type="number" min={0} value={startup.safe_cap ?? ""} onChange={e => update("safe_cap", e.target.value)} placeholder="6000000" /></Field>
                     <Field label={t("round.discount")}><WarmInput type="number" min={0} max={99} value={startup.safe_discount ?? ""} onChange={e => update("safe_discount", e.target.value)} placeholder="20" /></Field>
                   </div>
                 )}

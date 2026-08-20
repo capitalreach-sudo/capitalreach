@@ -16,6 +16,7 @@ import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
 import { WatchlistChanges } from "@/components/investor/watchlist-changes";
+import { InfoTip } from "@/components/shared/info-tip";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
 
 interface Props {
@@ -127,7 +128,7 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
   return (
     <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("allocation.title")}</h3>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("allocation.title")}<InfoTip termKey="glossary.allocation" /></h3>
         {editing ? (
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} inputMode="decimal" placeholder={t("allocation.targetPh")} autoFocus
