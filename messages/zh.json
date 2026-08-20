@@ -3234,5 +3234,19 @@
     "scheduleTitle": "分期方案 —— 已付 {paid} / {count}",
     "instalmentN": "第 {n} 期",
     "paidMark": "已付"
+  },
+  "assistant": {
+    "open": "提问",
+    "title": "询问本页内容",
+    "intro": "关于本页的任何问题都可以问。我只能看到你能看到的内容。",
+    "placeholder": "输入你的问题…",
+    "send": "发送",
+    "you": "你",
+    "thinking": "思考中…",
+    "failed": "刚才没能回答。",
+    "disclaimer": "答案由模型阅读本页生成。不构成投资建议，也未经人工核实。",
+    "suggest1": "他们是做什么的？",
+    "suggest2": "他们处于哪个阶段？",
+    "suggest3": "这个数字是什么意思？"
   }
 }

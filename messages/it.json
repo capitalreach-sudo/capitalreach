@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Piano di pagamento — {paid} di {count} pagate",
     "instalmentN": "Rata {n}",
     "paidMark": "pagata"
+  },
+  "assistant": {
+    "open": "Chiedi",
+    "title": "Fai una domanda su questa pagina",
+    "intro": "Chiedi qualsiasi cosa su questa pagina. Vedo solo ciò che vedi tu.",
+    "placeholder": "Fai una domanda…",
+    "send": "Invia",
+    "you": "Tu",
+    "thinking": "Sto pensando…",
+    "failed": "Non sono riuscito a rispondere adesso.",
+    "disclaimer": "Le risposte arrivano da un modello che legge questa pagina. Non sono consulenza finanziaria e non sono verificate da una persona.",
+    "suggest1": "Che cosa fanno?",
+    "suggest2": "A che stadio sono?",
+    "suggest3": "Che cosa significa questo numero?"
   }
 }

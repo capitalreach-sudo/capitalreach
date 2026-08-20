@@ -3234,5 +3234,19 @@
     "scheduleTitle": "분납 — {count}회 중 {paid}회 납부",
     "instalmentN": "{n}회차",
     "paidMark": "납부"
+  },
+  "assistant": {
+    "open": "질문하기",
+    "title": "이 페이지에 대해 질문",
+    "intro": "이 페이지에 대해 무엇이든 물어보세요. 회원님이 보는 것만 볼 수 있습니다.",
+    "placeholder": "질문을 입력하세요…",
+    "send": "보내기",
+    "you": "나",
+    "thinking": "생각 중…",
+    "failed": "지금은 답변할 수 없었습니다.",
+    "disclaimer": "답변은 이 페이지를 읽은 모델이 생성합니다. 투자 자문이 아니며 사람이 검토하지 않았습니다.",
+    "suggest1": "무엇을 하는 회사인가요?",
+    "suggest2": "어느 단계인가요?",
+    "suggest3": "이 숫자는 무슨 뜻인가요?"
   }
 }

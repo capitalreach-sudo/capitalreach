@@ -9,6 +9,7 @@ import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { BottomNav } from "@/components/shared/bottom-nav";
+import { SiteAssistant } from "@/components/shared/site-assistant";
 import { ShortcutsHelp } from "@/components/shared/shortcuts-help";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { LiveRegion } from "@/components/ui/LiveRegion";
@@ -104,6 +105,8 @@ export default function RootLayout({
         <ShortcutsHelp />
         <ScrollToTop />
         <BottomNav />
+        {/* Ask about this page. Hides itself on the working surfaces. */}
+        <SiteAssistant />
         <LiveRegion />
         <Toaster />
         <ToastNotifyProvider />

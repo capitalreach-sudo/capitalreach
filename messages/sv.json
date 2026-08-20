@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Betalningsplan — {paid} av {count} betalda",
     "instalmentN": "Delbetalning {n}",
     "paidMark": "betald"
+  },
+  "assistant": {
+    "open": "Fråga",
+    "title": "Fråga om den här sidan",
+    "intro": "Fråga vad du vill om den här sidan. Jag ser bara det du ser.",
+    "placeholder": "Ställ en fråga…",
+    "send": "Skicka",
+    "you": "Du",
+    "thinking": "Tänker…",
+    "failed": "Jag kunde inte svara just nu.",
+    "disclaimer": "Svaren kommer från en modell som läser den här sidan. Inte investeringsrådgivning och inte granskat av en människa.",
+    "suggest1": "Vad gör de?",
+    "suggest2": "Vilket skede är de i?",
+    "suggest3": "Vad betyder den här siffran?"
   }
 }

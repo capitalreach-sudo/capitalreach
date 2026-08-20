@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Zahlungsplan — {paid} von {count} bezahlt",
     "instalmentN": "Rate {n}",
     "paidMark": "bezahlt"
+  },
+  "assistant": {
+    "open": "Fragen",
+    "title": "Frage zu dieser Seite",
+    "intro": "Frag alles zu dieser Seite. Ich sehe nur, was du auch siehst.",
+    "placeholder": "Stell eine Frage…",
+    "send": "Senden",
+    "you": "Du",
+    "thinking": "Denkt nach…",
+    "failed": "Das konnte ich gerade nicht beantworten.",
+    "disclaimer": "Antworten stammen von einem Modell, das diese Seite liest. Keine Anlageberatung und nicht von einem Menschen geprüft.",
+    "suggest1": "Was machen die?",
+    "suggest2": "In welcher Phase sind sie?",
+    "suggest3": "Was bedeutet diese Zahl?"
   }
 }

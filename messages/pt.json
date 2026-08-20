@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Plano de pagamento — {paid} de {count} pagas",
     "instalmentN": "Prestação {n}",
     "paidMark": "paga"
+  },
+  "assistant": {
+    "open": "Perguntar",
+    "title": "Pergunte sobre esta página",
+    "intro": "Pergunte o que quiser sobre esta página. Só vejo o que você vê.",
+    "placeholder": "Faça uma pergunta…",
+    "send": "Enviar",
+    "you": "Você",
+    "thinking": "A pensar…",
+    "failed": "Não consegui responder agora.",
+    "disclaimer": "As respostas vêm de um modelo a ler esta página. Não são aconselhamento de investimento nem foram verificadas por uma pessoa.",
+    "suggest1": "O que fazem?",
+    "suggest2": "Em que fase estão?",
+    "suggest3": "O que significa este número?"
   }
 }

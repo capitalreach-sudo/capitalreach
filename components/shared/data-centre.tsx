@@ -517,6 +517,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   <DonutChart
                     slices={Object.entries(data.byIndustry).map(([label, count]) => ({ key: label, label, value: count }))}
                     otherLabel={t("data.otherIndustries")}
+                    hrefFor={(industry) => `/startups?industries=${encodeURIComponent(industry)}`}
                   />
                 )}
               </div>
@@ -530,9 +531,12 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 {stageEntries.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
-                  <BarChart bars={stageEntries.map(([label, count]) => ({
-                    key: label, label: STAGE_LABELS[label] ?? label, value: count,
-                  }))} />
+                  <BarChart
+                    bars={stageEntries.map(([label, count]) => ({
+                      key: label, label: STAGE_LABELS[label] ?? label, value: count,
+                    }))}
+                    hrefFor={(stage) => `/startups?stages=${encodeURIComponent(stage)}`}
+                  />
                 )}
               </div>
             </div>

@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Échéancier — {paid} sur {count} payées",
     "instalmentN": "Échéance {n}",
     "paidMark": "payée"
+  },
+  "assistant": {
+    "open": "Demander",
+    "title": "Poser une question sur cette page",
+    "intro": "Posez n'importe quelle question sur cette page. Je ne vois que ce que vous voyez.",
+    "placeholder": "Posez une question…",
+    "send": "Envoyer",
+    "you": "Vous",
+    "thinking": "Réflexion…",
+    "failed": "Je n'ai pas pu répondre à l'instant.",
+    "disclaimer": "Les réponses viennent d'un modèle qui lit cette page. Ce n'est pas un conseil en investissement et ce n'est pas vérifié par un humain.",
+    "suggest1": "Que font-ils ?",
+    "suggest2": "À quel stade sont-ils ?",
+    "suggest3": "Que signifie ce chiffre ?"
   }
 }

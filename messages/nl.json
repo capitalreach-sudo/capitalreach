@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Betalingsregeling — {paid} van {count} betaald",
     "instalmentN": "Termijn {n}",
     "paidMark": "betaald"
+  },
+  "assistant": {
+    "open": "Vragen",
+    "title": "Stel een vraag over deze pagina",
+    "intro": "Vraag alles over deze pagina. Ik zie alleen wat jij ziet.",
+    "placeholder": "Stel een vraag…",
+    "send": "Versturen",
+    "you": "Jij",
+    "thinking": "Aan het denken…",
+    "failed": "Dat kon ik nu niet beantwoorden.",
+    "disclaimer": "Antwoorden komen van een model dat deze pagina leest. Geen beleggingsadvies en niet door een mens gecontroleerd.",
+    "suggest1": "Wat doen ze?",
+    "suggest2": "In welke fase zitten ze?",
+    "suggest3": "Wat betekent dit getal?"
   }
 }

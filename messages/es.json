@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Plan de pago: {paid} de {count} pagadas",
     "instalmentN": "Cuota {n}",
     "paidMark": "pagada"
+  },
+  "assistant": {
+    "open": "Preguntar",
+    "title": "Pregunta sobre esta página",
+    "intro": "Pregunta lo que quieras sobre esta página. Solo veo lo que tú ves.",
+    "placeholder": "Haz una pregunta…",
+    "send": "Enviar",
+    "you": "Tú",
+    "thinking": "Pensando…",
+    "failed": "No he podido responder ahora mismo.",
+    "disclaimer": "Las respuestas las genera un modelo leyendo esta página. No es asesoramiento de inversión ni está revisado por una persona.",
+    "suggest1": "¿A qué se dedican?",
+    "suggest2": "¿En qué etapa están?",
+    "suggest3": "¿Qué significa esta cifra?"
   }
 }

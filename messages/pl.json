@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Plan płatności — opłacone {paid} z {count}",
     "instalmentN": "Rata {n}",
     "paidMark": "opłacona"
+  },
+  "assistant": {
+    "open": "Zapytaj",
+    "title": "Zapytaj o tę stronę",
+    "intro": "Zapytaj o cokolwiek na tej stronie. Widzę tylko to, co widzisz Ty.",
+    "placeholder": "Zadaj pytanie…",
+    "send": "Wyślij",
+    "you": "Ty",
+    "thinking": "Myślę…",
+    "failed": "Nie udało mi się teraz odpowiedzieć.",
+    "disclaimer": "Odpowiedzi pochodzą od modelu czytającego tę stronę. To nie porada inwestycyjna i nie sprawdził tego człowiek.",
+    "suggest1": "Czym się zajmują?",
+    "suggest2": "Na jakim są etapie?",
+    "suggest3": "Co oznacza ta liczba?"
   }
 }

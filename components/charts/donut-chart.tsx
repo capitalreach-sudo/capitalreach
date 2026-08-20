@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { seriesColor, OTHER } from "./palette";
 
 export interface Slice { key: string; label: string; value: number }
@@ -16,11 +17,13 @@ export interface Slice { key: string; label: string; value: number }
  * Every slice is labelled with its share, so nothing depends on telling two
  * colours apart.
  */
-export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total: totalOverride }: {
+export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total: totalOverride, hrefFor }: {
   slices: Slice[];
   maxSlices?: number;
   otherLabel?: string;
   total?: number;
+  /** Where a slice leads. A share of a whole is a question; the list behind it is the answer. */
+  hrefFor?: (key: string) => string | null;
 }) {
   const [hover, setHover] = useState<string | null>(null);
 
@@ -66,15 +69,30 @@ export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total:
       <ul style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 150 }}>
         {shown.map((s, i) => {
           const pct = Math.round((s.value / total) * 1000) / 10;
-          return (
-            <li key={s.key}
-              onMouseEnter={() => setHover(s.key)} onMouseLeave={() => setHover(null)}
-              style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: "'DM Sans', sans-serif", fontSize: 11.5,
-                color: hover && hover !== s.key ? "var(--cr-ink-4)" : "var(--cr-ink-3)" }}>
+          // "DeepTech is 8% of the platform" invites exactly one follow-up
+          // question, and the answer is a list of companies. The row is that
+          // link. "Other" is not a category, so it does not lead anywhere.
+          const href = s.key === "__other" ? null : hrefFor?.(s.key) ?? null;
+          const body = (
+            <>
               <span style={{ width: 9, height: 9, borderRadius: 2, flexShrink: 0,
                 background: s.key === "__other" ? OTHER : seriesColor(i) }} />
-              <span style={{ flex: 1 }}>{s.label}</span>
+              <span style={{ flex: 1, textDecoration: href ? "underline" : "none", textUnderlineOffset: 3, textDecorationColor: "var(--cr-rule-dark)" }}>{s.label}</span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink)" }}>{pct}%</span>
+            </>
+          );
+          const style: React.CSSProperties = {
+            display: "flex", alignItems: "center", gap: 7,
+            fontFamily: "'DM Sans', sans-serif", fontSize: 11.5,
+            color: hover && hover !== s.key ? "var(--cr-ink-4)" : "var(--cr-ink-3)",
+            textDecoration: "none",
+          };
+          return (
+            <li key={s.key}
+              onMouseEnter={() => setHover(s.key)} onMouseLeave={() => setHover(null)}>
+              {href
+                ? <Link href={href} style={{ ...style, cursor: "pointer" }}>{body}</Link>
+                : <span style={style}>{body}</span>}
             </li>
           );
         })}

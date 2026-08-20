@@ -3234,5 +3234,19 @@
     "scheduleTitle": "Payment plan — {paid} of {count} paid",
     "instalmentN": "Instalment {n}",
     "paidMark": "paid"
+  },
+  "assistant": {
+    "open": "Ask",
+    "title": "Ask about this page",
+    "intro": "Ask anything about what is on this page. I only see what you can see.",
+    "placeholder": "Ask a question…",
+    "send": "Send",
+    "you": "You",
+    "thinking": "Thinking…",
+    "failed": "I could not answer that just now.",
+    "disclaimer": "Answers come from a model reading this page. Not investment advice, and not checked by a person.",
+    "suggest1": "What do they do?",
+    "suggest2": "What stage are they at?",
+    "suggest3": "What does this number mean?"
   }
 }
