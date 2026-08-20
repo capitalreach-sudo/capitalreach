@@ -1379,7 +1379,10 @@
     "unlockScores": "Upgrade om financiën en AI-scores te ontgrendelen",
     "scoreTitle": "AI-score: {score}/100",
     "closingSoon": "Sluit binnenkort",
-    "closesIn": "Sluit over {count} d"
+    "closesIn": "Sluit over {count} d",
+    "scoreLabel": "AI-score",
+    "scoreLocked": "Upgrade om de AI-score te zien",
+    "scoreNone": "Nog niet gescoord"
   },
   "investors": {
     "pageTitle": "Geverifieerde investeerders",

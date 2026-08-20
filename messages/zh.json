@@ -1150,7 +1150,10 @@
     "unlockScores": "升级以解锁财务数据和AI评分",
     "scoreTitle": "AI评分：{score}/100",
     "closingSoon": "即将截止",
-    "closesIn": "{count} 天后截止"
+    "closesIn": "{count} 天后截止",
+    "scoreLabel": "AI 评分",
+    "scoreLocked": "升级后可查看 AI 评分",
+    "scoreNone": "尚未评分"
   },
   "startupDetail": {
     "overview": "概述",

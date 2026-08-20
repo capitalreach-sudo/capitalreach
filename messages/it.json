@@ -1379,7 +1379,10 @@
     "unlockScores": "Esegui l'upgrade per sbloccare finanze e punteggi IA",
     "scoreTitle": "Punteggio IA: {score}/100",
     "closingSoon": "Chiude a breve",
-    "closesIn": "Chiude tra {count} g"
+    "closesIn": "Chiude tra {count} g",
+    "scoreLabel": "Punteggio AI",
+    "scoreLocked": "Passa a un piano superiore per vedere il punteggio AI",
+    "scoreNone": "Non ancora valutato"
   },
   "investors": {
     "pageTitle": "Investitori verificati",

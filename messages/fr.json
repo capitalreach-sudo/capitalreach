@@ -1150,7 +1150,10 @@
     "unlockScores": "Passez à un forfait supérieur pour débloquer finances et scores IA",
     "scoreTitle": "Score IA : {score}/100",
     "closingSoon": "Clôture imminente",
-    "closesIn": "Clôture dans {count} j"
+    "closesIn": "Clôture dans {count} j",
+    "scoreLabel": "Score IA",
+    "scoreLocked": "Passez à un plan supérieur pour voir le score IA",
+    "scoreNone": "Pas encore évalué"
   },
   "startupDetail": {
     "overview": "Aperçu",

@@ -9,61 +9,8 @@ import { getInvestorPlan } from "@/lib/plans";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ScoreBadge } from "@/components/ui/score-badge";
 
-// ── Score Ring ────────────────────────────────────────────────────────────────
-
-function ScoreRing({ score, tier }: { score: number | null; tier?: SubscriptionTier | null }) {
-  const { t } = useTranslation();
-  const size  = 40;
-  const sw    = 3.5;
-  const r     = size / 2 - sw;
-  const c     = size / 2;
-  const circ  = 2 * Math.PI * r;
-
-  if (score === null) {
-    return (
-      <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
-        <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-          <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-paper-4)"
-            strokeWidth={sw} strokeDasharray="4 4" />
-        </svg>
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)" }}>?</span>
-        </div>
-      </div>
-    );
-  }
-
-  const canSee = !tier || tier === "free" ? false : true;
-
-  if (!canSee) {
-    return (
-      <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
-        <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-          <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-paper-4)" strokeWidth={sw} />
-        </svg>
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Lock style={{ width: 11, height: 11, color: "var(--cr-ink-4)" }} />
-        </div>
-      </div>
-    );
-  }
-
-  const dash = (score / 100) * circ;
-
-  return (
-    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }} title={t("startup.scoreTitle", { score })}>
-      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-paper-4)" strokeWidth={sw} />
-        <circle cx={c} cy={c} r={r} fill="none" stroke="var(--cr-copper)" strokeWidth={sw}
-          strokeLinecap="square" strokeDasharray={`${dash} ${circ}`} />
-      </svg>
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)" }}>{score}</span>
-      </div>
-    </div>
-  );
-}
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -201,7 +148,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
               {startup.tagline}
             </p>
           </div>
-          <ScoreRing score={score} tier={investorTier} />
+          {/* The score is a paid signal on some plans: free investors are
+              shown that it exists, not what it is. */}
+          <ScoreBadge score={score} locked={!investorTier || investorTier === "free"} />
         </div>
 
         {/* Row 2 — Badges */}

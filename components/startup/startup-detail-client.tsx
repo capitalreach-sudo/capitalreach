@@ -23,7 +23,8 @@ import { useRouter } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ScoreRing } from "@/components/ui/ScoreRing";
+import { ScoreBadge } from "@/components/ui/score-badge";
+import { InfoTip } from "@/components/shared/info-tip";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { roundCloseState } from "@/lib/round-close";
 import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
@@ -721,9 +722,12 @@ export function StartupDetailClient({
                     </span>
                   )}
                   {score != null && (
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                      <ScoreRing score={score} size={32} strokeWidth={3} />
-                    </div>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                      <ScoreBadge score={score} size="sm" />
+                      {/* A model produced this number about somebody's
+                          company. Say what it measures, next to it. */}
+                      <InfoTip termKey="glossary.aiScore" />
+                    </span>
                   )}
                 </div>
               </div>

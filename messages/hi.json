@@ -1379,7 +1379,10 @@
     "unlockScores": "वित्तीय जानकारी और AI स्कोर अनलॉक करने के लिए अपग्रेड करें",
     "scoreTitle": "AI स्कोर: {score}/100",
     "closingSoon": "जल्द बंद",
-    "closesIn": "{count} दिन में बंद"
+    "closesIn": "{count} दिन में बंद",
+    "scoreLabel": "AI स्कोर",
+    "scoreLocked": "AI स्कोर देखने के लिए अपग्रेड करें",
+    "scoreNone": "अभी स्कोर नहीं"
   },
   "investors": {
     "pageTitle": "सत्यापित निवेशक",

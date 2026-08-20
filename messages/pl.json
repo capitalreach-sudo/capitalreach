@@ -1379,7 +1379,10 @@
     "unlockScores": "Ulepsz plan, aby odblokować finanse i wyniki AI",
     "scoreTitle": "Wynik AI: {score}/100",
     "closingSoon": "Wkrótce zamknięcie",
-    "closesIn": "Zamknięcie za {count} dni"
+    "closesIn": "Zamknięcie za {count} dni",
+    "scoreLabel": "Ocena AI",
+    "scoreLocked": "Podnieś plan, aby zobaczyć ocenę AI",
+    "scoreNone": "Jeszcze nieoceniony"
   },
   "investors": {
     "pageTitle": "Zweryfikowani inwestorzy",

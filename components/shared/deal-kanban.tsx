@@ -2230,8 +2230,12 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
 
   return (
     <div>
-      {/* Pipeline stats */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "16px" }}>
+      {/* Pipeline stats.
+          These were five flex items sized by their own content, so they came
+          out five different widths and wrapped into a ragged block — the "$1.2M
+          + €400k" box is three times the width of "4". An even grid instead:
+          same width each, wrapping into tidy rows. */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(148px, 1fr))", gap: "10px", marginBottom: "16px" }}>
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statActivePipeline")}</p>
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
@@ -2262,10 +2266,42 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
         </div>
       </div>
 
-      {/* Filter / sort / actions */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+      {/* Toolbar.
+          This was one wrapping row holding the search box, every filter chip,
+          the clear link, the sort select, export, the view toggle and the new-
+          deal button — so on a laptop it broke into two or three ragged lines
+          and the primary button moved every time a chip was toggled.
+
+          Two rows now. The things you act WITH stay put on the first row;
+          the filters, whose number varies, wrap on their own below and move
+          nothing. */}
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
         <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder={t("deals.filterSearchPlaceholder")}
-          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", width: "180px" }} />
+          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", flex: "1 1 200px", minWidth: "160px", maxWidth: "320px" }} />
+        <div style={{ flex: 1 }} />
+        <select value={sortKey} onChange={e => setSortKey(e.target.value as SortKey)}
+          aria-label={t("deals.sortBy")}
+          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", cursor: "pointer" }}>
+          {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{t(o.labelKey)}</option>)}
+        </select>
+        {canExport && (
+          <button onClick={handleExportCsv}
+            style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>
+            {t("deals.exportCsv")}
+          </button>
+        )}
+        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
+          {(["kanban", "list"] as const).map(v => (
+            <button key={v} onClick={() => chooseView(v)} aria-label={v}
+              style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
+              {v === "kanban" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
+            </button>
+          ))}
+        </div>
+        {newDealButton}
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
         {filterOptions.map(v => (
           <button key={v} onClick={() => toggleFilter(v)}
             style={{
@@ -2283,27 +2319,6 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             {t("deals.clearFilters")}
           </button>
         )}
-        <select value={sortKey} onChange={e => setSortKey(e.target.value as SortKey)}
-          aria-label={t("deals.sortBy")}
-          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", cursor: "pointer" }}>
-          {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{t(o.labelKey)}</option>)}
-        </select>
-        {canExport && (
-          <button onClick={handleExportCsv}
-            style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", cursor: "pointer" }}>
-            {t("deals.exportCsv")}
-          </button>
-        )}
-        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
-          {(["kanban", "list"] as const).map(v => (
-            <button key={v} onClick={() => chooseView(v)} aria-label={v}
-              style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
-              {v === "kanban" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
-            </button>
-          ))}
-        </div>
-        <div style={{ flex: 1 }} />
-        {newDealButton}
       </div>
 
       {viewMode === "kanban" ? (

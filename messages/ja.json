@@ -1150,7 +1150,10 @@
     "unlockScores": "アップグレードして財務情報とAIスコアを解除",
     "scoreTitle": "AIスコア：{score}/100",
     "closingSoon": "まもなく締切",
-    "closesIn": "締切まで{count}日"
+    "closesIn": "締切まで{count}日",
+    "scoreLabel": "AI スコア",
+    "scoreLocked": "AI スコアの表示にはアップグレードが必要です",
+    "scoreNone": "未評価"
   },
   "startupDetail": {
     "overview": "概要",

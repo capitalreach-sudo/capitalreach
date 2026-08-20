@@ -19,7 +19,7 @@ import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
-import { ScoreRing } from "@/components/ui/ScoreRing";
+import { ScoreBadge } from "@/components/ui/score-badge";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -466,7 +466,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
               {s.tagline}
             </p>
           </div>
-          {score !== null && <ScoreRing score={score} size={36} strokeWidth={3} />}
+          <ScoreBadge score={score} size="md" />
         </div>
 
         {/* Badges */}

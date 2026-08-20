@@ -1150,7 +1150,10 @@
     "unlockScores": "Mejora tu plan para desbloquear finanzas y puntuaciones de IA",
     "scoreTitle": "Puntuación IA: {score}/100",
     "closingSoon": "Cierra pronto",
-    "closesIn": "Cierra en {count} d"
+    "closesIn": "Cierra en {count} d",
+    "scoreLabel": "Puntuación IA",
+    "scoreLocked": "Mejora tu plan para ver la puntuación IA",
+    "scoreNone": "Aún sin puntuar"
   },
   "startupDetail": {
     "overview": "Resumen",

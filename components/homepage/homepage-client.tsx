@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useReveal } from "@/hooks/useReveal";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ScoreRing } from "@/components/ui/ScoreRing";
+import { ScoreBadge } from "@/components/ui/score-badge";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { safeFormatCurrency, safeFormatMRR } from "@/lib/format";
 import type { PlatformStats } from "@/lib/stats";
@@ -316,7 +316,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
                     </div>
 
                     <div className="hidden md:flex justify-center" style={{ minWidth: "64px" }}>
-                      <ScoreRing score={s.vaultrise_score} size={36} strokeWidth={3} />
+                      <ScoreBadge score={s.vaultrise_score} size="sm" />
                     </div>
 
                     <div style={{ minWidth: "36px", textAlign: "right" }} className="md:min-w-[48px]">

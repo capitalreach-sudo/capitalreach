@@ -1379,7 +1379,10 @@
     "unlockScores": "업그레이드하여 재무 정보와 AI 점수를 잠금 해제하세요",
     "scoreTitle": "AI 점수: {score}/100",
     "closingSoon": "곧 마감",
-    "closesIn": "{count}일 후 마감"
+    "closesIn": "{count}일 후 마감",
+    "scoreLabel": "AI 점수",
+    "scoreLocked": "AI 점수를 보려면 업그레이드하세요",
+    "scoreNone": "아직 점수 없음"
   },
   "investors": {
     "pageTitle": "검증된 투자자",

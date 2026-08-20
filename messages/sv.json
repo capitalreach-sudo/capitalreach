@@ -1379,7 +1379,10 @@
     "unlockScores": "Uppgradera för att låsa upp ekonomi och AI-poäng",
     "scoreTitle": "AI-poäng: {score}/100",
     "closingSoon": "Stänger snart",
-    "closesIn": "Stänger om {count} d"
+    "closesIn": "Stänger om {count} d",
+    "scoreLabel": "AI-poäng",
+    "scoreLocked": "Uppgradera för att se AI-poängen",
+    "scoreNone": "Inte poängsatt än"
   },
   "investors": {
     "pageTitle": "Verifierade investerare",

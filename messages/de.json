@@ -1157,7 +1157,10 @@
     "unlockScores": "Upgrade, um Finanzen & KI-Scores freizuschalten",
     "scoreTitle": "KI-Score: {score}/100",
     "closingSoon": "Schließt bald",
-    "closesIn": "Schließt in {count} T."
+    "closesIn": "Schließt in {count} T.",
+    "scoreLabel": "KI-Score",
+    "scoreLocked": "Upgrade, um den KI-Score zu sehen",
+    "scoreNone": "Noch nicht bewertet"
   },
   "startupDetail": {
     "overview": "Übersicht",

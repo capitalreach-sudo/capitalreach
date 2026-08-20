@@ -1161,7 +1161,10 @@
     "unlockScores": "Upgrade to unlock financials & AI scores",
     "scoreTitle": "AI Score: {score}/100",
     "closingSoon": "Closing soon",
-    "closesIn": "Closes in {count}d"
+    "closesIn": "Closes in {count}d",
+    "scoreLabel": "AI score",
+    "scoreLocked": "Upgrade to see the AI score",
+    "scoreNone": "Not scored yet"
   },
   "startupDetail": {
     "overview": "Overview",
