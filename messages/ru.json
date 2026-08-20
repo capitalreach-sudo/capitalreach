@@ -2010,7 +2010,9 @@
     "commitSoft": "Soft-circle",
     "commitVerbal": "Устное да",
     "commitCommitted": "Подтверждено",
-    "commitmentSaved": "Обязательство обновлено."
+    "commitmentSaved": "Обязательство обновлено.",
+    "showDetails": "Подробнее",
+    "hideDetails": "Скрыть подробности"
   },
   "investorProfile": {
     "back": "Назад к инвесторам",

@@ -2017,7 +2017,9 @@
     "commitSoft": "Soft-Circle",
     "commitVerbal": "Mündliche Zusage",
     "commitCommitted": "Zugesagt",
-    "commitmentSaved": "Commitment aktualisiert."
+    "commitmentSaved": "Commitment aktualisiert.",
+    "showDetails": "Details",
+    "hideDetails": "Details ausblenden"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

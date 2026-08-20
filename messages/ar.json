@@ -2010,7 +2010,9 @@
     "commitSoft": "التزام مبدئي",
     "commitVerbal": "موافقة شفهية",
     "commitCommitted": "ملتزم",
-    "commitmentSaved": "تم تحديث الالتزام."
+    "commitmentSaved": "تم تحديث الالتزام.",
+    "showDetails": "التفاصيل",
+    "hideDetails": "إخفاء التفاصيل"
   },
   "investorProfile": {
     "back": "العودة إلى المستثمرين",

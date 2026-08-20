@@ -1657,6 +1657,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [showPassedPicker, setShowPassedPicker] = useState(false);
   const [checklistOpen, setChecklistOpen] = useState(0);
   const [pendingMove, setPendingMove] = useState<DealStatus | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const { investorName, startupName } = dealNames(deal, t);
   // B18: an off-platform contact has no account — anything that needs one
@@ -1829,6 +1830,26 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         />
       )}
 
+      {/* Everything below is the work you do ON a deal rather than the
+          state OF it. Rendered on every card, it made each one three to four
+          hundred pixels tall — a column of five ran past the fold and the
+          board stopped reading as a board. It also meant six data-fetching
+          sections mounting per card, so opening the page fired dozens of
+          requests for panels nobody had looked at.
+
+          Collapsed by default. The card shows who, how much, and how long it
+          has been sitting; the rest opens on demand. */}
+      <button onClick={() => setExpanded(v => !v)}
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, marginTop: "10px",
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)",
+          display: "flex", alignItems: "center", gap: "4px" }}
+        aria-expanded={expanded}>
+        <ChevronDown style={{ width: 12, height: 12, transform: expanded ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
+        {expanded ? t("deals.hideDetails") : t("deals.showDetails")}
+      </button>
+
+      {expanded && (
+        <>
       {/* C33: let other investors see you are looking at this company.
           Off by default, investor-side only, never shows the amount. */}
       {viewAs === "investor" && isActive && <PublicInterestToggle deal={deal} />}
@@ -1886,6 +1907,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             </button>
           )}
         </div>
+      )}
+        </>
       )}
 
       {/* A pending close proposal — both sides must agree before the fee fires. */}
@@ -1964,6 +1987,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </div>
       )}
 
+      {expanded && (
+        <>
       {/* D37: closed → funded. */}
       {deal.status === "closed" && <FundingBlock deal={deal} viewAs={viewAs} />}
 
@@ -1989,7 +2014,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         startupId={deal.startup_id}
         investorId={deal.investor_id}
       />
-      <ChecklistSection dealId={deal.id} stage={deal.status} viewAs={viewAs} onOpenCount={setChecklistOpen} />
+        </>
+      )}
+
+      <div style={{ display: expanded ? "block" : "none" }}>
+        <ChecklistSection dealId={deal.id} stage={deal.status} viewAs={viewAs} onOpenCount={setChecklistOpen} />
+      </div>
       <ActivitySection dealId={deal.id} />
     </div>
   );
@@ -2327,14 +2357,17 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             {columns.map(col => {
               const colDeals = filteredDeals.filter(d => d.status === col.status);
               return (
-                <div key={col.status} style={{ width: "264px", flexShrink: 0 }}>
+                <div key={col.status} style={{ width: "264px", flexShrink: 0, display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 260px)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                     <span style={colBadgeStyle(col.status, colDeals.length)}>{col.label}</span>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                       {colDeals.length}
                     </span>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {/* The column scrolls, not the page. One column with nine
+                      deals used to set the height of the whole board and push
+                      the empty ones off the bottom of the screen. */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", paddingRight: "2px", minHeight: 0 }}>
                     {colDeals.length === 0 ? <EmptySlot /> : colDeals.map(deal => (
                       <DealCard key={deal.id} deal={deal} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
                         onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} onSetCommitment={onSetCommitment} />

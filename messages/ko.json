@@ -2010,7 +2010,9 @@
     "commitSoft": "소프트 서클",
     "commitVerbal": "구두 동의",
     "commitCommitted": "약정 완료",
-    "commitmentSaved": "약정이 업데이트되었습니다."
+    "commitmentSaved": "약정이 업데이트되었습니다.",
+    "showDetails": "상세",
+    "hideDetails": "상세 숨기기"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

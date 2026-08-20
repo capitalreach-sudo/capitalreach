@@ -2010,7 +2010,9 @@
     "commitSoft": "Soft-circle",
     "commitVerbal": "Ustne tak",
     "commitCommitted": "Zobowiązany",
-    "commitmentSaved": "Zobowiązanie zaktualizowane."
+    "commitmentSaved": "Zobowiązanie zaktualizowane.",
+    "showDetails": "Szczegóły",
+    "hideDetails": "Ukryj szczegóły"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

@@ -2010,7 +2010,9 @@
     "commitSoft": "ソフトサークル",
     "commitVerbal": "口頭合意",
     "commitCommitted": "コミット済み",
-    "commitmentSaved": "コミットメントを更新しました。"
+    "commitmentSaved": "コミットメントを更新しました。",
+    "showDetails": "詳細",
+    "hideDetails": "詳細を隠す"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",

@@ -2010,7 +2010,9 @@
     "commitSoft": "Soft-circle",
     "commitVerbal": "Mondeling ja",
     "commitCommitted": "Toegezegd",
-    "commitmentSaved": "Toezegging bijgewerkt."
+    "commitmentSaved": "Toezegging bijgewerkt.",
+    "showDetails": "Details",
+    "hideDetails": "Details verbergen"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

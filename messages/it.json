@@ -2010,7 +2010,9 @@
     "commitSoft": "Soft-circle",
     "commitVerbal": "Sì verbale",
     "commitCommitted": "Impegnato",
-    "commitmentSaved": "Impegno aggiornato."
+    "commitmentSaved": "Impegno aggiornato.",
+    "showDetails": "Dettagli",
+    "hideDetails": "Nascondi i dettagli"
   },
   "investorProfile": {
     "back": "Torna agli investitori",

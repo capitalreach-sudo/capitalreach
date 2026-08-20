@@ -2010,7 +2010,9 @@
     "commitSoft": "Soft-circle",
     "commitVerbal": "Muntligt ja",
     "commitCommitted": "Åtagit sig",
-    "commitmentSaved": "Åtagande uppdaterat."
+    "commitmentSaved": "Åtagande uppdaterat.",
+    "showDetails": "Detaljer",
+    "hideDetails": "Dölj detaljer"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

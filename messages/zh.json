@@ -2010,7 +2010,9 @@
     "commitSoft": "软承诺",
     "commitVerbal": "口头同意",
     "commitCommitted": "已承诺",
-    "commitmentSaved": "承诺已更新。"
+    "commitmentSaved": "承诺已更新。",
+    "showDetails": "详情",
+    "hideDetails": "收起详情"
   },
   "investorProfile": {
     "back": "返回投资者列表",

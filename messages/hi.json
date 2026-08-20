@@ -2010,7 +2010,9 @@
     "commitSoft": "सॉफ्ट-सर्कल",
     "commitVerbal": "मौखिक हाँ",
     "commitCommitted": "प्रतिबद्ध",
-    "commitmentSaved": "प्रतिबद्धता अपडेट हुई।"
+    "commitmentSaved": "प्रतिबद्धता अपडेट हुई।",
+    "showDetails": "विवरण",
+    "hideDetails": "विवरण छिपाएँ"
   },
   "investorProfile": {
     "back": "निवेशकों पर वापस जाएं",

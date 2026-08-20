@@ -2021,7 +2021,9 @@
     "commitSoft": "Soft-circled",
     "commitVerbal": "Verbal yes",
     "commitCommitted": "Committed",
-    "commitmentSaved": "Commitment updated."
+    "commitmentSaved": "Commitment updated.",
+    "showDetails": "Details",
+    "hideDetails": "Hide details"
   },
   "investorProfile": {
     "back": "Back to investors",
