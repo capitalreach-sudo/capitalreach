@@ -3247,6 +3247,28 @@
     "disclaimer": "Las respuestas las genera un modelo leyendo esta página. No es asesoramiento de inversión ni está revisado por una persona.",
     "suggest1": "¿A qué se dedican?",
     "suggest2": "¿En qué etapa están?",
-    "suggest3": "¿Qué significa esta cifra?"
+    "suggest3": "¿Qué significa esta cifra?",
+    "seePlans": "Ver planes"
+  },
+  "watchChanges": {
+    "title": "Desde la última vez",
+    "watching": "{n} empresas en seguimiento",
+    "markSeen": "Marcar todo como visto",
+    "quiet": "Nada nuevo en las empresas que sigues."
+  },
+  "share": {
+    "title": "Comparte tu ronda",
+    "intro": "Tu ficha ya es pública. Un enlace para compartir la envía a un grupo concreto, con tus documentos si quieres, y te dice cuántos la abrieron.",
+    "labelPh": "¿Para quién es? (solo lo ves tú)",
+    "includeDocs": "Incluir mis documentos",
+    "create": "Crear enlace",
+    "none": "Aún no hay enlaces.",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar: selecciona el enlace",
+    "revoke": "Revocar",
+    "opens": "abierto {n}×",
+    "withDocs": "documentos incluidos",
+    "docsNeedGrowth": "Compartir documentos por enlace es parte del plan Growth. El enlace se creó sin ellos."
   }
 }

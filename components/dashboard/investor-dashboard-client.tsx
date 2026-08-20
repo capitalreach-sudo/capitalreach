@@ -15,6 +15,7 @@ import { allocationSummary } from "@/lib/round-math";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
+import { WatchlistChanges } from "@/components/investor/watchlist-changes";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
 
 interface Props {
@@ -667,6 +668,9 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* ── Watchlist ── */}
         {activeTab === "watchlist" && (
           <div>
+            {/* What moved on the companies already saved, above the list of
+                them: the list says what you picked, this says what happened. */}
+            <ErrorBoundary labelKey="sections.recentlyViewed"><WatchlistChanges /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>
             {allocation && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
             <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>

@@ -4,6 +4,8 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { aiRatelimit } from "@/lib/redis";
 import { logSystemEvent } from "@/lib/system-events";
 import { buildAssistantContext, type PageRef } from "@/lib/assistant-context";
+import { checkAiAccess } from "@/lib/ai-access";
+import { FIND_ROUNDS_TOOL, findRounds, type FindRoundsInput } from "@/lib/assistant-search";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +75,9 @@ HOW TO ANSWER
 - Never invent a number. No estimates, no ranges, no "probably around".
 - Be brief. Two or three sentences unless asked for more.
 - Plain prose. No markdown headings, no bullet lists unless genuinely listing.
+- When the person asks which companies match something, or asks for examples,
+  use the find_rounds tool rather than answering from the page. Quote only what
+  it returns, and give the /startups/... path so they can open it.
 
 WHAT YOU DO NOT DO
 - No investment advice, and no opinion on whether something is a good or bad
@@ -91,17 +96,33 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  // AI is a paid feature. Admins are exempt — an operator looking into a
+  // listing should not be stopped by a billing rule aimed at customers — and
+  // launch mode grants it to everyone until it ends, at which point this
+  // starts binding without a code change.
+  const ai = await checkAiAccess(user?.id ?? null);
+  if (!ai.allowed) {
+    return NextResponse.json({
+      error: ai.reason === "signed_out"
+        ? "Sign in to ask about this page."
+        : ai.reason === "suspended"
+          ? "Your account is suspended."
+          : `The assistant is part of the ${ai.needsPlan} plan.`,
+      upgrade: ai.reason === "plan",
+      signIn: ai.reason === "signed_out",
+    }, { status: ai.reason === "signed_out" ? 401 : 402 });
+  }
+
   const body = await req.json().catch(() => ({}));
   const question = typeof body?.question === "string" ? body.question.trim().slice(0, MAX_QUESTION) : "";
   if (!question) return NextResponse.json({ error: "Ask a question." }, { status: 400 });
 
-  // Signed-out visitors get a much smaller budget: this costs money per call
-  // and an open endpoint is somebody else's free API.
-  const { success } = await aiRatelimit.limit(user ? `assistant:${user.id}` : `assistant:anon:${req.headers.get("x-forwarded-for") ?? "unknown"}`);
+  // Per account, since an anonymous caller can no longer reach this at all.
+  const { success } = await aiRatelimit.limit(`assistant:${user!.id}`);
   if (!success) return NextResponse.json({ error: "Too many questions just now — try again in a minute." }, { status: 429 });
 
   const ref = parseRef(body?.page);
-  const { text: context, label, redacted } = await buildAssistantContext(ref, user?.id ?? null);
+  const { text: context, label, redacted } = await buildAssistantContext(ref, user!.id);
 
   // Prior turns, trimmed and re-validated. Never trusted as anything but text.
   const history: Anthropic.MessageParam[] = Array.isArray(body?.history)
@@ -116,21 +137,74 @@ export async function POST(req: NextRequest) {
   const client = new Anthropic();
 
   try {
-    const stream = client.beta.messages.stream({
+    const messages: Anthropic.MessageParam[] = [...history, { role: "user", content: question }];
+    const system = systemPrompt(label, context, redacted);
+    const common = {
       model: MODEL,
       max_tokens: 1024,
       // Cheap and fast is the right trade for grounded Q&A over one page.
-      output_config: { effort: "low" },
+      output_config: { effort: "low" as const },
       betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      system: systemPrompt(label, context, redacted),
-      messages: [...history, { role: "user", content: question }],
-    });
+      fallbacks: "default" as const,
+      system,
+      tools: [FIND_ROUNDS_TOOL],
+    };
+
+    // One tool round, at most.
+    //
+    // A search question needs a non-streamed first call (the tool input has to
+    // be complete before the search can run), then the answer streams. A
+    // question about the page needs neither — but you cannot know which you
+    // have until the model decides, so the first call is always non-streamed
+    // and short. Bounding it at ONE round is what keeps the cost of a question
+    // predictable; a loop here is an open-ended bill.
+    const first = await client.beta.messages.create({ ...common, messages });
+
+    let stream: ReturnType<typeof client.beta.messages.stream> | null = null;
+    let directText = "";
+
+    if (first.stop_reason === "tool_use") {
+      const toolUse = first.content.find(
+        (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
+      );
+      const result = toolUse
+        ? await findRounds(toolUse.input as FindRoundsInput)
+        : "No search was run.";
+
+      stream = client.beta.messages.stream({
+        ...common,
+        messages: [
+          ...messages,
+          { role: "assistant", content: first.content },
+          {
+            role: "user",
+            content: [{
+              type: "tool_result",
+              tool_use_id: toolUse?.id ?? "unknown",
+              content: result,
+            }],
+          },
+        ],
+      });
+    } else if (first.stop_reason === "refusal") {
+      directText = "I can't help with that one. Try asking about what is on the page.";
+    } else {
+      // Already answered, and short enough that a second call to stream it
+      // would cost more than it saves.
+      directText = first.content
+        .filter((b): b is Anthropic.TextBlock => b.type === "text")
+        .map(b => b.text)
+        .join("");
+    }
 
     const encoder = new TextEncoder();
     const readable = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
+          if (!stream) {
+            controller.enqueue(encoder.encode(directText));
+            return;
+          }
           for await (const event of stream) {
             if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
               controller.enqueue(encoder.encode(event.delta.text));

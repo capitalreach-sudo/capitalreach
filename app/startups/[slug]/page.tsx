@@ -18,7 +18,7 @@ export const revalidate = 120; // ISR — revalidate every 2 minutes
 
 interface Props {
   params: { slug: string };
-  searchParams?: { preview?: string };
+  searchParams?: { preview?: string; share?: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -260,11 +260,31 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     isLaunchMode: isLaunch,
     suspended: previewing ? false : viewerSuspended,
   });
+  // 089: a share link the founder minted can carry deck access for someone
+  // with no account. The TOKEN is re-checked here against this startup rather
+  // than trusting a query parameter — ?share=anything would otherwise be a
+  // universal key. NDA-gated documents still require the NDA; a share link
+  // grants the room, not a signature.
+  const shareToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
+  let shareGrantsDocs = false;
+  if (shareToken && !previewing) {
+    const { data: share } = await createAdminClient()
+      .from("round_shares")
+      .select("startup_id, grants_documents, expires_at, revoked_at")
+      .eq("token", shareToken)
+      .maybeSingle();
+    shareGrantsDocs = !!share
+      && share.startup_id === startup.id
+      && share.grants_documents
+      && !share.revoked_at
+      && (!share.expires_at || new Date(share.expires_at) > new Date());
+  }
+
   const docCtx = {
     isOwnerOrAdmin: previewing ? false : isOwner || viewerIsAdmin,
     // Any signed-in investor is in the room (preview simulates one); NDA-gated
     // docs still need the NDA below.
-    isInvestor: previewing ? true : !!investorId,
+    isInvestor: previewing ? true : !!investorId || shareGrantsDocs,
     startupRequiresNda: !!startup.require_nda,
     ndaSigned: previewing ? false : ndaSigned,
   };

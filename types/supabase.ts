@@ -1735,6 +1735,53 @@ export type Database = {
           },
         ]
       }
+      round_shares: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          grants_documents: boolean
+          id: string
+          label: string | null
+          last_opened_at: string | null
+          opens: number
+          revoked_at: string | null
+          startup_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          grants_documents?: boolean
+          id?: string
+          label?: string | null
+          last_opened_at?: string | null
+          opens?: number
+          revoked_at?: string | null
+          startup_id: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          grants_documents?: boolean
+          id?: string
+          label?: string | null
+          last_opened_at?: string | null
+          opens?: number
+          revoked_at?: string | null
+          startup_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_shares_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_searches: {
         Row: {
           alert_enabled: boolean
@@ -2586,6 +2633,7 @@ export type Database = {
       }
       watchlists: {
         Row: {
+          changes_seen_at: string | null
           created_at: string
           id: string
           investor_id: string
@@ -2596,6 +2644,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          changes_seen_at?: string | null
           created_at?: string
           id?: string
           investor_id: string
@@ -2606,6 +2655,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          changes_seen_at?: string | null
           created_at?: string
           id?: string
           investor_id?: string

@@ -32,6 +32,7 @@ export function SiteAssistant() {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
+  const [locked, setLocked] = useState<{ message: string; href: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   useEscapeKey(open, () => setOpen(false));
 
@@ -73,6 +74,12 @@ export function SiteAssistant() {
       });
 
       if (res.status === 503) { setUnavailable(true); return; }
+      if (res.status === 401 || res.status === 402) {
+        const j = await res.json().catch(() => ({}));
+        setLocked({ message: j.error || t("assistant.failed"), href: j.signIn ? "/auth/login" : "/pricing" });
+        setTurns([]);
+        return;
+      }
       if (!res.ok || !res.body) {
         const j = await res.json().catch(() => ({}));
         setTurns(prev => replaceLast(prev, j.error || t("assistant.failed")));
@@ -135,7 +142,17 @@ export function SiteAssistant() {
           </div>
 
           <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "12px 14px", minHeight: 120 }}>
-            {turns.length === 0 ? (
+            {locked ? (
+              <div>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.55 }}>
+                  {locked.message}
+                </p>
+                <a href={locked.href}
+                  style={{ display: "inline-block", marginTop: 10, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12.5px", color: "var(--cr-copper)" }}>
+                  {locked.href === "/pricing" ? t("assistant.seePlans") : t("nav.signIn")} →
+                </a>
+              </div>
+            ) : turns.length === 0 ? (
               <div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
                   {t("assistant.intro")}

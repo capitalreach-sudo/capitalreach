@@ -3247,6 +3247,28 @@
     "disclaimer": "Antwoorden komen van een model dat deze pagina leest. Geen beleggingsadvies en niet door een mens gecontroleerd.",
     "suggest1": "Wat doen ze?",
     "suggest2": "In welke fase zitten ze?",
-    "suggest3": "Wat betekent dit getal?"
+    "suggest3": "Wat betekent dit getal?",
+    "seePlans": "Bekijk de plannen"
+  },
+  "watchChanges": {
+    "title": "Sinds je laatste bezoek",
+    "watching": "{n} bedrijven gevolgd",
+    "markSeen": "Alles als gezien markeren",
+    "quiet": "Niets nieuws bij de bedrijven die je volgt."
+  },
+  "share": {
+    "title": "Deel je ronde",
+    "intro": "Je listing is al openbaar. Met een deellink stuur je hem naar een specifieke groep, desgewenst met je documenten, en zie je hoeveel van hen hem openden.",
+    "labelPh": "Voor wie is het? (alleen jij ziet dit)",
+    "includeDocs": "Mijn documenten meesturen",
+    "create": "Link maken",
+    "none": "Nog geen deellinks.",
+    "copy": "Link kopiëren",
+    "copied": "Link gekopieerd",
+    "copyFailed": "Kopiëren lukte niet — selecteer de link",
+    "revoke": "Intrekken",
+    "opens": "{n}× geopend",
+    "withDocs": "documenten inbegrepen",
+    "docsNeedGrowth": "Documenten via een link delen hoort bij het Growth-plan. De link is zonder gemaakt."
   }
 }

@@ -3247,6 +3247,28 @@
     "disclaimer": "Answers come from a model reading this page. Not investment advice, and not checked by a person.",
     "suggest1": "What do they do?",
     "suggest2": "What stage are they at?",
-    "suggest3": "What does this number mean?"
+    "suggest3": "What does this number mean?",
+    "seePlans": "See plans"
+  },
+  "watchChanges": {
+    "title": "Since you last looked",
+    "watching": "{n} companies watched",
+    "markSeen": "Mark all seen",
+    "quiet": "Nothing new on the companies you are watching."
+  },
+  "share": {
+    "title": "Share your round",
+    "intro": "Your listing is already public. A share link lets you send it to a specific group, optionally with your documents attached, and tells you how many of them opened it.",
+    "labelPh": "Who is it for? (only you see this)",
+    "includeDocs": "Include my documents",
+    "create": "Create link",
+    "none": "No share links yet.",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy — select the link instead",
+    "revoke": "Revoke",
+    "opens": "opened {n}×",
+    "withDocs": "documents included",
+    "docsNeedGrowth": "Sharing documents through a link is part of the Growth plan. The link was created without them."
   }
 }

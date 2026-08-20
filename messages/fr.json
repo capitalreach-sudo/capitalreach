@@ -3247,6 +3247,28 @@
     "disclaimer": "Les réponses viennent d'un modèle qui lit cette page. Ce n'est pas un conseil en investissement et ce n'est pas vérifié par un humain.",
     "suggest1": "Que font-ils ?",
     "suggest2": "À quel stade sont-ils ?",
-    "suggest3": "Que signifie ce chiffre ?"
+    "suggest3": "Que signifie ce chiffre ?",
+    "seePlans": "Voir les offres"
+  },
+  "watchChanges": {
+    "title": "Depuis votre dernière visite",
+    "watching": "{n} sociétés suivies",
+    "markSeen": "Tout marquer comme vu",
+    "quiet": "Rien de neuf chez les sociétés que vous suivez."
+  },
+  "share": {
+    "title": "Partager votre levée",
+    "intro": "Votre annonce est déjà publique. Un lien de partage l'envoie à un groupe précis, avec vos documents si vous le souhaitez, et vous dit combien l'ont ouvert.",
+    "labelPh": "Pour qui ? (visible par vous seul)",
+    "includeDocs": "Inclure mes documents",
+    "create": "Créer le lien",
+    "none": "Aucun lien de partage.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "copyFailed": "Copie impossible — sélectionnez le lien",
+    "revoke": "Révoquer",
+    "opens": "ouvert {n}×",
+    "withDocs": "documents inclus",
+    "docsNeedGrowth": "Partager des documents via un lien fait partie de l'offre Growth. Le lien a été créé sans eux."
   }
 }

@@ -3247,6 +3247,28 @@
     "disclaimer": "Svaren kommer från en modell som läser den här sidan. Inte investeringsrådgivning och inte granskat av en människa.",
     "suggest1": "Vad gör de?",
     "suggest2": "Vilket skede är de i?",
-    "suggest3": "Vad betyder den här siffran?"
+    "suggest3": "Vad betyder den här siffran?",
+    "seePlans": "Se planerna"
+  },
+  "watchChanges": {
+    "title": "Sedan du senast tittade",
+    "watching": "{n} bolag bevakade",
+    "markSeen": "Markera allt som sett",
+    "quiet": "Inget nytt hos bolagen du bevakar."
+  },
+  "share": {
+    "title": "Dela din runda",
+    "intro": "Din annons är redan offentlig. En delningslänk skickar den till en bestämd grupp, med dina dokument om du vill, och visar hur många som öppnade den.",
+    "labelPh": "Vem är den till? (bara du ser detta)",
+    "includeDocs": "Ta med mina dokument",
+    "create": "Skapa länk",
+    "none": "Inga delningslänkar än.",
+    "copy": "Kopiera länk",
+    "copied": "Länken kopierad",
+    "copyFailed": "Kunde inte kopiera — markera länken",
+    "revoke": "Återkalla",
+    "opens": "öppnad {n}×",
+    "withDocs": "dokument ingår",
+    "docsNeedGrowth": "Att dela dokument via en länk ingår i Growth-planen. Länken skapades utan dem."
   }
 }

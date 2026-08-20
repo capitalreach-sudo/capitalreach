@@ -3247,6 +3247,28 @@
     "disclaimer": "Odpowiedzi pochodzą od modelu czytającego tę stronę. To nie porada inwestycyjna i nie sprawdził tego człowiek.",
     "suggest1": "Czym się zajmują?",
     "suggest2": "Na jakim są etapie?",
-    "suggest3": "Co oznacza ta liczba?"
+    "suggest3": "Co oznacza ta liczba?",
+    "seePlans": "Zobacz plany"
+  },
+  "watchChanges": {
+    "title": "Od ostatniego razu",
+    "watching": "Obserwowane spółki: {n}",
+    "markSeen": "Oznacz wszystko jako przejrzane",
+    "quiet": "Nic nowego w obserwowanych spółkach."
+  },
+  "share": {
+    "title": "Udostępnij swoją rundę",
+    "intro": "Twoje ogłoszenie jest już publiczne. Link do udostępnienia wyśle je konkretnej grupie — w razie potrzeby z dokumentami — i pokaże, ilu je otworzyło.",
+    "labelPh": "Dla kogo jest? (widzisz to tylko Ty)",
+    "includeDocs": "Dołącz moje dokumenty",
+    "create": "Utwórz link",
+    "none": "Brak linków.",
+    "copy": "Kopiuj link",
+    "copied": "Link skopiowany",
+    "copyFailed": "Nie udało się skopiować — zaznacz link",
+    "revoke": "Unieważnij",
+    "opens": "otwarto {n}×",
+    "withDocs": "z dokumentami",
+    "docsNeedGrowth": "Udostępnianie dokumentów przez link należy do planu Growth. Link powstał bez nich."
   }
 }

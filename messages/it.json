@@ -3247,6 +3247,28 @@
     "disclaimer": "Le risposte arrivano da un modello che legge questa pagina. Non sono consulenza finanziaria e non sono verificate da una persona.",
     "suggest1": "Che cosa fanno?",
     "suggest2": "A che stadio sono?",
-    "suggest3": "Che cosa significa questo numero?"
+    "suggest3": "Che cosa significa questo numero?",
+    "seePlans": "Vedi i piani"
+  },
+  "watchChanges": {
+    "title": "Dall'ultima volta",
+    "watching": "{n} aziende seguite",
+    "markSeen": "Segna tutto come visto",
+    "quiet": "Niente di nuovo sulle aziende che segui."
+  },
+  "share": {
+    "title": "Condividi il tuo round",
+    "intro": "Il tuo annuncio è già pubblico. Un link di condivisione lo manda a un gruppo preciso, con i tuoi documenti se vuoi, e ti dice quanti l'hanno aperto.",
+    "labelPh": "Per chi è? (lo vedi solo tu)",
+    "includeDocs": "Includi i miei documenti",
+    "create": "Crea link",
+    "none": "Ancora nessun link.",
+    "copy": "Copia link",
+    "copied": "Link copiato",
+    "copyFailed": "Copia non riuscita — seleziona il link",
+    "revoke": "Revoca",
+    "opens": "aperto {n}×",
+    "withDocs": "documenti inclusi",
+    "docsNeedGrowth": "Condividere i documenti tramite link fa parte del piano Growth. Il link è stato creato senza."
   }
 }

@@ -10,6 +10,7 @@ import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
 import { InfoTip } from "@/components/shared/info-tip";
+import { ShareLinks } from "@/components/startup/share-links";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
@@ -1250,6 +1251,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             an invite is theirs to send, not ours. */}
         {!viewingAs && (
           <div style={{ marginTop: "24px" }}>
+            {/* Sharing the round, and finding out whether anybody opened it. */}
+            <ShareLinks />
             <InvitePanel defaultRole="investor" />
           </div>
         )}
