@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { openai, isOpenAIConfigured } from "@/lib/openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { LOCALE_META, type Locale } from "@/lib/locale";
 
 /**
@@ -52,7 +52,11 @@ export function collectFields(row: Record<string, unknown>, keys: string[]): Tra
   return out;
 }
 
-export const translationAvailable = isOpenAIConfigured;
+// Moved from OpenAI to Anthropic deliberately: the assistant already runs on
+// ANTHROPIC_API_KEY, and one funded provider beats two half-funded ones. The
+// OpenAI account being out of credits is what surfaced this — translation was
+// built against a key that could not pay for it.
+export const translationAvailable = !!process.env.ANTHROPIC_API_KEY;
 
 /**
  * Returns the translated fields, or null if translation is unavailable or the
@@ -63,44 +67,50 @@ export async function translateFields(
   fields: TranslatedFields,
   target: Locale,
 ): Promise<TranslatedFields | null> {
-  // Why the reason is recorded rather than swallowed: isOpenAIConfigured only
-  // checks the SHAPE of the key (length, prefix). A key that is well-formed and
-  // rejected, a model name the account cannot reach, or a quota that ran out
-  // all look identical from outside — a 502 with nothing behind it. It goes to
+  // Why the reason is recorded rather than swallowed: a key that is present
+  // but rejected, a model the account cannot reach, and an exhausted quota all
+  // look identical from outside — a 502 with nothing behind it. It goes to
   // system_events, which the admin page already reads.
-  if (!isOpenAIConfigured) return null;
+  if (!translationAvailable) return null;
   const keys = Object.keys(fields);
   if (keys.length === 0) return null;
 
   const language = LOCALE_META[target]?.name ?? target;
 
   try {
-    const res = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content: [
-            `You translate startup fundraising copy into ${language}.`,
-            "Return ONLY a JSON object with exactly the same keys you were given.",
-            "Rules:",
-            "- Translate meaning, not word order. Keep the register plain and factual.",
-            "- Never translate company names, product names, or people's names.",
-            "- Never convert, recalculate or reformat numbers, currencies, percentages or dates. Reproduce them exactly as written.",
-            "- Keep industry terms that stay untranslated in the target language (SaaS, ARR, SAFE) as they are.",
-            "- If a value is already in the target language, return it unchanged.",
-            "- Do not add, remove, summarise or improve anything. This is a legal-adjacent document.",
-          ].join("\n"),
-        },
-        { role: "user", content: JSON.stringify(fields) },
-      ],
+    const client = new Anthropic();
+    const res = await client.messages.create({
+      model: "claude-opus-5",
+      max_tokens: 8000,
+      // Translation is transformation, not reasoning; low effort keeps a
+      // cached page's first translation fast and cheap.
+      output_config: { effort: "low" },
+      system: [
+        `You translate startup fundraising copy into ${language}.`,
+        "Return ONLY a JSON object with exactly the same keys you were given. No prose before or after it.",
+        "Rules:",
+        "- Translate meaning, not word order. Keep the register plain and factual.",
+        "- Never translate company names, product names, or people's names.",
+        "- Never convert, recalculate or reformat numbers, currencies, percentages or dates. Reproduce them exactly as written.",
+        "- Keep industry terms that stay untranslated in the target language (SaaS, ARR, SAFE) as they are.",
+        "- If a value is already in the target language, return it unchanged.",
+        "- Do not add, remove, summarise or improve anything. This is a legal-adjacent document.",
+      ].join("\n"),
+      messages: [{ role: "user", content: JSON.stringify(fields) }],
     });
 
-    const raw = res.choices[0]?.message?.content;
+    const raw = res.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map(b => b.text)
+      .join("")
+      .trim();
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    // The model is told to return bare JSON; the brace-slice tolerates a
+    // stray fence without trusting anything outside the object.
+    const start = raw.indexOf("{");
+    const end = raw.lastIndexOf("}");
+    if (start < 0 || end <= start) return null;
+    const parsed = JSON.parse(raw.slice(start, end + 1)) as Record<string, unknown>;
 
     // Only keys we asked for, only strings. A model that invents a key or
     // returns an object must not end up rendered on a listing.
