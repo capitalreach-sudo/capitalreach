@@ -3224,5 +3224,15 @@
     "translateCta": "Traduci questa pagina",
     "machineNotice": "Traduzione automatica — non sono le parole dell'autore.",
     "showOriginal": "Mostra l'originale"
+  },
+  "feePlan": {
+    "offer": "Poca liquidità in questo momento? Distribuisci l'importo su qualche mese.",
+    "months": "{n} mesi",
+    "start": "Attiva un piano",
+    "started": "Piano di pagamento attivato",
+    "sameTotal": "Stesso totale, diviso in parti uguali. Ogni rata viene fatturata alla scadenza.",
+    "scheduleTitle": "Piano di pagamento — {paid} di {count} pagate",
+    "instalmentN": "Rata {n}",
+    "paidMark": "pagata"
   }
 }

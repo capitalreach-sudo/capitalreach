@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -225,6 +225,9 @@ function SuccessFees() {
               <p className="text-xs text-cr-i3 mt-2">{t("myFees.resolved")}: {f.disputeResolution}</p>
             )}
 
+            {/* 087: the objection to the fee is usually timing, not amount. */}
+            <FeePlan dealId={f.id} state={f.state} onChanged={load} />
+
             {(f.state === "outstanding" || f.state === "unbillable") && (
               openId === f.id ? (
                 <div className="mt-3">
@@ -246,5 +249,86 @@ function SuccessFees() {
         ))}
       </div>
     </section>
+  );
+}
+
+type Instalment = { seq: number; amount: number; due_date: string; paid_at: string | null; billing_error?: string | null };
+
+/**
+ * The instalment schedule for one fee, and the offer to start one.
+ *
+ * Shown on the fee itself rather than in a settings page: the moment a founder
+ * is looking at a number they were not expecting is the moment the alternative
+ * is worth knowing about.
+ */
+function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; onChanged: () => void }) {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{ instalments: Instalment[]; eligible: boolean; minMonths: number; maxMonths: number } | null>(null);
+  const [months, setMonths] = useState(3);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const res = await fetch(`/api/fees/plan?dealId=${dealId}`);
+    if (res.ok) setData(await res.json());
+  }, [dealId]);
+  useEffect(() => { void load(); }, [load]);
+
+  async function start() {
+    if (busy) return;
+    setBusy(true);
+    const res = await fetch("/api/fees/plan", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dealId, months }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) { notify.error(j.error || t("common.error")); return; }
+    notify.success(t("feePlan.started"));
+    void load();
+    onChanged();
+  }
+
+  if (!data) return null;
+
+  if (data.instalments.length > 0) {
+    const paid = data.instalments.filter(i => i.paid_at).length;
+    return (
+      <div className="mt-3 border-t pt-3">
+        <p className="text-xs font-semibold text-cr-ink mb-2">
+          {t("feePlan.scheduleTitle", { paid, count: data.instalments.length })}
+        </p>
+        <ul className="space-y-1">
+          {data.instalments.map(i => (
+            <li key={i.seq} className="flex items-center justify-between text-xs">
+              <span className={i.paid_at ? "text-cr-i4 line-through" : "text-cr-i3"}>
+                {t("feePlan.instalmentN", { n: i.seq })} · {new Date(i.due_date).toLocaleDateString()}
+              </span>
+              <span className={`font-mono ${i.paid_at ? "text-emerald-700" : "text-cr-ink"}`}>
+                {(i.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {i.paid_at ? ` ${t("feePlan.paidMark")}` : ""}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  if (!data.eligible || state === "collected") return null;
+
+  return (
+    <div className="mt-3 border-t pt-3">
+      <p className="text-xs text-cr-i4 mb-2">{t("feePlan.offer")}</p>
+      <div className="flex items-center gap-2">
+        <select value={months} onChange={e => setMonths(Number(e.target.value))}
+          className="text-xs border rounded-lg px-2 py-1 bg-cr-paper text-cr-ink">
+          {Array.from({ length: data.maxMonths - data.minMonths + 1 }, (_, i) => data.minMonths + i).map(m => (
+            <option key={m} value={m}>{t("feePlan.months", { n: m })}</option>
+          ))}
+        </select>
+        <Button size="sm" variant="outline" onClick={start} disabled={busy}>{t("feePlan.start")}</Button>
+      </div>
+      <p className="text-[11px] text-cr-i4 mt-2">{t("feePlan.sameTotal")}</p>
+    </div>
   );
 }

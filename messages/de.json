@@ -3224,5 +3224,15 @@
     "translateCta": "Diese Seite übersetzen",
     "machineNotice": "Maschinelle Übersetzung — nicht die Worte des Verfassers.",
     "showOriginal": "Original anzeigen"
+  },
+  "feePlan": {
+    "offer": "Gerade knapp bei Kasse? Verteile das auf mehrere Monate.",
+    "months": "{n} Monate",
+    "start": "Plan einrichten",
+    "started": "Zahlungsplan eingerichtet",
+    "sameTotal": "Gleiche Summe, gleichmäßig verteilt. Jede Rate wird zum Fälligkeitstag in Rechnung gestellt.",
+    "scheduleTitle": "Zahlungsplan — {paid} von {count} bezahlt",
+    "instalmentN": "Rate {n}",
+    "paidMark": "bezahlt"
   }
 }

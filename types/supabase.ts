@@ -658,6 +658,8 @@ export type Database = {
           fee_dispute_resolution: string | null
           fee_dispute_resolved_at: string | null
           fee_disputed_at: string | null
+          fee_plan_months: number | null
+          fee_plan_started_at: string | null
           fee_refund_amount: number | null
           fee_refunded_at: string | null
           fee_reminder_count: number
@@ -711,6 +713,8 @@ export type Database = {
           fee_dispute_resolution?: string | null
           fee_dispute_resolved_at?: string | null
           fee_disputed_at?: string | null
+          fee_plan_months?: number | null
+          fee_plan_started_at?: string | null
           fee_refund_amount?: number | null
           fee_refunded_at?: string | null
           fee_reminder_count?: number
@@ -764,6 +768,8 @@ export type Database = {
           fee_dispute_resolution?: string | null
           fee_dispute_resolved_at?: string | null
           fee_disputed_at?: string | null
+          fee_plan_months?: number | null
+          fee_plan_started_at?: string | null
           fee_refund_amount?: number | null
           fee_refunded_at?: string | null
           fee_reminder_count?: number
@@ -963,6 +969,50 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fee_instalments: {
+        Row: {
+          amount: number
+          billing_error: string | null
+          created_at: string
+          deal_id: string
+          due_date: string
+          id: string
+          paid_at: string | null
+          seq: number
+          stripe_invoice_id: string | null
+        }
+        Insert: {
+          amount: number
+          billing_error?: string | null
+          created_at?: string
+          deal_id: string
+          due_date: string
+          id?: string
+          paid_at?: string | null
+          seq: number
+          stripe_invoice_id?: string | null
+        }
+        Update: {
+          amount?: number
+          billing_error?: string | null
+          created_at?: string
+          deal_id?: string
+          due_date?: string
+          id?: string
+          paid_at?: string | null
+          seq?: number
+          stripe_invoice_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fee_instalments_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
             referencedColumns: ["id"]
           },
         ]

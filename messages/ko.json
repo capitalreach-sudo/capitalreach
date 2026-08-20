@@ -3224,5 +3224,15 @@
     "translateCta": "이 페이지 번역",
     "machineNotice": "기계 번역입니다 — 작성자의 원문이 아닙니다.",
     "showOriginal": "원문 보기"
+  },
+  "feePlan": {
+    "offer": "지금 자금이 빠듯하신가요? 몇 달에 나눠 내실 수 있습니다.",
+    "months": "{n}개월",
+    "start": "분납 설정",
+    "started": "분납이 설정되었습니다",
+    "sameTotal": "총액은 같고 균등하게 나뉩니다. 각 회차는 지정일에 청구됩니다.",
+    "scheduleTitle": "분납 — {count}회 중 {paid}회 납부",
+    "instalmentN": "{n}회차",
+    "paidMark": "납부"
   }
 }

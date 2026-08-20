@@ -215,6 +215,33 @@ export async function POST(req: NextRequest) {
         // subscription payment is what let a founder pay a success fee to
         // restore a listing suspended for an unpaid subscription.
         if (isSuccessFeeInvoice(invoice)) {
+          // 087: an instalment carries its own row id, so the right one is
+          // marked paid rather than inferred from the amount. The DEAL is only
+          // settled when the last instalment lands — marking it paid on the
+          // first would tell the ledger the platform had been paid in full
+          // when it had been paid a third.
+          const instalmentId = invoice.metadata?.instalmentId;
+          if (instalmentId) {
+            await supabase
+              .from("fee_instalments")
+              .update({ paid_at: new Date().toISOString(), billing_error: null })
+              .eq("id", instalmentId);
+
+            const dealId = invoice.metadata?.dealId;
+            if (dealId) {
+              const { data: all } = await supabase
+                .from("fee_instalments").select("paid_at").eq("deal_id", dealId);
+              const rows = all ?? [];
+              if (rows.length > 0 && rows.every(r => !!r.paid_at)) {
+                await supabase
+                  .from("deals")
+                  .update({ success_fee_paid_at: new Date().toISOString() })
+                  .eq("id", dealId);
+              }
+            }
+            break;
+          }
+
           await supabase
             .from("deals")
             .update({ success_fee_paid_at: new Date().toISOString() })

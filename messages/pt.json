@@ -3224,5 +3224,15 @@
     "translateCta": "Traduzir esta página",
     "machineNotice": "Tradução automática — não são as palavras do autor.",
     "showOriginal": "Ver o original"
+  },
+  "feePlan": {
+    "offer": "Tesouraria apertada? Divida este valor por alguns meses.",
+    "months": "{n} meses",
+    "start": "Criar um plano",
+    "started": "Plano de pagamento criado",
+    "sameTotal": "O mesmo total, dividido por igual. Cada prestação é faturada na data de vencimento.",
+    "scheduleTitle": "Plano de pagamento — {paid} de {count} pagas",
+    "instalmentN": "Prestação {n}",
+    "paidMark": "paga"
   }
 }

@@ -83,6 +83,12 @@ describe("dunning", () => {
     expect(reminderDue(d, at(15))).toBe(true);
   });
 
+  it("does not chase a fee that is being paid on an agreed schedule", () => {
+    // Not late — being paid on time, by arrangement. The cron chases the
+    // overdue instalment instead.
+    expect(reminderDue({ ...base, closed_at: "2026-07-01T00:00:00Z", fee_plan_months: 3 }, new Date("2026-09-01"))).toBe(false);
+  });
+
   it("never chases a fee that is paid, waived or was never invoiced", () => {
     expect(reminderDue({ ...base, closed_at: closed, success_fee_paid_at: "2026-07-05" }, at(60))).toBe(false);
     expect(reminderDue({ ...base, closed_at: closed, fee_waived_at: "2026-07-05" }, at(60))).toBe(false);

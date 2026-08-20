@@ -3224,5 +3224,15 @@
     "translateCta": "Translate this page",
     "machineNotice": "Machine translation — not the author's own words.",
     "showOriginal": "Show the original"
+  },
+  "feePlan": {
+    "offer": "Cash tight right now? Spread this over a few months.",
+    "months": "{n} months",
+    "start": "Set up a plan",
+    "started": "Payment plan set up",
+    "sameTotal": "Same total, split evenly. Each instalment is invoiced on its due date.",
+    "scheduleTitle": "Payment plan — {paid} of {count} paid",
+    "instalmentN": "Instalment {n}",
+    "paidMark": "paid"
   }
 }

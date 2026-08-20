@@ -31,6 +31,8 @@ export interface FeeDeal {
   fee_refunded_at?: string | null;
   fee_chargeback_at?: string | null;
   fee_chargeback_resolved_at?: string | null;
+  /** Set when the fee is being paid in instalments (migration 087). */
+  fee_plan_months?: number | null;
 }
 
 export function feeState(d: FeeDeal): FeeState {
@@ -81,6 +83,12 @@ export function daysBetween(from: string | Date, to: string | Date): number {
  */
 export function reminderDue(d: FeeDeal, now: Date = new Date()): boolean {
   if (feeState(d) !== "outstanding") return false;
+  // A fee on an instalment plan is not late for being unpaid — it is being
+  // paid on an agreed schedule. Chasing it with the flat 7/14/30 reminders
+  // would be chasing somebody for money that is not due yet, which is how a
+  // payment plan turns into a support ticket. The cron chases the overdue
+  // INSTALMENT instead.
+  if (d.fee_plan_months) return false;
   const since = d.closed_at;
   if (!since) return false;
   const sent = d.fee_reminder_count ?? 0;

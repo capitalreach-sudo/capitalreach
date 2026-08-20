@@ -3224,5 +3224,15 @@
     "translateCta": "Traducir esta página",
     "machineNotice": "Traducción automática: no son las palabras del autor.",
     "showOriginal": "Ver el original"
+  },
+  "feePlan": {
+    "offer": "¿Caja ajustada? Reparte este importe en varios meses.",
+    "months": "{n} meses",
+    "start": "Crear un plan",
+    "started": "Plan de pago creado",
+    "sameTotal": "El mismo total, repartido a partes iguales. Cada cuota se factura en su fecha.",
+    "scheduleTitle": "Plan de pago: {paid} de {count} pagadas",
+    "instalmentN": "Cuota {n}",
+    "paidMark": "pagada"
   }
 }

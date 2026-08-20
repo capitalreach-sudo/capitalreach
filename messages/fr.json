@@ -3224,5 +3224,15 @@
     "translateCta": "Traduire cette page",
     "machineNotice": "Traduction automatique — pas les mots de l'auteur.",
     "showOriginal": "Afficher l'original"
+  },
+  "feePlan": {
+    "offer": "Trésorerie tendue ? Étalez ce montant sur quelques mois.",
+    "months": "{n} mois",
+    "start": "Mettre en place un échéancier",
+    "started": "Échéancier mis en place",
+    "sameTotal": "Même total, réparti à parts égales. Chaque échéance est facturée à sa date.",
+    "scheduleTitle": "Échéancier — {paid} sur {count} payées",
+    "instalmentN": "Échéance {n}",
+    "paidMark": "payée"
   }
 }

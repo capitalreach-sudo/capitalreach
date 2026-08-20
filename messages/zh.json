@@ -3224,5 +3224,15 @@
     "translateCta": "翻译此页",
     "machineNotice": "机器翻译 —— 并非作者本人的原话。",
     "showOriginal": "显示原文"
+  },
+  "feePlan": {
+    "offer": "现在现金紧张？可以分几个月支付。",
+    "months": "{n} 个月",
+    "start": "设置分期",
+    "started": "分期方案已设置",
+    "sameTotal": "总额不变，平均分摊。每期在到期日开具账单。",
+    "scheduleTitle": "分期方案 —— 已付 {paid} / {count}",
+    "instalmentN": "第 {n} 期",
+    "paidMark": "已付"
   }
 }

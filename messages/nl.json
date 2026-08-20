@@ -3224,5 +3224,15 @@
     "translateCta": "Vertaal deze pagina",
     "machineNotice": "Machinevertaling — niet de eigen woorden van de auteur.",
     "showOriginal": "Toon het origineel"
+  },
+  "feePlan": {
+    "offer": "Krappe kas? Spreid dit over een paar maanden.",
+    "months": "{n} maanden",
+    "start": "Regeling instellen",
+    "started": "Betalingsregeling ingesteld",
+    "sameTotal": "Zelfde totaal, gelijk verdeeld. Elke termijn wordt op de vervaldag gefactureerd.",
+    "scheduleTitle": "Betalingsregeling — {paid} van {count} betaald",
+    "instalmentN": "Termijn {n}",
+    "paidMark": "betaald"
   }
 }

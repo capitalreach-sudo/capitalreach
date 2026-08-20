@@ -3224,5 +3224,15 @@
     "translateCta": "このページを翻訳",
     "machineNotice": "機械翻訳です — 執筆者本人の言葉ではありません。",
     "showOriginal": "原文を表示"
+  },
+  "feePlan": {
+    "offer": "いま資金繰りが厳しいですか？数か月に分けて支払えます。",
+    "months": "{n} か月",
+    "start": "分割払いを設定",
+    "started": "分割払いを設定しました",
+    "sameTotal": "総額は同じで、均等に分割します。各回は支払期日に請求されます。",
+    "scheduleTitle": "分割払い — {count} 回中 {paid} 回支払済み",
+    "instalmentN": "第 {n} 回",
+    "paidMark": "支払済み"
   }
 }

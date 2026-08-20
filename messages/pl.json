@@ -3224,5 +3224,15 @@
     "translateCta": "Przetłumacz tę stronę",
     "machineNotice": "Tłumaczenie maszynowe — to nie są słowa autora.",
     "showOriginal": "Pokaż oryginał"
+  },
+  "feePlan": {
+    "offer": "Napięta gotówka? Rozłóż tę kwotę na kilka miesięcy.",
+    "months": "{n} miesięcy",
+    "start": "Ustaw plan",
+    "started": "Plan płatności ustawiony",
+    "sameTotal": "Ta sama kwota, podzielona równo. Każda rata jest fakturowana w terminie.",
+    "scheduleTitle": "Plan płatności — opłacone {paid} z {count}",
+    "instalmentN": "Rata {n}",
+    "paidMark": "opłacona"
   }
 }

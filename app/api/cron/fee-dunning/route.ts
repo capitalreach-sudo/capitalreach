@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
 import { logSystemEvent } from "@/lib/system-events";
-import { createSuccessFeeInvoice } from "@/lib/stripe";
+import { createSuccessFeeInvoice, createFeeInstalmentInvoice } from "@/lib/stripe";
 import { feeState, feeMajor, reminderDue, autoRetryable, DUNNING_DAYS, type FeeDeal } from "@/lib/fees";
 import { formatMoney } from "@/lib/currency";
 
@@ -115,6 +115,65 @@ export async function GET(req: NextRequest) {
     reminded++;
   }
 
-  await logSystemEvent("cron/fee-dunning", "info", "Fee ledger swept", { rescued, rescueFailed, reminded, considered: (deals ?? []).length });
-  return NextResponse.json({ success: true, rescued, rescueFailed, reminded, considered: (deals ?? []).length });
+  // ── Instalment plans (087) ─────────────────────────────────────────────
+  // A plan is only a plan if somebody raises the invoices. Each instalment is
+  // billed once, on or after its due date, against the exact minor-unit amount
+  // the schedule computed — never recomputed here, or the parts stop summing
+  // to the whole.
+  let instalmentsBilled = 0, instalmentsFailed = 0;
+  const today = now.toISOString().slice(0, 10);
+  const { data: dueInstalments } = await admin
+    .from("fee_instalments")
+    .select("id, deal_id, seq, amount, due_date, deal:deals(id, currency, startup:startups(id, name, owner_id))")
+    .is("paid_at", null)
+    .is("stripe_invoice_id", null)
+    .lte("due_date", today)
+    .limit(500);
+
+  for (const inst of dueInstalments ?? []) {
+    const deal = inst.deal as unknown as { currency: string | null; startup: { name: string; owner_id: string } | null } | null;
+    const owner = deal?.startup?.owner_id;
+    if (!owner) continue;
+
+    const { data: profile } = await admin.from("profiles").select("stripe_customer_id").eq("id", owner).maybeSingle();
+    if (!profile?.stripe_customer_id) {
+      // No card on file: this is the ledger's 'no_customer' case, one
+      // instalment at a time. Recorded, not silently skipped forever.
+      await admin.from("fee_instalments")
+        .update({ billing_error: "No payment method on file" })
+        .eq("id", inst.id).then(undefined, () => {});
+      instalmentsFailed++;
+      continue;
+    }
+
+    try {
+      const invoice = await createFeeInstalmentInvoice(
+        profile.stripe_customer_id,
+        Number(inst.amount),
+        deal?.currency ?? "USD",
+        `CapitalReach success fee — instalment ${inst.seq}`,
+        inst.deal_id,
+        inst.id,
+      );
+      await admin.from("fee_instalments")
+        .update({ stripe_invoice_id: invoice.id, billing_error: null })
+        .eq("id", inst.id);
+      await notifyUser({
+        userId: owner,
+        type: "fee_due",
+        title: `Success fee — instalment ${inst.seq}`,
+        body: "The next instalment of your success fee has been invoiced.",
+        href: "/dashboard/startup/billing",
+      });
+      instalmentsBilled++;
+    } catch (err) {
+      await admin.from("fee_instalments")
+        .update({ billing_error: String((err as Error)?.message ?? err).slice(0, 400) })
+        .eq("id", inst.id).then(undefined, () => {});
+      instalmentsFailed++;
+    }
+  }
+
+  await logSystemEvent("cron/fee-dunning", "info", "Fee ledger swept", { rescued, rescueFailed, reminded, instalmentsBilled, instalmentsFailed, considered: (deals ?? []).length });
+  return NextResponse.json({ success: true, rescued, rescueFailed, reminded, instalmentsBilled, instalmentsFailed, considered: (deals ?? []).length });
 }

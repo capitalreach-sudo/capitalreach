@@ -107,6 +107,46 @@ export async function createSuccessFeeInvoice(
 }
 
 
+/**
+ * One instalment of a success fee (migration 087).
+ *
+ * Separate from createSuccessFeeInvoice on purpose: that one takes the amount
+ * RAISED and applies the 2% itself, which is right for a fee charged whole and
+ * wrong for a share of one. This takes the exact minor-unit amount the
+ * schedule computed, so the instalments cannot drift from the total by a
+ * rounding step taken twice.
+ *
+ * The metadata carries the instalment id as well as the deal, so the webhook
+ * can mark the right row paid rather than guessing from the amount.
+ */
+export async function createFeeInstalmentInvoice(
+  customerId: string,
+  amountMinor: number,
+  currency: string,
+  description: string,
+  dealId: string,
+  instalmentId: string,
+): Promise<Stripe.Invoice> {
+  const cur = currency.toLowerCase();
+
+  await stripe.invoiceItems.create({
+    customer: customerId,
+    amount: Math.round(amountMinor),
+    currency: cur,
+    description,
+  });
+
+  const invoice = await stripe.invoices.create({
+    customer: customerId,
+    auto_advance: true,
+    collection_method: "send_invoice",
+    days_until_due: 14,
+    metadata: { type: "success_fee", instalment: "1", dealId, instalmentId },
+  });
+
+  return stripe.invoices.finalizeInvoice(invoice.id);
+}
+
 export function constructWebhookEvent(payload: Buffer, sig: string) {
   return stripe.webhooks.constructEvent(
     payload,
