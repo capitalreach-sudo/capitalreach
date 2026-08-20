@@ -2016,7 +2016,8 @@
     "showDetails": "Szczegóły",
     "hideDetails": "Ukryj szczegóły",
     "showAllInColumn": "Pokaż jeszcze {n}",
-    "showFewer": "Pokaż mniej"
+    "showFewer": "Pokaż mniej",
+    "contractRequired": "Najpierw podpisana umowa: przygotuj ją przy transakcji, niech podpiszą obie strony, potem zamknij."
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -3061,7 +3062,8 @@
       "waived": "Odpisana",
       "disputed": "W weryfikacji",
       "reversed": "Zwrócona"
-    }
+    },
+    "payNow": "Zapłać teraz"
   },
   "adminList": {
     "searchPh": "Szukaj…",

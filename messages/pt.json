@@ -2016,7 +2016,8 @@
     "showDetails": "Detalhes",
     "hideDetails": "Ocultar detalhes",
     "showAllInColumn": "Ver mais {n}",
-    "showFewer": "Ver menos"
+    "showFewer": "Ver menos",
+    "contractRequired": "Primeiro o contrato assinado: redija-o no negócio, recolha as duas assinaturas e depois feche."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -3061,7 +3062,8 @@
       "waived": "Abatida",
       "disputed": "Em análise",
       "reversed": "Reembolsada"
-    }
+    },
+    "payNow": "Pagar agora"
   },
   "adminList": {
     "searchPh": "Pesquisar…",

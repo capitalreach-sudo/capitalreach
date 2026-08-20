@@ -2023,7 +2023,8 @@
     "showDetails": "Details",
     "hideDetails": "Details ausblenden",
     "showAllInColumn": "{n} weitere anzeigen",
-    "showFewer": "Weniger anzeigen"
+    "showFewer": "Weniger anzeigen",
+    "contractRequired": "Erst der unterschriebene Vertrag: im Deal aufsetzen, von beiden Seiten unterschreiben lassen, dann schließen."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -3061,7 +3062,8 @@
       "waived": "Ausgebucht",
       "disputed": "In Prüfung",
       "reversed": "Erstattet"
-    }
+    },
+    "payNow": "Jetzt bezahlen"
   },
   "adminList": {
     "searchPh": "Suchen…",

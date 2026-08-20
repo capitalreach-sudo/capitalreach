@@ -2016,7 +2016,8 @@
     "showDetails": "Dettagli",
     "hideDetails": "Nascondi i dettagli",
     "showAllInColumn": "Mostra altri {n}",
-    "showFewer": "Mostra meno"
+    "showFewer": "Mostra meno",
+    "contractRequired": "Prima il contratto firmato: redigilo sul deal, fallo firmare a entrambe le parti, poi chiudi."
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -3061,7 +3062,8 @@
       "waived": "Stralciata",
       "disputed": "In verifica",
       "reversed": "Rimborsata"
-    }
+    },
+    "payNow": "Paga ora"
   },
   "adminList": {
     "searchPh": "Cerca…",

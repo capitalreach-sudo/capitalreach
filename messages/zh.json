@@ -2016,7 +2016,8 @@
     "showDetails": "详情",
     "hideDetails": "收起详情",
     "showAllInColumn": "再显示 {n} 条",
-    "showFewer": "收起"
+    "showFewer": "收起",
+    "contractRequired": "先签合同：在交易中起草，双方签署后再交割。"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -3061,7 +3062,8 @@
       "waived": "已核销",
       "disputed": "审核中",
       "reversed": "已退款"
-    }
+    },
+    "payNow": "立即支付"
   },
   "adminList": {
     "searchPh": "搜索…",

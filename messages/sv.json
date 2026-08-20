@@ -2016,7 +2016,8 @@
     "showDetails": "Detaljer",
     "hideDetails": "Dölj detaljer",
     "showAllInColumn": "Visa {n} till",
-    "showFewer": "Visa färre"
+    "showFewer": "Visa färre",
+    "contractRequired": "Först det undertecknade avtalet: upprätta det på affären, låt båda sidor skriva under, stäng sedan."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -3061,7 +3062,8 @@
       "waived": "Avskriven",
       "disputed": "Under granskning",
       "reversed": "Återbetald"
-    }
+    },
+    "payNow": "Betala nu"
   },
   "adminList": {
     "searchPh": "Sök…",

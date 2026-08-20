@@ -146,7 +146,7 @@ export default function StartupBillingPage() {
 }
 
 type MyFee = {
-  id: string; currency: string | null; closedAt: string | null;
+  id: string; currency: string | null; closedAt: string | null; payUrl?: string | null;
   feeMajor: number; state: "collected" | "outstanding" | "unbillable" | "waived" | "disputed";
   investorName: string | null; disputeReason: string | null;
   disputeResolution: string | null; resolvedAt: string | null;
@@ -215,7 +215,18 @@ function SuccessFees() {
                   {f.closedAt && ` · ${t("fees.closed")} ${new Date(f.closedAt).toLocaleDateString()}`}
                 </p>
               </div>
-              <span className={`text-xs font-semibold ${tone[f.state]}`}>{t(`myFees.state.${f.state}`)}</span>
+              <span className="inline-flex items-center gap-3">
+                {/* The pay area. A fee with a live invoice gets the button
+                    that actually settles it — Stripe's hosted page, so no
+                    card data ever touches this app. */}
+                {f.payUrl && (
+                  <a href={f.payUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-bold text-white bg-cr-copper rounded px-3 py-1.5">
+                    {t("myFees.payNow")} ↗
+                  </a>
+                )}
+                <span className={`text-xs font-semibold ${tone[f.state]}`}>{t(`myFees.state.${f.state}`)}</span>
+              </span>
             </div>
 
             {f.state === "disputed" && (

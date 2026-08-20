@@ -62,6 +62,32 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── Contractually eligible ────────────────────────────────────────────────
+  // The last stage requires both sides to have HELD UP: a deal may only close
+  // when it carries a contract with status 'signed' — and 'signed' is only
+  // ever set by the signature route once the counterpart has countersigned,
+  // so this one check encodes "both parties signed". Money should not change
+  // hands, and a 2% fee should not be raised, on a handshake with no paper.
+  // Admins bypass it (oversight can close anything), never participants.
+  if (!isAdmin) {
+    const { data: signedContract } = await adminClient
+      .from("contracts")
+      .select("id")
+      .eq("deal_id", dealId)
+      .eq("status", "signed")
+      .limit(1)
+      .maybeSingle();
+    if (!signedContract) {
+      return NextResponse.json(
+        {
+          error: "A signed contract is required before closing. Draft one on the deal and have both sides sign it.",
+          code: "CONTRACT_REQUIRED",
+        },
+        { status: 409 },
+      );
+    }
+  }
+
   // ── Two-party close handshake ─────────────────────────────────────────────
   // Closing bills the founder, so one side can't do it alone. The first call
   // records a proposed amount and notifies the counterpart; the deal only

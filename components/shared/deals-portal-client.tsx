@@ -49,7 +49,11 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   async function handleDealClose(dealId: string, amount: number, currency: string) {
     const res = await fetch("/api/deals/close", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, amount, currency }) });
     const data = await res.json();
-    if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); return; }
+    if (!res.ok) {
+      // The one refusal with a next step: no signed contract yet.
+      notify.error(data.code === "CONTRACT_REQUIRED" ? t("deals.contractRequired") : (data.error || t("dashboard.dealCloseFailed")));
+      return;
+    }
     if (data.proposed) { notify.success(t("deals.closeProposedSent")); router.refresh(); return; }
     // The moment itself. Months of work deserve more than a four-second toast.
     const closedDeal = deals.find(d => d.id === dealId);

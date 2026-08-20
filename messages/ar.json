@@ -2016,7 +2016,8 @@
     "showDetails": "التفاصيل",
     "hideDetails": "إخفاء التفاصيل",
     "showAllInColumn": "عرض {n} إضافية",
-    "showFewer": "عرض أقل"
+    "showFewer": "عرض أقل",
+    "contractRequired": "العقد الموقّع أولًا: حرّره على الصفقة ووقّعه الطرفان، ثم أغلِق."
   },
   "investorProfile": {
     "back": "العودة إلى المستثمرين",
@@ -3061,7 +3062,8 @@
       "waived": "مشطوبة",
       "disputed": "قيد المراجعة",
       "reversed": "مستردة"
-    }
+    },
+    "payNow": "ادفع الآن"
   },
   "adminList": {
     "searchPh": "بحث…",

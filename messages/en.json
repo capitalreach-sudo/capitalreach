@@ -2027,7 +2027,8 @@
     "showDetails": "Details",
     "hideDetails": "Hide details",
     "showAllInColumn": "Show {n} more",
-    "showFewer": "Show fewer"
+    "showFewer": "Show fewer",
+    "contractRequired": "A signed contract comes first: draft one on the deal and have both sides sign it, then close."
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -3061,7 +3062,8 @@
       "waived": "Written off",
       "disputed": "Under review",
       "reversed": "Refunded"
-    }
+    },
+    "payNow": "Pay now"
   },
   "adminList": {
     "searchPh": "Search…",

@@ -2016,7 +2016,8 @@
     "showDetails": "विवरण",
     "hideDetails": "विवरण छिपाएँ",
     "showAllInColumn": "{n} और दिखाएँ",
-    "showFewer": "कम दिखाएँ"
+    "showFewer": "कम दिखाएँ",
+    "contractRequired": "पहले हस्ताक्षरित अनुबंध: डील पर ड्राफ़्ट करें, दोनों पक्ष हस्ताक्षर करें, फिर बंद करें।"
   },
   "investorProfile": {
     "back": "निवेशकों पर वापस जाएं",
@@ -3061,7 +3062,8 @@
       "waived": "बट्टे खाते",
       "disputed": "समीक्षाधीन",
       "reversed": "वापस की गई"
-    }
+    },
+    "payNow": "अभी भुगतान करें"
   },
   "adminList": {
     "searchPh": "खोजें…",

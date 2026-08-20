@@ -2016,7 +2016,8 @@
     "showDetails": "Détails",
     "hideDetails": "Masquer les détails",
     "showAllInColumn": "Afficher {n} de plus",
-    "showFewer": "Afficher moins"
+    "showFewer": "Afficher moins",
+    "contractRequired": "Le contrat signé d'abord : rédigez-le sur l'opération, faites-le signer des deux côtés, puis clôturez."
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
@@ -3061,7 +3062,8 @@
       "waived": "Passée en perte",
       "disputed": "En cours d'examen",
       "reversed": "Remboursée"
-    }
+    },
+    "payNow": "Payer maintenant"
   },
   "adminList": {
     "searchPh": "Rechercher…",

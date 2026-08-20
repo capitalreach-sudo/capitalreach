@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUsers } from "@/lib/notify-user";
 import { feeState, feeMajor, type FeeDeal } from "@/lib/fees";
+import Stripe from "stripe";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -25,6 +26,24 @@ async function myStartup(userId: string) {
   return { admin, startup: data };
 }
 
+/**
+ * The hosted Stripe page for an invoice — the actual "pay now" URL. Looked up
+ * live rather than stored: Stripe rotates hosted URLs when an invoice is
+ * revised, and a stale stored link is a dead payment button.
+ * Null when Stripe is unconfigured or the lookup fails; the page then shows
+ * state without a button, which is honest.
+ */
+async function hostedPayUrl(invoiceId: string | null): Promise<string | null> {
+  if (!invoiceId || !process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes("placeholder")) return null;
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const inv = await stripe.invoices.retrieve(invoiceId);
+    return inv.hosted_invoice_url ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -41,7 +60,7 @@ export async function GET() {
     .order("closed_at", { ascending: false })
     .limit(100);
 
-  const fees = (data ?? []).map(d => {
+  const fees = await Promise.all((data ?? []).map(async d => {
     const inv = d.investor as unknown as { display_name: string | null; firm_name: string | null } | null;
     return {
       id: d.id,
@@ -54,10 +73,16 @@ export async function GET() {
       disputeReason: d.fee_dispute_reason,
       disputeResolution: d.fee_dispute_resolution,
       resolvedAt: d.fee_dispute_resolved_at,
+      // The pay area: only an OUTSTANDING fee gets a button — a paid, waived
+      // or disputed one has nothing to pay right now.
+      payUrl: feeState(d as unknown as FeeDeal) === "outstanding"
+        ? await hostedPayUrl(d.stripe_invoice_id)
+        : null,
     };
-  }).filter(f => f.state !== "none");
+  }));
+  const visible = fees.filter(f => f.state !== "none");
 
-  return NextResponse.json({ fees });
+  return NextResponse.json({ fees: visible });
 }
 
 export async function POST(req: NextRequest) {

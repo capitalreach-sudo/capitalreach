@@ -2016,7 +2016,8 @@
     "showDetails": "Details",
     "hideDetails": "Details verbergen",
     "showAllInColumn": "Toon nog {n}",
-    "showFewer": "Toon minder"
+    "showFewer": "Toon minder",
+    "contractRequired": "Eerst het getekende contract: stel het op bij de deal, laat beide kanten tekenen en sluit dan."
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -3061,7 +3062,8 @@
       "waived": "Afgeboekt",
       "disputed": "In behandeling",
       "reversed": "Terugbetaald"
-    }
+    },
+    "payNow": "Nu betalen"
   },
   "adminList": {
     "searchPh": "Zoeken…",
