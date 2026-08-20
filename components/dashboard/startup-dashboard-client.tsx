@@ -1197,7 +1197,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                         </span>
                       )}
                     </div>
-                    <a href={doc.file_url} target="_blank" rel="noopener noreferrer"
+                    <a href={`/api/documents/open?id=${doc.id}`} target="_blank" rel="noopener noreferrer"
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
                       {t("dashboard.view")}
                     </a>

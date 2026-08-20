@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { mayOpenDocument, stripLockedUrl } from "../lib/document-access";
 
-const openDoc = { requires_nda: false, file_url: "https://example.com/deck.pdf" };
-const ndaDoc = { requires_nda: true, file_url: "https://example.com/financials.pdf" };
+const openDoc = { id: "11111111-1111-1111-1111-111111111111", requires_nda: false, file_url: "https://example.com/deck.pdf" };
+const ndaDoc = { id: "22222222-2222-2222-2222-222222222222", requires_nda: true, file_url: "https://example.com/financials.pdf" };
 
 const base = { isOwnerOrAdmin: false, isInvestor: true, startupRequiresNda: true, ndaSigned: false };
 
@@ -39,9 +39,18 @@ describe("stripLockedUrl", () => {
     expect(JSON.stringify(stripped)).not.toContain("financials.pdf");
   });
 
-  it("allowed documents keep their URL", () => {
+  it("allowed documents get the re-authorising open endpoint, never the stored URL", () => {
     const kept = stripLockedUrl(ndaDoc, { ...base, ndaSigned: true });
     expect(kept.locked).toBe(false);
-    expect(kept.file_url).toBe(ndaDoc.file_url);
+    expect(kept.file_url).toBe(`/api/documents/open?id=${ndaDoc.id}`);
+    // The stored (long-lived) URL must not appear anywhere in the payload —
+    // even for allowed viewers, or a copied link outlives revocation.
+    expect(JSON.stringify(kept)).not.toContain("financials.pdf");
+    expect(kept.is_pdf).toBe(true);
+  });
+
+  it("a share token rides along on the open URL", () => {
+    const viaShare = stripLockedUrl(openDoc, base, "tok_abc");
+    expect(viaShare.file_url).toBe(`/api/documents/open?id=${openDoc.id}&share=tok_abc`);
   });
 });

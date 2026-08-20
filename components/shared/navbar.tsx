@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
-import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell } from "lucide-react";
+import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell , Flag } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -209,6 +209,7 @@ export function Navbar() {
                     {[
                       { href: dashboardPath,         Icon: LayoutDashboard, label: t("nav.dashboard") },
                       { href: "/dashboard/messages", Icon: MessageSquare,   label: t("nav.messages")  },
+                      { href: "/dashboard/complaints", Icon: Flag,          label: t("complaints.title") },
                       { href: "/dashboard/settings", Icon: Settings,        label: t("nav.settings")  },
                     ].map(({ href, Icon, label }) => (
                       <Link key={href} href={href}
@@ -384,6 +385,7 @@ export function Navbar() {
                   { href: "/deals",                   label: t("nav.deals"),           Icon: Handshake       },
                   { href: "/dashboard/messages",      label: t("nav.messages"),        Icon: MessageSquare   },
                   { href: "/dashboard/notifications", label: t("notifications.title"), Icon: Bell            },
+                  { href: "/dashboard/complaints",    label: t("complaints.title"),    Icon: Flag            },
                   { href: "/dashboard/settings",      label: t("nav.settings"),        Icon: Settings        },
                 ] }] : []),
               ]).map(({ header, items }) => (

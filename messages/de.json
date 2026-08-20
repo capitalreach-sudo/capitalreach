@@ -2410,7 +2410,10 @@
     "tab_deals": "Deals",
     "tab_interest": "Interesse",
     "tab_account": "Konto",
-    "clearRead": "Gelesene entfernen"
+    "clearRead": "Gelesene entfernen",
+    "unreadOnly": "Nur Ungelesene",
+    "soundOn": "Benachrichtigungston einschalten",
+    "soundOff": "Benachrichtigungston ausschalten"
   },
   "authErrors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Dunkler Modus",
     "toLight": "Heller Modus"
+  },
+  "complaints": {
+    "title": "Beschwerden",
+    "tab": "Beschwerden",
+    "new": "Beschwerde einreichen",
+    "intro": "Etwas ist schiefgelaufen — Abrechnung, das Verhalten anderer, ein Streitfall, die Plattform selbst. Reichen Sie es hier ein und verfolgen Sie jeden Schritt bis zur Lösung.",
+    "filed": "Beschwerde eingereicht. Wir halten Sie hier und per Benachrichtigung auf dem Laufenden.",
+    "category": "Kategorie",
+    "subject": "Betreff",
+    "subjectPh": "Ein Satz: Worum geht es?",
+    "body": "Was ist passiert",
+    "bodyPh": "Daten, Namen, Beträge — je genauer, desto schneller können wir handeln.",
+    "submit": "Beschwerde einreichen",
+    "empty": "Keine Beschwerden — gut. Wenn etwas schiefläuft, ist hier der richtige Ort dafür.",
+    "resolution": "Lösung",
+    "resolvePrompt": "Lösungsnotiz (die einreichende Person liest dies):",
+    "moved": "Beschwerde aktualisiert.",
+    "review": "In Prüfung nehmen",
+    "resolve": "Lösen",
+    "dismissAct": "Abweisen",
+    "queueEmpty": "Nichts in dieser Warteschlange.",
+    "cat": {
+      "platform": "Plattform-Problem",
+      "user_conduct": "Verhalten anderer Nutzer",
+      "deal_dispute": "Deal-Streitfall",
+      "billing": "Abrechnung & Gebühren",
+      "data_privacy": "Daten & Datenschutz",
+      "other": "Etwas anderes"
+    },
+    "status": {
+      "open": "Offen",
+      "in_review": "In Prüfung",
+      "resolved": "Gelöst",
+      "dismissed": "Abgewiesen",
+      "all": "Alle"
+    }
+  },
+  "interest": {
+    "cta": "Ich bin interessiert",
+    "marked": "Interessiert",
+    "sent": "Die Gegenseite erfährt davon — eröffnen Sie einen Deal, wenn Sie über Zahlen sprechen möchten.",
+    "hint": "Ein leichtes Signal senden — kein Betrag, keine Pflichten, nur ein Anstoß.",
+    "withdraw": "Interesse zurückziehen (still — ohne Benachrichtigung)"
   }
 }

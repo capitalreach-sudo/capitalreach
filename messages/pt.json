@@ -2448,7 +2448,10 @@
     "tab_deals": "Negócios",
     "tab_interest": "Interesse",
     "tab_account": "Conta",
-    "clearRead": "Limpar lidas"
+    "clearRead": "Limpar lidas",
+    "unreadOnly": "Só não lidas",
+    "soundOn": "Ativar som de notificações",
+    "soundOff": "Desativar som de notificações"
   },
   "authErrors": {
     "generic": "Algo correu mal. Tenta de novo.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Modo escuro",
     "toLight": "Modo claro"
+  },
+  "complaints": {
+    "title": "Reclamações",
+    "tab": "Reclamações",
+    "new": "Registrar reclamação",
+    "intro": "Algo deu errado — cobrança, a conduta de outro usuário, uma disputa, a própria plataforma. Registre aqui e acompanhe cada etapa até a resolução.",
+    "filed": "Reclamação registrada. Manteremos você informado aqui e por notificação.",
+    "category": "Categoria",
+    "subject": "Assunto",
+    "subjectPh": "Uma linha: do que se trata?",
+    "body": "O que aconteceu",
+    "bodyPh": "Datas, nomes, valores — quanto mais específico, mais rápido podemos agir.",
+    "submit": "Registrar reclamação",
+    "empty": "Sem reclamações — ótimo. Se algo der errado, é aqui que se diz.",
+    "resolution": "Resolução",
+    "resolvePrompt": "Nota de resolução (quem registrou a reclamação vai lê-la):",
+    "moved": "Reclamação atualizada.",
+    "review": "Colocar em análise",
+    "resolve": "Resolver",
+    "dismissAct": "Indeferir",
+    "queueEmpty": "Nada nesta fila.",
+    "cat": {
+      "platform": "Problema da plataforma",
+      "user_conduct": "Conduta de outro usuário",
+      "deal_dispute": "Disputa de negócio",
+      "billing": "Cobrança e taxas",
+      "data_privacy": "Dados e privacidade",
+      "other": "Outra coisa"
+    },
+    "status": {
+      "open": "Aberta",
+      "in_review": "Em análise",
+      "resolved": "Resolvida",
+      "dismissed": "Indeferida",
+      "all": "Todas"
+    }
+  },
+  "interest": {
+    "cta": "Tenho interesse",
+    "marked": "Interessado",
+    "sent": "Eles ficarão sabendo — abra um negócio quando quiser falar de números.",
+    "hint": "Envie um sinal leve — sem valor, sem obrigações, só um aceno.",
+    "withdraw": "Retirar interesse (silenciosamente — sem notificação)"
   }
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Bell } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+import { playPing } from "@/lib/notification-sound";
 
 export { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
@@ -51,6 +52,7 @@ export function NotificationBell() {
       if (lastUnread.current !== null && n > lastUnread.current) {
         setPulse(true);
         setTimeout(() => setPulse(false), 900);
+        playPing();
       }
       lastUnread.current = n;
       setUnread(n);

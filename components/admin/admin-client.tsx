@@ -243,6 +243,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
           <TabsTrigger value="fees">{t("fees.tab")}</TabsTrigger>
           <TabsTrigger value="reports">{t("report.tab")}</TabsTrigger>
+          <TabsTrigger value="complaints">{t("complaints.tab")}</TabsTrigger>
         </TabsList>
 
         {/* Pending */}
@@ -435,6 +436,13 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         <TabsContent value="reports">
           <ReportQueue />
         </TabsContent>
+
+        {/* Complaints: "something went wrong for me" — distinct lifecycle
+            from content reports, same operator discipline: every complaint
+            leaves with a recorded outcome and the filer is told. */}
+        <TabsContent value="complaints">
+          <ComplaintQueue />
+        </TabsContent>
       </Tabs>
     </main>
   );
@@ -526,6 +534,100 @@ function ReportQueue() {
               </div>
               {r.detail && <p className="text-[12px] text-cr-i3 mt-1.5 break-words">“{r.detail}”</p>}
               {r.resolution && <p className="text-[11px] text-cr-i4 mt-1.5">{t("report.resolutionLabel")}: {r.resolution}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+type ComplaintRow = {
+  id: string; category: string; subject: string; body: string; status: string;
+  resolution_note: string | null; created_at: string;
+  filerName: string; filerRole: string | null;
+};
+
+function ComplaintQueue() {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<ComplaintRow[] | null>(null);
+  const [status, setStatus] = useState("open");
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = useCallback(async (st: string) => {
+    const res = await fetch(`/api/admin/complaints?status=${st}`);
+    setRows(res.ok ? (await res.json()).complaints ?? [] : []);
+  }, []);
+  useEffect(() => { void load(status); }, [load, status]);
+
+  async function move(r: ComplaintRow, next: "in_review" | "resolved" | "dismissed") {
+    // Terminal states demand a note the filer will read; taking a complaint
+    // into review does not.
+    let note = "";
+    if (next !== "in_review") {
+      note = window.prompt(t("complaints.resolvePrompt")) ?? "";
+      if (!note.trim()) return;
+    }
+    setBusy(r.id);
+    const res = await fetch("/api/admin/complaints", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: r.id, status: next, resolutionNote: note || undefined }),
+    });
+    setBusy(null);
+    if (!res.ok) { notify.error((await res.json().catch(() => ({}))).error || t("errors.generic")); return; }
+    notify.success(t("complaints.moved"));
+    void load(status);
+  }
+
+  if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-3 flex-wrap">
+        {["open", "in_review", "resolved", "dismissed", "all"].map(s => (
+          <button key={s} onClick={() => setStatus(s)}
+            className={`text-xs font-semibold ${status === s ? "text-cr-ink" : "text-cr-i4"}`}>
+            {t(`complaints.status.${s === "all" ? "all" : s}`)}
+          </button>
+        ))}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="text-center py-12 text-cr-i4">
+          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <p>{t("complaints.queueEmpty")}</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {rows.map(r => (
+            <div key={r.id} className="bg-cr-paper border rounded-xl px-4 py-3">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <p className="font-medium text-cr-ink text-sm">
+                    {r.subject}
+                    <span className="text-cr-i4 font-normal"> · {t(`complaints.cat.${r.category}`)}</span>
+                  </p>
+                  <p className="text-xs text-cr-i4">
+                    {r.filerName}{r.filerRole ? ` (${r.filerRole})` : ""} · {formatDate(r.created_at)}
+                  </p>
+                </div>
+                {(r.status === "open" || r.status === "in_review") ? (
+                  <div className="flex items-center gap-3">
+                    {r.status === "open" && (
+                      <button onClick={() => move(r, "in_review")} disabled={busy === r.id}
+                        className="text-xs font-semibold text-cr-i2 disabled:opacity-50">{t("complaints.review")}</button>
+                    )}
+                    <button onClick={() => move(r, "resolved")} disabled={busy === r.id}
+                      className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("complaints.resolve")}</button>
+                    <button onClick={() => move(r, "dismissed")} disabled={busy === r.id}
+                      className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("complaints.dismissAct")}</button>
+                  </div>
+                ) : (
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-cr-i4">{t(`complaints.status.${r.status}`)}</span>
+                )}
+              </div>
+              <p className="text-[12px] text-cr-i3 mt-1.5 break-words whitespace-pre-wrap">{r.body}</p>
+              {r.resolution_note && <p className="text-[11px] text-cr-i4 mt-1.5">{t("complaints.resolution")}: {r.resolution_note}</p>}
             </div>
           ))}
         </div>

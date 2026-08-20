@@ -2448,7 +2448,10 @@
     "tab_deals": "Affärer",
     "tab_interest": "Intresse",
     "tab_account": "Konto",
-    "clearRead": "Rensa lästa"
+    "clearRead": "Rensa lästa",
+    "unreadOnly": "Endast olästa",
+    "soundOn": "Slå på aviseringsljud",
+    "soundOff": "Stäng av aviseringsljud"
   },
   "authErrors": {
     "generic": "Något gick fel. Försök igen.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Mörkt läge",
     "toLight": "Ljust läge"
+  },
+  "complaints": {
+    "title": "Klagomål",
+    "tab": "Klagomål",
+    "new": "Lämna in klagomål",
+    "intro": "Något gick fel — fakturering, en annan användares beteende, en tvist, själva plattformen. Lämna in det här och följ varje steg tills det är löst.",
+    "filed": "Klagomål inlämnat. Vi håller dig uppdaterad här och via aviseringar.",
+    "category": "Kategori",
+    "subject": "Ämne",
+    "subjectPh": "En rad: vad gäller det?",
+    "body": "Vad som hände",
+    "bodyPh": "Datum, namn, belopp — ju mer specifikt, desto snabbare kan vi agera.",
+    "submit": "Lämna in klagomål",
+    "empty": "Inga klagomål — bra. Om något går fel är det här du säger till.",
+    "resolution": "Lösning",
+    "resolvePrompt": "Lösningsanteckning (den som anmälde läser detta):",
+    "moved": "Klagomål uppdaterat.",
+    "review": "Ta till granskning",
+    "resolve": "Lös",
+    "dismissAct": "Avvisa",
+    "queueEmpty": "Inget i den här kön.",
+    "cat": {
+      "platform": "Plattformsproblem",
+      "user_conduct": "En annan användares beteende",
+      "deal_dispute": "Affärstvist",
+      "billing": "Fakturering & avgifter",
+      "data_privacy": "Data & integritet",
+      "other": "Något annat"
+    },
+    "status": {
+      "open": "Öppet",
+      "in_review": "Under granskning",
+      "resolved": "Löst",
+      "dismissed": "Avvisat",
+      "all": "Alla"
+    }
+  },
+  "interest": {
+    "cta": "Jag är intresserad",
+    "marked": "Intresserad",
+    "sent": "De får veta det — öppna en affär när du vill prata siffror.",
+    "hint": "Skicka en lätt signal — inget belopp, inga förpliktelser, bara en knuff.",
+    "withdraw": "Dra tillbaka intresset (tyst — ingen avisering skickas)"
   }
 }

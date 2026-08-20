@@ -2448,7 +2448,10 @@
     "tab_deals": "交易",
     "tab_interest": "关注",
     "tab_account": "账户",
-    "clearRead": "清除已读"
+    "clearRead": "清除已读",
+    "unreadOnly": "仅未读",
+    "soundOn": "开启通知提示音",
+    "soundOff": "关闭通知提示音"
   },
   "authErrors": {
     "generic": "出了点问题，请重试。",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "深色模式",
     "toLight": "浅色模式"
+  },
+  "complaints": {
+    "title": "投诉",
+    "tab": "投诉",
+    "new": "提交投诉",
+    "intro": "出了问题——账单、其他用户的行为、纠纷或平台本身。在此提交，并跟踪每一步直至解决。",
+    "filed": "投诉已提交。我们将在此处并通过通知随时告知您进展。",
+    "category": "类别",
+    "subject": "主题",
+    "subjectPh": "一句话：这是关于什么的？",
+    "body": "发生了什么",
+    "bodyPh": "日期、姓名、金额——越具体，我们处理得越快。",
+    "submit": "提交投诉",
+    "empty": "暂无投诉——很好。如果出了问题，请在这里反映。",
+    "resolution": "处理结果",
+    "resolvePrompt": "处理说明（投诉人将会看到）：",
+    "moved": "投诉已更新。",
+    "review": "开始审查",
+    "resolve": "解决",
+    "dismissAct": "驳回",
+    "queueEmpty": "此队列为空。",
+    "cat": {
+      "platform": "平台问题",
+      "user_conduct": "其他用户的行为",
+      "deal_dispute": "交易纠纷",
+      "billing": "账单与费用",
+      "data_privacy": "数据与隐私",
+      "other": "其他"
+    },
+    "status": {
+      "open": "待处理",
+      "in_review": "审查中",
+      "resolved": "已解决",
+      "dismissed": "已驳回",
+      "all": "全部"
+    }
+  },
+  "interest": {
+    "cta": "我有兴趣",
+    "marked": "已表示兴趣",
+    "sent": "对方会收到通知——准备谈细节时再发起交易。",
+    "hint": "发出一个轻量信号——不含金额、不带义务，只是提个醒。",
+    "withdraw": "撤回兴趣（静默进行，不发送通知）"
   }
 }

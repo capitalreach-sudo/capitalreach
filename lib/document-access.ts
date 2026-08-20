@@ -35,11 +35,25 @@ export function mayOpenDocument(
   return true;
 }
 
-/** The same document with its URL removed unless the viewer may open it. */
-export function stripLockedUrl<T extends { requires_nda: boolean | null; file_url: string }>(
+/**
+ * The same document, made safe for a browser: the stored URL (historically a
+ * YEAR-long signed URL — a forwarded link kept working long after access was
+ * revoked) never leaves the server. Allowed viewers get /api/documents/open,
+ * which re-authorises and mints a 60-second URL per click; locked viewers get
+ * nothing. `is_pdf` survives the swap so the client can still pick the
+ * inline viewer without seeing the real URL.
+ */
+export function stripLockedUrl<T extends { id: string; requires_nda: boolean | null; file_url: string }>(
   doc: T,
   ctx: DocumentAccessContext,
-): T & { locked: boolean } {
+  shareToken?: string | null,
+): T & { locked: boolean; is_pdf: boolean } {
   const allowed = mayOpenDocument(doc, ctx);
-  return { ...doc, file_url: allowed ? doc.file_url : "", locked: !allowed };
+  const share = shareToken ? `&share=${encodeURIComponent(shareToken)}` : "";
+  return {
+    ...doc,
+    file_url: allowed ? `/api/documents/open?id=${doc.id}${share}` : "",
+    locked: !allowed,
+    is_pdf: /\.pdf(\?|$)/i.test(doc.file_url),
+  };
 }

@@ -2448,7 +2448,10 @@
     "tab_deals": "Opérations",
     "tab_interest": "Intérêt",
     "tab_account": "Compte",
-    "clearRead": "Effacer les lues"
+    "clearRead": "Effacer les lues",
+    "unreadOnly": "Non lues uniquement",
+    "soundOn": "Activer le son des notifications",
+    "soundOff": "Désactiver le son des notifications"
   },
   "authErrors": {
     "generic": "Une erreur s'est produite. Réessayez.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Mode sombre",
     "toLight": "Mode clair"
+  },
+  "complaints": {
+    "title": "Réclamations",
+    "tab": "Réclamations",
+    "new": "Déposer une réclamation",
+    "intro": "Quelque chose s'est mal passé — facturation, conduite d'un autre utilisateur, litige, la plateforme elle-même. Déposez-la ici et suivez chaque étape jusqu'à sa résolution.",
+    "filed": "Réclamation déposée. Nous vous tiendrons informé ici et par notification.",
+    "category": "Catégorie",
+    "subject": "Objet",
+    "subjectPh": "Une ligne : de quoi s'agit-il ?",
+    "body": "Ce qui s'est passé",
+    "bodyPh": "Dates, noms, montants — plus c'est précis, plus vite nous pouvons agir.",
+    "submit": "Déposer la réclamation",
+    "empty": "Aucune réclamation — tant mieux. Si quelque chose ne va pas, c'est ici qu'il faut le dire.",
+    "resolution": "Résolution",
+    "resolvePrompt": "Note de résolution (la personne qui a déposé la réclamation la lira) :",
+    "moved": "Réclamation mise à jour.",
+    "review": "Mettre en examen",
+    "resolve": "Résoudre",
+    "dismissAct": "Rejeter",
+    "queueEmpty": "Rien dans cette file.",
+    "cat": {
+      "platform": "Problème de plateforme",
+      "user_conduct": "Conduite d'un autre utilisateur",
+      "deal_dispute": "Litige sur une opération",
+      "billing": "Facturation et frais",
+      "data_privacy": "Données et confidentialité",
+      "other": "Autre chose"
+    },
+    "status": {
+      "open": "Ouverte",
+      "in_review": "En examen",
+      "resolved": "Résolue",
+      "dismissed": "Rejetée",
+      "all": "Toutes"
+    }
+  },
+  "interest": {
+    "cta": "Je suis intéressé(e)",
+    "marked": "Intéressé(e)",
+    "sent": "L'autre partie en sera informée — ouvrez une opération quand vous voudrez parler chiffres.",
+    "hint": "Envoyez un signal léger — pas de montant, pas d'obligations, juste un geste.",
+    "withdraw": "Retirer l'intérêt (discrètement — aucune notification envoyée)"
   }
 }

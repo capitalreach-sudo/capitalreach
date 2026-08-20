@@ -89,6 +89,9 @@ export interface StartupDocument {
   file_url: string;
   label: string;
   requires_nda: boolean;
+  /** Computed server-side by stripLockedUrl; absent on owner-only fetches. */
+  is_pdf?: boolean;
+  locked?: boolean;
 }
 
 export interface StartupMilestone {

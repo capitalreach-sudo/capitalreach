@@ -2448,7 +2448,10 @@
     "tab_deals": "Deals",
     "tab_interest": "Interesse",
     "tab_account": "Account",
-    "clearRead": "Gelezen wissen"
+    "clearRead": "Gelezen wissen",
+    "unreadOnly": "Alleen ongelezen",
+    "soundOn": "Meldingsgeluid aanzetten",
+    "soundOff": "Meldingsgeluid uitzetten"
   },
   "authErrors": {
     "generic": "Er ging iets mis. Probeer het opnieuw.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Donkere modus",
     "toLight": "Lichte modus"
+  },
+  "complaints": {
+    "title": "Klachten",
+    "tab": "Klachten",
+    "new": "Klacht indienen",
+    "intro": "Er ging iets mis — facturering, het gedrag van een andere gebruiker, een geschil, het platform zelf. Dien het hier in en volg elke stap tot het is opgelost.",
+    "filed": "Klacht ingediend. We houden u hier en via meldingen op de hoogte.",
+    "category": "Categorie",
+    "subject": "Onderwerp",
+    "subjectPh": "Eén regel: waar gaat dit over?",
+    "body": "Wat er is gebeurd",
+    "bodyPh": "Datums, namen, bedragen — hoe specifieker, hoe sneller we kunnen handelen.",
+    "submit": "Klacht indienen",
+    "empty": "Geen klachten — mooi. Als er iets misgaat, is dit de plek om het te melden.",
+    "resolution": "Oplossing",
+    "resolvePrompt": "Oplossingsnotitie (de indiener leest dit):",
+    "moved": "Klacht bijgewerkt.",
+    "review": "In behandeling nemen",
+    "resolve": "Oplossen",
+    "dismissAct": "Afwijzen",
+    "queueEmpty": "Niets in deze wachtrij.",
+    "cat": {
+      "platform": "Platformprobleem",
+      "user_conduct": "Gedrag van een andere gebruiker",
+      "deal_dispute": "Dealgeschil",
+      "billing": "Facturering & kosten",
+      "data_privacy": "Gegevens & privacy",
+      "other": "Iets anders"
+    },
+    "status": {
+      "open": "Open",
+      "in_review": "In behandeling",
+      "resolved": "Opgelost",
+      "dismissed": "Afgewezen",
+      "all": "Alle"
+    }
+  },
+  "interest": {
+    "cta": "Ik ben geïnteresseerd",
+    "marked": "Geïnteresseerd",
+    "sent": "Zij horen ervan — open een deal wanneer u over cijfers wilt praten.",
+    "hint": "Stuur een licht signaal — geen bedrag, geen verplichtingen, alleen een seintje.",
+    "withdraw": "Interesse intrekken (stil — er wordt geen melding verstuurd)"
   }
 }

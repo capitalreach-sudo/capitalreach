@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BellOff, X } from "lucide-react";
+import { ArrowLeft, BellOff, X, Volume2, VolumeX } from "lucide-react";
 import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
+import { soundEnabled, setSoundEnabled, playPing } from "@/lib/notification-sound";
 
 interface Row {
   id: string; type: string; title: string; body: string | null;
@@ -35,10 +36,13 @@ export default function NotificationsPage() {
   const TAB_TYPES: Record<string, string> = {
     all: "",
     deals: "deal_opened,deal_stage,deal_closed,deal_passed,follow_up_due,contract_status,nda_signed",
-    interest: "listing_saved,listing_update,search_match",
-    account: "listing_approved,listing_rejected,team_added,tier_changed,message",
+    interest: "listing_saved,listing_update,search_match,interest",
+    account: "listing_approved,listing_rejected,team_added,tier_changed,message,complaint_update",
   };
   const [tab, setTab] = useState<keyof typeof TAB_TYPES>("all");
+  const [unreadOnly, setUnreadOnly] = useState(false);
+  const [sound, setSound] = useState(true);
+  useEffect(() => { setSound(soundEnabled()); }, []);
 
   async function load(forTab: string = tab) {
     const typesQ = TAB_TYPES[forTab] ? `?types=${TAB_TYPES[forTab]}` : "";
@@ -130,6 +134,20 @@ export default function NotificationsPage() {
             <h1 className="text-2xl font-bold text-cr-ink">{t("notifications.title")}</h1>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                const next = !sound;
+                setSoundEnabled(next); setSound(next);
+                // An immediate demo ping doubles as the browser-audio unlock:
+                // enabling sound IS a user gesture, so this primes autoplay.
+                if (next) playPing();
+              }}
+              aria-label={sound ? t("notifications.soundOff") : t("notifications.soundOn")}
+              title={sound ? t("notifications.soundOff") : t("notifications.soundOn")}
+              className="p-2 text-cr-i4 hover:text-cr-i2"
+            >
+              {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </button>
             {unread > 0 && (
               <Button variant="outline" size="sm" onClick={markAll}>
                 {t("notifications.markAllRead")}
@@ -154,6 +172,15 @@ export default function NotificationsPage() {
           ))}
         </div>
 
+        <div className="flex items-center justify-end mb-3 -mt-1">
+          <button onClick={() => setUnreadOnly(v => !v)}
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors ${
+              unreadOnly ? "border-cr-copper text-cr-copper bg-cr-copper/10" : "border-cr-p4 text-cr-i4 hover:text-cr-i2"
+            }`}>
+            {t("notifications.unreadOnly")}{unread > 0 ? ` (${unread})` : ""}
+          </button>
+        </div>
+
         {rows === null ? (
           <p className="text-sm text-cr-i4">{t("common.loading")}</p>
         ) : loadError ? (
@@ -164,18 +191,18 @@ export default function NotificationsPage() {
               {t("errorPage.retry")}
             </button>
           </div>
-        ) : rows.length === 0 ? (
+        ) : (unreadOnly ? rows.filter((r) => !r.read_at) : rows).length === 0 ? (
           <div className="bg-cr-paper border rounded-2xl p-10 text-center">
             <BellOff className="h-8 w-8 text-cr-p4 mx-auto mb-3" />
             <p className="text-sm text-cr-i3">{t("notifications.empty")}</p>
           </div>
         ) : (
           <div className="bg-cr-paper border rounded-2xl divide-y">
-            {rows.map((n, idx) => {
+            {(unreadOnly ? rows.filter((r) => !r.read_at) : rows).map((n, idx, view) => {
               // A date rule whenever the day changes: a long feed reads as
               // "today / yesterday / last week", not one undifferentiated wall.
               const dayOf = (iso: string) => new Date(iso).toDateString();
-              const newDay = idx === 0 || dayOf(rows[idx - 1].created_at) !== dayOf(n.created_at);
+              const newDay = idx === 0 || dayOf(view[idx - 1].created_at) !== dayOf(n.created_at);
               const { Icon, color } = TYPE_ICON[n.type] ?? FALLBACK_ICON;
               const inner = (
                 <div className="flex items-start gap-3 p-4">

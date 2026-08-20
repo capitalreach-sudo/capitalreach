@@ -2410,7 +2410,10 @@
     "tab_deals": "Deals",
     "tab_interest": "Interest",
     "tab_account": "Account",
-    "clearRead": "Clear read"
+    "clearRead": "Clear read",
+    "unreadOnly": "Unread only",
+    "soundOn": "Turn notification sound on",
+    "soundOff": "Turn notification sound off"
   },
   "authErrors": {
     "generic": "Something went wrong. Please try again.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Dark mode",
     "toLight": "Light mode"
+  },
+  "complaints": {
+    "title": "Complaints",
+    "tab": "Complaints",
+    "new": "File a complaint",
+    "intro": "Something went wrong — billing, another user's conduct, a dispute, the platform itself. File it here and follow every step until it is resolved.",
+    "filed": "Complaint filed. We will keep you posted here and by notification.",
+    "category": "Category",
+    "subject": "Subject",
+    "subjectPh": "One line: what is this about?",
+    "body": "What happened",
+    "bodyPh": "Dates, names, amounts — the more specific, the faster we can act.",
+    "submit": "File complaint",
+    "empty": "No complaints — good. If something goes wrong, this is where to say so.",
+    "resolution": "Resolution",
+    "resolvePrompt": "Resolution note (the filer will read this):",
+    "moved": "Complaint updated.",
+    "review": "Take into review",
+    "resolve": "Resolve",
+    "dismissAct": "Dismiss",
+    "queueEmpty": "Nothing in this queue.",
+    "cat": {
+      "platform": "Platform problem",
+      "user_conduct": "Another user's conduct",
+      "deal_dispute": "Deal dispute",
+      "billing": "Billing & fees",
+      "data_privacy": "Data & privacy",
+      "other": "Something else"
+    },
+    "status": {
+      "open": "Open",
+      "in_review": "In review",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed",
+      "all": "All"
+    }
+  },
+  "interest": {
+    "cta": "I'm interested",
+    "marked": "Interested",
+    "sent": "They will hear about it — open a deal when you are ready to talk numbers.",
+    "hint": "Send a light signal — no amount, no obligations, just a nudge.",
+    "withdraw": "Withdraw interest (quietly — no notification is sent)"
   }
 }

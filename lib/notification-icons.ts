@@ -1,7 +1,7 @@
 import {
   Bell, Handshake, ArrowRightLeft, CheckCircle2, XCircle, MessageSquare,
   CalendarClock, FileSignature, ShieldCheck, BadgeCheck, Ban, Users, Crown,
-  SearchCheck, Bookmark, Megaphone, FileQuestion, Share2, HelpCircle, MessageCircleReply, Receipt, type LucideIcon,
+  SearchCheck, Bookmark, Megaphone, FileQuestion, Share2, HelpCircle, MessageCircleReply, Receipt, Flag, Sparkles, type LucideIcon,
 } from "lucide-react";
 
 /**
@@ -30,6 +30,8 @@ export const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
   question_asked:   { Icon: HelpCircle,     color: "var(--cr-copper)" },
   question_answered:{ Icon: MessageCircleReply, color: "var(--cr-up)" },
   verified:         { Icon: BadgeCheck,     color: "var(--cr-up)"     },
+  complaint_update: { Icon: Flag,         color: "var(--cr-copper)" },
+  interest:         { Icon: Sparkles,     color: "var(--cr-copper)" },
   fee_due:          { Icon: Receipt,        color: "var(--cr-down)"   },
 };
 

@@ -2448,7 +2448,10 @@
     "tab_deals": "Operazioni",
     "tab_interest": "Interesse",
     "tab_account": "Account",
-    "clearRead": "Elimina le lette"
+    "clearRead": "Elimina le lette",
+    "unreadOnly": "Solo non lette",
+    "soundOn": "Attiva il suono delle notifiche",
+    "soundOff": "Disattiva il suono delle notifiche"
   },
   "authErrors": {
     "generic": "Qualcosa è andato storto. Riprova.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Tema scuro",
     "toLight": "Tema chiaro"
+  },
+  "complaints": {
+    "title": "Reclami",
+    "tab": "Reclami",
+    "new": "Presenta un reclamo",
+    "intro": "Qualcosa è andato storto: fatturazione, la condotta di un altro utente, una controversia, la piattaforma stessa. Presentalo qui e segui ogni passaggio fino alla risoluzione.",
+    "filed": "Reclamo presentato. Ti terremo aggiornato qui e tramite notifica.",
+    "category": "Categoria",
+    "subject": "Oggetto",
+    "subjectPh": "Una riga: di cosa si tratta?",
+    "body": "Cosa è successo",
+    "bodyPh": "Date, nomi, importi: più sei specifico, più velocemente possiamo agire.",
+    "submit": "Invia reclamo",
+    "empty": "Nessun reclamo — bene. Se qualcosa va storto, è qui che va segnalato.",
+    "resolution": "Risoluzione",
+    "resolvePrompt": "Nota di risoluzione (chi ha presentato il reclamo la leggerà):",
+    "moved": "Reclamo aggiornato.",
+    "review": "Prendi in esame",
+    "resolve": "Risolvi",
+    "dismissAct": "Respingi",
+    "queueEmpty": "Niente in questa coda.",
+    "cat": {
+      "platform": "Problema della piattaforma",
+      "user_conduct": "Condotta di un altro utente",
+      "deal_dispute": "Controversia su un'operazione",
+      "billing": "Fatturazione e commissioni",
+      "data_privacy": "Dati e privacy",
+      "other": "Altro"
+    },
+    "status": {
+      "open": "Aperto",
+      "in_review": "In esame",
+      "resolved": "Risolto",
+      "dismissed": "Respinto",
+      "all": "Tutti"
+    }
+  },
+  "interest": {
+    "cta": "Sono interessato",
+    "marked": "Interessato",
+    "sent": "Ne verranno informati — apri un'operazione quando vuoi parlare di numeri.",
+    "hint": "Invia un segnale leggero: nessun importo, nessun obbligo, solo un cenno.",
+    "withdraw": "Ritira l'interesse (in silenzio — nessuna notifica)"
   }
 }

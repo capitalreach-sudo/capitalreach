@@ -229,7 +229,7 @@ export default function DocumentsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <a href={doc.file_url} target="_blank" rel="noopener noreferrer" aria-label={t("common.open")} className="text-cr-copper hover:text-cr-cu-l">
+                    <a href={`/api/documents/open?id=${doc.id}`} target="_blank" rel="noopener noreferrer" aria-label={t("common.open")} className="text-cr-copper hover:text-cr-cu-l">
                       <ExternalLink className="h-4 w-4" />
                     </a>
                     <button onClick={() => deleteDocument(doc.id)} aria-label={t("common.delete")} className="text-cr-i4 hover:text-red-500">

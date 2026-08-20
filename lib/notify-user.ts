@@ -31,7 +31,10 @@ export type NotificationType =
   // Migration 049: an admin verified this investor.
   | "verified"
   // Migration 078: the platform is owed a success fee.
-  | "fee_due";
+  | "fee_due"
+  // Added by migration 095.
+  | "complaint_update"
+  | "interest";
 
 interface NotifyInput {
   userId: string;

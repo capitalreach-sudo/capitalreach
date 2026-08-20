@@ -2448,7 +2448,10 @@
     "tab_deals": "Transakcje",
     "tab_interest": "Zainteresowanie",
     "tab_account": "Konto",
-    "clearRead": "Wyczyść przeczytane"
+    "clearRead": "Wyczyść przeczytane",
+    "unreadOnly": "Tylko nieprzeczytane",
+    "soundOn": "Włącz dźwięk powiadomień",
+    "soundOff": "Wyłącz dźwięk powiadomień"
   },
   "authErrors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Tryb ciemny",
     "toLight": "Tryb jasny"
+  },
+  "complaints": {
+    "title": "Skargi",
+    "tab": "Skargi",
+    "new": "Złóż skargę",
+    "intro": "Coś poszło nie tak — rozliczenia, zachowanie innego użytkownika, spór, sama platforma. Złóż skargę tutaj i śledź każdy krok aż do rozwiązania.",
+    "filed": "Skarga złożona. Będziemy informować tutaj i przez powiadomienia.",
+    "category": "Kategoria",
+    "subject": "Temat",
+    "subjectPh": "Jedno zdanie: czego to dotyczy?",
+    "body": "Co się stało",
+    "bodyPh": "Daty, nazwiska, kwoty — im dokładniej, tym szybciej możemy działać.",
+    "submit": "Złóż skargę",
+    "empty": "Brak skarg — dobrze. Jeśli coś pójdzie nie tak, tutaj można to zgłosić.",
+    "resolution": "Rozstrzygnięcie",
+    "resolvePrompt": "Notatka o rozstrzygnięciu (zgłaszający ją przeczyta):",
+    "moved": "Skarga zaktualizowana.",
+    "review": "Przyjmij do rozpatrzenia",
+    "resolve": "Rozwiąż",
+    "dismissAct": "Oddal",
+    "queueEmpty": "Nic w tej kolejce.",
+    "cat": {
+      "platform": "Problem z platformą",
+      "user_conduct": "Zachowanie innego użytkownika",
+      "deal_dispute": "Spór dotyczący transakcji",
+      "billing": "Rozliczenia i opłaty",
+      "data_privacy": "Dane i prywatność",
+      "other": "Coś innego"
+    },
+    "status": {
+      "open": "Otwarta",
+      "in_review": "W rozpatrywaniu",
+      "resolved": "Rozwiązana",
+      "dismissed": "Oddalona",
+      "all": "Wszystkie"
+    }
+  },
+  "interest": {
+    "cta": "Jestem zainteresowany",
+    "marked": "Zainteresowany",
+    "sent": "Druga strona się o tym dowie — otwórz transakcję, gdy zechcesz rozmawiać o liczbach.",
+    "hint": "Wyślij lekki sygnał — bez kwoty, bez zobowiązań, tylko znak.",
+    "withdraw": "Wycofaj zainteresowanie (po cichu — bez powiadomienia)"
   }
 }

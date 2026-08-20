@@ -2448,7 +2448,10 @@
     "tab_deals": "Operaciones",
     "tab_interest": "Interés",
     "tab_account": "Cuenta",
-    "clearRead": "Borrar leídas"
+    "clearRead": "Borrar leídas",
+    "unreadOnly": "Solo no leídas",
+    "soundOn": "Activar el sonido de notificaciones",
+    "soundOff": "Desactivar el sonido de notificaciones"
   },
   "authErrors": {
     "generic": "Algo ha fallado. Inténtalo de nuevo.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "Modo oscuro",
     "toLight": "Modo claro"
+  },
+  "complaints": {
+    "title": "Quejas",
+    "tab": "Quejas",
+    "new": "Presentar una queja",
+    "intro": "Algo salió mal: facturación, la conducta de otro usuario, una disputa, la propia plataforma. Preséntelo aquí y siga cada paso hasta su resolución.",
+    "filed": "Queja presentada. Le mantendremos informado aquí y por notificación.",
+    "category": "Categoría",
+    "subject": "Asunto",
+    "subjectPh": "Una línea: ¿de qué se trata?",
+    "body": "Qué ocurrió",
+    "bodyPh": "Fechas, nombres, importes: cuanto más específico, más rápido podremos actuar.",
+    "submit": "Presentar queja",
+    "empty": "Sin quejas — bien. Si algo va mal, este es el lugar para decirlo.",
+    "resolution": "Resolución",
+    "resolvePrompt": "Nota de resolución (quien presentó la queja la leerá):",
+    "moved": "Queja actualizada.",
+    "review": "Poner en revisión",
+    "resolve": "Resolver",
+    "dismissAct": "Desestimar",
+    "queueEmpty": "Nada en esta cola.",
+    "cat": {
+      "platform": "Problema de la plataforma",
+      "user_conduct": "Conducta de otro usuario",
+      "deal_dispute": "Disputa de operación",
+      "billing": "Facturación y comisiones",
+      "data_privacy": "Datos y privacidad",
+      "other": "Otra cosa"
+    },
+    "status": {
+      "open": "Abierta",
+      "in_review": "En revisión",
+      "resolved": "Resuelta",
+      "dismissed": "Desestimada",
+      "all": "Todas"
+    }
+  },
+  "interest": {
+    "cta": "Me interesa",
+    "marked": "Interesado",
+    "sent": "Se lo haremos saber; abra una operación cuando quiera hablar de cifras.",
+    "hint": "Envíe una señal ligera: sin importe, sin obligaciones, solo un aviso.",
+    "withdraw": "Retirar el interés (en silencio, sin notificación)"
   }
 }

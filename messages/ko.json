@@ -2448,7 +2448,10 @@
     "tab_deals": "딜",
     "tab_interest": "관심",
     "tab_account": "계정",
-    "clearRead": "읽은 알림 지우기"
+    "clearRead": "읽은 알림 지우기",
+    "unreadOnly": "읽지 않은 것만",
+    "soundOn": "알림 소리 켜기",
+    "soundOff": "알림 소리 끄기"
   },
   "authErrors": {
     "generic": "문제가 발생했습니다. 다시 시도해 주세요.",
@@ -3337,5 +3340,48 @@
   "theme": {
     "toDark": "다크 모드",
     "toLight": "라이트 모드"
+  },
+  "complaints": {
+    "title": "불만 사항",
+    "tab": "불만 사항",
+    "new": "불만 제기",
+    "intro": "문제가 발생했나요? 결제, 다른 사용자의 행동, 분쟁, 플랫폼 자체 등 여기에 제기하고 해결될 때까지 모든 단계를 확인하세요.",
+    "filed": "불만이 접수되었습니다. 여기와 알림으로 진행 상황을 알려드리겠습니다.",
+    "category": "카테고리",
+    "subject": "제목",
+    "subjectPh": "한 줄로: 무엇에 관한 것인가요?",
+    "body": "무슨 일이 있었나요",
+    "bodyPh": "날짜, 이름, 금액 — 구체적일수록 더 빨리 조치할 수 있습니다.",
+    "submit": "불만 제출",
+    "empty": "불만 사항이 없습니다 — 좋습니다. 문제가 생기면 여기에 알려주세요.",
+    "resolution": "처리 결과",
+    "resolvePrompt": "처리 메모 (제기자가 읽게 됩니다):",
+    "moved": "불만이 업데이트되었습니다.",
+    "review": "검토 시작",
+    "resolve": "해결",
+    "dismissAct": "기각",
+    "queueEmpty": "이 대기열에 항목이 없습니다.",
+    "cat": {
+      "platform": "플랫폼 문제",
+      "user_conduct": "다른 사용자의 행동",
+      "deal_dispute": "거래 분쟁",
+      "billing": "결제 및 수수료",
+      "data_privacy": "데이터 및 개인정보",
+      "other": "기타"
+    },
+    "status": {
+      "open": "접수됨",
+      "in_review": "검토 중",
+      "resolved": "해결됨",
+      "dismissed": "기각됨",
+      "all": "전체"
+    }
+  },
+  "interest": {
+    "cta": "관심 있어요",
+    "marked": "관심 표시됨",
+    "sent": "상대방에게 알림이 전달됩니다 — 조건을 논의할 준비가 되면 딜을 시작하세요.",
+    "hint": "가벼운 신호를 보내세요 — 금액도 의무도 없는 가벼운 표시입니다.",
+    "withdraw": "관심 철회 (알림 없이 조용히 처리됩니다)"
   }
 }

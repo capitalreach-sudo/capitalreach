@@ -29,6 +29,7 @@ import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { WaitlistButton } from "@/components/startup/waitlist-button";
+import { InterestedButton } from "@/components/shared/interested-button";
 import { RoundCalculator } from "@/components/startup/round-calculator";
 import { roundCloseState } from "@/lib/round-close";
 import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
@@ -827,6 +828,11 @@ export function StartupDetailClient({
                 {!viewerDeal && investorId && !viewerSuspended && (roundState === "closed" || roundState === "oversubscribed") && (
                   <WaitlistButton startupId={startup.id} roundState={roundState} />
                 )}
+                {/* The founder hears this one — unlike a watchlist save,
+                    which is the investor's private bookmark. */}
+                {!viewerDeal && investorId && !viewerSuspended && (
+                  <InterestedButton targetType="startup" targetId={startup.id} />
+                )}
                 {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
                   <button onClick={startInterest}
                     className="btn-copper-shimmer"
@@ -1384,7 +1390,7 @@ export function StartupDetailClient({
                           <Lock style={{ width: 11, height: 11 }} /> {t("startupDetail.signInToView")}
                         </span>
                       ) : (
-                        /\.pdf(\?|$)/i.test(doc.file_url) ? (
+                        (doc.is_pdf ?? /\.pdf(\?|$)/i.test(doc.file_url)) ? (
                           <button onClick={() => { trackDoc(doc.id); setViewerDoc({ url: doc.file_url, label: doc.label }); }}
                             style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", cursor: "pointer" }}>
                             <Eye style={{ width: 11, height: 11 }} /> {t("common.view")}

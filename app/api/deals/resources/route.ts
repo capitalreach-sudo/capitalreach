@@ -52,11 +52,18 @@ export async function GET(req: NextRequest) {
   const ndaSigned = !!nda?.signed_at;
   const requireNda = !!startupWithDocs?.require_nda;
   // locked strips the URL too: shipping file_url next to locked:true made the
-  // padlock a decoration -- devtools reads what a padlock hides.
+  // padlock a decoration -- devtools reads what a padlock hides. Allowed
+  // viewers now get /api/documents/open (re-authorised, 60-second URLs)
+  // rather than the stored year-long signed URL.
   const documents = (startupWithDocs?.documents || []).map(
-    (doc: { requires_nda: boolean; file_url: string } & Record<string, unknown>) => {
+    (doc: { id: string; requires_nda: boolean; file_url: string } & Record<string, unknown>) => {
       const locked = !isAdmin && doc.requires_nda && requireNda && !ndaSigned;
-      return { ...doc, file_url: locked ? "" : doc.file_url, locked };
+      return {
+        ...doc,
+        file_url: locked ? "" : `/api/documents/open?id=${doc.id}`,
+        locked,
+        is_pdf: /\.pdf(\?|$)/i.test(doc.file_url),
+      };
     },
   );
 

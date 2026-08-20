@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { TargetButton } from "@/components/investors/target-button";
+import { InterestedButton } from "@/components/shared/interested-button";
 import { FounderOutreach } from "@/components/investors/founder-outreach";
 import { resolveEntity } from "@/lib/membership";
 import { createAdminClient } from "@/lib/supabase-server";
@@ -215,6 +216,9 @@ export default async function InvestorProfilePage({ params }: Props) {
               )}
               {viewerIsFounder && (
                 <TargetButton investorId={investor.id} initiallyTargeted={viewerTargeted} />
+              )}
+              {viewerIsFounder && !viewerDeal && (
+                <InterestedButton targetType="investor" targetId={investor.id} />
               )}
               {investor.booking_url && user && (
                 <a href={investor.booking_url} target="_blank" rel="noopener noreferrer"

@@ -218,6 +218,45 @@ export type Database = {
           },
         ]
       }
+      complaints: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          id: string
+          opened_by: string
+          resolution_note: string | null
+          resolved_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category: string
+          created_at?: string
+          id?: string
+          opened_by: string
+          resolution_note?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          opened_by?: string
+          resolution_note?: string | null
+          resolved_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       content_reports: {
         Row: {
           created_at: string
@@ -1082,6 +1121,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      interest_signals: {
+        Row: {
+          created_at: string
+          from_id: string
+          from_type: string
+          from_user: string
+          id: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          created_at?: string
+          from_id: string
+          from_type: string
+          from_user: string
+          id?: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          created_at?: string
+          from_id?: string
+          from_type?: string
+          from_user?: string
+          id?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
       }
       investor_checklist_templates: {
         Row: {

@@ -298,7 +298,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   const safeStartup = {
     ...startup,
     founders: protectFounders(startup.founders, identityRevealed),
-    documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx)),
+    documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx, previewing ? null : shareToken)),
   };
 
   // Metric history rides the same gate as the single MRR number: financial
