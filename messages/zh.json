@@ -2012,7 +2012,9 @@
     "commitCommitted": "已承诺",
     "commitmentSaved": "承诺已更新。",
     "showDetails": "详情",
-    "hideDetails": "收起详情"
+    "hideDetails": "收起详情",
+    "showAllInColumn": "再显示 {n} 条",
+    "showFewer": "收起"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -3216,5 +3218,11 @@
     "softCircle": "投资人表示打算投资并说了金额，但尚未签署任何文件。是真实兴趣，不是已承诺的资金。",
     "leadInvestor": "设定条款并通常出最大一张支票的投资人。很多轮次在没有领投前会一直停滞。",
     "successFee": "融资交割时 CapitalReach 收取 2%。这笔费用由获得投资的初创公司支付 —— 绝不由投资人承担。"
+  },
+  "translate": {
+    "offer": "这段内容是用另一种语言写的。",
+    "translateCta": "翻译此页",
+    "machineNotice": "机器翻译 —— 并非作者本人的原话。",
+    "showOriginal": "显示原文"
   }
 }

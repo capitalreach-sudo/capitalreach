@@ -2012,7 +2012,9 @@
     "commitCommitted": "Impegnato",
     "commitmentSaved": "Impegno aggiornato.",
     "showDetails": "Dettagli",
-    "hideDetails": "Nascondi i dettagli"
+    "hideDetails": "Nascondi i dettagli",
+    "showAllInColumn": "Mostra altri {n}",
+    "showFewer": "Mostra meno"
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -3216,5 +3218,11 @@
     "softCircle": "Un investitore ha detto che intende investire, e quanto, ma non c'è nulla di firmato. Interesse reale, non denaro impegnato.",
     "leadInvestor": "L'investitore che fissa i termini e di solito mette il ticket più grande. Molti round restano fermi finché non ce n'è uno.",
     "successFee": "CapitalReach applica il 2% di un round alla chiusura. La paga la startup che riceve l'investimento — mai l'investitore."
+  },
+  "translate": {
+    "offer": "Questo testo è stato scritto in un'altra lingua.",
+    "translateCta": "Traduci questa pagina",
+    "machineNotice": "Traduzione automatica — non sono le parole dell'autore.",
+    "showOriginal": "Mostra l'originale"
   }
 }

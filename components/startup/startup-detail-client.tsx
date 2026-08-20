@@ -25,6 +25,7 @@ import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { InfoTip } from "@/components/shared/info-tip";
+import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { roundCloseState } from "@/lib/round-close";
 import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
@@ -586,6 +587,9 @@ export function StartupDetailClient({
   };
 
   return (
+    /* The pitch is the part of this page that has never been localised. The
+       offer sits at the top of the hero; the fields below read from it. */
+    <TranslatedContent entityType="startup" entityId={startup.id}>
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
       {/* Same black-bar convention as the admin view-as banner: unmistakable,
           and one click out. Everything below really is the free-investor
@@ -664,7 +668,7 @@ export function StartupDetailClient({
                   )}
                 </div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
-                  {startup.tagline}
+                  <T field="tagline">{startup.tagline}</T>
                 </p>
 
                 {/* Badge row */}
@@ -948,9 +952,11 @@ export function StartupDetailClient({
         {/* ── Tab: Overview ── */}
         {activeTab === "overview" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-            {startup.problem             && <Section title={t("startupDetail.problem")}>{startup.problem}</Section>}
-            {startup.solution            && <Section title={t("startupDetail.solution")}>{startup.solution}</Section>}
-            {startup.market              && <Section title={t("startupDetail.market")}>{startup.market}</Section>}
+            {/* The prose sections read from the translation when one is
+                showing, and from the founder's own text otherwise. */}
+            {startup.problem             && <Section title={t("startupDetail.problem")}><T field="problem">{startup.problem}</T></Section>}
+            {startup.solution            && <Section title={t("startupDetail.solution")}><T field="solution">{startup.solution}</T></Section>}
+            {startup.market              && <Section title={t("startupDetail.market")}><T field="market">{startup.market}</T></Section>}
             {/* Market sizing — only when at least one figure exists (never an empty card). */}
             {(startup.tam || startup.sam || startup.som) ? (
               <div>
@@ -965,8 +971,8 @@ export function StartupDetailClient({
                 </div>
               </div>
             ) : null}
-            {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}>{startup.competitive_advantage}</Section>}
-            {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}>{startup.use_of_funds}</Section>}
+            {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}><T field="competitive_advantage">{startup.competitive_advantage}</T></Section>}
+            {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}><T field="use_of_funds">{startup.use_of_funds}</T></Section>}
 
             {/* Competitors — captured at onboarding, never shown until now. */}
             {Array.isArray(startup.competitors_json) && startup.competitors_json.length > 0 && (
@@ -1562,5 +1568,6 @@ export function StartupDetailClient({
         )}
       </StickyActionBar>
     </main>
+    </TranslatedContent>
   );
 }

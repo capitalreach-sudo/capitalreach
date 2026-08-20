@@ -9,6 +9,7 @@ import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
 import { JsonLdScript } from "@/components/shared/json-ld";
+import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { investorJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -147,6 +148,9 @@ export default async function InvestorProfilePage({ params }: Props) {
   return (
     <>
       <Navbar />
+      {/* Same offer as a listing: an investor's own words, with a one-click
+          reading of them in the visitor's language. */}
+      <TranslatedContent entityType="investor" entityId={investor.id}>
       <main className="container mx-auto px-4 py-12 max-w-3xl">
 
         {/* Back nav */}
@@ -239,7 +243,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               <FounderOutreach investorId={investor.id} investorName={displayName} hasDeal={!!viewerDeal} />
             )}
             {investor.bio && (
-              <p className="text-cr-i3 leading-relaxed text-sm">{investor.bio}</p>
+              <p className="text-cr-i3 leading-relaxed text-sm"><T field="bio">{investor.bio}</T></p>
             )}
 
             {/* Social / web links */}
@@ -273,7 +277,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               <BookOpen className="h-4 w-4 text-cr-copper" />
               <h2 className="font-semibold text-cr-cu-l text-sm">{t("investors.thesis")}</h2>
             </div>
-            <p className="text-sm text-cr-cu-l leading-relaxed">{investor.investment_thesis}</p>
+            <p className="text-sm text-cr-cu-l leading-relaxed"><T field="investment_thesis">{investor.investment_thesis}</T></p>
           </div>
         )}
 
@@ -494,6 +498,7 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         )}
       </main>
+      </TranslatedContent>
       <Footer />
     </>
   );

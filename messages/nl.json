@@ -2012,7 +2012,9 @@
     "commitCommitted": "Toegezegd",
     "commitmentSaved": "Toezegging bijgewerkt.",
     "showDetails": "Details",
-    "hideDetails": "Details verbergen"
+    "hideDetails": "Details verbergen",
+    "showAllInColumn": "Toon nog {n}",
+    "showFewer": "Toon minder"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -3216,5 +3218,11 @@
     "softCircle": "Een investeerder heeft gezegd te willen investeren, en hoeveel, maar er is niets getekend. Echte interesse, geen toegezegd geld.",
     "leadInvestor": "De investeerder die de voorwaarden bepaalt en meestal de grootste cheque schrijft. Rondes blijven vaak steken tot er één is.",
     "successFee": "CapitalReach rekent 2% van een ronde bij closing. Die wordt betaald door de startup die de investering ontvangt — nooit door de investeerder."
+  },
+  "translate": {
+    "offer": "Dit is in een andere taal geschreven.",
+    "translateCta": "Vertaal deze pagina",
+    "machineNotice": "Machinevertaling — niet de eigen woorden van de auteur.",
+    "showOriginal": "Toon het origineel"
   }
 }

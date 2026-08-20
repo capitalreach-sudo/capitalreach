@@ -2012,7 +2012,9 @@
     "commitCommitted": "Engagé",
     "commitmentSaved": "Engagement mis à jour.",
     "showDetails": "Détails",
-    "hideDetails": "Masquer les détails"
+    "hideDetails": "Masquer les détails",
+    "showAllInColumn": "Afficher {n} de plus",
+    "showFewer": "Afficher moins"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
@@ -3216,5 +3218,11 @@
     "softCircle": "Un investisseur a annoncé son intention d'investir, et le montant, mais rien n'est signé. Un intérêt réel, pas un engagement ferme.",
     "leadInvestor": "L'investisseur qui fixe les conditions et met généralement le plus gros ticket. Beaucoup de levées stagnent tant qu'il n'existe pas.",
     "successFee": "CapitalReach prélève 2 % d'une levée à sa clôture. Cette commission est payée par la startup qui reçoit l'investissement — jamais par l'investisseur."
+  },
+  "translate": {
+    "offer": "Ceci a été rédigé dans une autre langue.",
+    "translateCta": "Traduire cette page",
+    "machineNotice": "Traduction automatique — pas les mots de l'auteur.",
+    "showOriginal": "Afficher l'original"
   }
 }

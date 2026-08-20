@@ -260,6 +260,36 @@ export type Database = {
         }
         Relationships: []
       }
+      content_translations: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          fields: Json
+          id: string
+          locale: string
+          source_hash: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          fields: Json
+          id?: string
+          locale: string
+          source_hash: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          fields?: Json
+          id?: string
+          locale?: string
+          source_hash?: string
+        }
+        Relationships: []
+      }
       contract_signatures: {
         Row: {
           content_hash: string
@@ -2618,6 +2648,7 @@ export type Database = {
           public: boolean | null
           type: Database["storage"]["Enums"]["buckettype"]
           updated_at: string | null
+          versioning_status: string
         }
         Insert: {
           allowed_mime_types?: string[] | null
@@ -2631,6 +2662,7 @@ export type Database = {
           public?: boolean | null
           type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+          versioning_status?: string
         }
         Update: {
           allowed_mime_types?: string[] | null
@@ -2644,6 +2676,7 @@ export type Database = {
           public?: boolean | null
           type?: Database["storage"]["Enums"]["buckettype"]
           updated_at?: string | null
+          versioning_status?: string
         }
         Relationships: []
       }
@@ -2721,9 +2754,12 @@ export type Database = {
       }
       objects: {
         Row: {
+          archived_at: string | null
           bucket_id: string | null
           created_at: string | null
           id: string
+          is_delete_marker: boolean
+          is_versioned: boolean
           last_accessed_at: string | null
           metadata: Json | null
           name: string | null
@@ -2735,9 +2771,12 @@ export type Database = {
           version: string | null
         }
         Insert: {
+          archived_at?: string | null
           bucket_id?: string | null
           created_at?: string | null
           id?: string
+          is_delete_marker?: boolean
+          is_versioned?: boolean
           last_accessed_at?: string | null
           metadata?: Json | null
           name?: string | null
@@ -2749,9 +2788,12 @@ export type Database = {
           version?: string | null
         }
         Update: {
+          archived_at?: string | null
           bucket_id?: string | null
           created_at?: string | null
           id?: string
+          is_delete_marker?: boolean
+          is_versioned?: boolean
           last_accessed_at?: string | null
           metadata?: Json | null
           name?: string | null

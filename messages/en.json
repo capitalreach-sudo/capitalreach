@@ -2023,7 +2023,9 @@
     "commitCommitted": "Committed",
     "commitmentSaved": "Commitment updated.",
     "showDetails": "Details",
-    "hideDetails": "Hide details"
+    "hideDetails": "Hide details",
+    "showAllInColumn": "Show {n} more",
+    "showFewer": "Show fewer"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -3216,5 +3218,11 @@
     "softCircle": "An investor has said they intend to invest, and how much, but nothing is signed. Real interest, not committed money.",
     "leadInvestor": "The investor who sets the terms and usually takes the largest cheque. Rounds often stall until one exists.",
     "successFee": "CapitalReach charges 2% of a round when it closes. It is paid by the startup receiving the investment — never by the investor."
+  },
+  "translate": {
+    "offer": "This was written in another language.",
+    "translateCta": "Translate this page",
+    "machineNotice": "Machine translation — not the author's own words.",
+    "showOriginal": "Show the original"
   }
 }

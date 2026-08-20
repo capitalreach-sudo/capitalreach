@@ -2012,7 +2012,9 @@
     "commitCommitted": "Zobowiązany",
     "commitmentSaved": "Zobowiązanie zaktualizowane.",
     "showDetails": "Szczegóły",
-    "hideDetails": "Ukryj szczegóły"
+    "hideDetails": "Ukryj szczegóły",
+    "showAllInColumn": "Pokaż jeszcze {n}",
+    "showFewer": "Pokaż mniej"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -3216,5 +3218,11 @@
     "softCircle": "Inwestor zadeklarował zamiar inwestycji i kwotę, ale nic nie jest podpisane. Realne zainteresowanie, nie zobowiązane pieniądze.",
     "leadInvestor": "Inwestor, który ustala warunki i zwykle wykłada największy czek. Wiele rund stoi w miejscu, dopóki się nie pojawi.",
     "successFee": "CapitalReach pobiera 2% rundy przy jej zamknięciu. Płaci je startup otrzymujący inwestycję — nigdy inwestor."
+  },
+  "translate": {
+    "offer": "To napisano w innym języku.",
+    "translateCta": "Przetłumacz tę stronę",
+    "machineNotice": "Tłumaczenie maszynowe — to nie są słowa autora.",
+    "showOriginal": "Pokaż oryginał"
   }
 }

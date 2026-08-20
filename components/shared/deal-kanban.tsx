@@ -116,6 +116,9 @@ function colBadgeStyle(status: DealStatus, count: number): React.CSSProperties {
   return { ...base, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)" };
 }
 
+/** How many cards a column shows before it offers the rest. */
+const COLUMN_PREVIEW = 5;
+
 // ── Empty column placeholder ──────────────────────────────────────────────────
 
 function EmptySlot() {
@@ -2053,6 +2056,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
   const [viewMode, setViewMode]       = useState<"kanban" | "list">("kanban");
+  const [expandedCols, setExpandedCols] = useState<Set<string>>(new Set());
 
   // On a phone the kanban is ~1400px of horizontal scroll for five columns;
   // the list view was built for exactly this shape. Default narrow screens to
@@ -2356,6 +2360,13 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
             {columns.map(col => {
               const colDeals = filteredDeals.filter(d => d.status === col.status);
+              // A column shows its first few and says how many more there are.
+              // Scrolling a column to find out what is in it is not the same as
+              // being told, and a board you have to scroll five times to read
+              // is not giving you the pipeline at a glance.
+              const showAll = expandedCols.has(col.status);
+              const visible = showAll ? colDeals : colDeals.slice(0, COLUMN_PREVIEW);
+              const hidden = colDeals.length - visible.length;
               return (
                 <div key={col.status} style={{ width: "264px", flexShrink: 0, display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 260px)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
@@ -2368,10 +2379,23 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                       deals used to set the height of the whole board and push
                       the empty ones off the bottom of the screen. */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", paddingRight: "2px", minHeight: 0 }}>
-                    {colDeals.length === 0 ? <EmptySlot /> : colDeals.map(deal => (
+                    {colDeals.length === 0 ? <EmptySlot /> : visible.map(deal => (
                       <DealCard key={deal.id} deal={deal} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
                         onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} onSetCommitment={onSetCommitment} />
                     ))}
+
+                    {(hidden > 0 || showAll) && (
+                      <button onClick={() => setExpandedCols(prev => {
+                        const next = new Set(prev);
+                        if (next.has(col.status)) next.delete(col.status); else next.add(col.status);
+                        return next;
+                      })}
+                        style={{ background: "var(--cr-paper-2)", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px",
+                          cursor: "pointer", padding: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+                          fontSize: "11px", color: "var(--cr-copper)" }}>
+                        {showAll ? t("deals.showFewer") : t("deals.showAllInColumn", { n: hidden })}
+                      </button>
+                    )}
                   </div>
                 </div>
               );

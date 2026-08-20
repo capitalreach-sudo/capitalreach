@@ -2012,7 +2012,9 @@
     "commitCommitted": "Comprometido",
     "commitmentSaved": "Compromisso atualizado.",
     "showDetails": "Detalhes",
-    "hideDetails": "Ocultar detalhes"
+    "hideDetails": "Ocultar detalhes",
+    "showAllInColumn": "Ver mais {n}",
+    "showFewer": "Ver menos"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -3216,5 +3218,11 @@
     "softCircle": "Um investidor disse que tenciona investir, e quanto, mas nada está assinado. Interesse real, não dinheiro comprometido.",
     "leadInvestor": "O investidor que define os termos e normalmente entra com o maior cheque. Muitas rondas ficam paradas até existir um.",
     "successFee": "A CapitalReach cobra 2% de uma ronda quando fecha. É paga pela startup que recebe o investimento — nunca pelo investidor."
+  },
+  "translate": {
+    "offer": "Isto foi escrito noutro idioma.",
+    "translateCta": "Traduzir esta página",
+    "machineNotice": "Tradução automática — não são as palavras do autor.",
+    "showOriginal": "Ver o original"
   }
 }

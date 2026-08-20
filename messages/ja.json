@@ -2012,7 +2012,9 @@
     "commitCommitted": "コミット済み",
     "commitmentSaved": "コミットメントを更新しました。",
     "showDetails": "詳細",
-    "hideDetails": "詳細を隠す"
+    "hideDetails": "詳細を隠す",
+    "showAllInColumn": "さらに {n} 件を表示",
+    "showFewer": "表示を減らす"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -3216,5 +3218,11 @@
     "softCircle": "投資家が投資の意向と金額を伝えた状態で、まだ何も署名されていません。本物の関心ではありますが、確定した資金ではありません。",
     "leadInvestor": "条件を決め、たいていは最も大きな金額を出す投資家です。リード投資家が決まるまで動かないラウンドは少なくありません。",
     "successFee": "CapitalReach はラウンド成立時に 2% を申し受けます。この手数料を負担するのは投資を受けるスタートアップであり、投資家ではありません。"
+  },
+  "translate": {
+    "offer": "これは別の言語で書かれています。",
+    "translateCta": "このページを翻訳",
+    "machineNotice": "機械翻訳です — 執筆者本人の言葉ではありません。",
+    "showOriginal": "原文を表示"
   }
 }

@@ -2012,7 +2012,9 @@
     "commitCommitted": "약정 완료",
     "commitmentSaved": "약정이 업데이트되었습니다.",
     "showDetails": "상세",
-    "hideDetails": "상세 숨기기"
+    "hideDetails": "상세 숨기기",
+    "showAllInColumn": "{n}개 더 보기",
+    "showFewer": "적게 보기"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",
@@ -3216,5 +3218,11 @@
     "softCircle": "투자자가 투자 의향과 금액을 밝혔지만 서명된 것은 없습니다. 진짜 관심이되 확정된 자금은 아닙니다.",
     "leadInvestor": "조건을 정하고 대개 가장 큰 금액을 넣는 투자자입니다. 리드가 정해지기 전까지 멈춰 있는 라운드가 많습니다.",
     "successFee": "CapitalReach는 라운드가 마감될 때 2%를 받습니다. 이 수수료는 투자를 받는 스타트업이 부담하며, 투자자가 내지 않습니다."
+  },
+  "translate": {
+    "offer": "이 내용은 다른 언어로 작성되었습니다.",
+    "translateCta": "이 페이지 번역",
+    "machineNotice": "기계 번역입니다 — 작성자의 원문이 아닙니다.",
+    "showOriginal": "원문 보기"
   }
 }

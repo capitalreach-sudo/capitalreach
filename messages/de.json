@@ -2019,7 +2019,9 @@
     "commitCommitted": "Zugesagt",
     "commitmentSaved": "Commitment aktualisiert.",
     "showDetails": "Details",
-    "hideDetails": "Details ausblenden"
+    "hideDetails": "Details ausblenden",
+    "showAllInColumn": "{n} weitere anzeigen",
+    "showFewer": "Weniger anzeigen"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -3216,5 +3218,11 @@
     "softCircle": "Ein Investor hat angekündigt, investieren zu wollen, und wie viel — unterschrieben ist nichts. Echtes Interesse, kein zugesagtes Geld.",
     "leadInvestor": "Der Investor, der die Konditionen setzt und meist den größten Scheck schreibt. Ohne ihn kommen Runden oft nicht voran.",
     "successFee": "CapitalReach berechnet 2 % einer Runde beim Abschluss. Sie zahlt das Startup, das die Investition erhält — nie der Investor."
+  },
+  "translate": {
+    "offer": "Dies wurde in einer anderen Sprache verfasst.",
+    "translateCta": "Diese Seite übersetzen",
+    "machineNotice": "Maschinelle Übersetzung — nicht die Worte des Verfassers.",
+    "showOriginal": "Original anzeigen"
   }
 }
