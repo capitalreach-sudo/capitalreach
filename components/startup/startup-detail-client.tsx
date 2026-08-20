@@ -518,7 +518,16 @@ export function StartupDetailClient({
         setAcked(false); setMessageOpen(false); setAckModalOpen(true);
         return;
       }
-      if (!res.ok || !data.deal) { notify.error(data.error || t("errors.generic")); return; }
+      if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
+      // Consent flow (091): interest is now a REQUEST the founder answers.
+      // The deal appears on both boards only once they accept.
+      if (data.proposal) {
+        notify.success(t("proposals.sentToFounder"));
+        setMessageOpen(false); setMessageBody(""); setInterestAmount("");
+        router.push("/deals");
+        return;
+      }
+      if (!data.deal) { notify.error(t("errors.generic")); return; }
       notify.success(t("startupDetail.interestSent"));
       setMessageOpen(false);
       setMessageBody("");

@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG lub WebP, do 2 MB. Kwadrat wygląda najlepiej.",
     "typeError": "Tylko PNG, JPEG lub WebP.",
     "sizeError": "Logo musi mieć mniej niż 2 MB."
+  },
+  "proposals": {
+    "title": "Prośby o transakcję",
+    "accept": "Akceptuj",
+    "decline": "Odrzuć",
+    "withdraw": "Wycofaj",
+    "waiting": "Czeka na odpowiedź",
+    "accepted": "Transakcja otwarta — jest już na obu tablicach",
+    "sent": "Prośba wysłana — druga strona musi najpierw zaakceptować",
+    "sentToFounder": "Prośba wysłana — założyciel decyduje, czy otworzyć transakcję"
   }
 }

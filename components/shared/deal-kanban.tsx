@@ -336,7 +336,10 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
     const data = await res.json();
     setCreating(false);
     if (!res.ok) { notify.error(data.error || t("deals.dealCreateFailed")); return; }
-    notify.success(t("deals.dealCreated"));
+    // Consent flow (091): with a real counterparty the create returns a
+    // pending proposal, not a deal. Saying "deal created" would be a lie the
+    // other side has not agreed to yet.
+    notify.success(data.proposal ? t("proposals.sent") : t("deals.dealCreated"));
     onCreated();
     onClose();
   }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DealKanban, type OwnProfile } from "@/components/shared/deal-kanban";
+import { DealProposals } from "@/components/shared/deal-proposals";
 import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
@@ -76,6 +77,9 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
         onConfirmed={() => { const r = ackPending.retry; setAckPending(null); r(); }}
       />
     )}
+    {/* The consent step, above the board it gates. Admin sees every deal
+        anyway and answers for neither side, so the strip is participant-only. */}
+    {viewAs !== "admin" && <DealProposals onChanged={() => router.refresh()} />}
     <DealKanban
       deals={deals}
       onStatusChange={handleDealStatusChange}

@@ -3295,5 +3295,15 @@
     "hint": "PNG、JPEG 或 WebP，最大 2 MB。方形效果最佳。",
     "typeError": "仅支持 PNG、JPEG 或 WebP。",
     "sizeError": "Logo 必须小于 2 MB。"
+  },
+  "proposals": {
+    "title": "交易请求",
+    "accept": "接受",
+    "decline": "拒绝",
+    "withdraw": "撤回",
+    "waiting": "等待对方答复",
+    "accepted": "交易已开启 —— 现已出现在双方的看板上",
+    "sent": "请求已发送 —— 需对方先接受",
+    "sentToFounder": "请求已发送 —— 由创始人决定是否开启交易"
   }
 }

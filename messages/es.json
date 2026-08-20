@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG o WebP, hasta 2 MB. El formato cuadrado queda mejor.",
     "typeError": "Solo PNG, JPEG o WebP.",
     "sizeError": "El logo debe pesar menos de 2 MB."
+  },
+  "proposals": {
+    "title": "Solicitudes de operación",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "withdraw": "Retirar",
+    "waiting": "Esperando su respuesta",
+    "accepted": "Operación abierta: ya está en ambos tableros",
+    "sent": "Solicitud enviada: la otra parte debe aceptar primero",
+    "sentToFounder": "Solicitud enviada: el fundador decide si abre la operación"
   }
 }

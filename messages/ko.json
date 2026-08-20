@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG 또는 WebP, 최대 2 MB. 정사각형이 가장 보기 좋습니다.",
     "typeError": "PNG, JPEG, WebP만 가능합니다.",
     "sizeError": "로고는 2 MB 미만이어야 합니다."
+  },
+  "proposals": {
+    "title": "딜 요청",
+    "accept": "수락",
+    "decline": "거절",
+    "withdraw": "철회",
+    "waiting": "상대 답변 대기 중",
+    "accepted": "딜이 열렸습니다 — 이제 양쪽 보드에 표시됩니다",
+    "sent": "요청을 보냈습니다 — 상대가 먼저 수락해야 합니다",
+    "sentToFounder": "요청을 보냈습니다 — 딜 개시 여부는 창업자가 결정합니다"
   }
 }

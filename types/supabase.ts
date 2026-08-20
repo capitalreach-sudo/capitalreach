@@ -581,6 +581,72 @@ export type Database = {
           },
         ]
       }
+      deal_proposals: {
+        Row: {
+          amount: number | null
+          circumvention_ack_id: string | null
+          created_at: string
+          currency: string | null
+          from_side: string
+          id: string
+          investor_id: string
+          next_follow_up: string | null
+          note: string | null
+          opening_status: string
+          proposed_by: string
+          resolved_at: string | null
+          startup_id: string
+          status: string
+        }
+        Insert: {
+          amount?: number | null
+          circumvention_ack_id?: string | null
+          created_at?: string
+          currency?: string | null
+          from_side: string
+          id?: string
+          investor_id: string
+          next_follow_up?: string | null
+          note?: string | null
+          opening_status?: string
+          proposed_by: string
+          resolved_at?: string | null
+          startup_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number | null
+          circumvention_ack_id?: string | null
+          created_at?: string
+          currency?: string | null
+          from_side?: string
+          id?: string
+          investor_id?: string
+          next_follow_up?: string | null
+          note?: string | null
+          opening_status?: string
+          proposed_by?: string
+          resolved_at?: string | null
+          startup_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_proposals_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_proposals_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_tranches: {
         Row: {
           amount: number

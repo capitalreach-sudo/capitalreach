@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG or WebP, up to 2 MB. Square works best.",
     "typeError": "PNG, JPEG or WebP only.",
     "sizeError": "Logo must be under 2 MB."
+  },
+  "proposals": {
+    "title": "Deal requests",
+    "accept": "Accept",
+    "decline": "Decline",
+    "withdraw": "Withdraw",
+    "waiting": "Waiting for their answer",
+    "accepted": "Deal opened — it is on both boards now",
+    "sent": "Request sent — the other side has to accept first",
+    "sentToFounder": "Request sent — the founder decides whether to open the deal"
   }
 }

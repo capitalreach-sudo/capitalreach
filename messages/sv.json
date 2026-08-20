@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG eller WebP, max 2 MB. Kvadratiskt fungerar bäst.",
     "typeError": "Endast PNG, JPEG eller WebP.",
     "sizeError": "Logotypen måste vara under 2 MB."
+  },
+  "proposals": {
+    "title": "Affärsförfrågningar",
+    "accept": "Acceptera",
+    "decline": "Avböj",
+    "withdraw": "Dra tillbaka",
+    "waiting": "Väntar på svar",
+    "accepted": "Affären öppnad — den ligger nu på båda tavlorna",
+    "sent": "Förfrågan skickad — motparten måste först acceptera",
+    "sentToFounder": "Förfrågan skickad — grundaren avgör om affären öppnas"
   }
 }

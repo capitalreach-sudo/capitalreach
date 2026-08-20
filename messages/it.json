@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG o WebP, fino a 2 MB. Il formato quadrato rende meglio.",
     "typeError": "Solo PNG, JPEG o WebP.",
     "sizeError": "Il logo deve essere sotto i 2 MB."
+  },
+  "proposals": {
+    "title": "Richieste di deal",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "withdraw": "Ritira",
+    "waiting": "In attesa di risposta",
+    "accepted": "Deal aperto — ora è su entrambe le board",
+    "sent": "Richiesta inviata — l'altra parte deve prima accettare",
+    "sentToFounder": "Richiesta inviata — il founder decide se aprire il deal"
   }
 }

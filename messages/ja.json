@@ -3295,5 +3295,15 @@
     "hint": "PNG・JPEG・WebP、最大 2 MB。正方形がきれいに表示されます。",
     "typeError": "PNG・JPEG・WebP のみ対応です。",
     "sizeError": "ロゴは 2 MB 未満にしてください。"
+  },
+  "proposals": {
+    "title": "ディール承認リクエスト",
+    "accept": "承認",
+    "decline": "辞退",
+    "withdraw": "取り下げ",
+    "waiting": "相手の回答待ち",
+    "accepted": "ディール開始 — 双方のボードに載りました",
+    "sent": "リクエスト送信済み — まず相手の承認が必要です",
+    "sentToFounder": "リクエスト送信済み — 開始するかは創業者が決めます"
   }
 }

@@ -47,6 +47,13 @@ export async function POST(req: NextRequest) {
 
   let startup_id: string;
   let investor_id: string;
+  // A deal is a relationship, and one party cannot declare a relationship on
+  // behalf of two. Anything with a real counterparty becomes a PROPOSAL the
+  // other side must accept; only admin-created deals and a founder's own
+  // off-platform contacts skip the consent step, because there is nobody to
+  // ask.
+  let needsConsent = false;
+  let fromSide: "startup" | "investor" = "investor";
   // Set when the caller is the investor side: the non-circumvention ack this
   // deal was opened under (Phase 1). Founders/admins opening deals need none.
   let ack: { id: string; acknowledged_at: string; ip_address: string | null } | null = null;
@@ -73,10 +80,16 @@ export async function POST(req: NextRequest) {
     ]);
 
     if (myStartup) {
-      const { data: inv } = await admin.from("investors").select("id").eq("id", counterpartId).maybeSingle();
+      const { data: inv } = await admin.from("investors").select("id, is_external, owner_id").eq("id", counterpartId).maybeSingle();
       if (!inv) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
       startup_id  = myStartup.entityId;
       investor_id = inv.id;
+      // An off-platform contact has no account and therefore nobody to
+      // consent — the founder's own pipeline entry stays direct. A platform
+      // investor, by contrast, must approve before appearing in anyone's
+      // funnel.
+      needsConsent = !inv.is_external && !!inv.owner_id;
+      fromSide = "startup";
     } else if (myInvestor) {
       // Browsing is open to everyone; *investing* requires the accreditation
       // attestation. Attestable any time from Settings — this is a gate on the
@@ -120,6 +133,8 @@ export async function POST(req: NextRequest) {
       ack = existingAck;
       startup_id  = st.id;
       investor_id = myInvestor.entityId;
+      needsConsent = true;
+      fromSide = "investor";
     } else {
       return NextResponse.json({ error: "Complete onboarding first" }, { status: 403 });
     }
@@ -138,6 +153,37 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
   if (existing) {
     return NextResponse.json({ error: "An open deal with this partner already exists" }, { status: 409 });
+  }
+
+  if (needsConsent) {
+    const { data: proposal, error: propErr } = await admin
+      .from("deal_proposals")
+      .insert({
+        startup_id,
+        investor_id,
+        proposed_by: user.id,
+        from_side: fromSide,
+        amount: parsedAmount,
+        currency: dealCurrency,
+        opening_status: startStatus,
+        note: openingNote,
+        next_follow_up: followUp,
+        circumvention_ack_id: ack?.id ?? null,
+      })
+      .select("id")
+      .single();
+    if (propErr || !proposal) {
+      if (propErr?.code === "23505") {
+        return NextResponse.json({ error: "A request with this partner is already waiting for an answer." }, { status: 409 });
+      }
+      return NextResponse.json({ error: "Failed to send the request" }, { status: 500 });
+    }
+
+    // Tell the side being asked. Awaited — the Vercel lambda freezes on
+    // response, same lesson as every other notify in this codebase.
+    await notifyProposal(admin, { startup_id, investor_id, fromSide, actorId: user.id }).catch(() => {});
+
+    return NextResponse.json({ success: true, proposal: { id: proposal.id, status: "pending" } });
   }
 
   const { data: deal, error } = await admin
@@ -201,6 +247,31 @@ export async function POST(req: NextRequest) {
   await notifyCounterpart(admin, { dealId: deal.id, startup_id, investor_id, actorId: user.id }).catch(() => {});
 
   return NextResponse.json({ success: true, deal });
+}
+
+/** Tells the side whose consent is being asked for. */
+async function notifyProposal(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  { startup_id, investor_id, fromSide, actorId }: { startup_id: string; investor_id: string; fromSide: "startup" | "investor"; actorId: string },
+) {
+  const [{ data: st }, { data: inv }] = await Promise.all([
+    admin.from("startups").select("name, owner_id").eq("id", startup_id).maybeSingle(),
+    admin.from("investors").select("display_name, firm_name, owner_id").eq("id", investor_id).maybeSingle(),
+  ]);
+  const recipient = fromSide === "investor" ? st?.owner_id : inv?.owner_id;
+  if (!recipient || recipient === actorId) return;
+  const proposerName = fromSide === "investor"
+    ? (inv?.firm_name || inv?.display_name || "An investor")
+    : (st?.name || "A startup");
+  const { notifyUser } = await import("@/lib/notify-user");
+  await notifyUser({
+    userId: recipient,
+    type: "deal_opened",
+    title: `${proposerName} wants to open a deal`,
+    body: "Accept to add it to both pipelines, or decline.",
+    href: "/deals",
+  });
 }
 
 /**

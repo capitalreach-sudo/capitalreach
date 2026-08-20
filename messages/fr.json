@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG ou WebP, 2 Mo max. Le format carré rend le mieux.",
     "typeError": "PNG, JPEG ou WebP uniquement.",
     "sizeError": "Le logo doit faire moins de 2 Mo."
+  },
+  "proposals": {
+    "title": "Demandes d'opération",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "withdraw": "Retirer",
+    "waiting": "En attente de réponse",
+    "accepted": "Opération ouverte — elle figure sur les deux tableaux",
+    "sent": "Demande envoyée — l'autre partie doit d'abord accepter",
+    "sentToFounder": "Demande envoyée — le fondateur décide d'ouvrir ou non l'opération"
   }
 }

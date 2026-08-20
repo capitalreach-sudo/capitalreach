@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG ou WebP, até 2 MB. O formato quadrado resulta melhor.",
     "typeError": "Apenas PNG, JPEG ou WebP.",
     "sizeError": "O logótipo tem de ter menos de 2 MB."
+  },
+  "proposals": {
+    "title": "Pedidos de negócio",
+    "accept": "Aceitar",
+    "decline": "Recusar",
+    "withdraw": "Retirar",
+    "waiting": "À espera de resposta",
+    "accepted": "Negócio aberto — já está nos dois quadros",
+    "sent": "Pedido enviado — a outra parte tem de aceitar primeiro",
+    "sentToFounder": "Pedido enviado — o fundador decide se abre o negócio"
   }
 }

@@ -36,7 +36,9 @@ export function FounderOutreach({ investorId, investorName, hasDeal }: { investo
     const res = await fetch("/api/deals/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ counterpartId: investorId }) });
     const j = await res.json().catch(() => ({}));
     setBusy(null);
-    if (!res.ok || !j.deal) { notify.error(j.error || t("errors.generic")); return; }
+    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    if (j.proposal) { notify.success(t("proposals.sent")); router.push("/deals"); return; }
+    if (!j.deal) { notify.error(t("errors.generic")); return; }
     notify.success(t("outreach.addedToPipeline"));
     router.push(`/deals?deal=${j.deal.id}`);
   }

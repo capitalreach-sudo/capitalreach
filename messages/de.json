@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG oder WebP, bis 2 MB. Quadratisch wirkt am besten.",
     "typeError": "Nur PNG, JPEG oder WebP.",
     "sizeError": "Das Logo muss unter 2 MB sein."
+  },
+  "proposals": {
+    "title": "Deal-Anfragen",
+    "accept": "Annehmen",
+    "decline": "Ablehnen",
+    "withdraw": "Zurückziehen",
+    "waiting": "Wartet auf Antwort",
+    "accepted": "Deal eröffnet — er liegt jetzt auf beiden Boards",
+    "sent": "Anfrage gesendet — die Gegenseite muss erst zustimmen",
+    "sentToFounder": "Anfrage gesendet — der Gründer entscheidet, ob der Deal geöffnet wird"
   }
 }

@@ -3295,5 +3295,15 @@
     "hint": "PNG, JPEG of WebP, tot 2 MB. Vierkant werkt het best.",
     "typeError": "Alleen PNG, JPEG of WebP.",
     "sizeError": "Het logo moet kleiner zijn dan 2 MB."
+  },
+  "proposals": {
+    "title": "Dealverzoeken",
+    "accept": "Accepteren",
+    "decline": "Afwijzen",
+    "withdraw": "Intrekken",
+    "waiting": "Wacht op antwoord",
+    "accepted": "Deal geopend — hij staat nu op beide borden",
+    "sent": "Verzoek verzonden — de andere kant moet eerst akkoord gaan",
+    "sentToFounder": "Verzoek verzonden — de oprichter beslist of de deal opent"
   }
 }
