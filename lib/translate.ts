@@ -63,6 +63,11 @@ export async function translateFields(
   fields: TranslatedFields,
   target: Locale,
 ): Promise<TranslatedFields | null> {
+  // Why the reason is recorded rather than swallowed: isOpenAIConfigured only
+  // checks the SHAPE of the key (length, prefix). A key that is well-formed and
+  // rejected, a model name the account cannot reach, or a quota that ran out
+  // all look identical from outside — a 502 with nothing behind it. It goes to
+  // system_events, which the admin page already reads.
   if (!isOpenAIConfigured) return null;
   const keys = Object.keys(fields);
   if (keys.length === 0) return null;
@@ -106,7 +111,10 @@ export async function translateFields(
     }
     return Object.keys(out).length ? out : null;
   } catch (err) {
-    console.error("[translate] failed:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[translate] failed:", message);
+    const { logSystemEvent } = await import("@/lib/system-events");
+    await logSystemEvent("translate", "error", "Translation call failed", { target, message: message.slice(0, 400) }).catch(() => {});
     return null;
   }
 }
