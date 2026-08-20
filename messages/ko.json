@@ -1224,7 +1224,8 @@
     "ddQuestionsPh": "이 리포트에 대한 질문 — 한 줄에 하나씩 (선택)",
     "ddRead": "읽음: {docs}",
     "ddReadNone": "열람 가능한 자료가 공유되지 않아 이 리포트는 등록 정보만을 근거로 합니다.",
-    "ddSkipped": "건너뜀: {docs}"
+    "ddSkipped": "건너뜀: {docs}",
+    "bookInNewTab": "새 탭에서 열기"
   },
   "filters": {
     "industry": "산업",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "첫 {target}명 회원 무료 — {memberCount}/{target}명 가입, {spotsLeft}자리 남음.",
     "cta": "자리 확보하기",
-    "textShort": "선착순 {target}명 무료 — {spotsLeft}자리 남음."
+    "textShort": "선착순 {target}명 무료 — {spotsLeft}자리 남음.",
+    "textZero": "런치 기간 동안 첫 {target}명은 무료입니다."
   },
   "locale": {
     "changedTo": "언어가 {name}(으)로 변경되었습니다",
@@ -3305,5 +3307,22 @@
     "accepted": "딜이 열렸습니다 — 이제 양쪽 보드에 표시됩니다",
     "sent": "요청을 보냈습니다 — 상대가 먼저 수락해야 합니다",
     "sentToFounder": "요청을 보냈습니다 — 딜 개시 여부는 창업자가 결정합니다"
+  },
+  "waitlist": {
+    "joinIfSpace": "대기 명단 참여",
+    "joinNextRaise": "다음 라운드 때 알려주세요",
+    "onIt": "대기 명단 등록됨",
+    "joined": "대기 명단에 올랐습니다 — 창업자에게 알렸습니다",
+    "waitingCount": "{n}명 대기 중"
+  },
+  "calc": {
+    "title": "내 수표로 무엇을 살 수 있나요?",
+    "note": "이 라운드의 포스트머니 {post} 기준 추산이며, 향후 희석은 반영하지 않습니다. 조건 설명일 뿐 자문이 아닙니다."
+  },
+  "closed": {
+    "kicker": "라운드 마감",
+    "line": "딜이 성사되었습니다.",
+    "lineNamed": "{name}와(과) 마감했습니다.",
+    "dismiss": "아무 곳이나 클릭하여 계속"
   }
 }

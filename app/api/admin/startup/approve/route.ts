@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       milestones: startup.milestones || [],
       stage: startup.stage,
     }).then(score =>
-      adminClient.from("startups").update({ vaultrise_score: score }).eq("id", startupId)
+      adminClient.from("startups").update({ vaultrise_score: score, scored_at: new Date().toISOString() }).eq("id", startupId)
     ).catch(() => {});
   }
 

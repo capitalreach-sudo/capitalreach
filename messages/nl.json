@@ -1224,7 +1224,8 @@
     "ddQuestionsPh": "Uw vragen voor dit rapport — één per regel (optioneel)",
     "ddRead": "Gelezen: {docs}",
     "ddReadNone": "Er zijn geen leesbare documenten met u gedeeld; dit rapport is alleen op de vermelding gebaseerd.",
-    "ddSkipped": "Overgeslagen: {docs}"
+    "ddSkipped": "Overgeslagen: {docs}",
+    "bookInNewTab": "Openen in nieuw tabblad"
   },
   "filters": {
     "industry": "Industrie",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Gratis voor onze eerste {target} leden — {memberCount}/{target} aangesloten, nog {spotsLeft} plekken vrij.",
     "cta": "Claim uw plek",
-    "textShort": "Gratis voor onze eerste {target} — nog {spotsLeft} plekken."
+    "textShort": "Gratis voor onze eerste {target} — nog {spotsLeft} plekken.",
+    "textZero": "Gratis voor onze eerste {target} leden tijdens de lancering."
   },
   "locale": {
     "changedTo": "Taal gewijzigd naar {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Deal geopend — hij staat nu op beide borden",
     "sent": "Verzoek verzonden — de andere kant moet eerst akkoord gaan",
     "sentToFounder": "Verzoek verzonden — de oprichter beslist of de deal opent"
+  },
+  "waitlist": {
+    "joinIfSpace": "Op de wachtlijst",
+    "joinNextRaise": "Zeg het me bij de volgende ronde",
+    "onIt": "Op de wachtlijst",
+    "joined": "Je staat op de wachtlijst — de oprichter weet ervan",
+    "waitingCount": "{n} wachten"
+  },
+  "calc": {
+    "title": "Wat zou jouw cheque kopen?",
+    "note": "Afgeleid van de eigen post-money van {post}, vóór toekomstige verwatering. Een illustratie van de voorwaarden, geen advies."
+  },
+  "closed": {
+    "kicker": "Ronde gesloten",
+    "line": "De deal is rond.",
+    "lineNamed": "Gesloten met {name}.",
+    "dismiss": "Klik ergens om verder te gaan"
   }
 }

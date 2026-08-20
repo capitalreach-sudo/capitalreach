@@ -4,6 +4,7 @@ import { notifyUser, notifyUsers } from "@/lib/notify-user";
 import { logSystemEvent } from "@/lib/system-events";
 import { matchesSavedSearch, type SavedSearchFilters } from "@/lib/search-match";
 import { listingCompleteness, type CompletenessInput } from "@/lib/listing-completeness";
+import { scoreStartup, isOpenAIConfigured } from "@/lib/openai";
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +85,42 @@ export async function GET(req: NextRequest) {
 
     await admin.from("deals").update({ next_follow_up: null }).eq("id", deal.id);
     notified++;
+  }
+
+  // ── 093: scores learn to age ────────────────────────────────────────────
+  // Re-score listings whose content moved after the model last looked. A few
+  // per run keeps the cost bounded; oldest drift first means nothing waits
+  // forever. Skipped entirely while the model is unconfigured — the stale
+  // score stays, which is still better than no score.
+  let rescored = 0;
+  if (isOpenAIConfigured) {
+    const { data: stale } = await admin
+      .from("startups")
+      .select("id, name, problem, solution, market, competitive_advantage, mrr, arr, user_count, growth_rate, stage, updated_at, scored_at, founders:startup_founders(name, role, linkedin_url), documents:startup_documents(type), milestones:startup_milestones(description)")
+      .eq("status", "active")
+      .not("scored_at", "is", null)
+      .limit(200);
+    const drifted = (stale ?? [])
+      .filter(s => s.updated_at && s.scored_at && s.updated_at > s.scored_at)
+      .sort((a, b) => (a.scored_at! < b.scored_at! ? -1 : 1))
+      .slice(0, 10);
+    for (const s of drifted) {
+      try {
+        const score = await scoreStartup({
+          name: s.name, problem: s.problem, solution: s.solution, market: s.market,
+          competitive_advantage: s.competitive_advantage, mrr: s.mrr, arr: s.arr,
+          user_count: s.user_count, growth_rate: s.growth_rate,
+          founders: (s.founders as { name: string; role: string; linkedin_url: string | null }[]) || [],
+          documents: (s.documents as { type: string }[]) || [],
+          milestones: (s.milestones as { description: string }[]) || [],
+          stage: s.stage,
+        });
+        await admin.from("startups")
+          .update({ vaultrise_score: score, scored_at: new Date().toISOString() })
+          .eq("id", s.id);
+        rescored++;
+      } catch { /* one refusal must not stop the queue */ }
+    }
   }
 
   // ── F: unfinished drafts ────────────────────────────────────────────────
@@ -218,7 +255,7 @@ export async function GET(req: NextRequest) {
   // the difference between "quiet because nothing was due" and "quiet because
   // it has not run for a week" is exactly what this table exists to expose.
   await logSystemEvent("cron/follow-ups", "info", "Run completed", {
-    checked: due?.length ?? 0, notified, draftNudges: nudged, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified, suspensionsLifted: lifted,
+    checked: due?.length ?? 0, notified, draftNudges: nudged, rescored, freshStartups: fresh?.length ?? 0, searchAlerts: searchNotified, suspensionsLifted: lifted,
   });
 
   // Prune info rows older than 30 days in passing; errors stay until deleted
@@ -268,6 +305,7 @@ export async function GET(req: NextRequest) {
     checked: due?.length ?? 0,
     notified,
     draftNudges: nudged,
+    rescored,
     freshStartups: fresh?.length ?? 0,
     searchAlerts: searchNotified,
   });

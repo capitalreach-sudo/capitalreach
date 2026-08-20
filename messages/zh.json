@@ -1267,7 +1267,8 @@
     "ddQuestionsPh": "您对本报告的提问 — 每行一个（可选）",
     "ddRead": "已读取：{docs}",
     "ddReadNone": "未向您共享任何可读文档，本报告仅基于列表信息。",
-    "ddSkipped": "已跳过：{docs}"
+    "ddSkipped": "已跳过：{docs}",
+    "bookInNewTab": "在新标签页打开"
   },
   "investors": {
     "pageTitle": "认证投资者",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",
     "cta": "抢占名额",
-    "textShort": "前 {target} 位免费 — 剩余 {spotsLeft} 个名额。"
+    "textShort": "前 {target} 位免费 — 剩余 {spotsLeft} 个名额。",
+    "textZero": "上线期间前 {target} 名成员免费。"
   },
   "locale": {
     "changedTo": "语言已切换为 {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "交易已开启 —— 现已出现在双方的看板上",
     "sent": "请求已发送 —— 需对方先接受",
     "sentToFounder": "请求已发送 —— 由创始人决定是否开启交易"
+  },
+  "waitlist": {
+    "joinIfSpace": "加入候补名单",
+    "joinNextRaise": "下轮融资时通知我",
+    "onIt": "已在候补名单",
+    "joined": "已加入候补 —— 创始人已收到通知",
+    "waitingCount": "{n} 人等待中"
+  },
+  "calc": {
+    "title": "你的支票能买到什么？",
+    "note": "按本轮公布的投后估值 {post} 推算，未计入未来稀释。仅为条款演示，不构成建议。"
+  },
+  "closed": {
+    "kicker": "本轮已交割",
+    "line": "大功告成。",
+    "lineNamed": "与 {name} 达成交易。",
+    "dismiss": "点击任意处继续"
   }
 }

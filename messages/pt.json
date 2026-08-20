@@ -1224,7 +1224,8 @@
     "ddQuestionsPh": "As suas perguntas para este relatório — uma por linha (opcional)",
     "ddRead": "Lidos: {docs}",
     "ddReadNone": "Não lhe foi partilhado nenhum documento legível, por isso este relatório baseia-se apenas na ficha.",
-    "ddSkipped": "Ignorados: {docs}"
+    "ddSkipped": "Ignorados: {docs}",
+    "bookInNewTab": "Abrir num novo separador"
   },
   "filters": {
     "industry": "Indústria",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Grátis para os primeiros {target} membros — {memberCount}/{target} aderiram, restam {spotsLeft} vagas.",
     "cta": "Garanta o seu lugar",
-    "textShort": "Grátis para os primeiros {target} — restam {spotsLeft} lugares."
+    "textShort": "Grátis para os primeiros {target} — restam {spotsLeft} lugares.",
+    "textZero": "Grátis para os nossos primeiros {target} membros durante o lançamento."
   },
   "locale": {
     "changedTo": "Idioma alterado para {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Negócio aberto — já está nos dois quadros",
     "sent": "Pedido enviado — a outra parte tem de aceitar primeiro",
     "sentToFounder": "Pedido enviado — o fundador decide se abre o negócio"
+  },
+  "waitlist": {
+    "joinIfSpace": "Entrar na lista de espera",
+    "joinNextRaise": "Avisem-me na próxima ronda",
+    "onIt": "Na lista de espera",
+    "joined": "Está na lista — o fundador foi avisado",
+    "waitingCount": "{n} à espera"
+  },
+  "calc": {
+    "title": "O que compraria o seu cheque?",
+    "note": "Derivado da post-money publicada de {post}, antes de diluições futuras. Uma ilustração dos termos, não aconselhamento."
+  },
+  "closed": {
+    "kicker": "Ronda fechada",
+    "line": "Negócio feito.",
+    "lineNamed": "Fechado com {name}.",
+    "dismiss": "Clique em qualquer lugar para continuar"
   }
 }

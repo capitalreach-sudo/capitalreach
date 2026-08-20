@@ -1224,7 +1224,8 @@
     "ddQuestionsPh": "Le tue domande per questo report — una per riga (facoltativo)",
     "ddRead": "Letti: {docs}",
     "ddReadNone": "Non ti è stato condiviso alcun documento leggibile, quindi il report si basa solo sulla scheda.",
-    "ddSkipped": "Saltati: {docs}"
+    "ddSkipped": "Saltati: {docs}",
+    "bookInNewTab": "Apri in una nuova scheda"
   },
   "filters": {
     "industry": "Settore",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Gratis per i primi {target} membri — {memberCount}/{target} iscritti, restano {spotsLeft} posti.",
     "cta": "Prenota il tuo posto",
-    "textShort": "Gratis per i primi {target} — restano {spotsLeft} posti."
+    "textShort": "Gratis per i primi {target} — restano {spotsLeft} posti.",
+    "textZero": "Gratuito per i primi {target} membri durante il lancio."
   },
   "locale": {
     "changedTo": "Lingua cambiata in {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Deal aperto — ora è su entrambe le board",
     "sent": "Richiesta inviata — l'altra parte deve prima accettare",
     "sentToFounder": "Richiesta inviata — il founder decide se aprire il deal"
+  },
+  "waitlist": {
+    "joinIfSpace": "Entra in lista d'attesa",
+    "joinNextRaise": "Avvisami al prossimo round",
+    "onIt": "In lista d'attesa",
+    "joined": "Sei in lista — il founder lo sa",
+    "waitingCount": "{n} in attesa"
+  },
+  "calc": {
+    "title": "Che cosa comprerebbe il tuo assegno?",
+    "note": "Derivato dalla post-money dichiarata di {post}, prima di future diluizioni. Un'illustrazione dei termini, non un consiglio."
+  },
+  "closed": {
+    "kicker": "Round chiuso",
+    "line": "L'affare è fatto.",
+    "lineNamed": "Chiuso con {name}.",
+    "dismiss": "Clicca ovunque per continuare"
   }
 }

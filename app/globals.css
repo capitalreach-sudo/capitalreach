@@ -1072,3 +1072,9 @@ html { scroll-behavior: smooth; }
 }
 .one-pager-cols { column-count: 1; }
 }
+
+/* The deal-closed moment eases in rather than snapping — a bell, not a popup. */
+@keyframes cr-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DealKanban, type OwnProfile } from "@/components/shared/deal-kanban";
 import { DealProposals } from "@/components/shared/deal-proposals";
+import { DealClosedMoment } from "@/components/shared/deal-closed-moment";
 import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
@@ -27,6 +28,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   // preceded by the non-circumvention acknowledgment. The server answers 428
   // with the startup; we show the modal, record the ack, and retry the move.
   const [ackPending, setAckPending] = useState<{ startupId: string; startupName: string; retry: () => Promise<void> } | null>(null);
+  const [closedMoment, setClosedMoment] = useState<{ amount: number | null; currency: string | null; counterpartName: string | null } | null>(null);
 
   async function handleDealStatusChange(dealId: string, status: DealStatus, reason?: string) {
     const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status, reason }) });
@@ -49,7 +51,13 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     const data = await res.json();
     if (!res.ok) { notify.error(data.error || t("dashboard.dealCloseFailed")); return; }
     if (data.proposed) { notify.success(t("deals.closeProposedSent")); router.refresh(); return; }
-    notify.success(amount ? t("dashboard.dealClosedAt", { amount: formatMoney(amount, currency) }) : t("dashboard.dealClosed"));
+    // The moment itself. Months of work deserve more than a four-second toast.
+    const closedDeal = deals.find(d => d.id === dealId);
+    const counterpartName = viewAs === "startup"
+      ? ((closedDeal?.investor as { display_name?: string | null; firm_name?: string | null } | undefined)?.firm_name
+         ?? (closedDeal?.investor as { display_name?: string | null } | undefined)?.display_name ?? null)
+      : ((closedDeal?.startup as { name?: string } | undefined)?.name ?? null);
+    setClosedMoment({ amount: amount || null, currency, counterpartName });
     // The fee couldn't be invoiced because the founder has no payment method on
     // file — say so rather than letting the revenue leak silently.
     if (data.feeNotBilled) notify.info(t("deals.feeNotBilled"));
@@ -68,6 +76,14 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
 
   return (
     <>
+    {closedMoment && (
+      <DealClosedMoment
+        amount={closedMoment.amount}
+        currency={closedMoment.currency}
+        counterpartName={closedMoment.counterpartName}
+        onDone={() => setClosedMoment(null)}
+      />
+    )}
     {ackPending && (
       <NonCircumventionModal
         open

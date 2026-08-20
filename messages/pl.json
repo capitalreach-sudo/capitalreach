@@ -1224,7 +1224,8 @@
     "ddQuestionsPh": "Twoje pytania do tego raportu — po jednym w wierszu (opcjonalnie)",
     "ddRead": "Przeczytano: {docs}",
     "ddReadNone": "Nie udostępniono Ci żadnych czytelnych dokumentów, więc raport opiera się wyłącznie na profilu.",
-    "ddSkipped": "Pominięto: {docs}"
+    "ddSkipped": "Pominięto: {docs}",
+    "bookInNewTab": "Otwórz w nowej karcie"
   },
   "filters": {
     "industry": "Branża",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Bezpłatnie dla pierwszych {target} członków — dołączyło {memberCount}/{target}, pozostało {spotsLeft} miejsc.",
     "cta": "Zajmij swoje miejsce",
-    "textShort": "Bezpłatnie dla pierwszych {target} — zostało {spotsLeft} miejsc."
+    "textShort": "Bezpłatnie dla pierwszych {target} — zostało {spotsLeft} miejsc.",
+    "textZero": "Za darmo dla pierwszych {target} członków w okresie startu."
   },
   "locale": {
     "changedTo": "Zmieniono język na {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Transakcja otwarta — jest już na obu tablicach",
     "sent": "Prośba wysłana — druga strona musi najpierw zaakceptować",
     "sentToFounder": "Prośba wysłana — założyciel decyduje, czy otworzyć transakcję"
+  },
+  "waitlist": {
+    "joinIfSpace": "Dołącz do listy oczekujących",
+    "joinNextRaise": "Daj znać przy następnej rundzie",
+    "onIt": "Na liście oczekujących",
+    "joined": "Jesteś na liście — założyciel wie",
+    "waitingCount": "Oczekuje: {n}"
+  },
+  "calc": {
+    "title": "Co kupiłby Twój czek?",
+    "note": "Wyliczone z podanej post-money {post}, przed przyszłym rozwodnieniem. Ilustracja warunków, nie porada."
+  },
+  "closed": {
+    "kicker": "Runda zamknięta",
+    "line": "Umowa dopięta.",
+    "lineNamed": "Zamknięta z {name}.",
+    "dismiss": "Kliknij gdziekolwiek, aby kontynuować"
   }
 }

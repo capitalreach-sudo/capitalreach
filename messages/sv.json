@@ -1224,7 +1224,8 @@
     "ddQuestionsPh": "Dina frågor för den här rapporten — en per rad (valfritt)",
     "ddRead": "Läst: {docs}",
     "ddReadNone": "Inga läsbara dokument delades med dig, så rapporten bygger enbart på annonsen.",
-    "ddSkipped": "Hoppades över: {docs}"
+    "ddSkipped": "Hoppades över: {docs}",
+    "bookInNewTab": "Öppna i ny flik"
   },
   "filters": {
     "industry": "Bransch",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Gratis för våra första {target} medlemmar — {memberCount}/{target} har gått med, {spotsLeft} platser kvar.",
     "cta": "Säkra din plats",
-    "textShort": "Gratis för våra första {target} — {spotsLeft} platser kvar."
+    "textShort": "Gratis för våra första {target} — {spotsLeft} platser kvar.",
+    "textZero": "Gratis för våra första {target} medlemmar under lanseringen."
   },
   "locale": {
     "changedTo": "Språk ändrat till {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Affären öppnad — den ligger nu på båda tavlorna",
     "sent": "Förfrågan skickad — motparten måste först acceptera",
     "sentToFounder": "Förfrågan skickad — grundaren avgör om affären öppnas"
+  },
+  "waitlist": {
+    "joinIfSpace": "Ställ mig på väntelistan",
+    "joinNextRaise": "Säg till vid nästa runda",
+    "onIt": "På väntelistan",
+    "joined": "Du står på väntelistan — grundaren vet",
+    "waitingCount": "{n} väntar"
+  },
+  "calc": {
+    "title": "Vad skulle din check köpa?",
+    "note": "Härlett ur rundans egen post-money på {post}, före framtida utspädning. En illustration av villkoren, inte rådgivning."
+  },
+  "closed": {
+    "kicker": "Rundan stängd",
+    "line": "Affären är i hamn.",
+    "lineNamed": "Stängd med {name}.",
+    "dismiss": "Klicka var som helst för att fortsätta"
   }
 }

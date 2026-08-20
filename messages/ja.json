@@ -1267,7 +1267,8 @@
     "ddQuestionsPh": "このレポートへの質問 — 1行に1つ（任意）",
     "ddRead": "読み取り: {docs}",
     "ddReadNone": "閲覧可能な資料が共有されていないため、本レポートは掲載情報のみに基づいています。",
-    "ddSkipped": "スキップ: {docs}"
+    "ddSkipped": "スキップ: {docs}",
+    "bookInNewTab": "新しいタブで開く"
   },
   "investors": {
     "pageTitle": "認定投資家",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",
     "cta": "今すぐ確保する",
-    "textShort": "先着 {target} 名は無料 — 残り {spotsLeft} 枠。"
+    "textShort": "先着 {target} 名は無料 — 残り {spotsLeft} 枠。",
+    "textZero": "ローンチ期間中、最初の {target} 名は無料です。"
   },
   "locale": {
     "changedTo": "言語を{name}に変更しました",
@@ -3305,5 +3307,22 @@
     "accepted": "ディール開始 — 双方のボードに載りました",
     "sent": "リクエスト送信済み — まず相手の承認が必要です",
     "sentToFounder": "リクエスト送信済み — 開始するかは創業者が決めます"
+  },
+  "waitlist": {
+    "joinIfSpace": "ウェイトリストに入る",
+    "joinNextRaise": "次の調達時に知らせて",
+    "onIt": "ウェイトリスト登録済み",
+    "joined": "登録しました — 創業者に通知済みです",
+    "waitingCount": "{n} 名待機中"
+  },
+  "calc": {
+    "title": "あなたの小切手で何が買える？",
+    "note": "本ラウンドのポストマネー {post} からの試算で、将来の希薄化は含みません。条件の説明であり助言ではありません。"
+  },
+  "closed": {
+    "kicker": "ラウンド成立",
+    "line": "ディール成立。",
+    "lineNamed": "{name} と成立。",
+    "dismiss": "どこかをクリックして続行"
   }
 }

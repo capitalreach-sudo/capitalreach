@@ -1267,7 +1267,8 @@
     "ddQuestionsPh": "Vos questions pour ce rapport — une par ligne (facultatif)",
     "ddRead": "Lu : {docs}",
     "ddReadNone": "Aucun document lisible ne vous a été partagé ; ce rapport se fonde uniquement sur la fiche.",
-    "ddSkipped": "Ignoré : {docs}"
+    "ddSkipped": "Ignoré : {docs}",
+    "bookInNewTab": "Ouvrir dans un nouvel onglet"
   },
   "investors": {
     "pageTitle": "Investisseurs vérifiés",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Gratuit pour nos {target} premiers membres — {memberCount}/{target} inscrits, {spotsLeft} places restantes.",
     "cta": "Réservez votre place",
-    "textShort": "Gratuit pour nos {target} premiers — {spotsLeft} places restantes."
+    "textShort": "Gratuit pour nos {target} premiers — {spotsLeft} places restantes.",
+    "textZero": "Gratuit pour nos {target} premiers membres pendant le lancement."
   },
   "locale": {
     "changedTo": "Langue changée pour {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Opération ouverte — elle figure sur les deux tableaux",
     "sent": "Demande envoyée — l'autre partie doit d'abord accepter",
     "sentToFounder": "Demande envoyée — le fondateur décide d'ouvrir ou non l'opération"
+  },
+  "waitlist": {
+    "joinIfSpace": "Rejoindre la liste d'attente",
+    "joinNextRaise": "Prévenez-moi à la prochaine levée",
+    "onIt": "Sur la liste d'attente",
+    "joined": "Vous êtes sur la liste — le fondateur est prévenu",
+    "waitingCount": "{n} en attente"
+  },
+  "calc": {
+    "title": "Qu'achèterait votre chèque ?",
+    "note": "Déduit de la post-money affichée de {post}, avant toute dilution future. Une illustration des conditions publiées, pas un conseil."
+  },
+  "closed": {
+    "kicker": "Levée clôturée",
+    "line": "L'affaire est faite.",
+    "lineNamed": "Conclu avec {name}.",
+    "dismiss": "Cliquez n'importe où pour continuer"
   }
 }

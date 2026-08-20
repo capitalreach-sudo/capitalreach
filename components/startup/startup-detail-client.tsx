@@ -28,6 +28,8 @@ import { InfoTip } from "@/components/shared/info-tip";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { EntityLogo } from "@/components/shared/entity-logo";
+import { WaitlistButton } from "@/components/startup/waitlist-button";
+import { RoundCalculator } from "@/components/startup/round-calculator";
 import { roundCloseState } from "@/lib/round-close";
 import { SCORECARD_CRITERIA, CRITERION_LABEL_KEY, scorecardTotal, type ScorecardScores, type ScorecardWeights, type ScorecardCriterion } from "@/lib/scorecard";
 import { postMoney, preMoney, impliedDilutionPct, ownershipForCheque, impliedPostFromEquity, equityValuationMismatch, type ValuationType } from "@/lib/round-math";
@@ -400,6 +402,7 @@ export function StartupDetailClient({
   const [isSaved, setIsSaved]                   = useState(false);
   const [viewerCount, setViewerCount]           = useState(1);
   const [messageOpen, setMessageOpen]           = useState(false);
+  const [bookingOpen, setBookingOpen]           = useState(false);
   // Phase 1: the non-circumvention acknowledgment gates first contact. Once
   // recorded (server-side, with IP + timestamp) the message dialog opens.
   const [acked, setAcked]                       = useState(circumventionAcked);
@@ -770,10 +773,10 @@ export function StartupDetailClient({
               {/* Action buttons */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
                 {startup.booking_url && (
-                  <a href={startup.booking_url} target="_blank" rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 14px", textDecoration: "none" }}>
+                  <button onClick={() => setBookingOpen(true)}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 14px", cursor: "pointer" }}>
                     <CalendarClock style={{ width: 13, height: 13 }} /> {t("startupDetail.bookCall")}
-                  </a>
+                  </button>
                 )}
                 {startup.website && (
                   <a href={startup.website} target="_blank" rel="noopener noreferrer"
@@ -819,6 +822,11 @@ export function StartupDetailClient({
                     section when one is on it), so it says that now. */}
                 <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
+                {/* A closed or oversubscribed round catches the demand it
+                    generates instead of dead-ending it. */}
+                {!viewerDeal && investorId && !viewerSuspended && (roundState === "closed" || roundState === "oversubscribed") && (
+                  <WaitlistButton startupId={startup.id} roundState={roundState} />
+                )}
                 {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
                   <button onClick={startInterest}
                     className="btn-copper-shimmer"
@@ -1191,6 +1199,16 @@ export function StartupDetailClient({
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
                       {t(st.instrument === "safe" ? "round.safe" : st.instrument === "convertible_note" ? "round.note" : "round.equity")}
                     </p>
+                  )}
+                  {/* The slider answers the one question the cells above set
+                      up: "and what would MY cheque buy?" */}
+                  {post !== null && (
+                    <RoundCalculator
+                      postMoney={post}
+                      currency={cur}
+                      minCheck={(startup as { min_check_size?: number | null }).min_check_size ?? null}
+                      fundingTarget={startup.funding_target}
+                    />
                   )}
                   {/* Owners see the contradiction before investors do. */}
                   {isOwner && gap !== null && gap > 0.5 && (
@@ -1584,6 +1602,32 @@ export function StartupDetailClient({
           </Link>
         )}
       </StickyActionBar>
+
+      {/* Booking, without leaving the page. Some providers refuse framing —
+          the fallback link inside the modal covers those. */}
+      {bookingOpen && startup.booking_url && (
+        <div role="dialog" aria-modal="true" onClick={() => setBookingOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 90, background: "rgba(26,22,18,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 8, width: "min(920px, 96vw)", height: "min(700px, 90vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)" }}>{t("startupDetail.bookCall")}</span>
+              <span style={{ display: "inline-flex", gap: 12, alignItems: "center" }}>
+                <a href={startup.booking_url} target="_blank" rel="noopener noreferrer"
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11.5, color: "var(--cr-copper)" }}>
+                  {t("startupDetail.bookInNewTab")} ↗
+                </a>
+                <button onClick={() => setBookingOpen(false)} aria-label={t("common.close")}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+                  <X style={{ width: 16, height: 16 }} />
+                </button>
+              </span>
+            </div>
+            <iframe src={startup.booking_url} title={t("startupDetail.bookCall")}
+              style={{ flex: 1, border: "none", width: "100%" }} />
+          </div>
+        </div>
+      )}
     </main>
     </TranslatedContent>
   );

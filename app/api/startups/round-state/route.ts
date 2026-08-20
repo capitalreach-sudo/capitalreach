@@ -83,6 +83,36 @@ export async function POST(req: NextRequest) {
     } catch (e) {
       console.error("round-state broadcast failed:", e);
     }
+
+    // The waitlist is a stronger promise than a watchlist: these investors
+    // asked SPECIFICALLY to be told when the door opens. Reopening tells
+    // them first-class; their entries stay, because "when you raise again"
+    // outlives any single reopening.
+    if (roundState === "open" && (before.round_state === "closed" || before.round_state === "oversubscribed")) {
+      try {
+        const { data: waiting } = await admin
+          .from("round_waitlist")
+          .select("investor:investors(owner_id)")
+          .eq("startup_id", mine.entityId)
+          .limit(500);
+        const ids = Array.from(new Set(
+          ((waiting ?? []) as Array<{ investor: { owner_id: string | null } | null }>)
+            .map(r => r.investor?.owner_id)
+            .filter((id): id is string => !!id && id !== user.id)
+        ));
+        if (ids.length > 0) {
+          await admin.from("notifications").insert(ids.map(uid => ({
+            user_id: uid,
+            type: "listing_update",
+            title: `${before.name} is open again — you are on the waitlist`,
+            body: "The round reopened to new investors. You asked to be told.",
+            href: `/startups/${before.slug}`,
+          })));
+        }
+      } catch (e) {
+        console.error("waitlist broadcast failed:", e);
+      }
+    }
   }
 
   return NextResponse.json({ success: true, roundState: data.round_state, showMomentum: data.show_momentum });

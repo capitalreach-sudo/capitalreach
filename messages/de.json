@@ -1274,7 +1274,8 @@
     "ddQuestionsPh": "Ihre Fragen für diesen Bericht — eine pro Zeile (optional)",
     "ddRead": "Gelesen: {docs}",
     "ddReadNone": "Es wurden keine lesbaren Dokumente mit Ihnen geteilt; dieser Bericht basiert nur auf dem Listing.",
-    "ddSkipped": "Übersprungen: {docs}"
+    "ddSkipped": "Übersprungen: {docs}",
+    "bookInNewTab": "In neuem Tab öffnen"
   },
   "investors": {
     "pageTitle": "Verifizierte Investoren",
@@ -1820,7 +1821,8 @@
   "banner": {
     "text": "Kostenlos für unsere ersten {target} Mitglieder — {memberCount}/{target} beigetreten, noch {spotsLeft} Plätze übrig.",
     "cta": "Sichere dir deinen Platz",
-    "textShort": "Kostenlos für unsere ersten {target} — noch {spotsLeft} Plätze frei."
+    "textShort": "Kostenlos für unsere ersten {target} — noch {spotsLeft} Plätze frei.",
+    "textZero": "Während des Launchs kostenlos für unsere ersten {target} Mitglieder."
   },
   "locale": {
     "changedTo": "Sprache geändert zu {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Deal eröffnet — er liegt jetzt auf beiden Boards",
     "sent": "Anfrage gesendet — die Gegenseite muss erst zustimmen",
     "sentToFounder": "Anfrage gesendet — der Gründer entscheidet, ob der Deal geöffnet wird"
+  },
+  "waitlist": {
+    "joinIfSpace": "Auf die Warteliste",
+    "joinNextRaise": "Sag mir Bescheid bei der nächsten Runde",
+    "onIt": "Auf der Warteliste",
+    "joined": "Du stehst auf der Warteliste — der Gründer weiß Bescheid",
+    "waitingCount": "{n} warten"
+  },
+  "calc": {
+    "title": "Was würde dein Scheck kaufen?",
+    "note": "Abgeleitet aus der Post-Money-Bewertung der Runde von {post}, vor künftiger Verwässerung. Eine Veranschaulichung der Konditionen, keine Beratung."
+  },
+  "closed": {
+    "kicker": "Runde geschlossen",
+    "line": "Der Deal ist gemacht.",
+    "lineNamed": "Abgeschlossen mit {name}.",
+    "dismiss": "Zum Fortfahren irgendwo klicken"
   }
 }

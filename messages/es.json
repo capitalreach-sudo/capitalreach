@@ -1267,7 +1267,8 @@
     "ddQuestionsPh": "Tus preguntas para este informe — una por línea (opcional)",
     "ddRead": "Leído: {docs}",
     "ddReadNone": "No se compartió contigo ningún documento legible, así que este informe se basa solo en la ficha.",
-    "ddSkipped": "Omitido: {docs}"
+    "ddSkipped": "Omitido: {docs}",
+    "bookInNewTab": "Abrir en una pestaña nueva"
   },
   "investors": {
     "pageTitle": "Inversores verificados",
@@ -1813,7 +1814,8 @@
   "banner": {
     "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",
     "cta": "Reserva tu lugar",
-    "textShort": "Gratis para nuestros primeros {target} — quedan {spotsLeft} plazas."
+    "textShort": "Gratis para nuestros primeros {target} — quedan {spotsLeft} plazas.",
+    "textZero": "Gratis para nuestros primeros {target} miembros durante el lanzamiento."
   },
   "locale": {
     "changedTo": "Idioma cambiado a {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Operación abierta: ya está en ambos tableros",
     "sent": "Solicitud enviada: la otra parte debe aceptar primero",
     "sentToFounder": "Solicitud enviada: el fundador decide si abre la operación"
+  },
+  "waitlist": {
+    "joinIfSpace": "Unirme a la lista de espera",
+    "joinNextRaise": "Avisadme en la próxima ronda",
+    "onIt": "En la lista de espera",
+    "joined": "Estás en la lista: el fundador lo sabe",
+    "waitingCount": "{n} esperando"
+  },
+  "calc": {
+    "title": "¿Qué compraría tu cheque?",
+    "note": "Derivado de la post-money publicada de {post}, antes de futuras diluciones. Una ilustración de las condiciones, no un consejo."
+  },
+  "closed": {
+    "kicker": "Ronda cerrada",
+    "line": "El trato está hecho.",
+    "lineNamed": "Cerrado con {name}.",
+    "dismiss": "Haz clic en cualquier parte para continuar"
   }
 }

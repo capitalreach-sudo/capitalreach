@@ -1854,6 +1854,45 @@ export type Database = {
           },
         ]
       }
+      round_waitlist: {
+        Row: {
+          created_at: string
+          id: string
+          investor_id: string
+          note: string | null
+          startup_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          investor_id: string
+          note?: string | null
+          startup_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          investor_id?: string
+          note?: string | null
+          startup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_waitlist_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round_waitlist_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_searches: {
         Row: {
           alert_enabled: boolean
@@ -2287,6 +2326,7 @@ export type Database = {
           safe_cap: number | null
           safe_discount: number | null
           sam: number | null
+          scored_at: string | null
           search_vector: unknown
           show_momentum: boolean
           slug: string
@@ -2367,6 +2407,7 @@ export type Database = {
           safe_cap?: number | null
           safe_discount?: number | null
           sam?: number | null
+          scored_at?: string | null
           search_vector?: unknown
           show_momentum?: boolean
           slug: string
@@ -2447,6 +2488,7 @@ export type Database = {
           safe_cap?: number | null
           safe_discount?: number | null
           sam?: number | null
+          scored_at?: string | null
           search_vector?: unknown
           show_momentum?: boolean
           slug?: string

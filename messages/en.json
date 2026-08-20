@@ -1278,7 +1278,8 @@
     "ddQuestionsPh": "Your questions for this report — one per line (optional)",
     "ddRead": "Read: {docs}",
     "ddReadNone": "No readable documents were shared with you, so this report is based on the listing only.",
-    "ddSkipped": "Skipped: {docs}"
+    "ddSkipped": "Skipped: {docs}",
+    "bookInNewTab": "Open in a new tab"
   },
   "investors": {
     "pageTitle": "Verified investors",
@@ -1824,7 +1825,8 @@
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",
     "cta": "Claim your spot",
-    "textShort": "Free for our first {target} — {spotsLeft} spots left."
+    "textShort": "Free for our first {target} — {spotsLeft} spots left.",
+    "textZero": "Free for our first {target} members during launch."
   },
   "locale": {
     "changedTo": "Language changed to {name}",
@@ -3305,5 +3307,22 @@
     "accepted": "Deal opened — it is on both boards now",
     "sent": "Request sent — the other side has to accept first",
     "sentToFounder": "Request sent — the founder decides whether to open the deal"
+  },
+  "waitlist": {
+    "joinIfSpace": "Join the waitlist",
+    "joinNextRaise": "Tell me when they raise again",
+    "onIt": "On the waitlist",
+    "joined": "You are on the waitlist — the founder has been told",
+    "waitingCount": "{n} waiting"
+  },
+  "calc": {
+    "title": "What would your cheque buy?",
+    "note": "Implied from the round's own post-money of {post}, before any future dilution. An illustration of the listed terms, not advice."
+  },
+  "closed": {
+    "kicker": "Round closed",
+    "line": "The deal is done.",
+    "lineNamed": "Closed with {name}.",
+    "dismiss": "Click anywhere to continue"
   }
 }
