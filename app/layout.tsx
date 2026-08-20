@@ -8,6 +8,7 @@ import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { CommandPalette } from "@/components/shared/command-palette";
+import { cookies } from "next/headers";
 import { BottomNav } from "@/components/shared/bottom-nav";
 import { SiteAssistant } from "@/components/shared/site-assistant";
 import { ShortcutsHelp } from "@/components/shared/shortcuts-help";
@@ -28,7 +29,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   // Tints the browser chrome on Android and the status bar in the installed
   // app, so the shell reads as part of the product rather than a web view.
-  themeColor: "#B5651D", // --cr-copper
+  themeColor: "var(--cr-copper)", // --cr-copper
 };
 
 export const metadata: Metadata = {
@@ -74,11 +75,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = getLocale();
+  // Theme before first byte: the toggle writes cr_theme, the server stamps
+  // the attribute, and no visitor ever sees a flash of the wrong theme.
+  let theme: "light" | "dark" = "light";
+  try {
+    theme = cookies().get("cr_theme")?.value === "dark" ? "dark" : "light";
+  } catch { /* static rendering contexts have no cookies; light is the default */ }
   const rtl = isRTL(locale);
   const extraFont = getLocaleFont(locale);
 
   return (
-    <html lang={locale} dir={rtl ? "rtl" : "ltr"} suppressHydrationWarning>
+    <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} suppressHydrationWarning>
       <head>
         {/* First in head: the connection is warm before any font CSS asks for it. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

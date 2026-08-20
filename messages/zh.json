@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "命令面板",
-    "placeholder": "搜索或跳转到…",
+    "placeholder": "搜索公司、投资人、页面…",
     "results": "结果",
     "noResults": "没有与“{q}”匹配的结果",
-    "hint": "搜索项目与投资人，或跳转到任意页面。"
+    "hint": "搜索项目与投资人，或跳转到任意页面。",
+    "empty": "未找到结果。",
+    "pageBrowse": "浏览创业公司",
+    "pageInvestors": "投资人目录",
+    "pageDeals": "交易门户",
+    "pageMessages": "消息",
+    "pageData": "数据中心",
+    "pagePricing": "价格"
   },
   "shortcuts": {
     "title": "键盘快捷键",
@@ -3324,5 +3331,9 @@
     "line": "大功告成。",
     "lineNamed": "与 {name} 达成交易。",
     "dismiss": "点击任意处继续"
+  },
+  "theme": {
+    "toDark": "深色模式",
+    "toLight": "浅色模式"
   }
 }

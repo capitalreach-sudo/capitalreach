@@ -17,7 +17,7 @@ import type { ListingSnippet } from "@/app/page";
 function DiamondDot() {
   return (
     <svg width="6" height="6" viewBox="0 0 6 6" fill="none" style={{ flexShrink: 0 }} aria-hidden>
-      <path d="M3 0L6 3L3 6L0 3L3 0Z" fill="#B5651D" />
+      <path d="M3 0L6 3L3 6L0 3L3 0Z" fill="var(--cr-copper)" />
     </svg>
   );
 }
@@ -25,9 +25,9 @@ function DiamondDot() {
 function StageBadge({ stage }: { stage: string }) {
   return (
     <span style={{
-      background: "#EDE8DE", border: "1px solid #D8D0C4", borderRadius: "3px",
+      background: "var(--cr-paper-2)", border: "1px solid #D8D0C4", borderRadius: "3px",
       padding: "3px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-      fontSize: "11px", color: "#6B6056", textTransform: "uppercase", letterSpacing: "0.06em",
+      fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em",
       whiteSpace: "nowrap",
     }}>
       {stage}
@@ -37,7 +37,7 @@ function StageBadge({ stage }: { stage: string }) {
 
 const TH: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-  color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.08em",
+  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
 };
 
 // ── Main Component ────────────────────────────────────────────
@@ -76,12 +76,12 @@ export function HomepageClient({ stats, listings, launch }: Props) {
   ];
 
   return (
-    <main style={{ background: "#F5F0E8" }}>
+    <main style={{ background: "var(--cr-paper)" }}>
       <ScrollProgress />
 
       {/* ── 1. HERO ─────────────────────────────────────────── */}
       <section
-        style={{ background: "#F5F0E8", position: "relative", overflow: "hidden" }}
+        style={{ background: "var(--cr-paper)", position: "relative", overflow: "hidden" }}
         className="min-h-[calc(100svh-56px)] flex items-center"
       >
         <div className="hero-noise" aria-hidden />
@@ -98,7 +98,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
                 display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "36px",
                 padding: "7px 14px", borderRadius: "999px", textDecoration: "none",
                 background: "rgba(181,101,29,0.08)", border: "1px solid rgba(181,101,29,0.25)",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "#B5651D",
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)",
                 letterSpacing: "0.02em",
               }}
             >
@@ -118,7 +118,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
               fontWeight:    700,
               fontStyle:     "italic",
               fontSize:      "clamp(38px, 6.6vw, 78px)",
-              color:         "#1A1612",
+              color:         "var(--cr-ink)",
               lineHeight:    1.02,
               textWrap:      "balance",
               letterSpacing: "-0.02em",
@@ -135,7 +135,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
             className="animate-fade-up-2"
             style={{
               fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "17px",
-              color: "#6B6056", lineHeight: 1.7, maxWidth: "520px",
+              color: "var(--cr-ink-3)", lineHeight: 1.7, maxWidth: "520px",
             }}
           >
             {t("hero.oneLiner")}
@@ -149,14 +149,14 @@ export function HomepageClient({ stats, listings, launch }: Props) {
             <Link
               href="/auth/signup?role=startup"
               className="btn-copper-shimmer w-full sm:w-auto"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "#B5651D", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "999px", border: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "999px", border: "none" }}
             >
               {t("hero.ctaPrimary")}
             </Link>
             <Link
               href="/startups"
               className="w-full sm:w-auto"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "#1A1612", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "999px", border: "1px solid #D8D0C4" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "999px", border: "1px solid #D8D0C4" }}
             >
               {t("hero.ctaSecondary")} →
             </Link>
@@ -167,11 +167,11 @@ export function HomepageClient({ stats, listings, launch }: Props) {
             className="animate-fade-up-4"
             style={{
               fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px",
-              color: "#9C8E82", marginTop: "28px", display: "flex", alignItems: "center",
+              color: "var(--cr-ink-4)", marginTop: "28px", display: "flex", alignItems: "center",
               justifyContent: "center", gap: "10px", flexWrap: "wrap",
             }}
           >
-            <span><span style={{ color: "#B5651D" }}>✦</span> {t("hero.trustVetted")}</span>
+            <span><span style={{ color: "var(--cr-copper)" }}>✦</span> {t("hero.trustVetted")}</span>
             <span aria-hidden>·</span>
             <span>{t("hero.trustFee")}</span>
             {launch.isLaunch && (<><span aria-hidden>·</span><span>{t("hero.trustLaunch")}</span></>)}
@@ -183,8 +183,8 @@ export function HomepageClient({ stats, listings, launch }: Props) {
               {trustCounts.map(([v, label]) => (
                 <div key={label} style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                   <DiamondDot />
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#6B6056" }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "#3D3630" }}>{v.toLocaleString()}</span>{" "}{label}
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-2)" }}>{v.toLocaleString()}</span>{" "}{label}
                   </span>
                 </div>
               ))}
@@ -196,7 +196,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
       {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
       <section
         aria-label="CapitalReach in three numbers"
-        style={{ background: "#1A1612", borderTop: "1px solid rgba(181,101,29,0.15)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}
+        style={{ background: "var(--cr-ink)", borderTop: "1px solid rgba(181,101,29,0.15)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-10">
           <div className="grid grid-cols-3">
@@ -206,7 +206,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
                 className="flex flex-col items-center justify-center text-center py-7 md:py-9"
                 style={{ borderLeft: i > 0 ? "1px solid rgba(245,240,232,0.08)" : undefined }}
               >
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "#B5651D", lineHeight: 1 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
                   {value}
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "rgba(245,240,232,0.45)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
@@ -227,21 +227,21 @@ export function HomepageClient({ stats, listings, launch }: Props) {
         <section
           ref={listRef as React.RefObject<HTMLElement>}
           className="reveal"
-          style={{ background: "#F5F0E8" }}
+          style={{ background: "var(--cr-paper)" }}
         >
           <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-20">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
               <div className="ruled-label">{t("listings.title")}</div>
-              <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#B5651D", textDecoration: "none" }}>
+              <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
                 {t("listings.viewAll")} →
               </Link>
             </div>
 
-            <div style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden", background: "#F5F0E8", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
+            <div style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden", background: "var(--cr-paper)", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
               <div style={{ height: "3px", background: "linear-gradient(90deg, #8A4A15, #B5651D, #D4842A)" }} />
 
               {/* Desktop header */}
-              <div className="hidden md:flex items-center" style={{ padding: "14px 20px", background: "#EDE8DE", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
+              <div className="hidden md:flex items-center" style={{ padding: "14px 20px", background: "var(--cr-paper-2)", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
                 <div style={{ minWidth: "28px" }} />
                 <div style={{ ...TH, flex: 1, minWidth: "180px" }}>{t("listings.company")}</div>
                 <div style={{ ...TH, minWidth: "120px", maxWidth: "120px" }}>{t("listings.industry")}</div>
@@ -252,7 +252,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
                 <div style={{ minWidth: "48px" }} />
               </div>
               {/* Mobile header */}
-              <div className="flex md:hidden items-center" style={{ padding: "14px 16px", background: "#EDE8DE", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
+              <div className="flex md:hidden items-center" style={{ padding: "14px 16px", background: "var(--cr-paper-2)", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
                 <div style={{ ...TH, flex: 1 }}>{t("listings.company")}</div>
                 <div style={{ ...TH, minWidth: "80px" }}>{t("listings.stage")}</div>
                 <div style={{ ...TH, minWidth: "80px", textAlign: "right" }}>{t("listings.raising")}</div>
@@ -280,7 +280,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
                     }}
                     style={{
                       borderBottom: isLast ? "none" : "1px solid rgba(26,22,18,0.08)",
-                      background: isHovered ? "#E4DDD2" : "transparent",
+                      background: isHovered ? "var(--cr-paper-3)" : "transparent",
                       transition: "background 120ms ease",
                       cursor: "pointer",
                     }}
@@ -291,27 +291,27 @@ export function HomepageClient({ stats, listings, launch }: Props) {
 
                     <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: "10px" }}>
                       <div style={{
-                        width: 28, height: 28, borderRadius: "50%", background: "#E4DDD2",
+                        width: 28, height: 28, borderRadius: "50%", background: "var(--cr-paper-3)",
                         border: "1px solid #D8D0C4", display: "flex", alignItems: "center",
                         justifyContent: "center", overflow: "hidden", flexShrink: 0,
-                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#B5651D",
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)",
                       }}>
                         {s.name.charAt(0)}
                       </div>
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A1612", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
                     </div>
 
-                    <div className="hidden md:block" style={{ minWidth: "120px", maxWidth: "120px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "#6B6056", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div className="hidden md:block" style={{ minWidth: "120px", maxWidth: "120px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {s.industry}
                     </div>
 
                     <div style={{ minWidth: "80px" }} className="md:min-w-[100px] md:max-w-[100px]"><StageBadge stage={s.stage} /></div>
 
-                    <div className="hidden md:block" style={{ minWidth: "90px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "#3D3630" }}>
+                    <div className="hidden md:block" style={{ minWidth: "90px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)" }}>
                       {safeFormatMRR(s.mrr)}
                     </div>
 
-                    <div style={{ minWidth: "80px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "#B5651D" }} className="md:min-w-[100px]">
+                    <div style={{ minWidth: "80px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)" }} className="md:min-w-[100px]">
                       {safeFormatCurrency(s.funding_target)}
                     </div>
 
@@ -320,7 +320,7 @@ export function HomepageClient({ stats, listings, launch }: Props) {
                     </div>
 
                     <div style={{ minWidth: "36px", textAlign: "right" }} className="md:min-w-[48px]">
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: isHovered ? "#1A1612" : "#9C8E82", transition: "color 120ms ease" }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: isHovered ? "var(--cr-ink)" : "var(--cr-ink-4)", transition: "color 120ms ease" }}>
                         {t("listings.view")} →
                       </span>
                     </div>

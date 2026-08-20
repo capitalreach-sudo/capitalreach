@@ -94,9 +94,9 @@ export function GlobalSearch() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={t("search.aria")}
-        style={{ background: "none", border: "none", cursor: "pointer", color: "#9C8E82", padding: 0, display: "flex", transition: "color 150ms ease" }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
+        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", padding: 0, display: "flex", transition: "color 150ms ease" }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
       >
         <Search className="h-4 w-4" />
       </button>

@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "Paleta de comandos",
-    "placeholder": "Pesquisar ou ir para…",
+    "placeholder": "Pesquisar empresas, investidores, páginas…",
     "results": "Resultados",
     "noResults": "Nada corresponde a «{q}»",
-    "hint": "Pesquisa oportunidades e investidores, ou vai para qualquer página."
+    "hint": "Pesquisa oportunidades e investidores, ou vai para qualquer página.",
+    "empty": "Nada encontrado.",
+    "pageBrowse": "Explorar startups",
+    "pageInvestors": "Diretório de investidores",
+    "pageDeals": "Portal de negócios",
+    "pageMessages": "Mensagens",
+    "pageData": "Centro de dados",
+    "pagePricing": "Preços"
   },
   "shortcuts": {
     "title": "Atalhos de teclado",
@@ -3324,5 +3331,9 @@
     "line": "Negócio feito.",
     "lineNamed": "Fechado com {name}.",
     "dismiss": "Clique em qualquer lugar para continuar"
+  },
+  "theme": {
+    "toDark": "Modo escuro",
+    "toLight": "Modo claro"
   }
 }

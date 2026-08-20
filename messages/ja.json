@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "コマンドパレット",
-    "placeholder": "検索、またはページへ移動…",
+    "placeholder": "会社・投資家・ページを検索…",
     "results": "結果",
     "noResults": "「{q}」に一致するものはありません",
-    "hint": "掲載企業や投資家を検索、または任意のページへ移動できます。"
+    "hint": "掲載企業や投資家を検索、または任意のページへ移動できます。",
+    "empty": "見つかりませんでした。",
+    "pageBrowse": "スタートアップを見る",
+    "pageInvestors": "投資家ディレクトリ",
+    "pageDeals": "ディールポータル",
+    "pageMessages": "メッセージ",
+    "pageData": "データセンター",
+    "pagePricing": "料金"
   },
   "shortcuts": {
     "title": "キーボードショートカット",
@@ -3324,5 +3331,9 @@
     "line": "ディール成立。",
     "lineNamed": "{name} と成立。",
     "dismiss": "どこかをクリックして続行"
+  },
+  "theme": {
+    "toDark": "ダークモード",
+    "toLight": "ライトモード"
   }
 }

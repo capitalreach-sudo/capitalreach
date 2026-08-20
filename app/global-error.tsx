@@ -23,7 +23,7 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: "#F5F0E8" }}>
+      <body style={{ margin: 0, background: "var(--cr-paper)" }}>
         <div
           style={{
             minHeight: "100vh", display: "flex", flexDirection: "column",
@@ -32,17 +32,17 @@ export default function GlobalError({
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
           }}
         >
-          <div style={{ fontSize: "40px", color: "#D8D0C4", marginBottom: "20px", lineHeight: 1 }}>◆</div>
-          <h1 style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "#1A1612", margin: "0 0 10px" }}>
+          <div style={{ fontSize: "40px", color: "var(--cr-paper-4)", marginBottom: "20px", lineHeight: 1 }}>◆</div>
+          <h1 style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)", margin: "0 0 10px" }}>
             Something went wrong
           </h1>
-          <p style={{ fontWeight: 300, fontSize: "14px", color: "#6B6056", lineHeight: 1.6, maxWidth: "360px", margin: "0 0 28px" }}>
+          <p style={{ fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "360px", margin: "0 0 28px" }}>
             CapitalReach failed to load. Reloading usually fixes it.
           </p>
           <button
             onClick={reset}
             style={{
-              height: "40px", padding: "0 22px", background: "#B5651D",
+              height: "40px", padding: "0 22px", background: "var(--cr-copper)",
               border: "none", borderRadius: "4px", cursor: "pointer",
               fontWeight: 600, fontSize: "13px", color: "#fff",
             }}
@@ -50,7 +50,7 @@ export default function GlobalError({
             Reload
           </button>
           {error.digest && (
-            <p style={{ fontFamily: "monospace", fontSize: "10px", color: "#9C8E82", marginTop: "28px" }}>
+            <p style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "28px" }}>
               Reference: {error.digest}
             </p>
           )}

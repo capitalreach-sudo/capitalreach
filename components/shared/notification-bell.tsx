@@ -108,9 +108,9 @@ export function NotificationBell() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={t("notifications.title")}
-        style={{ background: "none", border: "none", cursor: "pointer", color: "#9C8E82", padding: 0, display: "flex", position: "relative", transition: "color 150ms ease" }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
+        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", padding: 0, display: "flex", position: "relative", transition: "color 150ms ease" }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
       >
         <Bell className="h-4 w-4" style={pulse ? { animation: "bellPulse 800ms ease" } : undefined} />
         {unread > 0 && (

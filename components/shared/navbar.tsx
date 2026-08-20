@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase";
 import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTranslation } from "@/hooks/useTranslation";
 import { NotificationBell } from "@/components/shared/notification-bell";
 import { GlobalSearch } from "@/components/shared/global-search";
@@ -17,7 +18,7 @@ import type { Profile } from "@/types";
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 10 10" fill="none" aria-hidden>
     <rect x="1" y="1" width="8" height="8" rx="1"
-      fill="none" stroke="#B5651D" strokeWidth="1.5"
+      fill="none" stroke="var(--cr-copper)" strokeWidth="1.5"
       transform="rotate(45 5 5)" />
   </svg>
 );
@@ -84,7 +85,7 @@ export function Navbar() {
       <nav
         className="sticky top-0 z-50 h-[56px]"
         style={{
-          background:   "#F5F0E8",
+          background:   "var(--cr-paper)",
           borderBottom: `1px solid ${scrolled ? "rgba(26,22,18,0.1)" : "transparent"}`,
           transition:   "border-color 200ms ease",
         }}
@@ -99,7 +100,7 @@ export function Navbar() {
                 fontFamily:    "'Playfair Display', Georgia, serif",
                 fontWeight:    700,
                 fontSize:      "18px",
-                color:         "#1A1612",
+                color:         "var(--cr-ink)",
                 letterSpacing: "-0.02em",
                 lineHeight:    1,
               }}>
@@ -112,7 +113,7 @@ export function Navbar() {
               <div style={{ width: "1px", height: "20px", background: "rgba(26,22,18,0.15)" }} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-                fontSize: "11px", color: "#B5651D", letterSpacing: "0.02em",
+                fontSize: "11px", color: "var(--cr-copper)", letterSpacing: "0.02em",
                 display: "flex", alignItems: "center", gap: "5px",
               }}>
                 <span style={{ fontSize: "9px" }}>◆</span>
@@ -133,18 +134,18 @@ export function Navbar() {
                   fontFamily:     "'DM Sans', sans-serif",
                   fontWeight:     400,
                   fontSize:       "14px",
-                  color:          isActive(href) ? "#1A1612" : "#6B6056",
+                  color:          isActive(href) ? "var(--cr-ink)" : "var(--cr-ink-3)",
                   transition:     "color 150ms ease",
                   textDecoration: "none",
                 }}
-                onMouseEnter={e => !isActive(href) && ((e.currentTarget as HTMLElement).style.color = "#1A1612")}
-                onMouseLeave={e => !isActive(href) && ((e.currentTarget as HTMLElement).style.color = "#6B6056")}
+                onMouseEnter={e => !isActive(href) && ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+                onMouseLeave={e => !isActive(href) && ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}
               >
                 {label}
                 {isActive(href) && (
                   <span
                     className="absolute bottom-0 left-0 right-0"
-                    style={{ height: "1.5px", background: "#B5651D", borderRadius: "1px" }}
+                    style={{ height: "1.5px", background: "var(--cr-copper)", borderRadius: "1px" }}
                   />
                 )}
               </Link>
@@ -154,6 +155,7 @@ export function Navbar() {
           {/* Right — auth */}
           <div className="hidden lg:flex items-center gap-5">
             <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
+            <ThemeToggle />
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (
               <>
@@ -167,40 +169,40 @@ export function Navbar() {
                     onClick={() => setMenuOpen((v) => !v)}
                     aria-expanded={menuOpen}
                     style={{ background: "transparent", border: "none", cursor: "pointer" }}
-                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#E4DDD2")}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                     onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                   >
                     <div
                       className="h-7 w-7 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-                      style={{ background: "#E4DDD2", border: "1px solid #D8D0C4" }}
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid #D8D0C4" }}
                     >
                       {profile.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={profile.avatar_url} alt="" decoding="async" className="w-full h-full object-cover" />
                       ) : (
-                        <span style={{ fontSize: "10px", fontWeight: 600, color: "#B5651D" }}>
+                        <span style={{ fontSize: "10px", fontWeight: 600, color: "var(--cr-copper)" }}>
                           {getInitials(profile.full_name || profile.email)}
                         </span>
                       )}
                     </div>
-                    <ChevronDown className="h-3 w-3" style={{ color: "#9C8E82" }} />
+                    <ChevronDown className="h-3 w-3" style={{ color: "var(--cr-ink-4)" }} />
                   </button>
 
                   {/* Dropdown */}
                   <div
                     className={`absolute right-0 mt-1 w-52 py-1 transition-all duration-150 z-50 ${menuOpen ? "opacity-100 visible" : "opacity-0 invisible"} group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible`}
                     style={{
-                      background:   "#EDE8DE",
+                      background:   "var(--cr-paper-2)",
                       border:       "1px solid rgba(26,22,18,0.2)",
                       borderRadius: "6px",
                       boxShadow:    "0 8px 32px rgba(26,22,18,0.12)",
                     }}
                   >
                     <div className="px-4 py-3 mb-1" style={{ borderBottom: "1px solid rgba(26,22,18,0.1)" }}>
-                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1A1612", fontFamily: "'DM Sans', sans-serif" }} className="truncate">
+                      <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif" }} className="truncate">
                         {profile.full_name || t("nav.account")}
                       </p>
-                      <p style={{ fontSize: "11px", color: "#9C8E82", fontFamily: "'DM Sans', sans-serif" }} className="truncate mt-0.5">
+                      <p style={{ fontSize: "11px", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif" }} className="truncate mt-0.5">
                         {profile.email}
                       </p>
                     </div>
@@ -211,14 +213,14 @@ export function Navbar() {
                     ].map(({ href, Icon, label }) => (
                       <Link key={href} href={href}
                         className="flex items-center gap-3 px-4 py-2 mx-1 rounded-[3px] transition-colors"
-                        style={{ fontSize: "13px", fontFamily: "'DM Sans', sans-serif", color: "#6B6056", textDecoration: "none" }}
+                        style={{ fontSize: "13px", fontFamily: "'DM Sans', sans-serif", color: "var(--cr-ink-3)", textDecoration: "none" }}
                         onMouseEnter={e => {
-                          (e.currentTarget as HTMLElement).style.background = "#E4DDD2";
-                          (e.currentTarget as HTMLElement).style.color = "#1A1612";
+                          (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)";
+                          (e.currentTarget as HTMLElement).style.color = "var(--cr-ink)";
                         }}
                         onMouseLeave={e => {
                           (e.currentTarget as HTMLElement).style.background = "";
-                          (e.currentTarget as HTMLElement).style.color = "#6B6056";
+                          (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)";
                         }}
                       >
                         <Icon className="h-3.5 w-3.5" /> {label}
@@ -227,7 +229,7 @@ export function Navbar() {
                     <div className="mt-1 pt-1 mx-1" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>
                       <button onClick={signOut}
                         className="w-full flex items-center gap-3 px-4 py-2 rounded-[3px] transition-colors"
-                        style={{ fontSize: "13px", fontFamily: "'DM Sans', sans-serif", color: "#9B2335", background: "transparent", border: "none", cursor: "pointer" }}
+                        style={{ fontSize: "13px", fontFamily: "'DM Sans', sans-serif", color: "var(--cr-down)", background: "transparent", border: "none", cursor: "pointer" }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "rgba(155,35,53,0.08)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "")}
                       >
@@ -245,22 +247,22 @@ export function Navbar() {
                     fontFamily:  "'DM Sans', sans-serif",
                     fontWeight:  400,
                     fontSize:    "14px",
-                    color:       "#6B6056",
+                    color:       "var(--cr-ink-3)",
                     background:  "none",
                     border:      "none",
                     cursor:      "pointer",
                     transition:  "color 150ms ease",
                     padding:     0,
                   }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#1A1612")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#6B6056")}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}
                   >
                     {t("nav.signIn")}
                 </Link>
                 <Link href="/auth/signup" style={{
                     display:      "inline-block",
                     textDecoration: "none",
-                    background:   "#B5651D",
+                    background:   "var(--cr-copper)",
                     color:        "#fff",
                     fontFamily:   "'DM Sans', sans-serif",
                     fontWeight:   600,
@@ -272,8 +274,8 @@ export function Navbar() {
                     transition:   "background 120ms ease",
                     lineHeight:   1,
                   }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "#D4842A")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "#B5651D")}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-copper-l)")}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-copper)")}
                   >
                     {t("nav.listStartup")}
                 </Link>
@@ -293,7 +295,7 @@ export function Navbar() {
             style={{
               width: "44px", height: "44px",
               marginRight: "-10px",
-              color: "#6B6056", background: "none", border: "none", cursor: "pointer",
+              color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer",
             }}
             onClick={() => setMobileOpen(true)}
             aria-label={t("nav.openMenu")}
@@ -315,7 +317,7 @@ export function Navbar() {
             className="fixed top-0 left-0 bottom-0 z-[99] flex flex-col"
             style={{
               width:       "min(80vw, 320px)",
-              background:  "#EDE8DE",
+              background:  "var(--cr-paper-2)",
               borderRight: "1px solid rgba(26,22,18,0.15)",
             }}
           >
@@ -330,7 +332,7 @@ export function Navbar() {
                   fontFamily:    "'Playfair Display', Georgia, serif",
                   fontWeight:    700,
                   fontSize:      "16px",
-                  color:         "#1A1612",
+                  color:         "var(--cr-ink)",
                   letterSpacing: "-0.02em",
                 }}>
                   CapitalReach
@@ -338,7 +340,7 @@ export function Navbar() {
               </Link>
               <button
                 onClick={() => setMobileOpen(false)}
-                style={{ color: "#6B6056", background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{ color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
                 aria-label={t("nav.closeMenu")}
               >
                 <X size={20} />
@@ -351,14 +353,14 @@ export function Navbar() {
               <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-5 py-4 flex-shrink-0"
                 style={{ borderBottom: "1px solid rgba(26,22,18,0.1)", textDecoration: "none" }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(181,101,29,0.12)", border: "1px solid rgba(181,101,29,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#B5651D", flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(181,101,29,0.12)", border: "1px solid rgba(181,101,29,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", flexShrink: 0 }}>
                   {getInitials(profile.full_name || profile.email)}
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#1A1612", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {profile.full_name || profile.email}
                   </p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "#B5651D", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {profile.role}
                   </p>
                 </div>
@@ -386,7 +388,7 @@ export function Navbar() {
                 ] }] : []),
               ]).map(({ header, items }) => (
                 <div key={header} style={{ paddingBottom: "6px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.1em", padding: "14px 20px 6px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.1em", padding: "14px 20px 6px" }}>
                     {header}
                   </p>
                   {items.map(({ href, label, Icon }) => {
@@ -400,12 +402,12 @@ export function Navbar() {
                           fontFamily:     "'DM Sans', sans-serif",
                           fontWeight:     active ? 600 : 400,
                           fontSize:       "15px",
-                          color:          active ? "#B5651D" : "#1A1612",
+                          color:          active ? "var(--cr-copper)" : "var(--cr-ink)",
                           boxShadow:      active ? "inset 2px 0 0 #B5651D" : "none",
                           background:     active ? "rgba(181,101,29,0.06)" : "transparent",
                           textDecoration: "none",
                         }}>
-                        <Icon size={16} style={{ color: active ? "#B5651D" : "#9C8E82", flexShrink: 0 }} />
+                        <Icon size={16} style={{ color: active ? "var(--cr-copper)" : "var(--cr-ink-4)", flexShrink: 0 }} />
                         {label}
                       </Link>
                     );
@@ -416,6 +418,7 @@ export function Navbar() {
 
             {/* Language, demoted from prime position to just above the footer. */}
             <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.08)" }}>
+              <ThemeToggle />
               <LanguageSwitcher currentLocale={locale} />
             </div>
 
@@ -424,7 +427,7 @@ export function Navbar() {
               <div className="px-5 py-5 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    height: "44px", background: "#B5651D", color: "#fff",
+                    height: "44px", background: "var(--cr-copper)", color: "#fff",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
                     borderRadius: "4px", border: "none", cursor: "pointer", textDecoration: "none",
                   }}>
@@ -432,13 +435,13 @@ export function Navbar() {
                 </Link>
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    height: "44px", background: "transparent", color: "#3D3630",
+                    height: "44px", background: "transparent", color: "var(--cr-ink-2)",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
                     borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer", textDecoration: "none",
                   }}>
                     {t("nav.signIn")}
                 </Link>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "#9C8E82", textAlign: "center" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center" }}>
                   <Link href="/terms" onClick={() => setMobileOpen(false)} style={{ color: "inherit" }}>{t("footer.terms")}</Link>
                   {" · "}
                   <Link href="/privacy" onClick={() => setMobileOpen(false)} style={{ color: "inherit" }}>{t("footer.privacy")}</Link>
@@ -452,7 +455,7 @@ export function Navbar() {
                   onClick={() => { signOut(); setMobileOpen(false); }}
                   className="w-full"
                   style={{
-                    height: "44px", background: "transparent", color: "#9B2335",
+                    height: "44px", background: "transparent", color: "var(--cr-down)",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
                     borderRadius: "4px", border: "1px solid rgba(155,35,53,0.3)", cursor: "pointer",
                   }}

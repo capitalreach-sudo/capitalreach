@@ -2505,10 +2505,17 @@
   },
   "palette": {
     "title": "Command palette",
-    "placeholder": "Search or jump to…",
+    "placeholder": "Search companies, investors, pages…",
     "results": "Results",
     "noResults": "Nothing matches “{q}”",
-    "hint": "Search listings and investors, or jump to any page."
+    "hint": "Search listings and investors, or jump to any page.",
+    "empty": "Nothing found.",
+    "pageBrowse": "Browse startups",
+    "pageInvestors": "Investor directory",
+    "pageDeals": "Deal portal",
+    "pageMessages": "Messages",
+    "pageData": "Data centre",
+    "pagePricing": "Pricing"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -3324,5 +3331,9 @@
     "line": "The deal is done.",
     "lineNamed": "Closed with {name}.",
     "dismiss": "Click anywhere to continue"
+  },
+  "theme": {
+    "toDark": "Dark mode",
+    "toLight": "Light mode"
   }
 }

@@ -6,7 +6,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 const DiamondLogo = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
     <rect x="1" y="1" width="8" height="8" rx="1"
-      fill="none" stroke="#B5651D" strokeWidth="1.5"
+      fill="none" stroke="var(--cr-copper)" strokeWidth="1.5"
       transform="rotate(45 5 5)" />
   </svg>
 );
@@ -49,7 +49,7 @@ export function Footer() {
   ];
 
   return (
-    <footer style={{ background: "#EDE8DE", borderTop: "1px solid rgba(26,22,18,0.15)" }}>
+    <footer style={{ background: "var(--cr-paper-2)", borderTop: "1px solid rgba(26,22,18,0.15)" }}>
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-8">
 
         {/* Copper promise line */}
@@ -62,7 +62,7 @@ export function Footer() {
         }}>
           <span style={{
             fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-            fontSize: "12px", color: "#B5651D", letterSpacing: "0.05em",
+            fontSize: "12px", color: "var(--cr-copper)", letterSpacing: "0.05em",
             textAlign: "center",
           }}>
             ◆ {t("footer.feeStrip")}
@@ -80,7 +80,7 @@ export function Footer() {
                 fontFamily:    "'Playfair Display', Georgia, serif",
                 fontWeight:    700,
                 fontSize:      "17px",
-                color:         "#1A1612",
+                color:         "var(--cr-ink)",
                 letterSpacing: "-0.02em",
               }}>
                 CapitalReach
@@ -90,7 +90,7 @@ export function Footer() {
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 300,
               fontSize:   "14px",
-              color:      "#6B6056",
+              color:      "var(--cr-ink-3)",
               lineHeight: 1.6,
               marginTop:  "12px",
             }}>
@@ -106,7 +106,7 @@ export function Footer() {
                   fontFamily:    "'DM Sans', sans-serif",
                   fontWeight:    500,
                   fontSize:      "11px",
-                  color:         "#9C8E82",
+                  color:         "var(--cr-ink-4)",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
                   marginBottom:  "16px",
@@ -122,13 +122,13 @@ export function Footer() {
                           fontFamily:     "'DM Sans', sans-serif",
                           fontWeight:     300,
                           fontSize:       "14px",
-                          color:          "#6B6056",
+                          color:          "var(--cr-ink-3)",
                           textDecoration: "none",
                           display:        "block",
                           transition:     "color 150ms ease",
                         }}
-                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#1A1612")}
-                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#6B6056")}
+                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}
                       >
                         {label}
                       </Link>
@@ -149,7 +149,7 @@ export function Footer() {
             fontFamily: "'DM Sans', sans-serif",
             fontWeight: 300,
             fontSize:   "12px",
-            color:      "#9C8E82",
+            color:      "var(--cr-ink-4)",
             flexShrink: 0,
           }}>
             © {new Date().getFullYear()} CapitalReach Ltd.
@@ -159,7 +159,7 @@ export function Footer() {
             fontFamily: "'DM Sans', sans-serif",
             fontWeight: 300,
             fontSize:   "11px",
-            color:      "#9C8E82",
+            color:      "var(--cr-ink-4)",
             textAlign:  "center",
             maxWidth:   "360px",
             lineHeight: 1.55,
@@ -183,12 +183,12 @@ export function Footer() {
                   fontFamily:     "'DM Sans', sans-serif",
                   fontWeight:     300,
                   fontSize:       "12px",
-                  color:          "#9C8E82",
+                  color:          "var(--cr-ink-4)",
                   textDecoration: "none",
                   transition:     "color 150ms ease",
                 }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
               >
                 {label}
               </a>

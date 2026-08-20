@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "Palette de commandes",
-    "placeholder": "Rechercher ou aller à…",
+    "placeholder": "Rechercher sociétés, investisseurs, pages…",
     "results": "Résultats",
     "noResults": "Rien ne correspond à « {q} »",
-    "hint": "Recherchez des annonces et des investisseurs, ou allez à n'importe quelle page."
+    "hint": "Recherchez des annonces et des investisseurs, ou allez à n'importe quelle page.",
+    "empty": "Rien trouvé.",
+    "pageBrowse": "Parcourir les startups",
+    "pageInvestors": "Annuaire des investisseurs",
+    "pageDeals": "Portail des opérations",
+    "pageMessages": "Messages",
+    "pageData": "Centre de données",
+    "pagePricing": "Tarifs"
   },
   "shortcuts": {
     "title": "Raccourcis clavier",
@@ -3324,5 +3331,9 @@
     "line": "L'affaire est faite.",
     "lineNamed": "Conclu avec {name}.",
     "dismiss": "Cliquez n'importe où pour continuer"
+  },
+  "theme": {
+    "toDark": "Mode sombre",
+    "toLight": "Mode clair"
   }
 }

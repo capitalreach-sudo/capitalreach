@@ -58,6 +58,60 @@
     --ring:                   25 73% 41%;
     --radius:                 0.25rem;
   }
+
+  /* ── Dark: the "terminal" direction (design option B, finally shipped) ──
+     Same warm family, inverted: near-black paper, light warm ink, copper
+     brightened one step so it keeps its contrast against the dark ground.
+     Set via data-theme on <html>, written by the navbar toggle and read from
+     the cr_theme cookie server-side so there is no flash of the wrong theme. */
+  [data-theme="dark"] {
+    --cr-paper:   #14110D;
+    --cr-paper-2: #1B1712;
+    --cr-paper-3: #231D16;
+    --cr-paper-4: #2E261C;
+
+    --cr-ink:   #EDE6DA;
+    --cr-ink-2: #CFC5B6;
+    --cr-ink-3: #9A8F80;
+    --cr-ink-4: #6E6458;
+
+    --cr-copper:    #D4842A;
+    --cr-copper-l:  #E89A45;
+    --cr-copper-d:  #B5651D;
+    --cr-copper-bg: rgba(212,132,42,0.10);
+    --cr-copper-br: rgba(212,132,42,0.30);
+
+    --cr-up:       #55B287;
+    --cr-up-bg:    rgba(85,178,135,0.10);
+    --cr-down:     #E06A7A;
+    --cr-down-bg:  rgba(224,106,122,0.10);
+    --cr-neutral:  #8A97A5;
+
+    --cr-rule:      rgba(237,230,218,0.08);
+    --cr-rule-dark: rgba(237,230,218,0.16);
+
+    --background:             30 21% 6%;
+    --foreground:             36 33% 89%;
+    --card:                   30 20% 9%;
+    --card-foreground:        36 33% 89%;
+    --popover:                30 21% 6%;
+    --popover-foreground:     36 33% 89%;
+    --primary:                29 67% 50%;
+    --primary-foreground:     30 21% 6%;
+    --secondary:              30 18% 13%;
+    --secondary-foreground:   36 33% 89%;
+    --muted:                  30 18% 13%;
+    --muted-foreground:       33 12% 55%;
+    --accent:                 30 18% 13%;
+    --accent-foreground:      36 33% 89%;
+    --destructive:            352 64% 65%;
+    --destructive-foreground: 30 21% 6%;
+    --border:                 36 20% 82%;
+    --input:                  30 20% 9%;
+    --ring:                   29 67% 50%;
+
+    color-scheme: dark;
+  }
 }
 
 @layer base {

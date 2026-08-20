@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "Opdrachtenpalet",
-    "placeholder": "Zoeken of ga naar…",
+    "placeholder": "Zoek bedrijven, investeerders, pagina's…",
     "results": "Resultaten",
     "noResults": "Niets komt overeen met “{q}”",
-    "hint": "Zoek aanbod en investeerders, of ga naar een willekeurige pagina."
+    "hint": "Zoek aanbod en investeerders, of ga naar een willekeurige pagina.",
+    "empty": "Niets gevonden.",
+    "pageBrowse": "Startups bekijken",
+    "pageInvestors": "Investeerdersgids",
+    "pageDeals": "Dealportaal",
+    "pageMessages": "Berichten",
+    "pageData": "Datacentrum",
+    "pagePricing": "Prijzen"
   },
   "shortcuts": {
     "title": "Sneltoetsen",
@@ -3324,5 +3331,9 @@
     "line": "De deal is rond.",
     "lineNamed": "Gesloten met {name}.",
     "dismiss": "Klik ergens om verder te gaan"
+  },
+  "theme": {
+    "toDark": "Donkere modus",
+    "toLight": "Lichte modus"
   }
 }

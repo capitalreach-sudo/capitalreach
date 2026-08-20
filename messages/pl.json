@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "Paleta poleceń",
-    "placeholder": "Szukaj lub przejdź do…",
+    "placeholder": "Szukaj firm, inwestorów, stron…",
     "results": "Wyniki",
     "noResults": "Nic nie pasuje do „{q}”",
-    "hint": "Szukaj ofert i inwestorów albo przejdź do dowolnej strony."
+    "hint": "Szukaj ofert i inwestorów albo przejdź do dowolnej strony.",
+    "empty": "Nic nie znaleziono.",
+    "pageBrowse": "Przeglądaj startupy",
+    "pageInvestors": "Katalog inwestorów",
+    "pageDeals": "Portal transakcji",
+    "pageMessages": "Wiadomości",
+    "pageData": "Centrum danych",
+    "pagePricing": "Cennik"
   },
   "shortcuts": {
     "title": "Skróty klawiszowe",
@@ -3324,5 +3331,9 @@
     "line": "Umowa dopięta.",
     "lineNamed": "Zamknięta z {name}.",
     "dismiss": "Kliknij gdziekolwiek, aby kontynuować"
+  },
+  "theme": {
+    "toDark": "Tryb ciemny",
+    "toLight": "Tryb jasny"
   }
 }

@@ -19,8 +19,8 @@ export const notify = {
 };
 
 const iconColor: Record<ToastType, string> = {
-  success: "#2D6A4F",
-  error:   "#9B2335",
+  success: "var(--cr-up)",
+  error:   "var(--cr-down)",
   info:    "#5C6B7A",
 };
 

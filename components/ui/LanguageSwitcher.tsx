@@ -77,19 +77,19 @@ export function LanguageSwitcher({ currentLocale }: Props) {
           border: "1px solid transparent",
           background: "transparent", cursor: loading ? "not-allowed" : "pointer",
           transition: "all 150ms", opacity: loading ? 0.55 : 1,
-          color: "#6B6056",
+          color: "var(--cr-ink-3)",
         }}
         onMouseEnter={e => {
           if (!loading) {
-            (e.currentTarget as HTMLElement).style.background = "#E4DDD2";
-            (e.currentTarget as HTMLElement).style.borderColor = "#D8D0C4";
-            (e.currentTarget as HTMLElement).style.color = "#1A1612";
+            (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)";
+            (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)";
+            (e.currentTarget as HTMLElement).style.color = "var(--cr-ink)";
           }
         }}
         onMouseLeave={e => {
           (e.currentTarget as HTMLElement).style.background = "transparent";
           (e.currentTarget as HTMLElement).style.borderColor = "transparent";
-          (e.currentTarget as HTMLElement).style.color = "#6B6056";
+          (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)";
         }}
       >
         {/* Globe or spinner */}
@@ -100,7 +100,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
             borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0,
           }} />
         ) : (
-          <Globe style={{ width: 14, height: 14, color: "#B5651D", flexShrink: 0 }} />
+          <Globe style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
         )}
 
         {/* Flag */}
@@ -112,7 +112,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
         <span style={{
           fontSize: "11px", fontFamily: "'DM Sans', sans-serif",
           fontWeight: 500, textTransform: "uppercase",
-          letterSpacing: "0.06em", color: "#6B6056",
+          letterSpacing: "0.06em", color: "var(--cr-ink-3)",
         }}>
           {currentLocale}
         </span>
@@ -139,7 +139,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
             aria-label={t("locale.selectLanguage")}
             style={{
               position: "absolute", right: 0, top: "calc(100% + 6px)", zIndex: 50,
-              background: "#F5F0E8", border: "1px solid #D8D0C4",
+              background: "var(--cr-paper)", border: "1px solid #D8D0C4",
               borderRadius: "6px",
               boxShadow: "0 8px 40px rgba(26,22,18,0.18)",
               width: "220px", maxWidth: "calc(100vw - 32px)", maxHeight: "380px", overflowY: "auto",
@@ -151,7 +151,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
                 fontSize: "10px", textTransform: "uppercase",
-                letterSpacing: "0.08em", color: "#9C8E82",
+                letterSpacing: "0.08em", color: "var(--cr-ink-4)",
               }}>
                 {t("locale.selectLanguage")}
               </span>
@@ -169,12 +169,12 @@ export function LanguageSwitcher({ currentLocale }: Props) {
                   style={{
                     width: "100%", display: "flex", alignItems: "center", gap: "12px",
                     padding: "10px 16px", textAlign: "left", border: "none", cursor: "pointer",
-                    background: active ? "#E4DDD2" : "transparent",
-                    color: active ? "#1A1612" : "#3D3630",
+                    background: active ? "var(--cr-paper-3)" : "transparent",
+                    color: active ? "var(--cr-ink)" : "var(--cr-ink-2)",
                     transition: "background 100ms",
                   }}
-                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "#EDE8DE"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active ? "#E4DDD2" : "transparent"; }}
+                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = active ? "var(--cr-paper-3)" : "transparent"; }}
                 >
                   <span style={{ fontSize: "18px", lineHeight: 1, flexShrink: 0 }}>{meta.flag}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -187,16 +187,16 @@ export function LanguageSwitcher({ currentLocale }: Props) {
                     </div>
                     <div style={{
                       fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "11px", color: "#9C8E82", marginTop: "1px",
+                      fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "1px",
                     }}>
                       {meta.name}
                     </div>
                   </div>
-                  {active && <Check style={{ width: 13, height: 13, color: "#B5651D", flexShrink: 0 }} />}
+                  {active && <Check style={{ width: 13, height: 13, color: "var(--cr-copper)", flexShrink: 0 }} />}
                   {meta.rtl && (
                     <span style={{
                       fontFamily: "'DM Sans', sans-serif", fontSize: "8px",
-                      color: "#9C8E82", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0,
+                      color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0,
                     }}>{t("locale.rtl")}</span>
                   )}
                 </button>

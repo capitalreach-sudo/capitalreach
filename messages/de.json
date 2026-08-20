@@ -2505,10 +2505,17 @@
   },
   "palette": {
     "title": "Befehlspalette",
-    "placeholder": "Suchen oder springen zu…",
+    "placeholder": "Unternehmen, Investoren, Seiten suchen…",
     "results": "Ergebnisse",
     "noResults": "Nichts passt zu „{q}“",
-    "hint": "Listings und Investoren durchsuchen oder zu einer Seite springen."
+    "hint": "Listings und Investoren durchsuchen oder zu einer Seite springen.",
+    "empty": "Nichts gefunden.",
+    "pageBrowse": "Startups durchsuchen",
+    "pageInvestors": "Investorenverzeichnis",
+    "pageDeals": "Deal-Portal",
+    "pageMessages": "Nachrichten",
+    "pageData": "Datenzentrum",
+    "pagePricing": "Preise"
   },
   "shortcuts": {
     "title": "Tastaturkürzel",
@@ -3324,5 +3331,9 @@
     "line": "Der Deal ist gemacht.",
     "lineNamed": "Abgeschlossen mit {name}.",
     "dismiss": "Zum Fortfahren irgendwo klicken"
+  },
+  "theme": {
+    "toDark": "Dunkler Modus",
+    "toLight": "Heller Modus"
   }
 }

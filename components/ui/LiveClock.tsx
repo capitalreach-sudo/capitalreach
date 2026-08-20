@@ -33,7 +33,7 @@ export function LiveClock({ timezone, label, className = "" }: Props) {
       {label && (
         <span style={{
           fontSize: "11px", textTransform: "uppercase",
-          letterSpacing: "0.08em", color: "#9C8E82",
+          letterSpacing: "0.08em", color: "var(--cr-ink-4)",
           marginRight: "8px", fontFamily: "'DM Sans', sans-serif",
         }}>
           {label}

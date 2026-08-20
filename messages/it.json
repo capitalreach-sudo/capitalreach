@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "Palette dei comandi",
-    "placeholder": "Cerca o vai a…",
+    "placeholder": "Cerca aziende, investitori, pagine…",
     "results": "Risultati",
     "noResults": "Nessun risultato per «{q}»",
-    "hint": "Cerca opportunità e investitori, o vai a qualsiasi pagina."
+    "hint": "Cerca opportunità e investitori, o vai a qualsiasi pagina.",
+    "empty": "Niente trovato.",
+    "pageBrowse": "Sfoglia startup",
+    "pageInvestors": "Directory investitori",
+    "pageDeals": "Portale deal",
+    "pageMessages": "Messaggi",
+    "pageData": "Centro dati",
+    "pagePricing": "Prezzi"
   },
   "shortcuts": {
     "title": "Scorciatoie da tastiera",
@@ -3324,5 +3331,9 @@
     "line": "L'affare è fatto.",
     "lineNamed": "Chiuso con {name}.",
     "dismiss": "Clicca ovunque per continuare"
+  },
+  "theme": {
+    "toDark": "Tema scuro",
+    "toLight": "Tema chiaro"
   }
 }

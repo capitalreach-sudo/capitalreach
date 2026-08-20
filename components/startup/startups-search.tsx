@@ -1328,7 +1328,7 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
           wherever no tab bar is on screen (desktop, or signed out). */}
       {compareIds.length > 0 && (
         <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-ink)", borderRadius: "6px", padding: "10px 14px", boxShadow: "0 10px 30px rgba(26,22,18,0.35)" }}>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "#EDE8DE" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-paper-2)" }}>
             {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
           </span>
           <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
@@ -1336,7 +1336,7 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
             {t("startups.compare")} ({compareIds.length})
           </button>
           <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
-            style={{ background: "none", border: "none", color: "#9C8E82", cursor: "pointer", display: "flex", padding: 0 }}>
+            style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex", padding: 0 }}>
             <X style={{ width: 14, height: 14 }} />
           </button>
         </div>

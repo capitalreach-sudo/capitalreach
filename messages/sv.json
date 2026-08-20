@@ -2416,10 +2416,17 @@
   },
   "palette": {
     "title": "Kommandopalett",
-    "placeholder": "Sök eller gå till…",
+    "placeholder": "Sök bolag, investerare, sidor…",
     "results": "Resultat",
     "noResults": "Inget matchar ”{q}”",
-    "hint": "Sök noteringar och investerare, eller gå till valfri sida."
+    "hint": "Sök noteringar och investerare, eller gå till valfri sida.",
+    "empty": "Inget hittades.",
+    "pageBrowse": "Bläddra bland startups",
+    "pageInvestors": "Investerarkatalog",
+    "pageDeals": "Affärsportal",
+    "pageMessages": "Meddelanden",
+    "pageData": "Datacenter",
+    "pagePricing": "Priser"
   },
   "shortcuts": {
     "title": "Kortkommandon",
@@ -3324,5 +3331,9 @@
     "line": "Affären är i hamn.",
     "lineNamed": "Stängd med {name}.",
     "dismiss": "Klicka var som helst för att fortsätta"
+  },
+  "theme": {
+    "toDark": "Mörkt läge",
+    "toLight": "Ljust läge"
   }
 }

@@ -21,9 +21,9 @@ export function MessagesIcon() {
 
   return (
     <Link href="/dashboard/messages"
-      style={{ color: "#9C8E82", transition: "color 150ms ease", lineHeight: 1, position: "relative", display: "flex" }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#3D3630")}
-      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#9C8E82")}
+      style={{ color: "var(--cr-ink-4)", transition: "color 150ms ease", lineHeight: 1, position: "relative", display: "flex" }}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
+      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
     >
       <MessageSquare className="h-4 w-4" />
       {unread > 0 && (

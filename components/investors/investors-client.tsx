@@ -649,7 +649,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (
             <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-cr-ink rounded-md px-4 py-2.5 shadow-2xl">
-              <span className="text-[13px] text-cr-p2" style={{ color: "#EDE8DE" }}>
+              <span className="text-[13px] text-cr-p2" style={{ color: "var(--cr-paper-2)" }}>
                 {compareIds.map(id => investors.find(i => i.id === id)?.full_name).filter(Boolean).join(" · ")}
               </span>
               <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
