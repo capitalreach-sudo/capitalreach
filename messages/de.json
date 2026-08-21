@@ -1397,7 +1397,8 @@
     "month": "Monat",
     "showTable": "Zahlen anzeigen",
     "showChart": "Diagramm anzeigen",
-    "otherIndustries": "Andere Branchen"
+    "otherIndustries": "Andere Branchen",
+    "sampleNote": "Die Zahlen enthalten Beispiel-Listings aus der Startphase."
   },
   "filters": {
     "industry": "Branche",
@@ -3457,5 +3458,13 @@
     "Nigeria": "Nigeria",
     "Kenya": "Kenia",
     "Egypt": "Ägypten"
+  },
+  "demo": {
+    "badge": "Beispiel",
+    "tooltip": "Dies ist ein Beispiel-Listing, das während des Aufbaus des Marktplatzes angezeigt wird. Es stellt kein echtes Unternehmen dar."
+  },
+  "risk": {
+    "title": "Startup-Investments sind hochriskant.",
+    "body": "Sie können Ihre gesamte Einlage verlieren, Renditen sind nicht garantiert und Anteile sind illiquide — ein Verkauf kann jahrelang unmöglich sein. Streuen Sie Ihr Risiko und investieren Sie nur Geld, dessen Verlust Sie verkraften können. Nichts auf dieser Seite ist eine Anlageberatung."
   }
 }

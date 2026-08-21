@@ -12,7 +12,7 @@ import { createAdminClient } from "@/lib/supabase-server";
  */
 
 export const STARTUP_LIST_COLUMNS =
-  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state,logo_url,logo_color";
+  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state,logo_url,logo_color,is_demo";
 
 export type BrowseStartup = {
   id: string; slug: string; name: string; tagline: string;
@@ -25,6 +25,7 @@ export type BrowseStartup = {
   round_state?: string | null;
   logo_url?: string | null;
   logo_color?: string | null;
+  is_demo?: boolean;
 };
 
 export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
@@ -50,7 +51,7 @@ export type BrowseInvestor = {
   min_check: number | null; max_check: number | null;
   geography: string[]; subscription_tier: string | null;
   verified_at: string | null; lead_rounds: boolean;
-  number_of_investments: number | null; created_at: string;
+  number_of_investments: number | null; created_at: string; is_demo?: boolean;
   full_name: string | null; firm: string | null;
 };
 
@@ -65,7 +66,7 @@ export async function loadPublicInvestors(): Promise<BrowseInvestor[] | null> {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("investors")
-      .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public")
+      .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public, is_demo")
       .eq("is_public", true)
       // B18: off-platform contacts are private to the startup that created
       // them; is_public is already false on them, this is belt and braces.

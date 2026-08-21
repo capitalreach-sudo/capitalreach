@@ -1401,7 +1401,8 @@
     "month": "Month",
     "showTable": "Show the numbers",
     "showChart": "Show the chart",
-    "otherIndustries": "Other industries"
+    "otherIndustries": "Other industries",
+    "sampleNote": "Figures include sample listings shown during the launch period."
   },
   "filters": {
     "industry": "Industry",
@@ -3457,5 +3458,13 @@
     "Nigeria": "Nigeria",
     "Kenya": "Kenya",
     "Egypt": "Egypt"
+  },
+  "demo": {
+    "badge": "Sample",
+    "tooltip": "This is a sample listing shown while the marketplace grows. It does not represent a real company."
+  },
+  "risk": {
+    "title": "Investing in startups is high risk.",
+    "body": "You can lose your entire investment, returns are not guaranteed, and shares are illiquid — you may not be able to sell them for years. Diversify, and only invest money you can afford to lose. Nothing on this page is investment advice."
   }
 }

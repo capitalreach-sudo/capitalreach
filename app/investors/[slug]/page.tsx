@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { countryLabel } from "@/lib/country-label";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
@@ -232,6 +233,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                 </a>
               )}
               <Badge variant="outline">{typeLabel(investor.type)}</Badge>
+              {investor.is_demo && <span className="ml-2 inline-flex align-middle"><DemoBadge /></span>}
               {investor.subscription_tier !== "free" && (
                 <Badge className="bg-cr-copper/15 text-cr-cu-l border-0">
                   {investor.subscription_tier === "pro_investor" ? t("investorProfile.tierProInvestor") :

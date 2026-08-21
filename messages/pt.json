@@ -1505,7 +1505,8 @@
     "month": "Mês",
     "showTable": "Ver os números",
     "showChart": "Ver o gráfico",
-    "otherIndustries": "Outros setores"
+    "otherIndustries": "Outros setores",
+    "sampleNote": "Os números incluem anúncios de exemplo apresentados durante o lançamento."
   },
   "onboarding": {
     "welcomeTitle": "Bem-vindo ao CapitalReach",
@@ -3457,5 +3458,13 @@
     "Nigeria": "Nigéria",
     "Kenya": "Quénia",
     "Egypt": "Egito"
+  },
+  "demo": {
+    "badge": "Exemplo",
+    "tooltip": "Este é um anúncio de exemplo apresentado enquanto o mercado cresce. Não representa uma empresa real."
+  },
+  "risk": {
+    "title": "Investir em startups é de alto risco.",
+    "body": "Pode perder todo o investimento, os retornos não são garantidos e as participações são ilíquidas — pode não conseguir vendê-las durante anos. Diversifique e invista apenas dinheiro que pode perder. Nada nesta página é aconselhamento de investimento."
   }
 }

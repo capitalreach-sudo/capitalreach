@@ -1505,7 +1505,8 @@
     "month": "Maand",
     "showTable": "Toon de cijfers",
     "showChart": "Toon de grafiek",
-    "otherIndustries": "Andere sectoren"
+    "otherIndustries": "Andere sectoren",
+    "sampleNote": "De cijfers bevatten voorbeeldvermeldingen uit de lanceerperiode."
   },
   "onboarding": {
     "welcomeTitle": "Welkom bij CapitalReach",
@@ -3457,5 +3458,13 @@
     "Nigeria": "Nigeria",
     "Kenya": "Kenia",
     "Egypt": "Egypte"
+  },
+  "demo": {
+    "badge": "Voorbeeld",
+    "tooltip": "Dit is een voorbeeldvermelding die wordt getoond terwijl de marktplaats groeit. Het is geen echt bedrijf."
+  },
+  "risk": {
+    "title": "Investeren in startups is zeer risicovol.",
+    "body": "U kunt uw volledige inleg verliezen, rendement is niet gegarandeerd en aandelen zijn illiquide — verkopen kan jarenlang onmogelijk zijn. Spreid uw risico en investeer alleen geld dat u kunt missen. Niets op deze pagina is beleggingsadvies."
   }
 }

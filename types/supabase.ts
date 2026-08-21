@@ -1303,6 +1303,7 @@ export type Database = {
           id: string
           industries: string[]
           investment_thesis: string | null
+          is_demo: boolean
           is_external: boolean
           is_public: boolean
           languages: string[] | null
@@ -1346,6 +1347,7 @@ export type Database = {
           id?: string
           industries?: string[]
           investment_thesis?: string | null
+          is_demo?: boolean
           is_external?: boolean
           is_public?: boolean
           languages?: string[] | null
@@ -1389,6 +1391,7 @@ export type Database = {
           id?: string
           industries?: string[]
           investment_thesis?: string | null
+          is_demo?: boolean
           is_external?: boolean
           is_public?: boolean
           languages?: string[] | null
@@ -2370,6 +2373,7 @@ export type Database = {
           id: string
           industry: string
           instrument: string | null
+          is_demo: boolean
           languages: string[] | null
           languages_spoken: string[] | null
           lead_investor: string | null
@@ -2451,6 +2455,7 @@ export type Database = {
           id?: string
           industry: string
           instrument?: string | null
+          is_demo?: boolean
           languages?: string[] | null
           languages_spoken?: string[] | null
           lead_investor?: string | null
@@ -2532,6 +2537,7 @@ export type Database = {
           id?: string
           industry?: string
           instrument?: string | null
+          is_demo?: boolean
           languages?: string[] | null
           languages_spoken?: string[] | null
           lead_investor?: string | null

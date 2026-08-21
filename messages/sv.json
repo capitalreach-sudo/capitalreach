@@ -1505,7 +1505,8 @@
     "month": "Månad",
     "showTable": "Visa siffrorna",
     "showChart": "Visa diagrammet",
-    "otherIndustries": "Övriga branscher"
+    "otherIndustries": "Övriga branscher",
+    "sampleNote": "Siffrorna inkluderar exempelnoteringar från lanseringsperioden."
   },
   "onboarding": {
     "welcomeTitle": "Välkommen till CapitalReach",
@@ -3457,5 +3458,13 @@
     "Nigeria": "Nigeria",
     "Kenya": "Kenya",
     "Egypt": "Egypten"
+  },
+  "demo": {
+    "badge": "Exempel",
+    "tooltip": "Detta är en exempelnotering som visas medan marknadsplatsen växer. Den motsvarar inte ett verkligt företag."
+  },
+  "risk": {
+    "title": "Att investera i startups är högrisk.",
+    "body": "Du kan förlora hela din investering, avkastning garanteras inte och andelarna är illikvida — du kanske inte kan sälja dem på flera år. Diversifiera och investera bara pengar du har råd att förlora. Inget på denna sida är investeringsrådgivning."
   }
 }

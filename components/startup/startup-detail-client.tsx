@@ -31,6 +31,8 @@ import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { WaitlistButton } from "@/components/startup/waitlist-button";
 import { FounderToFounder } from "@/components/startup/founder-to-founder";
+import { DemoBadge } from "@/components/shared/demo-badge";
+import { RiskWarning } from "@/components/startup/risk-warning";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { RoundCalculator } from "@/components/startup/round-calculator";
 import { roundCloseState } from "@/lib/round-close";
@@ -668,6 +670,7 @@ export function StartupDetailClient({
                       <BadgeCheck style={{ width: 11, height: 11 }} /> {t("investors.verifiedBadge")}
                     </span>
                   )}
+                  {(startup as { is_demo?: boolean }).is_demo && <DemoBadge />}
                   {startup.subscription_tier === "growth" && (
                     <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       Featured
@@ -1223,6 +1226,7 @@ export function StartupDetailClient({
                       fundingTarget={startup.funding_target}
                     />
                   )}
+                {!isOwner && !viewerIsAdmin && <RiskWarning />}
                   {/* Owners see the contradiction before investors do. */}
                   {isOwner && gap !== null && gap > 0.5 && (
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11.5px", color: "var(--cr-down)", marginTop: "8px", lineHeight: 1.5 }}>

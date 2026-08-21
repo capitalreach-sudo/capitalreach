@@ -1390,7 +1390,8 @@
     "month": "Mois",
     "showTable": "Afficher les chiffres",
     "showChart": "Afficher le graphique",
-    "otherIndustries": "Autres secteurs"
+    "otherIndustries": "Autres secteurs",
+    "sampleNote": "Les chiffres incluent des annonces fictives affichées pendant la période de lancement."
   },
   "filters": {
     "industry": "Secteur",
@@ -3457,5 +3458,13 @@
     "Nigeria": "Nigéria",
     "Kenya": "Kenya",
     "Egypt": "Égypte"
+  },
+  "demo": {
+    "badge": "Exemple",
+    "tooltip": "Ceci est une annonce fictive affichée pendant le développement de la place de marché. Elle ne représente pas une entreprise réelle."
+  },
+  "risk": {
+    "title": "Investir dans des startups est très risqué.",
+    "body": "Vous pouvez perdre la totalité de votre investissement, les rendements ne sont pas garantis et les titres sont illiquides — leur revente peut être impossible pendant des années. Diversifiez et n'investissez que l'argent que vous pouvez vous permettre de perdre. Rien sur cette page ne constitue un conseil en investissement."
   }
 }

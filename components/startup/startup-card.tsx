@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Bookmark, Lock, BadgeCheck } from "lucide-react";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { formatCurrency, daysSince, STAGE_LABELS } from "@/lib/utils";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { roundCloseState } from "@/lib/round-close";
@@ -23,7 +24,7 @@ import { ScoreBadge } from "@/components/ui/score-badge";
  */
 export type StartupCardData = Pick<Startup,
   "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
-  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date"> & { verified_at?: string | null; round_state?: string | null; logo_url?: string | null; logo_color?: string | null };
+  "mrr" | "arr" | "growth_rate" | "runway_months" | "created_at" | "vaultrise_score" | "round_close_date"> & { verified_at?: string | null; round_state?: string | null; logo_url?: string | null; logo_color?: string | null; is_demo?: boolean };
 
 interface StartupCardProps {
   startup:     StartupCardData;
@@ -121,6 +122,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
             <p style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{startup.name}</span>
               {startup.verified_at && <BadgeCheck aria-label="verified" style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0 }} />}
+              {startup.is_demo && <DemoBadge />}
               {(startup.round_state === "oversubscribed" || startup.round_state === "closed") && (
                 <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontStyle: "normal", fontWeight: 600, fontSize: "9px", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 6px", borderRadius: "3px",
                   background: startup.round_state === "oversubscribed" ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", color: startup.round_state === "oversubscribed" ? "var(--cr-copper)" : "var(--cr-ink-4)", border: `1px solid ${startup.round_state === "oversubscribed" ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}` }}>

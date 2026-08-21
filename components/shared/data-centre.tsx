@@ -300,6 +300,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)", maxWidth: "480px", lineHeight: 1.6 }}>
             {t("data.subtitle")}
           </p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", marginTop: 6 }}>
+            {t("data.sampleNote")}
+          </p>
           <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "20px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <Activity style={{ width: 12, height: 12, color: "#4ADE80" }} />

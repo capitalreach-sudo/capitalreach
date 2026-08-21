@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { countryLabel } from "@/lib/country-label";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -187,7 +188,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
         // profiles is not anonymously readable (019), so it is not joined.
         const { data } = await supabase
           .from("investors")
-          .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public")
+          .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public, is_demo")
           .eq("is_public", true)
           .order("created_at", { ascending: false });
 
@@ -195,6 +196,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
           const mapped = data.map((inv: any) => ({
             id: inv.id,
             slug: inv.slug,
+            is_demo: !!inv.is_demo,
             type: inv.type || "angel",
             bio: inv.bio,
             industries: inv.industries || [],
@@ -874,6 +876,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                                 {inv.verified_at && (
                                   <BadgeCheck aria-label={t("investors.verifiedBadge")} className="inline-block ml-1.5 h-3.5 w-3.5 text-cr-copper align-[-2px]" />
                                 )}
+                                {(inv as { is_demo?: boolean }).is_demo && <span className="ml-1.5 align-middle inline-flex"><DemoBadge /></span>}
                               </p>
                               {inv.firm && <p className="text-xs text-cr-i4 mt-0.5">{inv.firm}</p>}
                               <div className="flex items-center gap-1.5 mt-1">
