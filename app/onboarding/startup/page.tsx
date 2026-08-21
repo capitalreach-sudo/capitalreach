@@ -174,10 +174,17 @@ export default function StartupOnboardingPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return false; }
 
-    const slug = slugify(name) + "-" + Math.random().toString(36).slice(2, 6);
+    // ONE listing per founder from this flow. The plan buttons call this on
+    // every press, and checkout can bounce the founder back here — a plain
+    // insert turned each retry into another pending-review listing (a real
+    // account reached FIVE), and every ".single()" lookup on "their startup"
+    // then failed, locking them out entirely. Reuse the existing row.
+    const { data: existing } = await supabase.from("startups")
+      .select("id, status").eq("owner_id", user.id)
+      .order("created_at", { ascending: true }).limit(1).maybeSingle();
 
-    const { data: startup, error } = await supabase.from("startups").insert({
-      owner_id: user.id, slug, name,
+    const fields = {
+      name,
       website: website || null, tagline,
       description: description || null, industry, stage, country,
       funding_target: parseInt(fundingTarget) || 0,
@@ -190,7 +197,6 @@ export default function StartupOnboardingPage() {
       user_count: userCount ? parseInt(userCount) : null,
       growth_rate: growthRate ? parseFloat(growthRate) : null,
       demo_video_url: demoVideoUrl || null,
-      status: "pending_review", subscription_tier: "free",
       city: city || null, business_model: businessModel || null,
       revenue_model: revenueModel || null, team_size: teamSize || null,
       company_type: companyType || null,
@@ -201,7 +207,25 @@ export default function StartupOnboardingPage() {
       twitter_url: twitterUrl || null,
       runway_months: runway ? parseInt(runway) : null,
       competitors_json: competitors.filter(c => c.name),
-    }).select().single();
+    };
+
+    let startup: { id: string } | null = null;
+    let error: { message?: string } | null = null;
+    const isNew = !existing;
+    if (existing) {
+      // Approved already? Don't silently knock a live listing back to
+      // pending — just take them to their dashboard.
+      const res = await supabase.from("startups").update(fields).eq("id", existing.id).select("id").single();
+      startup = res.data; error = res.error;
+    } else {
+      const slug = slugify(name) + "-" + Math.random().toString(36).slice(2, 6);
+      const res = await supabase.from("startups").insert({
+        owner_id: user.id, slug,
+        status: "pending_review", subscription_tier: "free",
+        ...fields,
+      }).select("id").single();
+      startup = res.data; error = res.error;
+    }
 
     if (error || !startup) {
       // Postgres messages are for logs, not founders.
@@ -216,6 +240,12 @@ export default function StartupOnboardingPage() {
     // fails, don't lose the founder's work silently — warn so they can re-add
     // from the edit page rather than discovering the gap on their live profile.
     let partialLoss = false;
+    if (!isNew) {
+      // Re-submit replaces the collections; appending duplicated every
+      // founder and milestone on each pass through this handler.
+      await supabase.from("startup_founders").delete().eq("startup_id", startup.id);
+      await supabase.from("startup_milestones").delete().eq("startup_id", startup.id);
+    }
     const validFounders = founders.filter(f => f.name && f.role);
     if (validFounders.length > 0) {
       const { error: fErr } = await supabase.from("startup_founders").insert(
@@ -234,10 +264,12 @@ export default function StartupOnboardingPage() {
       if (mErr) partialLoss = true;
     }
     if (partialLoss) notify.error(t("onboarding.su.partialSave"));
-    await fetch("/api/admin/notify-review", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ startupId: startup.id }),
-    }).catch(() => {});
+    if (isNew) {
+      await fetch("/api/admin/notify-review", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startupId: startup.id }),
+      }).catch(() => {});
+    }
 
     notify.success(t("onboarding.su.submitted"));
     router.push("/dashboard/startup?welcome=1");
@@ -759,46 +791,15 @@ export default function StartupOnboardingPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <label style={labelSt}>{t("onboarding.su.pitchDeckUrl")}</label>
-                      <p style={hintSt}>{t("onboarding.su.pitchDeckHint")}</p>
-                      <div style={{ position: "relative" }}>
-                        <FileText style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
-                        <input type="text" value={pitchDeckUrl} onChange={e => setPitchDeckUrl(e.target.value)}
-                          placeholder="https://docsend.com/view/…" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingLeft: "30px" }} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label style={labelSt}>{t("onboarding.su.demoVideoUrl")}</label>
-                      <p style={hintSt}>{t("onboarding.su.demoVideoHint")}</p>
-                      <div style={{ position: "relative" }}>
-                        <Link2 style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
-                        <input type="text" value={demoVideoUrl} onChange={e => setDemoVideoUrl(e.target.value)}
-                          placeholder="https://loom.com/share/…" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingLeft: "30px" }} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label style={labelSt}>{t("onboarding.su.productHuntUrl")}</label>
-                      <div style={{ position: "relative" }}>
-                        <Link2 style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "#DA552F" }} />
-                        <input type="text" value={productHuntUrl} onChange={e => setProductHuntUrl(e.target.value)}
-                          placeholder="https://producthunt.com/posts/…" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingLeft: "30px" }} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label style={labelSt}>{t("onboarding.su.companyTwitter")}</label>
-                      <div style={{ position: "relative" }}>
-                        <Twitter style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
-                        <input type="text" value={twitterUrl} onChange={e => setTwitterUrl(e.target.value)}
-                          placeholder="@yourcompany or https://x.com/yourcompany" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingLeft: "30px" }} />
-                      </div>
+                    {/* Deck, demo video, socials and per-founder LinkedIn now
+                        live in the dashboard, AFTER login — onboarding kept
+                        founders filling four link fields while the thing they
+                        wanted was to get in. The listing goes to review
+                        without them; they can be added any time. */}
+                    <div style={{ background: "var(--cr-paper-3)", border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "14px 16px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", lineHeight: 1.6, margin: 0 }}>
+                        {t("onboarding.su.materialsLater")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -872,7 +873,7 @@ export default function StartupOnboardingPage() {
                               // Only a saved listing may proceed to checkout;
                               // a failed save stays here with the form intact.
                               const ok = await handleSubmit();
-                              if (ok && plan.tier !== "free") router.push(`/api/checkout/startup?tier=${plan.tier}`);
+                              if (ok && plan.tier !== "free") router.push(`/api/checkout/startup?tier=${plan.tier}&from=onboarding`);
                             }}
                             style={{ ...plan.highlight ? primaryBtn : outlineBtn, marginLeft: "16px", opacity: loading ? 0.5 : 1 }}>
                             {loading ? t("common.saving") : plan.tier === "free" ? t("onboarding.su.startFree") : t("onboarding.su.selectPlan", { name: plan.name })}

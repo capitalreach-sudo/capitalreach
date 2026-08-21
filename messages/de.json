@@ -730,7 +730,7 @@
     "subscriptionBilling": "Abonnement & Abrechnung",
     "manageBilling": "Abrechnung verwalten",
     "billingNote": "Verwalte dein Abonnement, aktualisiere Zahlungsmethoden und sieh den Rechnungsverlauf im Stripe-Kundenportal ein.",
-    "upgradedToast": "Deine Mitgliedschaft wurde upgegradet. Viel Spaß mit den neuen Funktionen.",
+    "upgradedToast": "Plan aktualisiert — willkommen an Bord.",
     "closedDeals": "Abgeschlossene Deals",
     "fr1": "Startup-Karten durchsuchen",
     "fr2": "Finanzierungsziel & Phase sehen",
@@ -1004,7 +1004,9 @@
     "reportDeleteConfirm": "Diesen Bericht löschen? Das kann nicht rückgängig gemacht werden.",
     "reportExport": "Exportieren",
     "reportViewDeal": "Deal öffnen",
-    "unnamedAccount": "Unbenanntes Konto"
+    "unnamedAccount": "Unbenanntes Konto",
+    "billingSoon": "Sie sind vorerst im Free-Plan — die Online-Zahlung ist noch nicht aktiv. Ihr Listing ist gespeichert; ein Upgrade ist jederzeit unter Abrechnung möglich.",
+    "welcomeToast": "Willkommen! Ihr Listing wurde zur Prüfung eingereicht."
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -1642,7 +1644,8 @@
       "pctOutOfRange": "{field} muss zwischen 0 und {max} liegen.",
       "numberTooLarge": "Eine der Zahlen ist zu groß — Prozentwerte dürfen höchstens 100 sein.",
       "partialSave": "Dein Eintrag wurde gespeichert, aber einige Gründer oder Meilensteine konnten nicht hinzugefügt werden. Du kannst sie auf der Bearbeitungsseite ergänzen.",
-      "uploadLinkHint": "Füge unten einen teilbaren Link zu deinem Deck ein (Google Drive, DocSend, Notion oder eine PDF-URL)."
+      "uploadLinkHint": "Füge unten einen teilbaren Link zu deinem Deck ein (Google Drive, DocSend, Notion oder eine PDF-URL).",
+      "materialsLater": "Pitch-Deck, Demo-Video, Social Links und LinkedIn-Profile der Gründer:innen fügen Sie nach dem Login im Dashboard hinzu — Ihr Listing geht auch ohne sie in die Prüfung."
     },
     "inv": {
       "forInvestors": "für Investoren",

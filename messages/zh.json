@@ -723,7 +723,7 @@
     "subscriptionBilling": "订阅与账单",
     "manageBilling": "管理账单",
     "billingNote": "通过 Stripe 客户门户管理订阅、更新付款方式并查看发票历史。",
-    "upgradedToast": "您的会员已升级。尽情享受新功能。",
+    "upgradedToast": "套餐已升级——欢迎加入。",
     "closedDeals": "已完成交易",
     "fr1": "浏览初创公司卡片",
     "fr2": "查看融资目标和阶段",
@@ -997,7 +997,9 @@
     "reportDeleteConfirm": "删除此报告？此操作无法撤销。",
     "reportExport": "导出",
     "reportViewDeal": "打开交易",
-    "unnamedAccount": "未命名账户"
+    "unnamedAccount": "未命名账户",
+    "billingSoon": "你目前使用免费套餐——在线支付尚未开通。挂牌已保存；可随时在「账单」中升级。",
+    "welcomeToast": "欢迎！你的挂牌已提交审核。"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -1635,7 +1637,8 @@
       "pctOutOfRange": "{field} 必须在 0 到 {max} 之间。",
       "numberTooLarge": "某个数值过大——百分比不能超过 100。",
       "partialSave": "您的列表已保存，但部分创始人或里程碑未能添加。您可以在编辑页面添加它们。",
-      "uploadLinkHint": "在下方粘贴一个可分享的路演文稿链接（Google Drive、DocSend、Notion 或 PDF 网址）。"
+      "uploadLinkHint": "在下方粘贴一个可分享的路演文稿链接（Google Drive、DocSend、Notion 或 PDF 网址）。",
+      "materialsLater": "路演文件、演示视频、社交链接和创始人 LinkedIn 可在登录后从仪表盘添加——没有它们，你的挂牌也会进入审核。"
     },
     "inv": {
       "forInvestors": "投资者版",

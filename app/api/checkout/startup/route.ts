@@ -68,7 +68,15 @@ export async function GET(req: NextRequest) {
     // Previously this passed undefined straight to Stripe, which failed with
     // an opaque API error. Say what is actually wrong instead.
     console.error(`Stripe price not configured: ${plan.envKey}`);
-    return NextResponse.redirect(new URL("/pricing?error=price_unavailable", req.url));
+    // From onboarding this used to bounce to /pricing — the founder, whose
+    // listing had just saved, pressed "select plan" again and every press
+    // created another pending-review listing. Land them in their dashboard
+    // with their work intact; the upgrade can happen when billing is live.
+    return NextResponse.redirect(new URL(
+      req.nextUrl.searchParams.get("from") === "onboarding"
+        ? "/dashboard/startup?welcome=1&billing=soon"
+        : "/pricing?error=price_unavailable",
+      req.url));
   }
 
   const { data: profile } = await supabase
@@ -81,15 +89,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  const customerId = await getOrCreateCustomer(user.id, profile.email, profile.full_name || undefined);
-
-  const session = await createCheckoutSession({
-    customerId,
-    priceId,
-    successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/startup?upgraded=1`,
-    cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    metadata: { userId: user.id, role: "founder", tier: tier },
-  });
-
-  return NextResponse.redirect(session.url!);
+  try {
+    const customerId = await getOrCreateCustomer(user.id, profile.email, profile.full_name || undefined);
+    const session = await createCheckoutSession({
+      customerId,
+      priceId,
+      successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/startup?upgraded=1`,
+      cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+      metadata: { userId: user.id, role: "founder", tier: tier },
+    });
+    return NextResponse.redirect(session.url!);
+  } catch (err) {
+    // Stripe down or keys wrong must never strand a founder mid-onboarding.
+    console.error("Checkout session failed:", err);
+    return NextResponse.redirect(new URL(
+      req.nextUrl.searchParams.get("from") === "onboarding"
+        ? "/dashboard/startup?welcome=1&billing=soon"
+        : "/pricing?error=checkout_failed",
+      req.url));
+  }
 }

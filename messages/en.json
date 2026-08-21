@@ -734,7 +734,7 @@
     "subscriptionBilling": "Subscription & Billing",
     "manageBilling": "Manage Billing",
     "billingNote": "Manage your subscription, update payment methods, and view invoice history through the Stripe Customer Portal.",
-    "upgradedToast": "Your membership has been upgraded. Enjoy your new features.",
+    "upgradedToast": "Plan upgraded — welcome aboard.",
     "closedDeals": "Closed Deals",
     "fr1": "Browse startup cards",
     "fr2": "See funding target & stage",
@@ -1008,7 +1008,9 @@
     "reportDeleteConfirm": "Delete this report? This cannot be undone.",
     "reportExport": "Export",
     "reportViewDeal": "Open deal",
-    "unnamedAccount": "Unnamed account"
+    "unnamedAccount": "Unnamed account",
+    "billingSoon": "You're on the Free plan for now — online payment isn't live yet. Your listing is saved; upgrade any time from Billing.",
+    "welcomeToast": "Welcome! Your listing was submitted for review."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1646,7 +1648,8 @@
       "pctOutOfRange": "{field} must be between 0 and {max}.",
       "numberTooLarge": "One of the numbers is too large — percentages must be 100 or less.",
       "partialSave": "Your listing was saved, but some founders or milestones couldn't be added. You can add them from the edit page.",
-      "uploadLinkHint": "Paste a shareable link to your deck below (Google Drive, DocSend, Notion, or a PDF URL)."
+      "uploadLinkHint": "Paste a shareable link to your deck below (Google Drive, DocSend, Notion, or a PDF URL).",
+      "materialsLater": "Pitch deck, demo video, socials and founder LinkedIn profiles are added from your dashboard once you're in — your listing goes to review without them."
     },
     "inv": {
       "forInvestors": "for investors",

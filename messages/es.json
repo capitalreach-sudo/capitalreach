@@ -723,7 +723,7 @@
     "subscriptionBilling": "Suscripción y Facturación",
     "manageBilling": "Gestionar facturación",
     "billingNote": "Gestiona tu suscripción, actualiza métodos de pago y consulta el historial de facturas a través del Portal de Cliente de Stripe.",
-    "upgradedToast": "Tu membresía ha sido mejorada. Disfruta de tus nuevas funciones.",
+    "upgradedToast": "Plan mejorado — bienvenido a bordo.",
     "closedDeals": "Acuerdos cerrados",
     "fr1": "Explorar tarjetas de startups",
     "fr2": "Ver objetivo de financiación y etapa",
@@ -997,7 +997,9 @@
     "reportDeleteConfirm": "¿Eliminar este informe? No se puede deshacer.",
     "reportExport": "Exportar",
     "reportViewDeal": "Abrir operación",
-    "unnamedAccount": "Cuenta sin nombre"
+    "unnamedAccount": "Cuenta sin nombre",
+    "billingSoon": "Por ahora estás en el plan gratuito: el pago en línea aún no está activo. Tu ficha está guardada; mejora el plan cuando quieras desde Facturación.",
+    "welcomeToast": "¡Bienvenido! Tu ficha se envió a revisión."
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",
@@ -1635,7 +1637,8 @@
       "pctOutOfRange": "{field} debe estar entre 0 y {max}.",
       "numberTooLarge": "Uno de los números es demasiado grande: los porcentajes deben ser 100 o menos.",
       "partialSave": "Tu anuncio se guardó, pero algunos fundadores o hitos no se pudieron añadir. Puedes agregarlos desde la página de edición.",
-      "uploadLinkHint": "Pega abajo un enlace compartible a tu deck (Google Drive, DocSend, Notion o una URL de PDF)."
+      "uploadLinkHint": "Pega abajo un enlace compartible a tu deck (Google Drive, DocSend, Notion o una URL de PDF).",
+      "materialsLater": "El deck, el vídeo de demo, las redes y los perfiles de LinkedIn de los fundadores se añaden desde el panel una vez dentro; tu ficha va a revisión sin ellos."
     },
     "inv": {
       "forInvestors": "para inversores",

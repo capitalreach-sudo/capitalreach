@@ -251,7 +251,7 @@ export default function EditStartupPage() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
-      const { data } = await supabase.from("startups").select("*").eq("owner_id", user.id).single();
+      const { data } = await supabase.from("startups").select("*").eq("owner_id", user.id).order("status", { ascending: true }).order("created_at", { ascending: true }).limit(1).maybeSingle();
       if (data) data.competitors_json = Array.isArray(data.competitors_json) ? data.competitors_json : [];
       // A local backup newer than the database (tab closed mid-edit) is
       // restored — the founder loses nothing.

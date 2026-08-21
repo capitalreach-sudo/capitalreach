@@ -30,7 +30,12 @@ export default async function StartupDashboardPage() {
       milestones:startup_milestones(*)
     `)
     .eq("owner_id", user.id)
-    .single()
+    // "active" sorts before "pending_review": if duplicates ever exist again,
+    // the live listing wins and the dashboard still renders.
+    .order("status", { ascending: true })
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle()
     .returns<Startup>();
 
   // Analytics: pageviews last 30 days

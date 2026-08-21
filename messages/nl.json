@@ -715,7 +715,7 @@
     "subscriptionBilling": "Abonnement & Facturatie",
     "manageBilling": "Facturatie beheren",
     "billingNote": "Beheer uw abonnement, werk betaalmethoden bij en bekijk de factuurgeschiedenis via het Stripe-klantportaal.",
-    "upgradedToast": "Uw lidmaatschap is geüpgraded. Geniet van uw nieuwe functies.",
+    "upgradedToast": "Plan geüpgraded — welkom aan boord.",
     "fr1": "Startupkaarten bekijken",
     "fr2": "Financieringsdoel & fase zien",
     "fr3": "Volledige profielen & pitch decks",
@@ -988,7 +988,9 @@
     "reportDeleteConfirm": "Dit rapport verwijderen? Dit kan niet ongedaan worden gemaakt.",
     "reportExport": "Exporteren",
     "reportViewDeal": "Deal openen",
-    "unnamedAccount": "Naamloos account"
+    "unnamedAccount": "Naamloos account",
+    "billingSoon": "Je zit voorlopig op het gratis plan — online betalen is nog niet actief. Je vermelding is opgeslagen; upgraden kan altijd via Facturering.",
+    "welcomeToast": "Welkom! Je vermelding is ingediend voor review."
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -1652,7 +1654,8 @@
       "pctOutOfRange": "{field} moet tussen 0 en {max} liggen.",
       "numberTooLarge": "Een van de getallen is te groot — percentages moeten 100 of lager zijn.",
       "partialSave": "Je vermelding is opgeslagen, maar sommige oprichters of mijlpalen konden niet worden toegevoegd. Je kunt ze toevoegen via de bewerkpagina.",
-      "uploadLinkHint": "Plak hieronder een deelbare link naar je deck (Google Drive, DocSend, Notion of een PDF-URL)."
+      "uploadLinkHint": "Plak hieronder een deelbare link naar je deck (Google Drive, DocSend, Notion of een PDF-URL).",
+      "materialsLater": "Pitchdeck, demovideo, socials en LinkedIn-profielen van founders voeg je na het inloggen toe vanuit je dashboard — je vermelding gaat ook zonder in review."
     },
     "accredited": "Ik bevestig dat ik een geaccrediteerde investeerder ben",
     "accreditedNote": "Zelfcertificering is vereist volgens het platformbeleid. Voor institutionele accounts kan documentatie worden gevraagd.",

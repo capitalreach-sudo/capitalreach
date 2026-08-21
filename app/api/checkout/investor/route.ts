@@ -75,7 +75,13 @@ export async function GET(req: NextRequest) {
     // Previously this passed undefined straight to Stripe, which failed with
     // an opaque API error. Say what is actually wrong instead.
     console.error(`Stripe price not configured: ${plan.envKey}`);
-    return NextResponse.redirect(new URL("/pricing?error=price_unavailable", req.url));
+    // From onboarding, land in the dashboard with the profile intact — the
+    // /pricing bounce is what turned plan clicks into duplicate profiles.
+    return NextResponse.redirect(new URL(
+      req.nextUrl.searchParams.get("from") === "onboarding"
+        ? "/dashboard/investor?welcome=1&billing=soon"
+        : "/pricing?error=price_unavailable",
+      req.url));
   }
 
   const { data: profile } = await supabase
@@ -88,15 +94,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  const customerId = await getOrCreateCustomer(user.id, profile.email, profile.full_name || undefined);
-
-  const session = await createCheckoutSession({
-    customerId,
-    priceId,
-    successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/investor?upgraded=1`,
-    cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    metadata: { userId: user.id, role: "investor", tier: tier },
-  });
-
-  return NextResponse.redirect(session.url!);
+  try {
+    const customerId = await getOrCreateCustomer(user.id, profile.email, profile.full_name || undefined);
+    const session = await createCheckoutSession({
+      customerId,
+      priceId,
+      successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/investor?upgraded=1`,
+      cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+      metadata: { userId: user.id, role: "investor", tier: tier },
+    });
+    return NextResponse.redirect(session.url!);
+  } catch (err) {
+    console.error("Checkout session failed:", err);
+    return NextResponse.redirect(new URL(
+      req.nextUrl.searchParams.get("from") === "onboarding"
+        ? "/dashboard/investor?welcome=1&billing=soon"
+        : "/pricing?error=checkout_failed",
+      req.url));
+  }
 }

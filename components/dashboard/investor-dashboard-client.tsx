@@ -465,11 +465,17 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   ];
 
   useEffect(() => {
-    if (searchParams.get("upgraded") === "1") {
+    if (searchParams.get("billing") === "soon") {
+      notify.info(t("dashboard.billingSoon"));
+    } else if (searchParams.get("upgraded") === "1") {
       notify.success(t("dashboard.upgradedToast"));
+    }
+    if (searchParams.get("upgraded") || searchParams.get("billing")) {
       const url = new URL(window.location.href);
       url.searchParams.delete("upgraded");
       url.searchParams.delete("free");
+      url.searchParams.delete("billing");
+      url.searchParams.delete("welcome");
       router.replace(url.pathname + (url.search || ""));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

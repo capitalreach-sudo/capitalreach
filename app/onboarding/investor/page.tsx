@@ -152,18 +152,20 @@ export default function InvestorOnboardingPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
 
-    const base   = slugify(displayName || firmName || "investor");
-    const suffix = Math.random().toString(36).slice(2, 6);
-    const slug   = `${base}-${suffix}`;
+    // Same duplicate trap as the founder flow: checkout can bounce back here
+    // and each press of a plan button ran another insert. One profile per
+    // account — an existing row is updated, never joined by a twin.
+    const { data: existing } = await supabase.from("investors")
+      .select("id").eq("owner_id", user.id)
+      .order("created_at", { ascending: true }).limit(1).maybeSingle();
 
-    const { data: investor, error } = await supabase.from("investors").insert({
-      owner_id: user.id, slug, type: investorType,
+    const fields = {
+      type: investorType,
       bio: bio || null, linkedin_url: linkedin || null,
       industries, stages,
       min_check: minCheck ? parseInt(minCheck) : null,
       max_check: maxCheck ? parseInt(maxCheck) : null,
       geography: geography ? geography.split(",").map(g => g.trim()) : [],
-      subscription_tier: "free",
       display_name: displayName || null, firm_name: firmName || null,
       website: website || null, twitter_url: twitter || null,
       investment_thesis: investmentThesis || null, aum: aum || null,
@@ -172,7 +174,22 @@ export default function InvestorOnboardingPage() {
       lead_rounds: leadRounds,
       number_of_investments: numberOfInvestments ? parseInt(numberOfInvestments) : null,
       avg_hold_period: avgHoldPeriod || null,
-    }).select().single();
+    };
+
+    let investor: { id: string } | null = null;
+    let error: { message?: string } | null = null;
+    if (existing) {
+      const res = await supabase.from("investors").update(fields).eq("id", existing.id).select("id").single();
+      investor = res.data; error = res.error;
+    } else {
+      const base   = slugify(displayName || firmName || "investor");
+      const suffix = Math.random().toString(36).slice(2, 6);
+      const res = await supabase.from("investors").insert({
+        owner_id: user.id, slug: `${base}-${suffix}`, subscription_tier: "free",
+        ...fields,
+      }).select("id").single();
+      investor = res.data; error = res.error;
+    }
 
     if (error || !investor) {
       notify.error(t("onboarding.inv.errorCreating") + " " + (error?.message || ""));
@@ -193,7 +210,7 @@ export default function InvestorOnboardingPage() {
     }).eq("id", user.id);
 
     if (tier !== "free") {
-      router.push(`/api/checkout/investor?tier=${tier}`);
+      router.push(`/api/checkout/investor?tier=${tier}&from=onboarding`);
     } else {
       notify.success(t("onboarding.inv.created"));
       router.push("/dashboard/investor?welcome=1");

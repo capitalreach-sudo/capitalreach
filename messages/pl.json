@@ -715,7 +715,7 @@
     "subscriptionBilling": "Subskrypcja i rozliczenia",
     "manageBilling": "Zarządzaj rozliczeniami",
     "billingNote": "Zarządzaj subskrypcją, aktualizuj metody płatności i przeglądaj historię faktur przez Portal Klienta Stripe.",
-    "upgradedToast": "Twoje członkostwo zostało ulepszone. Ciesz się nowymi funkcjami.",
+    "upgradedToast": "Plan ulepszony — witamy na pokładzie.",
     "fr1": "Przeglądanie kart startupów",
     "fr2": "Zobacz cel finansowania i etap",
     "fr3": "Pełne profile i pitch decki",
@@ -988,7 +988,9 @@
     "reportDeleteConfirm": "Usunąć ten raport? Tej operacji nie można cofnąć.",
     "reportExport": "Eksportuj",
     "reportViewDeal": "Otwórz transakcję",
-    "unnamedAccount": "Konto bez nazwy"
+    "unnamedAccount": "Konto bez nazwy",
+    "billingSoon": "Na razie jesteś na planie darmowym — płatność online nie jest jeszcze aktywna. Ogłoszenie zapisane; ulepszysz plan w każdej chwili w Rozliczeniach.",
+    "welcomeToast": "Witamy! Ogłoszenie zostało przesłane do weryfikacji."
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -1652,7 +1654,8 @@
       "pctOutOfRange": "{field} musi mieścić się między 0 a {max}.",
       "numberTooLarge": "Jedna z liczb jest za duża — procenty muszą wynosić najwyżej 100.",
       "partialSave": "Twoja oferta została zapisana, ale niektórych founderów lub kamieni milowych nie udało się dodać. Możesz je dodać na stronie edycji.",
-      "uploadLinkHint": "Wklej poniżej udostępnialny link do swojej prezentacji (Google Drive, DocSend, Notion lub adres URL pliku PDF)."
+      "uploadLinkHint": "Wklej poniżej udostępnialny link do swojej prezentacji (Google Drive, DocSend, Notion lub adres URL pliku PDF).",
+      "materialsLater": "Deck, wideo demo, social media i profile LinkedIn założycieli dodasz z panelu po zalogowaniu — ogłoszenie trafia do weryfikacji bez nich."
     },
     "accredited": "Potwierdzam, że jestem akredytowanym inwestorem",
     "accreditedNote": "Samocertyfikacja jest wymagana przez politykę platformy. W przypadku kont instytucjonalnych może być wymagana dokumentacja.",

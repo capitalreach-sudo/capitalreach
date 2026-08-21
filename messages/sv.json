@@ -715,7 +715,7 @@
     "subscriptionBilling": "Prenumeration & Fakturering",
     "manageBilling": "Hantera fakturering",
     "billingNote": "Hantera din prenumeration, uppdatera betalningsmetoder och se fakturahistorik via Stripes kundportal.",
-    "upgradedToast": "Ditt medlemskap har uppgraderats. Njut av dina nya funktioner.",
+    "upgradedToast": "Plan uppgraderad — välkommen ombord.",
     "fr1": "Bläddra bland startupkort",
     "fr2": "Se finansieringsmål & fas",
     "fr3": "Fullständiga profiler & pitch decks",
@@ -988,7 +988,9 @@
     "reportDeleteConfirm": "Ta bort rapporten? Går inte att ångra.",
     "reportExport": "Exportera",
     "reportViewDeal": "Öppna affär",
-    "unnamedAccount": "Namnlöst konto"
+    "unnamedAccount": "Namnlöst konto",
+    "billingSoon": "Du är på gratisplanen tills vidare — onlinebetalning är inte aktiv ännu. Noteringen är sparad; uppgradera när som helst under Fakturering.",
+    "welcomeToast": "Välkommen! Din notering skickades till granskning."
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1652,7 +1654,8 @@
       "pctOutOfRange": "{field} måste ligga mellan 0 och {max}.",
       "numberTooLarge": "Ett av talen är för stort — procent måste vara 100 eller lägre.",
       "partialSave": "Din annons sparades, men vissa grundare eller milstolpar kunde inte läggas till. Du kan lägga till dem från redigeringssidan.",
-      "uploadLinkHint": "Klistra in en delbar länk till din pitch nedan (Google Drive, DocSend, Notion eller en PDF-URL)."
+      "uploadLinkHint": "Klistra in en delbar länk till din pitch nedan (Google Drive, DocSend, Notion eller en PDF-URL).",
+      "materialsLater": "Pitchdeck, demovideo, sociala länkar och grundarnas LinkedIn läggs till från din instrumentpanel när du är inne — din notering går till granskning utan dem."
     },
     "accredited": "Jag bekräftar att jag är en ackrediterad investerare",
     "accreditedNote": "Självcertifiering krävs enligt plattformens policy. Dokumentation kan begäras för institutionella konton.",

@@ -723,7 +723,7 @@
     "subscriptionBilling": "Abonnement & Facturation",
     "manageBilling": "Gérer la facturation",
     "billingNote": "Gérez votre abonnement, mettez à jour vos moyens de paiement et consultez l'historique des factures via le portail client Stripe.",
-    "upgradedToast": "Votre adhésion a été mise à niveau. Profitez de vos nouvelles fonctionnalités.",
+    "upgradedToast": "Offre mise à niveau — bienvenue à bord.",
     "closedDeals": "Deals conclus",
     "fr1": "Parcourir les cartes de startups",
     "fr2": "Voir l'objectif de financement & l'étape",
@@ -997,7 +997,9 @@
     "reportDeleteConfirm": "Supprimer ce rapport ? Action irréversible.",
     "reportExport": "Exporter",
     "reportViewDeal": "Ouvrir le deal",
-    "unnamedAccount": "Compte sans nom"
+    "unnamedAccount": "Compte sans nom",
+    "billingSoon": "Vous êtes sur l'offre gratuite pour l'instant — le paiement en ligne n'est pas encore actif. Votre annonce est enregistrée ; passez à l'offre supérieure à tout moment depuis Facturation.",
+    "welcomeToast": "Bienvenue ! Votre annonce a été soumise pour examen."
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -1635,7 +1637,8 @@
       "pctOutOfRange": "{field} doit être compris entre 0 et {max}.",
       "numberTooLarge": "L'un des nombres est trop grand — les pourcentages doivent être inférieurs ou égaux à 100.",
       "partialSave": "Votre annonce a été enregistrée, mais certains fondateurs ou jalons n'ont pas pu être ajoutés. Vous pouvez les ajouter depuis la page d'édition.",
-      "uploadLinkHint": "Collez ci-dessous un lien partageable vers votre deck (Google Drive, DocSend, Notion ou une URL PDF)."
+      "uploadLinkHint": "Collez ci-dessous un lien partageable vers votre deck (Google Drive, DocSend, Notion ou une URL PDF).",
+      "materialsLater": "Le deck, la vidéo de démo, les réseaux sociaux et les profils LinkedIn des fondateurs s'ajoutent depuis votre tableau de bord une fois connecté — votre annonce part en revue sans eux."
     },
     "inv": {
       "forInvestors": "pour investisseurs",

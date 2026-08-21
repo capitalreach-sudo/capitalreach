@@ -723,7 +723,7 @@
     "subscriptionBilling": "サブスクリプションと請求",
     "manageBilling": "請求を管理",
     "billingNote": "Stripeカスタマーポータルでサブスクリプションの管理、支払い方法の更新、請求履歴の確認ができます。",
-    "upgradedToast": "メンバーシップがアップグレードされました。新機能をお楽しみください。",
+    "upgradedToast": "プランをアップグレードしました。ようこそ。",
     "closedDeals": "成立ディール",
     "fr1": "スタートアップカードを閲覧",
     "fr2": "調達目標とステージを表示",
@@ -997,7 +997,9 @@
     "reportDeleteConfirm": "このレポートを削除しますか？取り消せません。",
     "reportExport": "エクスポート",
     "reportViewDeal": "ディールを開く",
-    "unnamedAccount": "名称未設定のアカウント"
+    "unnamedAccount": "名称未設定のアカウント",
+    "billingSoon": "現在は無料プランです。オンライン決済はまだ有効ではありません。掲載は保存済みです。アップグレードは「請求」からいつでも可能です。",
+    "welcomeToast": "ようこそ！掲載は審査に送信されました。"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -1635,7 +1637,8 @@
       "pctOutOfRange": "{field} は 0 から {max} の間で入力してください。",
       "numberTooLarge": "数値が大きすぎます。パーセンテージは100以下にしてください。",
       "partialSave": "掲載は保存されましたが、一部の創業者やマイルストーンを追加できませんでした。編集ページから追加できます。",
-      "uploadLinkHint": "デックの共有リンクを下に貼り付けてください（Google Drive、DocSend、Notion、または PDF の URL）。"
+      "uploadLinkHint": "デックの共有リンクを下に貼り付けてください（Google Drive、DocSend、Notion、または PDF の URL）。",
+      "materialsLater": "ピッチ資料、デモ動画、SNS、創業者のLinkedInはログイン後にダッシュボードから追加できます。掲載はこれらなしでも審査に進みます。"
     },
     "inv": {
       "forInvestors": "投資家向け",

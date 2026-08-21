@@ -780,6 +780,21 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
 
+  // Arrival notices from onboarding/checkout. Read once from the URL —
+  // welcome=1 greets, billing=soon explains why a paid pick landed on Free
+  // (the alternative was bouncing founders to /pricing, where re-pressing
+  // "select plan" once duplicated their listing on every press).
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("billing") === "soon") notify.info(t("dashboard.billingSoon"));
+    else if (q.get("welcome") === "1") notify.success(t("dashboard.welcomeToast"));
+    else if (q.get("upgraded") === "1") notify.success(t("dashboard.upgradedToast"));
+    if (q.get("welcome") || q.get("billing") || q.get("upgraded")) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const TABS: { value: StartupTab; label: string }[] = [
     { value: "overview",  label: t("dashboard.overview")    },
     { value: "documents", label: t("dashboard.documents")   },

@@ -715,7 +715,7 @@
     "subscriptionBilling": "Abbonamento e Fatturazione",
     "manageBilling": "Gestisci fatturazione",
     "billingNote": "Gestisci l'abbonamento, aggiorna i metodi di pagamento e consulta la cronologia delle fatture tramite il Portale Clienti Stripe.",
-    "upgradedToast": "Il tuo abbonamento è stato aggiornato. Goditi le nuove funzionalità.",
+    "upgradedToast": "Piano aggiornato — benvenuto a bordo.",
     "fr1": "Sfoglia le card delle startup",
     "fr2": "Vedi obiettivo di finanziamento e fase",
     "fr3": "Profili completi e pitch deck",
@@ -988,7 +988,9 @@
     "reportDeleteConfirm": "Eliminare questo report? Operazione irreversibile.",
     "reportExport": "Esporta",
     "reportViewDeal": "Apri deal",
-    "unnamedAccount": "Account senza nome"
+    "unnamedAccount": "Account senza nome",
+    "billingSoon": "Per ora sei sul piano gratuito: il pagamento online non è ancora attivo. L'annuncio è salvato; puoi fare l'upgrade in qualsiasi momento da Fatturazione.",
+    "welcomeToast": "Benvenuto! Il tuo annuncio è stato inviato in revisione."
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -1652,7 +1654,8 @@
       "pctOutOfRange": "{field} deve essere compreso tra 0 e {max}.",
       "numberTooLarge": "Uno dei numeri è troppo grande: le percentuali devono essere pari o inferiori a 100.",
       "partialSave": "Il tuo annuncio è stato salvato, ma alcuni founder o milestone non sono stati aggiunti. Puoi aggiungerli dalla pagina di modifica.",
-      "uploadLinkHint": "Incolla qui sotto un link condivisibile al tuo deck (Google Drive, DocSend, Notion o un URL PDF)."
+      "uploadLinkHint": "Incolla qui sotto un link condivisibile al tuo deck (Google Drive, DocSend, Notion o un URL PDF).",
+      "materialsLater": "Deck, video demo, social e profili LinkedIn dei founder si aggiungono dalla dashboard una volta dentro — il tuo annuncio va in revisione anche senza."
     },
     "accredited": "Confermo di essere un investitore accreditato",
     "accreditedNote": "L'autocertificazione è richiesta dalla politica della piattaforma. Per gli account istituzionali può essere richiesta documentazione.",

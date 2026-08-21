@@ -715,7 +715,7 @@
     "subscriptionBilling": "구독 및 결제",
     "manageBilling": "결제 관리",
     "billingNote": "Stripe 고객 포털에서 구독 관리, 결제 수단 업데이트, 청구서 내역 확인이 가능합니다.",
-    "upgradedToast": "멤버십이 업그레이드되었습니다. 새로운 기능을 즐겨보세요.",
+    "upgradedToast": "요금제가 업그레이드되었습니다. 환영합니다.",
     "fr1": "스타트업 카드 탐색",
     "fr2": "펀딩 목표 및 단계 확인",
     "fr3": "전체 프로필 및 피치 덱",
@@ -988,7 +988,9 @@
     "reportDeleteConfirm": "이 리포트를 삭제할까요? 되돌릴 수 없습니다.",
     "reportExport": "내보내기",
     "reportViewDeal": "거래 열기",
-    "unnamedAccount": "이름 없는 계정"
+    "unnamedAccount": "이름 없는 계정",
+    "billingSoon": "현재 무료 요금제입니다. 온라인 결제는 아직 활성화되지 않았습니다. 상장은 저장되었으며 결제 페이지에서 언제든 업그레이드할 수 있습니다.",
+    "welcomeToast": "환영합니다! 상장이 심사에 제출되었습니다."
   },
   "settings": {
     "pageTitle": "설정",
@@ -1652,7 +1654,8 @@
       "pctOutOfRange": "{field}은(는) 0에서 {max} 사이여야 합니다.",
       "numberTooLarge": "숫자 중 하나가 너무 큽니다 — 백분율은 100 이하여야 합니다.",
       "partialSave": "리스팅은 저장되었지만 일부 창업자 또는 마일스톤을 추가하지 못했습니다. 편집 페이지에서 추가할 수 있습니다.",
-      "uploadLinkHint": "공유 가능한 덱 링크를 아래에 붙여넣으세요(Google Drive, DocSend, Notion 또는 PDF URL)."
+      "uploadLinkHint": "공유 가능한 덱 링크를 아래에 붙여넣으세요(Google Drive, DocSend, Notion 또는 PDF URL).",
+      "materialsLater": "피치덱, 데모 영상, 소셜 링크, 창업자 LinkedIn은 로그인 후 대시보드에서 추가합니다. 상장은 이것들 없이도 심사로 넘어갑니다."
     },
     "accredited": "본인이 적격 투자자임을 확인합니다",
     "accreditedNote": "플랫폼 정책상 자체 인증이 필요합니다. 기관 계정에는 문서가 요청될 수 있습니다.",

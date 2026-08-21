@@ -715,7 +715,7 @@
     "subscriptionBilling": "Subscrição e Faturação",
     "manageBilling": "Gerir faturação",
     "billingNote": "Faça a gestão da subscrição, atualize métodos de pagamento e consulte o histórico de faturas através do Portal de Cliente Stripe.",
-    "upgradedToast": "A sua adesão foi melhorada. Aproveite as novas funcionalidades.",
+    "upgradedToast": "Plano atualizado — bem-vindo a bordo.",
     "fr1": "Explorar cartões de startups",
     "fr2": "Ver meta de financiamento e fase",
     "fr3": "Perfis completos e pitch decks",
@@ -988,7 +988,9 @@
     "reportDeleteConfirm": "Eliminar este relatório? Não pode ser desfeito.",
     "reportExport": "Exportar",
     "reportViewDeal": "Abrir negócio",
-    "unnamedAccount": "Conta sem nome"
+    "unnamedAccount": "Conta sem nome",
+    "billingSoon": "Por agora está no plano gratuito — o pagamento online ainda não está ativo. O anúncio está guardado; faça upgrade quando quiser em Faturação.",
+    "welcomeToast": "Bem-vindo! O seu anúncio foi enviado para revisão."
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -1652,7 +1654,8 @@
       "pctOutOfRange": "{field} tem de estar entre 0 e {max}.",
       "numberTooLarge": "Um dos números é demasiado grande — as percentagens têm de ser 100 ou menos.",
       "partialSave": "Seu anúncio foi salvo, mas alguns fundadores ou marcos não puderam ser adicionados. Você pode adicioná-los na página de edição.",
-      "uploadLinkHint": "Cole abaixo um link compartilhável para o seu deck (Google Drive, DocSend, Notion ou uma URL de PDF)."
+      "uploadLinkHint": "Cole abaixo um link compartilhável para o seu deck (Google Drive, DocSend, Notion ou uma URL de PDF).",
+      "materialsLater": "O deck, o vídeo de demonstração, as redes e os perfis LinkedIn dos fundadores são adicionados no painel depois de entrar — o seu anúncio segue para revisão sem eles."
     },
     "accredited": "Confirmo que sou um investidor acreditado",
     "accreditedNote": "A autocertificação é exigida pela política da plataforma. Documentação pode ser solicitada para contas institucionais.",
