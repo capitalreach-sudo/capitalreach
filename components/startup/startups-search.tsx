@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows, Clock } from "lucide-react";
@@ -462,8 +463,9 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
         <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px", paddingRight: "24px" }}>
           <EntityLogo name={s.name} logoUrl={(s as { logo_url?: string | null }).logo_url} logoColor={(s as { logo_color?: string | null }).logo_color} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {s.name}
+            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</span>
+              {(s as { is_demo?: boolean }).is_demo && <DemoBadge />}
             </p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {s.tagline}
