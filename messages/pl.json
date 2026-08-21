@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Inwestowanie w startupy wiąże się z wysokim ryzykiem.",
     "body": "Możesz stracić całą zainwestowaną kwotę, zwroty nie są gwarantowane, a udziały są niepłynne — ich sprzedaż może być niemożliwa przez lata. Dywersyfikuj i inwestuj tylko pieniądze, których utratę możesz zaakceptować. Nic na tej stronie nie stanowi porady inwestycyjnej."
+  },
+  "i2i": {
+    "message": "Napisz do inwestora",
+    "placeholder": "Przedstaw się — koinwestycja, pytanie o tezę, cokolwiek."
   }
 }

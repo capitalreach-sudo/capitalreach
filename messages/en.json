@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Investing in startups is high risk.",
     "body": "You can lose your entire investment, returns are not guaranteed, and shares are illiquid — you may not be able to sell them for years. Diversify, and only invest money you can afford to lose. Nothing on this page is investment advice."
+  },
+  "i2i": {
+    "message": "Message investor",
+    "placeholder": "Introduce yourself — a co-invest, a question about their thesis, anything."
   }
 }

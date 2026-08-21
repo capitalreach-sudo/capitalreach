@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Investir em startups é de alto risco.",
     "body": "Pode perder todo o investimento, os retornos não são garantidos e as participações são ilíquidas — pode não conseguir vendê-las durante anos. Diversifique e invista apenas dinheiro que pode perder. Nada nesta página é aconselhamento de investimento."
+  },
+  "i2i": {
+    "message": "Mensagem ao investidor",
+    "placeholder": "Apresente-se — um coinvestimento, uma pergunta sobre a tese, o que for."
   }
 }

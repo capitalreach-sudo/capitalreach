@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Investeren in startups is zeer risicovol.",
     "body": "U kunt uw volledige inleg verliezen, rendement is niet gegarandeerd en aandelen zijn illiquide — verkopen kan jarenlang onmogelijk zijn. Spreid uw risico en investeer alleen geld dat u kunt missen. Niets op deze pagina is beleggingsadvies."
+  },
+  "i2i": {
+    "message": "Bericht aan investeerder",
+    "placeholder": "Stel jezelf voor — een co-investering, een vraag over de these, wat dan ook."
   }
 }

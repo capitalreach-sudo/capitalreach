@@ -2774,7 +2774,7 @@ export type Database = {
           investor_id: string | null
           recipient_investor_id: string | null
           recipient_startup_id: string | null
-          startup_id: string
+          startup_id: string | null
           status: string
           updated_at: string
         }
@@ -2784,7 +2784,7 @@ export type Database = {
           investor_id?: string | null
           recipient_investor_id?: string | null
           recipient_startup_id?: string | null
-          startup_id: string
+          startup_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -2794,7 +2794,7 @@ export type Database = {
           investor_id?: string | null
           recipient_investor_id?: string | null
           recipient_startup_id?: string | null
-          startup_id?: string
+          startup_id?: string | null
           status?: string
           updated_at?: string
         }

@@ -16,6 +16,10 @@ import { isUuid } from "@/lib/utils";
  * POST { startupId, body } — founder→founder (migration 012 gave threads a
  * recipient_startup_id for exactly this; the route finally uses it). Two
  * founders comparing notes is how a marketplace becomes a community.
+ *
+ * Since 098 the sender may also be an INVESTOR: investor→startup opens the
+ * classic (startup, investor) pair, investor→investor opens a direct thread
+ * with no startup anchor. Every pairing on the platform can now talk.
  */
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -32,9 +36,76 @@ export async function POST(req: NextRequest) {
   if (body.length > 2000) return NextResponse.json({ error: "Message is too long (max 2000 characters)" }, { status: 400 });
 
   const mine = await resolveEntity(user.id, "startup");
-  if (!mine) return NextResponse.json({ error: "Founders only" }, { status: 403 });
-
   const admin = createAdminClient();
+
+  // ── Investor sender ─────────────────────────────────────────────────────
+  if (!mine) {
+    const myInv = await resolveEntity(user.id, "investor");
+    if (!myInv) return NextResponse.json({ error: "Create a profile first" }, { status: 403 });
+    const { data: me } = await admin.from("investors")
+      .select("id, display_name, firm_name").eq("id", myInv.entityId).maybeSingle();
+    if (!me) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const myName = me.display_name ?? me.firm_name ?? "An investor";
+
+    // investor → investor: a direct thread, no startup anchor (098).
+    if (isUuid(investorId)) {
+      const { data: other } = await admin.from("investors")
+        .select("id, owner_id, display_name, firm_name").eq("id", investorId).maybeSingle();
+      if (!other) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      if (other.id === me.id) return NextResponse.json({ error: "That is your own profile" }, { status: 400 });
+
+      const { data: existing } = await admin.from("threads").select("id")
+        .is("startup_id", null)
+        .or(`and(investor_id.eq.${me.id},recipient_investor_id.eq.${other.id}),and(investor_id.eq.${other.id},recipient_investor_id.eq.${me.id})`)
+        .limit(1).maybeSingle();
+      let threadId = existing?.id;
+      if (!threadId) {
+        const { data: created, error } = await admin.from("threads")
+          .insert({ investor_id: me.id, recipient_investor_id: other.id, status: "active" }).select("id").single();
+        if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
+        threadId = created.id;
+      }
+      const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
+      if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+      await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
+      if (other.owner_id && other.owner_id !== user.id) {
+        const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+        await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${myName}`, body: preview, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
+        const { data: p } = await admin.from("profiles").select("email").eq("id", other.owner_id).maybeSingle();
+        if (p?.email) await sendNewMessageEmail(p.email, myName, myName, preview).catch(() => {});
+      }
+      return NextResponse.json({ success: true, threadId });
+    }
+
+    // investor → startup: the classic pair, opened from the investor side.
+    if (isUuid(targetStartupId)) {
+      const { data: st } = await admin.from("startups")
+        .select("id, owner_id, name, status").eq("id", targetStartupId).maybeSingle();
+      if (!st || st.status !== "active") return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+      const { data: existing } = await admin.from("threads").select("id")
+        .match({ startup_id: st.id, investor_id: me.id }).maybeSingle();
+      let threadId = existing?.id;
+      if (!threadId) {
+        const { data: created, error } = await admin.from("threads")
+          .insert({ startup_id: st.id, investor_id: me.id, status: "active" }).select("id").single();
+        if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
+        threadId = created.id;
+      }
+      const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
+      if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+      await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
+      if (st.owner_id && st.owner_id !== user.id) {
+        const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+        await notifyUser({ userId: st.owner_id, type: "message", title: `New message from ${myName}`, body: preview, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
+        const { data: p } = await admin.from("profiles").select("email").eq("id", st.owner_id).maybeSingle();
+        if (p?.email) await sendNewMessageEmail(p.email, myName, myName, preview).catch(() => {});
+      }
+      return NextResponse.json({ success: true, threadId });
+    }
+    return NextResponse.json({ error: "investorId or startupId required" }, { status: 400 });
+  }
+
 
   // Founder → founder.
   if (isUuid(targetStartupId)) {

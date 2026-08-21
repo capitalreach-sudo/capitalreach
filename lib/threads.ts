@@ -38,7 +38,13 @@ export async function myThreadIds(userId: string): Promise<string[]> {
     // The other half of a startup-to-startup thread.
     ors.push(`recipient_startup_id.in.(${sIds.join(",")})`);
   }
-  if (iIds.length) ors.push(`investor_id.in.(${iIds.join(",")})`);
+  if (iIds.length) {
+    ors.push(`investor_id.in.(${iIds.join(",")})`);
+    // The receiving half of a co-investor or investor-to-investor thread —
+    // omitting it made those threads invisible to unread counts and
+    // Forbidden to mark read, the exact bug the header warns about.
+    ors.push(`recipient_investor_id.in.(${iIds.join(",")})`);
+  }
 
   const { data: threads } = await admin.from("threads").select("id").or(ors.join(","));
   return (threads ?? []).map((t) => t.id);

@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Startup-Investments sind hochriskant.",
     "body": "Sie können Ihre gesamte Einlage verlieren, Renditen sind nicht garantiert und Anteile sind illiquide — ein Verkauf kann jahrelang unmöglich sein. Streuen Sie Ihr Risiko und investieren Sie nur Geld, dessen Verlust Sie verkraften können. Nichts auf dieser Seite ist eine Anlageberatung."
+  },
+  "i2i": {
+    "message": "Investor:in anschreiben",
+    "placeholder": "Stellen Sie sich vor — ein Co-Investment, eine Frage zur These, was immer ansteht."
   }
 }

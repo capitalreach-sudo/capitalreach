@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Investir dans des startups est très risqué.",
     "body": "Vous pouvez perdre la totalité de votre investissement, les rendements ne sont pas garantis et les titres sont illiquides — leur revente peut être impossible pendant des années. Diversifiez et n'investissez que l'argent que vous pouvez vous permettre de perdre. Rien sur cette page ne constitue un conseil en investissement."
+  },
+  "i2i": {
+    "message": "Contacter l'investisseur",
+    "placeholder": "Présentez-vous — un co-investissement, une question sur sa thèse, autre chose."
   }
 }

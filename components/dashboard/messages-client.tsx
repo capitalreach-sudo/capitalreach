@@ -399,13 +399,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
           <div style={{ width: "300px", flexShrink: 0, display: mobileShowChat ? "none" : "flex", flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
             {/* Search */}
             <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+              {/* The archive toggle must live OUTSIDE the relative wrapper:
+                  the magnifier is absolutely centred in that wrapper, and a
+                  button inside it pushed the icon off the input entirely. */}
+              <button onClick={() => setShowArchived(v => !v)}
+                aria-pressed={showArchived}
+                style={{ background: showArchived ? "var(--cr-copper-bg)" : "transparent", border: showArchived ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: showArchived ? 600 : 400, fontSize: "11px", color: showArchived ? "var(--cr-copper)" : "var(--cr-ink-4)", padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", marginBottom: "8px" }}>
+                {showArchived ? t("messages.showingArchived", { count: archivedIds.size }) : t("messages.viewArchived", { count: archivedIds.size })}
+              </button>
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
-                <button onClick={() => setShowArchived(v => !v)}
-                  aria-pressed={showArchived}
-                  style={{ background: showArchived ? "var(--cr-copper-bg)" : "transparent", border: showArchived ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: showArchived ? 600 : 400, fontSize: "11px", color: showArchived ? "var(--cr-copper)" : "var(--cr-ink-4)", padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", marginBottom: "8px" }}>
-                  {showArchived ? t("messages.showingArchived", { count: archivedIds.size }) : t("messages.viewArchived", { count: archivedIds.size })}
-                </button>
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("dashboard.searchConversations")}
                   style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "10px", paddingTop: "7px", paddingBottom: "7px", outline: "none", boxSizing: "border-box" }} />
               </div>

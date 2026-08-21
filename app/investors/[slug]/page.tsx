@@ -7,6 +7,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { TargetButton } from "@/components/investors/target-button";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { FounderOutreach } from "@/components/investors/founder-outreach";
+import { InvestorToInvestor } from "@/components/investors/investor-to-investor";
 import { resolveEntity } from "@/lib/membership";
 import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
@@ -86,8 +87,13 @@ export default async function InvestorProfilePage({ params }: Props) {
   // Founder viewers also get the target-list button (migration 031); RLS
   // scopes the lookup to the caller's own startup.
   let viewerIsFounder = false;
+  let viewerIsInvestor = false;
   let viewerTargeted = false;
   if (user && !isOwnProfile) {
+    // Fellow investors get direct outreach (098): co-investing starts with
+    // a conversation, and small-cheque investors hunt in packs.
+    const invMembership = await resolveEntity(user.id, "investor");
+    if (invMembership && invMembership.entityId !== investor.id) viewerIsInvestor = true;
     // resolveEntity rather than an owner_id lookup: team members managing the
     // raise get the same button and the same initial state as the owner --
     // /api/targets already treats them alike, and an owner-only check here
@@ -252,6 +258,9 @@ export default async function InvestorProfilePage({ params }: Props) {
             {/* B23: founder outbound — message / add to pipeline, right here. */}
             {viewerIsFounder && !isOwnProfile && (
               <FounderOutreach investorId={investor.id} investorName={displayName} hasDeal={!!viewerDeal} />
+            )}
+            {viewerIsInvestor && !isOwnProfile && (
+              <InvestorToInvestor investorId={investor.id} />
             )}
             {investor.bio && (
               <p className="text-cr-i3 leading-relaxed text-sm"><T field="bio">{investor.bio}</T></p>

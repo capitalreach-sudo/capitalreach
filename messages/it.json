@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Investire in startup è ad alto rischio.",
     "body": "Può perdere l'intero investimento, i rendimenti non sono garantiti e le quote sono illiquide: potrebbe non riuscire a venderle per anni. Diversifichi e investa solo denaro che può permettersi di perdere. Nulla in questa pagina è consulenza finanziaria."
+  },
+  "i2i": {
+    "message": "Scrivi all'investitore",
+    "placeholder": "Presentati: un co-investimento, una domanda sulla sua tesi, qualsiasi cosa."
   }
 }

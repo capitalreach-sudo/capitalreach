@@ -834,8 +834,9 @@ export function StartupDetailClient({
                 {!viewerDeal && investorId && !viewerSuspended && (roundState === "closed" || roundState === "oversubscribed") && (
                   <WaitlistButton startupId={startup.id} roundState={roundState} />
                 )}
-                {/* Founder viewing a peer's round: talk to them. */}
-                {viewerStartupId && !isOwner && !viewerSuspended && (
+                {/* Any non-owner with a profile can just talk: peer founders
+                    since 012, investors since 098 (no deal required). */}
+                {(viewerStartupId || investorId) && !isOwner && !viewerSuspended && (
                   <FounderToFounder startupId={startup.id} />
                 )}
                 {/* The founder hears this one — unlike a watchlist save,

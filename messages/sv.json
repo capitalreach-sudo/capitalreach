@@ -3466,5 +3466,9 @@
   "risk": {
     "title": "Att investera i startups är högrisk.",
     "body": "Du kan förlora hela din investering, avkastning garanteras inte och andelarna är illikvida — du kanske inte kan sälja dem på flera år. Diversifiera och investera bara pengar du har råd att förlora. Inget på denna sida är investeringsrådgivning."
+  },
+  "i2i": {
+    "message": "Meddela investeraren",
+    "placeholder": "Presentera dig — en saminvestering, en fråga om tesen, vad som helst."
   }
 }
