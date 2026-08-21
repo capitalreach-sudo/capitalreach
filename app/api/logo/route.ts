@@ -29,12 +29,12 @@ const ALLOWED_TYPES: Record<string, string> = {
 
 async function ownEntity(admin: ReturnType<typeof createAdminClient>, userId: string, entityType: string) {
   if (entityType === "startup") {
-    const { data } = await admin.from("startups").select("id").eq("owner_id", userId).maybeSingle();
-    return data ? { table: "startups" as const, id: data.id } : null;
+    const { data } = await admin.from("startups").select("id, subscription_tier").eq("owner_id", userId).maybeSingle();
+    return data ? { table: "startups" as const, id: data.id, tier: data.subscription_tier } : null;
   }
   if (entityType === "investor") {
-    const { data } = await admin.from("investors").select("id").eq("owner_id", userId).maybeSingle();
-    return data ? { table: "investors" as const, id: data.id } : null;
+    const { data } = await admin.from("investors").select("id, subscription_tier").eq("owner_id", userId).maybeSingle();
+    return data ? { table: "investors" as const, id: data.id, tier: data.subscription_tier } : null;
   }
   return null;
 }
@@ -65,6 +65,13 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient();
   const entity = await ownEntity(admin, user.id, entityType);
   if (!entity) return NextResponse.json({ error: "Nothing to attach a logo to." }, { status: 403 });
+
+  // Profile imagery is a paid feature: any paid plan qualifies, free does
+  // not. Admins bypass (support needs to fix a broken logo, not buy a plan).
+  const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (prof?.role !== "admin" && (!entity.tier || entity.tier === "free")) {
+    return NextResponse.json({ error: "Profile images are part of the paid plans. Upgrade to add yours.", upgrade: true }, { status: 402 });
+  }
 
   // One canonical path per entity. A version query-param busts caches on
   // replacement, so a changed logo shows up without the old URL going dead.

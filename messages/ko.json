@@ -2047,7 +2047,9 @@
     "memberSince": "{date}부터 CapitalReach 이용",
     "boardSeat": "이사회 자리",
     "followOn": "후속 투자 정책",
-    "similarInvestors": "유사한 투자자"
+    "similarInvestors": "유사한 투자자",
+    "syndicate": "신디케이트",
+    "introVideo": "소개"
   },
   "admin": {
     "panelTitle": "관리자 패널",
@@ -2081,7 +2083,9 @@
     "launchTurnOff": "출시 기간 종료",
     "launchTurnOn": "출시 모드 다시 켜기",
     "editedSinceReview": "승인 후 수정됨",
-    "editsAcked": "재확인 완료로 표시했습니다."
+    "editsAcked": "재확인 완료로 표시했습니다.",
+    "viewDashboard": "대시보드",
+    "viewListing": "상장 페이지"
   },
   "contact": {
     "title": "문의하기",
@@ -3188,7 +3192,8 @@
       "investorUpdates": "투자자에게 업데이트 발송",
       "documents": "리스팅의 자료",
       "dataRoom": "데이터룸",
-      "nda": "공유 전 NDA 요청"
+      "nda": "공유 전 NDA 요청",
+      "assistant": "사이트 어시스턴트(어느 페이지든 질문 가능)"
     },
     "i": {
       "browse": "진행 중인 모든 라운드 열람",
@@ -3209,7 +3214,8 @@
       "portfolio": "포트폴리오 추적",
       "allocation": "배분 추적",
       "export": "데이터 CSV 내보내기",
-      "support": "전담 지원 담당자"
+      "support": "전담 지원 담당자",
+      "assistant": "사이트 어시스턴트(어느 페이지든 질문 가능)"
     }
   },
   "glossary": {
@@ -3235,7 +3241,8 @@
     "leadInvestor": "조건을 정하고 대개 가장 큰 금액을 넣는 투자자입니다. 리드가 정해지기 전까지 멈춰 있는 라운드가 많습니다.",
     "successFee": "CapitalReach는 라운드가 마감될 때 2%를 받습니다. 이 수수료는 투자를 받는 스타트업이 부담하며, 투자자가 내지 않습니다.",
     "dueDiligence": "투자자가 돈을 넣기 전에 하는 조사입니다. 재무를 읽고, 고객과 이야기하고, 리스팅의 주장을 증거와 대조합니다. 자료 요청과 질문이 오는 것이 정상이며, 질문이 없는 실사는 아직 시작되지 않은 것입니다.",
-    "termSheet": "최종 계약 전에 투자 조건 — 금액, 밸류에이션, 권리 — 을 확정하는 문서입니다. 보통 자금 자체에 법적 구속력은 없지만, 서명하면 협상은 끝나고 변호사들의 일이 시작됩니다."
+    "termSheet": "최종 계약 전에 투자 조건 — 금액, 밸류에이션, 권리 — 을 확정하는 문서입니다. 보통 자금 자체에 법적 구속력은 없지만, 서명하면 협상은 끝나고 변호사들의 일이 시작됩니다.",
+    "assistant": "보고 있는 페이지에 대한 질문에 답하는 AI 도우미입니다. 상장 조건, 투자자의 투자 철학, 지표의 의미 등. 요금제가 허용하는 범위만 참조합니다."
   },
   "translate": {
     "offer": "이 내용은 다른 언어로 작성되었습니다.",
@@ -3383,5 +3390,72 @@
     "sent": "상대방에게 알림이 전달됩니다 — 조건을 논의할 준비가 되면 딜을 시작하세요.",
     "hint": "가벼운 신호를 보내세요 — 금액도 의무도 없는 가벼운 표시입니다.",
     "withdraw": "관심 철회 (알림 없이 조용히 처리됩니다)"
+  },
+  "f2f": {
+    "message": "창업자에게 메시지",
+    "placeholder": "자기소개를 해주세요. 어떤 주제로 의견을 나누고 싶으신가요?",
+    "send": "보내기"
+  },
+  "invSettings": {
+    "profileImage": "프로필 이미지",
+    "imagePaid": "프로필 이미지는 유료 요금제 기능입니다.",
+    "introVideo": "소개 영상",
+    "videoPaid": "영상은 상위 요금제에서 이용할 수 있습니다."
+  },
+  "countries": {
+    "Germany": "독일",
+    "Austria": "오스트리아",
+    "Switzerland": "스위스",
+    "France": "프랑스",
+    "Netherlands": "네덜란드",
+    "Belgium": "벨기에",
+    "Spain": "스페인",
+    "Portugal": "포르투갈",
+    "Italy": "이탈리아",
+    "Ireland": "아일랜드",
+    "United Kingdom": "영국",
+    "Denmark": "덴마크",
+    "Sweden": "스웨덴",
+    "Norway": "노르웨이",
+    "Finland": "핀란드",
+    "Iceland": "아이슬란드",
+    "Poland": "폴란드",
+    "Czechia": "체코",
+    "Slovakia": "슬로바키아",
+    "Hungary": "헝가리",
+    "Romania": "루마니아",
+    "Bulgaria": "불가리아",
+    "Greece": "그리스",
+    "Croatia": "크로아티아",
+    "Slovenia": "슬로베니아",
+    "Estonia": "에스토니아",
+    "Latvia": "라트비아",
+    "Lithuania": "리투아니아",
+    "Luxembourg": "룩셈부르크",
+    "Malta": "몰타",
+    "Cyprus": "키프로스",
+    "United States": "미국",
+    "Canada": "캐나다",
+    "Mexico": "멕시코",
+    "Brazil": "브라질",
+    "Argentina": "아르헨티나",
+    "Chile": "칠레",
+    "Colombia": "콜롬비아",
+    "Israel": "이스라엘",
+    "United Arab Emirates": "아랍에미리트",
+    "Saudi Arabia": "사우디아라비아",
+    "Turkey": "튀르키예",
+    "India": "인도",
+    "Singapore": "싱가포르",
+    "Japan": "일본",
+    "South Korea": "대한민국",
+    "China": "중국",
+    "Hong Kong": "홍콩",
+    "Australia": "호주",
+    "New Zealand": "뉴질랜드",
+    "South Africa": "남아프리카 공화국",
+    "Nigeria": "나이지리아",
+    "Kenya": "케냐",
+    "Egypt": "이집트"
   }
 }

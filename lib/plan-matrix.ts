@@ -48,6 +48,9 @@ export function founderMatrix(): { plans: FounderPlan[]; rows: MatrixRow[] } {
     { key: "analytics", group: "insight", labelKey: "compare.f.analytics", values: caps.map(c => c.analyticsLevel === "full") },
     { key: "aiScore", group: "insight", labelKey: "compare.f.aiScore", infoKey: "glossary.aiScore", values: caps.map(c => c.aiPitchScore) },
     { key: "aiWritten", group: "insight", labelKey: "compare.f.aiWritten", values: caps.map(c => c.aiWrittenFeedback) },
+    // The site assistant is top-plan only — the ids here must match
+    // checkAiAccess("assistant") in lib/ai-access, which is the enforcing gate.
+    { key: "assistant", group: "insight", labelKey: "compare.f.assistant", infoKey: "glossary.assistant", values: plans.map(p => p.id === "growth") },
     { key: "exportData", group: "insight", labelKey: "compare.f.exportData", values: caps.map(c => c.exportData) },
 
     { key: "identity", group: "pipeline", labelKey: "compare.f.identity", infoKey: "glossary.investorIdentity", values: caps.map(c => c.seeInvestorIdentity) },
@@ -81,6 +84,7 @@ export function investorMatrix(): { plans: InvestorPlan[]; rows: MatrixRow[] } {
     { key: "coInvestors", group: "outreach", labelKey: "compare.i.coInvestors", infoKey: "glossary.coInvestor", values: caps.map(c => c.coInvestorVisibility) },
 
     { key: "aiScore", group: "analysis", labelKey: "compare.i.aiScore", infoKey: "glossary.aiScore", values: caps.map(c => c.aiScore) },
+    { key: "assistant", group: "analysis", labelKey: "compare.i.assistant", infoKey: "glossary.assistant", values: plans.map(p => p.id === "institution") },
     { key: "aiMatching", group: "analysis", labelKey: "compare.i.aiMatching", infoKey: "glossary.aiMatching", values: caps.map(c => c.aiMatching) },
     { key: "aiDiligence", group: "analysis", labelKey: "compare.i.aiDiligence", infoKey: "glossary.aiDiligence",
       values: caps.map(c => (c.aiDiligence === "included" ? true : c.aiDiligence === "paid" ? "payPerReport" : false)) },

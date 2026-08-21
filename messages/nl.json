@@ -2047,7 +2047,9 @@
     "memberSince": "Op CapitalReach sinds {date}",
     "boardSeat": "Bestuurszetel",
     "followOn": "Follow-on-beleid",
-    "similarInvestors": "Vergelijkbare investeerders"
+    "similarInvestors": "Vergelijkbare investeerders",
+    "syndicate": "Syndicaat",
+    "introVideo": "Introductie"
   },
   "admin": {
     "panelTitle": "Beheerderspaneel",
@@ -2081,7 +2083,9 @@
     "launchTurnOff": "Lanceerperiode beëindigen",
     "launchTurnOn": "Lanceermodus opnieuw inschakelen",
     "editedSinceReview": "Bewerkt sinds goedkeuring",
-    "editsAcked": "Gemarkeerd als opnieuw gecontroleerd."
+    "editsAcked": "Gemarkeerd als opnieuw gecontroleerd.",
+    "viewDashboard": "Dashboard",
+    "viewListing": "Vermelding"
   },
   "contact": {
     "title": "Neem contact op",
@@ -3188,7 +3192,8 @@
       "investorUpdates": "Updates naar je investeerders sturen",
       "documents": "Documenten op je listing",
       "dataRoom": "Dataroom",
-      "nda": "Een NDA vragen voor je deelt"
+      "nda": "Een NDA vragen voor je deelt",
+      "assistant": "Site-assistent (vragen over elke pagina)"
     },
     "i": {
       "browse": "Alle lopende rondes doorzoeken",
@@ -3209,7 +3214,8 @@
       "portfolio": "Portefeuille bijhouden",
       "allocation": "Allocatie bijhouden",
       "export": "Gegevens naar CSV exporteren",
-      "support": "Vaste supportcontactpersoon"
+      "support": "Vaste supportcontactpersoon",
+      "assistant": "Site-assistent (vragen over elke pagina)"
     }
   },
   "glossary": {
@@ -3235,7 +3241,8 @@
     "leadInvestor": "De investeerder die de voorwaarden bepaalt en meestal de grootste cheque schrijft. Rondes blijven vaak steken tot er één is.",
     "successFee": "CapitalReach rekent 2% van een ronde bij closing. Die wordt betaald door de startup die de investering ontvangt — nooit door de investeerder.",
     "dueDiligence": "Het onderzoek dat een investeerder doet voordat er geld wordt toegezegd: de cijfers lezen, met klanten praten, de claims in de listing tegen bewijs houden. Reken op documentverzoeken en vragen — een due diligence zonder vragen is niet begonnen.",
-    "termSheet": "Het document dat de voorwaarden van de investering vastlegt — bedrag, waardering, rechten — vóór de definitieve contracten. Meestal niet bindend voor het geld zelf, maar met de handtekening is de onderhandeling voorbij en beginnen de juristen."
+    "termSheet": "Het document dat de voorwaarden van de investering vastlegt — bedrag, waardering, rechten — vóór de definitieve contracten. Meestal niet bindend voor het geld zelf, maar met de handtekening is de onderhandeling voorbij en beginnen de juristen.",
+    "assistant": "Een AI-hulp die vragen beantwoordt over de pagina die je bekijkt — de voorwaarden van een vermelding, de these van een investeerder, wat een metric betekent. Hij ziet alleen wat jouw plan je laat zien."
   },
   "translate": {
     "offer": "Dit is in een andere taal geschreven.",
@@ -3383,5 +3390,72 @@
     "sent": "Zij horen ervan — open een deal wanneer u over cijfers wilt praten.",
     "hint": "Stuur een licht signaal — geen bedrag, geen verplichtingen, alleen een seintje.",
     "withdraw": "Interesse intrekken (stil — er wordt geen melding verstuurd)"
+  },
+  "f2f": {
+    "message": "Bericht aan oprichter",
+    "placeholder": "Stel jezelf voor — waarover wil je sparren?",
+    "send": "Versturen"
+  },
+  "invSettings": {
+    "profileImage": "Profielfoto",
+    "imagePaid": "Profielfoto's horen bij de betaalde plannen.",
+    "introVideo": "Introductievideo",
+    "videoPaid": "Video's zijn beschikbaar in de hoogste plannen."
+  },
+  "countries": {
+    "Germany": "Duitsland",
+    "Austria": "Oostenrijk",
+    "Switzerland": "Zwitserland",
+    "France": "Frankrijk",
+    "Netherlands": "Nederland",
+    "Belgium": "België",
+    "Spain": "Spanje",
+    "Portugal": "Portugal",
+    "Italy": "Italië",
+    "Ireland": "Ierland",
+    "United Kingdom": "Verenigd Koninkrijk",
+    "Denmark": "Denemarken",
+    "Sweden": "Zweden",
+    "Norway": "Noorwegen",
+    "Finland": "Finland",
+    "Iceland": "IJsland",
+    "Poland": "Polen",
+    "Czechia": "Tsjechië",
+    "Slovakia": "Slowakije",
+    "Hungary": "Hongarije",
+    "Romania": "Roemenië",
+    "Bulgaria": "Bulgarije",
+    "Greece": "Griekenland",
+    "Croatia": "Kroatië",
+    "Slovenia": "Slovenië",
+    "Estonia": "Estland",
+    "Latvia": "Letland",
+    "Lithuania": "Litouwen",
+    "Luxembourg": "Luxemburg",
+    "Malta": "Malta",
+    "Cyprus": "Cyprus",
+    "United States": "Verenigde Staten",
+    "Canada": "Canada",
+    "Mexico": "Mexico",
+    "Brazil": "Brazilië",
+    "Argentina": "Argentinië",
+    "Chile": "Chili",
+    "Colombia": "Colombia",
+    "Israel": "Israël",
+    "United Arab Emirates": "Verenigde Arabische Emiraten",
+    "Saudi Arabia": "Saoedi-Arabië",
+    "Turkey": "Turkije",
+    "India": "India",
+    "Singapore": "Singapore",
+    "Japan": "Japan",
+    "South Korea": "Zuid-Korea",
+    "China": "China",
+    "Hong Kong": "Hongkong",
+    "Australia": "Australië",
+    "New Zealand": "Nieuw-Zeeland",
+    "South Africa": "Zuid-Afrika",
+    "Nigeria": "Nigeria",
+    "Kenya": "Kenia",
+    "Egypt": "Egypte"
   }
 }

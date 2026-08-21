@@ -265,6 +265,14 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   // than trusting a query parameter — ?share=anything would otherwise be a
   // universal key. NDA-gated documents still require the NDA; a share link
   // grants the room, not a signature.
+  // A founder viewing someone ELSE's listing can message that founder.
+  let viewerStartupId: string | null = null;
+  if (user && !isOwner && !investorId && !viewerIsAdmin) {
+    const { data: own } = await createAdminClient()
+      .from("startups").select("id").eq("owner_id", user.id).limit(1).maybeSingle();
+    viewerStartupId = own?.id ?? null;
+  }
+
   const shareToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
   let shareGrantsDocs = false;
   if (shareToken && !previewing) {
@@ -340,6 +348,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         relatedStartups={related ?? []}
         updates={updates ?? []}
         isOwner={previewing ? false : isOwner}
+        viewerStartupId={previewing ? null : viewerStartupId}
         viewerIsAdmin={previewing ? false : viewerIsAdmin}
         questions={(questions ?? []).map((q) => {
           const inv = (q as unknown as { investor?: { slug: string; display_name: string | null; firm_name: string | null } | null }).investor;

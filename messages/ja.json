@@ -2047,7 +2047,9 @@
     "memberSince": "{date} から CapitalReach に参加",
     "boardSeat": "取締役会の席",
     "followOn": "フォローオン方針",
-    "similarInvestors": "類似の投資家"
+    "similarInvestors": "類似の投資家",
+    "syndicate": "シンジケート",
+    "introVideo": "自己紹介"
   },
   "admin": {
     "panelTitle": "管理パネル",
@@ -2081,7 +2083,9 @@
     "launchTurnOff": "ローンチ期間を終了",
     "launchTurnOn": "ローンチモードを再開",
     "editedSinceReview": "承認後に編集あり",
-    "editsAcked": "再確認済みにしました。"
+    "editsAcked": "再確認済みにしました。",
+    "viewDashboard": "ダッシュボード",
+    "viewListing": "掲載ページ"
   },
   "contact": {
     "title": "お問い合わせ",
@@ -3188,7 +3192,8 @@
       "investorUpdates": "投資家へのアップデート送信",
       "documents": "掲載に添付できる資料",
       "dataRoom": "データルーム",
-      "nda": "共有前に NDA を求める"
+      "nda": "共有前に NDA を求める",
+      "assistant": "サイトアシスタント（どのページでも質問可能）"
     },
     "i": {
       "browse": "進行中のラウンドをすべて閲覧",
@@ -3209,7 +3214,8 @@
       "portfolio": "ポートフォリオ管理",
       "allocation": "アロケーション管理",
       "export": "データを CSV に書き出し",
-      "support": "専任サポート窓口"
+      "support": "専任サポート窓口",
+      "assistant": "サイトアシスタント（どのページでも質問可能）"
     }
   },
   "glossary": {
@@ -3235,7 +3241,8 @@
     "leadInvestor": "条件を決め、たいていは最も大きな金額を出す投資家です。リード投資家が決まるまで動かないラウンドは少なくありません。",
     "successFee": "CapitalReach はラウンド成立時に 2% を申し受けます。この手数料を負担するのは投資を受けるスタートアップであり、投資家ではありません。",
     "dueDiligence": "投資家が資金を出す前に行う調査です。財務を読み、顧客に話を聞き、掲載内容の主張を証拠と突き合わせます。資料の依頼や質問が来るのが普通で、何も聞かれないデューデリはまだ始まっていません。",
-    "termSheet": "最終契約の前に投資条件 — 金額、評価額、権利 — を固める書類です。資金そのものへの法的拘束力は通常ありませんが、署名すれば交渉は終わり、あとは弁護士の仕事になります。"
+    "termSheet": "最終契約の前に投資条件 — 金額、評価額、権利 — を固める書類です。資金そのものへの法的拘束力は通常ありませんが、署名すれば交渉は終わり、あとは弁護士の仕事になります。",
+    "assistant": "表示中のページについて質問に答えるAIアシスタントです。掲載条件、投資家の投資方針、指標の意味など。プランで閲覧できる範囲だけを参照します。"
   },
   "translate": {
     "offer": "これは別の言語で書かれています。",
@@ -3383,5 +3390,72 @@
     "sent": "相手に通知されます——数字の話をする準備ができたらディールを開始してください。",
     "hint": "軽いシグナルを送ります——金額も義務もなし、きっかけだけ。",
     "withdraw": "興味を取り下げる（通知は送られません）"
+  },
+  "f2f": {
+    "message": "創業者にメッセージ",
+    "placeholder": "自己紹介をどうぞ。どんなことについて意見交換したいですか？",
+    "send": "送信"
+  },
+  "invSettings": {
+    "profileImage": "プロフィール画像",
+    "imagePaid": "プロフィール画像は有料プランの機能です。",
+    "introVideo": "紹介動画",
+    "videoPaid": "動画は上位プランでご利用いただけます。"
+  },
+  "countries": {
+    "Germany": "ドイツ",
+    "Austria": "オーストリア",
+    "Switzerland": "スイス",
+    "France": "フランス",
+    "Netherlands": "オランダ",
+    "Belgium": "ベルギー",
+    "Spain": "スペイン",
+    "Portugal": "ポルトガル",
+    "Italy": "イタリア",
+    "Ireland": "アイルランド",
+    "United Kingdom": "イギリス",
+    "Denmark": "デンマーク",
+    "Sweden": "スウェーデン",
+    "Norway": "ノルウェー",
+    "Finland": "フィンランド",
+    "Iceland": "アイスランド",
+    "Poland": "ポーランド",
+    "Czechia": "チェコ",
+    "Slovakia": "スロバキア",
+    "Hungary": "ハンガリー",
+    "Romania": "ルーマニア",
+    "Bulgaria": "ブルガリア",
+    "Greece": "ギリシャ",
+    "Croatia": "クロアチア",
+    "Slovenia": "スロベニア",
+    "Estonia": "エストニア",
+    "Latvia": "ラトビア",
+    "Lithuania": "リトアニア",
+    "Luxembourg": "ルクセンブルク",
+    "Malta": "マルタ",
+    "Cyprus": "キプロス",
+    "United States": "アメリカ合衆国",
+    "Canada": "カナダ",
+    "Mexico": "メキシコ",
+    "Brazil": "ブラジル",
+    "Argentina": "アルゼンチン",
+    "Chile": "チリ",
+    "Colombia": "コロンビア",
+    "Israel": "イスラエル",
+    "United Arab Emirates": "アラブ首長国連邦",
+    "Saudi Arabia": "サウジアラビア",
+    "Turkey": "トルコ",
+    "India": "インド",
+    "Singapore": "シンガポール",
+    "Japan": "日本",
+    "South Korea": "韓国",
+    "China": "中国",
+    "Hong Kong": "香港",
+    "Australia": "オーストラリア",
+    "New Zealand": "ニュージーランド",
+    "South Africa": "南アフリカ",
+    "Nigeria": "ナイジェリア",
+    "Kenya": "ケニア",
+    "Egypt": "エジプト"
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkAiAccess } from "@/lib/ai-access";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 
@@ -52,6 +53,13 @@ export async function POST(req: NextRequest) {
     }
     if (await isAccountSuspended(user.id)) {
       return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+    }
+
+    // Branded and sold as an AI tool, so it obeys the AI paywall like the
+    // rest of the family — even though today's scorer is heuristic.
+    const ai = await checkAiAccess(user.id);
+    if (!ai.allowed) {
+      return NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 });
     }
 
     const { industry, stage } = await req.json().catch(() => ({}));

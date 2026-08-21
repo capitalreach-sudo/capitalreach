@@ -156,6 +156,16 @@ function SignupForm() {
       });
       if (error) { setSignupError(authErrorMessage(error, t)); setLoading(false); return; }
       if (!data.user) { setSignupError(t("auth.signupFailed")); setLoading(false); return; }
+      // With email confirmation on, Supabase answers an EXISTING email with a
+      // fake success (a user object with no identities) instead of an error —
+      // deliberate enumeration protection on their side, but on ours it sent
+      // people to "check your inbox" for a mail that never comes. An empty
+      // identities array is the documented tell.
+      if (!data.session && (data.user.identities?.length ?? 0) === 0) {
+        setSignupError(t("authErrors.alreadyRegistered"));
+        setLoading(false);
+        return;
+      }
       if (data.session) {
         // Durable acceptance record (terms_acceptances) -- the checkbox alone
         // recorded nothing. Fire-and-forget: browser context, and a lost row

@@ -2,9 +2,12 @@ import { createAdminClient } from "@/lib/supabase-server";
 
 /** Daily AI invocations by tier; -1 is unlimited. */
 export function aiDailyLimit(tier: string | null | undefined): number {
-  if (tier === "pro_investor" || tier === "institutional" || tier === "growth") return -1;
+  if (tier === "pro" || tier === "pro_investor" || tier === "institution" || tier === "institutional" || tier === "growth") return -1;
   if (tier === "angel" || tier === "starter") return 20;
-  return 5;
+  // Free tiers get NOTHING. Five free calls a day quietly made every AI
+  // feature a free feature with a speed bump; a metered model behind a $0
+  // plan is a bill with no payer. (Admins bypass in checkAiAllowance.)
+  return 0;
 }
 
 /**
@@ -18,6 +21,14 @@ export async function checkAiAllowance(userId: string, action: string, tier: str
   const limit = aiDailyLimit(tier);
   if (limit === -1) return { ok: true };
   const admin = createAdminClient();
+  // Admins are exempt from billing rules aimed at customers — same rule as
+  // checkAiAccess. Checked here (not in aiDailyLimit) because only here is
+  // there a userId to check.
+  if (limit === 0) {
+    const { data: prof } = await admin.from("profiles").select("role").eq("id", userId).maybeSingle();
+    if (prof?.role === "admin") return { ok: true };
+    return { ok: false, limit: 0 };
+  }
   const today = new Date(); today.setUTCHours(0, 0, 0, 0);
   const { count } = await admin
     .from("ai_usage")

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { LogoUploader } from "@/components/shared/logo-uploader";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -211,6 +212,7 @@ export default function InvestorSettingsPage() {
         bio: investor.bio || null,
         website: investor.website || null,
         booking_url: investor.booking_url || null,
+        video_url: investor.video_url || null,
         linkedin_url: investor.linkedin_url || null,
         twitter_url: investor.twitter_url || null,
         // Investment details
@@ -353,6 +355,34 @@ export default function InvestorSettingsPage() {
                     placeholder="https://linkedin.com/in/…"
                   />
                 </div>
+              </div>
+              {/* Profile image — paid plans; the API enforces, this explains. */}
+              <div>
+                <Label>{t("invSettings.profileImage")}</Label>
+                {investor.subscription_tier && investor.subscription_tier !== "free" ? (
+                  <LogoUploader entityType="investor" name={investor.display_name || investor.firm_name || "?"} logoUrl={investor.logo_url ?? null} logoColor={investor.logo_color ?? null} onChanged={(url, color) => setInvestor((i: any) => ({ ...i, logo_url: url, logo_color: color }))} />
+                ) : (
+                  <p className="text-xs text-cr-i4 mt-1">
+                    {t("invSettings.imagePaid")}{" "}
+                    <Link href="/pricing" className="text-cr-copper underline underline-offset-2">{t("common.upgrade")}</Link>
+                  </p>
+                )}
+              </div>
+              {/* Intro video — top two investor plans. */}
+              <div>
+                <Label>{t("invSettings.introVideo")}</Label>
+                {investor.subscription_tier === "pro" || investor.subscription_tier === "institution" ? (
+                  <Input
+                    value={investor.video_url || ""}
+                    onChange={e => set("video_url", e.target.value)}
+                    placeholder="https://youtube.com/watch?v=…"
+                  />
+                ) : (
+                  <p className="text-xs text-cr-i4 mt-1">
+                    {t("invSettings.videoPaid")}{" "}
+                    <Link href="/pricing" className="text-cr-copper underline underline-offset-2">{t("common.upgrade")}</Link>
+                  </p>
+                )}
               </div>
               <div>
                 <Label>{t("onboarding.inv.twitterX")}</Label>
@@ -535,11 +565,11 @@ export default function InvestorSettingsPage() {
                   >
                     <option value="">{t("dashboard.selectDots")}</option>
                     {[
-                      { value: "Angel",         labelKey: "dashboard.itAngel" },
-                      { value: "VC",            labelKey: "dashboard.itVc"    },
-                      { value: "Family Office", labelKey: "dashboard.itFo"    },
-                      { value: "Corporate",     labelKey: "dashboard.itCorp"  },
-                      { value: "Syndicate",     labelKey: "dashboard.itSynd"  },
+                      { value: "angel",         labelKey: "dashboard.itAngel" },
+                      { value: "vc",            labelKey: "dashboard.itVc"    },
+                      { value: "family_office", labelKey: "dashboard.itFo"    },
+                      { value: "corporate",     labelKey: "dashboard.itCorp"  },
+                      { value: "syndicate",     labelKey: "dashboard.itSynd"  },
                     ].map(it => (
                       <option key={it.value} value={it.value}>{t(it.labelKey)}</option>
                     ))}

@@ -2047,7 +2047,9 @@
     "memberSince": "På CapitalReach sedan {date}",
     "boardSeat": "Styrelseplats",
     "followOn": "Follow-on-policy",
-    "similarInvestors": "Liknande investerare"
+    "similarInvestors": "Liknande investerare",
+    "syndicate": "Syndikat",
+    "introVideo": "Introduktion"
   },
   "admin": {
     "panelTitle": "Adminpanel",
@@ -2081,7 +2083,9 @@
     "launchTurnOff": "Avsluta lanseringsperioden",
     "launchTurnOn": "Aktivera lanseringsläget igen",
     "editedSinceReview": "Redigerad efter godkännande",
-    "editsAcked": "Markerad som omkontrollerad."
+    "editsAcked": "Markerad som omkontrollerad.",
+    "viewDashboard": "Instrumentpanel",
+    "viewListing": "Notering"
   },
   "contact": {
     "title": "Kontakta oss",
@@ -3188,7 +3192,8 @@
       "investorUpdates": "Skicka uppdateringar till dina investerare",
       "documents": "Dokument på annonsen",
       "dataRoom": "Datarum",
-      "nda": "Begära NDA innan du delar"
+      "nda": "Begära NDA innan du delar",
+      "assistant": "Webbassistent (fråga om vilken sida som helst)"
     },
     "i": {
       "browse": "Bläddra bland alla pågående rundor",
@@ -3209,7 +3214,8 @@
       "portfolio": "Portföljuppföljning",
       "allocation": "Allokeringsuppföljning",
       "export": "Exportera data till CSV",
-      "support": "Namngiven supportkontakt"
+      "support": "Namngiven supportkontakt",
+      "assistant": "Webbassistent (fråga om vilken sida som helst)"
     }
   },
   "glossary": {
@@ -3235,7 +3241,8 @@
     "leadInvestor": "Investeraren som sätter villkoren och oftast tar den största checken. Rundor står ofta still tills en sådan finns.",
     "successFee": "CapitalReach tar 2 % av en runda när den stängs. Avgiften betalas av startupen som tar emot investeringen — aldrig av investeraren.",
     "dueDiligence": "Granskningen en investerare gör innan pengar utlovas: läsa räkenskaperna, prata med kunder, pröva annonsens påståenden mot belägg. Räkna med dokumentförfrågningar och frågor — en due diligence utan frågor har inte börjat.",
-    "termSheet": "Dokumentet som slår fast investeringens villkor — belopp, värdering, rättigheter — före de slutliga avtalen. Oftast inte bindande för själva pengarna, men när det är undertecknat är förhandlingen över och juristerna tar vid."
+    "termSheet": "Dokumentet som slår fast investeringens villkor — belopp, värdering, rättigheter — före de slutliga avtalen. Oftast inte bindande för själva pengarna, men när det är undertecknat är förhandlingen över och juristerna tar vid.",
+    "assistant": "En AI-hjälp som svarar på frågor om sidan du tittar på — villkoren i en notering, en investerares tes, vad ett nyckeltal betyder. Den ser bara det din plan visar dig."
   },
   "translate": {
     "offer": "Det här skrevs på ett annat språk.",
@@ -3383,5 +3390,72 @@
     "sent": "De får veta det — öppna en affär när du vill prata siffror.",
     "hint": "Skicka en lätt signal — inget belopp, inga förpliktelser, bara en knuff.",
     "withdraw": "Dra tillbaka intresset (tyst — ingen avisering skickas)"
+  },
+  "f2f": {
+    "message": "Meddela grundaren",
+    "placeholder": "Presentera dig — vad vill du utbyta erfarenheter om?",
+    "send": "Skicka"
+  },
+  "invSettings": {
+    "profileImage": "Profilbild",
+    "imagePaid": "Profilbilder ingår i betalplanerna.",
+    "introVideo": "Introduktionsvideo",
+    "videoPaid": "Video finns i topplanerna."
+  },
+  "countries": {
+    "Germany": "Tyskland",
+    "Austria": "Österrike",
+    "Switzerland": "Schweiz",
+    "France": "Frankrike",
+    "Netherlands": "Nederländerna",
+    "Belgium": "Belgien",
+    "Spain": "Spanien",
+    "Portugal": "Portugal",
+    "Italy": "Italien",
+    "Ireland": "Irland",
+    "United Kingdom": "Storbritannien",
+    "Denmark": "Danmark",
+    "Sweden": "Sverige",
+    "Norway": "Norge",
+    "Finland": "Finland",
+    "Iceland": "Island",
+    "Poland": "Polen",
+    "Czechia": "Tjeckien",
+    "Slovakia": "Slovakien",
+    "Hungary": "Ungern",
+    "Romania": "Rumänien",
+    "Bulgaria": "Bulgarien",
+    "Greece": "Grekland",
+    "Croatia": "Kroatien",
+    "Slovenia": "Slovenien",
+    "Estonia": "Estland",
+    "Latvia": "Lettland",
+    "Lithuania": "Litauen",
+    "Luxembourg": "Luxemburg",
+    "Malta": "Malta",
+    "Cyprus": "Cypern",
+    "United States": "USA",
+    "Canada": "Kanada",
+    "Mexico": "Mexiko",
+    "Brazil": "Brasilien",
+    "Argentina": "Argentina",
+    "Chile": "Chile",
+    "Colombia": "Colombia",
+    "Israel": "Israel",
+    "United Arab Emirates": "Förenade Arabemiraten",
+    "Saudi Arabia": "Saudiarabien",
+    "Turkey": "Turkiet",
+    "India": "Indien",
+    "Singapore": "Singapore",
+    "Japan": "Japan",
+    "South Korea": "Sydkorea",
+    "China": "Kina",
+    "Hong Kong": "Hongkong",
+    "Australia": "Australien",
+    "New Zealand": "Nya Zeeland",
+    "South Africa": "Sydafrika",
+    "Nigeria": "Nigeria",
+    "Kenya": "Kenya",
+    "Egypt": "Egypten"
   }
 }

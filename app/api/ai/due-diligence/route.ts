@@ -27,10 +27,9 @@ export async function POST(req: NextRequest) {
       const { data: prof } = await supabase.from("profiles").select("subscription_tier").eq("id", user.id).maybeSingle();
       const allowance = await checkAiAllowance(user.id, "due-diligence", prof?.subscription_tier);
       if (!allowance.ok) {
-        return NextResponse.json(
-          { error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` },
-          { status: 429 },
-        );
+        return allowance.limit === 0
+          ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })
+          : NextResponse.json({ error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` }, { status: 429 });
       }
       await logAiUsage(user.id, "due-diligence");
     }

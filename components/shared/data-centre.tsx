@@ -185,7 +185,7 @@ function StatCard({
       </div>
       <p
         className={done ? "count-glow-done" : ""}
-        style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", lineHeight: 1 }}
+        style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(20px, 2.2vw + 8px, 32px)", color: "var(--cr-ink)", lineHeight: 1, overflowWrap: "anywhere" }}
       >
         {prefix}{displayed.toLocaleString()}
       </p>
@@ -256,6 +256,24 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchData]);
+
+  // The numbers keep themselves current: a quiet refresh every 60s while the
+  // tab is visible (no spinner — setLoading stays untouched on refreshes so
+  // the page never flickers), and one immediately when the tab regains focus.
+  useEffect(() => {
+    const refresh = async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const res = await fetch("/api/platform-data");
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!json.degraded) setData(json);
+      } catch { /* keep showing the last good numbers */ }
+    };
+    const id = window.setInterval(refresh, 60_000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => { window.clearInterval(id); document.removeEventListener("visibilitychange", refresh); };
+  }, []);
 
 
   const monthly = data?.monthly ?? [];

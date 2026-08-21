@@ -90,7 +90,7 @@ export function Navbar() {
           transition:   "border-color 200ms ease",
         }}
       >
-        <div className="flex items-center justify-between h-full max-w-[1200px] mx-auto px-6 lg:px-10">
+        <div className="flex items-center justify-between gap-6 h-full max-w-[1200px] mx-auto px-6 lg:px-10">
 
           {/* Logo + 2% signal */}
           <div className="flex items-center gap-4 flex-shrink-0 select-none">
@@ -109,7 +109,7 @@ export function Navbar() {
             </Link>
 
             {/* {t("navbar.feeBadge")} signal — desktop only */}
-            <div className="hidden lg:flex items-center gap-3" aria-label={t("navbar.feeBadgeAria")}>
+            <div className="hidden xl:flex items-center gap-3 whitespace-nowrap" aria-label={t("navbar.feeBadgeAria")}>
               <div style={{ width: "1px", height: "20px", background: "rgba(26,22,18,0.15)" }} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
@@ -123,13 +123,13 @@ export function Navbar() {
           </div>
 
           {/* Center links — desktop */}
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden lg:flex items-center gap-6 xl:gap-10">
             {NAV_LINKS.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 aria-current={isActive(href) ? "page" : undefined}
-                className="relative pb-[2px]"
+                className="relative pb-[2px] whitespace-nowrap"
                 style={{
                   fontFamily:     "'DM Sans', sans-serif",
                   fontWeight:     400,

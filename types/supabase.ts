@@ -1324,6 +1324,7 @@ export type Database = {
           type: string
           verified_at: string | null
           verified_by: string | null
+          video_url: string | null
           website: string | null
         }
         Insert: {
@@ -1366,6 +1367,7 @@ export type Database = {
           type: string
           verified_at?: string | null
           verified_by?: string | null
+          video_url?: string | null
           website?: string | null
         }
         Update: {
@@ -1408,6 +1410,7 @@ export type Database = {
           type?: string
           verified_at?: string | null
           verified_by?: string | null
+          video_url?: string | null
           website?: string | null
         }
         Relationships: [

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { openai, isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
 import { logSystemEvent } from "@/lib/system-events";
 import { buildAssistantContext, type PageRef } from "@/lib/assistant-context";
@@ -11,6 +12,13 @@ export const dynamic = "force-dynamic";
 
 /**
  * The site assistant: answers questions about the page you are looking at.
+ * Reserved for the TOP plan on each side (Growth / Institution) — the only
+ * exemption is admins. checkAiAccess("assistant") is the sole authority.
+ *
+ * PROVIDER: OpenAI-first (the platform's other model features already bill
+ * to the OpenAI account, so one funded account runs everything), falling
+ * back to Anthropic when only that key is configured. Same system prompt,
+ * same one-tool-round bound, same streaming contract either way.
  *
  * Three things this route is deliberately strict about.
  *
@@ -31,9 +39,11 @@ export const dynamic = "force-dynamic";
  *    giving regulated advice on behalf of a company that is not licensed to.
  */
 
-const MODEL = "claude-opus-5";
+const OPENAI_MODEL = "gpt-4o-mini";
+const ANTHROPIC_MODEL = "claude-opus-5";
 const MAX_QUESTION = 1000;
 const MAX_HISTORY = 8;
+const REFUSAL_TEXT = "I can't help with that one. Try asking about what is on the page.";
 
 /** Shape-checked at the edge, so a malformed body cannot reach the model. */
 function parseRef(raw: unknown): PageRef {
@@ -88,19 +98,191 @@ WHAT YOU DO NOT DO
 - No claims about a company beyond what the page says.
 `.trim();
 
+type Turn = { role: "user" | "assistant"; content: string };
+
+function parseHistory(raw: unknown): Turn[] {
+  return Array.isArray(raw)
+    ? raw.slice(-MAX_HISTORY).flatMap((m: unknown) => {
+        const t = m as Record<string, unknown>;
+        const role = t?.role === "assistant" ? "assistant" as const : "user" as const;
+        const content = typeof t?.content === "string" ? t.content.slice(0, 2000) : "";
+        return content ? [{ role, content }] : [];
+      })
+    : [];
+}
+
+function textStream(text: string): Response {
+  const encoder = new TextEncoder();
+  return new Response(new ReadableStream<Uint8Array>({
+    start(c) { c.enqueue(encoder.encode(text)); c.close(); },
+  }), { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+}
+
+// ── OpenAI path ────────────────────────────────────────────────────────────
+
+const OPENAI_FIND_ROUNDS = {
+  type: "function" as const,
+  function: {
+    name: FIND_ROUNDS_TOOL.name,
+    description: FIND_ROUNDS_TOOL.description,
+    parameters: FIND_ROUNDS_TOOL.input_schema as Record<string, unknown>,
+  },
+};
+
+async function answerWithOpenAI(system: string, history: Turn[], question: string): Promise<Response> {
+  const messages: Array<Record<string, unknown>> = [
+    { role: "system", content: system },
+    ...history,
+    { role: "user", content: question },
+  ];
+
+  // One tool round, at most. The first call is non-streamed because the tool
+  // input has to be complete before the search can run; bounding at ONE round
+  // is what keeps the cost of a question predictable.
+  const first = await openai.chat.completions.create({
+    model: OPENAI_MODEL,
+    max_tokens: 1024,
+    messages: messages as never,
+    tools: [OPENAI_FIND_ROUNDS],
+  });
+
+  const choice = first.choices[0];
+  const call = choice?.message?.tool_calls?.[0];
+  if (!call || call.type !== "function") {
+    return textStream(choice?.message?.content ?? REFUSAL_TEXT);
+  }
+
+  let input: FindRoundsInput;
+  try { input = JSON.parse(call.function.arguments || "{}"); } catch { input = {} as FindRoundsInput; }
+  const result = await findRounds(input);
+
+  const stream = await openai.chat.completions.create({
+    model: OPENAI_MODEL,
+    max_tokens: 1024,
+    stream: true,
+    messages: [
+      ...messages,
+      choice.message,
+      { role: "tool", tool_call_id: call.id, content: result },
+    ] as never,
+  });
+
+  const encoder = new TextEncoder();
+  return new Response(new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        for await (const chunk of stream) {
+          const delta = chunk.choices?.[0]?.delta?.content;
+          if (delta) controller.enqueue(encoder.encode(delta));
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        await logSystemEvent("assistant", "error", "Assistant stream failed (openai)", { message: message.slice(0, 400) }).catch(() => {});
+        controller.enqueue(encoder.encode("Something went wrong answering that."));
+      } finally {
+        controller.close();
+      }
+    },
+  }), { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+}
+
+// ── Anthropic fallback path ────────────────────────────────────────────────
+
+async function answerWithAnthropic(system: string, history: Turn[], question: string): Promise<Response> {
+  const client = new Anthropic();
+  const messages: Anthropic.MessageParam[] = [...history, { role: "user", content: question }];
+  const common = {
+    model: ANTHROPIC_MODEL,
+    max_tokens: 1024,
+    output_config: { effort: "low" as const },
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default" as const,
+    system,
+    tools: [FIND_ROUNDS_TOOL],
+  };
+
+  const first = await client.beta.messages.create({ ...common, messages });
+
+  let stream: ReturnType<typeof client.beta.messages.stream> | null = null;
+  let directText = "";
+
+  if (first.stop_reason === "tool_use") {
+    const toolUse = first.content.find(
+      (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
+    );
+    const result = toolUse
+      ? await findRounds(toolUse.input as FindRoundsInput)
+      : "No search was run.";
+
+    stream = client.beta.messages.stream({
+      ...common,
+      messages: [
+        ...messages,
+        { role: "assistant", content: first.content },
+        {
+          role: "user",
+          content: [{
+            type: "tool_result",
+            tool_use_id: toolUse?.id ?? "unknown",
+            content: result,
+          }],
+        },
+      ],
+    });
+  } else if (first.stop_reason === "refusal") {
+    directText = REFUSAL_TEXT;
+  } else {
+    directText = first.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map(b => b.text)
+      .join("");
+  }
+
+  const encoder = new TextEncoder();
+  return new Response(new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        if (!stream) {
+          controller.enqueue(encoder.encode(directText));
+          return;
+        }
+        for await (const event of stream) {
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            controller.enqueue(encoder.encode(event.delta.text));
+          }
+        }
+        const final = await stream.finalMessage();
+        // The whole chain declining is a real outcome, not an exception —
+        // it arrives as HTTP 200 with nothing useful in content.
+        if (final.stop_reason === "refusal") {
+          controller.enqueue(encoder.encode(REFUSAL_TEXT));
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        await logSystemEvent("assistant", "error", "Assistant stream failed", { message: message.slice(0, 400) }).catch(() => {});
+        controller.enqueue(encoder.encode("Something went wrong answering that."));
+      } finally {
+        controller.close();
+      }
+    },
+  }), { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+}
+
+// ── Route ──────────────────────────────────────────────────────────────────
+
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
+  if (!isOpenAIConfigured && !hasAnthropic) {
     return NextResponse.json({ error: "The assistant is not configured.", unavailable: true }, { status: 503 });
   }
 
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // AI is a paid feature. Admins are exempt — an operator looking into a
-  // listing should not be stopped by a billing rule aimed at customers — and
-  // launch mode grants it to everyone until it ends, at which point this
-  // starts binding without a code change.
-  const ai = await checkAiAccess(user?.id ?? null);
+  // Top-plan feature. Admins are exempt — an operator looking into a listing
+  // should not be stopped by a billing rule aimed at customers. Launch mode
+  // does not grant this (see lib/ai-access).
+  const ai = await checkAiAccess(user?.id ?? null, "assistant");
   if (!ai.allowed) {
     return NextResponse.json({
       error: ai.reason === "signed_out"
@@ -123,112 +305,13 @@ export async function POST(req: NextRequest) {
 
   const ref = parseRef(body?.page);
   const { text: context, label, redacted } = await buildAssistantContext(ref, user!.id);
-
-  // Prior turns, trimmed and re-validated. Never trusted as anything but text.
-  const history: Anthropic.MessageParam[] = Array.isArray(body?.history)
-    ? body.history.slice(-MAX_HISTORY).flatMap((m: unknown) => {
-        const t = m as Record<string, unknown>;
-        const role = t?.role === "assistant" ? "assistant" : "user";
-        const content = typeof t?.content === "string" ? t.content.slice(0, 2000) : "";
-        return content ? [{ role, content } as Anthropic.MessageParam] : [];
-      })
-    : [];
-
-  const client = new Anthropic();
+  const system = systemPrompt(label, context, redacted);
+  const history = parseHistory(body?.history);
 
   try {
-    const messages: Anthropic.MessageParam[] = [...history, { role: "user", content: question }];
-    const system = systemPrompt(label, context, redacted);
-    const common = {
-      model: MODEL,
-      max_tokens: 1024,
-      // Cheap and fast is the right trade for grounded Q&A over one page.
-      output_config: { effort: "low" as const },
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default" as const,
-      system,
-      tools: [FIND_ROUNDS_TOOL],
-    };
-
-    // One tool round, at most.
-    //
-    // A search question needs a non-streamed first call (the tool input has to
-    // be complete before the search can run), then the answer streams. A
-    // question about the page needs neither — but you cannot know which you
-    // have until the model decides, so the first call is always non-streamed
-    // and short. Bounding it at ONE round is what keeps the cost of a question
-    // predictable; a loop here is an open-ended bill.
-    const first = await client.beta.messages.create({ ...common, messages });
-
-    let stream: ReturnType<typeof client.beta.messages.stream> | null = null;
-    let directText = "";
-
-    if (first.stop_reason === "tool_use") {
-      const toolUse = first.content.find(
-        (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
-      );
-      const result = toolUse
-        ? await findRounds(toolUse.input as FindRoundsInput)
-        : "No search was run.";
-
-      stream = client.beta.messages.stream({
-        ...common,
-        messages: [
-          ...messages,
-          { role: "assistant", content: first.content },
-          {
-            role: "user",
-            content: [{
-              type: "tool_result",
-              tool_use_id: toolUse?.id ?? "unknown",
-              content: result,
-            }],
-          },
-        ],
-      });
-    } else if (first.stop_reason === "refusal") {
-      directText = "I can't help with that one. Try asking about what is on the page.";
-    } else {
-      // Already answered, and short enough that a second call to stream it
-      // would cost more than it saves.
-      directText = first.content
-        .filter((b): b is Anthropic.TextBlock => b.type === "text")
-        .map(b => b.text)
-        .join("");
-    }
-
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream<Uint8Array>({
-      async start(controller) {
-        try {
-          if (!stream) {
-            controller.enqueue(encoder.encode(directText));
-            return;
-          }
-          for await (const event of stream) {
-            if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-              controller.enqueue(encoder.encode(event.delta.text));
-            }
-          }
-          const final = await stream.finalMessage();
-          // The whole chain declining is a real outcome, not an exception —
-          // it arrives as HTTP 200 with nothing useful in content.
-          if (final.stop_reason === "refusal") {
-            controller.enqueue(encoder.encode("I can't help with that one. Try asking about what is on the page."));
-          }
-        } catch (err) {
-          const message = err instanceof Error ? err.message : String(err);
-          await logSystemEvent("assistant", "error", "Assistant stream failed", { message: message.slice(0, 400) }).catch(() => {});
-          controller.enqueue(encoder.encode("Something went wrong answering that."));
-        } finally {
-          controller.close();
-        }
-      },
-    });
-
-    return new Response(readable, {
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
-    });
+    return isOpenAIConfigured
+      ? await answerWithOpenAI(system, history, question)
+      : await answerWithAnthropic(system, history, question);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await logSystemEvent("assistant", "error", "Assistant call failed", { message: message.slice(0, 400) }).catch(() => {});

@@ -638,7 +638,17 @@ export default function EditStartupPage() {
                   <WarmInput value={startup.video_pitch_url || ""} onChange={e => update("video_pitch_url", e.target.value)} placeholder="https://youtube.com/watch?v=… or loom.com/share/…" />
                 </Field>
                 <Field label={t("onboarding.su.demoVideoUrl")}>
-                  <WarmInput value={startup.demo_video_url || ""} onChange={e => update("demo_video_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" />
+                  {/* Paid feature (Growth): the listing only renders the video
+                      on Growth, so an un-gated input here was a field that
+                      silently did nothing on lower plans. */}
+                  {startup.subscription_tier === "growth" ? (
+                    <WarmInput value={startup.demo_video_url || ""} onChange={e => update("demo_video_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" />
+                  ) : (
+                    <p className="text-xs text-cr-i4">
+                      {t("invSettings.videoPaid")}{" "}
+                      <Link href="/pricing" className="text-cr-copper underline underline-offset-2">{t("common.upgrade")}</Link>
+                    </p>
+                  )}
                 </Field>
                 <Field label={t("onboarding.su.productHuntUrl")}>
                   <WarmInput value={startup.product_hunt_url || ""} onChange={e => update("product_hunt_url", e.target.value)} placeholder="https://producthunt.com/posts/…" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { countryLabel } from "@/lib/country-label";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StartupCard } from "./startup-card";
@@ -29,6 +30,7 @@ import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { WaitlistButton } from "@/components/startup/waitlist-button";
+import { FounderToFounder } from "@/components/startup/founder-to-founder";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { RoundCalculator } from "@/components/startup/round-calculator";
 import { roundCloseState } from "@/lib/round-close";
@@ -50,6 +52,7 @@ interface Props {
   relatedStartups: StartupCardData[];
   updates?: Array<{ id: string; title: string; body: string; created_at: string }>;
   isOwner?: boolean;
+  viewerStartupId?: string | null;
   questions?: Array<{ id: string; question: string; answer: string | null; answered_at: string | null; created_at: string; is_private?: boolean; asker?: { slug: string; name: string | null } | null }>;
   isLaunchMode:   boolean;
   /** Owner is looking at their own listing as a free investor would see it. */
@@ -397,7 +400,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [],
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [],
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -731,7 +734,7 @@ export function StartupDetailClient({
                   })()}
                   {startup.country && (
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-                      {startup.country}
+                      {countryLabel(t, startup.country)}
                     </span>
                   )}
                   {viewerCount > 1 && (
@@ -828,6 +831,10 @@ export function StartupDetailClient({
                 {!viewerDeal && investorId && !viewerSuspended && (roundState === "closed" || roundState === "oversubscribed") && (
                   <WaitlistButton startupId={startup.id} roundState={roundState} />
                 )}
+                {/* Founder viewing a peer's round: talk to them. */}
+                {viewerStartupId && !isOwner && !viewerSuspended && (
+                  <FounderToFounder startupId={startup.id} />
+                )}
                 {/* The founder hears this one — unlike a watchlist save,
                     which is the investor's private bookmark. */}
                 {!viewerDeal && investorId && !viewerSuspended && (
@@ -888,7 +895,7 @@ export function StartupDetailClient({
               const facts: Array<{ label: string; value: string }> = [];
               if (startup.founded_year) facts.push({ label: t("startupDetail.founded"), value: String(startup.founded_year) });
               if (startup.team_size) facts.push({ label: t("startupDetail.teamSize"), value: startup.team_size });
-              const loc = [startup.city, startup.country].filter(Boolean).join(", ");
+              const loc = [startup.city, countryLabel(t, startup.country)].filter(Boolean).join(", ");
               if (loc) facts.push({ label: t("startupDetail.location"), value: loc });
               if (startup.business_model) facts.push({ label: t("startupDetail.businessModel"), value: startup.business_model });
               if (startup.company_type) facts.push({ label: t("startupDetail.companyType"), value: startup.company_type });

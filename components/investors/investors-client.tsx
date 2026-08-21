@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import { countryLabel } from "@/lib/country-label";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -314,6 +315,10 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
   function toggleCompare(id: string) {
     setCompareIds((prev) => prev.includes(id) ? prev.filter(x => x !== id) : prev.length >= 3 ? prev : [...prev, id]);
   }
+
+  const INV_PAGE_SIZE = 24;
+  const [page, setPage] = useState(1);
+  useEffect(() => { setPage(1); }, [f]);
 
   const results = useMemo(() => {
     let list = investors.filter(inv => {
@@ -734,7 +739,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                 <AppliedChip key={`s-${st}`} label={STAGE_LABELS[st] ?? st} onRemove={() => toggle("stages", st)} />
               ))}
               {f.geographies.map(g => (
-                <AppliedChip key={`g-${g}`} label={g} onRemove={() => toggle("geographies", g)} />
+                <AppliedChip key={`g-${g}`} label={countryLabel(t, g)} onRemove={() => toggle("geographies", g)} />
               ))}
               {f.minCheck > 0 && <AppliedChip label={`≥ ${formatCheck(f.minCheck)}`} onRemove={() => setF(p => ({ ...p, minCheck: 0 }))} />}
               {f.maxCheck < 100_000_000 && <AppliedChip label={`≤ ${formatCheck(f.maxCheck)}`} onRemove={() => setF(p => ({ ...p, maxCheck: 100_000_000 }))} />}
@@ -831,7 +836,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {results.map((inv, idx) => {
+                  {results.slice(0, page * INV_PAGE_SIZE).map((inv, idx) => {
                     const meta = TYPE_META[inv.type] ?? TYPE_META.angel;
                     const grad = GRAD_COLORS[idx % GRAD_COLORS.length];
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
@@ -932,7 +937,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                         {inv.geography && inv.geography.length > 0 && (
                           <div className="flex items-center gap-1.5 text-xs text-cr-i4 mb-4">
                             <Globe className="h-3 w-3" />
-                            {inv.geography.slice(0, 2).join(" · ")}
+                            {inv.geography.slice(0, 2).map(g => countryLabel(t, g)).join(" · ")}
                             {inv.geography.length > 2 && ` +${inv.geography.length - 2}`}
                           </div>
                         )}
@@ -947,6 +952,16 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                       </div>
                     );
                   })}
+                </div>
+              )}
+
+              {/* Load more — same 24-a-page rhythm as the startup directory. */}
+              {results.length > page * INV_PAGE_SIZE && (
+                <div className="mt-10 flex justify-center">
+                  <button onClick={() => setPage(p => p + 1)}
+                    className="text-sm text-cr-copper border border-cr-copper/40 rounded px-8 py-2.5 hover:bg-cr-copper/5 transition-colors">
+                    {t("startups.loadMore", { count: Math.min(INV_PAGE_SIZE, results.length - page * INV_PAGE_SIZE) })}
+                  </button>
                 </div>
               )}
             </>

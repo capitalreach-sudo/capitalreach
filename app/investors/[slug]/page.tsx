@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { countryLabel } from "@/lib/country-label";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
@@ -49,7 +50,11 @@ export default async function InvestorProfilePage({ params }: Props) {
     vc: t("investorProfile.ventureCapital"),
     family_office: t("investorProfile.familyOffice"),
     corporate: t("investorProfile.corporateInvestor"),
+    syndicate: t("investorProfile.syndicate"),
   };
+  // The DB stores lowercase snake_case; older rows may carry other casings.
+  const typeLabel = (raw: string | null | undefined) =>
+    raw ? (INVESTOR_TYPE_LABELS[raw.toLowerCase().replace(/ /g, "_")] ?? raw) : "";
 
   // Reads `investors` only. This page is public, and `profiles` is not: it
   // holds emails, subscription tiers and Stripe ids, and is now restricted to
@@ -226,7 +231,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                   {t("startupDetail.bookCall")}
                 </a>
               )}
-              <Badge variant="outline">{INVESTOR_TYPE_LABELS[investor.type] || investor.type}</Badge>
+              <Badge variant="outline">{typeLabel(investor.type)}</Badge>
               {investor.subscription_tier !== "free" && (
                 <Badge className="bg-cr-copper/15 text-cr-cu-l border-0">
                   {investor.subscription_tier === "pro_investor" ? t("investorProfile.tierProInvestor") :
@@ -275,6 +280,22 @@ export default async function InvestorProfilePage({ params }: Props) {
         </div>
 
         {/* ── Investment thesis ──────────────────────────────────────────── */}
+        {/* Intro video — a paid feature that stays paid: rendered only while
+            the plan still includes it, so a downgrade retires the video
+            without touching the row. */}
+        {investor.video_url && (investor.subscription_tier === "pro" || investor.subscription_tier === "institution") && (
+          <div className="bg-cr-paper border border-cr-p4 rounded-2xl p-6 mb-6">
+            <h2 className="font-semibold text-cr-ink mb-3">{t("investorProfile.introVideo")}</h2>
+            <div style={{ aspectRatio: "16/9", borderRadius: 8, overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
+              <iframe
+                src={investor.video_url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")}
+                style={{ width: "100%", height: "100%" }}
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
+
         {investor.investment_thesis && (
           <div className="bg-cr-copper/10 border border-cr-copper/20 rounded-xl p-5 mb-6">
             <div className="flex items-center gap-2 mb-2">
@@ -399,7 +420,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               <MapPin className="h-4 w-4 text-cr-i4 mt-0.5 flex-shrink-0" />
               <div className="flex flex-wrap gap-1.5">
                 {investor.geography.map((g: string) => (
-                  <span key={g} className="text-xs bg-cr-p3 text-cr-i2 px-2 py-0.5 rounded-full">{g}</span>
+                  <span key={g} className="text-xs bg-cr-p3 text-cr-i2 px-2 py-0.5 rounded-full">{countryLabel(t, g)}</span>
                 ))}
               </div>
             </div>
@@ -456,7 +477,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               {similar.map((s) => (
                 <a key={s.slug} href={`/investors/${s.slug}`} className="bg-cr-paper border rounded-xl p-4 hover:border-cr-copper transition-colors">
                   <p className="font-semibold text-cr-ink text-sm truncate">{s.display_name || s.firm_name || s.slug}</p>
-                  <p className="text-xs text-cr-i4 mt-0.5 capitalize">{s.type}{s.firm_name && s.display_name ? ` · ${s.firm_name}` : ""}</p>
+                  <p className="text-xs text-cr-i4 mt-0.5">{typeLabel(s.type)}{s.firm_name && s.display_name ? ` · ${s.firm_name}` : ""}</p>
                   {(s.industries ?? []).length > 0 && (
                     <p className="text-xs text-cr-i3 mt-1.5 truncate">{(s.industries ?? []).slice(0, 3).join(", ")}</p>
                   )}

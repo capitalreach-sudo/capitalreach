@@ -2047,7 +2047,9 @@
     "memberSince": "自 {date} 加入 CapitalReach",
     "boardSeat": "董事会席位",
     "followOn": "追加投资政策",
-    "similarInvestors": "相似的投资人"
+    "similarInvestors": "相似的投资人",
+    "syndicate": "投资联合体",
+    "introVideo": "介绍"
   },
   "admin": {
     "panelTitle": "管理面板",
@@ -2081,7 +2083,9 @@
     "launchTurnOff": "结束上线期",
     "launchTurnOn": "重新启用上线模式",
     "editedSinceReview": "批准后已编辑",
-    "editsAcked": "已标记为复核完成。"
+    "editsAcked": "已标记为复核完成。",
+    "viewDashboard": "仪表盘",
+    "viewListing": "挂牌页"
   },
   "contact": {
     "title": "联系我们",
@@ -3188,7 +3192,8 @@
       "investorUpdates": "向你的投资人发送进展",
       "documents": "项目页上的文件",
       "dataRoom": "数据室",
-      "nda": "分享前要求签署保密协议"
+      "nda": "分享前要求签署保密协议",
+      "assistant": "站点助手（可询问任何页面）"
     },
     "i": {
       "browse": "浏览全部进行中的轮次",
@@ -3209,7 +3214,8 @@
       "portfolio": "投资组合跟踪",
       "allocation": "额度跟踪",
       "export": "导出数据为 CSV",
-      "support": "专属支持联系人"
+      "support": "专属支持联系人",
+      "assistant": "站点助手（可询问任何页面）"
     }
   },
   "glossary": {
@@ -3235,7 +3241,8 @@
     "leadInvestor": "设定条款并通常出最大一张支票的投资人。很多轮次在没有领投前会一直停滞。",
     "successFee": "融资交割时 CapitalReach 收取 2%。这笔费用由获得投资的初创公司支付 —— 绝不由投资人承担。",
     "dueDiligence": "投资人在投钱之前做的调查：审阅财务、访谈客户、用证据核对项目页上的说法。请准备好收到文件请求和提问 —— 没有任何问题的尽调等于还没开始。",
-    "termSheet": "在最终合同之前确定投资条款的文件 —— 金额、估值、权利。通常对资金本身没有法律约束力，但一旦签署，谈判即告结束，律师开始工作。"
+    "termSheet": "在最终合同之前确定投资条款的文件 —— 金额、估值、权利。通常对资金本身没有法律约束力，但一旦签署，谈判即告结束，律师开始工作。",
+    "assistant": "一个回答当前页面相关问题的 AI 助手——挂牌条款、投资人理念、指标含义等。它只能看到你的套餐允许你看到的内容。"
   },
   "translate": {
     "offer": "这段内容是用另一种语言写的。",
@@ -3383,5 +3390,72 @@
     "sent": "对方会收到通知——准备谈细节时再发起交易。",
     "hint": "发出一个轻量信号——不含金额、不带义务，只是提个醒。",
     "withdraw": "撤回兴趣（静默进行，不发送通知）"
+  },
+  "f2f": {
+    "message": "给创始人发消息",
+    "placeholder": "介绍一下自己——你想交流什么？",
+    "send": "发送"
+  },
+  "invSettings": {
+    "profileImage": "头像",
+    "imagePaid": "头像是付费套餐的功能。",
+    "introVideo": "介绍视频",
+    "videoPaid": "视频在高级套餐中提供。"
+  },
+  "countries": {
+    "Germany": "德国",
+    "Austria": "奥地利",
+    "Switzerland": "瑞士",
+    "France": "法国",
+    "Netherlands": "荷兰",
+    "Belgium": "比利时",
+    "Spain": "西班牙",
+    "Portugal": "葡萄牙",
+    "Italy": "意大利",
+    "Ireland": "爱尔兰",
+    "United Kingdom": "英国",
+    "Denmark": "丹麦",
+    "Sweden": "瑞典",
+    "Norway": "挪威",
+    "Finland": "芬兰",
+    "Iceland": "冰岛",
+    "Poland": "波兰",
+    "Czechia": "捷克",
+    "Slovakia": "斯洛伐克",
+    "Hungary": "匈牙利",
+    "Romania": "罗马尼亚",
+    "Bulgaria": "保加利亚",
+    "Greece": "希腊",
+    "Croatia": "克罗地亚",
+    "Slovenia": "斯洛文尼亚",
+    "Estonia": "爱沙尼亚",
+    "Latvia": "拉脱维亚",
+    "Lithuania": "立陶宛",
+    "Luxembourg": "卢森堡",
+    "Malta": "马耳他",
+    "Cyprus": "塞浦路斯",
+    "United States": "美国",
+    "Canada": "加拿大",
+    "Mexico": "墨西哥",
+    "Brazil": "巴西",
+    "Argentina": "阿根廷",
+    "Chile": "智利",
+    "Colombia": "哥伦比亚",
+    "Israel": "以色列",
+    "United Arab Emirates": "阿联酋",
+    "Saudi Arabia": "沙特阿拉伯",
+    "Turkey": "土耳其",
+    "India": "印度",
+    "Singapore": "新加坡",
+    "Japan": "日本",
+    "South Korea": "韩国",
+    "China": "中国",
+    "Hong Kong": "香港",
+    "Australia": "澳大利亚",
+    "New Zealand": "新西兰",
+    "South Africa": "南非",
+    "Nigeria": "尼日利亚",
+    "Kenya": "肯尼亚",
+    "Egypt": "埃及"
   }
 }

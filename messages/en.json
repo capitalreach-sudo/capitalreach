@@ -2058,7 +2058,9 @@
     "corporateInvestor": "Corporate Investor",
     "boardSeat": "Board seat",
     "followOn": "Follow-on policy",
-    "similarInvestors": "Similar investors"
+    "similarInvestors": "Similar investors",
+    "syndicate": "Syndicate",
+    "introVideo": "Introduction"
   },
   "admin": {
     "panelTitle": "Admin Panel",
@@ -2092,7 +2094,9 @@
     "launchTurnOff": "End launch period",
     "launchTurnOn": "Re-enable launch mode",
     "editedSinceReview": "Edited since approval",
-    "editsAcked": "Marked as re-checked."
+    "editsAcked": "Marked as re-checked.",
+    "viewDashboard": "Dashboard",
+    "viewListing": "Listing"
   },
   "contact": {
     "title": "Get in Touch",
@@ -3188,7 +3192,8 @@
       "investorUpdates": "Send updates to your investors",
       "documents": "Documents on your listing",
       "dataRoom": "Data room",
-      "nda": "Request an NDA before sharing"
+      "nda": "Request an NDA before sharing",
+      "assistant": "Site assistant (ask about any page)"
     },
     "i": {
       "browse": "Browse every live round",
@@ -3209,7 +3214,8 @@
       "portfolio": "Portfolio tracking",
       "allocation": "Allocation tracking",
       "export": "Export data to CSV",
-      "support": "Named support contact"
+      "support": "Named support contact",
+      "assistant": "Site assistant (ask about any page)"
     }
   },
   "glossary": {
@@ -3235,7 +3241,8 @@
     "leadInvestor": "The investor who sets the terms and usually takes the largest cheque. Rounds often stall until one exists.",
     "successFee": "CapitalReach charges 2% of a round when it closes. It is paid by the startup receiving the investment — never by the investor.",
     "dueDiligence": "The investigation an investor runs before committing money: reading the financials, talking to customers, checking the claims on the listing against evidence. Expect document requests and questions — a diligence that finds nothing to ask about has not started.",
-    "termSheet": "The document that fixes the terms of the investment — amount, valuation, rights — before the final contracts. Usually not legally binding on the money itself, but signing one means the negotiation is over and the lawyers begin."
+    "termSheet": "The document that fixes the terms of the investment — amount, valuation, rights — before the final contracts. Usually not legally binding on the money itself, but signing one means the negotiation is over and the lawyers begin.",
+    "assistant": "An AI helper that answers questions about the page you are viewing — a listing's terms, an investor's thesis, what a metric means. It only sees what your plan lets you see."
   },
   "translate": {
     "offer": "This was written in another language.",
@@ -3383,5 +3390,72 @@
     "sent": "They will hear about it — open a deal when you are ready to talk numbers.",
     "hint": "Send a light signal — no amount, no obligations, just a nudge.",
     "withdraw": "Withdraw interest (quietly — no notification is sent)"
+  },
+  "f2f": {
+    "message": "Message founder",
+    "placeholder": "Introduce yourself — what would you like to compare notes on?",
+    "send": "Send"
+  },
+  "invSettings": {
+    "profileImage": "Profile image",
+    "imagePaid": "Profile images are part of the paid plans.",
+    "introVideo": "Intro video",
+    "videoPaid": "Videos are available on the top plans."
+  },
+  "countries": {
+    "Germany": "Germany",
+    "Austria": "Austria",
+    "Switzerland": "Switzerland",
+    "France": "France",
+    "Netherlands": "Netherlands",
+    "Belgium": "Belgium",
+    "Spain": "Spain",
+    "Portugal": "Portugal",
+    "Italy": "Italy",
+    "Ireland": "Ireland",
+    "United Kingdom": "United Kingdom",
+    "Denmark": "Denmark",
+    "Sweden": "Sweden",
+    "Norway": "Norway",
+    "Finland": "Finland",
+    "Iceland": "Iceland",
+    "Poland": "Poland",
+    "Czechia": "Czechia",
+    "Slovakia": "Slovakia",
+    "Hungary": "Hungary",
+    "Romania": "Romania",
+    "Bulgaria": "Bulgaria",
+    "Greece": "Greece",
+    "Croatia": "Croatia",
+    "Slovenia": "Slovenia",
+    "Estonia": "Estonia",
+    "Latvia": "Latvia",
+    "Lithuania": "Lithuania",
+    "Luxembourg": "Luxembourg",
+    "Malta": "Malta",
+    "Cyprus": "Cyprus",
+    "United States": "United States",
+    "Canada": "Canada",
+    "Mexico": "Mexico",
+    "Brazil": "Brazil",
+    "Argentina": "Argentina",
+    "Chile": "Chile",
+    "Colombia": "Colombia",
+    "Israel": "Israel",
+    "United Arab Emirates": "United Arab Emirates",
+    "Saudi Arabia": "Saudi Arabia",
+    "Turkey": "Turkey",
+    "India": "India",
+    "Singapore": "Singapore",
+    "Japan": "Japan",
+    "South Korea": "South Korea",
+    "China": "China",
+    "Hong Kong": "Hong Kong",
+    "Australia": "Australia",
+    "New Zealand": "New Zealand",
+    "South Africa": "South Africa",
+    "Nigeria": "Nigeria",
+    "Kenya": "Kenya",
+    "Egypt": "Egypt"
   }
 }

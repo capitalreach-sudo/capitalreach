@@ -317,7 +317,19 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 <div className="flex items-center gap-3">
                   <div>
                     <p className="font-medium text-cr-ink text-sm">{s.name}</p>
-                    <p className="text-xs text-cr-i4">{s.owner?.email} · {s.industry} · {s.stage}</p>
+                    <p className="text-xs text-cr-i4">
+                      {s.owner?.email} · {s.industry} · {s.stage}
+                      {" · "}
+                      {/* The founder dashboard as its founder sees it — every
+                          feature they have, read-only, visit audited. */}
+                      <Link href={`/admin/view/startup/${s.id}`} className="text-cr-copper underline underline-offset-2">
+                        {t("admin.viewDashboard")}
+                      </Link>
+                      {" · "}
+                      <Link href={`/startups/${s.slug}`} className="text-cr-copper underline underline-offset-2">
+                        {t("admin.viewListing")}
+                      </Link>
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
