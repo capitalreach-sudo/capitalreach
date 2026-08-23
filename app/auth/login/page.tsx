@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -83,6 +83,16 @@ function LoginForm() {
     }
     setLoading(false);
   }
+
+  // Already signed in? "Sign in" links survive all over the site (and
+  // "List your startup" buttons point at auth for anonymous visitors) — a
+  // logged-in click should land home, not on a login form.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) void finishLogin(user.id);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function finishLogin(userId: string) {
     // Fire-and-forget is safe here: this is the browser, not a lambda, and a

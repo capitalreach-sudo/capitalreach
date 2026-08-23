@@ -54,7 +54,8 @@
     "proofFee": "prowizja od sukcesu, płacona przez startup przy zamknięciu",
     "proofUpfront": "kosztów na start",
     "proofVetted": "ofert zweryfikowanych",
-    "whoPays": "Prowizję od sukcesu 2% płaci startup otrzymujący inwestycję — fakturowaną dopiero po zamknięciu rundy. Inwestorzy nigdy jej nie płacą."
+    "whoPays": "Prowizję od sukcesu 2% płaci startup otrzymujący inwestycję — fakturowaną dopiero po zamknięciu rundy. Inwestorzy nigdy jej nie płacą.",
+    "ctaDashboard": "Otwórz panel"
   },
   "trustIndicators": {
     "startupsListed": "startupów na liście",
@@ -580,7 +581,10 @@
     "strengthVeryStrong": "Bardzo silne",
     "passwordsMismatch": "Hasła nie są zgodne.",
     "ageConfirm": "Mam ukończone 18 lat.",
-    "mustConfirmAge": "Potwierdź, że masz ukończone 18 lat."
+    "mustConfirmAge": "Potwierdź, że masz ukończone 18 lat.",
+    "resetLinkDeadTitle": "Ten link wygasł",
+    "resetLinkDeadBody": "Linki do resetu działają raz i krótko — i tylko w przeglądarce, która o nie poprosiła. Poproś o nowy i otwórz go na tym urządzeniu.",
+    "requestNewLink": "Poproś o nowy link"
   },
   "dashboard": {
     "overview": "Przegląd",

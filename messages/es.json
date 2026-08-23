@@ -54,7 +54,8 @@
     "proofFee": "comisión de éxito, pagada por la startup al cierre",
     "proofUpfront": "coste inicial",
     "proofVetted": "oportunidades verificadas",
-    "whoPays": "La comisión de éxito del 2% la paga la startup que recibe la inversión — facturada solo tras el cierre de la ronda. Los inversores nunca la pagan."
+    "whoPays": "La comisión de éxito del 2% la paga la startup que recibe la inversión — facturada solo tras el cierre de la ronda. Los inversores nunca la pagan.",
+    "ctaDashboard": "Abrir el panel"
   },
   "feeStrip": {
     "tagline": "comisión de éxito, pagada por la startup — solo tras el cierre. Media del sector: 5–7% por adelantado.",
@@ -589,7 +590,10 @@
     "strengthVeryStrong": "Muy fuerte",
     "passwordsMismatch": "Las contraseñas no coinciden.",
     "ageConfirm": "Tengo 18 años o más.",
-    "mustConfirmAge": "Confirma que tienes 18 años o más."
+    "mustConfirmAge": "Confirma que tienes 18 años o más.",
+    "resetLinkDeadTitle": "Este enlace ha caducado",
+    "resetLinkDeadBody": "Los enlaces de restablecimiento funcionan una sola vez y por poco tiempo, y solo en el navegador que los solicitó. Pide uno nuevo y ábrelo en este dispositivo.",
+    "requestNewLink": "Solicitar un enlace nuevo"
   },
   "dashboard": {
     "overview": "Resumen",

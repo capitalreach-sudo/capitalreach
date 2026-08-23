@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { getPlatformStats }  from "@/lib/stats";
 import { getLaunchStatus }   from "@/lib/launchMode";
 import { Navbar }            from "@/components/shared/navbar";
@@ -56,11 +56,23 @@ export default async function HomePage() {
   } catch {
     /* DB not configured — render the shell with zero counts */
   }
+  // The hero should never sell "List your startup" to someone who already
+  // did. One cheap auth read decides which CTA renders.
+  let viewerRole: string | null = null;
+  try {
+    const sb = await createServerSupabaseClient();
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      const { data: prof } = await createAdminClient().from("profiles").select("role").eq("id", user.id).maybeSingle();
+      viewerRole = prof?.role ?? null;
+    }
+  } catch { /* anonymous render is the safe default */ }
+
 
   return (
     <>
       <Navbar />
-      <HomepageClient stats={stats} listings={listings} launch={launch} />
+      <HomepageClient stats={stats} listings={listings} launch={launch} viewerRole={viewerRole} />
       <Footer />
     </>
   );

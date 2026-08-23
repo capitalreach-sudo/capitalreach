@@ -54,7 +54,8 @@
     "proofFee": "成功费，由创业公司在成交时支付",
     "proofUpfront": "前期费用",
     "proofVetted": "项目已审核",
-    "whoPays": "2% 成功费由获得投资的创业公司支付 — 仅在融资完成后开票。投资者从不支付。"
+    "whoPays": "2% 成功费由获得投资的创业公司支付 — 仅在融资完成后开票。投资者从不支付。",
+    "ctaDashboard": "打开仪表盘"
   },
   "feeStrip": {
     "tagline": "成功费，由创业公司支付 — 仅在成交后。行业平均：预付 5–7%。",
@@ -589,7 +590,10 @@
     "strengthVeryStrong": "非常强",
     "passwordsMismatch": "两次输入的密码不一致。",
     "ageConfirm": "我已年满 18 周岁。",
-    "mustConfirmAge": "请确认您已年满 18 周岁。"
+    "mustConfirmAge": "请确认您已年满 18 周岁。",
+    "resetLinkDeadTitle": "此链接已过期",
+    "resetLinkDeadBody": "重置链接只能使用一次且有效期很短——并且只在发起请求的浏览器中有效。请重新申请并在本设备上打开。",
+    "requestNewLink": "申请新链接"
   },
   "dashboard": {
     "overview": "概览",

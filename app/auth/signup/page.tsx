@@ -115,6 +115,20 @@ function SignupForm() {
   const router = useRouter();
   const supabase = createClient();
 
+  // A signed-in visitor has no business on the signup form — every "List
+  // your startup" CTA on the site points here for anonymous visitors, and a
+  // logged-in founder clicking one should land in their dashboard, not in a
+  // form that would try to create a second account.
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      const r = profile?.role;
+      router.replace(r === "startup" ? "/dashboard/startup" : r === "investor" ? "/dashboard/investor" : r === "admin" ? "/admin" : "/onboarding");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     if (!role) return;

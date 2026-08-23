@@ -54,7 +54,8 @@
     "proofFee": "framgångsavgift, betalas av startupen vid stängning",
     "proofUpfront": "kostnad i förskott",
     "proofVetted": "noteringar granskade",
-    "whoPays": "Framgångsavgiften på 2% betalas av startupen som tar emot investeringen — faktureras först efter att rundan stängts. Investerare betalar den aldrig."
+    "whoPays": "Framgångsavgiften på 2% betalas av startupen som tar emot investeringen — faktureras först efter att rundan stängts. Investerare betalar den aldrig.",
+    "ctaDashboard": "Öppna instrumentpanelen"
   },
   "trustIndicators": {
     "startupsListed": "startups listade",
@@ -580,7 +581,10 @@
     "strengthVeryStrong": "Mycket starkt",
     "passwordsMismatch": "Lösenorden matchar inte.",
     "ageConfirm": "Jag är 18 år eller äldre.",
-    "mustConfirmAge": "Bekräfta att du är 18 år eller äldre."
+    "mustConfirmAge": "Bekräfta att du är 18 år eller äldre.",
+    "resetLinkDeadTitle": "Den här länken har gått ut",
+    "resetLinkDeadBody": "Återställningslänkar fungerar en gång och kort — och bara i webbläsaren som begärde dem. Begär en ny och öppna den på den här enheten.",
+    "requestNewLink": "Begär en ny länk"
   },
   "dashboard": {
     "overview": "Översikt",

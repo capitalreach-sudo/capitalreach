@@ -61,7 +61,8 @@
     "proofFee": "success fee, paid by the startup at close",
     "proofUpfront": "upfront cost",
     "proofVetted": "listings vetted",
-    "whoPays": "The 2% success fee is paid by the startup that receives the investment — invoiced only after the round closes. Investors never pay it."
+    "whoPays": "The 2% success fee is paid by the startup that receives the investment — invoiced only after the round closes. Investors never pay it.",
+    "ctaDashboard": "Open your dashboard"
   },
   "feeStrip": {
     "tagline": "success fee, paid by the startup — only after it closes. Industry average: 5–7% upfront.",
@@ -600,7 +601,10 @@
     "strengthVeryStrong": "Very strong",
     "passwordsMismatch": "Passwords do not match.",
     "ageConfirm": "I am 18 years or older.",
-    "mustConfirmAge": "Please confirm you are 18 or older."
+    "mustConfirmAge": "Please confirm you are 18 or older.",
+    "resetLinkDeadTitle": "This reset link has expired",
+    "resetLinkDeadBody": "Password links work once and only briefly — and only in the browser that requested them. Request a fresh one and open it on this device.",
+    "requestNewLink": "Request a new link"
   },
   "dashboard": {
     "overview": "Overview",

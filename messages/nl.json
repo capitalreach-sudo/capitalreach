@@ -54,7 +54,8 @@
     "proofFee": "succesfee, betaald door de startup bij sluiting",
     "proofUpfront": "kosten vooraf",
     "proofVetted": "aanbod gecontroleerd",
-    "whoPays": "De succesfee van 2% wordt betaald door de startup die de investering ontvangt — pas gefactureerd na sluiting van de ronde. Investeerders betalen die nooit."
+    "whoPays": "De succesfee van 2% wordt betaald door de startup die de investering ontvangt — pas gefactureerd na sluiting van de ronde. Investeerders betalen die nooit.",
+    "ctaDashboard": "Naar je dashboard"
   },
   "trustIndicators": {
     "startupsListed": "startups geplaatst",
@@ -580,7 +581,10 @@
     "strengthVeryStrong": "Zeer sterk",
     "passwordsMismatch": "Wachtwoorden komen niet overeen.",
     "ageConfirm": "Ik ben 18 jaar of ouder.",
-    "mustConfirmAge": "Bevestig dat u 18 jaar of ouder bent."
+    "mustConfirmAge": "Bevestig dat u 18 jaar of ouder bent.",
+    "resetLinkDeadTitle": "Deze link is verlopen",
+    "resetLinkDeadBody": "Herstellinks werken één keer en kort — en alleen in de browser die ze aanvroeg. Vraag een nieuwe aan en open die op dit apparaat.",
+    "requestNewLink": "Nieuwe link aanvragen"
   },
   "dashboard": {
     "overview": "Overzicht",

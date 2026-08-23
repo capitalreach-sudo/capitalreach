@@ -54,7 +54,8 @@
     "proofFee": "commission de succès, payée par la startup à la clôture",
     "proofUpfront": "coût initial",
     "proofVetted": "des annonces vérifiées",
-    "whoPays": "La commission de succès de 2 % est payée par la startup qui reçoit l'investissement — facturée seulement après la clôture du tour. Les investisseurs ne la paient jamais."
+    "whoPays": "La commission de succès de 2 % est payée par la startup qui reçoit l'investissement — facturée seulement après la clôture du tour. Les investisseurs ne la paient jamais.",
+    "ctaDashboard": "Ouvrir le tableau de bord"
   },
   "feeStrip": {
     "tagline": "commission de succès, payée par la startup — seulement après la clôture. Moyenne du secteur : 5–7 % d'avance.",
@@ -589,7 +590,10 @@
     "strengthVeryStrong": "Très fort",
     "passwordsMismatch": "Les mots de passe ne correspondent pas.",
     "ageConfirm": "J'ai 18 ans ou plus.",
-    "mustConfirmAge": "Veuillez confirmer que vous avez 18 ans ou plus."
+    "mustConfirmAge": "Veuillez confirmer que vous avez 18 ans ou plus.",
+    "resetLinkDeadTitle": "Ce lien a expiré",
+    "resetLinkDeadBody": "Les liens de réinitialisation ne fonctionnent qu'une fois et brièvement — et uniquement dans le navigateur qui les a demandés. Demandez-en un nouveau et ouvrez-le sur cet appareil.",
+    "requestNewLink": "Demander un nouveau lien"
   },
   "dashboard": {
     "overview": "Aperçu",

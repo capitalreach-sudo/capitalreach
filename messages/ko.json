@@ -54,7 +54,8 @@
     "proofFee": "성공 수수료, 마감 시 스타트업이 부담",
     "proofUpfront": "초기 비용",
     "proofVetted": "목록 검증 완료",
-    "whoPays": "2% 성공 수수료는 투자를 받는 스타트업이 부담합니다 — 라운드 마감 후에만 청구됩니다. 투자자는 절대 부담하지 않습니다."
+    "whoPays": "2% 성공 수수료는 투자를 받는 스타트업이 부담합니다 — 라운드 마감 후에만 청구됩니다. 투자자는 절대 부담하지 않습니다.",
+    "ctaDashboard": "대시보드 열기"
   },
   "trustIndicators": {
     "startupsListed": "개 스타트업 등록",
@@ -580,7 +581,10 @@
     "strengthVeryStrong": "매우 강함",
     "passwordsMismatch": "비밀번호가 일치하지 않습니다.",
     "ageConfirm": "본인은 만 18세 이상입니다.",
-    "mustConfirmAge": "만 18세 이상임을 확인해 주세요."
+    "mustConfirmAge": "만 18세 이상임을 확인해 주세요.",
+    "resetLinkDeadTitle": "이 링크는 만료되었습니다",
+    "resetLinkDeadBody": "재설정 링크는 한 번만, 짧은 시간 동안만 작동하며 요청한 브라우저에서만 유효합니다. 새 링크를 요청해 이 기기에서 여세요.",
+    "requestNewLink": "새 링크 요청"
   },
   "dashboard": {
     "overview": "개요",

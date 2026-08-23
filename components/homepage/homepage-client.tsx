@@ -56,7 +56,7 @@ interface Props {
  * "$100000000B". Counts are shown only when they are greater than zero —
  * "0 startups listed" is not a trust signal.
  */
-export function HomepageClient({ stats, listings, launch }: Props) {
+export function HomepageClient({ stats, listings, launch, viewerRole = null }: Props & { viewerRole?: string | null }) {
   const { t } = useTranslation();
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const router  = useRouter();
@@ -147,11 +147,11 @@ export function HomepageClient({ stats, listings, launch }: Props) {
             style={{ gap: "12px", marginTop: "36px" }}
           >
             <Link
-              href="/auth/signup?role=startup"
+              href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : viewerRole === "admin" ? "/admin" : "/auth/signup?role=startup"}
               className="btn-copper-shimmer w-full sm:w-auto"
               style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "999px", border: "none" }}
             >
-              {t("hero.ctaPrimary")}
+              {viewerRole ? t("hero.ctaDashboard") : t("hero.ctaPrimary")}
             </Link>
             <Link
               href="/startups"

@@ -54,7 +54,8 @@
     "proofFee": "success fee, pagata dalla startup alla chiusura",
     "proofUpfront": "costo iniziale",
     "proofVetted": "opportunità verificate",
-    "whoPays": "La success fee del 2% è pagata dalla startup che riceve l'investimento — fatturata solo dopo la chiusura del round. Gli investitori non la pagano mai."
+    "whoPays": "La success fee del 2% è pagata dalla startup che riceve l'investimento — fatturata solo dopo la chiusura del round. Gli investitori non la pagano mai.",
+    "ctaDashboard": "Apri la dashboard"
   },
   "trustIndicators": {
     "startupsListed": "startup elencate",
@@ -580,7 +581,10 @@
     "strengthVeryStrong": "Molto forte",
     "passwordsMismatch": "Le password non coincidono.",
     "ageConfirm": "Ho almeno 18 anni.",
-    "mustConfirmAge": "Conferma di avere almeno 18 anni."
+    "mustConfirmAge": "Conferma di avere almeno 18 anni.",
+    "resetLinkDeadTitle": "Questo link è scaduto",
+    "resetLinkDeadBody": "I link di reimpostazione funzionano una sola volta e per poco — e solo nel browser che li ha richiesti. Richiedine uno nuovo e aprilo su questo dispositivo.",
+    "requestNewLink": "Richiedi un nuovo link"
   },
   "dashboard": {
     "overview": "Panoramica",

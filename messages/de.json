@@ -61,7 +61,8 @@
     "proofFee": "Erfolgsgebühr, zahlt das Startup beim Abschluss",
     "proofUpfront": "Vorabkosten",
     "proofVetted": "geprüfte Listings",
-    "whoPays": "Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält — in Rechnung gestellt erst nach Abschluss der Runde. Investoren zahlen sie nie."
+    "whoPays": "Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält — in Rechnung gestellt erst nach Abschluss der Runde. Investoren zahlen sie nie.",
+    "ctaDashboard": "Zum Dashboard"
   },
   "feeStrip": {
     "tagline": "Erfolgsgebühr, zahlt das Startup — erst nach dem Abschluss. Branchenschnitt: 5–7% vorab.",
@@ -596,7 +597,10 @@
     "strengthVeryStrong": "Sehr stark",
     "passwordsMismatch": "Die Passwörter stimmen nicht überein.",
     "ageConfirm": "Ich bin mindestens 18 Jahre alt.",
-    "mustConfirmAge": "Bitte bestätigen Sie, dass Sie mindestens 18 sind."
+    "mustConfirmAge": "Bitte bestätigen Sie, dass Sie mindestens 18 sind.",
+    "resetLinkDeadTitle": "Dieser Link ist abgelaufen",
+    "resetLinkDeadBody": "Passwort-Links funktionieren nur einmal und nur kurz — und nur im Browser, der sie angefordert hat. Fordern Sie einen neuen an und öffnen Sie ihn auf diesem Gerät.",
+    "requestNewLink": "Neuen Link anfordern"
   },
   "dashboard": {
     "overview": "Übersicht",

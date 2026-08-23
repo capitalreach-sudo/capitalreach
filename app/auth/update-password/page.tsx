@@ -30,15 +30,25 @@ export default function UpdatePasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading]           = useState(false);
   const [done, setDone]                 = useState(false);
+  // null = still resolving, false = no recovery session (bad/expired link),
+  // true = ready. Without this, a dead link showed a working-looking form
+  // whose submit failed with a cryptic "Auth session missing".
+  const [ready, setReady]               = useState<boolean | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        // session active — form is ready
-      }
+    const { data: sub } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
     });
+    // The recovery code in the URL is exchanged automatically by the client;
+    // give it a moment, then check whether a session actually materialised.
+    const timer = window.setTimeout(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setReady(prev => prev ?? !!session);
+    }, 1500);
+    return () => { sub.subscription.unsubscribe(); window.clearTimeout(timer); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -94,7 +104,15 @@ export default function UpdatePasswordPage() {
         </Link>
 
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
-          {done ? (
+          {ready === false && !done ? (
+            <div style={{ textAlign: "center", padding: "16px 0" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, color: "var(--cr-ink)", marginBottom: 8 }}>{t("auth.resetLinkDeadTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: 18 }}>{t("auth.resetLinkDeadBody")}</p>
+              <Link href="/auth/reset-password" style={{ display: "inline-flex", background: "var(--cr-copper)", color: "#fff", borderRadius: 4, padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, textDecoration: "none" }}>
+                {t("auth.requestNewLink")}
+              </Link>
+            </div>
+          ) : done ? (
             <div style={{ textAlign: "center", padding: "16px 0" }}>
               <div style={{ width: 48, height: 48, background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.2)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <CheckCircle2 style={{ width: 22, height: 22, color: "var(--cr-up)" }} />
