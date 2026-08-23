@@ -65,21 +65,24 @@
      Set via data-theme on <html>, written by the navbar toggle and read from
      the cr_theme cookie server-side so there is no flash of the wrong theme. */
   [data-theme="dark"] {
-    --cr-paper:   #14110D;
-    --cr-paper-2: #1B1712;
-    --cr-paper-3: #231D16;
-    --cr-paper-4: #2E261C;
+    /* The professional register: deeper, near-black warm charcoal with
+       clearer elevation steps. Ink slightly cooled for long reading;
+       copper a touch brighter so it reads as brass on black, not orange. */
+    --cr-paper:   #0F0D0A;
+    --cr-paper-2: #16130F;
+    --cr-paper-3: #1E1A14;
+    --cr-paper-4: #2A241B;
 
-    --cr-ink:   #EDE6DA;
-    --cr-ink-2: #CFC5B6;
-    --cr-ink-3: #9A8F80;
-    --cr-ink-4: #6E6458;
+    --cr-ink:   #F0EAE0;
+    --cr-ink-2: #CFC6B8;
+    --cr-ink-3: #998F81;
+    --cr-ink-4: #6E6558;
 
-    --cr-copper:    #D4842A;
-    --cr-copper-l:  #E89A45;
+    --cr-copper:    #D98C33;
+    --cr-copper-l:  #EDA452;
     --cr-copper-d:  #B5651D;
-    --cr-copper-bg: rgba(212,132,42,0.10);
-    --cr-copper-br: rgba(212,132,42,0.30);
+    --cr-copper-bg: rgba(217,140,51,0.10);
+    --cr-copper-br: rgba(217,140,51,0.32);
 
     --cr-up:       #55B287;
     --cr-up-bg:    rgba(85,178,135,0.10);
@@ -90,7 +93,7 @@
     --cr-rule:      rgba(237,230,218,0.08);
     --cr-rule-dark: rgba(237,230,218,0.16);
 
-    --background:             30 21% 6%;
+    --background:             30 20% 5%;
     --foreground:             36 33% 89%;
     --card:                   30 20% 9%;
     --card-foreground:        36 33% 89%;

@@ -77,9 +77,11 @@ export default function RootLayout({
   const locale = getLocale();
   // Theme before first byte: the toggle writes cr_theme, the server stamps
   // the attribute, and no visitor ever sees a flash of the wrong theme.
-  let theme: "light" | "dark" = "light";
+  let theme: "light" | "dark" = "dark";
   try {
-    theme = cookies().get("cr_theme")?.value === "dark" ? "dark" : "light";
+    // Dark is the DEFAULT: the professional register of the product. The
+    // toggle still writes an explicit choice, so "light" survives per user.
+    theme = cookies().get("cr_theme")?.value === "light" ? "light" : "dark";
   } catch { /* static rendering contexts have no cookies; light is the default */ }
   const rtl = isRTL(locale);
   const extraFont = getLocaleFont(locale);
