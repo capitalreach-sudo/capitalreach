@@ -36,6 +36,15 @@
     --cr-rule:      rgba(26,22,18,0.10);
     --cr-rule-dark: rgba(26,22,18,0.20);
 
+    /* Inverted "band" surfaces (proof strip, dark CTAs): in light they are
+       the classic dark slab; in dark they are a slightly ELEVATED dark
+       surface — never a cream box (the bug this token exists to prevent:
+       background: var(--cr-ink) flips to cream when ink does). */
+    --cr-band-bg:      #1A1612;
+    --cr-band-ink:     #F5F0E8;
+    --cr-band-ink-dim: rgba(245,240,232,0.5);
+    --cr-scrim:        rgba(20,16,12,0.55);
+
     /* shadcn/radix compatibility — warm theme */
     --background:             37 33% 93%;
     --foreground:             22 11% 9%;
@@ -93,6 +102,11 @@
     --cr-rule:      rgba(237,230,218,0.08);
     --cr-rule-dark: rgba(237,230,218,0.16);
 
+    --cr-band-bg:      #16130F;
+    --cr-band-ink:     #F0EAE0;
+    --cr-band-ink-dim: rgba(240,234,224,0.5);
+    --cr-scrim:        rgba(0,0,0,0.6);
+
     --background:             30 20% 5%;
     --foreground:             36 33% 89%;
     --card:                   30 20% 9%;
@@ -128,6 +142,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection { background: rgba(181,101,29,0.18); color: var(--cr-ink); }
+
+  /* The theme flip fades instead of snapping — surfaces inherit the body's
+     paint, so one transition covers the page without per-element cost. */
+  body { transition: background-color 240ms ease, color 240ms ease; }
 }
 
 /* ── Typography utilities ─────────────────────────────────── */
@@ -627,6 +645,15 @@ body::before {
   90%  { transform: translate( 0%,  0%);  }
   100% { transform: translate( 0,   0);   }
 }
+/* A quiet copper aura behind the hero headline. Color-scheme-agnostic:
+   pure copper at low alpha reads as candlelight on dark and as warmth on
+   paper — the same value serves both registers. */
+.hero-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 38%, rgba(184,115,51,0.10), transparent 70%);
+}
+
 .hero-noise {
   position: absolute;
   inset: -10%;
@@ -936,7 +963,16 @@ body::before {
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
-  .hero-noise { animation: none; }
+  /* A quiet copper aura behind the hero headline. Color-scheme-agnostic:
+   pure copper at low alpha reads as candlelight on dark and as warmth on
+   paper — the same value serves both registers. */
+.hero-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 38%, rgba(184,115,51,0.10), transparent 70%);
+}
+
+.hero-noise { animation: none; }
   .copper-foil { animation: none; }
   .ruled-label::before { height: 16px; opacity: 1; animation: none; }
   .ruled-label.visible::before { animation: none; height: 16px; opacity: 1; }

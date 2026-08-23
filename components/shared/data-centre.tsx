@@ -288,7 +288,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
 
       {/* Header strip */}
-      <div style={{ background: "var(--cr-ink)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ background: "var(--cr-band-bg)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px 40px 48px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
             <BarChart3 style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
@@ -625,7 +625,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             </div>
 
             {/* CTA */}
-            <div style={{ background: "var(--cr-ink)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
+            <div style={{ background: "var(--cr-band-bg)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-paper)", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
                 {t("data.featuredHereSub")}

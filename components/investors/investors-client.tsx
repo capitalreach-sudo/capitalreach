@@ -655,7 +655,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (
-            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-cr-ink rounded-md px-4 py-2.5 shadow-2xl">
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 rounded-md px-4 py-2.5 shadow-2xl" style={{ background: "var(--cr-band-bg)" }}>
               <span className="text-[13px] text-cr-p2" style={{ color: "var(--cr-paper-2)" }}>
                 {compareIds.map(id => investors.find(i => i.id === id)?.full_name).filter(Boolean).join(" · ")}
               </span>
@@ -680,7 +680,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             ];
             return (
               <div role="dialog" aria-modal="true" className="fixed inset-0 z-[70]">
-                <div className="absolute inset-0 bg-cr-ink/50" onClick={() => setShowCompare(false)} />
+                <div className="absolute inset-0 bg-[color:var(--cr-scrim)]" onClick={() => setShowCompare(false)} />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto bg-cr-paper border border-cr-p4 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-cr-ink" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>{t("investors.compareInvestors")}</h2>

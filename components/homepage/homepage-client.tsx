@@ -84,6 +84,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
         style={{ background: "var(--cr-paper)", position: "relative", overflow: "hidden" }}
         className="min-h-[calc(100svh-56px)] flex items-center"
       >
+        <div className="hero-glow" aria-hidden />
         <div className="hero-noise" aria-hidden />
 
         <div
@@ -196,7 +197,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
       {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
       <section
         aria-label="CapitalReach in three numbers"
-        style={{ background: "var(--cr-ink)", borderTop: "1px solid rgba(181,101,29,0.15)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}
+        style={{ background: "var(--cr-band-bg)", borderTop: "1px solid rgba(181,101,29,0.2)", borderBottom: "1px solid rgba(181,101,29,0.2)" }}
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-10">
           <div className="grid grid-cols-3">
@@ -204,19 +205,19 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
               <div
                 key={label}
                 className="flex flex-col items-center justify-center text-center py-7 md:py-9"
-                style={{ borderLeft: i > 0 ? "1px solid rgba(245,240,232,0.08)" : undefined }}
+                style={{ borderLeft: i > 0 ? "1px solid rgba(181,101,29,0.15)" : undefined }}
               >
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
                   {value}
                 </div>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "rgba(245,240,232,0.45)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
                   {label}
                 </div>
               </div>
             ))}
           </div>
           {/* Who pays — stated in one plain sentence, right under the number. */}
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "rgba(245,240,232,0.55)", textAlign: "center", padding: "0 0 16px", lineHeight: 1.5 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-band-ink-dim)", textAlign: "center", padding: "0 0 16px", lineHeight: 1.5 }}>
             {t("hero.whoPays")}
           </p>
         </div>

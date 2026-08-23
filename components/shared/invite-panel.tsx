@@ -91,7 +91,7 @@ export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investo
           placeholder={t("invite.notePh")}
           className="flex-1 min-w-[160px] text-sm border rounded-lg px-3 py-1.5 bg-cr-paper text-cr-ink" />
         <button onClick={create} disabled={busy}
-          className="text-xs font-semibold text-cr-paper bg-cr-ink rounded-lg px-3 py-1.5 disabled:opacity-50">
+          className="text-xs font-semibold rounded-lg px-3 py-1.5 disabled:opacity-50" style={{ background: "var(--cr-band-bg)", color: "var(--cr-band-ink)" }}>
           {t("invite.create")}
         </button>
       </div>
