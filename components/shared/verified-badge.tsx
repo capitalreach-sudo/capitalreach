@@ -11,9 +11,11 @@ import { useEscapeKey } from "@/hooks/useEscapeKey";
  * checks this verification stands on and when they were run — a badge that
  * can show its work is a trust signal; one that can't is decoration.
  */
-export function VerifiedBadge({ checks, verifiedAt }: {
+export function VerifiedBadge({ checks, verifiedAt, kind = "investor" }: {
   checks?: { checks?: string[]; at?: string } | null;
   verifiedAt?: string | null;
+  /* The word matters: a company is not a "verified investor". */
+  kind?: "startup" | "investor";
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -30,7 +32,7 @@ export function VerifiedBadge({ checks, verifiedAt }: {
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
         style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em", cursor: "pointer" }}>
-        <BadgeCheck style={{ width: 11, height: 11 }} /> {t("investors.verifiedBadge")}
+        <BadgeCheck style={{ width: 11, height: 11 }} /> {t(kind === "startup" ? "verify.companyBadge" : "investors.verifiedBadge")}
       </button>
       {open && (
         <>

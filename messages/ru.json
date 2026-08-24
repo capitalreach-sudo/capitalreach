@@ -3492,7 +3492,8 @@
       "domain": "Владение доменом",
       "metrics": "Подтверждение метрик изучено"
     },
-    "on": "Проверено {date}"
+    "on": "Проверено {date}",
+    "companyBadge": "Проверенная компания"
   },
   "capTable": {
     "title": "Cap table — закрыто на CapitalReach",

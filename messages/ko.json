@@ -3492,7 +3492,8 @@
       "domain": "도메인 소유권",
       "metrics": "지표 증빙 검토"
     },
-    "on": "{date} 인증"
+    "on": "{date} 인증",
+    "companyBadge": "인증된 기업"
   },
   "capTable": {
     "title": "캡 테이블 — CapitalReach에서 성사",

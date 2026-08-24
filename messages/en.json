@@ -3492,7 +3492,8 @@
       "domain": "Website domain ownership",
       "metrics": "Metrics evidence reviewed"
     },
-    "on": "Verified {date}"
+    "on": "Verified {date}",
+    "companyBadge": "Verified company"
   },
   "capTable": {
     "title": "Cap table — closed on CapitalReach",

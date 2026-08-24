@@ -3492,7 +3492,8 @@
       "domain": "Domeineigendom",
       "metrics": "Bewijs van cijfers beoordeeld"
     },
-    "on": "Geverifieerd op {date}"
+    "on": "Geverifieerd op {date}",
+    "companyBadge": "Geverifieerd bedrijf"
   },
   "capTable": {
     "title": "Cap table — gesloten via CapitalReach",

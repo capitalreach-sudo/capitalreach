@@ -3492,7 +3492,8 @@
       "domain": "域名所有权",
       "metrics": "指标证据审核"
     },
-    "on": "{date} 认证"
+    "on": "{date} 认证",
+    "companyBadge": "已认证企业"
   },
   "capTable": {
     "title": "股权表 — 在 CapitalReach 成交",

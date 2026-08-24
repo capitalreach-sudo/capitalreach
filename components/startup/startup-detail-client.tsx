@@ -668,6 +668,7 @@ export function StartupDetailClient({
                   </h1>
                   {startup.verified_at && (
                     <VerifiedBadge
+                      kind="startup"
                       checks={(startup as { verification_checks?: { checks?: string[]; at?: string } | null }).verification_checks}
                       verifiedAt={startup.verified_at}
                     />

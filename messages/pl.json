@@ -3492,7 +3492,8 @@
       "domain": "Własność domeny",
       "metrics": "Dowody metryk zweryfikowane"
     },
-    "on": "Zweryfikowano {date}"
+    "on": "Zweryfikowano {date}",
+    "companyBadge": "Zweryfikowana firma"
   },
   "capTable": {
     "title": "Cap table — zamknięte na CapitalReach",

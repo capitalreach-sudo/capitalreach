@@ -3492,7 +3492,8 @@
       "domain": "Domänägarskap",
       "metrics": "Underlag för nyckeltal granskade"
     },
-    "on": "Verifierad {date}"
+    "on": "Verifierad {date}",
+    "companyBadge": "Verifierat bolag"
   },
   "capTable": {
     "title": "Cap table — stängda på CapitalReach",

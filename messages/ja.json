@@ -3492,7 +3492,8 @@
       "domain": "ドメイン所有権",
       "metrics": "指標の裏付け確認"
     },
-    "on": "{date} に認証"
+    "on": "{date} に認証",
+    "companyBadge": "認証済み企業"
   },
   "capTable": {
     "title": "キャップテーブル — CapitalReach で成約",
