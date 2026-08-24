@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { Sparkline } from "@/components/ui/sparkline";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -407,7 +408,7 @@ function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: 
 
 // ── Search result card ────────────────────────────────────────────────────────
 
-function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -517,8 +518,10 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
               <div style={{
                 fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px",
                 color: val ? (isGrowth ? (positiveGrowth ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)") : "var(--cr-ink-4)",
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6,
               }}>
-                {val ?? "—"}
+                <span>{val ?? "—"}</span>
+                {label === t("startupDetail.mrr") && spark && <Sparkline points={spark} width={44} height={16} />}
               </div>
             </div>
           ))}
@@ -589,6 +592,14 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
   const [loading, setLoading]         = useState(!initialStartups);
   const [page, setPage]               = useState(1);
   const [savedIds, setSavedIds]       = useState<Set<string>>(new Set());
+  // Normalised MRR shapes per listing (server strips absolute values).
+  const [sparks, setSparks]           = useState<Record<string, number[]>>({});
+  useEffect(() => {
+    fetch("/api/startups/sparklines")
+      .then(r => r.ok ? r.json() : null)
+      .then(j => { if (j?.sparks) setSparks(j.sparks); })
+      .catch(() => {});
+  }, []);
   // Which listings this investor has already opened. startup_views RLS is
   // scoped to the viewing investor, so the bare select returns only their own
   // history; anonymous and founder sessions just get an empty set.
@@ -1310,7 +1321,7 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
             {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
+              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
             ))}
           </div>
         )}
