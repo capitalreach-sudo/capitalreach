@@ -2035,7 +2035,9 @@
     "status_passed": "Recusados",
     "consentNotice": "A outra parte tem de aprovar este pedido antes de o negócio existir — nada aparece no pipeline dela até dizer que sim.",
     "colProposal": "Proposta",
-    "colNegotiation": "Negociação"
+    "colNegotiation": "Negociação",
+    "scopeAll": "Todos os negócios",
+    "scopeMine": "Os meus negócios"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

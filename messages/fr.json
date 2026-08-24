@@ -2035,7 +2035,9 @@
     "status_passed": "Refusés",
     "consentNotice": "L'autre partie doit approuver cette demande avant que le deal existe — rien n'apparaît dans son pipeline avant son accord.",
     "colProposal": "Proposition",
-    "colNegotiation": "Négociation"
+    "colNegotiation": "Négociation",
+    "scopeAll": "Tous les deals",
+    "scopeMine": "Mes deals"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

@@ -17,11 +17,20 @@ interface Props {
   equityOffered?: number | null;
   ownProfile?: OwnProfile;
   canExport?: boolean;
+  /** Admin who is also a participant: ids of their own entities. */
+  myEntityIds?: string[];
 }
 
-export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false }: Props) {
+export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, myEntityIds = [] }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
+
+  // Two lenses for the operator-participant: the platform ledger, and their
+  // own pipeline inside it. Pure client-side cut of the same rows.
+  const [scope, setScope] = useState<"all" | "mine">("all");
+  const scopedDeals = viewAs === "admin" && scope === "mine" && myEntityIds.length
+    ? deals.filter(d => myEntityIds.includes(d.startup_id) || myEntityIds.includes(d.investor_id))
+    : deals;
 
   // Phase 1: an investor's first stage move on a founder-opened deal must be
   // preceded by the non-circumvention acknowledgment. The server answers 428
@@ -98,8 +107,18 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     )}
     {/* The consent step, above the board it gates. Admin sees every deal
         anyway and answers for neither side, so the strip is participant-only. */}
+    {viewAs === "admin" && myEntityIds.length > 0 && (
+      <div style={{ display: "inline-flex", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, overflow: "hidden", marginBottom: 16 }}>
+        {(["all", "mine"] as const).map(v => (
+          <button key={v} onClick={() => setScope(v)}
+            style={{ background: scope === v ? "var(--cr-band-bg)" : "transparent", color: scope === v ? "var(--cr-band-ink)" : "var(--cr-ink-4)", border: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, padding: "8px 18px", cursor: "pointer" }}>
+            {v === "all" ? t("deals.scopeAll") : t("deals.scopeMine")}
+          </button>
+        ))}
+      </div>
+    )}
     <DealKanban
-      deals={deals}
+      deals={scopedDeals}
       onProposalsChanged={() => router.refresh()}
       onStatusChange={handleDealStatusChange}
       onDealClose={handleDealClose}

@@ -2035,7 +2035,9 @@
     "status_passed": "مرفوضة",
     "consentNotice": "يجب أن يوافق الطرف الآخر على هذا الطلب قبل أن توجد الصفقة — لن يظهر شيء في خط أعماله حتى يوافق.",
     "colProposal": "اقتراح",
-    "colNegotiation": "تفاوض"
+    "colNegotiation": "تفاوض",
+    "scopeAll": "كل الصفقات",
+    "scopeMine": "صفقاتي"
   },
   "investorProfile": {
     "back": "العودة إلى المستثمرين",

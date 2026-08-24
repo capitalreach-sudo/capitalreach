@@ -2035,7 +2035,9 @@
     "status_passed": "Avböjda",
     "consentNotice": "Motparten måste godkänna denna förfrågan innan affären finns — inget syns i deras pipeline förrän de säger ja.",
     "colProposal": "Förslag",
-    "colNegotiation": "Förhandling"
+    "colNegotiation": "Förhandling",
+    "scopeAll": "Alla affärer",
+    "scopeMine": "Mina affärer"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

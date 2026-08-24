@@ -2035,7 +2035,9 @@
     "status_passed": "अस्वीकृत",
     "consentNotice": "डील बनने से पहले दूसरे पक्ष को इस अनुरोध को मंज़ूरी देनी होगी — उनकी सहमति तक उनकी पाइपलाइन में कुछ नहीं दिखेगा।",
     "colProposal": "प्रस्ताव",
-    "colNegotiation": "मोल-भाव"
+    "colNegotiation": "मोल-भाव",
+    "scopeAll": "सभी डील",
+    "scopeMine": "मेरी डील"
   },
   "investorProfile": {
     "back": "निवेशकों पर वापस जाएं",

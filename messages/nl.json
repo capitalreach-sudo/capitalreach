@@ -2035,7 +2035,9 @@
     "status_passed": "Afgewezen",
     "consentNotice": "De andere kant moet dit verzoek eerst goedkeuren — er verschijnt niets in hun pipeline totdat ze ja zeggen.",
     "colProposal": "Voorstel",
-    "colNegotiation": "Onderhandeling"
+    "colNegotiation": "Onderhandeling",
+    "scopeAll": "Alle deals",
+    "scopeMine": "Mijn deals"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

@@ -2035,7 +2035,9 @@
     "status_passed": "已放弃",
     "consentNotice": "对方必须先批准此请求，交易才会成立——在对方同意之前，其管道中不会出现任何内容。",
     "colProposal": "提案",
-    "colNegotiation": "谈判"
+    "colNegotiation": "谈判",
+    "scopeAll": "全部交易",
+    "scopeMine": "我的交易"
   },
   "investorProfile": {
     "back": "返回投资者列表",

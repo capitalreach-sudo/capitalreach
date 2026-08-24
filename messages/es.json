@@ -2035,7 +2035,9 @@
     "status_passed": "Descartados",
     "consentNotice": "La otra parte debe aprobar esta solicitud antes de que el deal exista: nada aparece en su pipeline hasta que diga que sí.",
     "colProposal": "Propuesta",
-    "colNegotiation": "Negociación"
+    "colNegotiation": "Negociación",
+    "scopeAll": "Todos los deals",
+    "scopeMine": "Mis deals"
   },
   "investorProfile": {
     "back": "Volver a inversores",

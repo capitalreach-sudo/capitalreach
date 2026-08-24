@@ -2035,7 +2035,9 @@
     "status_passed": "거절",
     "consentNotice": "상대방이 이 요청을 승인해야 딜이 성립합니다. 승인 전에는 상대 파이프라인에 아무것도 표시되지 않습니다.",
     "colProposal": "제안",
-    "colNegotiation": "협상"
+    "colNegotiation": "협상",
+    "scopeAll": "모든 딜",
+    "scopeMine": "내 딜"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

@@ -2035,7 +2035,9 @@
     "status_passed": "Odrzucone",
     "consentNotice": "Druga strona musi najpierw zatwierdzić tę prośbę — nic nie pojawi się w jej pipeline, dopóki się nie zgodzi.",
     "colProposal": "Propozycja",
-    "colNegotiation": "Negocjacje"
+    "colNegotiation": "Negocjacje",
+    "scopeAll": "Wszystkie transakcje",
+    "scopeMine": "Moje transakcje"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

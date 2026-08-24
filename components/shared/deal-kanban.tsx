@@ -1713,15 +1713,35 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
     setShowCloseForm(false);
   }
 
+  // Where this deal stands in the process, as four quiet dots: filled up to
+  // the current stage, copper on the active one, all-green when finalised,
+  // struck when passed. The card answers "how far along?" before it is read.
+  const ladderPos = deal.status === "closed" ? 4
+    : deal.status === "passed" ? -1
+    : ["intro", "due_diligence", "term_sheet"].indexOf(deal.status) + 1;
+
   return (
-    <div id={`deal-${deal.id}`} style={{
+    <div id={`deal-${deal.id}`} className="cr-lift" style={{
       background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
       borderRadius: "4px", padding: "14px 16px",
-      transition: "border-color 120ms ease",
+      transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease",
     }}
       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)")}
       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
     >
+      <div aria-hidden style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+        {[1, 2, 3, 4].map(i => (
+          <span key={i} style={{
+            width: i === ladderPos ? 14 : 5, height: 5, borderRadius: 3,
+            transition: "width 200ms ease, background 200ms ease",
+            background: ladderPos === -1 ? "var(--cr-rule-dark)"
+              : ladderPos === 4 ? "var(--cr-up)"
+              : i < ladderPos ? "var(--cr-copper-br)"
+              : i === ladderPos ? "var(--cr-copper)"
+              : "var(--cr-rule-dark)",
+          }} />
+        ))}
+      </div>
       <p style={{
         fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
         color: masked ? "var(--cr-ink-4)" : "var(--cr-ink)",

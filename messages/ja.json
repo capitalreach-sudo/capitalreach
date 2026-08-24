@@ -2035,7 +2035,9 @@
     "status_passed": "見送り",
     "consentNotice": "相手側がこのリクエストを承認するまでディールは成立しません。承認されるまで相手のパイプラインには何も表示されません。",
     "colProposal": "提案",
-    "colNegotiation": "交渉"
+    "colNegotiation": "交渉",
+    "scopeAll": "すべてのディール",
+    "scopeMine": "自分のディール"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",

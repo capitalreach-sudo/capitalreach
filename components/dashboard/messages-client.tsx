@@ -70,7 +70,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [showNewModal, setShowNewModal]     = useState(false);
   useEscapeKey(showNewModal, () => setShowNewModal(false));
   const [newBody, setNewBody]               = useState("");
-  const [targetKind, setTargetKind]         = useState<"investor" | "startup">("investor");
+  const [targetKind, setTargetKind]         = useState<"investor" | "startup">("startup");
   const [accountSearch, setAccountSearch]   = useState("");
   const [accountResults, setAccountResults] = useState<SearchAccount[]>([]);
   const [accountSearching, setAccountSearching] = useState(false);
@@ -141,7 +141,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     searchTimeoutRef.current = setTimeout(async () => {
       setAccountSearching(true);
       const q = accountSearch.trim();
-      const targetRole = profile.role === "investor" ? "startup" : targetKind;
+      const targetRole = targetKind;
       try {
         const res = await fetch(`/api/messages/accounts?kind=${targetRole}&q=${encodeURIComponent(q)}`);
         const j = res.ok ? await res.json() : { results: [] };
@@ -323,65 +323,27 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     if (!selectedAccount || !newBody.trim()) return;
     setSendingNew(true); setSendNewError("");
     try {
-      let threadId: string | undefined;
-
-      if (selectedAccount.kind === "startup") {
-        // Peer messaging: both sides are startups.
-        if (!myStartupId) { setSendNewError(t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
-        const { data: otherStartupData } = await supabase.from("startups").select("id").eq("owner_id", selectedAccount.id).maybeSingle();
-        if (!otherStartupData) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
-        const { data: existing } = await supabase.from("threads").select("id")
-          .or(`and(startup_id.eq.${myStartupId},recipient_startup_id.eq.${otherStartupData.id}),and(startup_id.eq.${otherStartupData.id},recipient_startup_id.eq.${myStartupId})`)
-          .maybeSingle();
-        threadId = existing?.id;
-        if (!threadId) {
-          const { data: newThread, error } = await supabase.from("threads")
-            .insert({ startup_id: myStartupId, recipient_startup_id: otherStartupData.id, status: "active" })
-            .select().single();
-          if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
-          threadId = newThread.id;
-        }
-      } else if (profile.role === "investor") {
-        // Investor messaging a startup: route through the same gated API used
-        // by the startup detail page's "Message" button, so tier limits and
-        // rate limiting apply consistently regardless of entry point.
-        const { data: startupData } = await supabase.from("startups").select("id").eq("owner_id", selectedAccount.id).maybeSingle();
-        if (!startupData) { setSendNewError(t("dashboard.errNoStartupYet")); setSendingNew(false); return; }
-        const { data: investorData } = await supabase.from("investors").select("id").eq("owner_id", profile.id).maybeSingle();
-        if (!investorData) { setSendNewError(t("dashboard.errCompleteInvestor")); setSendingNew(false); return; }
-        const res = await fetch("/api/messages/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ startupId: startupData.id, investorId: investorData.id, body: newBody.trim() }),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          setSendNewError(err.error || t("dashboard.errStartConvo"));
-          setSendingNew(false);
-          return;
-        }
-        closeNewModal();
-        router.refresh();
+      // One door for every pairing: /api/messages/start resolves which side
+      // the CALLER is by entity ownership and builds the right thread shape
+      // (founder↔investor, founder↔founder, investor↔investor). The four
+      // hand-rolled role branches this replaces each assumed an older world.
+      const table = selectedAccount.kind === "startup" ? "startups" : "investors";
+      const { data: target } = await supabase.from(table).select("id").eq("owner_id", selectedAccount.id).maybeSingle();
+      if (!target) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
+      const res = await fetch("/api/messages/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          [selectedAccount.kind === "startup" ? "startupId" : "investorId"]: target.id,
+          body: newBody.trim(),
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setSendNewError(err.error || t("dashboard.errStartConvo"));
+        setSendingNew(false);
         return;
-      } else {
-        // Startup messaging an investor for the first time — no tier gate
-        // exists on this direction today (only investor-initiated contact
-        // is rate-limited), so this stays a direct insert.
-        const { data: startupData } = await supabase.from("startups").select("id").eq("owner_id", profile.id).maybeSingle();
-        const { data: investorData } = await supabase.from("investors").select("id").eq("owner_id", selectedAccount.id).maybeSingle();
-        if (!startupData) { setSendNewError(t("dashboard.errCompleteStartup")); setSendingNew(false); return; }
-        if (!investorData) { setSendNewError(t("dashboard.errNoInvestorYet")); setSendingNew(false); return; }
-        const { data: existing } = await supabase.from("threads").select("id").eq("startup_id", startupData.id).eq("investor_id", investorData.id).maybeSingle();
-        threadId = existing?.id;
-        if (!threadId) {
-          const { data: newThread, error } = await supabase.from("threads").insert({ startup_id: startupData.id, investor_id: investorData.id, status: "active" }).select().single();
-          if (error || !newThread) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
-          threadId = newThread.id;
-        }
       }
-
-      const { error: msgError } = await supabase.from("messages").insert({ thread_id: threadId, sender_id: profile.id, body: newBody.trim() });
-      if (msgError) { setSendNewError(t("dashboard.errSendMessageFailed")); setSendingNew(false); return; }
       closeNewModal();
       router.refresh();
     } catch (err: any) { setSendNewError(err?.message || t("dashboard.errSomethingWrong2")); }
@@ -716,7 +678,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               <div>
                 <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("dashboard.newMessageModalTitle")}</h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                  {profile.role === "investor" ? t("dashboard.searchStartupHint") : targetKind === "investor" ? t("dashboard.searchInvestorHint") : t("dashboard.searchStartupHint")}
+                  {targetKind === "investor" ? t("dashboard.searchInvestorHint") : t("dashboard.searchStartupHint")}
                 </p>
               </div>
               <button onClick={closeNewModal} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
@@ -725,8 +687,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {/* Recipient type toggle — only startups can choose between investor and peer startup */}
-              {profile.role === "startup" && !selectedAccount && (
+              {/* Recipient type toggle: every role talks to both sides now —
+                  founders to investors and peers, investors to startups and
+                  co-investors, operators to whoever the job needs. */}
+              {!selectedAccount && (
                 <div style={{ display: "flex", gap: "6px" }}>
                   {(["investor", "startup"] as const).map(k => (
                     <button key={k}

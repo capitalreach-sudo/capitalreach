@@ -2046,7 +2046,9 @@
     "status_passed": "Passed",
     "consentNotice": "The other side has to approve this request before the deal exists — nothing appears in their pipeline until they say yes.",
     "colProposal": "Proposal",
-    "colNegotiation": "Negotiation"
+    "colNegotiation": "Negotiation",
+    "scopeAll": "All deals",
+    "scopeMine": "My deals"
   },
   "investorProfile": {
     "back": "Back to investors",

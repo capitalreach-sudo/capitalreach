@@ -2042,7 +2042,9 @@
     "status_passed": "Abgelehnt",
     "consentNotice": "Die andere Seite muss diese Anfrage erst annehmen — vorher erscheint nichts in ihrer Pipeline.",
     "colProposal": "Vorschlag",
-    "colNegotiation": "Verhandlung"
+    "colNegotiation": "Verhandlung",
+    "scopeAll": "Alle Deals",
+    "scopeMine": "Meine Deals"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

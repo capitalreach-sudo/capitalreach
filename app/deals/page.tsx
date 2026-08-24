@@ -147,6 +147,19 @@ export default async function DealsPage() {
       .order("updated_at", { ascending: false })
       .limit(500);
 
+    // The operator who is ALSO a participant (an admin with their own
+    // investor or startup profile) needs two lenses on this page: the
+    // platform ledger, and their own pipeline inside it. The ids of their
+    // entities let the client offer the switch.
+    const [{ data: myStartups }, { data: myInvestors }] = await Promise.all([
+      resolved.admin.from("startups").select("id").eq("owner_id", user.id),
+      resolved.admin.from("investors").select("id").eq("owner_id", user.id),
+    ]);
+    const myEntityIds = [
+      ...(myStartups ?? []).map(r => r.id),
+      ...(myInvestors ?? []).map(r => r.id),
+    ];
+
     return (
       <>
         <Navbar />
@@ -159,7 +172,7 @@ export default async function DealsPage() {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
               {t("deals.adminSubtitle")}
             </p>
-            <DealsPortalClient deals={(deals ?? []) as Deal[]} viewAs="admin" canExport />
+            <DealsPortalClient deals={(deals ?? []) as Deal[]} viewAs="admin" canExport myEntityIds={myEntityIds} />
             <LegalDisclaimer />
           </div>
         </main>
