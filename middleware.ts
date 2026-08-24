@@ -33,11 +33,21 @@ export async function middleware(request: NextRequest) {
       }
     );
 
+    const pathname = request.nextUrl.pathname;
+
+    // The fast lane: a request with NO Supabase auth cookie is anonymous —
+    // getUser() would be a guaranteed-null network round-trip added to every
+    // public page view (and every crawler hit). Skip it; protected paths
+    // still get the login redirect below via user === null.
+    const hasAuthCookie = request.cookies.getAll().some(c => c.name.startsWith("sb-"));
+    const protectedPathsEarly = ["/dashboard", "/onboarding", "/admin"];
+    if (!hasAuthCookie && !protectedPathsEarly.some(p => pathname.startsWith(p))) {
+      return supabaseResponse;
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
-    const pathname = request.nextUrl.pathname;
 
     // Protect dashboard, onboarding, admin routes
     const protectedPaths = ["/dashboard", "/onboarding", "/admin"];

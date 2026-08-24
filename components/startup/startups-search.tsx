@@ -548,7 +548,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[] } = {}) {
+export function StartupsSearch({ initialStartups, initialIsPartial }: { initialStartups?: Startup[]; initialIsPartial?: boolean } = {}) {
   const { t } = useTranslation();
   const searchParams  = useSearchParams();
 
@@ -709,9 +709,18 @@ export function StartupsSearch({ initialStartups }: { initialStartups?: Startup[
 
   useEffect(() => {
     async function load() {
-      // Fresh data was already rendered by the server; skip the redundant
-      // round trip (a filter change never needs it — filtering is local).
-      if (initialStartups) return;
+      // A FULL server payload makes the round trip redundant. A PARTIAL one
+      // (the server now ships only the first page to keep the HTML light)
+      // still paints instantly — the full list arrives quietly behind it
+      // from the 60s-cached API, without a spinner.
+      if (initialStartups && !initialIsPartial) return;
+      if (initialStartups && initialIsPartial) {
+        fetch("/api/startups/list")
+          .then(r => (r.ok ? r.json() : null))
+          .then(j => { if (j?.startups) setAllStartups(j.startups as Startup[]); })
+          .catch(() => {});
+        return;
+      }
       setLoading(true);
       try {
         const res = await fetch("/api/startups/list");

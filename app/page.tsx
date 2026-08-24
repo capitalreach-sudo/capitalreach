@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { getPlatformStats }  from "@/lib/stats";
 import { getLaunchStatus }   from "@/lib/launchMode";
@@ -40,8 +41,15 @@ export default async function HomePage() {
 
   try {
     const supabase = createAdminClient();
+    // The stats and top-listings queries are identical for every visitor;
+    // 60s of staleness is invisible on a marketing page, and the cache is
+    // what keeps a cold lambda's TTFB from stacking four table scans.
+    const cachedStats = unstable_cache(
+      () => getPlatformStats(createAdminClient()),
+      ["home-stats"], { revalidate: 60 },
+    );
     const [statsRes, launchRes, listingsRes] = await Promise.all([
-      getPlatformStats(supabase),
+      cachedStats(),
       getLaunchStatus(),
       supabase
         .from("startups")
@@ -57,7 +65,9 @@ export default async function HomePage() {
     /* DB not configured — render the shell with zero counts */
   }
   // The hero should never sell "List your startup" to someone who already
-  // did. One cheap auth read decides which CTA renders.
+  // did. Runs as ONE awaited chain in parallel-friendly position: for the
+  // anonymous majority getUser resolves locally from absent cookies without
+  // a network hop, so this costs signed-in visitors only.
   let viewerRole: string | null = null;
   try {
     const sb = await createServerSupabaseClient();

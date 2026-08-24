@@ -30,7 +30,10 @@ export default async function StartupsPage() {
           <div style={{ minHeight: "80vh", background: "var(--cr-paper)" }} aria-busy="true" />
         }
       >
-        <StartupsSearch initialStartups={initial ?? undefined} />
+        {/* First page only: 103 full listings serialized twice (HTML + RSC
+            payload) made this route a 300KB document. 48 rows cover two
+            pages of the grid; the client tops up from the cached API. */}
+        <StartupsSearch initialStartups={initial ? initial.slice(0, 48) : undefined} initialIsPartial={(initial?.length ?? 0) > 48} />
       </Suspense>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
         <LegalDisclaimer />

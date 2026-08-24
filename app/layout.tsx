@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { DeferredChrome } from "@/components/shared/deferred-chrome";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastNotifyProvider } from "@/components/ui/toast-notify";
@@ -7,10 +8,8 @@ import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
 import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { SkipToContent } from "@/components/ui/SkipToContent";
-import { CommandPalette } from "@/components/shared/command-palette";
 import { cookies } from "next/headers";
 import { BottomNav } from "@/components/shared/bottom-nav";
-import { SiteAssistant } from "@/components/shared/site-assistant";
 import { ShortcutsHelp } from "@/components/shared/shortcuts-help";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { LiveRegion } from "@/components/ui/LiveRegion";
@@ -90,6 +89,11 @@ export default function RootLayout({
     <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} suppressHydrationWarning>
       <head>
         {/* First in head: the connection is warm before any font CSS asks for it. */}
+        {/* The client talks to Supabase from the first interactive moment
+            (session, saved lists, sparklines) — pay the TLS setup early. */}
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} crossOrigin="" />
+        )}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {extraFont && (
@@ -110,12 +114,11 @@ export default function RootLayout({
         {children}
         {/* Global shell. The Navbar is mounted per page, but these three are
             the same everywhere, so the layout is the one place they belong. */}
-        <CommandPalette />
         <ShortcutsHelp />
         <ScrollToTop />
         <BottomNav />
         {/* Ask about this page. Hides itself on the working surfaces. */}
-        <SiteAssistant />
+        <DeferredChrome />
         <LiveRegion />
         <Toaster />
         <ToastNotifyProvider />
