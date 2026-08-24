@@ -657,6 +657,18 @@ body::before {
   90%  { transform: translate( 0%,  0%);  }
   100% { transform: translate( 0,   0);   }
 }
+/* Theme flip as a circular reveal from the toggle button (View
+   Transitions API; browsers without it keep the body crossfade). The old
+   frame holds still while the new theme sweeps over it. */
+::view-transition-old(root) { animation: none; }
+::view-transition-new(root) {
+  animation: cr-theme-reveal 480ms ease-out both;
+}
+@keyframes cr-theme-reveal {
+  from { clip-path: circle(0px at var(--vt-x, 50%) var(--vt-y, 0%)); }
+  to   { clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%)); }
+}
+
 /* Cursor spotlight: a soft copper highlight that follows the pointer
    across a card. The card sets --mx/--my from its own mousemove; the
    overlay never intercepts events and vanishes when the pointer leaves. */
@@ -1024,7 +1036,19 @@ body::before {
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
-  /* Cursor spotlight: a soft copper highlight that follows the pointer
+  /* Theme flip as a circular reveal from the toggle button (View
+   Transitions API; browsers without it keep the body crossfade). The old
+   frame holds still while the new theme sweeps over it. */
+::view-transition-old(root) { animation: none; }
+::view-transition-new(root) {
+  animation: cr-theme-reveal 480ms ease-out both;
+}
+@keyframes cr-theme-reveal {
+  from { clip-path: circle(0px at var(--vt-x, 50%) var(--vt-y, 0%)); }
+  to   { clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%)); }
+}
+
+/* Cursor spotlight: a soft copper highlight that follows the pointer
    across a card. The card sets --mx/--my from its own mousemove; the
    overlay never intercepts events and vanishes when the pointer leaves. */
 .cr-spot { position: relative; }

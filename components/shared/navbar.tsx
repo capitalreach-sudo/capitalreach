@@ -158,6 +158,14 @@ export function Navbar() {
           {/* Right — auth */}
           <div className="hidden lg:flex items-center gap-5">
             <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
+            {/* The keyboard path, advertised: one glance teaches the shortcut. */}
+            <button
+              onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+              aria-label="Command palette (Cmd+K)"
+              className="hidden xl:inline-flex"
+              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "3px 7px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
+              ⌘K
+            </button>
             <ThemeToggle />
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (

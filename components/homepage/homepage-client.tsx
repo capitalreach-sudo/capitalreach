@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CountUp } from "@/components/ui/count-up";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useReveal } from "@/hooks/useReveal";
@@ -185,7 +186,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
                 <div key={label} style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                   <DiamondDot />
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-2)" }}>{v.toLocaleString()}</span>{" "}{label}
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-2)" }}><CountUp value={v} /></span>{" "}{label}
                   </span>
                 </div>
               ))}
@@ -197,9 +198,10 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
       {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
       <section
         aria-label="CapitalReach in three numbers"
-        style={{ background: "var(--cr-band-bg)", borderTop: "1px solid rgba(181,101,29,0.2)", borderBottom: "1px solid rgba(181,101,29,0.2)" }}
+        style={{ background: "var(--cr-band-bg)", borderTop: "1px solid rgba(181,101,29,0.2)", borderBottom: "1px solid rgba(181,101,29,0.2)", position: "relative", overflow: "hidden" }}
       >
-        <div className="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div className="hero-noise" aria-hidden />
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10" style={{ position: "relative" }}>
           <div className="grid grid-cols-3">
             {proof.map(([value, label], i) => (
               <div

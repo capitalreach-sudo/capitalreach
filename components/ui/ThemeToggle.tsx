@@ -22,11 +22,25 @@ export function ThemeToggle() {
     setDark(document.documentElement.dataset.theme === "dark");
   }, []);
 
-  function toggle() {
+  function toggle(e: React.MouseEvent<HTMLButtonElement>) {
     const next = dark ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    document.cookie = `cr_theme=${next};path=/;max-age=31536000;SameSite=Lax`;
-    setDark(!dark);
+    const apply = () => {
+      document.documentElement.dataset.theme = next;
+      document.cookie = `cr_theme=${next};path=/;max-age=31536000;SameSite=Lax`;
+      setDark(!dark);
+    };
+    // The new theme ripples out from the button itself — View Transitions
+    // where supported, the plain crossfade everywhere else.
+    const root = document.documentElement;
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => void };
+    if (doc.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const r = e.currentTarget.getBoundingClientRect();
+      root.style.setProperty("--vt-x", `${r.left + r.width / 2}px`);
+      root.style.setProperty("--vt-y", `${r.top + r.height / 2}px`);
+      doc.startViewTransition(apply);
+    } else {
+      apply();
+    }
   }
 
   return (
