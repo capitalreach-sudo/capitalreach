@@ -66,7 +66,18 @@ function useColumns(): { status: DealStatus; label: string; copperActive: boolea
   ];
 }
 
-const QUICK_MOVE: DealStatus[] = ["due_diligence", "term_sheet", "passed"];
+// The ladder the server enforces: one step either way, pass from anywhere.
+const STAGE_LADDER: DealStatus[] = ["intro", "due_diligence", "term_sheet"];
+function validMoves(from: DealStatus): DealStatus[] {
+  if (from === "passed") return ["intro"];
+  const i = STAGE_LADDER.indexOf(from);
+  if (i === -1) return [];
+  const out: DealStatus[] = [];
+  if (i + 1 < STAGE_LADDER.length) out.push(STAGE_LADDER[i + 1]);
+  if (i - 1 >= 0) out.push(STAGE_LADDER[i - 1]);
+  out.push("passed");
+  return out;
+}
 
 interface DealKanbanProps {
   deals: Deal[];
@@ -412,18 +423,13 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
         {/* Starting stage + follow-up date */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
-              {t("deals.startingStage")}
-            </label>
-            <select value={startStatus} onChange={e => setStartStatus(e.target.value as DealStatus)}
-              style={{ width: "100%", height: "36px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "0 8px", outline: "none", cursor: "pointer", boxSizing: "border-box" }}>
-              <option value="intro">{t("deals.colIntro")}</option>
-              {/* Same key the board's own column header uses, so the dropdown
-                  and the column a new deal lands in always read identically. */}
-              <option value="due_diligence">{t("deals.colNegotiation")}</option>
-              <option value="term_sheet">{t("deals.colTermSheet")}</option>
-            </select>
+          {/* No stage picker: a deal is a PROCESS. It starts as a Proposal;
+              on approval it enters Talking; from there it moves one stage at
+              a time. The path is stated so nobody looks for the dropdown. */}
+          <div style={{ flex: 1, display: "flex", alignItems: "flex-end" }}>
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 10, color: "var(--cr-ink-4)", lineHeight: 1.6, margin: 0 }}>
+              {t("deals.colProposal")} → {t("deals.colIntro")} → {t("deals.colNegotiation")} → {t("deals.colTermSheet")} → {t("deals.colClosed")}
+            </p>
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
@@ -1788,7 +1794,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {/* Quick-move buttons */}
       {onStatusChange && isActive && !showPassedPicker && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px" }}>
-          {QUICK_MOVE.filter(s => s !== deal.status).map((s) => (
+          {validMoves(deal.status).map((s) => (
             <button key={s} onClick={() => {
                 if (s === "passed") { setShowPassedPicker(true); return; }
                 // Soft gate: open checklist items are a nudge, not a wall. The

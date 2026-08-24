@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
   // closed and passed are excluded deliberately: closing raises a success-fee
   // invoice through /api/deals/close, and letting a deal be born closed would
   // route around that entirely.
-  const OPENING_STAGES = ["intro", "due_diligence", "term_sheet"] as const;
-  const startStatus = OPENING_STAGES.includes(status) ? status : "intro";
+  // A process has one entrance. Whatever the client sends, life begins at "Talking".
+  const startStatus = "intro" as const;
 
   const openingNote = typeof note === "string" && note.trim() ? note.trim().slice(0, 2000) : null;
 

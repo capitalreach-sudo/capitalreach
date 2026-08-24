@@ -66,6 +66,27 @@ export async function POST(req: NextRequest) {
 
   if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  // A deal is a PROCESS: Talking → Negotiation → Final proposal, one step
+  // at a time (either direction — negotiations do regress). Passing is
+  // allowed from anywhere; Finalised is never set here at all — closing has
+  // its own two-party route with the contract gate. Skipping stages made
+  // the pipeline stats lie, so the ladder is enforced where writes happen.
+  if (status !== undefined && status !== deal.status) {
+    const LADDER = ["intro", "due_diligence", "term_sheet"] as const;
+    const from = LADDER.indexOf(deal.status as typeof LADDER[number]);
+    const to = LADDER.indexOf(status as typeof LADDER[number]);
+    const isAdjacentLadderMove = from !== -1 && to !== -1 && Math.abs(from - to) === 1;
+    const isPass = status === "passed";
+    // A passed deal may be reopened, but only back to the start of the talk.
+    const isReopen = deal.status === "passed" && status === "intro";
+    if (!isAdjacentLadderMove && !isPass && !isReopen) {
+      return NextResponse.json(
+        { error: "Deals move one stage at a time.", code: "STAGE_ORDER" },
+        { status: 409 },
+      );
+    }
+  }
+
   // Phase 1: an investor advancing a deal (into diligence or a term sheet)
   // must have accepted the non-circumvention terms for this startup. Deals the
   // investor opened already carry the ack; founder-opened deals reach this
