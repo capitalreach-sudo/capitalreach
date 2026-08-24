@@ -2028,7 +2028,12 @@
     "hideDetails": "Details verbergen",
     "showAllInColumn": "Toon nog {n}",
     "showFewer": "Toon minder",
-    "contractRequired": "Eerst het getekende contract: stel het op bij de deal, laat beide kanten tekenen en sluit dan."
+    "contractRequired": "Eerst het getekende contract: stel het op bij de deal, laat beide kanten tekenen en sluit dan.",
+    "status_all": "Alle",
+    "status_active": "Actief",
+    "status_closed": "Gesloten",
+    "status_passed": "Afgewezen",
+    "consentNotice": "De andere kant moet dit verzoek eerst goedkeuren — er verschijnt niets in hun pipeline totdat ze ja zeggen."
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

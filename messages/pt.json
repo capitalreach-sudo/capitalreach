@@ -2028,7 +2028,12 @@
     "hideDetails": "Ocultar detalhes",
     "showAllInColumn": "Ver mais {n}",
     "showFewer": "Ver menos",
-    "contractRequired": "Primeiro o contrato assinado: redija-o no negócio, recolha as duas assinaturas e depois feche."
+    "contractRequired": "Primeiro o contrato assinado: redija-o no negócio, recolha as duas assinaturas e depois feche.",
+    "status_all": "Todos",
+    "status_active": "Ativos",
+    "status_closed": "Fechados",
+    "status_passed": "Recusados",
+    "consentNotice": "A outra parte tem de aprovar este pedido antes de o negócio existir — nada aparece no pipeline dela até dizer que sim."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",

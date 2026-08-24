@@ -2028,7 +2028,12 @@
     "hideDetails": "Nascondi i dettagli",
     "showAllInColumn": "Mostra altri {n}",
     "showFewer": "Mostra meno",
-    "contractRequired": "Prima il contratto firmato: redigilo sul deal, fallo firmare a entrambe le parti, poi chiudi."
+    "contractRequired": "Prima il contratto firmato: redigilo sul deal, fallo firmare a entrambe le parti, poi chiudi.",
+    "status_all": "Tutti",
+    "status_active": "Attivi",
+    "status_closed": "Chiusi",
+    "status_passed": "Rifiutati",
+    "consentNotice": "L'altra parte deve approvare questa richiesta prima che il deal esista — nulla appare nella sua pipeline finché non accetta."
   },
   "investorProfile": {
     "back": "Torna agli investitori",

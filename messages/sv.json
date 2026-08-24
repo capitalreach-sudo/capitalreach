@@ -2028,7 +2028,12 @@
     "hideDetails": "Dölj detaljer",
     "showAllInColumn": "Visa {n} till",
     "showFewer": "Visa färre",
-    "contractRequired": "Först det undertecknade avtalet: upprätta det på affären, låt båda sidor skriva under, stäng sedan."
+    "contractRequired": "Först det undertecknade avtalet: upprätta det på affären, låt båda sidor skriva under, stäng sedan.",
+    "status_all": "Alla",
+    "status_active": "Aktiva",
+    "status_closed": "Stängda",
+    "status_passed": "Avböjda",
+    "consentNotice": "Motparten måste godkänna denna förfrågan innan affären finns — inget syns i deras pipeline förrän de säger ja."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

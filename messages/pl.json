@@ -2028,7 +2028,12 @@
     "hideDetails": "Ukryj szczegóły",
     "showAllInColumn": "Pokaż jeszcze {n}",
     "showFewer": "Pokaż mniej",
-    "contractRequired": "Najpierw podpisana umowa: przygotuj ją przy transakcji, niech podpiszą obie strony, potem zamknij."
+    "contractRequired": "Najpierw podpisana umowa: przygotuj ją przy transakcji, niech podpiszą obie strony, potem zamknij.",
+    "status_all": "Wszystkie",
+    "status_active": "Aktywne",
+    "status_closed": "Zamknięte",
+    "status_passed": "Odrzucone",
+    "consentNotice": "Druga strona musi najpierw zatwierdzić tę prośbę — nic nie pojawi się w jej pipeline, dopóki się nie zgodzi."
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",

@@ -2035,7 +2035,12 @@
     "hideDetails": "Details ausblenden",
     "showAllInColumn": "{n} weitere anzeigen",
     "showFewer": "Weniger anzeigen",
-    "contractRequired": "Erst der unterschriebene Vertrag: im Deal aufsetzen, von beiden Seiten unterschreiben lassen, dann schließen."
+    "contractRequired": "Erst der unterschriebene Vertrag: im Deal aufsetzen, von beiden Seiten unterschreiben lassen, dann schließen.",
+    "status_all": "Alle",
+    "status_active": "Aktiv",
+    "status_closed": "Geschlossen",
+    "status_passed": "Abgelehnt",
+    "consentNotice": "Die andere Seite muss diese Anfrage erst annehmen — vorher erscheint nichts in ihrer Pipeline."
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

@@ -99,7 +99,10 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     )}
     {/* The consent step, above the board it gates. Admin sees every deal
         anyway and answers for neither side, so the strip is participant-only. */}
-    {viewAs !== "admin" && <DealProposals onChanged={() => router.refresh()} />}
+    {/* Admins too: an operator with their own investor profile (or one who
+        proposed a pairing) needs to SEE the request waiting for an answer —
+        the strip renders nothing when there is nothing. */}
+    <DealProposals onChanged={() => router.refresh()} />
     <DealKanban
       deals={deals}
       onStatusChange={handleDealStatusChange}

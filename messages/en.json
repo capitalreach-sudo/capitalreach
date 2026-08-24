@@ -2039,7 +2039,12 @@
     "hideDetails": "Hide details",
     "showAllInColumn": "Show {n} more",
     "showFewer": "Show fewer",
-    "contractRequired": "A signed contract comes first: draft one on the deal and have both sides sign it, then close."
+    "contractRequired": "A signed contract comes first: draft one on the deal and have both sides sign it, then close.",
+    "status_all": "All",
+    "status_active": "Active",
+    "status_closed": "Closed",
+    "status_passed": "Passed",
+    "consentNotice": "The other side has to approve this request before the deal exists — nothing appears in their pipeline until they say yes."
   },
   "investorProfile": {
     "back": "Back to investors",

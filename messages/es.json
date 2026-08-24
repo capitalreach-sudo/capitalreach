@@ -2028,7 +2028,12 @@
     "hideDetails": "Ocultar detalles",
     "showAllInColumn": "Ver {n} más",
     "showFewer": "Ver menos",
-    "contractRequired": "Primero el contrato firmado: redáctalo en la operación, que lo firmen ambas partes y luego cierra."
+    "contractRequired": "Primero el contrato firmado: redáctalo en la operación, que lo firmen ambas partes y luego cierra.",
+    "status_all": "Todos",
+    "status_active": "Activos",
+    "status_closed": "Cerrados",
+    "status_passed": "Descartados",
+    "consentNotice": "La otra parte debe aprobar esta solicitud antes de que el deal exista: nada aparece en su pipeline hasta que diga que sí."
   },
   "investorProfile": {
     "back": "Volver a inversores",

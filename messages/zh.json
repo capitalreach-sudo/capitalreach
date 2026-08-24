@@ -2028,7 +2028,12 @@
     "hideDetails": "收起详情",
     "showAllInColumn": "再显示 {n} 条",
     "showFewer": "收起",
-    "contractRequired": "先签合同：在交易中起草，双方签署后再交割。"
+    "contractRequired": "先签合同：在交易中起草，双方签署后再交割。",
+    "status_all": "全部",
+    "status_active": "进行中",
+    "status_closed": "已成交",
+    "status_passed": "已放弃",
+    "consentNotice": "对方必须先批准此请求，交易才会成立——在对方同意之前，其管道中不会出现任何内容。"
   },
   "investorProfile": {
     "back": "返回投资者列表",

@@ -2028,7 +2028,12 @@
     "hideDetails": "詳細を隠す",
     "showAllInColumn": "さらに {n} 件を表示",
     "showFewer": "表示を減らす",
-    "contractRequired": "まず署名済みの契約を。ディール上で作成し、両者が署名してからクローズしてください。"
+    "contractRequired": "まず署名済みの契約を。ディール上で作成し、両者が署名してからクローズしてください。",
+    "status_all": "すべて",
+    "status_active": "進行中",
+    "status_closed": "成約",
+    "status_passed": "見送り",
+    "consentNotice": "相手側がこのリクエストを承認するまでディールは成立しません。承認されるまで相手のパイプラインには何も表示されません。"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",

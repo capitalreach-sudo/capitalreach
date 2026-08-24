@@ -2028,7 +2028,12 @@
     "hideDetails": "상세 숨기기",
     "showAllInColumn": "{n}개 더 보기",
     "showFewer": "적게 보기",
-    "contractRequired": "서명된 계약이 먼저입니다. 딜에서 계약을 작성해 양측이 서명한 뒤 마감하세요."
+    "contractRequired": "서명된 계약이 먼저입니다. 딜에서 계약을 작성해 양측이 서명한 뒤 마감하세요.",
+    "status_all": "전체",
+    "status_active": "진행 중",
+    "status_closed": "성사",
+    "status_passed": "거절",
+    "consentNotice": "상대방이 이 요청을 승인해야 딜이 성립합니다. 승인 전에는 상대 파이프라인에 아무것도 표시되지 않습니다."
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

@@ -406,6 +406,17 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
           </select>
         </div>
 
+        {/* Common cheque sizes, one tap. Typing five zeroes correctly on a
+            phone keyboard is nobody's favourite part of investing. */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, marginTop: -6 }}>
+          {[10000, 25000, 50000, 100000].map(v => (
+            <button key={v} type="button" onClick={() => setAmount(String(v))}
+              style={{ background: amount === String(v) ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", border: `1px solid ${amount === String(v) ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`, borderRadius: 12, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: amount === String(v) ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "4px 10px", cursor: "pointer" }}>
+              {getCurrency(currency).symbol}{v >= 1000 ? `${v / 1000}k` : v}
+            </button>
+          ))}
+        </div>
+
         {/* Starting stage + follow-up date */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
           <div style={{ flex: 1 }}>
@@ -436,6 +447,11 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
           placeholder={t("deals.openingNotePlaceholder")} rows={2} maxLength={2000}
           style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", marginBottom: "12px", resize: "vertical", boxSizing: "border-box" }} />
 
+        {/* The consent contract, stated where the button is: nothing lands
+            in anyone's pipeline until the other side says yes. */}
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "6px" }}>
+          {t("deals.consentNotice")}
+        </p>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
           {t("deals.circumventionNotice")}
         </p>
@@ -2059,6 +2075,9 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const [showExternal, setShowExternal] = useState(false);
   const [search, setSearch]           = useState("");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
+  // Lifecycle filter: the question "which deals are still ALIVE?" deserved
+  // better than reading column headers. Active = neither closed nor passed.
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "closed" | "passed">("all");
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
   const [viewMode, setViewMode]       = useState<"kanban" | "list">("kanban");
   const [expandedCols, setExpandedCols] = useState<Set<string>>(new Set());
@@ -2186,6 +2205,11 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
         return v && activeFilters.has(v);
       });
     }
+    if (statusFilter !== "all") {
+      list = list.filter(d => statusFilter === "active"
+        ? d.status !== "closed" && d.status !== "passed"
+        : d.status === statusFilter);
+    }
     const sorted = [...list];
     if (sortKey === "amount_desc") sorted.sort((a, b) => (b.amount || 0) - (a.amount || 0));
     else if (sortKey === "amount_asc") sorted.sort((a, b) => (a.amount || 0) - (b.amount || 0));
@@ -2205,7 +2229,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     });
     else sorted.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
     return sorted;
-  }, [deals, search, activeFilters, sortKey, viewAs, t]);
+  }, [deals, search, activeFilters, statusFilter, sortKey, viewAs, t]);
 
   function toggleFilter(v: string) {
     setActiveFilters(prev => {
@@ -2341,6 +2365,14 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "12px", overflow: "hidden", marginRight: 4 }}>
+          {(["all", "active", "closed", "passed"] as const).map(v => (
+            <button key={v} onClick={() => setStatusFilter(v)}
+              style={{ background: statusFilter === v ? "var(--cr-band-bg)" : "transparent", color: statusFilter === v ? "var(--cr-band-ink)" : "var(--cr-ink-4)", border: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "6px 11px", cursor: "pointer" }}>
+              {t(`deals.status_${v}`)}
+            </button>
+          ))}
+        </div>
         {filterOptions.map(v => (
           <button key={v} onClick={() => toggleFilter(v)}
             style={{

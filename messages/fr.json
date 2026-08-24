@@ -2028,7 +2028,12 @@
     "hideDetails": "Masquer les détails",
     "showAllInColumn": "Afficher {n} de plus",
     "showFewer": "Afficher moins",
-    "contractRequired": "Le contrat signé d'abord : rédigez-le sur l'opération, faites-le signer des deux côtés, puis clôturez."
+    "contractRequired": "Le contrat signé d'abord : rédigez-le sur l'opération, faites-le signer des deux côtés, puis clôturez.",
+    "status_all": "Tous",
+    "status_active": "Actifs",
+    "status_closed": "Clôturés",
+    "status_passed": "Refusés",
+    "consentNotice": "L'autre partie doit approuver cette demande avant que le deal existe — rien n'apparaît dans son pipeline avant son accord."
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
