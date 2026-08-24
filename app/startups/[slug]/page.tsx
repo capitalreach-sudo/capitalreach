@@ -102,13 +102,15 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
       || profile?.account_status === "banned";
     viewerIsAdmin = profile?.role === "admin";
 
-    if (profile?.role === "investor") {
+    if (profile?.role === "investor" || profile?.role === "admin") {
+      // Admins may own an investor profile of their own (the operator who
+      // also writes cheques); the buttons follow the entity, not the role.
       investorTier = profile.subscription_tier;
       const { data: inv } = await supabase
         .from("investors")
         .select("id")
         .eq("owner_id", user.id)
-        .single();
+        .maybeSingle();
       investorId = inv?.id || null;
 
       if (investorId && startup.require_nda) {

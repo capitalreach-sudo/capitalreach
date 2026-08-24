@@ -63,13 +63,30 @@ export async function POST(req: NextRequest) {
     if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const [{ data: st }, { data: inv }] = await Promise.all([
-      admin.from("startups").select("id").eq("id", startupId).maybeSingle(),
-      admin.from("investors").select("id").eq("id", investorId).maybeSingle(),
+      admin.from("startups").select("id, owner_id").eq("id", startupId).maybeSingle(),
+      admin.from("investors").select("id, owner_id, is_external").eq("id", investorId).maybeSingle(),
     ]);
     if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
     if (!inv) return NextResponse.json({ error: "Investor not found" }, { status: 404 });
     startup_id  = st.id;
     investor_id = inv.id;
+
+    // Admin pairing no longer bypasses consent: a deal in someone's pipeline
+    // that they never agreed to is the thing the proposal flow exists to
+    // prevent, and operators are not exempt from other people's pipelines.
+    //  - admin owns one side  → the OTHER side approves (normal participant rules)
+    //  - admin owns neither   → the startup's founder approves (it is their round)
+    //  - recipient side unowned/external → nobody to ask; direct create stands
+    if (inv.owner_id === user.id) {
+      fromSide = "investor";
+      needsConsent = !!st.owner_id;
+    } else if (st.owner_id === user.id) {
+      fromSide = "startup";
+      needsConsent = !inv.is_external && !!inv.owner_id;
+    } else {
+      fromSide = "investor";
+      needsConsent = !!st.owner_id;
+    }
   } else if (counterpartId && typeof counterpartId === "string") {
     // Which side is the caller on? resolveEntity checks ownership first and
     // team membership second, so an associate opens deals for the firm rather
