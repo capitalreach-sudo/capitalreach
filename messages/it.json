@@ -464,7 +464,8 @@
     "saveTwoMonths": "2 mesi gratis",
     "afterLaunch": "dopo il lancio",
     "billedYearly": "{amount} $ fatturati all'anno",
-    "saveUpTo": "Risparmia fino al {percent} %"
+    "saveUpTo": "Risparmia fino al {percent} %",
+    "checkoutUnavailable": "Il pagamento online non è ancora disponibile — il tuo piano non è stato modificato. Riprova quando la fatturazione sarà attiva o contattaci."
   },
   "cta": {
     "headline": "Il capitale giusto, nella fase giusta.",

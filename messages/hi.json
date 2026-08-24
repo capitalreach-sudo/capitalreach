@@ -464,7 +464,8 @@
     "saveTwoMonths": "2 महीने मुफ़्त",
     "afterLaunch": "लॉन्च के बाद",
     "billedYearly": "${amount} वार्षिक बिल",
-    "saveUpTo": "{percent}% तक बचाएँ"
+    "saveUpTo": "{percent}% तक बचाएँ",
+    "checkoutUnavailable": "ऑनलाइन भुगतान अभी उपलब्ध नहीं है — आपका प्लान नहीं बदला गया। बिलिंग सक्रिय होने पर पुनः प्रयास करें या हमसे संपर्क करें।"
   },
   "cta": {
     "headline": "सही चरण में सही पूंजी।",

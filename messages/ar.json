@@ -473,7 +473,8 @@
     "saveTwoMonths": "شهران مجانًا",
     "afterLaunch": "بعد الإطلاق",
     "billedYearly": "{amount} $ تُفوتر سنويًا",
-    "saveUpTo": "وفّر حتى {percent} %"
+    "saveUpTo": "وفّر حتى {percent} %",
+    "checkoutUnavailable": "الدفع الإلكتروني غير متاح بعد — لم تتغير خطتك. حاول مجددًا عند تفعيل الفوترة أو تواصل معنا."
   },
   "cta": {
     "headline": "رأس المال المناسب في المرحلة المناسبة.",

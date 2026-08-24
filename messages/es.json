@@ -473,7 +473,8 @@
     "saveTwoMonths": "2 meses gratis",
     "afterLaunch": "tras el lanzamiento",
     "billedYearly": "{amount} $ facturados al año",
-    "saveUpTo": "Ahorra hasta un {percent} %"
+    "saveUpTo": "Ahorra hasta un {percent} %",
+    "checkoutUnavailable": "El pago en línea aún no está disponible: tu plan no se modificó. Inténtalo cuando la facturación esté activa o contáctanos."
   },
   "cta": {
     "headline": "El capital correcto, en la etapa correcta.",

@@ -464,7 +464,8 @@
     "saveTwoMonths": "2 månader gratis",
     "afterLaunch": "efter lanseringen",
     "billedYearly": "{amount} $ faktureras årligen",
-    "saveUpTo": "Spara upp till {percent} %"
+    "saveUpTo": "Spara upp till {percent} %",
+    "checkoutUnavailable": "Onlinebetalning är inte tillgänglig ännu — din plan ändrades inte. Försök igen när faktureringen är igång, eller kontakta oss."
   },
   "cta": {
     "headline": "Rätt kapital, i rätt fas.",

@@ -473,7 +473,8 @@
     "saveTwoMonths": "免 2 个月",
     "afterLaunch": "上线后",
     "billedYearly": "每年计费 {amount} 美元",
-    "saveUpTo": "最多省 {percent}%"
+    "saveUpTo": "最多省 {percent}%",
+    "checkoutUnavailable": "在线支付尚未开通——你的套餐未被更改。请在计费上线后重试，或联系我们。"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",

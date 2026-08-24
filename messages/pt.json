@@ -464,7 +464,8 @@
     "saveTwoMonths": "2 meses grátis",
     "afterLaunch": "após o lançamento",
     "billedYearly": "{amount} $ faturados por ano",
-    "saveUpTo": "Poupe até {percent} %"
+    "saveUpTo": "Poupe até {percent} %",
+    "checkoutUnavailable": "O pagamento online ainda não está disponível — o seu plano não foi alterado. Tente novamente quando a faturação estiver ativa ou contacte-nos."
   },
   "cta": {
     "headline": "O capital certo, no estágio certo.",

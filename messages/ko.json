@@ -464,7 +464,8 @@
     "saveTwoMonths": "2개월 무료",
     "afterLaunch": "런칭 후",
     "billedYearly": "연 {amount}달러 청구",
-    "saveUpTo": "최대 {percent}% 절약"
+    "saveUpTo": "최대 {percent}% 절약",
+    "checkoutUnavailable": "온라인 결제는 아직 이용할 수 없습니다. 요금제는 변경되지 않았습니다. 결제가 활성화되면 다시 시도하거나 문의해 주세요."
   },
   "cta": {
     "headline": "적절한 단계의 적절한 자본.",

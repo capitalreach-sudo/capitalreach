@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getLaunchStatus } from "@/lib/launchMode";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 import { getInvestorPlan } from "@/lib/plans";
@@ -15,7 +16,6 @@ import { getInvestorPlan } from "@/lib/plans";
 // self-serve, so it now falls through to the redirect below.
 
 /** Platform is free until this many users have joined */
-const FREE_UNTIL_USER_COUNT = 100;
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -42,14 +42,17 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // ── Free-until-100 gate ───────────────────────────────────────────────
+  // ── Launch-mode free grant ────────────────────────────────────────────
+  // This used to count ALL profiles against the 100-member launch promise —
+  // and the 203 seeded sample accounts pushed the count past 100 on day
+  // one, so the "free for our first 100" grant NEVER fired: every upgrade
+  // fell through to unconfigured Stripe and bounced with nothing changed.
+  // The authority on the promise is launch mode itself, same as the banner.
   try {
     const admin = createAdminClient();
-    const { count } = await admin
-      .from("profiles")
-      .select("*", { count: "exact", head: true });
+    const { isLaunch } = await getLaunchStatus();
 
-    if ((count ?? 0) < FREE_UNTIL_USER_COUNT) {
+    if (isLaunch) {
       // Grant the requested tier for free — skip Stripe entirely
       await admin
         .from("profiles")

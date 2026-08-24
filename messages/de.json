@@ -480,7 +480,8 @@
     "saveTwoMonths": "2 Monate gratis",
     "afterLaunch": "nach dem Launch",
     "billedYearly": "{amount} $ jährlich abgerechnet",
-    "saveUpTo": "Bis zu {percent} % sparen"
+    "saveUpTo": "Bis zu {percent} % sparen",
+    "checkoutUnavailable": "Die Online-Zahlung ist noch nicht verfügbar — Ihr Plan wurde nicht geändert. Versuchen Sie es, sobald die Abrechnung live ist, oder kontaktieren Sie uns."
   },
   "cta": {
     "headline": "Das richtige Kapital, zur richtigen Phase.",

@@ -473,7 +473,8 @@
     "saveTwoMonths": "2 mois offerts",
     "afterLaunch": "après le lancement",
     "billedYearly": "{amount} $ facturés par an",
-    "saveUpTo": "Jusqu'à {percent} % d'économie"
+    "saveUpTo": "Jusqu'à {percent} % d'économie",
+    "checkoutUnavailable": "Le paiement en ligne n'est pas encore disponible — votre offre n'a pas été modifiée. Réessayez quand la facturation sera active, ou contactez-nous."
   },
   "cta": {
     "headline": "Le bon capital, au bon stade.",

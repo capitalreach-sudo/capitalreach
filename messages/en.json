@@ -484,7 +484,8 @@
     "saveTwoMonths": "2 months free",
     "afterLaunch": "after launch",
     "billedYearly": "${amount} billed yearly",
-    "saveUpTo": "Save up to {percent}%"
+    "saveUpTo": "Save up to {percent}%",
+    "checkoutUnavailable": "Online payment isn't available yet — your plan wasn't changed. Try again once billing goes live, or contact us."
   },
   "cta": {
     "headline": "The right capital, at the right stage.",

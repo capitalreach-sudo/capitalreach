@@ -473,7 +473,8 @@
     "saveTwoMonths": "2 か月分無料",
     "afterLaunch": "ローンチ後",
     "billedYearly": "年額 {amount} ドル",
-    "saveUpTo": "最大 {percent}% お得"
+    "saveUpTo": "最大 {percent}% お得",
+    "checkoutUnavailable": "オンライン決済はまだ利用できません。プランは変更されていません。課金が有効になってから再度お試しいただくか、お問い合わせください。"
   },
   "cta": {
     "headline": "適切な資本を、適切なステージで。",

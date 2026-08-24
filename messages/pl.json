@@ -464,7 +464,8 @@
     "saveTwoMonths": "2 miesiące gratis",
     "afterLaunch": "po premierze",
     "billedYearly": "{amount} $ rocznie",
-    "saveUpTo": "Oszczędzasz do {percent} %"
+    "saveUpTo": "Oszczędzasz do {percent} %",
+    "checkoutUnavailable": "Płatność online nie jest jeszcze dostępna — plan nie został zmieniony. Spróbuj, gdy rozliczenia będą aktywne, lub skontaktuj się z nami."
   },
   "cta": {
     "headline": "Właściwy kapitał, na właściwym etapie.",

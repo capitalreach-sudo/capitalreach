@@ -464,7 +464,8 @@
     "saveTwoMonths": "2 maanden gratis",
     "afterLaunch": "na de lancering",
     "billedYearly": "${amount} jaarlijks gefactureerd",
-    "saveUpTo": "Bespaar tot {percent} %"
+    "saveUpTo": "Bespaar tot {percent} %",
+    "checkoutUnavailable": "Online betalen is nog niet beschikbaar — je plan is niet gewijzigd. Probeer het zodra facturering live is, of neem contact op."
   },
   "cta": {
     "headline": "Het juiste kapitaal, op het juiste moment.",

@@ -290,6 +290,17 @@ export default function PricingPage() {
   const [activeTab, setActiveTab] = useState<"startup" | "investor">("startup");
   const { isLaunch, memberCount, target, loading } = useLaunchMode();
 
+  // Checkout bounce-backs used to land here SILENTLY — "selecting a plan
+  // doesn't change anything" was this page eating the error param.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("error") === "price_unavailable" || q.get("error") === "checkout_failed") {
+      notify.error(t("pricing.checkoutUnavailable"));
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Who is looking, and what do they already pay for? Signed-in viewers get
   // their own plan marked and its CTA routed to the billing portal instead of
   // a second checkout -- and land on the tab for their own role.
