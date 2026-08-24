@@ -84,6 +84,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
         style={{ background: "var(--cr-paper)", position: "relative", overflow: "hidden" }}
         className="min-h-[calc(100svh-56px)] flex items-center"
       >
+        <div className="hero-ledger" aria-hidden />
         <div className="hero-glow" aria-hidden />
         <div className="hero-noise" aria-hidden />
 

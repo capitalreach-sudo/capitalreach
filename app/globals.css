@@ -45,6 +45,13 @@
     --cr-band-ink-dim: rgba(245,240,232,0.5);
     --cr-scrim:        rgba(20,16,12,0.55);
 
+    /* Depth system: paper gets soft graphite shadows; dark gets true black
+       depth plus a 1px top-edge highlight that reads as machined metal. */
+    --cr-card-shadow:       0 1px 2px rgba(26,22,18,0.05), 0 6px 18px rgba(26,22,18,0.06);
+    --cr-card-shadow-hover: 0 2px 4px rgba(26,22,18,0.07), 0 14px 34px rgba(26,22,18,0.12);
+    --cr-card-edge:         inset 0 1px 0 rgba(255,255,255,0.6);
+    --cr-nav-glass:         rgba(250,247,242,0.82);
+
     /* shadcn/radix compatibility — warm theme */
     --background:             37 33% 93%;
     --foreground:             22 11% 9%;
@@ -106,6 +113,11 @@
     --cr-band-ink:     #F0EAE0;
     --cr-band-ink-dim: rgba(240,234,224,0.5);
     --cr-scrim:        rgba(0,0,0,0.6);
+
+    --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
+    --cr-card-shadow-hover: 0 2px 4px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.5);
+    --cr-card-edge:         inset 0 1px 0 rgba(240,234,224,0.06);
+    --cr-nav-glass:         rgba(15,13,10,0.75);
 
     --background:             30 20% 5%;
     --foreground:             36 33% 89%;
@@ -645,6 +657,36 @@ body::before {
   90%  { transform: translate( 0%,  0%);  }
   100% { transform: translate( 0,   0);   }
 }
+/* Ledger lines: the product's whole register is "institutional ledger",
+   so the hero literally sits on ruled paper — faint horizontal rules that
+   fade out toward the fold. Ink-based alpha, so one rule serves both
+   themes (graphite on paper, phosphor rules on the terminal). */
+.hero-ledger {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0, transparent 47px,
+    color-mix(in srgb, var(--cr-ink) 5%, transparent) 47px,
+    color-mix(in srgb, var(--cr-ink) 5%, transparent) 48px
+  );
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
+}
+
+/* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
+   nothing shifts that didn't ask to. */
+.cr-lift {
+  box-shadow: var(--cr-card-shadow), var(--cr-card-edge);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.cr-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cr-card-shadow-hover), var(--cr-card-edge);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-lift, .cr-lift:hover { transform: none; }
+}
+
 /* A quiet copper aura behind the hero headline. Color-scheme-agnostic:
    pure copper at low alpha reads as candlelight on dark and as warmth on
    paper — the same value serves both registers. */
@@ -963,7 +1005,37 @@ body::before {
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
-  /* A quiet copper aura behind the hero headline. Color-scheme-agnostic:
+  /* Ledger lines: the product's whole register is "institutional ledger",
+   so the hero literally sits on ruled paper — faint horizontal rules that
+   fade out toward the fold. Ink-based alpha, so one rule serves both
+   themes (graphite on paper, phosphor rules on the terminal). */
+.hero-ledger {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0, transparent 47px,
+    color-mix(in srgb, var(--cr-ink) 5%, transparent) 47px,
+    color-mix(in srgb, var(--cr-ink) 5%, transparent) 48px
+  );
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
+}
+
+/* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
+   nothing shifts that didn't ask to. */
+.cr-lift {
+  box-shadow: var(--cr-card-shadow), var(--cr-card-edge);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.cr-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cr-card-shadow-hover), var(--cr-card-edge);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-lift, .cr-lift:hover { transform: none; }
+}
+
+/* A quiet copper aura behind the hero headline. Color-scheme-agnostic:
    pure copper at low alpha reads as candlelight on dark and as warmth on
    paper — the same value serves both registers. */
 .hero-glow {

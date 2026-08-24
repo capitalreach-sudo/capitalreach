@@ -415,11 +415,12 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
   return (
     <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none" }}>
       <div
+        className="cr-lift"
         style={{
           position: "relative", display: "flex", flexDirection: "column",
           background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
           borderRadius: "4px", padding: "20px",
-          transition: "background 120ms ease, border-color 120ms ease", cursor: "pointer",
+          transition: "background 120ms ease, border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease", cursor: "pointer",
         }}
         onMouseEnter={e => {
           (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)";

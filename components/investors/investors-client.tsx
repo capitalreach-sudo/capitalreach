@@ -843,7 +843,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                     const grad = GRAD_COLORS[idx % GRAD_COLORS.length];
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
-                      <div key={inv.id} className="group relative bg-cr-paper border border-cr-p4 rounded-2xl p-5 hover:border-cr-copper/30 hover:shadow-[0_0_20px_rgba(196,158,80,0.1)] transition-all duration-200 flex flex-col">
+                      <div key={inv.id} className="cr-lift group relative bg-cr-paper border border-cr-p4 rounded-2xl p-5 hover:border-cr-copper/30 transition-all duration-200 flex flex-col">
                         {/* Top */}
                         <div className="flex items-start justify-between mb-4">
                           <div className="absolute top-4 right-4 flex items-center gap-2">

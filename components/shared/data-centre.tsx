@@ -175,7 +175,7 @@ function StatCard({
 }) {
   const { value: displayed, done } = useCountUp(value);
   return (
-    <div style={{
+    <div className="cr-lift" style={{
       background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
       borderRadius: "4px", padding: "20px 22px",
     }}>

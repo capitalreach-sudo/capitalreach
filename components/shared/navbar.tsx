@@ -85,8 +85,11 @@ export function Navbar() {
       <nav
         className="sticky top-0 z-50 h-[56px]"
         style={{
-          background:   "var(--cr-paper)",
-          borderBottom: `1px solid ${scrolled ? "rgba(26,22,18,0.1)" : "transparent"}`,
+          // Frosted glass: the page scrolls beneath the bar in both themes.
+          background:   "var(--cr-nav-glass)",
+          backdropFilter: "blur(14px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(14px) saturate(1.4)",
+          borderBottom: `1px solid ${scrolled ? "var(--cr-rule-dark)" : "transparent"}`,
           transition:   "border-color 200ms ease",
         }}
       >
