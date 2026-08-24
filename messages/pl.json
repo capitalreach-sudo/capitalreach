@@ -1838,9 +1838,9 @@
     "languageSaved": "Język zaktualizowany"
   },
   "deals": {
-    "colIntro": "Wstęp",
-    "colTermSheet": "Term Sheet",
-    "colClosed": "Zamknięta",
+    "colIntro": "Rozmowy",
+    "colTermSheet": "Oferta końcowa",
+    "colClosed": "Sfinalizowane",
     "colPassed": "Odrzucona",
     "noDealsCol": "Brak transakcji",
     "investorFallback": "Inwestor",
@@ -2033,7 +2033,9 @@
     "status_active": "Aktywne",
     "status_closed": "Zamknięte",
     "status_passed": "Odrzucone",
-    "consentNotice": "Druga strona musi najpierw zatwierdzić tę prośbę — nic nie pojawi się w jej pipeline, dopóki się nie zgodzi."
+    "consentNotice": "Druga strona musi najpierw zatwierdzić tę prośbę — nic nie pojawi się w jej pipeline, dopóki się nie zgodzi.",
+    "colProposal": "Propozycja",
+    "colNegotiation": "Negocjacje"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -3344,7 +3346,8 @@
     "waiting": "Czeka na odpowiedź",
     "accepted": "Transakcja otwarta — jest już na obu tablicach",
     "sent": "Prośba wysłana — druga strona musi najpierw zaakceptować",
-    "sentToFounder": "Prośba wysłana — założyciel decyduje, czy otworzyć transakcję"
+    "sentToFounder": "Prośba wysłana — założyciel decyduje, czy otworzyć transakcję",
+    "emptyColumn": "Nowe prośby trafiają tutaj"
   },
   "waitlist": {
     "joinIfSpace": "Dołącz do listy oczekujących",

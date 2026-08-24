@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { DealProposals } from "@/components/shared/deal-proposals";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -58,7 +59,7 @@ function useColumns(): { status: DealStatus; label: string; copperActive: boolea
   const { t } = useTranslation();
   return [
     { status: "intro",          label: t("deals.colIntro"),        copperActive: false },
-    { status: "due_diligence",  label: t("dashboard.dueDiligence"), copperActive: false },
+    { status: "due_diligence",  label: t("deals.colNegotiation"), copperActive: false },
     { status: "term_sheet",     label: t("deals.colTermSheet"),     copperActive: true  },
     { status: "closed",         label: t("deals.colClosed"),        copperActive: false },
     { status: "passed",         label: t("deals.colPassed"),        copperActive: false },
@@ -69,6 +70,7 @@ const QUICK_MOVE: DealStatus[] = ["due_diligence", "term_sheet", "passed"];
 
 interface DealKanbanProps {
   deals: Deal[];
+  onProposalsChanged?: () => void;
   onStatusChange?: (dealId: string, status: DealStatus, reason?: string) => void;
   onDealClose?: (dealId: string, amount: number, currency: string) => void;
   viewAs: "startup" | "investor" | "admin";
@@ -406,16 +408,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
           </select>
         </div>
 
-        {/* Common cheque sizes, one tap. Typing five zeroes correctly on a
-            phone keyboard is nobody's favourite part of investing. */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, marginTop: -6 }}>
-          {[10000, 25000, 50000, 100000].map(v => (
-            <button key={v} type="button" onClick={() => setAmount(String(v))}
-              style={{ background: amount === String(v) ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", border: `1px solid ${amount === String(v) ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`, borderRadius: 12, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: amount === String(v) ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "4px 10px", cursor: "pointer" }}>
-              {getCurrency(currency).symbol}{v >= 1000 ? `${v / 1000}k` : v}
-            </button>
-          ))}
-        </div>
+
 
         {/* Starting stage + follow-up date */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
@@ -428,7 +421,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
               <option value="intro">{t("deals.colIntro")}</option>
               {/* Same key the board's own column header uses, so the dropdown
                   and the column a new deal lands in always read identically. */}
-              <option value="due_diligence">{t("dashboard.dueDiligence")}</option>
+              <option value="due_diligence">{t("deals.colNegotiation")}</option>
               <option value="term_sheet">{t("deals.colTermSheet")}</option>
             </select>
           </div>
@@ -2067,7 +2060,7 @@ function csvEscape(v: unknown): string {
   return `"${String(v ?? "").replace(/"/g, '""')}"`;
 }
 
-export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp, onSetCommitment }: DealKanbanProps) {
+export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp, onSetCommitment , onProposalsChanged }: DealKanbanProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const columns = useColumns();
@@ -2395,6 +2388,10 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
       {viewMode === "kanban" ? (
         <div style={{ overflowX: "auto" }}>
           <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
+            {/* Stage zero. A deal's life starts as a REQUEST — it deserves a
+                column, not a banner: Proposal → Talking → Negotiation →
+                Final proposal → Finalised, left to right. */}
+            <DealProposals variant="column" onChanged={onProposalsChanged} />
             {columns.map(col => {
               const colDeals = filteredDeals.filter(d => d.status === col.status);
               // A column shows its first few and says how many more there are.
@@ -2446,6 +2443,8 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           </div>
         </div>
       ) : (
+        <>
+        <DealProposals onChanged={onProposalsChanged} />
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'DM Sans', sans-serif", fontSize: "12px" }}>
             <thead>
@@ -2475,6 +2474,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           </table>
           {filteredDeals.length === 0 && <EmptySlot />}
         </div>
+        </>
       )}
       {modal}
     </div>

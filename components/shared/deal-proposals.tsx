@@ -27,7 +27,7 @@ type Proposal = {
  * sides see it; declining tells the sender plainly rather than leaving them
  * to infer it from silence.
  */
-export function DealProposals({ onChanged }: { onChanged?: () => void }) {
+export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: () => void; variant?: "strip" | "column" }) {
   const { t } = useTranslation();
   const [incoming, setIncoming] = useState<Proposal[]>([]);
   const [outgoing, setOutgoing] = useState<Proposal[]>([]);
@@ -59,7 +59,7 @@ export function DealProposals({ onChanged }: { onChanged?: () => void }) {
     onChanged?.();
   }
 
-  if (!loaded || (incoming.length === 0 && outgoing.length === 0)) return null;
+  if (variant === "strip" && (!loaded || (incoming.length === 0 && outgoing.length === 0))) return null;
 
   const row = (p: Proposal) => (
     <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
@@ -97,6 +97,60 @@ export function DealProposals({ onChanged }: { onChanged?: () => void }) {
       )}
     </div>
   );
+
+  if (variant === "column") {
+    const all = [...incoming, ...outgoing];
+    return (
+      <div style={{ width: "264px", flexShrink: 0, display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 260px)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 3, padding: "3px 10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-copper)" }}>
+            <Handshake style={{ width: 11, height: 11 }} /> {t("deals.colProposal")}
+          </span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{all.length}</span>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", paddingRight: "2px", minHeight: 0 }}>
+          {all.length === 0 ? (
+            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "18px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)" }}>
+              {t("proposals.emptyColumn")}
+            </div>
+          ) : all.map(p => (
+            <div key={p.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <EntityLogo name={p.counterpart.name} logoUrl={p.counterpart.logoUrl} logoColor={p.counterpart.logoColor} size={28} radius={4} />
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12.5, color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.counterpart.name}</p>
+                  {p.amount != null && (
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 11, color: "var(--cr-copper)" }}>{formatMoney(p.amount, p.currency, { compact: true })}</p>
+                  )}
+                </div>
+              </div>
+              {p.note && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "var(--cr-ink-3)", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>“{p.note}”</p>}
+              {p.direction === "incoming" ? (
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button onClick={() => act(p.id, "accept")} disabled={busy === p.id}
+                    style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, background: "var(--cr-up)", color: "#fff", border: "none", borderRadius: 4, padding: "6px 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11.5 }}>
+                    <Check style={{ width: 11, height: 11 }} /> {t("proposals.accept")}
+                  </button>
+                  <button onClick={() => act(p.id, "decline")} disabled={busy === p.id}
+                    style={{ flex: 1, background: "transparent", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "6px 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11.5 }}>
+                    {t("proposals.decline")}
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 10.5, color: "var(--cr-ink-4)" }}>{t("proposals.waiting")}</span>
+                  <button onClick={() => act(p.id, "withdraw")} disabled={busy === p.id}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 10.5, color: "var(--cr-ink-4)", textDecoration: "underline" }}>
+                    {t("proposals.withdraw")}
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "14px 18px", marginBottom: 20 }}>

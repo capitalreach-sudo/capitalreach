@@ -1838,9 +1838,9 @@
     "languageSaved": "Taal bijgewerkt"
   },
   "deals": {
-    "colIntro": "Intro",
-    "colTermSheet": "Term Sheet",
-    "colClosed": "Afgesloten",
+    "colIntro": "In gesprek",
+    "colTermSheet": "Eindvoorstel",
+    "colClosed": "Afgerond",
     "colPassed": "Afgewezen",
     "noDealsCol": "Geen deals",
     "investorFallback": "Investeerder",
@@ -2033,7 +2033,9 @@
     "status_active": "Actief",
     "status_closed": "Gesloten",
     "status_passed": "Afgewezen",
-    "consentNotice": "De andere kant moet dit verzoek eerst goedkeuren — er verschijnt niets in hun pipeline totdat ze ja zeggen."
+    "consentNotice": "De andere kant moet dit verzoek eerst goedkeuren — er verschijnt niets in hun pipeline totdat ze ja zeggen.",
+    "colProposal": "Voorstel",
+    "colNegotiation": "Onderhandeling"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -3344,7 +3346,8 @@
     "waiting": "Wacht op antwoord",
     "accepted": "Deal geopend — hij staat nu op beide borden",
     "sent": "Verzoek verzonden — de andere kant moet eerst akkoord gaan",
-    "sentToFounder": "Verzoek verzonden — de oprichter beslist of de deal opent"
+    "sentToFounder": "Verzoek verzonden — de oprichter beslist of de deal opent",
+    "emptyColumn": "Nieuwe verzoeken komen hier binnen"
   },
   "waitlist": {
     "joinIfSpace": "Op de wachtlijst",

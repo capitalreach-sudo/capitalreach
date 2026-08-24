@@ -1838,8 +1838,8 @@
     "languageSaved": "言語を更新しました"
   },
   "deals": {
-    "colIntro": "紹介",
-    "colTermSheet": "タームシート",
+    "colIntro": "対話中",
+    "colTermSheet": "最終提案",
     "colClosed": "成立",
     "colPassed": "見送り",
     "noDealsCol": "取引なし",
@@ -2033,7 +2033,9 @@
     "status_active": "進行中",
     "status_closed": "成約",
     "status_passed": "見送り",
-    "consentNotice": "相手側がこのリクエストを承認するまでディールは成立しません。承認されるまで相手のパイプラインには何も表示されません。"
+    "consentNotice": "相手側がこのリクエストを承認するまでディールは成立しません。承認されるまで相手のパイプラインには何も表示されません。",
+    "colProposal": "提案",
+    "colNegotiation": "交渉"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -3344,7 +3346,8 @@
     "waiting": "相手の回答待ち",
     "accepted": "ディール開始 — 双方のボードに載りました",
     "sent": "リクエスト送信済み — まず相手の承認が必要です",
-    "sentToFounder": "リクエスト送信済み — 開始するかは創業者が決めます"
+    "sentToFounder": "リクエスト送信済み — 開始するかは創業者が決めます",
+    "emptyColumn": "新しいリクエストはここに届きます"
   },
   "waitlist": {
     "joinIfSpace": "ウェイトリストに入る",

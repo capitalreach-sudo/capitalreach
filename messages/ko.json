@@ -1838,9 +1838,9 @@
     "languageSaved": "언어가 업데이트되었습니다"
   },
   "deals": {
-    "colIntro": "소개",
-    "colTermSheet": "텀시트",
-    "colClosed": "완료",
+    "colIntro": "대화 중",
+    "colTermSheet": "최종 제안",
+    "colClosed": "성사",
     "colPassed": "보류",
     "noDealsCol": "거래 없음",
     "investorFallback": "투자자",
@@ -2033,7 +2033,9 @@
     "status_active": "진행 중",
     "status_closed": "성사",
     "status_passed": "거절",
-    "consentNotice": "상대방이 이 요청을 승인해야 딜이 성립합니다. 승인 전에는 상대 파이프라인에 아무것도 표시되지 않습니다."
+    "consentNotice": "상대방이 이 요청을 승인해야 딜이 성립합니다. 승인 전에는 상대 파이프라인에 아무것도 표시되지 않습니다.",
+    "colProposal": "제안",
+    "colNegotiation": "협상"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",
@@ -3344,7 +3346,8 @@
     "waiting": "상대 답변 대기 중",
     "accepted": "딜이 열렸습니다 — 이제 양쪽 보드에 표시됩니다",
     "sent": "요청을 보냈습니다 — 상대가 먼저 수락해야 합니다",
-    "sentToFounder": "요청을 보냈습니다 — 딜 개시 여부는 창업자가 결정합니다"
+    "sentToFounder": "요청을 보냈습니다 — 딜 개시 여부는 창업자가 결정합니다",
+    "emptyColumn": "새 요청이 여기에 표시됩니다"
   },
   "waitlist": {
     "joinIfSpace": "대기 명단 참여",

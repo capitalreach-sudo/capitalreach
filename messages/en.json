@@ -1852,9 +1852,9 @@
     "startingStage": "Starting stage",
     "followUpOptional": "Follow-up (optional)",
     "openingNotePlaceholder": "Opening note — how this conversation started (optional)",
-    "colIntro": "Intro",
-    "colTermSheet": "Term Sheet",
-    "colClosed": "Closed",
+    "colIntro": "Talking",
+    "colTermSheet": "Final proposal",
+    "colClosed": "Finalised",
     "colPassed": "Passed",
     "noDealsCol": "No deals",
     "investorFallback": "Investor",
@@ -2044,7 +2044,9 @@
     "status_active": "Active",
     "status_closed": "Closed",
     "status_passed": "Passed",
-    "consentNotice": "The other side has to approve this request before the deal exists — nothing appears in their pipeline until they say yes."
+    "consentNotice": "The other side has to approve this request before the deal exists — nothing appears in their pipeline until they say yes.",
+    "colProposal": "Proposal",
+    "colNegotiation": "Negotiation"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -3344,7 +3346,8 @@
     "waiting": "Waiting for their answer",
     "accepted": "Deal opened — it is on both boards now",
     "sent": "Request sent — the other side has to accept first",
-    "sentToFounder": "Request sent — the founder decides whether to open the deal"
+    "sentToFounder": "Request sent — the founder decides whether to open the deal",
+    "emptyColumn": "New requests land here"
   },
   "waitlist": {
     "joinIfSpace": "Join the waitlist",

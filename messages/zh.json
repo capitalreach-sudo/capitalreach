@@ -1838,8 +1838,8 @@
     "languageSaved": "语言已更新"
   },
   "deals": {
-    "colIntro": "初步接触",
-    "colTermSheet": "条款清单",
+    "colIntro": "洽谈中",
+    "colTermSheet": "最终提案",
     "colClosed": "已完成",
     "colPassed": "已放弃",
     "noDealsCol": "暂无交易",
@@ -2033,7 +2033,9 @@
     "status_active": "进行中",
     "status_closed": "已成交",
     "status_passed": "已放弃",
-    "consentNotice": "对方必须先批准此请求，交易才会成立——在对方同意之前，其管道中不会出现任何内容。"
+    "consentNotice": "对方必须先批准此请求，交易才会成立——在对方同意之前，其管道中不会出现任何内容。",
+    "colProposal": "提案",
+    "colNegotiation": "谈判"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -3344,7 +3346,8 @@
     "waiting": "等待对方答复",
     "accepted": "交易已开启 —— 现已出现在双方的看板上",
     "sent": "请求已发送 —— 需对方先接受",
-    "sentToFounder": "请求已发送 —— 由创始人决定是否开启交易"
+    "sentToFounder": "请求已发送 —— 由创始人决定是否开启交易",
+    "emptyColumn": "新请求会出现在这里"
   },
   "waitlist": {
     "joinIfSpace": "加入候补名单",

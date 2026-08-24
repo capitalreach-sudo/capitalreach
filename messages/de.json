@@ -1845,8 +1845,8 @@
     "languageSaved": "Sprache aktualisiert"
   },
   "deals": {
-    "colIntro": "Einführung",
-    "colTermSheet": "Term Sheet",
+    "colIntro": "Im Gespräch",
+    "colTermSheet": "Finales Angebot",
     "colClosed": "Abgeschlossen",
     "colPassed": "Abgelehnt",
     "noDealsCol": "Keine Deals",
@@ -2040,7 +2040,9 @@
     "status_active": "Aktiv",
     "status_closed": "Geschlossen",
     "status_passed": "Abgelehnt",
-    "consentNotice": "Die andere Seite muss diese Anfrage erst annehmen — vorher erscheint nichts in ihrer Pipeline."
+    "consentNotice": "Die andere Seite muss diese Anfrage erst annehmen — vorher erscheint nichts in ihrer Pipeline.",
+    "colProposal": "Vorschlag",
+    "colNegotiation": "Verhandlung"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -3344,7 +3346,8 @@
     "waiting": "Wartet auf Antwort",
     "accepted": "Deal eröffnet — er liegt jetzt auf beiden Boards",
     "sent": "Anfrage gesendet — die Gegenseite muss erst zustimmen",
-    "sentToFounder": "Anfrage gesendet — der Gründer entscheidet, ob der Deal geöffnet wird"
+    "sentToFounder": "Anfrage gesendet — der Gründer entscheidet, ob der Deal geöffnet wird",
+    "emptyColumn": "Neue Anfragen landen hier"
   },
   "waitlist": {
     "joinIfSpace": "Auf die Warteliste",

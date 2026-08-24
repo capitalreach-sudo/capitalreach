@@ -1838,9 +1838,9 @@
     "languageSaved": "Språk uppdaterat"
   },
   "deals": {
-    "colIntro": "Intro",
-    "colTermSheet": "Term Sheet",
-    "colClosed": "Avslutad",
+    "colIntro": "I samtal",
+    "colTermSheet": "Slutbud",
+    "colClosed": "Slutförd",
     "colPassed": "Avböjd",
     "noDealsCol": "Inga affärer",
     "investorFallback": "Investerare",
@@ -2033,7 +2033,9 @@
     "status_active": "Aktiva",
     "status_closed": "Stängda",
     "status_passed": "Avböjda",
-    "consentNotice": "Motparten måste godkänna denna förfrågan innan affären finns — inget syns i deras pipeline förrän de säger ja."
+    "consentNotice": "Motparten måste godkänna denna förfrågan innan affären finns — inget syns i deras pipeline förrän de säger ja.",
+    "colProposal": "Förslag",
+    "colNegotiation": "Förhandling"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -3344,7 +3346,8 @@
     "waiting": "Väntar på svar",
     "accepted": "Affären öppnad — den ligger nu på båda tavlorna",
     "sent": "Förfrågan skickad — motparten måste först acceptera",
-    "sentToFounder": "Förfrågan skickad — grundaren avgör om affären öppnas"
+    "sentToFounder": "Förfrågan skickad — grundaren avgör om affären öppnas",
+    "emptyColumn": "Nya förfrågningar hamnar här"
   },
   "waitlist": {
     "joinIfSpace": "Ställ mig på väntelistan",
