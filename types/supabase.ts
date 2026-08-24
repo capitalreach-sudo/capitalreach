@@ -751,6 +751,7 @@ export type Database = {
           close_proposed_by: string | null
           close_proposed_currency: string | null
           closed_at: string | null
+          closing_snapshot: Json | null
           commitment_at: string | null
           commitment_type: string | null
           created_at: string
@@ -806,6 +807,7 @@ export type Database = {
           close_proposed_by?: string | null
           close_proposed_currency?: string | null
           closed_at?: string | null
+          closing_snapshot?: Json | null
           commitment_at?: string | null
           commitment_type?: string | null
           created_at?: string
@@ -861,6 +863,7 @@ export type Database = {
           close_proposed_by?: string | null
           close_proposed_currency?: string | null
           closed_at?: string | null
+          closing_snapshot?: Json | null
           commitment_at?: string | null
           commitment_type?: string | null
           created_at?: string
@@ -1323,6 +1326,7 @@ export type Database = {
           subscription_tier: string
           twitter_url: string | null
           type: string
+          verification_checks: Json | null
           verified_at: string | null
           verified_by: string | null
           video_url: string | null
@@ -1367,6 +1371,7 @@ export type Database = {
           subscription_tier?: string
           twitter_url?: string | null
           type: string
+          verification_checks?: Json | null
           verified_at?: string | null
           verified_by?: string | null
           video_url?: string | null
@@ -1411,6 +1416,7 @@ export type Database = {
           subscription_tier?: string
           twitter_url?: string | null
           type?: string
+          verification_checks?: Json | null
           verified_at?: string | null
           verified_by?: string | null
           video_url?: string | null
@@ -2424,6 +2430,7 @@ export type Database = {
           valuation: number | null
           valuation_type: string | null
           vaultrise_score: number | null
+          verification_checks: Json | null
           verified_at: string | null
           verified_by: string | null
           video_pitch_url: string | null
@@ -2506,6 +2513,7 @@ export type Database = {
           valuation?: number | null
           valuation_type?: string | null
           vaultrise_score?: number | null
+          verification_checks?: Json | null
           verified_at?: string | null
           verified_by?: string | null
           video_pitch_url?: string | null
@@ -2588,6 +2596,7 @@ export type Database = {
           valuation?: number | null
           valuation_type?: string | null
           vaultrise_score?: number | null
+          verification_checks?: Json | null
           verified_at?: string | null
           verified_by?: string | null
           video_pitch_url?: string | null

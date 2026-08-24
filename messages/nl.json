@@ -995,7 +995,9 @@
     "reportViewDeal": "Deal openen",
     "unnamedAccount": "Naamloos account",
     "billingSoon": "Je zit voorlopig op het gratis plan — online betalen is nog niet actief. Je vermelding is opgeslagen; upgraden kan altijd via Facturering.",
-    "welcomeToast": "Welkom! Je vermelding is ingediend voor review."
+    "welcomeToast": "Welkom! Je vermelding is ingediend voor review.",
+    "updDraftAi": "Opstellen met AI",
+    "updDraftTitle": "Maandelijkse update"
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Actieve financieringsrondes"
+  },
+  "verify": {
+    "whatWasChecked": "Wat is gecontroleerd",
+    "check": {
+      "identity": "Identiteit van het team",
+      "registry": "Handelsregister",
+      "domain": "Domeineigendom",
+      "metrics": "Bewijs van cijfers beoordeeld"
+    },
+    "on": "Geverifieerd op {date}"
+  },
+  "capTable": {
+    "title": "Cap table — gesloten via CapitalReach",
+    "investor": "Investeerder",
+    "amount": "Bedrag",
+    "ownership": "Belang",
+    "valuation": "Waardering bij sluiting",
+    "date": "Gesloten",
+    "total": "{pct}% afgestaan via platform",
+    "unknown": "Niet bekendgemaakt",
+    "note": "Bevroren op het moment van elke sluiting — latere waarderingswijzigingen herschrijven deze geschiedenis nooit. Buiten het platform gesloten rondes verschijnen niet."
   }
 }

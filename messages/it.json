@@ -995,7 +995,9 @@
     "reportViewDeal": "Apri deal",
     "unnamedAccount": "Account senza nome",
     "billingSoon": "Per ora sei sul piano gratuito: il pagamento online non è ancora attivo. L'annuncio è salvato; puoi fare l'upgrade in qualsiasi momento da Fatturazione.",
-    "welcomeToast": "Benvenuto! Il tuo annuncio è stato inviato in revisione."
+    "welcomeToast": "Benvenuto! Il tuo annuncio è stato inviato in revisione.",
+    "updDraftAi": "Bozza con IA",
+    "updDraftTitle": "Aggiornamento mensile"
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Round di raccolta attivi"
+  },
+  "verify": {
+    "whatWasChecked": "Cosa è stato verificato",
+    "check": {
+      "identity": "Identità del team",
+      "registry": "Registro delle imprese",
+      "domain": "Proprietà del dominio",
+      "metrics": "Evidenze delle metriche esaminate"
+    },
+    "on": "Verificato il {date}"
+  },
+  "capTable": {
+    "title": "Cap table — chiusi su CapitalReach",
+    "investor": "Investitore",
+    "amount": "Importo",
+    "ownership": "Quota",
+    "valuation": "Valutazione alla chiusura",
+    "date": "Chiuso",
+    "total": "{pct}% ceduto via piattaforma",
+    "unknown": "Non divulgato",
+    "note": "Congelata al momento di ogni chiusura: successive variazioni di valutazione non riscrivono mai questa storia. I round chiusi fuori piattaforma non compaiono."
   }
 }

@@ -1004,7 +1004,9 @@
     "reportViewDeal": "Ouvrir le deal",
     "unnamedAccount": "Compte sans nom",
     "billingSoon": "Vous êtes sur l'offre gratuite pour l'instant — le paiement en ligne n'est pas encore actif. Votre annonce est enregistrée ; passez à l'offre supérieure à tout moment depuis Facturation.",
-    "welcomeToast": "Bienvenue ! Votre annonce a été soumise pour examen."
+    "welcomeToast": "Bienvenue ! Votre annonce a été soumise pour examen.",
+    "updDraftAi": "Rédiger avec l'IA",
+    "updDraftTitle": "Point mensuel"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Levées de fonds en cours"
+  },
+  "verify": {
+    "whatWasChecked": "Ce qui a été vérifié",
+    "check": {
+      "identity": "Identité de l'équipe",
+      "registry": "Inscription au registre",
+      "domain": "Propriété du domaine",
+      "metrics": "Justificatifs des métriques examinés"
+    },
+    "on": "Vérifié le {date}"
+  },
+  "capTable": {
+    "title": "Table de capitalisation — clôturé sur CapitalReach",
+    "investor": "Investisseur",
+    "amount": "Montant",
+    "ownership": "Participation",
+    "valuation": "Valorisation à la clôture",
+    "date": "Clôturé",
+    "total": "{pct} % cédés via la plateforme",
+    "unknown": "Non divulgué",
+    "note": "Figée au moment de chaque clôture — les changements de valorisation ultérieurs ne réécrivent jamais cet historique. Les tours clôturés hors plateforme n'apparaissent pas."
   }
 }

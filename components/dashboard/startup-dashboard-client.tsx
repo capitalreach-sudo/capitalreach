@@ -12,6 +12,7 @@ import { InvitePanel } from "@/components/shared/invite-panel";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ShareLinks } from "@/components/startup/share-links";
 import type { BenchmarkResult } from "@/lib/benchmarks";
+import { CapTableCard } from "@/components/dashboard/cap-table-card";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
@@ -615,6 +616,20 @@ function UpdateComposer() {
   const [body, setBody] = useState("");
   const [audience, setAudience] = useState<"watchers" | "deals" | "all">("all");
   const [busy, setBusy] = useState(false);
+  const [drafting, setDrafting] = useState(false);
+
+  async function draftWithAi() {
+    if (drafting) return;
+    setDrafting(true);
+    const res = await fetch("/api/ai/draft-update", { method: "POST" }).catch(() => null);
+    const j = await res?.json().catch(() => ({}));
+    setDrafting(false);
+    if (!res?.ok) { notify.error(j?.error || t("errors.generic")); return; }
+    // A draft never overwrites typing — it fills the empty seat only.
+    if (!body.trim()) setBody(j.draft);
+    else setBody(b => b + "\n\n" + j.draft);
+    if (!title.trim()) setTitle(t("dashboard.updDraftTitle"));
+  }
   // B21: history with edit / delete. Write-only before.
   type Upd = { id: string; title: string; body: string; audience: string; created_at: string; updated_at: string | null };
   const [history, setHistory] = useState<Upd[]>([]);
@@ -667,6 +682,10 @@ function UpdateComposer() {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
           <input value={title} onChange={e => setTitle(e.target.value)} maxLength={150} placeholder={t("dashboard.updTitle")}
             style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none" }} />
+          <button onClick={draftWithAi} disabled={drafting}
+            style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 5, background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, padding: "5px 10px", cursor: drafting ? "wait" : "pointer" }}>
+            ✦ {drafting ? t("common.loading") : t("dashboard.updDraftAi")}
+          </button>
           <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={5000} rows={4} placeholder={t("dashboard.updBody")}
             style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
           {/* Audience: savers, deal investors (closed included), or both. */}
@@ -1006,6 +1025,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             good. Percentiles among same-stage listings that DISCLOSED each
             metric — never a ranking, so nobody can reverse-engineer who is
             one place above them. */}
+        <CapTableCard />
         {benchmarks && benchmarks.entries.length > 0 && (
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px", marginBottom: "32px", marginTop: "-20px" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>

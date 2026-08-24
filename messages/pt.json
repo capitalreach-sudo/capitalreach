@@ -995,7 +995,9 @@
     "reportViewDeal": "Abrir negócio",
     "unnamedAccount": "Conta sem nome",
     "billingSoon": "Por agora está no plano gratuito — o pagamento online ainda não está ativo. O anúncio está guardado; faça upgrade quando quiser em Faturação.",
-    "welcomeToast": "Bem-vindo! O seu anúncio foi enviado para revisão."
+    "welcomeToast": "Bem-vindo! O seu anúncio foi enviado para revisão.",
+    "updDraftAi": "Rascunho com IA",
+    "updDraftTitle": "Atualização mensal"
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Rondas de financiamento ativas"
+  },
+  "verify": {
+    "whatWasChecked": "O que foi verificado",
+    "check": {
+      "identity": "Identidade da equipa",
+      "registry": "Registo comercial",
+      "domain": "Propriedade do domínio",
+      "metrics": "Evidência de métricas revista"
+    },
+    "on": "Verificado a {date}"
+  },
+  "capTable": {
+    "title": "Cap table — fechado na CapitalReach",
+    "investor": "Investidor",
+    "amount": "Montante",
+    "ownership": "Participação",
+    "valuation": "Avaliação no fecho",
+    "date": "Fechado",
+    "total": "{pct}% cedido via plataforma",
+    "unknown": "Não divulgado",
+    "note": "Congelada no momento de cada fecho — alterações de avaliação posteriores nunca reescrevem este histórico. Rondas fechadas fora da plataforma não aparecem."
   }
 }

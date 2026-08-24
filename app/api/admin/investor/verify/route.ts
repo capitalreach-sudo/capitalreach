@@ -16,7 +16,14 @@ export async function POST(req: NextRequest) {
   const guard = await requireAdmin("operator");
   if (!guard.ok) return guard.response;
 
-  const { investorId, verified } = await req.json().catch(() => ({}));
+  const { investorId, verified, checks } = await req.json().catch(() => ({}));
+  // Which checks this verification stands on. Free-text is refused: the
+  // popover renders translation keys, and unknown strings would leak
+  // whatever an admin typed onto a public page.
+  const KNOWN_CHECKS = ["identity", "registry", "domain", "metrics"];
+  const checkList: string[] = Array.isArray(checks)
+    ? checks.filter((c: unknown) => typeof c === "string" && KNOWN_CHECKS.includes(c))
+    : KNOWN_CHECKS.slice(0, 3); // legacy callers: identity, registry, domain
   if (!isUuid(investorId) || typeof verified !== "boolean") {
     return NextResponse.json({ error: "investorId and verified required" }, { status: 400 });
   }
@@ -27,6 +34,7 @@ export async function POST(req: NextRequest) {
     .update({
       verified_at: verified ? new Date().toISOString() : null,
       verified_by: verified ? guard.adminId : null,
+      verification_checks: verified ? { checks: checkList, at: new Date().toISOString() } : null,
     })
     .eq("id", investorId)
     .select("id, owner_id, display_name")

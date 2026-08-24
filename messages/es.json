@@ -1004,7 +1004,9 @@
     "reportViewDeal": "Abrir operación",
     "unnamedAccount": "Cuenta sin nombre",
     "billingSoon": "Por ahora estás en el plan gratuito: el pago en línea aún no está activo. Tu ficha está guardada; mejora el plan cuando quieras desde Facturación.",
-    "welcomeToast": "¡Bienvenido! Tu ficha se envió a revisión."
+    "welcomeToast": "¡Bienvenido! Tu ficha se envió a revisión.",
+    "updDraftAi": "Redactar con IA",
+    "updDraftTitle": "Actualización mensual"
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Rondas de financiación activas"
+  },
+  "verify": {
+    "whatWasChecked": "Qué se comprobó",
+    "check": {
+      "identity": "Identidad del equipo",
+      "registry": "Registro mercantil",
+      "domain": "Propiedad del dominio",
+      "metrics": "Evidencia de métricas revisada"
+    },
+    "on": "Verificado el {date}"
+  },
+  "capTable": {
+    "title": "Cap table — cerrado en CapitalReach",
+    "investor": "Inversor",
+    "amount": "Importe",
+    "ownership": "Participación",
+    "valuation": "Valoración al cierre",
+    "date": "Cerrado",
+    "total": "{pct}% cedido vía plataforma",
+    "unknown": "No revelado",
+    "note": "Congelada en el momento de cada cierre: los cambios de valoración posteriores nunca reescriben este historial. Las rondas cerradas fuera de la plataforma no aparecen."
   }
 }

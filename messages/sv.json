@@ -995,7 +995,9 @@
     "reportViewDeal": "Öppna affär",
     "unnamedAccount": "Namnlöst konto",
     "billingSoon": "Du är på gratisplanen tills vidare — onlinebetalning är inte aktiv ännu. Noteringen är sparad; uppgradera när som helst under Fakturering.",
-    "welcomeToast": "Välkommen! Din notering skickades till granskning."
+    "welcomeToast": "Välkommen! Din notering skickades till granskning.",
+    "updDraftAi": "Utkast med AI",
+    "updDraftTitle": "Månadsuppdatering"
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Pågående finansieringsrundor"
+  },
+  "verify": {
+    "whatWasChecked": "Vad som kontrollerades",
+    "check": {
+      "identity": "Teamets identitet",
+      "registry": "Bolagsregisterpost",
+      "domain": "Domänägarskap",
+      "metrics": "Underlag för nyckeltal granskade"
+    },
+    "on": "Verifierad {date}"
+  },
+  "capTable": {
+    "title": "Cap table — stängda på CapitalReach",
+    "investor": "Investerare",
+    "amount": "Belopp",
+    "ownership": "Ägarandel",
+    "valuation": "Värdering vid stängning",
+    "date": "Stängd",
+    "total": "{pct} % avstått via plattformen",
+    "unknown": "Ej namngiven",
+    "note": "Frusen vid varje stängning — senare värderingsändringar skriver aldrig om denna historik. Rundor stängda utanför plattformen visas inte."
   }
 }

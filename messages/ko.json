@@ -995,7 +995,9 @@
     "reportViewDeal": "거래 열기",
     "unnamedAccount": "이름 없는 계정",
     "billingSoon": "현재 무료 요금제입니다. 온라인 결제는 아직 활성화되지 않았습니다. 상장은 저장되었으며 결제 페이지에서 언제든 업그레이드할 수 있습니다.",
-    "welcomeToast": "환영합니다! 상장이 심사에 제출되었습니다."
+    "welcomeToast": "환영합니다! 상장이 심사에 제출되었습니다.",
+    "updDraftAi": "AI로 초안 작성",
+    "updDraftTitle": "월간 업데이트"
   },
   "settings": {
     "pageTitle": "설정",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "진행 중인 펀딩 라운드"
+  },
+  "verify": {
+    "whatWasChecked": "확인한 항목",
+    "check": {
+      "identity": "팀 신원",
+      "registry": "법인 등기 확인",
+      "domain": "도메인 소유권",
+      "metrics": "지표 증빙 검토"
+    },
+    "on": "{date} 인증"
+  },
+  "capTable": {
+    "title": "캡 테이블 — CapitalReach에서 성사",
+    "investor": "투자자",
+    "amount": "금액",
+    "ownership": "지분",
+    "valuation": "성사 시 기업가치",
+    "date": "성사일",
+    "total": "플랫폼을 통해 {pct}% 양도",
+    "unknown": "비공개",
+    "note": "각 성사 시점에 고정됩니다. 이후 기업가치 변동이 이 기록을 다시 쓰는 일은 없습니다. 플랫폼 밖에서 성사된 라운드는 표시되지 않습니다."
   }
 }

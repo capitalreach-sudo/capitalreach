@@ -1011,7 +1011,9 @@
     "reportViewDeal": "Deal öffnen",
     "unnamedAccount": "Unbenanntes Konto",
     "billingSoon": "Sie sind vorerst im Free-Plan — die Online-Zahlung ist noch nicht aktiv. Ihr Listing ist gespeichert; ein Upgrade ist jederzeit unter Abrechnung möglich.",
-    "welcomeToast": "Willkommen! Ihr Listing wurde zur Prüfung eingereicht."
+    "welcomeToast": "Willkommen! Ihr Listing wurde zur Prüfung eingereicht.",
+    "updDraftAi": "Mit KI entwerfen",
+    "updDraftTitle": "Monats-Update"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Aktive Finanzierungsrunden"
+  },
+  "verify": {
+    "whatWasChecked": "Was geprüft wurde",
+    "check": {
+      "identity": "Identität des Teams",
+      "registry": "Handelsregistereintrag",
+      "domain": "Inhaberschaft der Website-Domain",
+      "metrics": "Kennzahlen-Nachweise geprüft"
+    },
+    "on": "Verifiziert am {date}"
+  },
+  "capTable": {
+    "title": "Cap Table — über CapitalReach geschlossen",
+    "investor": "Investor:in",
+    "amount": "Betrag",
+    "ownership": "Anteil",
+    "valuation": "Bewertung beim Abschluss",
+    "date": "Geschlossen",
+    "total": "{pct} % über die Plattform abgegeben",
+    "unknown": "Nicht genannt",
+    "note": "Zum Zeitpunkt des Abschlusses eingefroren — spätere Bewertungsänderungen schreiben diese Historie nie um. Extern geschlossene Runden erscheinen nicht."
   }
 }

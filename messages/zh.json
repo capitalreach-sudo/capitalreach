@@ -1004,7 +1004,9 @@
     "reportViewDeal": "打开交易",
     "unnamedAccount": "未命名账户",
     "billingSoon": "你目前使用免费套餐——在线支付尚未开通。挂牌已保存；可随时在「账单」中升级。",
-    "welcomeToast": "欢迎！你的挂牌已提交审核。"
+    "welcomeToast": "欢迎！你的挂牌已提交审核。",
+    "updDraftAi": "用 AI 起草",
+    "updDraftTitle": "月度更新"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "进行中的融资轮次"
+  },
+  "verify": {
+    "whatWasChecked": "核验内容",
+    "check": {
+      "identity": "团队身份",
+      "registry": "企业注册信息",
+      "domain": "域名所有权",
+      "metrics": "指标证据审核"
+    },
+    "on": "{date} 认证"
+  },
+  "capTable": {
+    "title": "股权表 — 在 CapitalReach 成交",
+    "investor": "投资人",
+    "amount": "金额",
+    "ownership": "持股",
+    "valuation": "成交时估值",
+    "date": "成交日",
+    "total": "通过平台让渡 {pct}%",
+    "unknown": "未披露",
+    "note": "在每次成交时刻冻结——之后的估值变动不会改写这段历史。平台外成交的轮次不显示。"
   }
 }

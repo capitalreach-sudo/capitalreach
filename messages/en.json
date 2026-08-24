@@ -1015,7 +1015,9 @@
     "reportViewDeal": "Open deal",
     "unnamedAccount": "Unnamed account",
     "billingSoon": "You're on the Free plan for now — online payment isn't live yet. Your listing is saved; upgrade any time from Billing.",
-    "welcomeToast": "Welcome! Your listing was submitted for review."
+    "welcomeToast": "Welcome! Your listing was submitted for review.",
+    "updDraftAi": "Draft with AI",
+    "updDraftTitle": "Monthly update"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Live fundraising rounds"
+  },
+  "verify": {
+    "whatWasChecked": "What was checked",
+    "check": {
+      "identity": "Identity of the team",
+      "registry": "Company registry entry",
+      "domain": "Website domain ownership",
+      "metrics": "Metrics evidence reviewed"
+    },
+    "on": "Verified {date}"
+  },
+  "capTable": {
+    "title": "Cap table — closed on CapitalReach",
+    "investor": "Investor",
+    "amount": "Amount",
+    "ownership": "Ownership",
+    "valuation": "Valuation at close",
+    "date": "Closed",
+    "total": "{pct}% ceded via platform",
+    "unknown": "Undisclosed investor",
+    "note": "Frozen at the moment of each close — later valuation changes never restate this history. Rounds closed off-platform are not shown."
   }
 }

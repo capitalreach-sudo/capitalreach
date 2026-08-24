@@ -995,7 +995,9 @@
     "reportViewDeal": "Otwórz transakcję",
     "unnamedAccount": "Konto bez nazwy",
     "billingSoon": "Na razie jesteś na planie darmowym — płatność online nie jest jeszcze aktywna. Ogłoszenie zapisane; ulepszysz plan w każdej chwili w Rozliczeniach.",
-    "welcomeToast": "Witamy! Ogłoszenie zostało przesłane do weryfikacji."
+    "welcomeToast": "Witamy! Ogłoszenie zostało przesłane do weryfikacji.",
+    "updDraftAi": "Szkic z AI",
+    "updDraftTitle": "Aktualizacja miesięczna"
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "Aktywne rundy finansowania"
+  },
+  "verify": {
+    "whatWasChecked": "Co sprawdzono",
+    "check": {
+      "identity": "Tożsamość zespołu",
+      "registry": "Wpis w rejestrze",
+      "domain": "Własność domeny",
+      "metrics": "Dowody metryk zweryfikowane"
+    },
+    "on": "Zweryfikowano {date}"
+  },
+  "capTable": {
+    "title": "Cap table — zamknięte na CapitalReach",
+    "investor": "Inwestor",
+    "amount": "Kwota",
+    "ownership": "Udział",
+    "valuation": "Wycena przy zamknięciu",
+    "date": "Zamknięto",
+    "total": "{pct}% oddane przez platformę",
+    "unknown": "Nieujawniony",
+    "note": "Zamrożona w chwili każdego zamknięcia — późniejsze zmiany wyceny nigdy nie przepisują tej historii. Rundy zamknięte poza platformą nie są pokazywane."
   }
 }

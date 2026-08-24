@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const { data: deal } = await adminClient
     .from("deals")
-    .select("*, startup:startups(name, owner_id, valuation, valuation_type, funding_target), investor:investors(owner_id)")
+    .select("*, startup:startups(name, owner_id, valuation, valuation_type, funding_target), investor:investors(owner_id, display_name, firm_name)")
     .eq("id", dealId)
     .single();
 
@@ -181,12 +181,23 @@ export async function POST(req: NextRequest) {
       // later from the company's *current* valuation would restate history
       // every time they raised again.
       ...(() => {
-        const st = deal.startup as unknown as { valuation?: number | null; valuation_type?: string | null; funding_target?: number | null } | null;
+        const st = deal.startup as unknown as { name?: string; valuation?: number | null; valuation_type?: string | null; funding_target?: number | null } | null;
+        const inv = deal.investor as unknown as { display_name?: string | null; firm_name?: string | null } | null;
         const post = postMoney({ raise: st?.funding_target ?? null, valuation: st?.valuation ?? null, valuationType: (st?.valuation_type as "pre" | "post" | null) ?? null });
-        if (!post || !finalAmount) return {};
+        const ownership = post && finalAmount ? Number(((finalAmount / post) * 100).toFixed(4)) : null;
         return {
-          valuation_at_close: post,
-          ownership_percent: Number(((finalAmount / post) * 100).toFixed(4)),
+          ...(post && finalAmount ? { valuation_at_close: post, ownership_percent: ownership } : {}),
+          // The cap-table record, frozen with the NAMES as they were at
+          // close — parties rename; the record of the deal does not.
+          closing_snapshot: {
+            startup: st?.name ?? null,
+            investor: inv?.display_name ?? inv?.firm_name ?? null,
+            amount: finalAmount ?? null,
+            currency: finalCurrency ?? null,
+            ownership_percent: ownership,
+            valuation_at_close: post ?? null,
+            at: new Date().toISOString(),
+          },
         };
       })(),
     })

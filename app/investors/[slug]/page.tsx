@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { countryLabel } from "@/lib/country-label";
 import { DemoBadge } from "@/components/shared/demo-badge";
+import { VerifiedBadge } from "@/components/shared/verified-badge";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
@@ -200,8 +201,8 @@ export default async function InvestorProfilePage({ params }: Props) {
             <h1 className="text-2xl font-bold text-cr-ink mb-0.5">
               {displayName}
               {investor.verified_at && (
-                <span className="inline-flex items-center gap-1 ml-2 align-middle rounded border border-cr-copper/30 bg-cr-copper/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cr-copper">
-                  <BadgeCheck className="h-3 w-3" /> {t("investors.verifiedBadge")}
+                <span className="ml-2 align-middle inline-flex">
+                  <VerifiedBadge checks={investor.verification_checks as { checks?: string[]; at?: string } | null} verifiedAt={investor.verified_at} />
                 </span>
               )}
             </h1>

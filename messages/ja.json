@@ -1004,7 +1004,9 @@
     "reportViewDeal": "ディールを開く",
     "unnamedAccount": "名称未設定のアカウント",
     "billingSoon": "現在は無料プランです。オンライン決済はまだ有効ではありません。掲載は保存済みです。アップグレードは「請求」からいつでも可能です。",
-    "welcomeToast": "ようこそ！掲載は審査に送信されました。"
+    "welcomeToast": "ようこそ！掲載は審査に送信されました。",
+    "updDraftAi": "AIで下書き",
+    "updDraftTitle": "月次アップデート"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -3481,5 +3483,26 @@
   },
   "ticker": {
     "aria": "進行中の資金調達ラウンド"
+  },
+  "verify": {
+    "whatWasChecked": "確認した項目",
+    "check": {
+      "identity": "チームの本人確認",
+      "registry": "商業登記の確認",
+      "domain": "ドメイン所有権",
+      "metrics": "指標の裏付け確認"
+    },
+    "on": "{date} に認証"
+  },
+  "capTable": {
+    "title": "キャップテーブル — CapitalReach で成約",
+    "investor": "投資家",
+    "amount": "金額",
+    "ownership": "持分",
+    "valuation": "成約時評価額",
+    "date": "成約日",
+    "total": "プラットフォーム経由で {pct}% 譲渡",
+    "unknown": "非公開",
+    "note": "各成約の時点で確定します。その後の評価額の変動がこの履歴を書き換えることはありません。プラットフォーム外の成約は表示されません。"
   }
 }

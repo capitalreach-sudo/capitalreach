@@ -33,6 +33,7 @@ import { WaitlistButton } from "@/components/startup/waitlist-button";
 import { FounderToFounder } from "@/components/startup/founder-to-founder";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { RiskWarning } from "@/components/startup/risk-warning";
+import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { RoundCalculator } from "@/components/startup/round-calculator";
 import { roundCloseState } from "@/lib/round-close";
@@ -666,9 +667,10 @@ export function StartupDetailClient({
                     {startup.name}
                   </h1>
                   {startup.verified_at && (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                      <BadgeCheck style={{ width: 11, height: 11 }} /> {t("investors.verifiedBadge")}
-                    </span>
+                    <VerifiedBadge
+                      checks={(startup as { verification_checks?: { checks?: string[]; at?: string } | null }).verification_checks}
+                      verifiedAt={startup.verified_at}
+                    />
                   )}
                   {(startup as { is_demo?: boolean }).is_demo && <DemoBadge />}
                   {startup.subscription_tier === "growth" && (

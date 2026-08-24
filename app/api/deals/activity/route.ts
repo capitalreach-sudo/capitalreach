@@ -94,11 +94,55 @@ export async function POST(req: NextRequest) {
     })
     .select("id, type, body, created_at, actor:profiles(full_name)")
     .single();
-  if (error || !entry) return NextResponse.json({ error: "Failed to add note" }, { status: 500 });
+  if (error || !entry) {
+    return NextResponse.json({ error: "Failed to add note" }, { status: 500 });
+  }
+
+  const mentionedIds: string[] = [];
+  // ── @mentions ─────────────────────────────────────────────────────────
+  // "@name" in a deal note taps that person on the shoulder. Candidates are
+  // exactly the people who can already read the note — both owners and both
+  // teams — so a mention can never leak a note beyond its audience.
+  try {
+    const noteBody = body.trim().slice(0, 5000);
+    if (noteBody.includes("@")) {
+      const { data: team } = await admin
+        .from("team_members").select("user_id")
+        .or(`and(entity_type.eq.startup,entity_id.eq.${deal.startup_id}),and(entity_type.eq.investor,entity_id.eq.${deal.investor_id})`);
+      const candidateIds = Array.from(new Set([
+        startup?.owner_id, investor?.owner_id,
+        ...(team ?? []).map(t => t.user_id),
+      ].filter((x): x is string => !!x && x !== user!.id)));
+      if (candidateIds.length) {
+        const [{ data: people }, { data: actor }, { data: dealStartup }] = await Promise.all([
+          admin.from("profiles").select("id, full_name").in("id", candidateIds),
+          admin.from("profiles").select("full_name").eq("id", user!.id).maybeSingle(),
+          admin.from("startups").select("name").eq("id", deal.startup_id).maybeSingle(),
+        ]);
+        const lower = noteBody.toLowerCase();
+        const mentioned = (people ?? []).filter(p => {
+          const name = (p.full_name ?? "").trim().toLowerCase();
+          if (!name) return false;
+          const first = name.split(/\s+/)[0];
+          return lower.includes("@" + name) || (first.length >= 2 && lower.includes("@" + first));
+        }).map(p => p.id);
+        mentionedIds.push(...mentioned);
+        if (mentioned.length) {
+          await notifyUsers(mentioned, {
+            type: "message",
+            title: `${actor?.full_name ?? "A teammate"} mentioned you on ${dealStartup?.name ?? "a deal"}`,
+            body: noteBody.slice(0, 140),
+            href: `/deals?deal=${deal.id}`,
+          }).catch(() => {});
+        }
+      }
+    }
+  } catch { /* a failed mention never fails the note */ }
 
   // A note is written to be read — tell the counterpart instead of hoping
   // they reload the board.
-  const other = [startup?.owner_id, investor?.owner_id].filter((id): id is string => !!id && id !== user.id);
+  // Mentioned people already got the sharper notification — no double tap.
+  const other = [startup?.owner_id, investor?.owner_id].filter((id): id is string => !!id && id !== user.id && !mentionedIds.includes(id));
   if (other.length) {
     await notifyUsers(other, {
       type: "deal_stage",
