@@ -657,22 +657,6 @@ body::before {
   90%  { transform: translate( 0%,  0%);  }
   100% { transform: translate( 0,   0);   }
 }
-/* Ledger lines: the product's whole register is "institutional ledger",
-   so the hero literally sits on ruled paper — faint horizontal rules that
-   fade out toward the fold. Ink-based alpha, so one rule serves both
-   themes (graphite on paper, phosphor rules on the terminal). */
-.hero-ledger {
-  position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0, transparent 47px,
-    color-mix(in srgb, var(--cr-ink) 5%, transparent) 47px,
-    color-mix(in srgb, var(--cr-ink) 5%, transparent) 48px
-  );
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
-}
-
 /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */
 .cr-lift {
@@ -1005,23 +989,7 @@ body::before {
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
-  /* Ledger lines: the product's whole register is "institutional ledger",
-   so the hero literally sits on ruled paper — faint horizontal rules that
-   fade out toward the fold. Ink-based alpha, so one rule serves both
-   themes (graphite on paper, phosphor rules on the terminal). */
-.hero-ledger {
-  position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0, transparent 47px,
-    color-mix(in srgb, var(--cr-ink) 5%, transparent) 47px,
-    color-mix(in srgb, var(--cr-ink) 5%, transparent) 48px
-  );
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 62%, transparent 95%);
-}
-
-/* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
+  /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */
 .cr-lift {
   box-shadow: var(--cr-card-shadow), var(--cr-card-edge);
