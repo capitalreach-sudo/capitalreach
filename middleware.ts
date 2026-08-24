@@ -35,13 +35,14 @@ export async function middleware(request: NextRequest) {
 
     const pathname = request.nextUrl.pathname;
 
-    // The fast lane: a request with NO Supabase auth cookie is anonymous —
-    // getUser() would be a guaranteed-null network round-trip added to every
-    // public page view (and every crawler hit). Skip it; protected paths
-    // still get the login redirect below via user === null.
-    const hasAuthCookie = request.cookies.getAll().some(c => c.name.startsWith("sb-"));
-    const protectedPathsEarly = ["/dashboard", "/onboarding", "/admin"];
-    if (!hasAuthCookie && !protectedPathsEarly.some(p => pathname.startsWith(p))) {
+    // The fast lane, widened: middleware's auth round-trip runs ONLY where
+    // it gates something — the protected areas and /deals (suspension gate).
+    // Public pages skip it for EVERYONE now, signed-in included: the browser
+    // client refreshes tokens itself and server pages that care about the
+    // viewer read the cookies directly. One network hop per navigation,
+    // repaid on every page of a browsing session.
+    const gatedPathsEarly = ["/dashboard", "/onboarding", "/admin", "/deals"];
+    if (!gatedPathsEarly.some(p => pathname.startsWith(p))) {
       return supabaseResponse;
     }
 

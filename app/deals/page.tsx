@@ -145,7 +145,9 @@ export default async function DealsPage() {
       .from("deals")
       .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name, is_external)")
       .order("updated_at", { ascending: false })
-      .limit(500);
+      // 250 most-recent: the board previews columns and the list paginates
+      // visually anyway — 500 rows of joined JSON was pure transfer weight.
+      .limit(250);
 
     // The operator who is ALSO a participant (an admin with their own
     // investor or startup profile) needs two lenses on this page: the
