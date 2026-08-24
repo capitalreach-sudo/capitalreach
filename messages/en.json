@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Message investor",
     "placeholder": "Introduce yourself — a co-invest, a question about their thesis, anything."
+  },
+  "ticker": {
+    "aria": "Live fundraising rounds"
   }
 }

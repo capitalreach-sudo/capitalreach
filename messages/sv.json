@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Meddela investeraren",
     "placeholder": "Presentera dig — en saminvestering, en fråga om tesen, vad som helst."
+  },
+  "ticker": {
+    "aria": "Pågående finansieringsrundor"
   }
 }

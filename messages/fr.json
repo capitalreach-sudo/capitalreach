@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Contacter l'investisseur",
     "placeholder": "Présentez-vous — un co-investissement, une question sur sa thèse, autre chose."
+  },
+  "ticker": {
+    "aria": "Levées de fonds en cours"
   }
 }

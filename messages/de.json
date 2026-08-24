@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Investor:in anschreiben",
     "placeholder": "Stellen Sie sich vor — ein Co-Investment, eine Frage zur These, was immer ansteht."
+  },
+  "ticker": {
+    "aria": "Aktive Finanzierungsrunden"
   }
 }

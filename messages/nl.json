@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Bericht aan investeerder",
     "placeholder": "Stel jezelf voor — een co-investering, een vraag over de these, wat dan ook."
+  },
+  "ticker": {
+    "aria": "Actieve financieringsrondes"
   }
 }

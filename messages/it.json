@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Scrivi all'investitore",
     "placeholder": "Presentati: un co-investimento, una domanda sulla sua tesi, qualsiasi cosa."
+  },
+  "ticker": {
+    "aria": "Round di raccolta attivi"
   }
 }

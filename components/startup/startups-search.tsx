@@ -415,7 +415,12 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
   return (
     <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none" }}>
       <div
-        className="cr-lift"
+        className="cr-lift cr-spot"
+        onMouseMove={e => {
+          const r = e.currentTarget.getBoundingClientRect();
+          e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+          e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+        }}
         style={{
           position: "relative", display: "flex", flexDirection: "column",
           background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",

@@ -223,6 +223,28 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
         </div>
       </section>
 
+      {/* ── 2b. LIVE ROUNDS TICKER ──────────────────────────── */}
+      {/* One slow lane of what is actually raising right now — the ledger
+          moving. Data the page already holds; duplicated once for a
+          seamless loop; pauses on hover; absent under reduced motion. */}
+      {listings.length >= 4 && (
+        <div className="cr-ticker" aria-label={t("ticker.aria")}
+          style={{ borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)", padding: "10px 0" }}>
+          <div className="cr-ticker-lane">
+            {[...listings, ...listings].map((l, i) => (
+              <Link key={`${l.id}-${i}`} href={`/startups/${l.slug}`} aria-hidden={i >= listings.length}
+                style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", padding: "0 28px", textDecoration: "none", borderLeft: "1px solid var(--cr-rule)" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)" }}>{l.name}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{l.stage.replace(/_/g, " ")}</span>
+                {l.funding_target ? (
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-copper)" }}>{safeFormatCurrency(l.funding_target)}</span>
+                ) : null}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── 3. TOP LISTINGS (only when there is something to show) ── */}
       {listings.length > 0 && (
         <section

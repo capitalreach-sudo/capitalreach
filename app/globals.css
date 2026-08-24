@@ -657,6 +657,41 @@ body::before {
   90%  { transform: translate( 0%,  0%);  }
   100% { transform: translate( 0,   0);   }
 }
+/* Cursor spotlight: a soft copper highlight that follows the pointer
+   across a card. The card sets --mx/--my from its own mousemove; the
+   overlay never intercepts events and vanishes when the pointer leaves. */
+.cr-spot { position: relative; }
+.cr-spot::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0; transition: opacity 260ms ease;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(184,115,51,0.10), transparent 65%);
+}
+.cr-spot:hover::after { opacity: 1; }
+@media (hover: none) { .cr-spot::after { display: none; } }
+
+/* The live rounds ticker: one slow, seamless lane of active raises.
+   Content is duplicated once; -50% loops without a seam. Pauses on hover
+   (someone is reading), gone entirely under reduced motion. */
+.cr-ticker { overflow: hidden; position: relative; }
+.cr-ticker-lane {
+  display: inline-flex; gap: 0; white-space: nowrap; width: max-content;
+  animation: cr-ticker-roll 60s linear infinite;
+}
+.cr-ticker:hover .cr-ticker-lane { animation-play-state: paused; }
+@keyframes cr-ticker-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .cr-ticker { display: none; } }
+
+/* Scrollbars finished to match: thin, quiet, copper on grip. */
+* { scrollbar-width: thin; scrollbar-color: var(--cr-paper-4) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--cr-paper-4); border-radius: 5px;
+  border: 2px solid var(--cr-paper); background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--cr-copper); border: 2px solid var(--cr-paper); background-clip: padding-box; }
+
 /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */
 .cr-lift {
@@ -989,7 +1024,42 @@ body::before {
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
-  /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
+  /* Cursor spotlight: a soft copper highlight that follows the pointer
+   across a card. The card sets --mx/--my from its own mousemove; the
+   overlay never intercepts events and vanishes when the pointer leaves. */
+.cr-spot { position: relative; }
+.cr-spot::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0; transition: opacity 260ms ease;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(184,115,51,0.10), transparent 65%);
+}
+.cr-spot:hover::after { opacity: 1; }
+@media (hover: none) { .cr-spot::after { display: none; } }
+
+/* The live rounds ticker: one slow, seamless lane of active raises.
+   Content is duplicated once; -50% loops without a seam. Pauses on hover
+   (someone is reading), gone entirely under reduced motion. */
+.cr-ticker { overflow: hidden; position: relative; }
+.cr-ticker-lane {
+  display: inline-flex; gap: 0; white-space: nowrap; width: max-content;
+  animation: cr-ticker-roll 60s linear infinite;
+}
+.cr-ticker:hover .cr-ticker-lane { animation-play-state: paused; }
+@keyframes cr-ticker-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .cr-ticker { display: none; } }
+
+/* Scrollbars finished to match: thin, quiet, copper on grip. */
+* { scrollbar-width: thin; scrollbar-color: var(--cr-paper-4) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--cr-paper-4); border-radius: 5px;
+  border: 2px solid var(--cr-paper); background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--cr-copper); border: 2px solid var(--cr-paper); background-clip: padding-box; }
+
+/* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */
 .cr-lift {
   box-shadow: var(--cr-card-shadow), var(--cr-card-edge);

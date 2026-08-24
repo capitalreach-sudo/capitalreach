@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Escribir al inversor",
     "placeholder": "Preséntate: una coinversión, una pregunta sobre su tesis, lo que sea."
+  },
+  "ticker": {
+    "aria": "Rondas de financiación activas"
   }
 }

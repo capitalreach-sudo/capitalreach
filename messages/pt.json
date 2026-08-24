@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Mensagem ao investidor",
     "placeholder": "Apresente-se — um coinvestimento, uma pergunta sobre a tese, o que for."
+  },
+  "ticker": {
+    "aria": "Rondas de financiamento ativas"
   }
 }

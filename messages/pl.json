@@ -3477,5 +3477,8 @@
   "i2i": {
     "message": "Napisz do inwestora",
     "placeholder": "Przedstaw się — koinwestycja, pytanie o tezę, cokolwiek."
+  },
+  "ticker": {
+    "aria": "Aktywne rundy finansowania"
   }
 }
