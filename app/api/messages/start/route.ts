@@ -31,8 +31,12 @@ export async function POST(req: NextRequest) {
   const investorId = typeof payload.investorId === "string" ? payload.investorId : "";
   const targetStartupId = typeof payload.startupId === "string" ? payload.startupId : "";
   const body = typeof payload.body === "string" ? payload.body.trim() : "";
+  // open:true = "make an intro": create or find the thread and hand back its
+  // id for a redirect into Messages — the first words are typed THERE, in
+  // the real composer, not in a cramped profile-page box.
+  const openOnly = payload.open === true;
   if (!isUuid(investorId) && !isUuid(targetStartupId)) return NextResponse.json({ error: "investorId or startupId required" }, { status: 400 });
-  if (!body) return NextResponse.json({ error: "Message is empty" }, { status: 400 });
+  if (!body && !openOnly) return NextResponse.json({ error: "Message is empty" }, { status: 400 });
   if (body.length > 2000) return NextResponse.json({ error: "Message is too long (max 2000 characters)" }, { status: 400 });
 
   const mine = await resolveEntity(user.id, "startup");
@@ -65,6 +69,7 @@ export async function POST(req: NextRequest) {
         if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
         threadId = created.id;
       }
+      if (openOnly) return NextResponse.json({ success: true, threadId });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
@@ -92,6 +97,7 @@ export async function POST(req: NextRequest) {
         if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
         threadId = created.id;
       }
+      if (openOnly) return NextResponse.json({ success: true, threadId });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
@@ -128,6 +134,7 @@ export async function POST(req: NextRequest) {
       if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
       threadId = created.id;
     }
+    if (openOnly) return NextResponse.json({ success: true, threadId });
     const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
     if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
     await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
@@ -154,6 +161,7 @@ export async function POST(req: NextRequest) {
     if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
     threadId = created.id;
   }
+  if (openOnly) return NextResponse.json({ success: true, threadId, startupId: st.id, investorId: inv.id });
   const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
   if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});

@@ -2504,7 +2504,10 @@
     "clearSearch": "清除搜索",
     "unreadAria": "未读",
     "noMatches": "没有与\"{query}\"匹配的消息",
-    "legalNote": "消息属于您在 CapitalReach 的交易记录，在费用争议中可能被引用。"
+    "legalNote": "消息属于您在 CapitalReach 的交易记录，在费用争议中可能被引用。",
+    "markImportant": "标为重要",
+    "unmarkImportant": "取消标记",
+    "importantAria": "已标为重要"
   },
   "completeness": {
     "nextBest": "下一步",
@@ -3505,5 +3508,8 @@
     "total": "通过平台让渡 {pct}%",
     "unknown": "未披露",
     "note": "在每次成交时刻冻结——之后的估值变动不会改写这段历史。平台外成交的轮次不显示。"
+  },
+  "intro": {
+    "make": "发起引荐"
   }
 }

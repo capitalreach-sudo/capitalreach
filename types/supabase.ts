@@ -2776,6 +2776,35 @@ export type Database = {
           },
         ]
       }
+      thread_flags: {
+        Row: {
+          created_at: string
+          important: boolean
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          important?: boolean
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          important?: boolean
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thread_flags_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       threads: {
         Row: {
           created_at: string

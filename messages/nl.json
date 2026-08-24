@@ -2504,7 +2504,10 @@
     "clearSearch": "Zoekopdracht wissen",
     "unreadAria": "Ongelezen",
     "noMatches": "Geen berichten voor \"{query}\"",
-    "legalNote": "Berichten maken deel uit van uw CapitalReach-dealdossier en kunnen worden aangehaald bij geschillen over de fee."
+    "legalNote": "Berichten maken deel uit van uw CapitalReach-dealdossier en kunnen worden aangehaald bij geschillen over de fee.",
+    "markImportant": "Markeer als belangrijk",
+    "unmarkImportant": "Markering verwijderen",
+    "importantAria": "Als belangrijk gemarkeerd"
   },
   "completeness": {
     "nextBest": "Doe dit hierna",
@@ -3505,5 +3508,8 @@
     "total": "{pct}% afgestaan via platform",
     "unknown": "Niet bekendgemaakt",
     "note": "Bevroren op het moment van elke sluiting — latere waarderingswijzigingen herschrijven deze geschiedenis nooit. Buiten het platform gesloten rondes verschijnen niet."
+  },
+  "intro": {
+    "make": "Maak een intro"
   }
 }

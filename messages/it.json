@@ -2504,7 +2504,10 @@
     "clearSearch": "Cancella ricerca",
     "unreadAria": "Non letto",
     "noMatches": "Nessun messaggio corrisponde a \"{query}\"",
-    "legalNote": "I messaggi fanno parte del fascicolo dell'operazione su CapitalReach e possono essere richiamati in caso di controversie sulle fee."
+    "legalNote": "I messaggi fanno parte del fascicolo dell'operazione su CapitalReach e possono essere richiamati in caso di controversie sulle fee.",
+    "markImportant": "Segna come importante",
+    "unmarkImportant": "Rimuovi importanza",
+    "importantAria": "Segnato importante"
   },
   "completeness": {
     "nextBest": "Fai questo ora",
@@ -3505,5 +3508,8 @@
     "total": "{pct}% ceduto via piattaforma",
     "unknown": "Non divulgato",
     "note": "Congelata al momento di ogni chiusura: successive variazioni di valutazione non riscrivono mai questa storia. I round chiusi fuori piattaforma non compaiono."
+  },
+  "intro": {
+    "make": "Fai un'intro"
   }
 }

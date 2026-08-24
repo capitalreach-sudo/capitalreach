@@ -2503,7 +2503,10 @@
     "clearSearch": "Clear search",
     "unreadAria": "Unread",
     "noMatches": "No messages match \"{query}\"",
-    "legalNote": "Messages are part of your CapitalReach deal record and may be referenced in fee disputes."
+    "legalNote": "Messages are part of your CapitalReach deal record and may be referenced in fee disputes.",
+    "markImportant": "Mark as important",
+    "unmarkImportant": "Remove importance",
+    "importantAria": "Marked important"
   },
   "presets": {
     "preseedAi": "Pre-seed AI",
@@ -3505,5 +3508,8 @@
     "total": "{pct}% ceded via platform",
     "unknown": "Undisclosed investor",
     "note": "Frozen at the moment of each close — later valuation changes never restate this history. Rounds closed off-platform are not shown."
+  },
+  "intro": {
+    "make": "Make an intro"
   }
 }

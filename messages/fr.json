@@ -2504,7 +2504,10 @@
     "clearSearch": "Effacer la recherche",
     "unreadAria": "Non lu",
     "noMatches": "Aucun message ne correspond à \"{query}\"",
-    "legalNote": "Les messages font partie de votre dossier de deal CapitalReach et peuvent être invoqués en cas de litige sur les frais."
+    "legalNote": "Les messages font partie de votre dossier de deal CapitalReach et peuvent être invoqués en cas de litige sur les frais.",
+    "markImportant": "Marquer comme important",
+    "unmarkImportant": "Retirer l'importance",
+    "importantAria": "Marqué important"
   },
   "completeness": {
     "nextBest": "À faire ensuite",
@@ -3505,5 +3508,8 @@
     "total": "{pct} % cédés via la plateforme",
     "unknown": "Non divulgué",
     "note": "Figée au moment de chaque clôture — les changements de valorisation ultérieurs ne réécrivent jamais cet historique. Les tours clôturés hors plateforme n'apparaissent pas."
+  },
+  "intro": {
+    "make": "Faire une intro"
   }
 }

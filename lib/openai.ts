@@ -248,3 +248,34 @@ ${startups.map(s => `ID: ${s.id} | ${s.name} | ${s.industry} | ${s.stage} | ${s.
   const result = JSON.parse(response.choices[0].message.content!);
   return result.matches || [];
 }
+
+
+/**
+ * Web screening for a due-diligence report: the model SEARCHES THE OPEN WEB
+ * for the company and its founders — news, registries, launch pages, red
+ * flags — via OpenAI's search-preview model, and reports only what it found
+ * with sources. Fails soft: a report without the web section beats no
+ * report; the section says when screening was unavailable rather than
+ * pretending the web was quiet.
+ */
+export async function webScreenCompany(input: {
+  name: string; country?: string | null; website?: string | null;
+  founders?: Array<{ name: string }>;
+}): Promise<string | null> {
+  if (!isOpenAIConfigured) return null;
+  const founderNames = (input.founders ?? []).map(f => f.name).filter(Boolean).slice(0, 4).join(", ");
+  try {
+    const res = await openai.chat.completions.create({
+      model: "gpt-4o-mini-search-preview",
+      web_search_options: {},
+      messages: [
+        { role: "system", content: "You screen companies for investors. Search the web for the company and founders given. Report ONLY what you actually find, with source names: notable news, official registry or launch presence, and any red flags (litigation, complaints, contradictory claims). If searches return nothing relevant, say exactly that — a quiet web is a finding. 120 words maximum, plain prose, no markdown." },
+        { role: "user", content: `Company: ${input.name}${input.country ? ` (${input.country})` : ""}${input.website ? `, website: ${input.website}` : ""}${founderNames ? `. Founders: ${founderNames}` : ""}` },
+      ],
+    } as never);
+    const out = (res as { choices?: Array<{ message?: { content?: string | null } }> }).choices?.[0]?.message?.content?.trim();
+    return out || null;
+  } catch {
+    return null;
+  }
+}

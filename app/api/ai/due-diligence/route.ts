@@ -3,7 +3,7 @@ import { protectFounders } from "@/lib/identity";
 import { extractDocuments } from "@/lib/doc-text";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { checkAiAllowance, logAiUsage } from "@/lib/ai-limits";
-import { generateDueDiligenceReport, isOpenAIConfigured } from "@/lib/openai";
+import { generateDueDiligenceReport, webScreenCompany, isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, canAiDueDiligence } from "@/lib/access";
@@ -117,6 +117,14 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // The web screen runs in PARALLEL with the report body — same wall time.
+  const webScreenPromise = webScreenCompany({
+    name: startup.name,
+    country: startup.country,
+    website: (startup as { website?: string | null }).website ?? null,
+    founders: (startup.founders ?? []) as Array<{ name: string }>,
+  });
+
   const report = await generateDueDiligenceReport({
     name: startup.name,
     tagline: startup.tagline,
@@ -138,18 +146,24 @@ export async function POST(req: NextRequest) {
     questions,
   });
 
+  // Append the web screen — sourced findings or an honest "unavailable".
+  const webScreen = await webScreenPromise;
+  const fullReport = report + "\n\nWEB SCREENING\n" + (
+    webScreen ?? "Web screening was unavailable for this report — findings above are based only on the company's own materials."
+  );
+
   const adminClient = createAdminClient();
   await adminClient.from("ai_reports").insert({
     investor_id: investor?.id,
     startup_id: startupId,
     type: "due_diligence",
-    content: report,
+    content: fullReport,
   });
 
   // Tell the caller what the model could and couldn't read — a report that
   // silently skipped the financial model must not look complete.
   return NextResponse.json({
-    report,
+    report: fullReport,
     documentsRead: documents.map((d) => d.label),
     documentsSkipped: skippedDocs,
   });

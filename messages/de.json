@@ -2503,7 +2503,10 @@
     "clearSearch": "Suche löschen",
     "unreadAria": "Ungelesen",
     "noMatches": "Keine Nachrichten passen zu \"{query}\"",
-    "legalNote": "Nachrichten sind Teil Ihrer CapitalReach-Deal-Akte und können bei Gebührenstreitigkeiten herangezogen werden."
+    "legalNote": "Nachrichten sind Teil Ihrer CapitalReach-Deal-Akte und können bei Gebührenstreitigkeiten herangezogen werden.",
+    "markImportant": "Als wichtig markieren",
+    "unmarkImportant": "Markierung entfernen",
+    "importantAria": "Als wichtig markiert"
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",
@@ -3505,5 +3508,8 @@
     "total": "{pct} % über die Plattform abgegeben",
     "unknown": "Nicht genannt",
     "note": "Zum Zeitpunkt des Abschlusses eingefroren — spätere Bewertungsänderungen schreiben diese Historie nie um. Extern geschlossene Runden erscheinen nicht."
+  },
+  "intro": {
+    "make": "Intro starten"
   }
 }

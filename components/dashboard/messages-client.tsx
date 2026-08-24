@@ -7,7 +7,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import {
   Send, MessageSquare, Plus, Search, X, ArrowLeft,
-  CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Search as SearchIcon } from "lucide-react";
+  CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Star, Search as SearchIcon } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -193,6 +193,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     const archiveMatch = showArchived ? archivedIds.has(t.id) : !archivedIds.has(t.id);
     return searchMatch && statusMatch && archiveMatch;
   }).sort((a, b) => {
+    // Starred conversations float; within each band the chosen sort holds.
+    const imp = Number(importantIds.has(b.id)) - Number(importantIds.has(a.id));
+    if (imp !== 0) return imp;
     if (sortBy === "name") return getLabel(a).localeCompare(getLabel(b));
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
@@ -211,12 +214,31 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   // you cannot see into is a trash can.
   const [archivedIds, setArchivedIds] = useState<Set<string>>(new Set());
   const [showArchived, setShowArchived] = useState(false);
+  // Per-user importance stars (migration 100): starred threads pin to the
+  // top of the list and wear a copper marker; the other side never sees it.
+  const [importantIds, setImportantIds] = useState<Set<string>>(new Set());
   const [msgQuery, setMsgQuery] = useState("");
   useEffect(() => {
     fetch("/api/messages/archive").then(r => r.ok ? r.json() : null)
       .then(j => { if (j?.archived) setArchivedIds(new Set(j.archived as string[])); })
       .catch(() => {});
+    fetch("/api/messages/flag").then(r => r.ok ? r.json() : null)
+      .then(j => { if (j?.threadIds) setImportantIds(new Set(j.threadIds as string[])); })
+      .catch(() => {});
   }, []);
+
+  async function toggleImportant(threadId: string) {
+    const was = importantIds.has(threadId);
+    setImportantIds(prev => {
+      const next = new Set(prev);
+      if (was) next.delete(threadId); else next.add(threadId);
+      return next;
+    });
+    await fetch("/api/messages/flag", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, important: !was }),
+    }).catch(() => {});
+  }
   async function toggleArchive(threadId: string) {
     const isArchived = archivedIds.has(threadId);
     // Optimistic; a failed request just puts the row back on reload.
@@ -450,6 +472,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
                           <p style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: unreadSet.has(thread.id) ? 700 : 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{getLabel(thread)}</span>
+                            {importantIds.has(thread.id) && (
+                              <Star aria-label={t("messages.importantAria")} style={{ width: 11, height: 11, color: "var(--cr-copper)", fill: "var(--cr-copper)", flexShrink: 0 }} />
+                            )}
                             {unreadSet.has(thread.id) && (
                               <span aria-label={t("messages.unreadAria")} style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
                             )}
@@ -493,6 +518,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                  <button onClick={() => toggleImportant(selectedThread.id)}
+                    aria-label={importantIds.has(selectedThread.id) ? t("messages.unmarkImportant") : t("messages.markImportant")}
+                    title={importantIds.has(selectedThread.id) ? t("messages.unmarkImportant") : t("messages.markImportant")}
+                    style={{ background: importantIds.has(selectedThread.id) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: importantIds.has(selectedThread.id) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                    <Star style={{ width: 13, height: 13, color: importantIds.has(selectedThread.id) ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: importantIds.has(selectedThread.id) ? "var(--cr-copper)" : "none" }} />
+                  </button>
                   <button onClick={() => toggleArchive(selectedThread.id)}
                     aria-label={archivedIds.has(selectedThread.id) ? t("messages.unarchive") : t("messages.archive")}
                     title={archivedIds.has(selectedThread.id) ? t("messages.unarchive") : t("messages.archive")}

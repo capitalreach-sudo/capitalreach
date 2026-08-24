@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MessageSquare, Handshake } from "lucide-react";
+import { MessageSquare, Handshake, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
 
@@ -47,6 +47,18 @@ export function FounderOutreach({ investorId, investorName, hasDeal }: { investo
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        <button onClick={async () => {
+          if (busy) return;
+          const res = await fetch("/api/messages/start", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ investorId, open: true }),
+          });
+          const j = await res.json().catch(() => ({}));
+          if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+          router.push(`/dashboard/messages?thread=${j.threadId}`);
+        }} style={{ ...btn, background: "var(--cr-paper-2)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
+          <ArrowRight style={{ width: 13, height: 13 }} /> {t("intro.make")}
+        </button>
         <button onClick={() => setOpen((o) => !o)} style={{ ...btn, background: "var(--cr-copper)", color: "#fff", border: "1px solid var(--cr-copper-d)" }}>
           <MessageSquare style={{ width: 13, height: 13 }} /> {t("outreach.message", { name: investorName })}
         </button>

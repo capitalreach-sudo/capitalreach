@@ -2504,7 +2504,10 @@
     "clearSearch": "Wyczyść wyszukiwanie",
     "unreadAria": "Nieprzeczytane",
     "noMatches": "Brak wiadomości pasujących do \"{query}\"",
-    "legalNote": "Wiadomości są częścią Twojej dokumentacji transakcji w CapitalReach i mogą być przywoływane w sporach o prowizję."
+    "legalNote": "Wiadomości są częścią Twojej dokumentacji transakcji w CapitalReach i mogą być przywoływane w sporach o prowizję.",
+    "markImportant": "Oznacz jako ważne",
+    "unmarkImportant": "Usuń oznaczenie",
+    "importantAria": "Oznaczone jako ważne"
   },
   "completeness": {
     "nextBest": "Zrób to teraz",
@@ -3505,5 +3508,8 @@
     "total": "{pct}% oddane przez platformę",
     "unknown": "Nieujawniony",
     "note": "Zamrożona w chwili każdego zamknięcia — późniejsze zmiany wyceny nigdy nie przepisują tej historii. Rundy zamknięte poza platformą nie są pokazywane."
+  },
+  "intro": {
+    "make": "Zrób intro"
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
 
@@ -36,10 +36,25 @@ export function InvestorToInvestor({ investorId }: { investorId: string }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <button onClick={async () => {
+        if (busy) return;
+        const res = await fetch("/api/messages/start", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ investorId, open: true }),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+        router.push(`/dashboard/messages?thread=${j.threadId}`);
+      }}
+        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>
+        <ArrowRight style={{ width: 13, height: 13 }} /> {t("intro.make")}
+      </button>
       <button onClick={() => setOpen(o => !o)}
         style={{ display: "inline-flex", alignItems: "center", gap: 6, alignSelf: "flex-start", background: "var(--cr-copper)", color: "#fff", border: "1px solid var(--cr-copper-d)", borderRadius: 4, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
         <MessageSquare style={{ width: 13, height: 13 }} /> {t("i2i.message")}
       </button>
+      </div>
       {open && (
         <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "min(340px, 90vw)" }}>
           <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={2000} rows={3}

@@ -2504,7 +2504,10 @@
     "clearSearch": "Rensa sökning",
     "unreadAria": "Oläst",
     "noMatches": "Inga meddelanden matchar \"{query}\"",
-    "legalNote": "Meddelanden är en del av ditt CapitalReach-affärsunderlag och kan åberopas vid avgiftstvister."
+    "legalNote": "Meddelanden är en del av ditt CapitalReach-affärsunderlag och kan åberopas vid avgiftstvister.",
+    "markImportant": "Markera som viktig",
+    "unmarkImportant": "Ta bort markering",
+    "importantAria": "Markerad som viktig"
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",
@@ -3505,5 +3508,8 @@
     "total": "{pct} % avstått via plattformen",
     "unknown": "Ej namngiven",
     "note": "Frusen vid varje stängning — senare värderingsändringar skriver aldrig om denna historik. Rundor stängda utanför plattformen visas inte."
+  },
+  "intro": {
+    "make": "Gör en intro"
   }
 }

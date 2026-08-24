@@ -2504,7 +2504,10 @@
     "clearSearch": "Borrar búsqueda",
     "unreadAria": "No leído",
     "noMatches": "Ningún mensaje coincide con \"{query}\"",
-    "legalNote": "Los mensajes forman parte de tu expediente de operación en CapitalReach y pueden usarse en disputas sobre comisiones."
+    "legalNote": "Los mensajes forman parte de tu expediente de operación en CapitalReach y pueden usarse en disputas sobre comisiones.",
+    "markImportant": "Marcar como importante",
+    "unmarkImportant": "Quitar importancia",
+    "importantAria": "Marcado importante"
   },
   "completeness": {
     "nextBest": "Haz esto ahora",
@@ -3505,5 +3508,8 @@
     "total": "{pct}% cedido vía plataforma",
     "unknown": "No revelado",
     "note": "Congelada en el momento de cada cierre: los cambios de valoración posteriores nunca reescriben este historial. Las rondas cerradas fuera de la plataforma no aparecen."
+  },
+  "intro": {
+    "make": "Hacer una intro"
   }
 }

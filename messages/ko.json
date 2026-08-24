@@ -2504,7 +2504,10 @@
     "clearSearch": "검색 지우기",
     "unreadAria": "읽지 않음",
     "noMatches": "\"{query}\"와 일치하는 메시지가 없습니다",
-    "legalNote": "메시지는 CapitalReach 거래 기록의 일부이며 수수료 분쟁 시 참조될 수 있습니다."
+    "legalNote": "메시지는 CapitalReach 거래 기록의 일부이며 수수료 분쟁 시 참조될 수 있습니다.",
+    "markImportant": "중요 표시",
+    "unmarkImportant": "표시 해제",
+    "importantAria": "중요 표시됨"
   },
   "completeness": {
     "nextBest": "다음에 할 일",
@@ -3505,5 +3508,8 @@
     "total": "플랫폼을 통해 {pct}% 양도",
     "unknown": "비공개",
     "note": "각 성사 시점에 고정됩니다. 이후 기업가치 변동이 이 기록을 다시 쓰는 일은 없습니다. 플랫폼 밖에서 성사된 라운드는 표시되지 않습니다."
+  },
+  "intro": {
+    "make": "인트로 시작"
   }
 }

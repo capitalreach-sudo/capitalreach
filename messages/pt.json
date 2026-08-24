@@ -2504,7 +2504,10 @@
     "clearSearch": "Limpar busca",
     "unreadAria": "Não lido",
     "noMatches": "Nenhuma mensagem corresponde a \"{query}\"",
-    "legalNote": "As mensagens fazem parte do seu registo de negócio na CapitalReach e podem ser referidas em disputas sobre comissões."
+    "legalNote": "As mensagens fazem parte do seu registo de negócio na CapitalReach e podem ser referidas em disputas sobre comissões.",
+    "markImportant": "Marcar como importante",
+    "unmarkImportant": "Remover importância",
+    "importantAria": "Marcado importante"
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",
@@ -3505,5 +3508,8 @@
     "total": "{pct}% cedido via plataforma",
     "unknown": "Não divulgado",
     "note": "Congelada no momento de cada fecho — alterações de avaliação posteriores nunca reescrevem este histórico. Rondas fechadas fora da plataforma não aparecem."
+  },
+  "intro": {
+    "make": "Fazer uma intro"
   }
 }

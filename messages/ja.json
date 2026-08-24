@@ -2504,7 +2504,10 @@
     "clearSearch": "検索をクリア",
     "unreadAria": "未読",
     "noMatches": "「{query}」に一致するメッセージはありません",
-    "legalNote": "メッセージは CapitalReach のディール記録の一部であり、手数料に関する紛争で参照される場合があります。"
+    "legalNote": "メッセージは CapitalReach のディール記録の一部であり、手数料に関する紛争で参照される場合があります。",
+    "markImportant": "重要としてマーク",
+    "unmarkImportant": "マークを外す",
+    "importantAria": "重要マーク済み"
   },
   "completeness": {
     "nextBest": "次にやること",
@@ -3505,5 +3508,8 @@
     "total": "プラットフォーム経由で {pct}% 譲渡",
     "unknown": "非公開",
     "note": "各成約の時点で確定します。その後の評価額の変動がこの履歴を書き換えることはありません。プラットフォーム外の成約は表示されません。"
+  },
+  "intro": {
+    "make": "イントロを始める"
   }
 }
