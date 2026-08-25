@@ -51,7 +51,11 @@ export function DealClosedMoment({ amount, currency, counterpartName, onDone }: 
         <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 600, fontSize: "clamp(17px, 3vw, 24px)", color: "rgba(245,240,232,0.85)", marginTop: 16 }}>
           {counterpartName ? t("closed.lineNamed", { name: counterpartName }) : t("closed.line")}
         </p>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "rgba(245,240,232,0.4)", marginTop: 28 }}>
+        {/* The stamp comes down last — the ledger entry made official. */}
+        <span className="cr-stamp cr-stamp-in" style={{ position: "static", display: "inline-block", marginTop: 24, fontSize: 13, padding: "5px 14px", animationDelay: "500ms" }} aria-hidden>
+          {t("deals.colClosed")}
+        </span>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "rgba(245,240,232,0.4)", marginTop: 20 }}>
           {t("closed.dismiss")}
         </p>
       </div>

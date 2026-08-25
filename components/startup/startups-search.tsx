@@ -416,11 +416,14 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
   return (
     <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none" }}>
       <div
-        className="cr-lift cr-spot"
+        className="cr-lift cr-spot cr-tilt"
         onMouseMove={e => {
           const r = e.currentTarget.getBoundingClientRect();
-          e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+          const x = e.clientX - r.left, y = e.clientY - r.top;
+          e.currentTarget.style.setProperty("--mx", `${x}px`);
+          e.currentTarget.style.setProperty("--my", `${y}px`);
+          e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
+          e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
         }}
         style={{
           position: "relative", display: "flex", flexDirection: "column",
@@ -435,6 +438,8 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
         onMouseLeave={e => {
           (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)";
           (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)";
+          e.currentTarget.style.setProperty("--rx", "0deg");
+          e.currentTarget.style.setProperty("--ry", "0deg");
         }}
       >
         {/* Bookmark */}

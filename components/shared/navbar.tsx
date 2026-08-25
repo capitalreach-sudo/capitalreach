@@ -16,7 +16,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import type { Profile } from "@/types";
 
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 10 10" fill="none" aria-hidden>
+  <svg className="cr-diamond-live" width={size} height={size} viewBox="0 0 10 10" fill="none" aria-hidden>
     <rect x="1" y="1" width="8" height="8" rx="1"
       fill="none" stroke="var(--cr-copper)" strokeWidth="1.5"
       transform="rotate(45 5 5)" />

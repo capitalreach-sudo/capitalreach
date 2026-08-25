@@ -29,6 +29,7 @@ export function VerifiedBadge({ checks, verifiedAt, kind = "investor" }: {
     <span style={{ position: "relative", display: "inline-flex" }}>
       <button
         ref={btnRef}
+        className="cr-foil-badge"
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
         style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em", cursor: "pointer" }}>

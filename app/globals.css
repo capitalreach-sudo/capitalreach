@@ -704,6 +704,75 @@ body::before {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--cr-copper); border: 2px solid var(--cr-paper); background-clip: padding-box; }
 
+/* 3D tilt: the card leans toward the cursor like paper under a thumb.
+   Driven by --rx/--ry from the card's own mousemove; only on devices with
+   a real hover, never under reduced motion. Pairs with .cr-spot. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .cr-tilt {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 160ms ease, box-shadow 180ms ease, border-color 120ms ease;
+    will-change: transform;
+  }
+  .cr-tilt:hover {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-2px);
+  }
+}
+
+/* The ink stamp: a finalised deal is STAMPED, the way a ledger entry is.
+   Double rule, tilted, slightly worn (mask), deliberately imperfect. */
+.cr-stamp {
+  position: absolute; top: 10px; right: 10px; pointer-events: none;
+  transform: rotate(-12deg);
+  border: 2px double var(--cr-up); border-radius: 3px;
+  color: var(--cr-up); background: transparent;
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px;
+  opacity: 0.75;
+  -webkit-mask-image: radial-gradient(120% 100% at 30% 40%, #000 55%, rgba(0,0,0,0.55) 100%);
+  mask-image: radial-gradient(120% 100% at 30% 40%, #000 55%, rgba(0,0,0,0.55) 100%);
+}
+.cr-stamp-in { animation: cr-stamp-in 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+@keyframes cr-stamp-in {
+  from { transform: rotate(-12deg) scale(2.4); opacity: 0; }
+  60%  { opacity: 0.9; }
+  to   { transform: rotate(-12deg) scale(1); opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) { .cr-stamp-in { animation: none; } }
+
+/* Foil sweep: a light passes across the verified badge on hover — the
+   badge is foil, and foil catches light. */
+.cr-foil-badge { position: relative; overflow: hidden; }
+.cr-foil-badge::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  transform: translateX(-110%);
+}
+.cr-foil-badge:hover::before { transition: transform 600ms ease; transform: translateX(110%); }
+@media (prefers-reduced-motion: reduce) { .cr-foil-badge::before { display: none; } }
+
+/* The market pulse: one slow heartbeat drawn behind the Data Centre title.
+   Dash-animated stroke; ink-alpha so both themes read it as their own. */
+.cr-pulse path {
+  fill: none; stroke: var(--cr-copper); stroke-width: 1.5; opacity: 0.35;
+  stroke-dasharray: 480; stroke-dashoffset: 480;
+  animation: cr-pulse-draw 5s ease-in-out infinite;
+}
+@keyframes cr-pulse-draw {
+  0% { stroke-dashoffset: 480; opacity: 0; }
+  25% { opacity: 0.35; }
+  60% { stroke-dashoffset: 0; opacity: 0.35; }
+  100% { stroke-dashoffset: -480; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .cr-pulse { display: none; } }
+
+/* The living diamond: the brand mark glints when greeted. */
+.cr-diamond-live { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 400ms ease; }
+a:hover > .cr-diamond-live {
+  transform: rotate(90deg) scale(1.12);
+  filter: drop-shadow(0 0 6px rgba(184,115,51,0.5));
+}
+@media (prefers-reduced-motion: reduce) { .cr-diamond-live, a:hover > .cr-diamond-live { transition: none; transform: none; } }
+
 /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */
 .cr-lift {
@@ -1082,6 +1151,75 @@ body::before {
   border: 2px solid var(--cr-paper); background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--cr-copper); border: 2px solid var(--cr-paper); background-clip: padding-box; }
+
+/* 3D tilt: the card leans toward the cursor like paper under a thumb.
+   Driven by --rx/--ry from the card's own mousemove; only on devices with
+   a real hover, never under reduced motion. Pairs with .cr-spot. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .cr-tilt {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 160ms ease, box-shadow 180ms ease, border-color 120ms ease;
+    will-change: transform;
+  }
+  .cr-tilt:hover {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-2px);
+  }
+}
+
+/* The ink stamp: a finalised deal is STAMPED, the way a ledger entry is.
+   Double rule, tilted, slightly worn (mask), deliberately imperfect. */
+.cr-stamp {
+  position: absolute; top: 10px; right: 10px; pointer-events: none;
+  transform: rotate(-12deg);
+  border: 2px double var(--cr-up); border-radius: 3px;
+  color: var(--cr-up); background: transparent;
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px;
+  opacity: 0.75;
+  -webkit-mask-image: radial-gradient(120% 100% at 30% 40%, #000 55%, rgba(0,0,0,0.55) 100%);
+  mask-image: radial-gradient(120% 100% at 30% 40%, #000 55%, rgba(0,0,0,0.55) 100%);
+}
+.cr-stamp-in { animation: cr-stamp-in 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+@keyframes cr-stamp-in {
+  from { transform: rotate(-12deg) scale(2.4); opacity: 0; }
+  60%  { opacity: 0.9; }
+  to   { transform: rotate(-12deg) scale(1); opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) { .cr-stamp-in { animation: none; } }
+
+/* Foil sweep: a light passes across the verified badge on hover — the
+   badge is foil, and foil catches light. */
+.cr-foil-badge { position: relative; overflow: hidden; }
+.cr-foil-badge::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  transform: translateX(-110%);
+}
+.cr-foil-badge:hover::before { transition: transform 600ms ease; transform: translateX(110%); }
+@media (prefers-reduced-motion: reduce) { .cr-foil-badge::before { display: none; } }
+
+/* The market pulse: one slow heartbeat drawn behind the Data Centre title.
+   Dash-animated stroke; ink-alpha so both themes read it as their own. */
+.cr-pulse path {
+  fill: none; stroke: var(--cr-copper); stroke-width: 1.5; opacity: 0.35;
+  stroke-dasharray: 480; stroke-dashoffset: 480;
+  animation: cr-pulse-draw 5s ease-in-out infinite;
+}
+@keyframes cr-pulse-draw {
+  0% { stroke-dashoffset: 480; opacity: 0; }
+  25% { opacity: 0.35; }
+  60% { stroke-dashoffset: 0; opacity: 0.35; }
+  100% { stroke-dashoffset: -480; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .cr-pulse { display: none; } }
+
+/* The living diamond: the brand mark glints when greeted. */
+.cr-diamond-live { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 400ms ease; }
+a:hover > .cr-diamond-live {
+  transform: rotate(90deg) scale(1.12);
+  filter: drop-shadow(0 0 6px rgba(184,115,51,0.5));
+}
+@media (prefers-reduced-motion: reduce) { .cr-diamond-live, a:hover > .cr-diamond-live { transition: none; transform: none; } }
 
 /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */

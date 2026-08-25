@@ -843,11 +843,18 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                     const grad = GRAD_COLORS[idx % GRAD_COLORS.length];
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
-                      <div key={inv.id} className="cr-lift cr-spot group relative bg-cr-paper border border-cr-p4 rounded-2xl p-5 hover:border-cr-copper/30 transition-all duration-200 flex flex-col"
+                      <div key={inv.id} className="cr-lift cr-spot cr-tilt group relative bg-cr-paper border border-cr-p4 rounded-2xl p-5 hover:border-cr-copper/30 transition-all duration-200 flex flex-col"
                         onMouseMove={e => {
                           const r = e.currentTarget.getBoundingClientRect();
-                          e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-                          e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+                          const x = e.clientX - r.left, y = e.clientY - r.top;
+                          e.currentTarget.style.setProperty("--mx", `${x}px`);
+                          e.currentTarget.style.setProperty("--my", `${y}px`);
+                          e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
+                          e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.setProperty("--rx", "0deg");
+                          e.currentTarget.style.setProperty("--ry", "0deg");
                         }}>
                         {/* Top */}
                         <div className="flex items-start justify-between mb-4">

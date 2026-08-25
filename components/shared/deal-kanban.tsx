@@ -1750,6 +1750,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
   return (
     <div id={`deal-${deal.id}`} className="cr-lift" style={{
+      position: "relative",
       background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
       borderRadius: "4px", padding: "14px 16px",
       transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease",
@@ -1757,6 +1758,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)")}
       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
     >
+      {deal.status === "closed" && (
+        <span className="cr-stamp" aria-hidden>{t("deals.colClosed")}</span>
+      )}
       <div aria-hidden style={{ display: "flex", gap: 4, marginBottom: 8 }}>
         {[1, 2, 3, 4].map(i => (
           <span key={i} style={{

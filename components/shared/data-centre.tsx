@@ -288,15 +288,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
 
       {/* Header strip */}
-      <div style={{ background: "var(--cr-band-bg)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}>
+      <div style={{ position: "relative",  background: "var(--cr-band-bg)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px 40px 48px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
             <BarChart3 style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("data.eyebrow")}</span>
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(32px,5vw,52px)", color: "var(--cr-paper)", letterSpacing: "-0.03em", marginBottom: "12px" }}>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(32px,5vw,52px)", color: "var(--cr-band-ink)", letterSpacing: "-0.03em", marginBottom: "12px" }}>
             {t("data.title")}
           </h1>
+          {/* The pulse of the market, drawn once every five seconds. */}
+          <svg className="cr-pulse" aria-hidden viewBox="0 0 480 40" style={{ position: "absolute", left: 0, right: 0, top: 8, width: "min(480px, 90%)", height: 40, pointerEvents: "none" }}>
+            <path d="M0 20 H140 L155 20 165 6 178 34 190 14 200 20 H300 L315 20 325 10 338 30 350 20 H480" />
+          </svg>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)", maxWidth: "480px", lineHeight: 1.6 }}>
             {t("data.subtitle")}
           </p>
@@ -626,7 +630,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
 
             {/* CTA */}
             <div style={{ background: "var(--cr-band-bg)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-paper)", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
                 {t("data.featuredHereSub")}
               </p>
