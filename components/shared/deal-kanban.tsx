@@ -1566,22 +1566,50 @@ function ActivitySection({ dealId }: { dealId: string }) {
           {!loading && loaded && activity.length === 0 && (
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noActivity")}</p>
           )}
-          {!loading && activity.map(a => (
-            <div key={a.id} style={{ padding: "6px 0", borderBottom: "1px solid var(--cr-rule)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>
-                  {t(ACTIVITY_ICON_KEY[a.type])}
-                  {a.actor?.full_name ? ` · ${a.actor.full_name}` : ""}
-                </span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>
-                  {formatDate(a.created_at)}
-                </span>
-              </div>
-              {a.body && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", marginTop: "2px" }}>{a.body}</p>
-              )}
+          {/* The timeline: a rail of typed dots, newest first. A deal's whole
+              life readable in one column — proposed, agreed, every stage,
+              every signature, every note, the close. */}
+          {!loading && activity.length > 0 && (
+            <div style={{ position: "relative", paddingLeft: 16 }}>
+              <span aria-hidden style={{ position: "absolute", left: 3.5, top: 8, bottom: 8, width: 1, background: "var(--cr-rule-dark)" }} />
+              {activity.map(a => {
+                const DOT: Record<string, string> = {
+                  note: "var(--cr-ink-4)", status_change: "var(--cr-copper)",
+                  contract_status: "var(--cr-copper)", nda_signed: "var(--cr-up)",
+                  success_fee: "var(--cr-copper)", circumvention_acknowledged: "var(--cr-up)",
+                };
+                // Stage moves store machine ids ("intro>due_diligence"); render
+                // them in the viewer's language with the board's own labels.
+                let body: string | null = a.body;
+                if (a.type === "status_change" && a.body?.includes(">")) {
+                  const [movePart, notePart] = a.body.split(" · ");
+                  const [from, to] = movePart.split(">");
+                  const LBL: Record<string, string> = {
+                    intro: t("deals.colIntro"), due_diligence: t("deals.colNegotiation"),
+                    term_sheet: t("deals.colTermSheet"), closed: t("deals.colClosed"), passed: t("deals.colPassed"),
+                  };
+                  body = `${LBL[from] ?? from} → ${LBL[to] ?? to}${notePart ? ` · ${notePart}` : ""}`;
+                }
+                return (
+                  <div key={a.id} style={{ position: "relative", padding: "6px 0" }}>
+                    <span aria-hidden style={{ position: "absolute", left: -16, top: 12, width: 8, height: 8, borderRadius: "50%", background: DOT[a.type] ?? "var(--cr-ink-4)", border: "2px solid var(--cr-paper-2)" }} />
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>
+                        {t(ACTIVITY_ICON_KEY[a.type])}
+                        {a.actor?.full_name ? ` · ${a.actor.full_name}` : ""}
+                      </span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>
+                        {formatDate(a.created_at)}
+                      </span>
+                    </div>
+                    {body && (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", marginTop: "2px" }}>{body}</p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
 
           <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
             <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder={t("deals.addNotePlaceholder")}

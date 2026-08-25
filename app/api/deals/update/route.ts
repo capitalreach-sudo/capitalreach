@@ -158,6 +158,18 @@ export async function POST(req: NextRequest) {
 
   if (Object.keys(updates).length > 0) {
     const { error } = await supabase.from("deals").update(updates).eq("id", dealId);
+
+    // Every stage move joins the timeline. The body is machine-readable
+    // ("intro>due_diligence"); the client renders it in the viewer's
+    // language — free-text here would freeze one locale into the history.
+    if (!error && status !== undefined && status !== deal.status) {
+      const adminLog = createAdminClient();
+      await adminLog.from("deal_activity").insert({
+        deal_id: dealId, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: user.id,
+        type: "status_change",
+        body: `${deal.status}>${status}${reason ? ` · ${String(reason).slice(0, 200)}` : ""}`,
+      }).then(undefined, () => {});
+    }
     if (error) {
       console.error("[deals/update]", error);
       return NextResponse.json({ error: "Failed to update deal" }, { status: 500 });
