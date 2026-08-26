@@ -186,6 +186,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     return th.startup?.slug || "";
   };
 
+  // Declared ABOVE filteredThreads on purpose: the sort below reads
+  // importantIds, and a const read before its declaration is a
+  // ReferenceError at render — this exact ordering crashed the whole
+  // messages page for every user ("Something went wrong", both roles).
+  const [archivedIds, setArchivedIds] = useState<Set<string>>(new Set());
+  const [showArchived, setShowArchived] = useState(false);
+  // Per-user importance stars (migration 100): starred threads pin to the
+  // top of the list and wear a copper marker; the other side never sees it.
+  const [importantIds, setImportantIds] = useState<Set<string>>(new Set());
+
   const filteredThreads = initialThreads.filter(t => {
     const label = getLabel(t);
     const searchMatch = !search || label.toLowerCase().includes(search.toLowerCase());
@@ -212,11 +222,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   // Per-user archive (migration 052) + in-thread message search. Archived
   // threads leave the default list but stay one toggle away -- an archive
   // you cannot see into is a trash can.
-  const [archivedIds, setArchivedIds] = useState<Set<string>>(new Set());
-  const [showArchived, setShowArchived] = useState(false);
-  // Per-user importance stars (migration 100): starred threads pin to the
-  // top of the list and wear a copper marker; the other side never sees it.
-  const [importantIds, setImportantIds] = useState<Set<string>>(new Set());
+  // (archive/importance state is declared above the thread list that
+  // consumes it — see the TDZ note there.)
   const [msgQuery, setMsgQuery] = useState("");
   useEffect(() => {
     fetch("/api/messages/archive").then(r => r.ok ? r.json() : null)
