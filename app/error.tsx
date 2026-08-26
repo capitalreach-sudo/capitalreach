@@ -26,6 +26,22 @@ export default function Error({
   reset: () => void;
 }) {
   const { t } = useTranslation();
+
+  // Stale-chunk self-heal: after a deploy, a browser still holding the old
+  // page requests JS chunks that no longer exist — the crash looks like
+  // "something went wrong" and reset() re-crashes forever because the chunk
+  // is still gone. The only real fix is a full reload for the new build;
+  // one automatic attempt, guarded so a genuinely broken build cannot loop.
+  useEffect(() => {
+    const msg = `${error?.name ?? ""} ${error?.message ?? ""}`;
+    const isChunkError = /ChunkLoadError|Loading chunk|Failed to fetch dynamically imported module|Importing a module script failed/i.test(msg);
+    if (isChunkError && !sessionStorage.getItem("cr_chunk_reloaded")) {
+      sessionStorage.setItem("cr_chunk_reloaded", "1");
+      window.location.reload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     // The digest is the only handle on the real stack once this is deployed --
     // Next strips messages from client bundles in production.
@@ -54,7 +70,18 @@ export default function Error({
 
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
         <button
-          onClick={reset}
+          onClick={() => {
+            // First press: re-render in place (transient failures recover).
+            // Second press within the same error: the state is not transient
+            // — do the thing that actually works, a full reload.
+            if (sessionStorage.getItem("cr_err_reset_tried")) {
+              sessionStorage.removeItem("cr_err_reset_tried");
+              window.location.reload();
+              return;
+            }
+            sessionStorage.setItem("cr_err_reset_tried", "1");
+            reset();
+          }}
           style={{
             height: "40px", padding: "0 22px", background: "var(--cr-copper)",
             border: "none", borderRadius: "4px", cursor: "pointer",

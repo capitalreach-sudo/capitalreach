@@ -28,38 +28,27 @@ export default async function MessagesPage() {
       redirect("/auth/login?redirect=/dashboard/messages");
     }
 
-    if (profile.role === "startup") {
-      const { data: startup } = await supabase
-        .from("startups")
-        .select("id")
-        .eq("owner_id", user.id)
-        .single();
-      if (startup) {
-        myStartupId = startup.id;
-        const { data } = await supabase
-          .from("threads")
-          .select("*, investor:investors!threads_investor_id_fkey(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug), recipient_startup:startups!threads_recipient_startup_id_fkey(name, slug)")
-          .or(`startup_id.eq.${startup.id},recipient_startup_id.eq.${startup.id}`)
-          .order("updated_at", { ascending: false });
-        threads = data || [];
-      }
-    } else if (profile.role === "investor") {
-      const { data: investor } = await supabase
-        .from("investors")
-        .select("id")
-        .eq("owner_id", user.id)
-        .single();
-      if (investor) {
-        myInvestorId = investor.id;
-        const { data } = await supabase
-          .from("threads")
-          .select("*, investor:investors!threads_investor_id_fkey(slug, type, display_name, firm_name), recipient_investor:investors!threads_recipient_investor_id_fkey(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug)")
-          // C32: an investor is a participant either as the deal-side
-          // investor or as the recipient of a co-investor share.
-          .or(`investor_id.eq.${investor.id},recipient_investor_id.eq.${investor.id}`)
-          .order("updated_at", { ascending: false });
-        threads = data || [];
-      }
+    // Threads by ENTITY OWNERSHIP, not by role. The old role branches left
+    // two classes of people staring at an empty inbox: admins who also own
+    // an entity (their sent conversations never listed), and anyone owning
+    // both kinds of profile. One query, all four participant columns.
+    const [{ data: myStartups }, { data: myInvestors }] = await Promise.all([
+      supabase.from("startups").select("id").eq("owner_id", user.id).limit(1),
+      supabase.from("investors").select("id").eq("owner_id", user.id).limit(1),
+    ]);
+    myStartupId = myStartups?.[0]?.id ?? null;
+    myInvestorId = myInvestors?.[0]?.id ?? null;
+
+    const ors: string[] = [];
+    if (myStartupId) ors.push(`startup_id.eq.${myStartupId}`, `recipient_startup_id.eq.${myStartupId}`);
+    if (myInvestorId) ors.push(`investor_id.eq.${myInvestorId}`, `recipient_investor_id.eq.${myInvestorId}`);
+    if (ors.length) {
+      const { data } = await supabase
+        .from("threads")
+        .select("*, investor:investors!threads_investor_id_fkey(slug, type, display_name, firm_name), recipient_investor:investors!threads_recipient_investor_id_fkey(slug, type, display_name, firm_name), startup:startups!threads_startup_id_fkey(name, slug), recipient_startup:startups!threads_recipient_startup_id_fkey(name, slug)")
+        .or(ors.join(","))
+        .order("updated_at", { ascending: false });
+      threads = data || [];
     }
   } catch {
     // DB not connected — redirect to login
