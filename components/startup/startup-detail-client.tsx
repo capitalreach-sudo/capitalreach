@@ -427,7 +427,11 @@ export function StartupDetailClient({
   const [messageBody, setMessageBody]           = useState("");
   const [sendingMessage, setSendingMessage]     = useState(false);
   const [interestAmount, setInterestAmount]     = useState("");
-  const [interestCurrency, setInterestCurrency] = useState<string>(DEFAULT_CURRENCY);
+  const [interestCurrency, setInterestCurrency] = useState<string>(
+    // The listing's own round currency is the only sensible default — a €68k
+    // round proposed in USD read as a different offer than the one made.
+    ((startup as { currency?: string | null }).currency ?? DEFAULT_CURRENCY),
+  );
   const [aiReport, setAiReport]                 = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [ndaLoading, setNdaLoading]             = useState(false);

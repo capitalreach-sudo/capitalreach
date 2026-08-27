@@ -2000,8 +2000,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </div>
       )}
 
-      {/* Close deal */}
-      {isActive && onDealClose && !showCloseForm && !deal.close_proposed_at && (
+      {/* Close deal — only from Final proposal: the process ends where the
+          contract lives, not from the middle of a conversation. */}
+      {isActive && deal.status === "term_sheet" && onDealClose && !showCloseForm && !deal.close_proposed_at && (
         <button onClick={() => setShowCloseForm(true)}
           style={{ marginTop: "10px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "7px 0", cursor: "pointer" }}>
           <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.closeDeal")}
@@ -2329,15 +2330,26 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   );
 
   if (deals.length === 0) {
+    // The empty state must still carry the PROPOSAL column: a founder's
+    // FIRST contact with the pipeline is an incoming request, and hiding
+    // the whole board behind "No deals yet" hid the Accept button from
+    // exactly the person it was for (found live, twice).
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px", textAlign: "center" }}>
-        <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("deals.emptyTitle")}</p>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "20px" }}>
-          {t("deals.emptyDesc")}
-        </p>
-        {newDealButton}
-        {modal}
+      <div>
+        <div style={{ overflowX: "auto", marginBottom: 8 }}>
+          <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
+            <DealProposals variant="column" onChanged={onProposalsChanged} />
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 24px 80px", textAlign: "center" }}>
+          <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("deals.emptyTitle")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "20px" }}>
+            {t("deals.emptyDesc")}
+          </p>
+          {newDealButton}
+          {modal}
+        </div>
       </div>
     );
   }
