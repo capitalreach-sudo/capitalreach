@@ -3317,7 +3317,8 @@
     "revoke": "Révoquer",
     "opens": "ouvert {n}×",
     "withDocs": "documents inclus",
-    "docsNeedGrowth": "Partager des documents via un lien fait partie de l'offre Growth. Le lien a été créé sans eux."
+    "docsNeedGrowth": "Partager des documents via un lien fait partie de l'offre Growth. Le lien a été créé sans eux.",
+    "copyLink": "Copier le lien"
   },
   "bench": {
     "title": "Où vous en êtes — {n} levées en cours à votre stade",

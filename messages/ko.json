@@ -3317,7 +3317,8 @@
     "revoke": "취소",
     "opens": "{n}회 열림",
     "withDocs": "자료 포함",
-    "docsNeedGrowth": "링크로 자료를 공유하는 기능은 Growth 플랜입니다. 자료 없이 링크를 만들었습니다."
+    "docsNeedGrowth": "링크로 자료를 공유하는 기능은 Growth 플랜입니다. 자료 없이 링크를 만들었습니다.",
+    "copyLink": "링크 복사"
   },
   "bench": {
     "title": "현재 위치 — 같은 단계의 진행 중 라운드 {n}건",

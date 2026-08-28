@@ -10,10 +10,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = brand.url;
   const supabase = createAdminClient();
 
+  // Sample listings NEVER reach crawlers: a search result for a fictional
+  // company is an SEO penalty and a trust incident in one. They stay on the
+  // site (labeled), they stay out of the index.
   const { data: startups } = await supabase
     .from("startups")
     .select("slug, updated_at")
-    .eq("status", "active");
+    .eq("status", "active")
+    .eq("is_demo", false);
 
   // Only investors whose account is in good standing; a suspended investor's
   // profile shouldn't be advertised to crawlers. Joined through the owner
@@ -23,6 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select("slug, created_at, owner:profiles!owner_id(suspended, account_status)")
     // B18: never advertise a founder's private off-platform contact.
     .eq("is_external", false)
+    .eq("is_demo", false)
     .then((r) => ({
       data: (r.data ?? []).filter((i) => {
         const o = i.owner as { suspended?: boolean | null; account_status?: string | null } | null;

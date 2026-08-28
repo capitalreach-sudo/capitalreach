@@ -3317,7 +3317,8 @@
     "revoke": "取り消す",
     "opens": "{n} 回開かれました",
     "withDocs": "資料つき",
-    "docsNeedGrowth": "リンクで資料を共有できるのは Growth プランです。資料なしでリンクを作成しました。"
+    "docsNeedGrowth": "リンクで資料を共有できるのは Growth プランです。資料なしでリンクを作成しました。",
+    "copyLink": "リンクをコピー"
   },
   "bench": {
     "title": "現在地 — 同ステージの進行中ラウンド {n} 件",

@@ -21,7 +21,6 @@ import { ndaText } from "@/lib/nda-text";
 import { CURRENCIES, DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
-import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
@@ -427,6 +426,7 @@ export function StartupDetailClient({
   const [messageBody, setMessageBody]           = useState("");
   const [sendingMessage, setSendingMessage]     = useState(false);
   const [interestAmount, setInterestAmount]     = useState("");
+  const [shareMenuOpen, setShareMenuOpen]       = useState(false);
   const [interestCurrency, setInterestCurrency] = useState<string>(
     // The listing's own round currency is the only sensible default — a €68k
     // round proposed in USD read as a different offer than the one made.
@@ -808,33 +808,38 @@ export function StartupDetailClient({
                   <Bookmark style={{ width: 13, height: 13, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
                   {isSaved ? t("toast.saved") : t("common.saveWatchlist")}
                 </button>
-                <button
-                  onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); }}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-                  <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")}
-                </button>
-                <button
-                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer")}
-                  aria-label={t("startupDetail.shareX")}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-                  <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.shareX")}
-                </button>
-                <button
-                  onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer")}
-                  aria-label={t("startupDetail.shareLinkedIn")}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-                  <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.shareLinkedIn")}
-                </button>
-                <Link href={`/startups/${startup.slug}/one-pager`} target="_blank"
-                  style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none" }}>
-                  <FileText style={{ width: 13, height: 13 }} /> {t("onePager.open")}
-                </Link>
+                {/* One Share menu instead of five sibling buttons: copy link,
+                    X, LinkedIn, the one-pager and the PDF are all the same
+                    intent — "take this listing somewhere else" — and they
+                    were crowding out the actions that live HERE. */}
+                <span style={{ position: "relative", display: "inline-flex" }}>
+                  <button onClick={() => setShareMenuOpen(o => !o)} aria-expanded={shareMenuOpen}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
+                    <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")} ▾
+                  </button>
+                  {shareMenuOpen && (
+                    <>
+                      <span onClick={() => setShareMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 60 }} />
+                      <span style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 61, minWidth: 200, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, boxShadow: "var(--cr-card-shadow-hover)", padding: 6, display: "flex", flexDirection: "column" }}>
+                        {[
+                          { label: t("share.copyLink"), act: () => { navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); } },
+                          { label: t("startupDetail.shareX"), act: () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer") },
+                          { label: t("startupDetail.shareLinkedIn"), act: () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer") },
+                          { label: t("onePager.open"), act: () => window.open(`/startups/${startup.slug}/one-pager`, "_blank") },
+                          { label: t("common.exportPdf"), act: () => window.print() },
+                        ].map(item => (
+                          <button key={item.label} onClick={() => { item.act(); setShareMenuOpen(false); }}
+                            style={{ textAlign: "start", background: "none", border: "none", cursor: "pointer", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: 13, color: "var(--cr-ink-2)", padding: "8px 10px" }}
+                            onMouseEnter={e => (e.currentTarget.style.background = "var(--cr-paper-3)")}
+                            onMouseLeave={e => (e.currentTarget.style.background = "none")}>
+                            {item.label}
+                          </button>
+                        ))}
+                      </span>
+                    </>
+                  )}
+                </span>
                 {investorId && !viewerSuspended && <SharePicker startupId={startup.id} />}
-                {/* Was labeled "AI Due Diligence Report" while its only action is
-                    window.print() -- a button that promises AI and delivers the
-                    print dialog. It prints the page (including the AI report
-                    section when one is on it), so it says that now. */}
-                <PrintButton label={t("common.exportPdf")} />
                 {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
                 {/* A closed or oversubscribed round catches the demand it
                     generates instead of dead-ending it. */}

@@ -3317,7 +3317,8 @@
     "revoke": "Revoca",
     "opens": "aperto {n}×",
     "withDocs": "documenti inclusi",
-    "docsNeedGrowth": "Condividere i documenti tramite link fa parte del piano Growth. Il link è stato creato senza."
+    "docsNeedGrowth": "Condividere i documenti tramite link fa parte del piano Growth. Il link è stato creato senza.",
+    "copyLink": "Copia link"
   },
   "bench": {
     "title": "Dove ti trovi — {n} round attivi al tuo stadio",

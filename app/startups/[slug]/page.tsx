@@ -25,13 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
   const { data: startup } = await supabase
     .from("startups")
-    .select("name, tagline, industry, stage, funding_target")
+    .select("name, tagline, industry, stage, funding_target, is_demo")
     .eq("slug", params.slug)
     .single();
 
   if (!startup) return {};
 
   return {
+    // A fictional sample company must never appear in a search result.
+    ...(startup.is_demo ? { robots: { index: false, follow: false } } : {}),
     title: `${startup.name} — ${startup.tagline}`,
     description: `${startup.name} is raising for ${startup.stage}. Browse their pitch, traction, and team on CapitalReach.`,
     openGraph: {

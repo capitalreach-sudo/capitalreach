@@ -3317,7 +3317,8 @@
     "revoke": "Revogar",
     "opens": "aberto {n}×",
     "withDocs": "documentos incluídos",
-    "docsNeedGrowth": "Partilhar documentos por link faz parte do plano Growth. O link foi criado sem eles."
+    "docsNeedGrowth": "Partilhar documentos por link faz parte do plano Growth. O link foi criado sem eles.",
+    "copyLink": "Copiar link"
   },
   "bench": {
     "title": "Onde está — {n} rondas ativas na sua fase",

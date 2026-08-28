@@ -30,13 +30,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase
     .from("investors")
-    .select("slug, type, bio, display_name, firm_name")
+    .select("slug, type, bio, display_name, firm_name, is_demo")
     .eq("slug", params.slug)
     .single();
   if (!data) return {};
   const name = data.display_name || data.slug;
   const firm = data.firm_name ? ` · ${data.firm_name}` : "";
   return {
+    // Sample profiles never reach a search result.
+    ...(data.is_demo ? { robots: { index: false, follow: false } } : {}),
     title: `${name}${firm} — Investor on CapitalReach`,
     description: data.bio || `${data.type} investor on CapitalReach`,
     alternates: { canonical: `/investors/${params.slug}` },

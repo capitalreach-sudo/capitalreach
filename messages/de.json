@@ -3317,7 +3317,8 @@
     "revoke": "Widerrufen",
     "opens": "{n}× geöffnet",
     "withDocs": "Dokumente enthalten",
-    "docsNeedGrowth": "Dokumente über einen Link zu teilen gehört zum Growth-Plan. Der Link wurde ohne sie erstellt."
+    "docsNeedGrowth": "Dokumente über einen Link zu teilen gehört zum Growth-Plan. Der Link wurde ohne sie erstellt.",
+    "copyLink": "Link kopieren"
   },
   "bench": {
     "title": "Wo du stehst — {n} laufende Runden in deiner Phase",

@@ -3317,7 +3317,8 @@
     "revoke": "Återkalla",
     "opens": "öppnad {n}×",
     "withDocs": "dokument ingår",
-    "docsNeedGrowth": "Att dela dokument via en länk ingår i Growth-planen. Länken skapades utan dem."
+    "docsNeedGrowth": "Att dela dokument via en länk ingår i Growth-planen. Länken skapades utan dem.",
+    "copyLink": "Kopiera länk"
   },
   "bench": {
     "title": "Var du står — {n} pågående rundor i ditt skede",

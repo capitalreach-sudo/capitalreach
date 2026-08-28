@@ -3317,7 +3317,8 @@
     "revoke": "Unieważnij",
     "opens": "otwarto {n}×",
     "withDocs": "z dokumentami",
-    "docsNeedGrowth": "Udostępnianie dokumentów przez link należy do planu Growth. Link powstał bez nich."
+    "docsNeedGrowth": "Udostępnianie dokumentów przez link należy do planu Growth. Link powstał bez nich.",
+    "copyLink": "Kopiuj link"
   },
   "bench": {
     "title": "Gdzie jesteś — {n} otwartych rund na Twoim etapie",

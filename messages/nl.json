@@ -3317,7 +3317,8 @@
     "revoke": "Intrekken",
     "opens": "{n}× geopend",
     "withDocs": "documenten inbegrepen",
-    "docsNeedGrowth": "Documenten via een link delen hoort bij het Growth-plan. De link is zonder gemaakt."
+    "docsNeedGrowth": "Documenten via een link delen hoort bij het Growth-plan. De link is zonder gemaakt.",
+    "copyLink": "Link kopiëren"
   },
   "bench": {
     "title": "Waar je staat — {n} lopende rondes in jouw fase",

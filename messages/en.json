@@ -3317,7 +3317,8 @@
     "revoke": "Revoke",
     "opens": "opened {n}×",
     "withDocs": "documents included",
-    "docsNeedGrowth": "Sharing documents through a link is part of the Growth plan. The link was created without them."
+    "docsNeedGrowth": "Sharing documents through a link is part of the Growth plan. The link was created without them.",
+    "copyLink": "Copy link"
   },
   "bench": {
     "title": "Where you stand — {n} live rounds at your stage",

@@ -3317,7 +3317,8 @@
     "revoke": "撤销",
     "opens": "已打开 {n} 次",
     "withDocs": "含文件",
-    "docsNeedGrowth": "通过链接分享文件属于 Growth 方案。此链接已在不含文件的情况下创建。"
+    "docsNeedGrowth": "通过链接分享文件属于 Growth 方案。此链接已在不含文件的情况下创建。",
+    "copyLink": "复制链接"
   },
   "bench": {
     "title": "你的位置 —— 同阶段共有 {n} 个进行中的轮次",
