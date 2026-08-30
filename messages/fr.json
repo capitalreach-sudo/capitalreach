@@ -2476,7 +2476,11 @@
     "clearRead": "Effacer les lues",
     "unreadOnly": "Non lues uniquement",
     "soundOn": "Activer le son des notifications",
-    "soundOff": "Désactiver le son des notifications"
+    "soundOff": "Désactiver le son des notifications",
+    "tab_platform": "Plateforme",
+    "emptyFounder": "Rien de neuf. Vous saurez ici quand des investisseurs consultent, enregistrent ou proposent sur votre annonce.",
+    "emptyInvestor": "Rien de neuf. Vous saurez ici quand des fondateurs répondent, des tours avancent ou une recherche correspond.",
+    "emptyAdmin": "Rien de neuf. Les alertes plateforme, signalements et réclamations arrivent ici."
   },
   "authErrors": {
     "generic": "Une erreur s'est produite. Réessayez.",

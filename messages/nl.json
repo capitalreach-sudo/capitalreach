@@ -2476,7 +2476,11 @@
     "clearRead": "Gelezen wissen",
     "unreadOnly": "Alleen ongelezen",
     "soundOn": "Meldingsgeluid aanzetten",
-    "soundOff": "Meldingsgeluid uitzetten"
+    "soundOff": "Meldingsgeluid uitzetten",
+    "tab_platform": "Platform",
+    "emptyFounder": "Niets nieuws. Hier hoor je wanneer investeerders je vermelding bekijken, opslaan of een deal voorstellen.",
+    "emptyInvestor": "Niets nieuws. Hier hoor je wanneer founders reageren, rondes bewegen of een zoekopdracht matcht.",
+    "emptyAdmin": "Niets nieuws. Platformmeldingen, rapportages en klachten komen hier binnen."
   },
   "authErrors": {
     "generic": "Er ging iets mis. Probeer het opnieuw.",

@@ -2476,7 +2476,11 @@
     "clearRead": "清除已读",
     "unreadOnly": "仅未读",
     "soundOn": "开启通知提示音",
-    "soundOff": "关闭通知提示音"
+    "soundOff": "关闭通知提示音",
+    "tab_platform": "平台",
+    "emptyFounder": "暂无新消息。投资人查看、收藏或对你的挂牌发起提案时，会在这里通知你。",
+    "emptyInvestor": "暂无新消息。创始人回复、轮次推进或搜索匹配时，会在这里通知你。",
+    "emptyAdmin": "暂无新消息。平台警报、举报与投诉会送达这里。"
   },
   "authErrors": {
     "generic": "出了点问题，请重试。",

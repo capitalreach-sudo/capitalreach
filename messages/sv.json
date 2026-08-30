@@ -2476,7 +2476,11 @@
     "clearRead": "Rensa lästa",
     "unreadOnly": "Endast olästa",
     "soundOn": "Slå på aviseringsljud",
-    "soundOff": "Stäng av aviseringsljud"
+    "soundOff": "Stäng av aviseringsljud",
+    "tab_platform": "Plattform",
+    "emptyFounder": "Inget nytt. Här hör du när investerare tittar, sparar eller föreslår på din notering.",
+    "emptyInvestor": "Inget nytt. Här hör du när grundare svarar, rundor rör sig eller en sökning matchar.",
+    "emptyAdmin": "Inget nytt. Plattformslarm, anmälningar och klagomål hamnar här."
   },
   "authErrors": {
     "generic": "Något gick fel. Försök igen.",

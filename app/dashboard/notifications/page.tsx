@@ -9,6 +9,7 @@ import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
+import { useProfile } from "@/hooks/useProfile";
 import { soundEnabled, setSoundEnabled, playPing } from "@/lib/notification-sound";
 
 interface Row {
@@ -32,12 +33,21 @@ export default function NotificationsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
 
   // Tabs are a server-side type filter, so pagination stays correct inside a
-  // tab instead of filtering already-fetched pages client-side.
-  const TAB_TYPES: Record<string, string> = {
+  // tab instead of filtering already-fetched pages client-side — and they
+  // speak the READER's language: an operator gets a Platform tab for
+  // alerts instead of being told about "their listing" they do not have.
+  const { profile } = useProfile();
+  const role = profile?.role ?? "investor";
+  const TAB_TYPES: Record<string, string> = role === "admin" ? {
     all: "",
     deals: "deal_opened,deal_stage,deal_closed,deal_passed,follow_up_due,contract_status,nda_signed",
-    interest: "listing_saved,listing_update,search_match,interest",
-    account: "listing_approved,listing_rejected,team_added,tier_changed,message,complaint_update",
+    platform: "admin_alert,complaint_update,fee_due",
+    account: "team_added,tier_changed,message,interest",
+  } : {
+    all: "",
+    deals: "deal_opened,deal_stage,deal_closed,deal_passed,follow_up_due,contract_status,nda_signed",
+    interest: "listing_saved,listing_update,search_match,interest,doc_request",
+    account: "listing_approved,listing_rejected,team_added,tier_changed,message,verified,complaint_update,fee_due",
   };
   const [tab, setTab] = useState<keyof typeof TAB_TYPES>("all");
   const [unreadOnly, setUnreadOnly] = useState(false);
@@ -194,7 +204,7 @@ export default function NotificationsPage() {
         ) : (unreadOnly ? rows.filter((r) => !r.read_at) : rows).length === 0 ? (
           <div className="bg-cr-paper border rounded-2xl p-10 text-center">
             <BellOff className="h-8 w-8 text-cr-p4 mx-auto mb-3" />
-            <p className="text-sm text-cr-i3">{t("notifications.empty")}</p>
+            <p className="text-sm text-cr-i3">{t(role === "admin" ? "notifications.emptyAdmin" : role === "startup" ? "notifications.emptyFounder" : "notifications.emptyInvestor")}</p>
           </div>
         ) : (
           <div className="bg-cr-paper border rounded-2xl divide-y">

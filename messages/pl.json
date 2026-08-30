@@ -2476,7 +2476,11 @@
     "clearRead": "Wyczyść przeczytane",
     "unreadOnly": "Tylko nieprzeczytane",
     "soundOn": "Włącz dźwięk powiadomień",
-    "soundOff": "Wyłącz dźwięk powiadomień"
+    "soundOff": "Wyłącz dźwięk powiadomień",
+    "tab_platform": "Platforma",
+    "emptyFounder": "Nic nowego. Tu dowiesz się, gdy inwestorzy obejrzą, zapiszą lub zaproponują deal na Twoim ogłoszeniu.",
+    "emptyInvestor": "Nic nowego. Tu dowiesz się, gdy founderzy odpowiedzą, rundy ruszą lub wyszukiwanie trafi.",
+    "emptyAdmin": "Nic nowego. Alerty platformy, zgłoszenia i skargi trafiają tutaj."
   },
   "authErrors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie.",

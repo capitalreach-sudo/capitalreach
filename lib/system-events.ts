@@ -78,7 +78,7 @@ async function alertAdmins(
 
     const { notifyUsers } = await import("@/lib/notify-user");
     await notifyUsers(ids, {
-      type: "fee_due",
+      type: "admin_alert",
       title: `Something is failing: ${source}`,
       body: message.slice(0, 160),
       href: "/admin",

@@ -2476,7 +2476,11 @@
     "clearRead": "Limpar lidas",
     "unreadOnly": "Só não lidas",
     "soundOn": "Ativar som de notificações",
-    "soundOff": "Desativar som de notificações"
+    "soundOff": "Desativar som de notificações",
+    "tab_platform": "Plataforma",
+    "emptyFounder": "Nada de novo. Saberá aqui quando investidores virem, guardarem ou propuserem no seu anúncio.",
+    "emptyInvestor": "Nada de novo. Saberá aqui quando fundadores responderem, rondas avançarem ou uma pesquisa corresponder.",
+    "emptyAdmin": "Nada de novo. Alertas da plataforma, denúncias e reclamações chegam aqui."
   },
   "authErrors": {
     "generic": "Algo correu mal. Tenta de novo.",

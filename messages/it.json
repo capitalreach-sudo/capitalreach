@@ -2476,7 +2476,11 @@
     "clearRead": "Elimina le lette",
     "unreadOnly": "Solo non lette",
     "soundOn": "Attiva il suono delle notifiche",
-    "soundOff": "Disattiva il suono delle notifiche"
+    "soundOff": "Disattiva il suono delle notifiche",
+    "tab_platform": "Piattaforma",
+    "emptyFounder": "Niente di nuovo. Qui saprai quando gli investitori vedono, salvano o propongono sul tuo annuncio.",
+    "emptyInvestor": "Niente di nuovo. Qui saprai quando i founder rispondono, i round avanzano o una ricerca combacia.",
+    "emptyAdmin": "Niente di nuovo. Avvisi di piattaforma, segnalazioni e reclami arrivano qui."
   },
   "authErrors": {
     "generic": "Qualcosa è andato storto. Riprova.",

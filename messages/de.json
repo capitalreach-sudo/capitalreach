@@ -2438,7 +2438,11 @@
     "clearRead": "Gelesene entfernen",
     "unreadOnly": "Nur Ungelesene",
     "soundOn": "Benachrichtigungston einschalten",
-    "soundOff": "Benachrichtigungston ausschalten"
+    "soundOff": "Benachrichtigungston ausschalten",
+    "tab_platform": "Plattform",
+    "emptyFounder": "Nichts Neues. Hier erfahren Sie, wenn Investor:innen Ihr Listing ansehen, speichern oder einen Deal vorschlagen.",
+    "emptyInvestor": "Nichts Neues. Hier erfahren Sie, wenn Gründer:innen antworten, Runden sich bewegen oder eine Suche trifft.",
+    "emptyAdmin": "Nichts Neues. Plattform-Alarme, Meldungen und Beschwerden landen hier."
   },
   "authErrors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",

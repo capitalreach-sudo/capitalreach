@@ -34,7 +34,9 @@ export type NotificationType =
   | "fee_due"
   // Added by migration 095.
   | "complaint_update"
-  | "interest";
+  | "interest"
+  // Added by migration 101.
+  | "admin_alert";
 
 interface NotifyInput {
   userId: string;

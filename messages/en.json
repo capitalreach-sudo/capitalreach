@@ -2438,7 +2438,11 @@
     "clearRead": "Clear read",
     "unreadOnly": "Unread only",
     "soundOn": "Turn notification sound on",
-    "soundOff": "Turn notification sound off"
+    "soundOff": "Turn notification sound off",
+    "tab_platform": "Platform",
+    "emptyFounder": "Nothing new. You'll hear here when investors view, save or propose on your listing.",
+    "emptyInvestor": "Nothing new. You'll hear here when founders respond, rounds move, or a search match lands.",
+    "emptyAdmin": "Nothing new. Platform alerts, reports and complaints arrive here."
   },
   "authErrors": {
     "generic": "Something went wrong. Please try again.",

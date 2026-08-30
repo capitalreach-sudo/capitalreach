@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   const adminIds = (admins ?? []).map(a => a.id);
   if (adminIds.length) {
     await notifyUsers(adminIds, {
-      type: "fee_due",
+      type: "admin_alert",
       title: `Content reported — ${reason.replace(/_/g, " ")}`,
       body: text ? text.slice(0, 140) : `A ${targetType} was reported.`,
       href: "/admin",
