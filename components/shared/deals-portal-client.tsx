@@ -107,16 +107,29 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     )}
     {/* The consent step, above the board it gates. Admin sees every deal
         anyway and answers for neither side, so the strip is participant-only. */}
-    {viewAs === "admin" && myEntityIds.length > 0 && (
-      <div style={{ display: "inline-flex", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, overflow: "hidden", marginBottom: 16 }}>
-        {(["all", "mine"] as const).map(v => (
-          <button key={v} onClick={() => setScope(v)}
-            style={{ background: scope === v ? "var(--cr-band-bg)" : "transparent", color: scope === v ? "var(--cr-band-ink)" : "var(--cr-ink-4)", border: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, padding: "8px 18px", cursor: "pointer" }}>
-            {v === "all" ? t("deals.scopeAll") : t("deals.scopeMine")}
-          </button>
-        ))}
-      </div>
-    )}
+    {viewAs === "admin" && myEntityIds.length > 0 && (() => {
+      const mineCount = deals.filter(d => myEntityIds.includes(d.startup_id) || myEntityIds.includes(d.investor_id)).length;
+      // Two SECTIONS, not a widget: the platform ledger and your own
+      // pipeline inside it, underlined like the tabs they are.
+      return (
+        <div style={{ display: "flex", gap: 4, borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: 20 }}>
+          {([["all", t("deals.scopeAll"), deals.length], ["mine", t("deals.scopeMine"), mineCount]] as const).map(([v, label, n]) => (
+            <button key={v} onClick={() => setScope(v)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                borderBottom: scope === v ? "2px solid var(--cr-copper)" : "2px solid transparent",
+                marginBottom: -1, padding: "10px 18px",
+                fontFamily: "'DM Sans', sans-serif", fontWeight: scope === v ? 700 : 400, fontSize: 14,
+                color: scope === v ? "var(--cr-ink)" : "var(--cr-ink-4)",
+                display: "inline-flex", alignItems: "center", gap: 8,
+              }}>
+              {label}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: 11, color: scope === v ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{n}</span>
+            </button>
+          ))}
+        </div>
+      );
+    })()}
     <DealKanban
       deals={scopedDeals}
       onProposalsChanged={() => router.refresh()}

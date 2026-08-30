@@ -2127,9 +2127,10 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const [showExternal, setShowExternal] = useState(false);
   const [search, setSearch]           = useState("");
   const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set());
-  // Lifecycle filter: the question "which deals are still ALIVE?" deserved
-  // better than reading column headers. Active = neither closed nor passed.
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "closed" | "passed">("all");
+  // Stage filter: every stage of the process is a lens — Proposal focuses
+  // the request column alone, each later stage its own column; the board
+  // and the list obey the same choice.
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
   const [viewMode, setViewMode]       = useState<"kanban" | "list">("kanban");
   const [expandedCols, setExpandedCols] = useState<Set<string>>(new Set());
@@ -2258,9 +2259,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
       });
     }
     if (statusFilter !== "all") {
-      list = list.filter(d => statusFilter === "active"
-        ? d.status !== "closed" && d.status !== "passed"
-        : d.status === statusFilter);
+      list = statusFilter === "proposal" ? [] : list.filter(d => d.status === statusFilter);
     }
     const sorted = [...list];
     if (sortKey === "amount_desc") sorted.sort((a, b) => (b.amount || 0) - (a.amount || 0));
@@ -2428,11 +2427,19 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
-        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "12px", overflow: "hidden", marginRight: 4 }}>
-          {(["all", "active", "closed", "passed"] as const).map(v => (
+        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "12px", overflow: "hidden", marginRight: 4, flexWrap: "wrap" }}>
+          {([
+            ["all", t("deals.status_all")],
+            ["proposal", t("deals.colProposal")],
+            ["intro", t("deals.colIntro")],
+            ["due_diligence", t("deals.colNegotiation")],
+            ["term_sheet", t("deals.colTermSheet")],
+            ["closed", t("deals.colClosed")],
+            ["passed", t("deals.colPassed")],
+          ] as const).map(([v, label]) => (
             <button key={v} onClick={() => setStatusFilter(v)}
               style={{ background: statusFilter === v ? "var(--cr-band-bg)" : "transparent", color: statusFilter === v ? "var(--cr-band-ink)" : "var(--cr-ink-4)", border: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "6px 11px", cursor: "pointer" }}>
-              {t(`deals.status_${v}`)}
+              {label}
             </button>
           ))}
         </div>
@@ -2461,8 +2468,10 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             {/* Stage zero. A deal's life starts as a REQUEST — it deserves a
                 column, not a banner: Proposal → Talking → Negotiation →
                 Final proposal → Finalised, left to right. */}
-            <DealProposals variant="column" onChanged={onProposalsChanged} />
-            {columns.map(col => {
+            {(statusFilter === "all" || statusFilter === "proposal") && (
+              <DealProposals variant="column" onChanged={onProposalsChanged} />
+            )}
+            {columns.filter(col => statusFilter === "all" || col.status === statusFilter).map(col => {
               const colDeals = filteredDeals.filter(d => d.status === col.status);
               // A column shows its first few and says how many more there are.
               // Scrolling a column to find out what is in it is not the same as
