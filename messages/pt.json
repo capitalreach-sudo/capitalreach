@@ -1349,7 +1349,8 @@
     "status": "Estado",
     "stats": "Estatísticas da plataforma",
     "feeStrip": "Taxa de sucesso de 2% · só após o fechamento · só fundadores · nunca investidores",
-    "imprint": "Informações legais"
+    "imprint": "Informações legais",
+    "sectors": "Setores"
   },
   "feeStrip": {
     "tagline": "comissão de sucesso, paga pela startup — só após o fecho. Média do setor: 5–7% adiantados.",

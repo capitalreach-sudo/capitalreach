@@ -1349,7 +1349,8 @@
     "status": "Status",
     "stats": "Platformstatistieken",
     "feeStrip": "2% succesfee · alleen na closing · alleen founders · nooit investeerders",
-    "imprint": "Colofon"
+    "imprint": "Colofon",
+    "sectors": "Sectoren"
   },
   "feeStrip": {
     "tagline": "succesfee, betaald door de startup — pas na sluiting. Branchegemiddelde: 5–7% vooraf.",

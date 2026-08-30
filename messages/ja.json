@@ -1820,7 +1820,8 @@
     "status": "稼働状況",
     "stats": "プラットフォーム統計",
     "feeStrip": "成功報酬2%・クローズ後のみ・ファウンダーのみ・投資家には一切なし",
-    "imprint": "インプリント"
+    "imprint": "インプリント",
+    "sectors": "セクター"
   },
   "banner": {
     "text": "最初の{target}名まで無料 — {memberCount}/{target}名参加済み、残り{spotsLeft}枠。",

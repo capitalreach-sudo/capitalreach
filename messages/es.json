@@ -1820,7 +1820,8 @@
     "status": "Estado",
     "stats": "Estadísticas de la plataforma",
     "feeStrip": "2 % de comisión de éxito · solo tras el cierre · solo fundadores · nunca inversores",
-    "imprint": "Aviso legal"
+    "imprint": "Aviso legal",
+    "sectors": "Sectores"
   },
   "banner": {
     "text": "Gratis para nuestros primeros {target} miembros — {memberCount}/{target} inscritos, quedan {spotsLeft} plazas.",

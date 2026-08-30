@@ -1349,7 +1349,8 @@
     "status": "Stato",
     "stats": "Statistiche della piattaforma",
     "feeStrip": "Commissione di successo del 2% · solo dopo la chiusura · solo founder · mai gli investitori",
-    "imprint": "Note legali"
+    "imprint": "Note legali",
+    "sectors": "Settori"
   },
   "feeStrip": {
     "tagline": "success fee, pagata dalla startup — solo dopo la chiusura. Media di settore: 5–7% anticipato.",

@@ -1,4 +1,6 @@
 import { unstable_cache } from "next/cache";
+import { JsonLdScript } from "@/components/shared/json-ld";
+import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { getPlatformStats }  from "@/lib/stats";
 import { getLaunchStatus }   from "@/lib/launchMode";
@@ -82,6 +84,8 @@ export default async function HomePage() {
   return (
     <>
       <Navbar />
+      <JsonLdScript data={organizationJsonLd()} />
+      <JsonLdScript data={webSiteJsonLd()} />
       <HomepageClient stats={stats} listings={listings} launch={launch} viewerRole={viewerRole} />
       <Footer />
     </>

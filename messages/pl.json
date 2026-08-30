@@ -1349,7 +1349,8 @@
     "status": "Status",
     "stats": "Statystyki platformy",
     "feeStrip": "2% prowizji od sukcesu · tylko po zamknięciu · tylko founderzy · nigdy inwestorzy",
-    "imprint": "Nota prawna"
+    "imprint": "Nota prawna",
+    "sectors": "Branże"
   },
   "feeStrip": {
     "tagline": "prowizja od sukcesu, płacona przez startup — dopiero po zamknięciu. Średnia branżowa: 5–7% z góry.",

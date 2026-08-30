@@ -1827,7 +1827,8 @@
     "status": "Status",
     "stats": "Plattform-Statistiken",
     "feeStrip": "2 % Erfolgsgebühr · nur nach Abschluss · nur Gründer · nie Investoren",
-    "imprint": "Impressum"
+    "imprint": "Impressum",
+    "sectors": "Branchen"
   },
   "banner": {
     "text": "Kostenlos für unsere ersten {target} Mitglieder — {memberCount}/{target} beigetreten, noch {spotsLeft} Plätze übrig.",

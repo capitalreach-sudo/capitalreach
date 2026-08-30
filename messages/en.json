@@ -1831,7 +1831,8 @@
     "status": "Status",
     "stats": "Platform stats",
     "feeStrip": "2% success fee · only after close · founders only · never investors",
-    "imprint": "Imprint"
+    "imprint": "Imprint",
+    "sectors": "Sectors"
   },
   "banner": {
     "text": "Free for our first {target} members — {memberCount}/{target} joined, {spotsLeft} spots left.",

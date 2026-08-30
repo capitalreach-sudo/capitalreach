@@ -1349,7 +1349,8 @@
     "status": "Status",
     "stats": "Plattformsstatistik",
     "feeStrip": "2 % success fee · endast efter avslut · endast grundare · aldrig investerare",
-    "imprint": "Impressum"
+    "imprint": "Impressum",
+    "sectors": "Sektorer"
   },
   "feeStrip": {
     "tagline": "framgångsavgift, betalas av startupen — först efter stängning. Branschsnitt: 5–7% i förskott.",

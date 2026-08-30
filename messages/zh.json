@@ -1820,7 +1820,8 @@
     "status": "系统状态",
     "stats": "平台统计",
     "feeStrip": "2%成功佣金 · 仅在成交后 · 仅创始人 · 投资人永不付费",
-    "imprint": "法律声明"
+    "imprint": "法律声明",
+    "sectors": "行业"
   },
   "banner": {
     "text": "前 {target} 名会员免费 — 已加入 {memberCount}/{target} 人，剩余 {spotsLeft} 个名额。",

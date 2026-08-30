@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SECTOR_SLUGS } from "@/lib/industry-slugs";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const DiamondLogo = () => (
@@ -15,6 +16,11 @@ export function Footer() {
   const { t } = useTranslation();
 
   const LINK_GROUPS: [string, [string, string][]][] = [
+    // The sector landing pages are the site's search-traffic catchers —
+    // linking them from every page's footer keeps them one hop from
+    // anywhere, which is what tells crawlers they matter.
+    [t("footer.sectors"), SECTOR_SLUGS.slice(0, 6).map(({ slug, industry }) =>
+      [industry, `/startups/sector/${slug}`] as [string, string])],
     [t("footer.platform"), [
       [t("footer.browseStartups"), "/startups"],
       [t("footer.findInvestors"),  "/investors"],

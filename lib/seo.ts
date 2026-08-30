@@ -127,3 +127,33 @@ export function breadcrumbJsonLd(trail: Array<{ name: string; path: string }>): 
     })),
   };
 }
+
+
+/** The site itself, for the knowledge panel: who runs this, one canonical
+ *  name and logo. Emitted once, on the homepage. */
+export function organizationJsonLd(): JsonLd {
+  return prune({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "CapitalReach",
+    url: absoluteUrl("/"),
+    logo: absoluteUrl("/icon.png"),
+    description: "A private marketplace where startups raise capital and investors deploy it. 2% success fee, paid by the startup at close.",
+  });
+}
+
+/** WebSite with a SearchAction: tells Google the directory is searchable,
+ *  which is what earns the sitelinks search box. */
+export function webSiteJsonLd(): JsonLd {
+  return prune({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "CapitalReach",
+    url: absoluteUrl("/"),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: absoluteUrl("/startups?query={search_term_string}") },
+      "query-input": "required name=search_term_string",
+    },
+  });
+}
