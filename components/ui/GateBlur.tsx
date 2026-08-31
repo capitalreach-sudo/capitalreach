@@ -9,6 +9,8 @@ interface GateBlurProps {
   description: string;
   ctaLabel?:   string;
   ctaHref?:    string;
+  /** When the gate is contractual (an NDA), the CTA acts instead of links. */
+  onCta?:      () => void;
   children:    React.ReactNode;
 }
 
@@ -17,9 +19,12 @@ export function GateBlur({
   description,
   ctaLabel,
   ctaHref  = "/pricing",
+  onCta,
   children,
 }: GateBlurProps) {
   const { t } = useTranslation();
+  // A plain <a>-vs-<button> switch: contractual gates act in place.
+  const CtaEl = (onCta ? "button" : Link) as React.ElementType;
   return (
     <div style={{ position: "relative", borderRadius: "4px", overflow: "hidden" }}>
       <div
@@ -57,8 +62,8 @@ export function GateBlur({
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "320px" }}>
           {description}
         </p>
-        <Link
-          href={ctaHref}
+        <CtaEl
+          {...(onCta ? { onClick: onCta } : { href: ctaHref })}
           style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
             background: "var(--cr-copper)", color: "#fff",
@@ -67,7 +72,7 @@ export function GateBlur({
           }}
         >
           {ctaLabel ?? t("common.viewPlans")} →
-        </Link>
+        </CtaEl>
       </div>
     </div>
   );

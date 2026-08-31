@@ -444,7 +444,11 @@ export function StartupDetailClient({
 
   const accessCtx = { userId: investorId, role: viewerIsAdmin ? "admin" as const : investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
   const caps          = investorCan(accessCtx);
-  const canFinancials = caps.viewFinancials;
+  // NDA barrier (beyond the data room): a listing that demands an NDA keeps
+  // its NUMBERS behind it too — revenue history is exactly what an NDA is
+  // for. Tier still applies; the NDA stacks on top. Owner and admin exempt.
+  const ndaBlocksFinancials = !!startup.require_nda && !ndaSigned && !isOwner && !viewerIsAdmin;
+  const canFinancials = caps.viewFinancials && !ndaBlocksFinancials;
   const canAi         = caps.aiDiligence === "included";
   const canTeam       = caps.viewTeam;
 
@@ -1342,7 +1346,21 @@ export function StartupDetailClient({
 
         {/* ── Tab: Financials ── */}
         {activeTab === "financials" && (
-          canFinancials ? (
+          ndaBlocksFinancials && caps.viewFinancials ? (
+            <GateBlur
+              title={t("ndaGate.financialsTitle")}
+              description={t("ndaGate.financialsDesc")}
+              ctaLabel={t("startupDetail.signNdaAccess")}
+              onCta={() => setNdaModalOpen(true)}
+            >
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
+                <MetricCell label={t("startupDetail.mrr")} value="$42,000" />
+                <MetricCell label={t("startupDetail.arr")} value="$504,000" />
+                <MetricCell label={t("startupDetail.totalUsers")} value="3,200" />
+                <MetricCell label={t("startupDetail.growth")} value="14%" />
+              </div>
+            </GateBlur>
+          ) : canFinancials ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
               <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? safeFormatMRR(startup.mrr)        : null} termKey="glossary.mrr" />
               <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? safeFormatMRR(startup.arr)        : null} termKey="glossary.arr" />

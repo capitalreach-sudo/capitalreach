@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "发起引荐"
+  },
+  "ndaGate": {
+    "financialsTitle": "查看财务需签署 NDA",
+    "financialsDesc": "该公司在保密协议下共享数据。签署一次即可解锁财务、历史与 AI 报告。"
   }
 }

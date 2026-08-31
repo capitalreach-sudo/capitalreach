@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "Maak een intro"
+  },
+  "ndaGate": {
+    "financialsTitle": "NDA vereist voor financiën",
+    "financialsDesc": "Dit bedrijf deelt zijn cijfers onder een geheimhoudingsovereenkomst. Eén keer tekenen en financiën, historie en AI-rapporten ontgrendelen."
   }
 }

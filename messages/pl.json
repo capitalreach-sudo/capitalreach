@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "Zrób intro"
+  },
+  "ndaGate": {
+    "financialsTitle": "Finanse wymagają NDA",
+    "financialsDesc": "Ta firma udostępnia liczby na podstawie umowy o poufności. Podpisz raz, a finanse, historia i raporty AI się odblokują."
   }
 }

@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "Make an intro"
+  },
+  "ndaGate": {
+    "financialsTitle": "NDA required for financials",
+    "financialsDesc": "This company shares its numbers under a non-disclosure agreement. Sign it once and the financials, history and AI reports unlock."
   }
 }

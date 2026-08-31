@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "Intro starten"
+  },
+  "ndaGate": {
+    "financialsTitle": "NDA für Finanzzahlen erforderlich",
+    "financialsDesc": "Dieses Unternehmen teilt seine Zahlen unter einer Vertraulichkeitsvereinbarung. Einmal unterschreiben — Finanzzahlen, Historie und KI-Berichte werden freigeschaltet."
   }
 }

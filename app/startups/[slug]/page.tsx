@@ -317,7 +317,8 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   // tier (or the owner outside preview). Fetched only when it will render, so
   // a gated viewer's payload does not carry the curve either.
   let metricHistory: Array<{ month: string; mrr: number | null; arr: number | null; user_count: number | null; paying_customers: number | null }> = [];
-  if (viewerCaps.viewFinancials || (isOwner && !previewing) || (viewerIsAdmin && !previewing)) {
+  const ndaBlocksNumbers = !!startup.require_nda && !ndaSigned && !isOwner && !viewerIsAdmin;
+  if ((viewerCaps.viewFinancials && !ndaBlocksNumbers) || (isOwner && !previewing) || (viewerIsAdmin && !previewing)) {
     const { data: mh } = await createAdminClient()
       .from("startup_metrics")
       .select("month, mrr, arr, user_count, paying_customers")

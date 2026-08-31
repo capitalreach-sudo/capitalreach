@@ -106,6 +106,15 @@ export async function POST(req: NextRequest) {
       const { data: nda } = await supabase.from("nda_records").select("signed_at").match({ startup_id: startupId, investor_id: investor.id }).maybeSingle();
       ndaSigned = !!nda?.signed_at;
     }
+    // NDA barrier on the WHOLE report for NDA listings: an AI distillation
+    // of the company's numbers and materials is exactly what the NDA
+    // protects — filtering documents alone still leaked the analysis.
+    if (startup.require_nda && !ndaSigned && profile?.role !== "admin") {
+      return NextResponse.json(
+        { error: "This company requires a signed NDA before due diligence. Sign it on their listing first.", code: "NDA_REQUIRED" },
+        { status: 403 },
+      );
+    }
     const allowed = all.filter((d) => {
       const locked = d.requires_nda || startup.require_nda;
       return !locked || ndaSigned || profile?.role === "admin";

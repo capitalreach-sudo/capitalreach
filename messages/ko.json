@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "인트로 시작"
+  },
+  "ndaGate": {
+    "financialsTitle": "재무 정보에는 NDA가 필요합니다",
+    "financialsDesc": "이 회사는 비밀유지계약 하에 수치를 공개합니다. 한 번 서명하면 재무, 이력, AI 리포트가 열립니다."
   }
 }

@@ -3527,5 +3527,9 @@
   },
   "intro": {
     "make": "Gör en intro"
+  },
+  "ndaGate": {
+    "financialsTitle": "NDA krävs för finansiella data",
+    "financialsDesc": "Bolaget delar sina siffror under sekretessavtal. Skriv under en gång så låses finanser, historik och AI-rapporter upp."
   }
 }
