@@ -121,7 +121,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{startup.name}</span>
-              {startup.verified_at && <BadgeCheck aria-label="verified" style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0 }} />}
+              {startup.verified_at && <BadgeCheck aria-label={t("investors.verifiedBadge")} style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0 }} />}
               {startup.is_demo && <DemoBadge />}
               {(startup.round_state === "oversubscribed" || startup.round_state === "closed") && (
                 <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontStyle: "normal", fontWeight: 600, fontSize: "9px", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 6px", borderRadius: "3px",

@@ -55,7 +55,8 @@
     "proofUpfront": "初期費用",
     "proofVetted": "掲載はすべて審査済み",
     "whoPays": "2% の成功報酬は投資を受けるスタートアップが支払います — 請求はラウンド成約後のみ。投資家が支払うことはありません。",
-    "ctaDashboard": "ダッシュボードを開く"
+    "ctaDashboard": "ダッシュボードを開く",
+    "proofAria": "3つの数字で見るCapitalReach"
   },
   "feeStrip": {
     "tagline": "成功報酬、スタートアップが支払い — 成約後のみ。業界平均：前払い 5〜7%。",
@@ -2452,7 +2453,8 @@
     "pageDeals": "ディールポータル",
     "pageMessages": "メッセージ",
     "pageData": "データセンター",
-    "pagePricing": "料金"
+    "pagePricing": "料金",
+    "openAria": "コマンドパレットを開く"
   },
   "shortcuts": {
     "title": "キーボードショートカット",

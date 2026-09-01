@@ -197,7 +197,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
 
       {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
       <section
-        aria-label="CapitalReach in three numbers"
+        aria-label={t("hero.proofAria")}
         style={{ background: "var(--cr-band-bg)", borderTop: "1px solid rgba(181,101,29,0.2)", borderBottom: "1px solid rgba(181,101,29,0.2)", position: "relative", overflow: "hidden" }}
       >
         <div className="hero-noise" aria-hidden />

@@ -55,7 +55,8 @@
     "proofUpfront": "kosztów na start",
     "proofVetted": "ofert zweryfikowanych",
     "whoPays": "Prowizję od sukcesu 2% płaci startup otrzymujący inwestycję — fakturowaną dopiero po zamknięciu rundy. Inwestorzy nigdy jej nie płacą.",
-    "ctaDashboard": "Otwórz panel"
+    "ctaDashboard": "Otwórz panel",
+    "proofAria": "CapitalReach w trzech liczbach"
   },
   "trustIndicators": {
     "startupsListed": "startupów na liście",
@@ -2452,7 +2453,8 @@
     "pageDeals": "Portal transakcji",
     "pageMessages": "Wiadomości",
     "pageData": "Centrum danych",
-    "pagePricing": "Cennik"
+    "pagePricing": "Cennik",
+    "openAria": "Otwórz paletę poleceń"
   },
   "shortcuts": {
     "title": "Skróty klawiszowe",

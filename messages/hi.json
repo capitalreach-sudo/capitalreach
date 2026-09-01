@@ -55,7 +55,8 @@
     "proofUpfront": "अग्रिम लागत",
     "proofVetted": "लिस्टिंग जाँची गईं",
     "whoPays": "2% सफलता शुल्क निवेश पाने वाला स्टार्टअप देता है — बिल केवल राउंड बंद होने के बाद। निवेशक इसे कभी नहीं देते।",
-    "ctaDashboard": "डैशबोर्ड खोलें"
+    "ctaDashboard": "डैशबोर्ड खोलें",
+    "proofAria": "तीन आँकड़ों में CapitalReach"
   },
   "trustIndicators": {
     "startupsListed": "स्टार्टअप सूचीबद्ध",
@@ -2452,7 +2453,8 @@
     "pageDeals": "डील पोर्टल",
     "pageMessages": "संदेश",
     "pageData": "डेटा सेंटर",
-    "pagePricing": "मूल्य"
+    "pagePricing": "मूल्य",
+    "openAria": "कमांड पैलेट खोलें"
   },
   "shortcuts": {
     "title": "कीबोर्ड शॉर्टकट",

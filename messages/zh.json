@@ -55,7 +55,8 @@
     "proofUpfront": "前期费用",
     "proofVetted": "项目已审核",
     "whoPays": "2% 成功费由获得投资的创业公司支付 — 仅在融资完成后开票。投资者从不支付。",
-    "ctaDashboard": "打开仪表盘"
+    "ctaDashboard": "打开仪表盘",
+    "proofAria": "三个数字看懂 CapitalReach"
   },
   "feeStrip": {
     "tagline": "成功费，由创业公司支付 — 仅在成交后。行业平均：预付 5–7%。",
@@ -2452,7 +2453,8 @@
     "pageDeals": "交易门户",
     "pageMessages": "消息",
     "pageData": "数据中心",
-    "pagePricing": "价格"
+    "pagePricing": "价格",
+    "openAria": "打开命令面板"
   },
   "shortcuts": {
     "title": "键盘快捷键",

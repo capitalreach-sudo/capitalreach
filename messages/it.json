@@ -55,7 +55,8 @@
     "proofUpfront": "costo iniziale",
     "proofVetted": "opportunità verificate",
     "whoPays": "La success fee del 2% è pagata dalla startup che riceve l'investimento — fatturata solo dopo la chiusura del round. Gli investitori non la pagano mai.",
-    "ctaDashboard": "Apri la dashboard"
+    "ctaDashboard": "Apri la dashboard",
+    "proofAria": "CapitalReach in tre numeri"
   },
   "trustIndicators": {
     "startupsListed": "startup elencate",
@@ -2452,7 +2453,8 @@
     "pageDeals": "Portale deal",
     "pageMessages": "Messaggi",
     "pageData": "Centro dati",
-    "pagePricing": "Prezzi"
+    "pagePricing": "Prezzi",
+    "openAria": "Apri la palette comandi"
   },
   "shortcuts": {
     "title": "Scorciatoie da tastiera",

@@ -62,7 +62,8 @@
     "proofUpfront": "Vorabkosten",
     "proofVetted": "geprüfte Listings",
     "whoPays": "Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält — in Rechnung gestellt erst nach Abschluss der Runde. Investoren zahlen sie nie.",
-    "ctaDashboard": "Zum Dashboard"
+    "ctaDashboard": "Zum Dashboard",
+    "proofAria": "CapitalReach in drei Zahlen"
   },
   "feeStrip": {
     "tagline": "Erfolgsgebühr, zahlt das Startup — erst nach dem Abschluss. Branchenschnitt: 5–7% vorab.",
@@ -2551,7 +2552,8 @@
     "pageDeals": "Deal-Portal",
     "pageMessages": "Nachrichten",
     "pageData": "Datenzentrum",
-    "pagePricing": "Preise"
+    "pagePricing": "Preise",
+    "openAria": "Befehlspalette öffnen"
   },
   "shortcuts": {
     "title": "Tastaturkürzel",

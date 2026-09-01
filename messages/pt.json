@@ -55,7 +55,8 @@
     "proofUpfront": "custo inicial",
     "proofVetted": "oportunidades verificadas",
     "whoPays": "A comissão de sucesso de 2% é paga pela startup que recebe o investimento — faturada apenas após o fecho da ronda. Os investidores nunca a pagam.",
-    "ctaDashboard": "Abrir o painel"
+    "ctaDashboard": "Abrir o painel",
+    "proofAria": "CapitalReach em três números"
   },
   "trustIndicators": {
     "startupsListed": "startups listadas",
@@ -2452,7 +2453,8 @@
     "pageDeals": "Portal de negócios",
     "pageMessages": "Mensagens",
     "pageData": "Centro de dados",
-    "pagePricing": "Preços"
+    "pagePricing": "Preços",
+    "openAria": "Abrir a paleta de comandos"
   },
   "shortcuts": {
     "title": "Atalhos de teclado",

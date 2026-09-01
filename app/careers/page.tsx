@@ -111,7 +111,7 @@ export default async function CareersPage() {
                     </span>
                   </div>
                 </div>
-                <a href={`mailto:?subject=Application: `}>
+                <a href={`mailto:careers@capitalreach.app?subject=${encodeURIComponent(`Application: ${role.title}`)}`}>
                   <Button size="sm" variant="outline" className="flex-shrink-0 border-cr-p4 text-cr-i2 hover:text-cr-ink hover:bg-cr-paper/5">
                     {t("careers.applyNow")}
                   </Button>

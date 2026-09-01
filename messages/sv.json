@@ -55,7 +55,8 @@
     "proofUpfront": "kostnad i förskott",
     "proofVetted": "noteringar granskade",
     "whoPays": "Framgångsavgiften på 2% betalas av startupen som tar emot investeringen — faktureras först efter att rundan stängts. Investerare betalar den aldrig.",
-    "ctaDashboard": "Öppna instrumentpanelen"
+    "ctaDashboard": "Öppna instrumentpanelen",
+    "proofAria": "CapitalReach i tre siffror"
   },
   "trustIndicators": {
     "startupsListed": "startups listade",
@@ -2452,7 +2453,8 @@
     "pageDeals": "Affärsportal",
     "pageMessages": "Meddelanden",
     "pageData": "Datacenter",
-    "pagePricing": "Priser"
+    "pagePricing": "Priser",
+    "openAria": "Öppna kommandopaletten"
   },
   "shortcuts": {
     "title": "Kortkommandon",

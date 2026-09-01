@@ -55,7 +55,8 @@
     "proofUpfront": "초기 비용",
     "proofVetted": "목록 검증 완료",
     "whoPays": "2% 성공 수수료는 투자를 받는 스타트업이 부담합니다 — 라운드 마감 후에만 청구됩니다. 투자자는 절대 부담하지 않습니다.",
-    "ctaDashboard": "대시보드 열기"
+    "ctaDashboard": "대시보드 열기",
+    "proofAria": "세 가지 숫자로 보는 CapitalReach"
   },
   "trustIndicators": {
     "startupsListed": "개 스타트업 등록",
@@ -2452,7 +2453,8 @@
     "pageDeals": "딜 포털",
     "pageMessages": "메시지",
     "pageData": "데이터 센터",
-    "pagePricing": "요금"
+    "pagePricing": "요금",
+    "openAria": "명령 팔레트 열기"
   },
   "shortcuts": {
     "title": "키보드 단축키",

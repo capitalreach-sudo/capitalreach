@@ -55,7 +55,8 @@
     "proofUpfront": "coût initial",
     "proofVetted": "des annonces vérifiées",
     "whoPays": "La commission de succès de 2 % est payée par la startup qui reçoit l'investissement — facturée seulement après la clôture du tour. Les investisseurs ne la paient jamais.",
-    "ctaDashboard": "Ouvrir le tableau de bord"
+    "ctaDashboard": "Ouvrir le tableau de bord",
+    "proofAria": "CapitalReach en trois chiffres"
   },
   "feeStrip": {
     "tagline": "commission de succès, payée par la startup — seulement après la clôture. Moyenne du secteur : 5–7 % d'avance.",
@@ -2452,7 +2453,8 @@
     "pageDeals": "Portail des opérations",
     "pageMessages": "Messages",
     "pageData": "Centre de données",
-    "pagePricing": "Tarifs"
+    "pagePricing": "Tarifs",
+    "openAria": "Ouvrir la palette de commandes"
   },
   "shortcuts": {
     "title": "Raccourcis clavier",

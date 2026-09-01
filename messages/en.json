@@ -62,7 +62,8 @@
     "proofUpfront": "upfront cost",
     "proofVetted": "listings vetted",
     "whoPays": "The 2% success fee is paid by the startup that receives the investment — invoiced only after the round closes. Investors never pay it.",
-    "ctaDashboard": "Open your dashboard"
+    "ctaDashboard": "Open your dashboard",
+    "proofAria": "CapitalReach in three numbers"
   },
   "feeStrip": {
     "tagline": "success fee, paid by the startup — only after it closes. Industry average: 5–7% upfront.",
@@ -2551,7 +2552,8 @@
     "pageDeals": "Deal portal",
     "pageMessages": "Messages",
     "pageData": "Data centre",
-    "pagePricing": "Pricing"
+    "pagePricing": "Pricing",
+    "openAria": "Open command palette"
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
