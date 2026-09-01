@@ -13,10 +13,13 @@ import { notifyUsers } from "@/lib/notify-user";
 // base64-encoded in the X-DocuSign-Signature-1 header. Verify it so an attacker
 // who guesses an envelope id can't POST here to mark an NDA signed and unlock a
 // data room. Fails closed when the key is set; when unset (DocuSign not yet
-// configured) the endpoint stays inert-but-open, as before.
+// configured) the endpoint rejects — an unsigned webhook is not trusted.
 function verifyDocusignSignature(rawBody: string, header: string | null): boolean {
   const key = process.env.DOCUSIGN_CONNECT_HMAC_KEY;
-  if (!key) return true; // not configured — no signing to verify against
+  // FAIL CLOSED when unconfigured: an unset key previously let an
+  // unauthenticated POST with a guessed envelope id mark an NDA signed and
+  // unlock a data room. No key → no trusted webhook → reject.
+  if (!key) return false;
   if (!header) return false;
   const expected = createHmac("sha256", key).update(rawBody, "utf8").digest("base64");
   const a = Buffer.from(expected);

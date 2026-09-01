@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isTeamMemberOfEither } from "@/lib/membership";
-import { createSuccessFeeInvoice } from "@/lib/stripe";
+import { createSuccessFeeInvoice, minorUnitsFactor } from "@/lib/stripe";
 import { sendDealClosedEmail } from "@/lib/resend";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
@@ -175,8 +175,12 @@ export async function POST(req: NextRequest) {
       stage_entered_at: new Date().toISOString(),
       // Likewise the fee: it was computed inside Stripe and never stored, so
       // answering "how much have we billed?" meant querying Stripe rather than
-      // our own database. Recorded in minor units to match Stripe.
-      success_fee_amount: finalAmount ? Math.round(finalAmount * 0.02 * 100) : null,
+      // our own database. Recorded in minor units to match Stripe — which is
+      // 1 per major unit for zero-decimal currencies (JPY), not always 100.
+      // The old hardcoded ×100 made a JPY instalment plan bill 100× the fee.
+      success_fee_amount: finalAmount
+        ? Math.round(finalAmount * 0.02 * minorUnitsFactor(finalCurrency ?? "usd"))
+        : null,
       // D40: snapshot the position as it was at close. Deriving ownership
       // later from the company's *current* valuation would restate history
       // every time they raised again.

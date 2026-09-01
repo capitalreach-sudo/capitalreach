@@ -49,7 +49,9 @@ function LoginForm() {
   const [mfaCode, setMfaCode]         = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
+  const rawRedirect = searchParams.get("redirect") || "/";
+  // Same-origin relative paths only — never navigate to an attacker host.
+  const redirect = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/";
   const supabase = createClient();
 
   async function handleLogin(e: React.FormEvent) {
@@ -127,7 +129,7 @@ function LoginForm() {
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?redirect=${redirect}` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirect)}` },
     });
   }
 

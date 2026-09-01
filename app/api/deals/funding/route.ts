@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   const investorOwner = (deal.investor as unknown as { owner_id: string | null } | null)?.owner_id ?? null;
   const isFounderSide = user.id === startupOwner;
   const isInvestorSide = !!investorOwner && user.id === investorOwner;
-  const isTeam = await isTeamMemberOfEither(user.id, "", "");
+  const isTeam = await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
   if (!isFounderSide && !isInvestorSide && !isTeam) {
     const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
     if (prof?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -54,7 +54,11 @@ export async function POST(req: NextRequest) {
   // founder says money arrived. An off-platform investor has no account, so
   // the founder records both (they are the only party present).
   const externalInvestor = !investorOwner;
-  if (step === "sent" && !isInvestorSide && !(externalInvestor && isFounderSide) && !isFounderSide) {
+  // "Sent" is the investor's leg. The ONLY founder exception is an
+  // off-platform investor with no account (the founder is the sole party).
+  // The old trailing `&& !isFounderSide` made this unreachable for founders
+  // on real deals, letting them confirm the investor's leg unilaterally.
+  if (step === "sent" && !isInvestorSide && !(externalInvestor && isFounderSide)) {
     return NextResponse.json({ error: "Only the investor confirms funds sent." }, { status: 403 });
   }
   if (step === "received" && !isFounderSide) {

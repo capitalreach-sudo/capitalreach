@@ -66,8 +66,13 @@ export async function GET(request: Request) {
   // Determine destination URL
   let destination: URL;
 
-  if (explicitRedirect && explicitRedirect !== "/") {
-    destination = new URL(explicitRedirect, requestUrl.origin);
+  // Only a same-origin, single-slash path is honoured. new URL() drops the
+  // base for absolute or protocol-relative input ("//evil.com"), so an
+  // unvalidated ?redirect= was an open redirect fired right after login —
+  // the exact polished moment a phishing page wants.
+  const safeRedirect = explicitRedirect && /^\/(?!\/)/.test(explicitRedirect) ? explicitRedirect : null;
+  if (safeRedirect && safeRedirect !== "/") {
+    destination = new URL(safeRedirect, requestUrl.origin);
   } else if (role === "investor") {
     const { data: inv } = await supabase
       .from("investors")

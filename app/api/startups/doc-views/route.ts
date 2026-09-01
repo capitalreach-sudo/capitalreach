@@ -33,7 +33,7 @@ export async function GET() {
 
   const { data: rows } = await admin
     .from("document_views")
-    .select("viewed_at, document:startup_documents!inner(id, label, startup_id), investor:investors(slug, display_name, firm_name)")
+    .select("viewed_at, document:startup_documents!inner(id, label, startup_id), investor:investors(slug, display_name, firm_name, is_public, is_external)")
     .eq("document.startup_id", startup.id)
     .order("viewed_at", { ascending: false })
     .limit(500);
@@ -44,7 +44,8 @@ export async function GET() {
     if (!byDoc.has(d.id)) byDoc.set(d.id, { label: d.label, opens: 0, viewers: new Map() });
     const agg = byDoc.get(d.id)!;
     agg.opens += 1;
-    const slug = r.investor?.slug;
+    const namable = r.investor?.is_public && !r.investor?.is_external;
+    const slug = namable ? r.investor?.slug : null;
     if (slug && !agg.viewers.has(slug)) {
       agg.viewers.set(slug, { slug, name: r.investor?.display_name ?? r.investor?.firm_name ?? null, lastAt: r.viewed_at });
     }

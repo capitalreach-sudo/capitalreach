@@ -77,9 +77,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not record signature" }, { status: 500 });
   }
 
-  // The contract is fully executed once the counterparty (someone other than
-  // whoever drafted it) has signed — that's the acceptance. Mark it signed then.
-  const counterpartSigned = user.id !== contract.created_by;
+  // A contract is executed only when a signer from the OPPOSITE MARKET SIDE
+  // has signed — not merely "someone other than the creator". The old check
+  // let an attacker add a sockpuppet to their OWN team and self-execute the
+  // agreement (and, downstream, force-close the deal and raise the founder's
+  // 2% fee). "Side" = which entity the person owns or is a team member of.
+  const sideOf = async (uid: string): Promise<"startup" | "investor" | null> => {
+    if (uid === startupOwner) return "startup";
+    if (uid === investorOwner) return "investor";
+    if (await isTeamMemberOfEither(uid, contract.startup_id, null)) return "startup";
+    if (await isTeamMemberOfEither(uid, null, contract.investor_id)) return "investor";
+    return null;
+  };
+  const [creatorSide, signerSide] = await Promise.all([sideOf(contract.created_by), sideOf(user.id)]);
+  const counterpartSigned = !!signerSide && !!creatorSide && signerSide !== creatorSide;
   let updated = contract;
   if (counterpartSigned && contract.status !== "signed") {
     const { data: row } = await admin

@@ -72,6 +72,12 @@ export async function createCustomerPortalSession(
 // zero-decimal currencies like JPY, where the amount is the whole unit.
 const ZERO_DECIMAL_CURRENCIES = new Set(["jpy"]);
 
+/** Minor units per major unit for a currency (1 for zero-decimal like JPY,
+ *  100 otherwise). The one place close/route and Stripe must agree. */
+export function minorUnitsFactor(currency: string): number {
+  return ZERO_DECIMAL_CURRENCIES.has(currency.toLowerCase()) ? 1 : 100;
+}
+
 export async function createSuccessFeeInvoice(
   customerId: string,
   amountRaised: number,
@@ -80,7 +86,7 @@ export async function createSuccessFeeInvoice(
   dealId?: string
 ): Promise<Stripe.Invoice> {
   const cur = currency.toLowerCase();
-  const minorUnitFactor = ZERO_DECIMAL_CURRENCIES.has(cur) ? 1 : 100;
+  const minorUnitFactor = minorUnitsFactor(cur);
   const feeAmount = Math.round(amountRaised * 0.02 * minorUnitFactor); // 2% success fee
 
   await stripe.invoiceItems.create({

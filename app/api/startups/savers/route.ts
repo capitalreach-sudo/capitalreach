@@ -52,7 +52,7 @@ export async function GET() {
 
   const { data: rows, count } = await admin
     .from("watchlists")
-    .select("created_at, investor:investors(slug, display_name, firm_name, type, min_check, max_check)", { count: "exact" })
+    .select("created_at, investor:investors(slug, display_name, firm_name, type, min_check, max_check, is_public, is_external)", { count: "exact" })
     .eq("startup_id", startup.id)
     .order("created_at", { ascending: false })
     .limit(50);
@@ -63,7 +63,10 @@ export async function GET() {
     return NextResponse.json({ savers: [], count: count ?? 0, locked: true });
   }
 
+  // A private (is_public=false) or off-platform investor is never NAMED here —
+  // the docstring promised this and the code never enforced it. Anonymised.
   const savers = (rows ?? [])
+    .filter((r: any) => r.investor && r.investor.is_public && !r.investor.is_external)
     .map((r: any) => ({
       slug:      r.investor?.slug ?? null,
       name:      r.investor?.display_name ?? r.investor?.firm_name ?? null,

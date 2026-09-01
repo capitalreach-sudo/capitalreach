@@ -307,8 +307,16 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   const identityRevealed = !previewing && (
     isOwner || viewerIsAdmin || (!!viewerDeal && viewerDeal.status !== "passed")
   );
+  // Financials are gated by tier AND (for NDA listings) the NDA. The client
+  // only HID them; client-component props serialize into the payload, so a
+  // gated viewer could read mrr/arr/users/growth/valuation from view-source.
+  // Strip them server-side — the same rule metric history already follows.
+  const financialsAllowed = viewerCaps.viewFinancials
+    && !(!!startup.require_nda && !ndaSigned && !isOwner && !viewerIsAdmin);
+  const showFinancials = financialsAllowed || (isOwner && !previewing) || (viewerIsAdmin && !previewing);
   const safeStartup = {
     ...startup,
+    ...(showFinancials ? {} : { mrr: null, arr: null, user_count: null, growth_rate: null, valuation: null, paying_customers: null, runway_months: null, churn_rate: null }),
     founders: protectFounders(startup.founders, identityRevealed),
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx, previewing ? null : shareToken)),
   };

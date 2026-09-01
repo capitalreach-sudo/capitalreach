@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
-import { founderGate, planRequired } from "@/lib/plan-gate";
+import { investorGate, planRequired } from "@/lib/plan-gate";
 import { DOC_TYPES } from "@/lib/upload-validation";
 import { resolveEntity } from "@/lib/membership";
 
@@ -23,9 +23,14 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Plan gate: the data room — requesting and tracking documents — is Growth.
-  const caps = await founderGate(user.id);
-  if (!caps.dataRoom) return NextResponse.json(planRequired("The data room", "Growth"), { status: 402 });
+  // Requesting documents is an INVESTOR action — gate on the investor tier,
+  // not founderGate (which reads the caller's startup tier, absent for an
+  // investor, so the paywall never fired for its stated reason).
+  const caps = await investorGate(user.id);
+  if (!caps.aiDiligence && !caps.dataExport) {
+    // Any paid investor tier; free explorers cannot run the data room.
+    return NextResponse.json(planRequired("The data room", "Angel"), { status: 402 });
+  }
 
   const { startupId, docType, message, dealId } = await req.json().catch(() => ({}));
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });

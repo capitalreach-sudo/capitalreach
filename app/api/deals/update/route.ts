@@ -196,24 +196,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  if (status) {
-    // deal_activity has no admin RLS policy (unlike deals), so use the admin
-    // client here to make sure admin-initiated changes still get logged.
-    const admin = createAdminClient();
-    await admin.from("deal_activity").insert({
-      deal_id: dealId,
-      startup_id: deal.startup_id,
-      investor_id: deal.investor_id,
-      actor_id: user.id,
-      type: "status_change",
-      // "Intro → Term Sheet" — without the transition the timeline could only
-      // say that *something* moved, which made it useless as a record.
-      body: [
-        `${STAGE_LABEL[deal.status as string] ?? deal.status} → ${STAGE_LABEL[status as string] ?? status}`,
-        status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : "",
-      ].filter(Boolean).join(" · "),
-    });
-
+  // Guarded on an ACTUAL change: the timeline log lives above (machine-
+  // readable, localised by the client). A no-op status POST used to insert a
+  // second English "X → X" row AND notify the counterpart of a move that
+  // never happened.
+  if (status && status !== deal.status) {
     // Tell the other side. A deal moving stage -- especially to passed -- is
     // the thing a counterparty most wants to hear about and previously the
     // thing they were least likely to notice.

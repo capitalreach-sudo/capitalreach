@@ -47,7 +47,7 @@ export async function GET() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const { data: rows } = await admin
     .from("startup_views")
-    .select("viewed_at, investor:investors(slug, display_name, firm_name, type)")
+    .select("viewed_at, investor:investors(slug, display_name, firm_name, type, is_public, is_external)")
     .eq("startup_id", startup.id)
     .gte("viewed_at", thirtyDaysAgo)
     .order("viewed_at", { ascending: false })
@@ -57,6 +57,8 @@ export async function GET() {
   // already newest-first).
   const seen = new Map<string, { slug: string; name: string | null; firm: string | null; type: string | null; lastViewedAt: string }>();
   for (const r of (rows ?? []) as any[]) {
+    // Private / off-platform investors are counted but never named.
+    if (!r.investor?.is_public || r.investor?.is_external) continue;
     const slug = r.investor?.slug;
     if (!slug || seen.has(slug)) continue;
     seen.set(slug, {
