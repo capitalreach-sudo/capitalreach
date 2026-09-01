@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
   if (state === "collected") return NextResponse.json({ error: "This fee is already paid." }, { status: 409 });
   if (state === "waived") return NextResponse.json({ error: "This fee has been written off." }, { status: 409 });
   if (state === "disputed") return NextResponse.json({ error: "This fee is under review. The schedule can wait until that is settled." }, { status: 409 });
+  if (state === "reversed") return NextResponse.json({ error: "This fee was reversed — there is nothing to schedule." }, { status: 409 });
   if (!planAllowed(deal.success_fee_amount)) {
     return NextResponse.json({ error: "This fee is small enough to pay in one go." }, { status: 409 });
   }

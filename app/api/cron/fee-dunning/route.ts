@@ -124,16 +124,23 @@ export async function GET(req: NextRequest) {
   const today = now.toISOString().slice(0, 10);
   const { data: dueInstalments } = await admin
     .from("fee_instalments")
-    .select("id, deal_id, seq, amount, due_date, deal:deals(id, currency, startup:startups(id, name, owner_id))")
+    .select("id, deal_id, seq, amount, due_date, deal:deals(id, status, currency, success_fee_paid_at, fee_waived_at, fee_refunded_at, fee_chargeback_at, startup:startups(id, name, owner_id))")
     .is("paid_at", null)
     .is("stripe_invoice_id", null)
     .lte("due_date", today)
     .limit(500);
 
   for (const inst of dueInstalments ?? []) {
-    const deal = inst.deal as unknown as { currency: string | null; startup: { name: string; owner_id: string } | null } | null;
+    const deal = inst.deal as unknown as { status?: string | null; currency: string | null; success_fee_paid_at?: string | null; fee_waived_at?: string | null; fee_refunded_at?: string | null; fee_chargeback_at?: string | null; startup: { name: string; owner_id: string } | null } | null;
     const owner = deal?.startup?.owner_id;
     if (!owner) continue;
+    // Never bill an instalment for a fee that is settled or reversed at the
+    // DEAL level. Waive/markPaid/refund/chargeback touch only the deal, not
+    // the schedule — so without this the cron kept charging a paid, waived or
+    // refunded fee. Also skip a deal that is no longer closed (un-closed).
+    if (deal.success_fee_paid_at || deal.fee_waived_at || deal.fee_refunded_at || deal.fee_chargeback_at || deal.status !== "closed") {
+      continue;
+    }
 
     const { data: profile } = await admin.from("profiles").select("stripe_customer_id").eq("id", owner).maybeSingle();
     if (!profile?.stripe_customer_id) {

@@ -72,6 +72,14 @@ export async function POST(req: NextRequest) {
   // its own two-party route with the contract gate. Skipping stages made
   // the pipeline stats lie, so the ladder is enforced where writes happen.
   if (status !== undefined && status !== deal.status) {
+    // A CLOSED deal is terminal here: unwinding a close reverses a fee, a
+    // snapshot and an invoice — that is a deliberate admin ceremony, never a
+    // one-click stage move. Without this, closed→passed stranded the 2% fee
+    // (dunning kept chasing) and let a re-close diverge the stored fee from
+    // the live invoice.
+    if (deal.status === "closed") {
+      return NextResponse.json({ error: "A closed deal cannot be moved. Contact support to unwind a close.", code: "DEAL_CLOSED" }, { status: 409 });
+    }
     const LADDER = ["intro", "due_diligence", "term_sheet"] as const;
     const from = LADDER.indexOf(deal.status as typeof LADDER[number]);
     const to = LADDER.indexOf(status as typeof LADDER[number]);

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   const { data: contract } = await admin
     .from("contracts")
-    .select("id, deal_id, startup_id, investor_id, title")
+    .select("id, deal_id, startup_id, investor_id, title, status")
     .eq("id", contractId)
     .maybeSingle();
   if (!contract) return NextResponse.json({ error: "Contract not found" }, { status: 404 });
@@ -42,6 +42,20 @@ export async function POST(req: NextRequest) {
   const isParticipant = startup?.owner_id === user.id || investor?.owner_id === user.id
     || await isTeamMemberOfEither(user.id, contract.startup_id, contract.investor_id);
   if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  // "signed" is NEVER set here — only the signature route sets it, after an
+  // opposite-side signature. And a void contract is terminal. Allowing
+  // draft→signed or void→signed via this route defeated the close gate's
+  // "both parties signed" guarantee (which trusts status='signed').
+  if (status === "signed") {
+    return NextResponse.json({ error: "A contract becomes signed only when a party signs it.", code: "SIGN_ONLY" }, { status: 400 });
+  }
+  if (contract.status === "void") {
+    return NextResponse.json({ error: "A voided contract cannot be changed.", code: "VOID_TERMINAL" }, { status: 409 });
+  }
+  if (contract.status === "signed" && status !== "void") {
+    return NextResponse.json({ error: "A signed contract can only be voided.", code: "SIGNED_LOCKED" }, { status: 409 });
+  }
 
   const { data: updated, error } = await admin
     .from("contracts")

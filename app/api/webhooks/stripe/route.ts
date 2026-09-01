@@ -45,22 +45,16 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient();
 
-  // Idempotency: Stripe retries on any non-2xx, and this handler used to
-  // return 500 on error — so a partially-applied handler was guaranteed to
-  // replay. Record the event id first; a duplicate short-circuits to 200.
+  // Idempotency, done in the right order: CHECK for an already-processed
+  // event up front (fast skip on a genuine duplicate), but only RECORD the
+  // marker AFTER the handler succeeds (below). Recording it first — as this
+  // did — meant a handler that threw mid-way (e.g. instalment updated but the
+  // aggregate deal update failed) was marked processed, and Stripe's retry
+  // was swallowed as a duplicate, leaving the partial state permanent.
   {
-    const { error: dupErr } = await supabase
-      .from("stripe_events")
-      .insert({ id: event.id, type: event.type });
-    if (dupErr) {
-      // 23505 = unique violation → already processed.
-      if ((dupErr as { code?: string }).code === "23505") {
-        return NextResponse.json({ received: true, duplicate: true });
-      }
-      // Any other insert failure: proceed (never let bookkeeping block money
-      // events) but note it.
-      await logSystemEvent("webhook/stripe", "error", "stripe_events insert failed", { error: dupErr.message }).catch(() => {});
-    }
+    const { data: seen } = await supabase
+      .from("stripe_events").select("id").eq("id", event.id).maybeSingle();
+    if (seen) return NextResponse.json({ received: true, duplicate: true });
   }
 
   // invoice.* fires for every invoice on the account, and this app raises two
@@ -404,6 +398,9 @@ export async function POST(req: NextRequest) {
       default:
         break;
     }
+    // Handler succeeded → NOW record the event so a retry of THIS delivery is
+    // skipped, but a retry after a partial failure above re-runs.
+    await supabase.from("stripe_events").insert({ id: event.id, type: event.type }).then(undefined, () => {});
   } catch (err) {
     console.error("Error processing webhook:", err);
     await logSystemEvent("webhook/stripe", "error", "Handler failed", { error: String(err) });

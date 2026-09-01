@@ -73,11 +73,26 @@ export async function POST(req: NextRequest) {
   else { patch.funds_received_at = now; patch.funds_received_by = user.id; }
   if (ref) patch.funding_reference = ref;
 
-  const bothNow = step === "sent" ? !!deal.funds_received_at : !!deal.funds_sent_at;
-  if (bothNow) patch.funded_at = now;
-
-  const { error } = await admin.from("deals").update(patch).eq("id", dealId);
+  // Write THIS leg conditionally on it still being null — the idempotency gate
+  // lives IN the update, like deals/close, not in the if-check above. Two
+  // concurrent confirmations (investor "sent" + founder "received") otherwise
+  // both read the other leg as null and NEITHER sets funded_at, leaving a
+  // fully-funded deal permanently un-"funded".
+  const leg = step === "sent" ? "funds_sent_at" : "funds_received_at";
+  const { data: written, error } = await admin.from("deals")
+    .update(patch).eq("id", dealId).is(leg, null).select("id");
   if (error) return NextResponse.json({ error: "Could not record it" }, { status: 500 });
+  if (!written || written.length === 0) {
+    return NextResponse.json({ error: "Already confirmed." }, { status: 409 });
+  }
+
+  // Re-read after the write to settle funded_at without a race: if BOTH legs
+  // are now stamped and funded_at isn't set, set it now (idempotent).
+  const { data: fresh } = await admin.from("deals")
+    .select("funds_sent_at, funds_received_at, funded_at").eq("id", dealId).maybeSingle();
+  if (fresh?.funds_sent_at && fresh?.funds_received_at && !fresh?.funded_at) {
+    await admin.from("deals").update({ funded_at: now }).eq("id", dealId).is("funded_at", null).then(undefined, () => {});
+  }
 
   await admin.from("deal_activity").insert({
     deal_id: dealId,
@@ -88,17 +103,18 @@ export async function POST(req: NextRequest) {
     body: step === "sent" ? `Funds sent${ref ? ` · ref ${ref}` : ""}` : `Funds received${ref ? ` · ref ${ref}` : ""}`,
   }).then(undefined, () => {});
 
+  const bothConfirmed = !!fresh?.funds_sent_at && !!fresh?.funds_received_at;
   const recipients = [startupOwner, investorOwner].filter((id): id is string => !!id && id !== user.id);
   if (recipients.length) {
     await notifyUsers(recipients, {
       type: "deal_closed",
-      title: bothNow
+      title: bothConfirmed
         ? `Funded — ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}`
         : step === "sent" ? "The investor confirmed funds sent" : "The founder confirmed funds received",
-      body: bothNow ? "Both sides confirmed the transfer." : "Confirm your side to complete the round.",
+      body: bothConfirmed ? "Both sides confirmed the transfer." : "Confirm your side to complete the round.",
       href: `/deals?deal=${dealId}`,
     }).catch(() => {});
   }
 
-  return NextResponse.json({ success: true, fundsSentAt: patch.funds_sent_at ?? deal.funds_sent_at, fundsReceivedAt: patch.funds_received_at ?? deal.funds_received_at, fundedAt: patch.funded_at ?? deal.funded_at });
+  return NextResponse.json({ success: true, fundsSentAt: patch.funds_sent_at ?? deal.funds_sent_at, fundsReceivedAt: patch.funds_received_at ?? deal.funds_received_at, fundedAt: fresh?.funded_at ?? patch.funded_at ?? deal.funded_at });
 }
