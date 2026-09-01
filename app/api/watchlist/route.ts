@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { buildAccessContext, investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -101,7 +102,10 @@ export async function POST(req: NextRequest) {
         .select("owner_id")
         .eq("id", startupId)
         .maybeSingle();
-      if (st?.owner_id && st.owner_id !== user.id) {
+      // Re-notify guard: unsave→re-save would re-ping the founder. Cap the
+      // notify per (investor, listing) per day; the save itself is unaffected.
+      const canPing = st?.owner_id && (await dbRateLimit(user.id, `save_ping:${startupId}`, ...Object.values(RATE.perDay(1)) as [number, number])).ok;
+      if (st?.owner_id && st.owner_id !== user.id && canPing) {
         await notifyUser({
           userId: st.owner_id,
           type: "listing_saved",

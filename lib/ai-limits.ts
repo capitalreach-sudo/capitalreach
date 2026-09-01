@@ -19,8 +19,23 @@ export function aiDailyLimit(tier: string | null | undefined): number {
 export async function checkAiAllowance(userId: string, action: string, tier: string | null | undefined):
   Promise<{ ok: true } | { ok: false; limit: number }> {
   const limit = aiDailyLimit(tier);
-  if (limit === -1) return { ok: true };
   const admin = createAdminClient();
+  // "Unlimited" tiers still get a hard backstop: without it a launch-mode
+  // growth account (what launch grants everyone) could loop model calls with
+  // no ceiling, billing our OpenAI/Anthropic key. 150/day/action is far above
+  // any human's real use and far below a runaway loop. Admins exempt below.
+  if (limit === -1) {
+    const dayStart = new Date(); dayStart.setUTCHours(0, 0, 0, 0);
+    const { count: hardCount } = await admin
+      .from("ai_usage").select("*", { count: "exact", head: true })
+      .eq("user_id", userId).eq("action", action).gte("created_at", dayStart.toISOString());
+    if (hardCount !== null && hardCount >= 150) {
+      const { data: prof } = await admin.from("profiles").select("role").eq("id", userId).maybeSingle();
+      if (prof?.role === "admin") return { ok: true };
+      return { ok: false, limit: 150 };
+    }
+    return { ok: true };
+  }
   // Admins are exempt from billing rules aimed at customers — same rule as
   // checkAiAccess. Checked here (not in aiDailyLimit) because only here is
   // there a userId to check.

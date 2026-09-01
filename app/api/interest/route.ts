@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { resolveEntity } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
@@ -95,7 +96,10 @@ export async function POST(req: NextRequest) {
       .select(fromType === "startup" ? "name" : "display_name, firm_name").eq("id", mine.entityId).maybeSingle();
     const rec = (me ?? {}) as Record<string, string | null>;
     const name = rec.name ?? rec.display_name ?? rec.firm_name ?? (fromType === "startup" ? "A startup" : "An investor");
-    await notifyUser({
+    // Re-notify guard: the row dedupe stops repeats, but delete-then-re-signal
+    // would re-ping. Cap the NOTIFY per target per day (the signal still saves).
+    const canPing = await dbRateLimit(user.id, `interest_ping:${targetId}`, ...Object.values(RATE.perDay(1)) as [number, number]);
+    if (canPing.ok) await notifyUser({
       userId: target.owner_id,
       type: "interest",
       title: `${name} is interested`,

@@ -135,6 +135,28 @@ export async function DELETE(req: NextRequest) {
 
     // The login must stop working. Deleting the auth user would cascade and
     // take the records with it, so the credentials are neutralised instead.
+    // Scrub the free-text PII the person authored and the IP/UA trails that
+    // point at them — the anonymise branch previously touched only profiles,
+    // leaving message bodies, notes, IPs and the newsletter row linkable to a
+    // named person, which contradicted the "we remove your personal data"
+    // promise. Signature/fee-ack IPs are KEPT (documented legal-evidence
+    // basis); everything else that is merely convenience is nulled.
+    const uid = user.id;
+    await Promise.all([
+      // Message bodies the user wrote (thread stays for the counterpart).
+      adminClient.from("messages").update({ body: "[deleted]" }).eq("sender_id", uid),
+      // Free-text deal notes they authored.
+      adminClient.from("deal_activity").update({ body: null }).eq("actor_id", uid),
+      // Their own notification history.
+      adminClient.from("notifications").delete().eq("user_id", uid),
+      // IP/UA login history.
+      adminClient.from("login_events").delete().eq("user_id", uid),
+      // Admin notes ABOUT this user (target_id has no FK, so they orphan).
+      adminClient.from("admin_notes").delete().eq("target_type", "user").eq("target_id", uid),
+      // The newsletter row keyed by their old email.
+      adminClient.from("subscribers").delete().eq("email", user.email ?? "___none___"),
+    ].map(q => q.then(undefined, () => {})));
+
     await adminClient.auth.admin.updateUserById(user.id, {
       email: scrubbedEmail,
       password: crypto.randomUUID() + crypto.randomUUID(),

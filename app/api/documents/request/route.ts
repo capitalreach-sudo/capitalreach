@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
@@ -58,7 +59,10 @@ export async function POST(req: NextRequest) {
     requestId = row.id;
   }
 
-  await notifyUser({
+  // A NEW request always notifies; a repeat "bump" is capped to once/day per
+  // (investor, startup, type) so re-POSTing in a loop can't ring the bell.
+  const bumpOk = !existing || (await dbRateLimit(user.id, `docreq_ping:${startupId}:${docType}`, ...Object.values(RATE.perDay(1)) as [number, number])).ok;
+  if (bumpOk) await notifyUser({
     userId: startup.owner_id,
     type: "doc_request",
     title: `${inv.display_name ?? inv.firm_name ?? "An investor"} requested your ${LABEL[docType]}`,

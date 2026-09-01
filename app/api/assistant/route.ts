@@ -6,6 +6,7 @@ import { aiRatelimit } from "@/lib/redis";
 import { logSystemEvent } from "@/lib/system-events";
 import { buildAssistantContext, type PageRef } from "@/lib/assistant-context";
 import { checkAiAccess } from "@/lib/ai-access";
+import { checkAiAllowance, logAiUsage } from "@/lib/ai-limits";
 import { FIND_ROUNDS_TOOL, findRounds, type FindRoundsInput } from "@/lib/assistant-search";
 
 export const dynamic = "force-dynamic";
@@ -302,6 +303,11 @@ export async function POST(req: NextRequest) {
   // Per account, since an anonymous caller can no longer reach this at all.
   const { success } = await aiRatelimit.limit(`assistant:${user!.id}`);
   if (!success) return NextResponse.json({ error: "Too many questions just now — try again in a minute." }, { status: 429 });
+  // Redis fails open in prod, so a DB-backed daily allowance is the real
+  // ceiling on model spend (the assistant had no counter at all).
+  const allowance = await checkAiAllowance(user!.id, "assistant", ai.isAdmin ? "institution" : undefined);
+  if (!allowance.ok) return NextResponse.json({ error: "You've used the assistant a lot today — try again tomorrow." }, { status: 429 });
+  await logAiUsage(user!.id, "assistant").catch(() => {});
 
   const ref = parseRef(body?.page);
   const { text: context, label, redacted } = await buildAssistantContext(ref, user!.id);

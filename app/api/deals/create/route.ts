@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
@@ -20,6 +21,10 @@ export async function POST(req: NextRequest) {
   if (await isAccountSuspended(user.id)) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
+  // Cap deal-opening fan-out: each proposal notifies a counterpart, and the
+  // pending-only unique index let withdraw→re-propose loop-notify one target.
+  { const rl = await dbRateLimit(user.id, "deal_create", ...Object.values(RATE.perDay(25)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "You've opened a lot of deals today. Try again tomorrow." }, { status: 429 }); }
 
 
   const { counterpartId, startupId, investorId, amount, currency, status, note, nextFollowUp } =
