@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { resolveEntity } from "@/lib/membership";
@@ -26,6 +27,10 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (await isAccountSuspended(user.id)) return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  // Redis-independent brake: opening conversations notifies + emails the
+  // other side, so cap the fan-out (the Upstash limiter fails open in prod).
+  { const rl = await dbRateLimit(user.id, "msg_start", ...Object.values(RATE.perHour(30)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "You're sending messages too fast. Try again in a bit." }, { status: 429 }); }
 
   const payload = await req.json().catch(() => ({}));
   const investorId = typeof payload.investorId === "string" ? payload.investorId : "";

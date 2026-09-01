@@ -57,7 +57,10 @@ export function SiteAssistant() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [turns, busy]);
 
-  if (HIDDEN_ON.some(p => pathname.startsWith(p)) || unavailable) return null;
+  // The homepage has no page-specific subject to ask about — the Ask bubble
+  // there was noise. Hide on "/" exactly (not startsWith, which would eat
+  // every route). The assistant belongs on listings/investors/data/pricing.
+  if (pathname === "/" || HIDDEN_ON.some(p => pathname.startsWith(p)) || unavailable) return null;
 
   async function ask() {
     const question = draft.trim();

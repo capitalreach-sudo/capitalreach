@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { isTeamMemberOfEither } from "@/lib/membership";
@@ -21,6 +22,8 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  { const rl = await dbRateLimit(user.id, "msg_reply", ...Object.values(RATE.perHour(60)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "You're sending messages too fast. Try again in a bit." }, { status: 429 }); }
   if (await isAccountSuspended(user.id)) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }

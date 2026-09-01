@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { resolveEntity } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
@@ -13,6 +14,8 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  { const rl = await dbRateLimit(user.id, "question", ...Object.values(RATE.perDay(20)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "You've asked a lot of questions today. Try again tomorrow." }, { status: 429 }); }
 
   const { startupId, question } = await req.json().catch(() => ({}));
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
