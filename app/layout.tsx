@@ -15,7 +15,7 @@ import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { isRTL, getLocaleFont } from "@/lib/locale";
-import { getLocale } from "@/lib/locale-server";
+import { getLocale, getMessages } from "@/lib/locale-server";
 import { brand } from "@/lib/brand";
 
 export const viewport: Viewport = {
@@ -68,12 +68,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const locale = getLocale();
+  // Inline only the active locale's dictionary, and only when it is not English
+  // -- useTranslation already carries English statically as its fallback, so an
+  // English page pays nothing here. This is what replaced shipping all 15
+  // locales (~3.2 MB) to every visitor: they now get their own language alone.
+  const messages = locale === "en" ? null : await getMessages(locale);
   // Theme before first byte: the toggle writes cr_theme, the server stamps
   // the attribute, and no visitor ever sees a flash of the wrong theme.
   let theme: "light" | "dark" = "dark";
@@ -106,7 +111,7 @@ export default function RootLayout({
       <body className="font-sans">
         {/* Seeds every client component with the server-resolved locale, so the
             first paint is already correct rather than English-then-swap. */}
-        <LocaleProvider initialLocale={locale}>
+        <LocaleProvider initialLocale={locale} initialMessages={messages}>
         <SkipToContent />
         <RuleLabelAnimator />
         <LaunchBanner />

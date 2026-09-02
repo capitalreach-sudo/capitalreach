@@ -1,24 +1,38 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { LOCALES, DEFAULT_LOCALE, isRTL } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 
 /**
- * Carries the server-resolved locale into the client tree.
+ * Carries the server-resolved locale AND its dictionary into the client tree.
  *
- * useTranslation used to start every client component at "en" and only read the
- * cookie in an effect -- after hydration. That meant all 34 components using it
- * rendered English into the SSR HTML no matter what locale was set, then
- * swapped once JS ran. On a slow connection that is a visible flash of the
- * wrong language; if hydration is delayed or fails, the page simply stays in
- * English, which is indistinguishable from the language switcher being broken.
+ * Two jobs, and the second is why this file exists in its current form:
  *
- * The layout already resolves the locale from the cookie on the server. Passing
- * it down means server and client agree on the first render, so there is no
- * flash and no hydration mismatch.
+ * 1. No flash of the wrong language. useTranslation used to start every client
+ *    component at "en" and read the cookie only in an effect -- after
+ *    hydration. That rendered English into the SSR HTML regardless of the
+ *    cookie, then swapped once JS ran. The layout resolves the locale on the
+ *    server and passes it (with its messages) down, so server and client agree
+ *    on the first paint.
+ *
+ * 2. One language on the wire, not fifteen. useTranslation used to statically
+ *    import all 15 locale JSONs (~3.2 MB) into a client module that shipped on
+ *    every page. Now the server inlines only the ACTIVE locale's dictionary
+ *    (via initialMessages), English stays a static fallback inside
+ *    useTranslation, and any later language change dynamic-imports just that
+ *    one locale's chunk. A visitor downloads their own language, not all of
+ *    them.
+ *
+ * initialMessages is null when the active locale is English: there is nothing
+ * to inline because useTranslation already has English statically as its
+ * fallback, so English pages pay nothing extra.
  */
-const LocaleContext = createContext<Locale | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Dict = Record<string, any>;
+type LocaleState = { locale: Locale; messages: Dict | null };
+
+const LocaleContext = createContext<LocaleState | null>(null);
 
 function readLocaleCookie(): Locale | null {
   if (typeof document === "undefined") return null;
@@ -27,41 +41,68 @@ function readLocaleCookie(): Locale | null {
   return raw && (LOCALES as string[]).includes(raw) ? (raw as Locale) : null;
 }
 
+/**
+ * Client-side dictionary loader. The template-literal import makes webpack emit
+ * one lazy chunk per locale, so switching to German fetches German alone. This
+ * path only runs when the client locale ends up different from what the server
+ * rendered -- a static page corrected from its cookie, or the localechange
+ * event -- which on the normal navigation path never happens.
+ */
+async function loadLocaleMessages(locale: Locale): Promise<Dict> {
+  try {
+    return (await import(`../../messages/${locale}.json`)).default as Dict;
+  } catch {
+    return (await import("../../messages/en.json")).default as Dict;
+  }
+}
+
 export function LocaleProvider({
   initialLocale,
+  initialMessages = null,
   children,
 }: {
   initialLocale: Locale;
+  initialMessages?: Dict | null;
   children: React.ReactNode;
 }) {
-  const [locale, setLocale] = useState<Locale>(initialLocale);
+  const [state, setState] = useState<LocaleState>({ locale: initialLocale, messages: initialMessages });
 
-  // Static routes (force-static: the homepage and the five content pages) are
-  // rendered at build time, where there is no request and therefore no cookie
-  // -- the server seed is always the default locale. Without this mount sync a
-  // German visitor got English on those pages permanently, and the switcher
-  // looked broken because navigating served the same prerendered HTML again.
+  // Latest locale without re-arming the effect: the effect subscribes once and
+  // reads current through the ref, so a change never tears down the listener.
+  const localeRef = useRef(state.locale);
+  localeRef.current = state.locale;
+
+  // Static routes (force-static: the six content pages) are rendered at build
+  // time, where there is no request and therefore no cookie -- the server seed
+  // is always the default locale. Without this correction a German visitor got
+  // English on those pages permanently, and the switcher looked broken because
+  // navigating served the same prerendered HTML again.
   //
-  // Deliberately after hydration, so server and client still agree on the
-  // first paint; the correction costs one frame on static pages only, and a
-  // frame of English beats a page that never speaks your language.
+  // Deliberately after hydration, so server and client agree on the first
+  // paint. The correct dictionary is fetched before the swap, so the page
+  // moves from default-locale straight to the full target language in one step
+  // -- never a half-translated frame.
   useEffect(() => {
+    let cancelled = false;
     const sync = () => {
       const next = readLocaleCookie() ?? initialLocale;
-      setLocale(next);
-      // The layout stamped lang/dir from the build-time locale for the same
-      // reason; keep the document honest for screen readers and RTL.
-      if (typeof document !== "undefined") {
-        document.documentElement.lang = next;
-        document.documentElement.dir = isRTL(next) ? "rtl" : "ltr";
-      }
+      if (next === localeRef.current) return;
+      void loadLocaleMessages(next).then(messages => {
+        // Re-read: the cookie may have changed again while the chunk loaded.
+        if (cancelled || next !== (readLocaleCookie() ?? initialLocale)) return;
+        setState({ locale: next, messages });
+        if (typeof document !== "undefined") {
+          document.documentElement.lang = next;
+          document.documentElement.dir = isRTL(next) ? "rtl" : "ltr";
+        }
+      });
     };
     sync();
     window.addEventListener("localechange", sync);
-    return () => window.removeEventListener("localechange", sync);
+    return () => { cancelled = true; window.removeEventListener("localechange", sync); };
   }, [initialLocale]);
 
-  return <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>;
+  return <LocaleContext.Provider value={state}>{children}</LocaleContext.Provider>;
 }
 
 /**
@@ -70,6 +111,15 @@ export function LocaleProvider({
  */
 export function useLocale(): Locale {
   const ctx = useContext(LocaleContext);
-  if (ctx) return ctx;
+  if (ctx) return ctx.locale;
   return readLocaleCookie() ?? DEFAULT_LOCALE;
+}
+
+/**
+ * The active locale's dictionary, or null when it is English (or when rendered
+ * outside the provider). useTranslation treats null as "use the static English
+ * fallback", so null is a valid, expected value rather than an error.
+ */
+export function useLocaleMessages(): Dict | null {
+  return useContext(LocaleContext)?.messages ?? null;
 }
