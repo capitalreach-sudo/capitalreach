@@ -307,12 +307,29 @@ export async function POST(req: NextRequest) {
         const { data: deal } = await supabase
           .from("deals").select("id, startup_id, investor_id").eq("stripe_invoice_id", invoiceId).maybeSingle();
         if (!deal) break;
-        await supabase.from("deals").update({
-          fee_refunded_at: new Date().toISOString(),
-          fee_refund_amount: charge.amount_refunded ?? null,
-          fee_billing_status: "refunded",
-        }).eq("id", deal.id);
-        await logSystemEvent("webhook/stripe", "error", "Success fee refunded", { deal: deal.id, amount: charge.amount_refunded }).catch(() => {});
+
+        // Only a FULL refund reverses the fee. A partial refund used to flip the
+        // whole fee to 'reversed' — dropping the entire amount out of revenue
+        // and permanently halting instalment collection — even when the platform
+        // kept 90% of it. Record the refunded amount, keep the fee collected,
+        // and flag the partial for a human rather than reversing it in code.
+        const total = charge.amount ?? 0;
+        const refunded = charge.amount_refunded ?? 0;
+        const fullyRefunded = total > 0 && refunded >= total;
+
+        if (fullyRefunded) {
+          await supabase.from("deals").update({
+            fee_refunded_at: new Date().toISOString(),
+            fee_refund_amount: refunded,
+            fee_billing_status: "refunded",
+          }).eq("id", deal.id);
+          await logSystemEvent("webhook/stripe", "error", "Success fee refunded (full)", { deal: deal.id, amount: refunded }).catch(() => {});
+        } else {
+          await supabase.from("deals").update({
+            fee_refund_amount: refunded,
+          }).eq("id", deal.id);
+          await logSystemEvent("webhook/stripe", "error", "Success fee PARTIALLY refunded — needs review", { deal: deal.id, refunded, total }).catch(() => {});
+        }
         break;
       }
 

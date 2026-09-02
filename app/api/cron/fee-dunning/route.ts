@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
   const { data: deals, error } = await admin
     .from("deals")
-    .select("id, amount, currency, closed_at, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_reminder_count, fee_reminder_last_at, fee_retry_count, fee_waived_at, startup:startups(id, name, owner_id)")
+    .select("id, amount, currency, closed_at, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_plan_months, fee_reminder_count, fee_reminder_last_at, fee_retry_count, fee_waived_at, startup:startups(id, name, owner_id)")
     .not("success_fee_amount", "is", null)
     .is("success_fee_paid_at", null)
     .is("fee_waived_at", null)
@@ -62,6 +62,11 @@ export async function GET(req: NextRequest) {
 
     // ── 1. Self-heal ────────────────────────────────────────────────────
     if (feeState(fd) === "unbillable") {
+      // A fee on an instalment plan is billed one instalment at a time by the
+      // loop below. Re-invoicing the WHOLE fee here would bill it a second time
+      // in full — this exact 'unbillable + plan' state is what a plan created on
+      // a no-customer fee, or on a voided lump invoice, looks like.
+      if (deal.fee_plan_months) continue;
       const { data: profile } = await admin.from("profiles").select("stripe_customer_id").eq("id", startup.owner_id).maybeSingle();
       if (!autoRetryable(fd, !!profile?.stripe_customer_id)) continue;
       const raised = Number(deal.amount) || 0;

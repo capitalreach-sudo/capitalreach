@@ -3,7 +3,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupsSearch } from "@/components/startup/startups-search";
 import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
-import { loadActiveStartups } from "@/lib/browse-data";
+import { loadActiveStartups, stripBrowseFinancials, viewerCanSeeFinancials } from "@/lib/browse-data";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +19,13 @@ export const metadata: Metadata = {
 
 export default async function StartupsPage() {
   // Rows are fetched on the server so the page ships with its listings in
-  // the HTML: no "Loading…" first paint, crawlable, and instant on a cold
+  // the HTML: no "Loading" first paint, crawlable, and instant on a cold
   // client. A failed load hands `undefined` down and the client fetches.
-  const initial = await loadActiveStartups();
+  // MRR/ARR are gated, so they are stripped from the payload for any viewer who
+  // has not unlocked financials before the rows are serialized to the browser.
+  const canSeeFinancials = await viewerCanSeeFinancials();
+  const loaded = await loadActiveStartups();
+  const initial = loaded ? stripBrowseFinancials(loaded, canSeeFinancials) : loaded;
   return (
     <>
       <Navbar />

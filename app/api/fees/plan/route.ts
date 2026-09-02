@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { notifyUsers } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
 import { feeState, type FeeDeal } from "@/lib/fees";
+import { voidInvoice } from "@/lib/stripe";
 import {
   planInstalments, planAllowed, planProgress,
   MIN_PLAN_MONTHS, MAX_PLAN_MONTHS,
@@ -86,6 +87,22 @@ export async function POST(req: NextRequest) {
     .from("fee_instalments").select("id", { count: "exact", head: true }).eq("deal_id", dealId);
   if ((existing ?? 0) > 0) return NextResponse.json({ error: "This fee already has a payment plan." }, { status: 409 });
 
+  // The fee is invoiced on close day, so it is almost always 'outstanding' when
+  // a founder asks to spread it — and that invoice is LIVE, collecting the full
+  // amount on 14-day terms. The plan's instalments will collect the same total
+  // again unless the original is voided first. Void it, then plan; if it cannot
+  // be voided (it was just paid, say), do not create a plan that would bill on
+  // top of a paid fee.
+  if (state === "outstanding" && deal.stripe_invoice_id) {
+    const voided = await voidInvoice(deal.stripe_invoice_id);
+    if (!voided) {
+      return NextResponse.json({ error: "This fee's invoice couldn't be converted to a plan — it may have just been paid. Refresh and check." }, { status: 409 });
+    }
+    // The instalment loop now owns billing; the whole-fee invoice is gone. The
+    // invoice.voided webhook will also set this, idempotently.
+    await admin.from("deals").update({ fee_billing_status: "voided" }).eq("id", dealId);
+  }
+
   // Amounts come from the stored fee, never from the request.
   const rows = planInstalments(Number(deal.success_fee_amount), term, new Date().toISOString())
     .map(i => ({ deal_id: dealId, seq: i.seq, amount: i.amount, due_date: i.dueDate }));
@@ -125,7 +142,7 @@ async function ownFeeDeal(admin: ReturnType<typeof createAdminClient>, userId: s
 
   const { data: deal } = await admin
     .from("deals")
-    .select("id, startup_id, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_waived_at, fee_disputed_at, fee_dispute_resolved_at, fee_refunded_at, fee_chargeback_at, fee_chargeback_resolved_at, currency, startup:startups(id, name)")
+    .select("id, startup_id, success_fee_amount, success_fee_invoiced, success_fee_paid_at, stripe_invoice_id, fee_billing_status, fee_waived_at, fee_disputed_at, fee_dispute_resolved_at, fee_refunded_at, fee_chargeback_at, fee_chargeback_resolved_at, currency, startup:startups(id, name)")
     .eq("id", dealId)
     .maybeSingle();
 

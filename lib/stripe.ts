@@ -153,6 +153,28 @@ export async function createFeeInstalmentInvoice(
   return stripe.invoices.finalizeInvoice(invoice.id);
 }
 
+/**
+ * Void a finalized-but-unpaid success-fee invoice. Used when a founder converts
+ * a lump-sum fee into an instalment plan: the original invoice is still open and
+ * collecting, so it must be retired before the schedule takes over — otherwise
+ * the founder is billed the whole fee AND every instalment.
+ *
+ * Returns true if the invoice is no longer collectible afterwards (voided, or
+ * already void/paid so there is nothing to collect twice), false if voiding was
+ * refused — in which case the caller must NOT create the plan.
+ */
+export async function voidInvoice(invoiceId: string): Promise<boolean> {
+  try {
+    const inv = await stripe.invoices.retrieve(invoiceId);
+    if (inv.status === "void" || inv.status === "uncollectible") return true;
+    if (inv.status === "paid") return false; // already paid — a plan would double-bill the other way
+    await stripe.invoices.voidInvoice(invoiceId);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function constructWebhookEvent(payload: Buffer, sig: string) {
   return stripe.webhooks.constructEvent(
     payload,

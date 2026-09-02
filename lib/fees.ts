@@ -8,6 +8,8 @@
  * money.
  */
 
+import { getCurrency } from "@/lib/currency";
+
 export type FeeState =
   | "none"        // no fee on this deal
   | "collected"   // paid, through Stripe or recorded offline
@@ -22,6 +24,8 @@ export interface FeeDeal {
   success_fee_invoiced: boolean | null;
   success_fee_paid_at: string | null;
   fee_billing_status: string | null;
+  /** The deal's currency; decides the minor-unit factor (JPY is zero-decimal). */
+  currency?: string | null;
   fee_waived_at?: string | null;
   closed_at?: string | null;
   fee_reminder_count?: number | null;
@@ -57,9 +61,19 @@ export function feeState(d: FeeDeal): FeeState {
   return "unbillable";
 }
 
-/** success_fee_amount is stored in minor units. */
+/**
+ * success_fee_amount is stored in MINOR units, and close/route.ts scales it by
+ * the currency's minor-unit factor when it stores it. Dividing by a flat 100
+ * here understated every zero-decimal currency 100× (a ¥5,000,000 fee shown and
+ * ledgered as ¥50,000) even though the Stripe invoice itself was correct. The
+ * factor must match the one used to store it.
+ */
 export function feeMajor(d: FeeDeal): number {
-  return (Number(d.success_fee_amount) || 0) / 100;
+  // Currency is stored lowercase (Stripe convention); the currency table is
+  // keyed uppercase, so normalise before the lookup or JPY silently falls
+  // through to the two-decimal default.
+  const factor = getCurrency(d.currency?.toUpperCase()).zeroDecimal ? 1 : 100;
+  return (Number(d.success_fee_amount) || 0) / factor;
 }
 
 /**

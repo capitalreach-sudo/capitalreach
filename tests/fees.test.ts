@@ -60,6 +60,24 @@ describe("fee state", () => {
   it("reads the amount out of minor units", () => {
     expect(feeMajor(base)).toBe(1000);
   });
+
+  it("uses the currency's minor-unit factor, not a flat 100", () => {
+    // JPY is zero-decimal: close/route stores minor==major, so dividing by 100
+    // understated it 100x. A stored 5,000,000 is 5,000,000 yen, not 50,000.
+    expect(feeMajor({ ...base, success_fee_amount: 5_000_000, currency: "jpy" })).toBe(5_000_000);
+    // Two-decimal currencies are unchanged, including the no-currency default.
+    expect(feeMajor({ ...base, success_fee_amount: 100000, currency: "usd" })).toBe(1000);
+    expect(feeMajor({ ...base, success_fee_amount: 100000, currency: "eur" })).toBe(1000);
+    expect(feeMajor({ ...base, success_fee_amount: 100000 })).toBe(1000);
+  });
+
+  it("a partial refund does not reverse the whole fee", () => {
+    // The webhook records fee_refund_amount on a partial refund but leaves
+    // fee_refunded_at null, so the fee stays collected rather than flipping the
+    // entire amount out of revenue. Only a full refund sets fee_refunded_at.
+    expect(feeState({ ...base, success_fee_paid_at: "2026-08-01", fee_refund_amount: 500 } as never)).toBe("collected");
+    expect(feeState({ ...base, success_fee_paid_at: "2026-08-01", fee_refunded_at: "2026-08-10" })).toBe("reversed");
+  });
 });
 
 describe("dunning", () => {

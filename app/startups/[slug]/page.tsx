@@ -373,7 +373,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         investorId={previewing ? null : investorId}
         viewerDeal={previewing ? null : viewerDeal}
         ndaSigned={previewing ? false : ndaSigned}
-        relatedStartups={related ?? []}
+        relatedStartups={(related ?? []).map((r) => (viewerCaps.viewFinancials && !previewing ? r : { ...r, mrr: null, arr: null }))}
         updates={updates ?? []}
         isOwner={previewing ? false : isOwner}
         viewerStartupId={previewing ? null : viewerStartupId}

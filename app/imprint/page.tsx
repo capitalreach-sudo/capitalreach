@@ -4,12 +4,12 @@ import { Building2 } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import { legalEntity, legalEntityConfigured } from "@/lib/brand";
 
-// Impressum / legal notice (§ 5 TMG). Content is env-driven: until the company
-// is registered and NEXT_PUBLIC_LEGAL_* are set, the page renders a clear
-// "not yet published" state rather than inventing entity details — a wrong
-// Impressum is a bigger liability than a pending one.
-export const dynamic = "force-static";
-export const revalidate = 3600;
+// The whole body is rendered on the SERVER with getTranslator(getLocale()),
+// and the locale comes from a cookie. force-static prerendered it once at
+// build time, where there is no cookie, so every non-English visitor got this
+// page in English permanently (a client cannot re-render a server component).
+// Rendered per request instead, so the cookie language is honoured.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const t = await getTranslator(getLocale());

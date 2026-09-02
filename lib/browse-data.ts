@@ -1,4 +1,6 @@
-import { createAdminClient } from "@/lib/supabase-server";
+import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
+import { investorCan } from "@/lib/access";
+import { getLaunchStatus } from "@/lib/launchMode";
 
 /**
  * Server-side loaders for the two public directories and the data centre.
@@ -42,6 +44,50 @@ export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
     return (data ?? []) as unknown as BrowseStartup[];
   } catch {
     return null;
+  }
+}
+
+/**
+ * Absolute revenue figures — MRR and ARR — are gated to the financials tier
+ * (lib/access viewFinancials), the same gate the detail page enforces. The
+ * public directory and its cached JSON API used to select and return them to
+ * everyone, so a free or anonymous viewer could read a startup's MRR straight
+ * from the browse payload — the paywall was bypassable with no account. These
+ * are nulled server-side for any viewer who has not unlocked them, so the value
+ * never reaches the browser at all rather than being merely hidden by CSS.
+ *
+ * growth_rate and runway_months are deliberately NOT gated (the card shows them
+ * to everyone), so they are left intact.
+ */
+export function stripBrowseFinancials(rows: BrowseStartup[], canSeeFinancials: boolean): BrowseStartup[] {
+  if (canSeeFinancials) return rows;
+  return rows.map(r => ({ ...r, mrr: null, arr: null }));
+}
+
+/**
+ * Whether the current request's viewer may see gated financials, resolved the
+ * same way the startup detail page resolves it (investorCan). Anonymous and
+ * free viewers get false; admins and the financials-tier get true. Safe by
+ * default: any failure resolves to false.
+ */
+export async function viewerCanSeeFinancials(): Promise<boolean> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data: profile } = await supabase
+      .from("profiles").select("role, subscription_tier, suspended").eq("id", user.id).maybeSingle();
+    if (!profile) return false;
+    const { isLaunch } = await getLaunchStatus();
+    return investorCan({
+      userId: user.id,
+      role: profile.role === "investor" ? "investor" : profile.role === "admin" ? "admin" : null,
+      tier: profile.subscription_tier ?? null,
+      isLaunchMode: isLaunch,
+      suspended: !!profile.suspended,
+    }).viewFinancials;
+  } catch {
+    return false;
   }
 }
 

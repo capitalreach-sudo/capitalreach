@@ -55,7 +55,10 @@ export default async function SectorPage({ params }: Props) {
     .limit(24)
     .returns<StartupCardData[]>();
 
-  const list = startups ?? [];
+  // This page is statically generated for anonymous crawlers and always passes
+  // investorTier={null} to the card, so gated MRR/ARR are never displayed here.
+  // Null them so the figures are not shipped in the prerendered payload either.
+  const list = (startups ?? []).map((s) => ({ ...s, mrr: null, arr: null }));
 
   return (
     <>
