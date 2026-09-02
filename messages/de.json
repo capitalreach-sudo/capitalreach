@@ -3278,7 +3278,9 @@
     "offer": "Dies wurde in einer anderen Sprache verfasst.",
     "translateCta": "Diese Seite übersetzen",
     "machineNotice": "Maschinelle Übersetzung — nicht die Worte des Verfassers.",
-    "showOriginal": "Original anzeigen"
+    "showOriginal": "Original anzeigen",
+    "translating": "Wird übersetzt…",
+    "showTranslation": "Übersetzung anzeigen"
   },
   "feePlan": {
     "offer": "Gerade knapp bei Kasse? Verteile das auf mehrere Monate.",

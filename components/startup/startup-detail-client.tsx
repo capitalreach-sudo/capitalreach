@@ -72,6 +72,12 @@ interface Props {
   coInvestors?: Array<{ slug: string; name: string | null; type: string | null }>;
   /** B19: public momentum aggregate (only when the founder opted in). */
   momentum?: { interested: number; committedCount: number; committedAmount: number; softAmount: number; currency: string } | null;
+  /** Auto-translation: the listing's detected language, a server-cached
+      translation for the viewer's locale (if any), and whether translation is
+      configured on the server. */
+  sourceLocale?: string | null;
+  initialTranslation?: Record<string, string> | null;
+  translationAvailable?: boolean;
 }
 
 const TABS = ["overview", "team", "financials", "documents", "traction"] as const;
@@ -402,7 +408,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [],
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [], sourceLocale = null, initialTranslation = null, translationAvailable = true,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -620,7 +626,8 @@ export function StartupDetailClient({
   return (
     /* The pitch is the part of this page that has never been localised. The
        offer sits at the top of the hero; the fields below read from it. */
-    <TranslatedContent entityType="startup" entityId={startup.id}>
+    <TranslatedContent entityType="startup" entityId={startup.id}
+      sourceLocale={sourceLocale} initialFields={initialTranslation} available={translationAvailable}>
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
       {/* Same black-bar convention as the admin view-as banner: unmistakable,
           and one click out. Everything below really is the free-investor

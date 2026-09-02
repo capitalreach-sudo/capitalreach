@@ -10,6 +10,9 @@ import { stripLockedUrl } from "@/lib/document-access";
 import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { protectFounders } from "@/lib/identity";
+import { getLocale } from "@/lib/locale-server";
+import { detectLanguage } from "@/lib/detect-language";
+import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
 import type { Startup, SubscriptionTier } from "@/types";
 import type { Metadata } from "next";
 import type { StartupCardData } from "@/components/startup/startup-card";
@@ -321,6 +324,18 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx, previewing ? null : shareToken)),
   };
 
+  // Auto-translation. The listing's language is detected from its own prose
+  // (fresh every render, so an edited-into-another-language pitch is never
+  // stale), and when it differs from the viewer's we hand the client any
+  // translation the cache already holds so the page paints translated with no
+  // flash. A cold cache just means the client fetches it once.
+  const viewerLocale = getLocale();
+  const proseFields = collectFields(safeStartup as unknown as Record<string, unknown>, TRANSLATABLE.startup);
+  const sourceLocale = detectLanguage(Object.values(proseFields).join("\n"), "en");
+  const initialTranslation = (translationAvailable && viewerLocale !== sourceLocale && !previewing)
+    ? await readCachedTranslation("startup", startup.id, viewerLocale, proseFields)
+    : null;
+
   // Metric history rides the same gate as the single MRR number: financial
   // tier (or the owner outside preview). Fetched only when it will render, so
   // a gated viewer's payload does not carry the curve either.
@@ -379,6 +394,9 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         circumventionAcked={previewing ? false : circumventionAcked}
         momentum={momentum}
         coInvestors={coInvestors}
+        sourceLocale={sourceLocale}
+        initialTranslation={initialTranslation}
+        translationAvailable={translationAvailable}
       />
       {/* E50: reporting a listing needs someone to come back to, so it is
           offered to signed-in visitors who are not the owner. */}

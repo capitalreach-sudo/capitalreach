@@ -3278,7 +3278,9 @@
     "offer": "이 내용은 다른 언어로 작성되었습니다.",
     "translateCta": "이 페이지 번역",
     "machineNotice": "기계 번역입니다 — 작성자의 원문이 아닙니다.",
-    "showOriginal": "원문 보기"
+    "showOriginal": "원문 보기",
+    "translating": "번역 중…",
+    "showTranslation": "번역 보기"
   },
   "feePlan": {
     "offer": "지금 자금이 빠듯하신가요? 몇 달에 나눠 내실 수 있습니다.",

@@ -22,6 +22,8 @@ import { Linkedin, MapPin, DollarSign, Globe, Twitter,
   Briefcase, BookOpen, Eye, Pencil, Handshake, BadgeCheck } from "lucide-react";
 import { formatCurrency, getInitials } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";
+import { detectLanguage } from "@/lib/detect-language";
+import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
 import type { Metadata } from "next";
 
 interface Props { params: { slug: string } }
@@ -161,12 +163,23 @@ export default async function InvestorProfilePage({ params }: Props) {
     }
   }
 
+  // Auto-translation: detect the profile's language from its own prose and, if
+  // it differs from the viewer's, hand down any cached translation so the page
+  // paints translated with no flash. Cold cache → the client fetches it once.
+  const viewerLocale = getLocale();
+  const proseFields = collectFields(investor as unknown as Record<string, unknown>, TRANSLATABLE.investor);
+  const sourceLocale = detectLanguage(Object.values(proseFields).join("\n"), "en");
+  const initialTranslation = (translationAvailable && viewerLocale !== sourceLocale)
+    ? await readCachedTranslation("investor", investor.id, viewerLocale, proseFields)
+    : null;
+
   return (
     <>
       <Navbar />
-      {/* Same offer as a listing: an investor's own words, with a one-click
-          reading of them in the visitor's language. */}
-      <TranslatedContent entityType="investor" entityId={investor.id}>
+      {/* An investor's own words, automatically read in the visitor's language
+          when they differ — always labelled, with the original one click away. */}
+      <TranslatedContent entityType="investor" entityId={investor.id}
+        sourceLocale={sourceLocale} initialFields={initialTranslation} available={translationAvailable}>
       <main className="container mx-auto px-4 py-12 max-w-3xl">
 
         {/* Back nav */}

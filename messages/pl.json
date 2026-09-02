@@ -3278,7 +3278,9 @@
     "offer": "To napisano w innym języku.",
     "translateCta": "Przetłumacz tę stronę",
     "machineNotice": "Tłumaczenie maszynowe — to nie są słowa autora.",
-    "showOriginal": "Pokaż oryginał"
+    "showOriginal": "Pokaż oryginał",
+    "translating": "Tłumaczenie…",
+    "showTranslation": "Pokaż tłumaczenie"
   },
   "feePlan": {
     "offer": "Napięta gotówka? Rozłóż tę kwotę na kilka miesięcy.",

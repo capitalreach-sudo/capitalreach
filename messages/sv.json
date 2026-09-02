@@ -3278,7 +3278,9 @@
     "offer": "Det här skrevs på ett annat språk.",
     "translateCta": "Översätt den här sidan",
     "machineNotice": "Maskinöversättning — inte författarens egna ord.",
-    "showOriginal": "Visa originalet"
+    "showOriginal": "Visa originalet",
+    "translating": "Översätter…",
+    "showTranslation": "Visa översättning"
   },
   "feePlan": {
     "offer": "Ont om likviditet just nu? Dela upp beloppet på några månader.",

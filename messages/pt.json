@@ -3278,7 +3278,9 @@
     "offer": "Isto foi escrito noutro idioma.",
     "translateCta": "Traduzir esta página",
     "machineNotice": "Tradução automática — não são as palavras do autor.",
-    "showOriginal": "Ver o original"
+    "showOriginal": "Ver o original",
+    "translating": "Traduzindo…",
+    "showTranslation": "Mostrar tradução"
   },
   "feePlan": {
     "offer": "Tesouraria apertada? Divida este valor por alguns meses.",

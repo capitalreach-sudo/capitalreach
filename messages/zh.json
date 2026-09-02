@@ -3278,7 +3278,9 @@
     "offer": "这段内容是用另一种语言写的。",
     "translateCta": "翻译此页",
     "machineNotice": "机器翻译 —— 并非作者本人的原话。",
-    "showOriginal": "显示原文"
+    "showOriginal": "显示原文",
+    "translating": "正在翻译…",
+    "showTranslation": "显示翻译"
   },
   "feePlan": {
     "offer": "现在现金紧张？可以分几个月支付。",

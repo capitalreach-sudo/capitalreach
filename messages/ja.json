@@ -3278,7 +3278,9 @@
     "offer": "これは別の言語で書かれています。",
     "translateCta": "このページを翻訳",
     "machineNotice": "機械翻訳です — 執筆者本人の言葉ではありません。",
-    "showOriginal": "原文を表示"
+    "showOriginal": "原文を表示",
+    "translating": "翻訳中…",
+    "showTranslation": "翻訳を表示"
   },
   "feePlan": {
     "offer": "いま資金繰りが厳しいですか？数か月に分けて支払えます。",

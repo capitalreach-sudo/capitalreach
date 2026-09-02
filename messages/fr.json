@@ -3278,7 +3278,9 @@
     "offer": "Ceci a été rédigé dans une autre langue.",
     "translateCta": "Traduire cette page",
     "machineNotice": "Traduction automatique — pas les mots de l'auteur.",
-    "showOriginal": "Afficher l'original"
+    "showOriginal": "Afficher l'original",
+    "translating": "Traduction en cours…",
+    "showTranslation": "Afficher la traduction"
   },
   "feePlan": {
     "offer": "Trésorerie tendue ? Étalez ce montant sur quelques mois.",

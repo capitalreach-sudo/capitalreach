@@ -3278,7 +3278,9 @@
     "offer": "Dit is in een andere taal geschreven.",
     "translateCta": "Vertaal deze pagina",
     "machineNotice": "Machinevertaling — niet de eigen woorden van de auteur.",
-    "showOriginal": "Toon het origineel"
+    "showOriginal": "Toon het origineel",
+    "translating": "Bezig met vertalen…",
+    "showTranslation": "Vertaling tonen"
   },
   "feePlan": {
     "offer": "Krappe kas? Spreid dit over een paar maanden.",

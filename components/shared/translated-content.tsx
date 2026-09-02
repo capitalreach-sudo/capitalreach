@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Languages, Loader2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLocale } from "@/components/providers/locale-provider";
@@ -13,15 +13,18 @@ import { useLocale } from "@/components/providers/locale-provider";
  * perfectly localised page wrapped around text they could not read — which is
  * the half of the localisation that decides whether they engage at all.
  *
- * Two decisions worth defending:
+ * Behaviour, and why:
  *
- *  - It is OFFERED, not imposed. The page paints the founder's own words and a
- *    one-click "read this in <language>". Silently swapping somebody's pitch
- *    for a model's rendering of it, in a document people make investment
- *    decisions from, is not a courtesy.
- *  - It is always labelled while active, with "show original" beside it. A
- *    reader must never be unsure whether they are looking at what the founder
- *    wrote.
+ *  - AUTOMATIC when the listing is not in the viewer's language. If the server
+ *    already had the translation cached it arrives with the page (initialFields)
+ *    and there is no flash; otherwise the panel fetches it once on mount. Either
+ *    way the reader does not have to know the feature exists to benefit from it.
+ *  - ALWAYS LABELLED while a translation is showing, with "show original" beside
+ *    it. A reader making an investment decision must never be unsure whether the
+ *    words are the founder's or a model's. Auto-translation without that label
+ *    would be misrepresentation; the label is what makes auto safe.
+ *  - SILENT when it cannot help. Same language, or translation not configured on
+ *    the server (available=false): no banner, no fetch, just the original.
  */
 
 type Ctx = {
@@ -32,32 +35,55 @@ type Ctx = {
 
 const TranslationCtx = createContext<Ctx>({ fields: null, active: false, get: (_k, o) => o });
 
+// Module-level so it dedups across component instances and StrictMode's
+// dev-only double-mount, not just within one instance: the auto-translate
+// effect can fire from several instances/remounts of the same entity before any
+// cache write lands, and the request's own rate-limiter fails open when Redis
+// is unconfigured. One in-flight translate per (entity, locale) per tab.
+const pendingTranslations = new Set<string>();
+
 export function useTranslatedField(key: string, original: string | null | undefined) {
   return useContext(TranslationCtx).get(key, original);
 }
 
 export function TranslatedContent({
-  entityType, entityId, sourceLocale, children,
+  entityType, entityId, sourceLocale, initialFields = null, available = true, children,
 }: {
   entityType: "startup" | "investor";
   entityId: string;
   /** The language the content is believed to be in, when it is known. */
   sourceLocale?: string | null;
+  /** A translation the server already had cached for the viewer's locale. */
+  initialFields?: Record<string, string> | null;
+  /** Whether translation is configured on the server. False → stay silent. */
+  available?: boolean;
   children: React.ReactNode;
 }) {
   const { t } = useTranslation();
   const locale = useLocale();
-  const [fields, setFields] = useState<Record<string, string> | null>(null);
-  const [active, setActive] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [unavailable, setUnavailable] = useState(false);
 
   // Nothing to offer when the reader is already in the content's language, and
   // English is the assumption when the content's language is unrecorded.
   const sameLanguage = (sourceLocale ?? "en") === locale;
 
-  const run = useCallback(async () => {
-    if (fields) { setActive(true); return; }
+  // initialFields was computed by the server for the locale it rendered — the
+  // locale the client also starts at. It is only valid while that holds; after
+  // an in-page locale change (static pages) it is stale and dropped.
+  const seededLocaleRef = useRef(locale);
+  const seedValid = !sameLanguage && available && !!initialFields;
+
+  const [fields, setFields] = useState<Record<string, string> | null>(seedValid ? initialFields : null);
+  const [active, setActive] = useState<boolean>(seedValid);
+  const [busy, setBusy] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
+
+  const fetchTranslation = useRef<() => Promise<void>>(async () => {});
+  fetchTranslation.current = async () => {
+    // Synchronous, module-level de-dupe: a state flag would be read too late to
+    // stop a second concurrent call (see pendingTranslations above).
+    const key = `${entityType}:${entityId}:${locale}`;
+    if (pendingTranslations.has(key)) return;
+    pendingTranslations.add(key);
     setBusy(true);
     try {
       const res = await fetch("/api/translate", {
@@ -73,21 +99,38 @@ export function TranslatedContent({
       // Silent: the original is on screen and readable either way.
     } finally {
       setBusy(false);
+      pendingTranslations.delete(key);
     }
-  }, [entityType, entityId, locale, fields]);
+  };
 
-  // A locale change invalidates what is on screen — a German translation
-  // must not stay up when the reader switches to Korean.
-  useEffect(() => { setFields(null); setActive(false); }, [locale]);
+  // Auto-translate. Runs on mount, and again whenever the locale changes (a
+  // German translation must not stay up when the reader switches to Korean).
+  // The seed covers the very first paint when the server had it cached, so this
+  // only reaches the network on a cold cache or after a locale change.
+  useEffect(() => {
+    // Locale changed away from the server-seeded one: the seed is now stale.
+    if (locale !== seededLocaleRef.current) {
+      setFields(null);
+      setActive(false);
+    }
+    if (sameLanguage || !available || unavailable) return;
+    // Already have a valid translation for this locale (seed, or a prior fetch
+    // that this same effect run has not cleared): show it, don't refetch.
+    if (fields && locale === seededLocaleRef.current) { setActive(true); return; }
+    void fetchTranslation.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, sameLanguage, available, unavailable]);
 
   const ctx = useMemo<Ctx>(() => ({
     fields, active,
     get: (key, original) => (active && fields?.[key] ? fields[key] : original),
   }), [fields, active]);
 
+  const showBanner = !sameLanguage && available && !unavailable;
+
   return (
     <TranslationCtx.Provider value={ctx}>
-      {!sameLanguage && !unavailable && (
+      {showBanner && (
         <div style={{
           display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap",
           background: active ? "var(--cr-copper-bg)" : "transparent",
@@ -98,14 +141,18 @@ export function TranslatedContent({
             ? <Loader2 style={{ width: 13, height: 13, color: "var(--cr-ink-4)" }} className="animate-spin" />
             : <Languages style={{ width: 13, height: 13, color: active ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />}
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
-            {active ? t("translate.machineNotice") : t("translate.offer")}
+            {busy && !active ? t("translate.translating") : active ? t("translate.machineNotice") : t("translate.offer")}
           </span>
           <button
-            onClick={() => (active ? setActive(false) : run())}
+            onClick={() => {
+              if (active) { setActive(false); return; }
+              if (fields) { setActive(true); return; }
+              void fetchTranslation.current();
+            }}
             disabled={busy}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0,
+            style={{ background: "none", border: "none", cursor: busy ? "default" : "pointer", padding: 0,
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>
-            {active ? t("translate.showOriginal") : t("translate.translateCta")}
+            {active ? t("translate.showOriginal") : t("translate.showTranslation")}
           </button>
         </div>
       )}

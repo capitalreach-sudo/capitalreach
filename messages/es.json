@@ -3278,7 +3278,9 @@
     "offer": "Esto se escribió en otro idioma.",
     "translateCta": "Traducir esta página",
     "machineNotice": "Traducción automática: no son las palabras del autor.",
-    "showOriginal": "Ver el original"
+    "showOriginal": "Ver el original",
+    "translating": "Traduciendo…",
+    "showTranslation": "Mostrar traducción"
   },
   "feePlan": {
     "offer": "¿Caja ajustada? Reparte este importe en varios meses.",

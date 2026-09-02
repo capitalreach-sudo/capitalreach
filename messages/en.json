@@ -3278,7 +3278,9 @@
     "offer": "This was written in another language.",
     "translateCta": "Translate this page",
     "machineNotice": "Machine translation — not the author's own words.",
-    "showOriginal": "Show the original"
+    "showOriginal": "Show the original",
+    "translating": "Translating…",
+    "showTranslation": "Show translation"
   },
   "feePlan": {
     "offer": "Cash tight right now? Spread this over a few months.",

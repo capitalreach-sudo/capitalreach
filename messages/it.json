@@ -3278,7 +3278,9 @@
     "offer": "Questo testo è stato scritto in un'altra lingua.",
     "translateCta": "Traduci questa pagina",
     "machineNotice": "Traduzione automatica — non sono le parole dell'autore.",
-    "showOriginal": "Mostra l'originale"
+    "showOriginal": "Mostra l'originale",
+    "translating": "Traduzione in corso…",
+    "showTranslation": "Mostra traduzione"
   },
   "feePlan": {
     "offer": "Poca liquidità in questo momento? Distribuisci l'importo su qualche mese.",

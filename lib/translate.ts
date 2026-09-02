@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import { LOCALE_META, type Locale } from "@/lib/locale";
+import { createAdminClient } from "@/lib/supabase-server";
+import { openai, isOpenAIConfigured } from "@/lib/openai";
 
 /**
  * Machine translation of user-written content.
@@ -52,79 +54,152 @@ export function collectFields(row: Record<string, unknown>, keys: string[]): Tra
   return out;
 }
 
-// Moved from OpenAI to Anthropic deliberately: the assistant already runs on
-// ANTHROPIC_API_KEY, and one funded provider beats two half-funded ones. The
-// OpenAI account being out of credits is what surfaced this — translation was
-// built against a key that could not pay for it.
-export const translationAvailable = !!process.env.ANTHROPIC_API_KEY;
+/**
+ * Server-side cache read for the render path. Returns a ready translation ONLY
+ * when one exists AND its source hash still matches the live content — an
+ * edited listing whose prose moved on is a miss, never a stale hit.
+ *
+ * This is what lets a detail page paint an already-translated listing on the
+ * first byte with no model call and no flash: a plain indexed lookup on the
+ * (entity_type, entity_id, locale) unique key. A miss just means the client
+ * will fetch it — cheaply, once — and warm the cache for the next viewer.
+ */
+export async function readCachedTranslation(
+  entityType: "startup" | "investor" | "update",
+  entityId: string,
+  locale: Locale,
+  currentFields: TranslatedFields,
+): Promise<TranslatedFields | null> {
+  if (Object.keys(currentFields).length === 0) return null;
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("content_translations")
+      .select("fields, source_hash")
+      .eq("entity_type", entityType)
+      .eq("entity_id", entityId)
+      .eq("locale", locale)
+      .maybeSingle();
+    if (!data || data.source_hash !== sourceHash(currentFields)) return null;
+    return data.fields as TranslatedFields;
+  } catch {
+    // A cache read must never break a page render; the original prose is there.
+    return null;
+  }
+}
+
+// Runs on whichever model account is funded. OpenAI is the platform's primary
+// (the assistant, scoring and due-diligence all bill there — "one funded
+// account runs everything"); Anthropic is the fallback. Being Anthropic-only
+// is what previously left translation dark whenever only the OpenAI key was
+// set, which is the common case in this deployment.
+const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
+export const translationAvailable = isOpenAIConfigured || hasAnthropic;
+
+/** The instruction set is identical across providers — the rules are the product. */
+function systemPrompt(language: string): string {
+  return [
+    `You translate startup fundraising copy into ${language}.`,
+    "Return ONLY a JSON object with exactly the same keys you were given. No prose before or after it.",
+    "Rules:",
+    "- Translate meaning, not word order. Keep the register plain and factual.",
+    "- Never translate company names, product names, or people's names.",
+    "- Never convert, recalculate or reformat numbers, currencies, percentages or dates. Reproduce them exactly as written.",
+    "- Keep industry terms that stay untranslated in the target language (SaaS, ARR, SAFE) as they are.",
+    "- If a value is already in the target language, return it unchanged.",
+    "- Do not add, remove, summarise or improve anything. This is a legal-adjacent document.",
+  ].join("\n");
+}
 
 /**
- * Returns the translated fields, or null if translation is unavailable or the
- * model returned something unusable. Never throws: a failed translation must
+ * Validate a model's raw output down to exactly the keys we asked for, as
+ * strings. The brace-slice tolerates a stray code fence without trusting
+ * anything outside the object; a model that invents a key or returns an object
+ * for a value must not end up rendered on a listing.
+ */
+function parseTranslation(raw: string, keys: string[]): TranslatedFields | null {
+  const trimmed = (raw ?? "").trim();
+  if (!trimmed) return null;
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  if (start < 0 || end <= start) return null;
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(trimmed.slice(start, end + 1)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+  const out: TranslatedFields = {};
+  for (const k of keys) {
+    const v = parsed[k];
+    if (typeof v === "string" && v.trim()) out[k] = v.trim();
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+async function viaOpenAI(fields: TranslatedFields, language: string, keys: string[]): Promise<TranslatedFields | null> {
+  if (!isOpenAIConfigured) return null;
+  const res = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    temperature: 0,                       // translation is transformation, not invention
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: systemPrompt(language) },
+      { role: "user", content: JSON.stringify(fields) },
+    ],
+  });
+  return parseTranslation(res.choices?.[0]?.message?.content ?? "", keys);
+}
+
+async function viaAnthropic(fields: TranslatedFields, language: string, keys: string[]): Promise<TranslatedFields | null> {
+  if (!hasAnthropic) return null;
+  const client = new Anthropic();
+  const res = await client.messages.create({
+    model: "claude-opus-5",
+    max_tokens: 8000,
+    output_config: { effort: "low" },     // cheap/fast; a cached page pays once
+    system: systemPrompt(language),
+    messages: [{ role: "user", content: JSON.stringify(fields) }],
+  });
+  const raw = res.content
+    .filter((b): b is Anthropic.TextBlock => b.type === "text")
+    .map(b => b.text)
+    .join("");
+  return parseTranslation(raw, keys);
+}
+
+/**
+ * Returns the translated fields, or null if translation is unavailable or every
+ * provider returned something unusable. Never throws: a failed translation must
  * leave the original readable rather than break the page.
+ *
+ * The failure reason is recorded rather than swallowed — a rejected key, an
+ * unreachable model and an exhausted quota look identical from outside (a bare
+ * 502). It goes to system_events, which the admin page already reads.
  */
 export async function translateFields(
   fields: TranslatedFields,
   target: Locale,
 ): Promise<TranslatedFields | null> {
-  // Why the reason is recorded rather than swallowed: a key that is present
-  // but rejected, a model the account cannot reach, and an exhausted quota all
-  // look identical from outside — a 502 with nothing behind it. It goes to
-  // system_events, which the admin page already reads.
   if (!translationAvailable) return null;
   const keys = Object.keys(fields);
   if (keys.length === 0) return null;
 
   const language = LOCALE_META[target]?.name ?? target;
 
-  try {
-    const client = new Anthropic();
-    const res = await client.messages.create({
-      model: "claude-opus-5",
-      max_tokens: 8000,
-      // Translation is transformation, not reasoning; low effort keeps a
-      // cached page's first translation fast and cheap.
-      output_config: { effort: "low" },
-      system: [
-        `You translate startup fundraising copy into ${language}.`,
-        "Return ONLY a JSON object with exactly the same keys you were given. No prose before or after it.",
-        "Rules:",
-        "- Translate meaning, not word order. Keep the register plain and factual.",
-        "- Never translate company names, product names, or people's names.",
-        "- Never convert, recalculate or reformat numbers, currencies, percentages or dates. Reproduce them exactly as written.",
-        "- Keep industry terms that stay untranslated in the target language (SaaS, ARR, SAFE) as they are.",
-        "- If a value is already in the target language, return it unchanged.",
-        "- Do not add, remove, summarise or improve anything. This is a legal-adjacent document.",
-      ].join("\n"),
-      messages: [{ role: "user", content: JSON.stringify(fields) }],
-    });
-
-    const raw = res.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map(b => b.text)
-      .join("")
-      .trim();
-    if (!raw) return null;
-    // The model is told to return bare JSON; the brace-slice tolerates a
-    // stray fence without trusting anything outside the object.
-    const start = raw.indexOf("{");
-    const end = raw.lastIndexOf("}");
-    if (start < 0 || end <= start) return null;
-    const parsed = JSON.parse(raw.slice(start, end + 1)) as Record<string, unknown>;
-
-    // Only keys we asked for, only strings. A model that invents a key or
-    // returns an object must not end up rendered on a listing.
-    const out: TranslatedFields = {};
-    for (const k of keys) {
-      const v = parsed[k];
-      if (typeof v === "string" && v.trim()) out[k] = v.trim();
+  // OpenAI first (funded account), Anthropic as fallback. Each provider's own
+  // failure drops through to the next rather than aborting the whole call.
+  for (const [name, run] of [["openai", viaOpenAI], ["anthropic", viaAnthropic]] as const) {
+    try {
+      const out = await run(fields, language, keys);
+      if (out) return out;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[translate] ${name} failed:`, message);
+      const { logSystemEvent } = await import("@/lib/system-events");
+      await logSystemEvent("translate", "error", `Translation call failed (${name})`, { target, message: message.slice(0, 400) }).catch(() => {});
+      // fall through to the next provider
     }
-    return Object.keys(out).length ? out : null;
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("[translate] failed:", message);
-    const { logSystemEvent } = await import("@/lib/system-events");
-    await logSystemEvent("translate", "error", "Translation call failed", { target, message: message.slice(0, 400) }).catch(() => {});
-    return null;
   }
+  return null;
 }
