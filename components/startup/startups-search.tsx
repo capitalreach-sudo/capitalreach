@@ -511,26 +511,36 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
           )}
         </div>
 
-        {/* Metrics */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
-          {[
-            { label: t("startupDetail.mrr"),    val: s.mrr         ? safeFormatMRR(s.mrr)                                       : null },
-            { label: t("startupDetail.arr"),    val: s.arr         ? safeFormatMRR(s.arr)                                       : null },
-            { label: t("startupDetail.growth"), val: s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : null, isGrowth: true, positiveGrowth: (s.growth_rate ?? 0) > 0 },
-          ].map(({ label, val, isGrowth, positiveGrowth }) => (
-            <div key={label} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "8px 10px 7px" }}>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{label}</div>
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px",
-                color: val ? (isGrowth ? (positiveGrowth ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)") : "var(--cr-ink-4)",
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6,
-              }}>
-                <span>{val ?? "—"}</span>
-                {label === t("startupDetail.mrr") && spark && <Sparkline points={spark} width={44} height={16} />}
-              </div>
+        {/* Metrics. Only the numbers this viewer actually HAS render -- a row of
+            boxes showing "—" (which is what every anonymous viewer saw once
+            MRR/ARR started being stripped server-side) reads as a broken card,
+            not a gated one. Present metrics sit on one hairline-divided strip;
+            absent ones are simply absent, and a card with no metrics at all
+            skips the strip and lets the raise row below carry it. */}
+        {(() => {
+          const metrics: Array<{ label: string; val: string; color?: string; withSpark?: boolean }> = [];
+          if (s.mrr) metrics.push({ label: t("startupDetail.mrr"), val: safeFormatMRR(s.mrr) ?? "", withSpark: true });
+          if (s.arr) metrics.push({ label: t("startupDetail.arr"), val: safeFormatMRR(s.arr) ?? "" });
+          if (s.growth_rate) metrics.push({
+            label: t("startupDetail.growth"),
+            val: `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%`,
+            color: s.growth_rate > 0 ? "var(--cr-up)" : "var(--cr-down)",
+          });
+          if (!metrics.length) return null;
+          return (
+            <div style={{ display: "flex", alignItems: "stretch", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", marginBottom: "14px", overflow: "hidden" }}>
+              {metrics.map((m, i) => (
+                <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "8px 10px 7px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{m.label}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: m.color ?? "var(--cr-ink)", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.val}</span>
+                    {m.withSpark && spark && <Sparkline points={spark} width={40} height={14} />}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          );
+        })()}
 
         {/* Raise strip */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>

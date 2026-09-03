@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export type ListingSnippet = {
   id: string; name: string; slug: string;
   industry: string; stage: string;
-  mrr: number | null; funding_target: number | null; vaultrise_score: number | null;
+  funding_target: number | null; vaultrise_score: number | null;
   logo_url?: string | null;
 };
 
@@ -55,7 +55,7 @@ export default async function HomePage() {
       getLaunchStatus(),
       supabase
         .from("startups")
-        .select("id,name,slug,industry,stage,mrr,funding_target,vaultrise_score")
+        .select("id,name,slug,industry,stage,funding_target,vaultrise_score")
         .eq("status", "active")
         .order("vaultrise_score", { ascending: false, nullsFirst: false })
         .limit(8),

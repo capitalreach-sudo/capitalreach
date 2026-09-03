@@ -8,7 +8,7 @@ import { useReveal } from "@/hooks/useReveal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { safeFormatCurrency, safeFormatMRR } from "@/lib/format";
+import { safeFormatCurrency } from "@/lib/format";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
 import type { ListingSnippet } from "@/app/page";
@@ -31,7 +31,7 @@ function StageBadge({ stage }: { stage: string }) {
       fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em",
       whiteSpace: "nowrap",
     }}>
-      {stage}
+      {stage.replace(/_/g, " ")}
     </span>
   );
 }
@@ -247,7 +247,47 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
         </div>
       )}
 
-      {/* ── 3. TOP LISTINGS (only when there is something to show) ── */}
+      {/* ── 3. HOW IT WORKS ─────────────────────────────────── */}
+      {/* Two tracks side by side: the reader self-selects founder or investor
+          and reads four steps, not a wall of features. Every string here has
+          existed in all fifteen locales since the howItWorks group shipped --
+          the section costs nothing new to localise. */}
+      <section aria-label={t("howItWorks.title")} style={{ background: "var(--cr-paper)", borderTop: "1px solid var(--cr-rule)" }}>
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24">
+          <div className="ruled-label" style={{ marginBottom: "40px" }}>{t("howItWorks.sectionLabel")}</div>
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
+            {([
+              { track: t("howItWorks.forFounders"),  steps: [1, 2, 3, 4].map(n => ({ title: t(`howItWorks.f${n}title`), desc: t(`howItWorks.f${n}desc`) })) },
+              { track: t("howItWorks.forInvestors"), steps: [1, 2, 3, 4].map(n => ({ title: t(`howItWorks.i${n}title`), desc: t(`howItWorks.i${n}desc`) })) },
+            ]).map(({ track, steps }) => (
+              <div key={track}>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "28px" }}>
+                  {track}
+                </h2>
+                <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                  {steps.map((step, i) => (
+                    <li key={step.title} style={{ display: "flex", gap: "18px", paddingBottom: i === steps.length - 1 ? 0 : "22px", position: "relative" }}>
+                      {/* Rail: number + connecting rule, the ledger line down the steps. */}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "999px", width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        {i < steps.length - 1 && <span aria-hidden style={{ flex: 1, width: 1, background: "var(--cr-rule)", marginTop: 6 }} />}
+                      </div>
+                      <div style={{ paddingTop: 3 }}>
+                        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "5px" }}>{step.title}</h3>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13.5px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "46ch" }}>{step.desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. TOP LISTINGS (only when there is something to show) ── */}
       {listings.length > 0 && (
         <section
           ref={listRef as React.RefObject<HTMLElement>}
@@ -265,15 +305,16 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
             <div style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden", background: "var(--cr-paper)", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
               <div style={{ height: "3px", background: "linear-gradient(90deg, #8A4A15, #B5651D, #D4842A)" }} />
 
-              {/* Desktop header */}
+              {/* Desktop header. No MRR column: revenue figures are gated to
+                  the financials tier, and this table reaches every anonymous
+                  visitor -- the number belongs behind the listing, not here. */}
               <div className="hidden md:flex items-center" style={{ padding: "14px 20px", background: "var(--cr-paper-2)", borderBottom: "1px solid rgba(26,22,18,0.12)" }}>
                 <div style={{ minWidth: "28px" }} />
                 <div style={{ ...TH, flex: 1, minWidth: "180px" }}>{t("listings.company")}</div>
-                <div style={{ ...TH, minWidth: "120px", maxWidth: "120px" }}>{t("listings.industry")}</div>
-                <div style={{ ...TH, minWidth: "100px", maxWidth: "100px" }}>{t("listings.stage")}</div>
-                <div style={{ ...TH, minWidth: "90px", textAlign: "right" }}>{t("listings.mrr")}</div>
-                <div style={{ ...TH, minWidth: "100px", textAlign: "right" }}>{t("listings.raising")}</div>
-                <div style={{ ...TH, minWidth: "64px", textAlign: "center" }}>{t("listings.score")}</div>
+                <div style={{ ...TH, minWidth: "140px", maxWidth: "140px" }}>{t("listings.industry")}</div>
+                <div style={{ ...TH, minWidth: "110px", maxWidth: "110px" }}>{t("listings.stage")}</div>
+                <div style={{ ...TH, minWidth: "110px", textAlign: "right" }}>{t("listings.raising")}</div>
+                <div style={{ ...TH, minWidth: "72px", textAlign: "center" }}>{t("listings.score")}</div>
                 <div style={{ minWidth: "48px" }} />
               </div>
               {/* Mobile header */}
@@ -281,7 +322,6 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
                 <div style={{ ...TH, flex: 1 }}>{t("listings.company")}</div>
                 <div style={{ ...TH, minWidth: "80px" }}>{t("listings.stage")}</div>
                 <div style={{ ...TH, minWidth: "80px", textAlign: "right" }}>{t("listings.raising")}</div>
-                <div style={{ minWidth: "36px" }} />
               </div>
 
               {listings.map((s, rowIdx) => {
@@ -326,25 +366,21 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
                     </div>
 
-                    <div className="hidden md:block" style={{ minWidth: "120px", maxWidth: "120px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div className="hidden md:block" style={{ minWidth: "140px", maxWidth: "140px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {s.industry}
                     </div>
 
-                    <div style={{ minWidth: "80px" }} className="md:min-w-[100px] md:max-w-[100px]"><StageBadge stage={s.stage} /></div>
+                    <div style={{ minWidth: "80px" }} className="md:min-w-[110px] md:max-w-[110px]"><StageBadge stage={s.stage} /></div>
 
-                    <div className="hidden md:block" style={{ minWidth: "90px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)" }}>
-                      {safeFormatMRR(s.mrr)}
-                    </div>
-
-                    <div style={{ minWidth: "80px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)" }} className="md:min-w-[100px]">
+                    <div style={{ minWidth: "80px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)" }} className="md:min-w-[110px]">
                       {safeFormatCurrency(s.funding_target)}
                     </div>
 
-                    <div className="hidden md:flex justify-center" style={{ minWidth: "64px" }}>
+                    <div className="hidden md:flex justify-center" style={{ minWidth: "72px" }}>
                       <ScoreBadge score={s.vaultrise_score} size="sm" />
                     </div>
 
-                    <div style={{ minWidth: "36px", textAlign: "right" }} className="md:min-w-[48px]">
+                    <div style={{ minWidth: "48px", textAlign: "right" }} className="hidden md:block">
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: isHovered ? "var(--cr-ink)" : "var(--cr-ink-4)", transition: "color 120ms ease" }}>
                         {t("listings.view")} →
                       </span>
@@ -356,6 +392,61 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
           </div>
         </section>
       )}
+
+      {/* ── 5. PULL QUOTE ───────────────────────────────────── */}
+      {/* The creed, said once, on the dark slab. Serif in editorial; the
+          business style flattens it to sans automatically. */}
+      <section aria-label={t("pullQuote.attribution")} style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)" }}>
+        <div className="max-w-[880px] mx-auto px-6 md:px-10 py-16 md:py-20 text-center">
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3.4vw, 34px)", color: "var(--cr-band-ink)", lineHeight: 1.35, letterSpacing: "-0.01em", textWrap: "balance" }}>
+            “{t("pullQuote.text")}”
+          </p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: "20px" }}>
+            {t("pullQuote.attribution")}
+          </p>
+        </div>
+      </section>
+
+      {/* ── 6. CLOSING CTA ──────────────────────────────────── */}
+      <section aria-label={t("cta.label")} style={{ background: "var(--cr-paper)" }}>
+        <div className="max-w-[720px] mx-auto px-6 md:px-10 py-20 md:py-28 flex flex-col items-center text-center">
+          <div className="ruled-label" style={{ marginBottom: "28px", justifyContent: "center" }}>{t("cta.label")}</div>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 5vw, 52px)", color: "var(--cr-ink)", lineHeight: 1.05, letterSpacing: "-0.02em", textWrap: "balance" }}>
+            {t("cta.headline1")}<br />{t("cta.headline2")}
+          </h2>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.7, marginTop: "18px", maxWidth: "44ch" }}>
+            {t("cta.sub")}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto" style={{ gap: "12px", marginTop: "32px" }}>
+            {viewerRole ? (
+              <Link
+                href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : "/admin"}
+                className="btn-copper-shimmer w-full sm:w-auto"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "999px", border: "none" }}
+              >
+                {t("hero.ctaDashboard")}
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/auth/signup?role=startup"
+                  className="btn-copper-shimmer w-full sm:w-auto"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "13px 28px", borderRadius: "999px", border: "none" }}
+                >
+                  {t("cta.listStartup")}
+                </Link>
+                <Link
+                  href="/auth/signup?role=investor"
+                  className="w-full sm:w-auto"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)" }}
+                >
+                  {t("cta.exploreInvestor")} →
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
