@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "查看财务需签署 NDA",
     "financialsDesc": "该公司在保密协议下共享数据。签署一次即可解锁财务、历史与 AI 报告。"
+  },
+  "style": {
+    "toBusiness": "切换到商务风格",
+    "toEditorial": "切换到杂志风格"
   }
 }

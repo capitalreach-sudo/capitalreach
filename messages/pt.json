@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "NDA necessário para as finanças",
     "financialsDesc": "Esta empresa partilha os números sob acordo de confidencialidade. Assine uma vez e as finanças, o histórico e os relatórios de IA desbloqueiam."
+  },
+  "style": {
+    "toBusiness": "Mudar para o estilo profissional",
+    "toEditorial": "Mudar para o estilo editorial"
   }
 }

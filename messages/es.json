@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "Se requiere NDA para las finanzas",
     "financialsDesc": "Esta empresa comparte sus cifras bajo un acuerdo de confidencialidad. Fírmalo una vez y se desbloquean finanzas, historial e informes de IA."
+  },
+  "style": {
+    "toBusiness": "Cambiar al estilo profesional",
+    "toEditorial": "Cambiar al estilo editorial"
   }
 }

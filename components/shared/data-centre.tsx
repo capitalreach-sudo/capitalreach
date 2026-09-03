@@ -288,7 +288,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
 
       {/* Header strip */}
-      <div style={{ position: "relative",  background: "var(--cr-band-bg)", borderBottom: "1px solid rgba(181,101,29,0.15)" }}>
+      <div style={{ position: "relative",  background: "var(--cr-band-bg)", borderBottom: "1px solid var(--cr-copper-br)" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px 40px 48px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
             <BarChart3 style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />

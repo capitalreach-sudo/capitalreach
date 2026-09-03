@@ -615,7 +615,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                 <Link href="/dashboard/investor/settings" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", background: "var(--cr-copper)", padding: "8px 14px", borderRadius: "4px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.completeProfile")} →</Link>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px" }}>
-                <div style={{ flex: 1, height: "5px", background: "rgba(181,101,29,0.15)", borderRadius: "3px", overflow: "hidden" }}>
+                <div style={{ flex: 1, height: "5px", background: "var(--cr-copper-bg)", borderRadius: "3px", overflow: "hidden" }}>
                   <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-copper)" }} />
                 </div>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-copper)", fontWeight: 600 }}>{pct}%</span>

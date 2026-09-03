@@ -468,7 +468,7 @@ export default function PricingPage() {
               <div style={{
                 flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
                 width: "40px", height: "40px",
-                background: "rgba(181,101,29,0.12)", borderRadius: "4px",
+                background: "var(--cr-copper-bg)", borderRadius: "4px",
                 border: "1px solid var(--cr-copper-br)",
               }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)", letterSpacing: "-0.03em" }}>2%</span>

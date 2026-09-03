@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "NDA richiesto per i dati finanziari",
     "financialsDesc": "Questa azienda condivide i numeri sotto accordo di riservatezza. Firmalo una volta e finanze, storico e report IA si sbloccano."
+  },
+  "style": {
+    "toBusiness": "Passa allo stile professionale",
+    "toEditorial": "Passa allo stile editoriale"
   }
 }

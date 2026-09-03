@@ -56,7 +56,7 @@ export function LanguageSettingsSelector({ initialLocale = "en", translations }:
               className={`flex items-center gap-3 p-3.5 rounded-[6px] border
                           text-left transition-all duration-150 w-full
                           ${active
-                            ? "border-[#B5651D] bg-[rgba(181,101,29,0.05)]"
+                            ? "border-[#B5651D] bg-[var(--cr-copper-bg)]"
                             : "border-[#D8D0C4] bg-[#F5F0E8] hover:bg-[#E4DDD2] hover:border-[#9C8E82]"
                           }`}
             >

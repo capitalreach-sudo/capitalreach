@@ -26,7 +26,7 @@ function DiamondDot() {
 function StageBadge({ stage }: { stage: string }) {
   return (
     <span style={{
-      background: "var(--cr-paper-2)", border: "1px solid #D8D0C4", borderRadius: "3px",
+      background: "var(--cr-paper-2)", border: "1px solid var(--cr-paper-4)", borderRadius: "3px",
       padding: "3px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
       fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em",
       whiteSpace: "nowrap",
@@ -99,7 +99,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
               style={{
                 display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "36px",
                 padding: "7px 14px", borderRadius: "999px", textDecoration: "none",
-                background: "rgba(181,101,29,0.08)", border: "1px solid rgba(181,101,29,0.25)",
+                background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)",
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)",
                 letterSpacing: "0.02em",
               }}
@@ -158,7 +158,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
             <Link
               href="/startups"
               className="w-full sm:w-auto"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "999px", border: "1px solid #D8D0C4" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 28px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)" }}
             >
               {t("hero.ctaSecondary")} →
             </Link>
@@ -198,7 +198,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
       {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
       <section
         aria-label={t("hero.proofAria")}
-        style={{ background: "var(--cr-band-bg)", borderTop: "1px solid rgba(181,101,29,0.2)", borderBottom: "1px solid rgba(181,101,29,0.2)", position: "relative", overflow: "hidden" }}
+        style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", position: "relative", overflow: "hidden" }}
       >
         <div className="hero-noise" aria-hidden />
         <div className="max-w-[1200px] mx-auto px-6 md:px-10" style={{ position: "relative" }}>
@@ -207,7 +207,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
               <div
                 key={label}
                 className="flex flex-col items-center justify-center text-center py-7 md:py-9"
-                style={{ borderLeft: i > 0 ? "1px solid rgba(181,101,29,0.15)" : undefined }}
+                style={{ borderLeft: i > 0 ? "1px solid var(--cr-copper-br)" : undefined }}
               >
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
                   {value}
@@ -317,7 +317,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
                     <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: "10px" }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: "50%", background: "var(--cr-paper-3)",
-                        border: "1px solid #D8D0C4", display: "flex", alignItems: "center",
+                        border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center",
                         justifyContent: "center", overflow: "hidden", flexShrink: 0,
                         fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)",
                       }}>

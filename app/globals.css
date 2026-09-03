@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -140,6 +140,179 @@
     --ring:                   29 67% 50%;
 
     color-scheme: dark;
+  }
+
+  /* ── Business style: the corporate register ─────────────────────────────
+     A second STYLE dimension, orthogonal to light/dark. data-style on <html>
+     is stamped by the server from the cr_style cookie (same no-flash pattern
+     as cr_theme); the navbar toggle switches it live. Everything below is
+     token overrides, so the whole product reskins without touching a
+     component: neutral slate greys instead of warm cream, a banker's navy
+     instead of copper, and (further down) the editorial serif headlines
+     flipped to a tight corporate sans. */
+  [data-style="business"] {
+    --cr-paper:   #FFFFFF;
+    --cr-paper-2: #F7F8FA;
+    --cr-paper-3: #EEF1F4;
+    --cr-paper-4: #E2E6EB;
+
+    --cr-ink:   #101828;
+    --cr-ink-2: #344054;
+    --cr-ink-3: #667085;
+    --cr-ink-4: #98A2B3;
+
+    /* The accent tokens keep their copper NAMES (they are wired through the
+       whole codebase) but paint corporate navy-blue. */
+    --cr-copper:    #1E40AF;
+    --cr-copper-l:  #3B82F6;
+    --cr-copper-d:  #1E3A8A;
+    --cr-copper-bg: rgba(30,64,175,0.06);
+    --cr-copper-br: rgba(30,64,175,0.22);
+
+    --cr-up:       #15803D;
+    --cr-up-bg:    rgba(21,128,61,0.08);
+    --cr-down:     #B42318;
+    --cr-down-bg:  rgba(180,35,24,0.08);
+    --cr-neutral:  #64748B;
+
+    --cr-rule:      rgba(16,24,40,0.08);
+    --cr-rule-dark: rgba(16,24,40,0.16);
+
+    --cr-band-bg:      #0F172A;
+    --cr-band-ink:     #F8FAFC;
+    --cr-band-ink-dim: rgba(248,250,252,0.55);
+    --cr-scrim:        rgba(15,23,42,0.55);
+
+    --cr-card-shadow:       0 1px 2px rgba(16,24,40,0.05), 0 4px 12px rgba(16,24,40,0.05);
+    --cr-card-shadow-hover: 0 2px 4px rgba(16,24,40,0.06), 0 12px 28px rgba(16,24,40,0.10);
+    --cr-card-edge:         inset 0 1px 0 rgba(255,255,255,0.8);
+    --cr-nav-glass:         rgba(255,255,255,0.85);
+
+    --background:             0 0% 100%;
+    --foreground:             221 43% 11%;
+    --card:                   210 20% 98%;
+    --card-foreground:        221 43% 11%;
+    --popover:                0 0% 100%;
+    --popover-foreground:     221 43% 11%;
+    --primary:                224 71% 40%;
+    --primary-foreground:     0 0% 100%;
+    --secondary:              214 21% 95%;
+    --secondary-foreground:   221 43% 11%;
+    --muted:                  214 21% 95%;
+    --muted-foreground:       216 15% 46%;
+    --accent:                 214 21% 95%;
+    --accent-foreground:      221 43% 11%;
+    --destructive:            4 74% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border:                 221 26% 18%;
+    --input:                  0 0% 100%;
+    --ring:                   224 71% 40%;
+    --radius:                 0.5rem;
+  }
+
+  /* Business × dark: slate night, blue brightened for contrast on the dark
+     ground -- same relationship copper has to the warm dark theme. */
+  [data-style="business"][data-theme="dark"] {
+    --cr-paper:   #0A0F1A;
+    --cr-paper-2: #111827;
+    --cr-paper-3: #1A2333;
+    --cr-paper-4: #253045;
+
+    --cr-ink:   #F1F5F9;
+    --cr-ink-2: #CBD5E1;
+    --cr-ink-3: #8B98AB;
+    --cr-ink-4: #64748B;
+
+    --cr-copper:    #60A5FA;
+    --cr-copper-l:  #93C5FD;
+    --cr-copper-d:  #3B82F6;
+    --cr-copper-bg: rgba(96,165,250,0.10);
+    --cr-copper-br: rgba(96,165,250,0.30);
+
+    --cr-up:       #55B287;
+    --cr-up-bg:    rgba(85,178,135,0.10);
+    --cr-down:     #F87171;
+    --cr-down-bg:  rgba(248,113,113,0.10);
+    --cr-neutral:  #8A97A5;
+
+    --cr-rule:      rgba(241,245,249,0.08);
+    --cr-rule-dark: rgba(241,245,249,0.16);
+
+    --cr-band-bg:      #111827;
+    --cr-band-ink:     #F1F5F9;
+    --cr-band-ink-dim: rgba(241,245,249,0.5);
+    --cr-scrim:        rgba(0,0,0,0.6);
+
+    --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
+    --cr-card-shadow-hover: 0 2px 4px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.5);
+    --cr-card-edge:         inset 0 1px 0 rgba(241,245,249,0.06);
+    --cr-nav-glass:         rgba(10,15,26,0.78);
+
+    --background:             221 44% 7%;
+    --foreground:             210 40% 96%;
+    --card:                   221 39% 11%;
+    --card-foreground:        210 40% 96%;
+    --popover:                221 44% 8%;
+    --popover-foreground:     210 40% 96%;
+    --primary:                213 94% 68%;
+    --primary-foreground:     221 44% 8%;
+    --secondary:              219 33% 15%;
+    --secondary-foreground:   210 40% 96%;
+    --muted:                  219 33% 15%;
+    --muted-foreground:       215 16% 55%;
+    --accent:                 219 33% 15%;
+    --accent-foreground:      210 40% 96%;
+    --destructive:            0 91% 71%;
+    --destructive-foreground: 221 44% 8%;
+    --border:                 210 32% 85%;
+    --input:                  221 39% 11%;
+    --ring:                   213 94% 68%;
+
+    color-scheme: dark;
+  }
+
+  /* Business typography: the editorial voice IS the serif. Flatten every
+     Playfair headline -- inline styles included, hence the !important and the
+     [style*=] match -- to a tight bold sans, and normalise the italic that the
+     editorial masthead style leans on. Mono data labels are kept: financial
+     terminals speak mono, and it reads precise rather than quaint. */
+  [data-style="business"] [style*="Playfair"],
+  [data-style="business"] .font-serif,
+  [data-style="business"] .display {
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+    font-style: normal !important;
+    letter-spacing: -0.02em !important;
+  }
+  [data-style="business"] ::selection { background: rgba(30,64,175,0.15); }
+
+  /* Business recolour for the handful of effects that bake copper literals
+     into a gradient or an inline style (the sweep to tokens covered flat
+     colors; gradients kept their stops). The [style*=] matches are surgical:
+     they re-paint exactly the literals they name. */
+  [data-style="business"] .copper-foil {
+    background: linear-gradient(
+      105deg,
+      #1E3A8A 0%,
+      #1E40AF 25%,
+      #3B82F6 40%,
+      #93C5FD 50%,
+      #3B82F6 60%,
+      #1E40AF 75%,
+      #1E3A8A 100%
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  [data-style="business"] [style*="#8A4A15"] {
+    background: linear-gradient(90deg, #1E3A8A, #1E40AF, #3B82F6) !important;
+  }
+  [data-style="business"] [style*="inset 2px 0 0 #B5651D"] {
+    box-shadow: inset 2px 0 0 #1E40AF !important;
+  }
+  [data-style="business"] [style*="2px solid #B5651D"] {
+    border-color: #1E40AF !important;
   }
 }
 

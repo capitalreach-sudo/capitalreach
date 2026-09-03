@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "NDA vereist voor financiën",
     "financialsDesc": "Dit bedrijf deelt zijn cijfers onder een geheimhoudingsovereenkomst. Eén keer tekenen en financiën, historie en AI-rapporten ontgrendelen."
+  },
+  "style": {
+    "toBusiness": "Naar zakelijke stijl wisselen",
+    "toEditorial": "Naar redactionele stijl wisselen"
   }
 }

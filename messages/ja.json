@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "財務情報にはNDAが必要です",
     "financialsDesc": "この企業は秘密保持契約のもとで数値を開示しています。一度署名すれば、財務・履歴・AIレポートが解放されます。"
+  },
+  "style": {
+    "toBusiness": "ビジネススタイルに切り替える",
+    "toEditorial": "エディトリアルスタイルに切り替える"
   }
 }

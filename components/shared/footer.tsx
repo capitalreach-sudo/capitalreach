@@ -63,8 +63,8 @@ export function Footer() {
           display: "flex", alignItems: "center", justifyContent: "center",
           gap: "8px", marginBottom: "40px",
           padding: "12px 0",
-          borderTop: "1px solid rgba(181,101,29,0.2)",
-          borderBottom: "1px solid rgba(181,101,29,0.2)",
+          borderTop: "1px solid var(--cr-copper-br)",
+          borderBottom: "1px solid var(--cr-copper-br)",
         }}>
           <span style={{
             fontFamily: "'DM Sans', sans-serif", fontWeight: 500,

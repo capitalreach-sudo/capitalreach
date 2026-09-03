@@ -798,7 +798,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
       {/* AI disclosure — persistent, cannot be dismissed. Informational only,
           not investment advice, and the required disclosure that AI produced
           what follows. */}
-      <div role="note" style={{ background: "rgba(181,101,29,0.06)", borderBottom: "1px solid rgba(181,101,29,0.15)", padding: "9px 24px", textAlign: "center" }}>
+      <div role="note" style={{ background: "var(--cr-copper-bg)", borderBottom: "1px solid var(--cr-copper-br)", padding: "9px 24px", textAlign: "center" }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.5, maxWidth: "900px", margin: "0 auto" }}>
           {t("ai.disclosureStrip")}
         </p>
@@ -909,7 +909,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
                     <tr key={row.feature} className="pricing-row" style={{ borderBottom: "1px solid var(--cr-rule)", background: i % 2 === 0 ? "transparent" : "var(--cr-paper-2)" }}>
                       <td style={{ padding: "14px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>{row.feature}</td>
                       <td style={{ padding: "14px", textAlign: "center" }}><TierCheck val={row.free} /></td>
-                      <td style={{ padding: "14px", textAlign: "center", background: "rgba(181,101,29,0.03)" }}><TierCheck val={row.angel} /></td>
+                      <td style={{ padding: "14px", textAlign: "center", background: "var(--cr-copper-bg)" }}><TierCheck val={row.angel} /></td>
                       <td style={{ padding: "14px", textAlign: "center", background: "var(--cr-copper-bg)" }}><TierCheck val={row.pro} /></td>
                     </tr>
                   ))}

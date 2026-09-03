@@ -82,16 +82,21 @@ export default async function RootLayout({
   // Theme before first byte: the toggle writes cr_theme, the server stamps
   // the attribute, and no visitor ever sees a flash of the wrong theme.
   let theme: "light" | "dark" = "dark";
+  // Visual STYLE, orthogonal to light/dark: "editorial" (the warm serif
+  // default) or "business" (neutral slate + navy, sans headlines). Server-
+  // stamped like the theme so there is no flash of the wrong style.
+  let style: "editorial" | "business" = "editorial";
   try {
     // Dark is the DEFAULT: the professional register of the product. The
     // toggle still writes an explicit choice, so "light" survives per user.
     theme = cookies().get("cr_theme")?.value === "light" ? "light" : "dark";
+    style = cookies().get("cr_style")?.value === "business" ? "business" : "editorial";
   } catch { /* static rendering contexts have no cookies; light is the default */ }
   const rtl = isRTL(locale);
   const extraFont = getLocaleFont(locale);
 
   return (
-    <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} suppressHydrationWarning>
+    <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} data-style={style} suppressHydrationWarning>
       <head>
         {/* First in head: the connection is warm before any font CSS asks for it. */}
         {/* The client talks to Supabase from the first interactive moment

@@ -8,6 +8,7 @@ import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown,
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { StyleToggle } from "@/components/ui/StyleToggle";
 import { useTranslation } from "@/hooks/useTranslation";
 import { NotificationBell } from "@/components/shared/notification-bell";
 import { GlobalSearch } from "@/components/shared/global-search";
@@ -166,6 +167,7 @@ export function Navbar() {
               style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "3px 7px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
               ⌘K
             </button>
+            <StyleToggle />
             <ThemeToggle />
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (
@@ -185,7 +187,7 @@ export function Navbar() {
                   >
                     <div
                       className="h-7 w-7 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-                      style={{ background: "var(--cr-paper-3)", border: "1px solid #D8D0C4" }}
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)" }}
                     >
                       {profile.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -365,7 +367,7 @@ export function Navbar() {
               <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-5 py-4 flex-shrink-0"
                 style={{ borderBottom: "1px solid rgba(26,22,18,0.1)", textDecoration: "none" }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(181,101,29,0.12)", border: "1px solid rgba(181,101,29,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", flexShrink: 0 }}>
                   {getInitials(profile.full_name || profile.email)}
                 </div>
                 <div style={{ minWidth: 0 }}>
@@ -417,7 +419,7 @@ export function Navbar() {
                           fontSize:       "15px",
                           color:          active ? "var(--cr-copper)" : "var(--cr-ink)",
                           boxShadow:      active ? "inset 2px 0 0 #B5651D" : "none",
-                          background:     active ? "rgba(181,101,29,0.06)" : "transparent",
+                          background:     active ? "var(--cr-copper-bg)" : "transparent",
                           textDecoration: "none",
                         }}>
                         <Icon size={16} style={{ color: active ? "var(--cr-copper)" : "var(--cr-ink-4)", flexShrink: 0 }} />
@@ -431,6 +433,7 @@ export function Navbar() {
 
             {/* Language, demoted from prime position to just above the footer. */}
             <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.08)" }}>
+              <StyleToggle />
               <ThemeToggle />
               <LanguageSwitcher currentLocale={locale} />
             </div>
@@ -450,7 +453,7 @@ export function Navbar() {
                     display: "flex", alignItems: "center", justifyContent: "center",
                     height: "44px", background: "transparent", color: "var(--cr-ink-2)",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
-                    borderRadius: "4px", border: "1px solid #D8D0C4", cursor: "pointer", textDecoration: "none",
+                    borderRadius: "4px", border: "1px solid var(--cr-paper-4)", cursor: "pointer", textDecoration: "none",
                   }}>
                     {t("nav.signIn")}
                 </Link>

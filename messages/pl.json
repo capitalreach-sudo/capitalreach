@@ -3535,5 +3535,9 @@
   "ndaGate": {
     "financialsTitle": "Finanse wymagają NDA",
     "financialsDesc": "Ta firma udostępnia liczby na podstawie umowy o poufności. Podpisz raz, a finanse, historia i raporty AI się odblokują."
+  },
+  "style": {
+    "toBusiness": "Przełącz na styl biznesowy",
+    "toEditorial": "Przełącz na styl redakcyjny"
   }
 }
