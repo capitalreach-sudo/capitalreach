@@ -142,131 +142,137 @@
     color-scheme: dark;
   }
 
-  /* ── Business style: the corporate register ─────────────────────────────
+  /* ── Business style: the private-bank register ──────────────────────────
      A second STYLE dimension, orthogonal to light/dark. data-style on <html>
      is stamped by the server from the cr_style cookie (same no-flash pattern
      as cr_theme); the navbar toggle switches it live. Everything below is
      token overrides, so the whole product reskins without touching a
-     component: neutral slate greys instead of warm cream, a banker's navy
-     instead of copper, and (further down) the editorial serif headlines
-     flipped to a tight corporate sans. */
+     component. The register is Swiss/private-bank: stark white and zinc
+     monochrome, hairline rules instead of shadows, sharp corners, black slab
+     bands, and one deep emerald accent used sparingly -- plus (further down)
+     the editorial serif headlines flipped to a tight corporate sans. A navy
+     SaaS take on "business" was tried first and read as generic software;
+     this direction reads as where the money actually lives. */
   [data-style="business"] {
     --cr-paper:   #FFFFFF;
-    --cr-paper-2: #F7F8FA;
-    --cr-paper-3: #EEF1F4;
-    --cr-paper-4: #E2E6EB;
+    --cr-paper-2: #FAFAFA;
+    --cr-paper-3: #F4F4F5;
+    --cr-paper-4: #E4E4E7;
 
-    --cr-ink:   #101828;
-    --cr-ink-2: #344054;
-    --cr-ink-3: #667085;
-    --cr-ink-4: #98A2B3;
+    --cr-ink:   #18181B;
+    --cr-ink-2: #3F3F46;
+    --cr-ink-3: #71717A;
+    --cr-ink-4: #A1A1AA;
 
     /* The accent tokens keep their copper NAMES (they are wired through the
-       whole codebase) but paint corporate navy-blue. */
-    --cr-copper:    #1E40AF;
-    --cr-copper-l:  #3B82F6;
-    --cr-copper-d:  #1E3A8A;
-    --cr-copper-bg: rgba(30,64,175,0.06);
-    --cr-copper-br: rgba(30,64,175,0.22);
+       whole codebase) but paint a private-bank emerald: the colour of money,
+       used sparingly against an otherwise monochrome page. */
+    --cr-copper:    #047857;
+    --cr-copper-l:  #10B981;
+    --cr-copper-d:  #065F46;
+    --cr-copper-bg: rgba(4,120,87,0.06);
+    --cr-copper-br: rgba(4,120,87,0.22);
 
-    --cr-up:       #15803D;
-    --cr-up-bg:    rgba(21,128,61,0.08);
-    --cr-down:     #B42318;
-    --cr-down-bg:  rgba(180,35,24,0.08);
-    --cr-neutral:  #64748B;
+    --cr-up:       #047857;
+    --cr-up-bg:    rgba(4,120,87,0.08);
+    --cr-down:     #B91C1C;
+    --cr-down-bg:  rgba(185,28,28,0.07);
+    --cr-neutral:  #71717A;
 
-    --cr-rule:      rgba(16,24,40,0.08);
-    --cr-rule-dark: rgba(16,24,40,0.16);
+    --cr-rule:      rgba(24,24,27,0.08);
+    --cr-rule-dark: rgba(24,24,27,0.16);
 
-    --cr-band-bg:      #0F172A;
-    --cr-band-ink:     #F8FAFC;
-    --cr-band-ink-dim: rgba(248,250,252,0.55);
-    --cr-scrim:        rgba(15,23,42,0.55);
+    --cr-band-bg:      #0A0A0A;
+    --cr-band-ink:     #FAFAFA;
+    --cr-band-ink-dim: rgba(250,250,250,0.5);
+    --cr-scrim:        rgba(10,10,10,0.55);
 
-    --cr-card-shadow:       0 1px 2px rgba(16,24,40,0.05), 0 4px 12px rgba(16,24,40,0.05);
-    --cr-card-shadow-hover: 0 2px 4px rgba(16,24,40,0.06), 0 12px 28px rgba(16,24,40,0.10);
-    --cr-card-edge:         inset 0 1px 0 rgba(255,255,255,0.8);
-    --cr-nav-glass:         rgba(255,255,255,0.85);
+    /* Swiss register: hairline rules carry the structure, shadows nearly
+       disappear -- depth by line, not by blur. */
+    --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.04);
+    --cr-card-shadow-hover: 0 4px 14px rgba(0,0,0,0.08);
+    --cr-card-edge:         inset 0 0 0 1px rgba(24,24,27,0.06);
+    --cr-nav-glass:         rgba(255,255,255,0.9);
 
     --background:             0 0% 100%;
-    --foreground:             221 43% 11%;
-    --card:                   210 20% 98%;
-    --card-foreground:        221 43% 11%;
+    --foreground:             240 6% 10%;
+    --card:                   0 0% 98%;
+    --card-foreground:        240 6% 10%;
     --popover:                0 0% 100%;
-    --popover-foreground:     221 43% 11%;
-    --primary:                224 71% 40%;
+    --popover-foreground:     240 6% 10%;
+    --primary:                161 94% 24%;
     --primary-foreground:     0 0% 100%;
-    --secondary:              214 21% 95%;
-    --secondary-foreground:   221 43% 11%;
-    --muted:                  214 21% 95%;
-    --muted-foreground:       216 15% 46%;
-    --accent:                 214 21% 95%;
-    --accent-foreground:      221 43% 11%;
-    --destructive:            4 74% 40%;
+    --secondary:              240 5% 96%;
+    --secondary-foreground:   240 6% 10%;
+    --muted:                  240 5% 96%;
+    --muted-foreground:       240 4% 46%;
+    --accent:                 240 5% 96%;
+    --accent-foreground:      240 6% 10%;
+    --destructive:            0 74% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border:                 221 26% 18%;
+    --border:                 240 6% 16%;
     --input:                  0 0% 100%;
-    --ring:                   224 71% 40%;
-    --radius:                 0.5rem;
+    --ring:                   161 94% 24%;
+    --radius:                 0.125rem;
   }
 
   /* Business × dark: slate night, blue brightened for contrast on the dark
      ground -- same relationship copper has to the warm dark theme. */
   [data-style="business"][data-theme="dark"] {
-    --cr-paper:   #0A0F1A;
-    --cr-paper-2: #111827;
-    --cr-paper-3: #1A2333;
-    --cr-paper-4: #253045;
+    --cr-paper:   #0A0A0A;
+    --cr-paper-2: #111113;
+    --cr-paper-3: #1A1A1D;
+    --cr-paper-4: #26262B;
 
-    --cr-ink:   #F1F5F9;
-    --cr-ink-2: #CBD5E1;
-    --cr-ink-3: #8B98AB;
-    --cr-ink-4: #64748B;
+    --cr-ink:   #F4F4F5;
+    --cr-ink-2: #D4D4D8;
+    --cr-ink-3: #8E8E96;
+    --cr-ink-4: #62626A;
 
-    --cr-copper:    #60A5FA;
-    --cr-copper-l:  #93C5FD;
-    --cr-copper-d:  #3B82F6;
-    --cr-copper-bg: rgba(96,165,250,0.10);
-    --cr-copper-br: rgba(96,165,250,0.30);
+    --cr-copper:    #34D399;
+    --cr-copper-l:  #6EE7B7;
+    --cr-copper-d:  #10B981;
+    --cr-copper-bg: rgba(52,211,153,0.10);
+    --cr-copper-br: rgba(52,211,153,0.28);
 
-    --cr-up:       #55B287;
-    --cr-up-bg:    rgba(85,178,135,0.10);
+    --cr-up:       #34D399;
+    --cr-up-bg:    rgba(52,211,153,0.10);
     --cr-down:     #F87171;
     --cr-down-bg:  rgba(248,113,113,0.10);
-    --cr-neutral:  #8A97A5;
+    --cr-neutral:  #8E8E96;
 
-    --cr-rule:      rgba(241,245,249,0.08);
-    --cr-rule-dark: rgba(241,245,249,0.16);
+    --cr-rule:      rgba(244,244,245,0.08);
+    --cr-rule-dark: rgba(244,244,245,0.16);
 
-    --cr-band-bg:      #111827;
-    --cr-band-ink:     #F1F5F9;
-    --cr-band-ink-dim: rgba(241,245,249,0.5);
-    --cr-scrim:        rgba(0,0,0,0.6);
+    --cr-band-bg:      #111113;
+    --cr-band-ink:     #F4F4F5;
+    --cr-band-ink-dim: rgba(244,244,245,0.5);
+    --cr-scrim:        rgba(0,0,0,0.65);
 
-    --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
-    --cr-card-shadow-hover: 0 2px 4px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.5);
-    --cr-card-edge:         inset 0 1px 0 rgba(241,245,249,0.06);
-    --cr-nav-glass:         rgba(10,15,26,0.78);
+    --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.5);
+    --cr-card-shadow-hover: 0 6px 20px rgba(0,0,0,0.55);
+    --cr-card-edge:         inset 0 0 0 1px rgba(244,244,245,0.07);
+    --cr-nav-glass:         rgba(10,10,10,0.8);
 
-    --background:             221 44% 7%;
-    --foreground:             210 40% 96%;
-    --card:                   221 39% 11%;
-    --card-foreground:        210 40% 96%;
-    --popover:                221 44% 8%;
-    --popover-foreground:     210 40% 96%;
-    --primary:                213 94% 68%;
-    --primary-foreground:     221 44% 8%;
-    --secondary:              219 33% 15%;
-    --secondary-foreground:   210 40% 96%;
-    --muted:                  219 33% 15%;
-    --muted-foreground:       215 16% 55%;
-    --accent:                 219 33% 15%;
-    --accent-foreground:      210 40% 96%;
+    --background:             240 6% 4%;
+    --foreground:             240 5% 96%;
+    --card:                   240 5% 7%;
+    --card-foreground:        240 5% 96%;
+    --popover:                240 6% 4%;
+    --popover-foreground:     240 5% 96%;
+    --primary:                158 64% 52%;
+    --primary-foreground:     240 6% 4%;
+    --secondary:              240 5% 11%;
+    --secondary-foreground:   240 5% 96%;
+    --muted:                  240 5% 11%;
+    --muted-foreground:       240 4% 55%;
+    --accent:                 240 5% 11%;
+    --accent-foreground:      240 5% 96%;
     --destructive:            0 91% 71%;
-    --destructive-foreground: 221 44% 8%;
-    --border:                 210 32% 85%;
-    --input:                  221 39% 11%;
-    --ring:                   213 94% 68%;
+    --destructive-foreground: 240 6% 4%;
+    --border:                 240 5% 85%;
+    --input:                  240 5% 7%;
+    --ring:                   158 64% 52%;
 
     color-scheme: dark;
   }
@@ -283,7 +289,7 @@
     font-style: normal !important;
     letter-spacing: -0.02em !important;
   }
-  [data-style="business"] ::selection { background: rgba(30,64,175,0.15); }
+  [data-style="business"] ::selection { background: rgba(4,120,87,0.14); }
 
   /* Business recolour for the handful of effects that bake copper literals
      into a gradient or an inline style (the sweep to tokens covered flat
@@ -292,13 +298,13 @@
   [data-style="business"] .copper-foil {
     background: linear-gradient(
       105deg,
-      #1E3A8A 0%,
-      #1E40AF 25%,
-      #3B82F6 40%,
-      #93C5FD 50%,
-      #3B82F6 60%,
-      #1E40AF 75%,
-      #1E3A8A 100%
+      #065F46 0%,
+      #047857 25%,
+      #10B981 40%,
+      #6EE7B7 50%,
+      #10B981 60%,
+      #047857 75%,
+      #065F46 100%
     );
     background-size: 300% 100%;
     -webkit-background-clip: text;
@@ -306,13 +312,13 @@
     background-clip: text;
   }
   [data-style="business"] [style*="#8A4A15"] {
-    background: linear-gradient(90deg, #1E3A8A, #1E40AF, #3B82F6) !important;
+    background: linear-gradient(90deg, #065F46, #047857, #10B981) !important;
   }
   [data-style="business"] [style*="inset 2px 0 0 #B5651D"] {
-    box-shadow: inset 2px 0 0 #1E40AF !important;
+    box-shadow: inset 2px 0 0 #047857 !important;
   }
   [data-style="business"] [style*="2px solid #B5651D"] {
-    border-color: #1E40AF !important;
+    border-color: #047857 !important;
   }
 }
 
