@@ -998,7 +998,8 @@
     "billingSoon": "Je zit voorlopig op het gratis plan — online betalen is nog niet actief. Je vermelding is opgeslagen; upgraden kan altijd via Facturering.",
     "welcomeToast": "Welkom! Je vermelding is ingediend voor review.",
     "updDraftAi": "Opstellen met AI",
-    "updDraftTitle": "Maandelijkse update"
+    "updDraftTitle": "Maandelijkse update",
+    "portfolioUpgrade": "Portfoliotracking hoort bij het Angel-plan en hoger — posities, belangen en waardestijgingen op één plek."
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Naar zakelijke stijl wisselen",
     "toEditorial": "Naar redactionele stijl wisselen"
+  },
+  "engagement": {
+    "title": "Interactie (laatste 30 dagen)",
+    "website": "Websiteklikken",
+    "video": "Videoweergaven",
+    "booking": "Gespreksagenda geopend",
+    "shares": "Gedeeld",
+    "onepager": "One-pager geopend",
+    "interest": "Geïnteresseerde investeerders",
+    "waitlist": "Op je wachtlijst",
+    "conversations": "Gestarte gesprekken",
+    "whoViewedYou": "Wie je profiel bekeek",
+    "views30d": "weergaven in 30 dagen",
+    "interestedInYou": "geïnteresseerd",
+    "conversations30d": "gesprekken"
   }
 }

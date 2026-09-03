@@ -998,7 +998,8 @@
     "billingSoon": "Por agora está no plano gratuito — o pagamento online ainda não está ativo. O anúncio está guardado; faça upgrade quando quiser em Faturação.",
     "welcomeToast": "Bem-vindo! O seu anúncio foi enviado para revisão.",
     "updDraftAi": "Rascunho com IA",
-    "updDraftTitle": "Atualização mensal"
+    "updDraftTitle": "Atualização mensal",
+    "portfolioUpgrade": "O acompanhamento de portefólio faz parte do plano Angel e superiores — posições, participações e valorizações num só lugar."
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Mudar para o estilo profissional",
     "toEditorial": "Mudar para o estilo editorial"
+  },
+  "engagement": {
+    "title": "Interações (últimos 30 dias)",
+    "website": "Cliques no site",
+    "video": "Reproduções de vídeo",
+    "booking": "Agendas de chamada abertas",
+    "shares": "Partilhas",
+    "onepager": "Aberturas do one-pager",
+    "interest": "Investidores interessados",
+    "waitlist": "Na sua lista de espera",
+    "conversations": "Conversas iniciadas",
+    "whoViewedYou": "Quem viu o seu perfil",
+    "views30d": "visitas em 30 dias",
+    "interestedInYou": "interessados",
+    "conversations30d": "conversas"
   }
 }

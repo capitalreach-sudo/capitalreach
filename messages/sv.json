@@ -998,7 +998,8 @@
     "billingSoon": "Du är på gratisplanen tills vidare — onlinebetalning är inte aktiv ännu. Noteringen är sparad; uppgradera när som helst under Fakturering.",
     "welcomeToast": "Välkommen! Din notering skickades till granskning.",
     "updDraftAi": "Utkast med AI",
-    "updDraftTitle": "Månadsuppdatering"
+    "updDraftTitle": "Månadsuppdatering",
+    "portfolioUpgrade": "Portföljspårning ingår i Angel-planen och uppåt — positioner, ägarandelar och värdeökningar på ett ställe."
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Byt till professionell stil",
     "toEditorial": "Byt till redaktionell stil"
+  },
+  "engagement": {
+    "title": "Engagemang (senaste 30 dagarna)",
+    "website": "Webbplatsklick",
+    "video": "Videouppspelningar",
+    "booking": "Öppnade samtalskalendrar",
+    "shares": "Delningar",
+    "onepager": "One-pager öppnad",
+    "interest": "Intresserade investerare",
+    "waitlist": "På din väntelista",
+    "conversations": "Startade konversationer",
+    "whoViewedYou": "Vem som sett din profil",
+    "views30d": "visningar på 30 dagar",
+    "interestedInYou": "intresserade",
+    "conversations30d": "konversationer"
   }
 }

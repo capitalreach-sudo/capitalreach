@@ -998,7 +998,8 @@
     "billingSoon": "현재 무료 요금제입니다. 온라인 결제는 아직 활성화되지 않았습니다. 상장은 저장되었으며 결제 페이지에서 언제든 업그레이드할 수 있습니다.",
     "welcomeToast": "환영합니다! 상장이 심사에 제출되었습니다.",
     "updDraftAi": "AI로 초안 작성",
-    "updDraftTitle": "월간 업데이트"
+    "updDraftTitle": "월간 업데이트",
+    "portfolioUpgrade": "포트폴리오 추적은 Angel 플랜 이상의 기능입니다. 포지션, 지분, 가치 상승을 한곳에서 확인하세요."
   },
   "settings": {
     "pageTitle": "설정",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "비즈니스 스타일로 전환",
     "toEditorial": "에디토리얼 스타일로 전환"
+  },
+  "engagement": {
+    "title": "참여 (최근 30일)",
+    "website": "웹사이트 클릭",
+    "video": "동영상 재생",
+    "booking": "통화 예약 열람",
+    "shares": "공유",
+    "onepager": "원페이저 열람",
+    "interest": "관심 투자자",
+    "waitlist": "대기자 명단",
+    "conversations": "시작된 대화",
+    "whoViewedYou": "프로필을 본 사람",
+    "views30d": "30일간 조회",
+    "interestedInYou": "관심 표시",
+    "conversations30d": "대화"
   }
 }

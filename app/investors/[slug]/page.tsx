@@ -96,6 +96,17 @@ export default async function InvestorProfilePage({ params }: Props) {
     notFound();
   }
 
+  // Record the view (migration 107) -- the investor-side mirror of
+  // startup_views. Any signed-in viewer except the owner counts; the unique
+  // index collapses repeat visits to one row per viewer per UTC day, and the
+  // conflict is swallowed the same way the startup page swallows its own.
+  if (user && !isOwnProfile) {
+    await createAdminClient()
+      .from("investor_views")
+      .insert({ investor_id: investor.id, viewer_id: user.id })
+      .then(undefined, () => {});
+  }
+
   // If the viewer is a founder, their own deal with this investor. Same rule
   // as the startup profile: fetched with the caller's client so RLS decides,
   // only the viewer's own deal, never shown to the public.

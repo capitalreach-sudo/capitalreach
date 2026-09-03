@@ -1007,7 +1007,8 @@
     "billingSoon": "Por ahora estás en el plan gratuito: el pago en línea aún no está activo. Tu ficha está guardada; mejora el plan cuando quieras desde Facturación.",
     "welcomeToast": "¡Bienvenido! Tu ficha se envió a revisión.",
     "updDraftAi": "Redactar con IA",
-    "updDraftTitle": "Actualización mensual"
+    "updDraftTitle": "Actualización mensual",
+    "portfolioUpgrade": "El seguimiento de cartera es parte del plan Angel y superiores — posiciones, participaciones y revalorizaciones en un solo lugar."
   },
   "settings": {
     "pageTitle": "Configuración de la cuenta",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Cambiar al estilo profesional",
     "toEditorial": "Cambiar al estilo editorial"
+  },
+  "engagement": {
+    "title": "Interacción (últimos 30 días)",
+    "website": "Clics en el sitio web",
+    "video": "Reproducciones de vídeo",
+    "booking": "Calendarios de llamada abiertos",
+    "shares": "Compartidos",
+    "onepager": "Aperturas del one-pager",
+    "interest": "Inversores interesados",
+    "waitlist": "En tu lista de espera",
+    "conversations": "Conversaciones iniciadas",
+    "whoViewedYou": "Quién vio tu perfil",
+    "views30d": "visitas en 30 días",
+    "interestedInYou": "interesados",
+    "conversations30d": "conversaciones"
   }
 }

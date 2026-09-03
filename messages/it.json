@@ -998,7 +998,8 @@
     "billingSoon": "Per ora sei sul piano gratuito: il pagamento online non è ancora attivo. L'annuncio è salvato; puoi fare l'upgrade in qualsiasi momento da Fatturazione.",
     "welcomeToast": "Benvenuto! Il tuo annuncio è stato inviato in revisione.",
     "updDraftAi": "Bozza con IA",
-    "updDraftTitle": "Aggiornamento mensile"
+    "updDraftTitle": "Aggiornamento mensile",
+    "portfolioUpgrade": "Il monitoraggio del portafoglio fa parte del piano Angel e superiori — posizioni, quote e rivalutazioni in un unico posto."
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Passa allo stile professionale",
     "toEditorial": "Passa allo stile editoriale"
+  },
+  "engagement": {
+    "title": "Interazioni (ultimi 30 giorni)",
+    "website": "Clic sul sito",
+    "video": "Riproduzioni video",
+    "booking": "Calendari chiamata aperti",
+    "shares": "Condivisioni",
+    "onepager": "Aperture del one-pager",
+    "interest": "Investitori interessati",
+    "waitlist": "In lista d'attesa",
+    "conversations": "Conversazioni avviate",
+    "whoViewedYou": "Chi ha visto il tuo profilo",
+    "views30d": "visite in 30 giorni",
+    "interestedInYou": "interessati",
+    "conversations30d": "conversazioni"
   }
 }

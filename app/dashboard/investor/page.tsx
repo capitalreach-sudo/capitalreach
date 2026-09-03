@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboard-client";
+import { getLaunchStatus } from "@/lib/launchMode";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { postMoney } from "@/lib/round-math";
@@ -112,10 +113,13 @@ export default async function InvestorDashboardPage() {
     return { committed, deployed };
   })();
 
+  const { isLaunch } = await getLaunchStatus();
+
   return (
     <>
       <Navbar />
       <InvestorDashboardClient
+        isLaunchMode={isLaunch}
         allocation={allocation}
         portfolio={portfolio}
         profile={profile}

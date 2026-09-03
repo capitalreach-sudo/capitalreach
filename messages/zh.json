@@ -1007,7 +1007,8 @@
     "billingSoon": "你目前使用免费套餐——在线支付尚未开通。挂牌已保存；可随时在「账单」中升级。",
     "welcomeToast": "欢迎！你的挂牌已提交审核。",
     "updDraftAi": "用 AI 起草",
-    "updDraftTitle": "月度更新"
+    "updDraftTitle": "月度更新",
+    "portfolioUpgrade": "投资组合跟踪是 Angel 及以上套餐的功能——在一处查看持仓、股权和增值。"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "切换到商务风格",
     "toEditorial": "切换到杂志风格"
+  },
+  "engagement": {
+    "title": "互动（最近30天）",
+    "website": "网站点击",
+    "video": "视频播放",
+    "booking": "预约日历打开",
+    "shares": "分享",
+    "onepager": "单页简介打开",
+    "interest": "感兴趣的投资人",
+    "waitlist": "候补名单人数",
+    "conversations": "发起的对话",
+    "whoViewedYou": "谁看过你的主页",
+    "views30d": "30天内浏览",
+    "interestedInYou": "感兴趣",
+    "conversations30d": "对话"
   }
 }

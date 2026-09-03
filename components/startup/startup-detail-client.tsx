@@ -26,6 +26,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { InfoTip } from "@/components/shared/info-tip";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
+import { track } from "@/lib/track";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { WaitlistButton } from "@/components/startup/waitlist-button";
@@ -179,6 +180,41 @@ function SharePicker({ startupId }: { startupId: string }) {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Click-to-play video facade. An iframe swallows every click, so bare embeds
+ * made play-counts impossible AND shipped the whole player to people who never
+ * pressed play. The facade tracks the play (migration 107) and only then
+ * mounts the player, autoplaying so the click means what the viewer meant.
+ */
+function TrackedVideo({ startupId, url }: { startupId: string; url: string }) {
+  const [playing, setPlaying] = useState(false);
+  const src = url
+    .replace("watch?v=", "embed/")
+    .replace("youtu.be/", "youtube.com/embed/")
+    .replace("loom.com/share/", "loom.com/embed/");
+  if (playing) {
+    return (
+      <iframe
+        src={src + (src.includes("?") ? "&" : "?") + "autoplay=1"}
+        style={{ width: "100%", height: "100%", border: "none" }}
+        allow="autoplay; fullscreen"
+        allowFullScreen
+      />
+    );
+  }
+  return (
+    <button
+      onClick={() => { track("startup", startupId, "video_play"); setPlaying(true); }}
+      aria-label="Play video"
+      style={{ width: "100%", height: "100%", border: "none", cursor: "pointer", background: "var(--cr-band-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}
+    >
+      <span style={{ width: 64, height: 64, borderRadius: "50%", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden><path d="M6 4l10 6-10 6V4z" fill="var(--cr-copper)" /></svg>
+      </span>
+    </button>
   );
 }
 
@@ -798,19 +834,21 @@ export function StartupDetailClient({
               {/* Action buttons */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
                 {startup.booking_url && (
-                  <button onClick={() => setBookingOpen(true)}
+                  <button onClick={() => { track("startup", startup.id, "booking_open"); setBookingOpen(true); }}
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 14px", cursor: "pointer" }}>
                     <CalendarClock style={{ width: 13, height: 13 }} /> {t("startupDetail.bookCall")}
                   </button>
                 )}
                 {startup.website && (
                   <a href={startup.website} target="_blank" rel="noopener noreferrer"
+                    onClick={() => track("startup", startup.id, "website_click")}
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
                     <Globe style={{ width: 13, height: 13 }} /> {t("startupDetail.website")}
                   </a>
                 )}
                 {startup.product_hunt_url && (
                   <a href={startup.product_hunt_url} target="_blank" rel="noopener noreferrer"
+                    onClick={() => track("startup", startup.id, "producthunt_click")}
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
                     <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.productHunt")}
                   </a>
@@ -833,10 +871,10 @@ export function StartupDetailClient({
                       <span onClick={() => setShareMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 60 }} />
                       <span style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 61, minWidth: 200, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, boxShadow: "var(--cr-card-shadow-hover)", padding: 6, display: "flex", flexDirection: "column" }}>
                         {[
-                          { label: t("share.copyLink"), act: () => { navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); } },
-                          { label: t("startupDetail.shareX"), act: () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer") },
-                          { label: t("startupDetail.shareLinkedIn"), act: () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer") },
-                          { label: t("onePager.open"), act: () => window.open(`/startups/${startup.slug}/one-pager`, "_blank") },
+                          { label: t("share.copyLink"), act: () => { track("startup", startup.id, "share_copy"); navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); } },
+                          { label: t("startupDetail.shareX"), act: () => { track("startup", startup.id, "share_social"); window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer"); } },
+                          { label: t("startupDetail.shareLinkedIn"), act: () => { track("startup", startup.id, "share_social"); window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer"); } },
+                          { label: t("onePager.open"), act: () => { track("startup", startup.id, "onepager_open"); window.open(`/startups/${startup.slug}/one-pager`, "_blank"); } },
                           { label: t("common.exportPdf"), act: () => window.print() },
                         ].map(item => (
                           <button key={item.label} onClick={() => { item.act(); setShareMenuOpen(false); }}
@@ -1081,14 +1119,7 @@ export function StartupDetailClient({
               <div>
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.pitchVideo")}</div>
                 <div style={{ aspectRatio: "16/9", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
-                  <iframe
-                    src={(startup.video_pitch_url as string)
-                      .replace("watch?v=", "embed/")
-                      .replace("youtu.be/", "youtube.com/embed/")
-                      .replace("loom.com/share/", "loom.com/embed/")}
-                    style={{ width: "100%", height: "100%", border: "none" }}
-                    allowFullScreen
-                  />
+                  <TrackedVideo startupId={startup.id} url={startup.video_pitch_url as string} />
                 </div>
               </div>
             )}
@@ -1108,13 +1139,7 @@ export function StartupDetailClient({
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.productDemo")}</div>
                 {canFinancials ? (
                   <div style={{ aspectRatio: "16/9", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
-                    <iframe
-                      src={startup.demo_video_url
-                        .replace("watch?v=", "embed/")
-                        .replace("youtu.be/", "youtube.com/embed/")}
-                      style={{ width: "100%", height: "100%" }}
-                      allowFullScreen
-                    />
+                    <TrackedVideo startupId={startup.id} url={startup.demo_video_url} />
                   </div>
                 ) : (
                   <div style={{ aspectRatio: "16/9", borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px dashed var(--cr-paper-4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>

@@ -1018,7 +1018,8 @@
     "billingSoon": "You're on the Free plan for now — online payment isn't live yet. Your listing is saved; upgrade any time from Billing.",
     "welcomeToast": "Welcome! Your listing was submitted for review.",
     "updDraftAi": "Draft with AI",
-    "updDraftTitle": "Monthly update"
+    "updDraftTitle": "Monthly update",
+    "portfolioUpgrade": "Portfolio tracking is part of the Angel plan and above — see positions, ownership and mark-ups in one place."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Switch to business look",
     "toEditorial": "Switch to editorial look"
+  },
+  "engagement": {
+    "title": "Engagement (last 30 days)",
+    "website": "Website clicks",
+    "video": "Video plays",
+    "booking": "Call bookings opened",
+    "shares": "Shares",
+    "onepager": "One-pager opens",
+    "interest": "Interested investors",
+    "waitlist": "On your waitlist",
+    "conversations": "Conversations started",
+    "whoViewedYou": "Who viewed your profile",
+    "views30d": "views in 30 days",
+    "interestedInYou": "interested",
+    "conversations30d": "conversations"
   }
 }

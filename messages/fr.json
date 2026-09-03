@@ -1007,7 +1007,8 @@
     "billingSoon": "Vous êtes sur l'offre gratuite pour l'instant — le paiement en ligne n'est pas encore actif. Votre annonce est enregistrée ; passez à l'offre supérieure à tout moment depuis Facturation.",
     "welcomeToast": "Bienvenue ! Votre annonce a été soumise pour examen.",
     "updDraftAi": "Rédiger avec l'IA",
-    "updDraftTitle": "Point mensuel"
+    "updDraftTitle": "Point mensuel",
+    "portfolioUpgrade": "Le suivi de portefeuille fait partie du plan Angel et supérieurs — positions, participations et plus-values au même endroit."
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Passer au style professionnel",
     "toEditorial": "Passer au style éditorial"
+  },
+  "engagement": {
+    "title": "Engagement (30 derniers jours)",
+    "website": "Clics sur le site",
+    "video": "Lectures vidéo",
+    "booking": "Calendriers d'appel ouverts",
+    "shares": "Partages",
+    "onepager": "Ouvertures du one-pager",
+    "interest": "Investisseurs intéressés",
+    "waitlist": "Sur votre liste d'attente",
+    "conversations": "Conversations lancées",
+    "whoViewedYou": "Qui a consulté votre profil",
+    "views30d": "vues en 30 jours",
+    "interestedInYou": "intéressés",
+    "conversations30d": "conversations"
   }
 }

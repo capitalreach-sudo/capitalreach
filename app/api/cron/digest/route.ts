@@ -72,11 +72,13 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Fact 3: yesterday's listing views per founder.
+  // Fact 3: yesterday's listing views per founder. startup_views has no
+  // created_at -- its timestamp column is viewed_at. The old filter errored,
+  // the error was swallowed, and every digest quietly reported zero views.
   const { data: views } = await admin
     .from("startup_views")
     .select("startup:startups(owner_id)")
-    .gte("created_at", since)
+    .gte("viewed_at", since)
     .limit(5000);
   const viewCounts = new Map<string, number>();
   for (const v of views ?? []) {

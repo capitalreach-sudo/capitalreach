@@ -1007,7 +1007,8 @@
     "billingSoon": "現在は無料プランです。オンライン決済はまだ有効ではありません。掲載は保存済みです。アップグレードは「請求」からいつでも可能です。",
     "welcomeToast": "ようこそ！掲載は審査に送信されました。",
     "updDraftAi": "AIで下書き",
-    "updDraftTitle": "月次アップデート"
+    "updDraftTitle": "月次アップデート",
+    "portfolioUpgrade": "ポートフォリオ管理はAngelプラン以上の機能です。ポジション、持分、評価額の推移を一箇所で確認できます。"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "ビジネススタイルに切り替える",
     "toEditorial": "エディトリアルスタイルに切り替える"
+  },
+  "engagement": {
+    "title": "エンゲージメント（過去30日間）",
+    "website": "ウェブサイトのクリック",
+    "video": "動画再生",
+    "booking": "通話予約が開かれた回数",
+    "shares": "共有",
+    "onepager": "ワンページャー閲覧",
+    "interest": "関心を示した投資家",
+    "waitlist": "ウェイトリスト登録",
+    "conversations": "開始された会話",
+    "whoViewedYou": "プロフィールを見た人",
+    "views30d": "30日間の閲覧",
+    "interestedInYou": "関心あり",
+    "conversations30d": "会話"
   }
 }

@@ -109,6 +109,60 @@ const VIS_ROWS = [
  * Locked plans still see the count and the names blurred out: the point of the
  * gate is to make the upgrade legible, not to pretend nobody is interested.
  */
+/**
+ * The interaction ledger (migration 107): what people DID with the listing
+ * beyond viewing -- website clicks, video plays, booking opens, shares -- plus
+ * the three signals that were tracked but shown nowhere: interest, waitlist,
+ * conversations. Counts only, no identity, so it is ungated like the stat
+ * tiles; renders nothing until something has happened.
+ */
+function EngagementPanel() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{
+    events: Record<string, number>;
+    interest: number; waitlist: number; conversations: number;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/startups/engagement")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  if (!data) return null;
+  const ev = data.events ?? {};
+  const rows: Array<[string, number]> = [
+    [t("engagement.website"),       ev.website_click ?? 0],
+    [t("engagement.video"),         ev.video_play ?? 0],
+    [t("engagement.booking"),       ev.booking_open ?? 0],
+    [t("engagement.shares"),        (ev.share_copy ?? 0) + (ev.share_social ?? 0)],
+    [t("engagement.onepager"),      ev.onepager_open ?? 0],
+    [t("engagement.interest"),      data.interest],
+    [t("engagement.waitlist"),      data.waitlist],
+    [t("engagement.conversations"), data.conversations],
+  ].filter(([, v]) => (v as number) > 0) as Array<[string, number]>;
+  if (!rows.length) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          {t("engagement.title")}
+        </h3>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "1px", background: "var(--cr-rule)", border: "1px solid var(--cr-rule)", borderRadius: "3px", overflow: "hidden" }}>
+        {rows.map(([label, value]) => (
+          <div key={label} style={{ background: "var(--cr-paper-2)", padding: "12px 14px" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", color: "var(--cr-copper)", lineHeight: 1 }}>{value}</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "6px" }}>{label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SaversPanel() {
   const { t } = useTranslation();
   const [data, setData] = useState<{
@@ -1198,6 +1252,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             )}
             <ErrorBoundary labelKey="sections.fundraiseChecklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.tractionHistory"><MetricsRecorder /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.investorInterest"><EngagementPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.investorInterest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.profileViewers"><ViewersPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.targetInvestors"><TargetsPanel /></ErrorBoundary>

@@ -1014,7 +1014,8 @@
     "billingSoon": "Sie sind vorerst im Free-Plan — die Online-Zahlung ist noch nicht aktiv. Ihr Listing ist gespeichert; ein Upgrade ist jederzeit unter Abrechnung möglich.",
     "welcomeToast": "Willkommen! Ihr Listing wurde zur Prüfung eingereicht.",
     "updDraftAi": "Mit KI entwerfen",
-    "updDraftTitle": "Monats-Update"
+    "updDraftTitle": "Monats-Update",
+    "portfolioUpgrade": "Portfolio-Tracking ist Teil des Angel-Plans und höher — Positionen, Beteiligungen und Wertsteigerungen an einem Ort."
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Zum Business-Design wechseln",
     "toEditorial": "Zum Editorial-Design wechseln"
+  },
+  "engagement": {
+    "title": "Interaktionen (letzte 30 Tage)",
+    "website": "Website-Klicks",
+    "video": "Video-Wiedergaben",
+    "booking": "Termin-Kalender geöffnet",
+    "shares": "Geteilt",
+    "onepager": "One-Pager geöffnet",
+    "interest": "Interessierte Investoren",
+    "waitlist": "Auf deiner Warteliste",
+    "conversations": "Gestartete Gespräche",
+    "whoViewedYou": "Wer dein Profil angesehen hat",
+    "views30d": "Aufrufe in 30 Tagen",
+    "interestedInYou": "interessiert",
+    "conversations30d": "Gespräche"
   }
 }

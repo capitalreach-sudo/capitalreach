@@ -31,6 +31,8 @@ interface Props {
   allocation?: { committed: number; deployed: number };
   /** D40: per-company position, metric curve and latest update. */
   portfolio?: PortfolioPosition[];
+  /** Launch mode grants every capability; the server passes the live flag. */
+  isLaunchMode?: boolean;
 }
 
 export interface PortfolioPosition {
@@ -158,6 +160,86 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
 }
 
 /** C31: listings other investors sent you, with the note and the thread. */
+/**
+ * Who is looking at YOU (migration 107) -- the first inbound-engagement
+ * surface investors have ever had. Founders always had viewers/savers panels;
+ * an investor profile accumulated nothing. Counts for every plan; names for
+ * paid tiers, blurred-teaser upsell otherwise (the founder-side shape).
+ */
+function WhoViewedYou() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{
+    views: number; series: number[];
+    viewers: Array<{ name: string; kind: "investor" | "founder"; slug: string | null; lastAt: string }>;
+    interest: number; conversations: number; locked: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/investors/engagement")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  if (!data || (data.views === 0 && data.interest === 0 && data.conversations === 0)) return null;
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
+        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          {t("engagement.whoViewedYou")}
+        </h3>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "16px" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>{data.views}</span>{" "}{t("engagement.views30d")}
+          </span>
+          {data.interest > 0 && (
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>{data.interest}</span>{" "}{t("engagement.interestedInYou")}
+            </span>
+          )}
+          {data.conversations > 0 && (
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>{data.conversations}</span>{" "}{t("engagement.conversations30d")}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {data.locked && data.views > 0 ? (
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
+            {Array.from({ length: Math.min(data.views, 3) }).map((_, i) => (
+              <div key={i} style={{ height: "14px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+            ))}
+          </div>
+          <Link href="/pricing" style={{ display: "block", textAlign: "center", marginTop: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+            {t("dashboard.upgradeSeeWho")} →
+          </Link>
+        </>
+      ) : data.viewers.length > 0 ? (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {data.viewers.slice(0, 8).map((v, i) => (
+            <div key={`${v.slug}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", padding: "7px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+              {v.slug ? (
+                <Link href={v.kind === "investor" ? `/investors/${v.slug}` : `/startups/${v.slug}`}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", textDecoration: "none" }}>
+                  {v.name}
+                </Link>
+              ) : (
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{v.name}</span>
+              )}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                {v.lastAt ? new Date(v.lastAt).toLocaleDateString() : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function SharedWithYou() {
   const { t } = useTranslation();
   type Share = { id: string; note: string | null; created_at: string; thread_id: string | null; startup: { name: string; slug: string } | null; from_investor?: { slug: string; display_name: string | null; firm_name: string | null } | null };
@@ -427,7 +509,7 @@ function SavedSearchManager() {
   );
 }
 
-export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation, portfolio = [] }: Props) {
+export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation, portfolio = [], isLaunchMode = false }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
@@ -484,7 +566,9 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   // One capability object instead of four legacy tier-string checks; admin
   // and suspension handling come along for free. Launch mode is a server
   // concern and is already reflected in subscription_tier upgrades.
-  const caps             = investorCan(buildAccessContext(profile, false));
+  // isLaunchMode was hardcoded false here, so during launch the client
+  // gated features the server had granted. The server passes the live flag.
+  const caps             = investorCan(buildAccessContext(profile, isLaunchMode));
   const canExport        = caps.dataExport;
   const canSeeFinancials = caps.viewFinancials;
   const canMsg           = caps.message;
@@ -675,11 +759,12 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* ── Watchlist ── */}
         {activeTab === "watchlist" && (
           <div>
+            <ErrorBoundary labelKey="sections.profileViewers"><WhoViewedYou /></ErrorBoundary>
             {/* What moved on the companies already saved, above the list of
                 them: the list says what you picked, this says what happened. */}
             <ErrorBoundary labelKey="sections.recentlyViewed"><WatchlistChanges /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>
-            {allocation && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
+            {allocation && caps.allocationTracking && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
             <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
@@ -740,7 +825,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         )}
 
         {/* ── AI Reports ── */}
-        {activeTab === "portfolio" && (() => {
+        {activeTab === "portfolio" && !caps.portfolio && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center", gap: "12px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", maxWidth: "44ch" }}>{t("dashboard.portfolioUpgrade")}</p>
+            <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewPlans")} →</Link>
+          </div>
+        )}
+        {activeTab === "portfolio" && caps.portfolio && (() => {
           const positions = portfolio;
           const total = positions.reduce((a, p) => a + (p.amount ?? 0), 0);
           const cur = positions[0]?.currency ?? "USD";

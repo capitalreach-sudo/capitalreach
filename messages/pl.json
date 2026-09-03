@@ -998,7 +998,8 @@
     "billingSoon": "Na razie jesteś na planie darmowym — płatność online nie jest jeszcze aktywna. Ogłoszenie zapisane; ulepszysz plan w każdej chwili w Rozliczeniach.",
     "welcomeToast": "Witamy! Ogłoszenie zostało przesłane do weryfikacji.",
     "updDraftAi": "Szkic z AI",
-    "updDraftTitle": "Aktualizacja miesięczna"
+    "updDraftTitle": "Aktualizacja miesięczna",
+    "portfolioUpgrade": "Śledzenie portfela jest częścią planu Angel i wyższych — pozycje, udziały i wzrosty wartości w jednym miejscu."
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -3539,5 +3540,20 @@
   "style": {
     "toBusiness": "Przełącz na styl biznesowy",
     "toEditorial": "Przełącz na styl redakcyjny"
+  },
+  "engagement": {
+    "title": "Zaangażowanie (ostatnie 30 dni)",
+    "website": "Kliknięcia strony",
+    "video": "Odtworzenia wideo",
+    "booking": "Otwarcia kalendarza rozmów",
+    "shares": "Udostępnienia",
+    "onepager": "Otwarcia one-pagera",
+    "interest": "Zainteresowani inwestorzy",
+    "waitlist": "Na liście oczekujących",
+    "conversations": "Rozpoczęte rozmowy",
+    "whoViewedYou": "Kto oglądał Twój profil",
+    "views30d": "wyświetleń w 30 dni",
+    "interestedInYou": "zainteresowanych",
+    "conversations30d": "rozmów"
   }
 }
