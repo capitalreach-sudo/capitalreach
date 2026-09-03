@@ -166,6 +166,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "That person already owns this account" }, { status: 409 });
   }
 
+  // Was this person already on the team? A role change consumes no seat, so it
+  // is exempt from the post-insert cap recheck below.
+  const { data: alreadyMember } = await admin
+    .from("team_members")
+    .select("id")
+    .eq("entity_type", type).eq("entity_id", me.entityId).eq("user_id", invitee.id)
+    .maybeSingle();
+
   const { error } = await admin
     .from("team_members")
     .upsert(
@@ -176,6 +184,28 @@ export async function POST(req: NextRequest) {
   if (error) {
     console.error("[team]", error);
     return NextResponse.json({ error: "Could not add that member" }, { status: 500 });
+  }
+
+  // The seat gate above is a read-then-write: two concurrent invites for
+  // different people both pass it, and the upsert's uniqueness is per invitee
+  // so both land, overshooting the plan cap. Re-count AFTER the write and roll
+  // this row back if the team is now over; exactly one of the racers survives.
+  if (type === "startup" && !alreadyMember) {
+    const caps = await founderGate(user.id);
+    const { count: after } = await admin
+      .from("team_members")
+      .select("id", { count: "exact", head: true })
+      .eq("entity_type", "startup")
+      .eq("entity_id", me.entityId);
+    if (((after ?? 0) + 1) > caps.teamSeats) {
+      await admin.from("team_members").delete()
+        .eq("entity_type", type).eq("entity_id", me.entityId).eq("user_id", invitee.id)
+        .then(undefined, () => {});
+      return NextResponse.json(
+        { error: `Your plan includes ${caps.teamSeats} ${caps.teamSeats === 1 ? "seat" : "seats"}. Upgrade to add more.`, upgrade: true },
+        { status: 402 },
+      );
+    }
   }
 
   await notifyUser({

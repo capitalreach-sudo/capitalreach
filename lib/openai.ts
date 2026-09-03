@@ -17,7 +17,27 @@ if (!isOpenAIConfigured) {
 export const openai = new OpenAI({
   // SDK is instantiated even if key is placeholder; routes must guard with isOpenAIConfigured.
   apiKey: _apiKey || "sk-not-configured",
+  // The SDK default is 600s with 2 retries, and no AI route sets maxDuration, so
+  // a hung upstream would stall a serverless function to the platform ceiling.
+  // Bound it: fail in well under a minute so the route can return a clean error.
+  timeout: 45_000,
+  maxRetries: 1,
 });
+
+/**
+ * Parse a model's JSON response, guarding the two ways it bites: content can be
+ * null (a refusal or an empty choice), and it can be truncated to invalid JSON.
+ * Either used to throw a raw TypeError/SyntaxError inside a helper; now it is a
+ * single, described error the calling route can catch.
+ */
+function parseModelJson<T>(content: string | null | undefined, where: string): T {
+  if (!content) throw new Error(`${where}: model returned empty content`);
+  try {
+    return JSON.parse(content) as T;
+  } catch {
+    throw new Error(`${where}: model returned unparseable JSON`);
+  }
+}
 
 export async function generatePitchFeedback(pitchData: {
   problem: string;
@@ -63,7 +83,7 @@ Return a JSON object with these exact keys:
     temperature: 0.7,
   });
 
-  return JSON.parse(response.choices[0].message.content!);
+  return parseModelJson(response.choices[0].message.content, "pitch-feedback");
 }
 
 export async function generateDueDiligenceReport(startup: {
@@ -204,8 +224,8 @@ Scoring criteria:
     temperature: 0.3,
   });
 
-  const result = JSON.parse(response.choices[0].message.content!);
-  return Math.min(100, Math.max(0, result.score));
+  const result = parseModelJson<{ score?: number }>(response.choices[0].message.content, "scoreStartup");
+  return Math.min(100, Math.max(0, Number(result.score) || 0));
 }
 
 export async function matchStartupsToInvestor(
@@ -245,7 +265,7 @@ ${startups.map(s => `ID: ${s.id} | ${s.name} | ${s.industry} | ${s.stage} | ${s.
     temperature: 0.4,
   });
 
-  const result = JSON.parse(response.choices[0].message.content!);
+  const result = parseModelJson<{ matches?: string[] }>(response.choices[0].message.content, "matchStartups");
   return result.matches || [];
 }
 

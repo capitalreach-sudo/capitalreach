@@ -20,9 +20,16 @@ export async function GET(req: NextRequest) {
   // cheapest way to scrape both listings. Degrades open when Redis is
   // unconfigured, like every other limiter here.
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const { success } = await searchRatelimit.limit(`ip:${ip}`);
-  if (!success) {
-    return NextResponse.json({ startups: [], investors: [], limited: true }, { status: 429 });
+  // The mock limiter (no Redis) always succeeds, but a configured-but-transiently
+  // -down Upstash makes .limit() REJECT, which would 500 this public path. Fail
+  // open on error, consistent with the "degrades open" contract above.
+  try {
+    const { success } = await searchRatelimit.limit(`ip:${ip}`);
+    if (!success) {
+      return NextResponse.json({ startups: [], investors: [], limited: true }, { status: 429 });
+    }
+  } catch {
+    // Redis unreachable: allow the request rather than failing a public read.
   }
 
   // Escape the LIKE metacharacters so a query of "50%" matches the text

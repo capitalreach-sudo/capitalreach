@@ -43,11 +43,15 @@ export async function POST(req: NextRequest) {
     await sendProfileUnderReviewEmail(ownerEmail, startup.name).catch(() => {});
   }
 
-  // Also send a Slack/internal notification (optional — add webhook URL to env)
+  // Also send a Slack/internal notification (optional — add webhook URL to env).
+  // Bounded: .catch only covers rejections, not a peer that accepts the
+  // connection and stalls — that would hold this founder-facing request until
+  // the platform timeout. Five seconds is plenty for a webhook ping.
   if (process.env.ADMIN_NOTIFICATION_WEBHOOK) {
     await fetch(process.env.ADMIN_NOTIFICATION_WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(5000),
       body: JSON.stringify({
         text: `🆕 New startup submitted for review: *${startup.name}* — <${process.env.NEXT_PUBLIC_APP_URL}/admin|Review in Admin>`,
       }),

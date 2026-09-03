@@ -71,8 +71,18 @@ export async function POST(req: NextRequest) {
       if (!threadId) {
         const { data: created, error } = await admin.from("threads")
           .insert({ investor_id: me.id, recipient_investor_id: other.id, status: "active" }).select("id").single();
-        if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
-        threadId = created.id;
+        if (error || !created) {
+          // 23505: a concurrent request created the pair's thread between our
+          // SELECT and INSERT (unique index from 106). Use theirs.
+          const { data: raced } = await admin.from("threads").select("id")
+            .is("startup_id", null)
+            .or(`and(investor_id.eq.${me.id},recipient_investor_id.eq.${other.id}),and(investor_id.eq.${other.id},recipient_investor_id.eq.${me.id})`)
+            .limit(1).maybeSingle();
+          if (!raced) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
+          threadId = raced.id;
+        } else {
+          threadId = created.id;
+        }
       }
       if (openOnly) return NextResponse.json({ success: true, threadId });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();

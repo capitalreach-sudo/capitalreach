@@ -45,16 +45,18 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient();
 
-  // Idempotency, done in the right order: CHECK for an already-processed
-  // event up front (fast skip on a genuine duplicate), but only RECORD the
-  // marker AFTER the handler succeeds (below). Recording it first — as this
-  // did — meant a handler that threw mid-way (e.g. instalment updated but the
-  // aggregate deal update failed) was marked processed, and Stripe's retry
-  // was swallowed as a duplicate, leaving the partial state permanent.
+  // Idempotency: CLAIM the event id first, atomically. The insert's primary
+  // key is the arbiter — of two CONCURRENT deliveries of the same event,
+  // exactly one insert lands and the other returns duplicate here (the old
+  // select-then-record let both pass the check and run the handler twice,
+  // double-incrementing counters and double-sending notifications). The claim
+  // is RELEASED in the catch below if the handler fails, so Stripe's
+  // sequential retry after a partial failure still re-runs it rather than
+  // being swallowed — the property the previous ordering existed to protect.
   {
-    const { data: seen } = await supabase
-      .from("stripe_events").select("id").eq("id", event.id).maybeSingle();
-    if (seen) return NextResponse.json({ received: true, duplicate: true });
+    const { error: claimErr } = await supabase
+      .from("stripe_events").insert({ id: event.id, type: event.type });
+    if (claimErr) return NextResponse.json({ received: true, duplicate: true });
   }
 
   // invoice.* fires for every invoice on the account, and this app raises two
@@ -415,12 +417,14 @@ export async function POST(req: NextRequest) {
       default:
         break;
     }
-    // Handler succeeded → NOW record the event so a retry of THIS delivery is
-    // skipped, but a retry after a partial failure above re-runs.
-    await supabase.from("stripe_events").insert({ id: event.id, type: event.type }).then(undefined, () => {});
+    // Handler succeeded; the claim recorded up front stands as the processed
+    // marker, so any later redelivery is skipped.
   } catch (err) {
     console.error("Error processing webhook:", err);
     await logSystemEvent("webhook/stripe", "error", "Handler failed", { error: String(err) });
+    // Release the claim: the handler failed part-way, and Stripe's retry must
+    // re-run it rather than hit the marker and be swallowed as a duplicate.
+    await supabase.from("stripe_events").delete().eq("id", event.id).then(undefined, () => {});
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
   }
 

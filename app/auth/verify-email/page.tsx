@@ -20,7 +20,12 @@ function VerifyEmailInner() {
   const { t } = useTranslation();
   const sp = useSearchParams();
   const router = useRouter();
-  const email = (sp.get("email") ?? "").trim();
+  // sessionStorage first (how signup/login hand it over now); the query param
+  // stays only as a fallback for old links already in inboxes/history.
+  const [storedEmail] = useState(() => {
+    try { return sessionStorage.getItem("cr_pending_email") ?? ""; } catch { return ""; }
+  });
+  const email = (storedEmail || sp.get("email") || "").trim();
   const [resendIn, setResendIn] = useState(0);
   const [resending, setResending] = useState(false);
   const supabase = createClient();

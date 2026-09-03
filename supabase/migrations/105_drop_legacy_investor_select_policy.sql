@@ -1,0 +1,18 @@
+-- 105 - drop the legacy blanket investors SELECT policy.
+--
+-- Migration 003 created "Investors visible to authenticated users" FOR SELECT
+-- USING (true) with no TO clause, so it applies to PUBLIC (anon included).
+-- Migration 072 later added a locked-down investors_public policy
+-- (using is_external = false) to keep off-platform contacts private, and added
+-- investors_external_manager so only the managing startup can read external
+-- rows -- but it never dropped the 003 policy. Postgres ORs permissive SELECT
+-- policies, so the effective rule stayed (true) OR (is_external = false) = true:
+-- every external investor row, including the third party's contact_email and
+-- contact_note, was readable by any client through RLS.
+--
+-- Dropping the blanket policy leaves the intended gate:
+--   investors_public            - public, non-external rows (is_external = false)
+--   investors_external_manager  - external rows, managing startup only
+-- Public browse is unaffected (it runs through the service role), and an owner
+-- still reads their own non-external row through investors_public.
+drop policy if exists "Investors visible to authenticated users" on investors;

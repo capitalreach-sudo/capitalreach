@@ -8,6 +8,11 @@ import { aiRatelimit } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, canAiDueDiligence } from "@/lib/access";
 
+// Reading data-room documents plus a ~2200-token completion can run long; cap it
+// so a slow or hung upstream fails cleanly rather than stalling to the platform
+// default timeout.
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   if (!isOpenAIConfigured) {
     return NextResponse.json(
@@ -31,7 +36,8 @@ export async function POST(req: NextRequest) {
           ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })
           : NextResponse.json({ error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` }, { status: 429 });
       }
-      await logAiUsage(user.id, "due-diligence");
+      // Charged after the report succeeds (see below), so a failed generation
+      // does not burn the investor's daily quota.
     }
 
   try {
@@ -134,46 +140,58 @@ export async function POST(req: NextRequest) {
     founders: (startup.founders ?? []) as Array<{ name: string }>,
   });
 
-  const report = await generateDueDiligenceReport({
-    name: startup.name,
-    tagline: startup.tagline,
-    industry: startup.industry,
-    stage: startup.stage,
-    country: startup.country,
-    problem: startup.problem ?? "",
-    solution: startup.solution ?? "",
-    market: startup.market ?? "",
-    competitive_advantage: startup.competitive_advantage ?? "",
-    mrr: startup.mrr,
-    arr: startup.arr,
-    user_count: startup.user_count,
-    growth_rate: startup.growth_rate,
-    funding_target: startup.funding_target,
-    equity_offered: startup.equity_offered,
-    founders: protectFounders(startup.founders, reveal),
-    documents,
-    questions,
-  });
+  // The report body is the expensive, throwable step (OpenAI network/5xx, a
+  // truncated completion). Unwrapped it returned a raw 500; wrapped, a failure
+  // returns a clean 502 and the daily allowance is charged only on success.
+  try {
+    const report = await generateDueDiligenceReport({
+      name: startup.name,
+      tagline: startup.tagline,
+      industry: startup.industry,
+      stage: startup.stage,
+      country: startup.country,
+      problem: startup.problem ?? "",
+      solution: startup.solution ?? "",
+      market: startup.market ?? "",
+      competitive_advantage: startup.competitive_advantage ?? "",
+      mrr: startup.mrr,
+      arr: startup.arr,
+      user_count: startup.user_count,
+      growth_rate: startup.growth_rate,
+      funding_target: startup.funding_target,
+      equity_offered: startup.equity_offered,
+      founders: protectFounders(startup.founders, reveal),
+      documents,
+      questions,
+    });
 
-  // Append the web screen — sourced findings or an honest "unavailable".
-  const webScreen = await webScreenPromise;
-  const fullReport = report + "\n\nWEB SCREENING\n" + (
-    webScreen ?? "Web screening was unavailable for this report — findings above are based only on the company's own materials."
-  );
+    // Append the web screen — sourced findings or an honest "unavailable".
+    // webScreenCompany catches its own errors and resolves to null, so awaiting
+    // it here cannot throw.
+    const webScreen = await webScreenPromise;
+    const fullReport = report + "\n\nWEB SCREENING\n" + (
+      webScreen ?? "Web screening was unavailable for this report — findings above are based only on the company's own materials."
+    );
 
-  const adminClient = createAdminClient();
-  await adminClient.from("ai_reports").insert({
-    investor_id: investor?.id,
-    startup_id: startupId,
-    type: "due_diligence",
-    content: fullReport,
-  });
+    const adminClient = createAdminClient();
+    await adminClient.from("ai_reports").insert({
+      investor_id: investor?.id,
+      startup_id: startupId,
+      type: "due_diligence",
+      content: fullReport,
+    });
+    await logAiUsage(user.id, "due-diligence");
 
-  // Tell the caller what the model could and couldn't read — a report that
-  // silently skipped the financial model must not look complete.
-  return NextResponse.json({
-    report: fullReport,
-    documentsRead: documents.map((d) => d.label),
-    documentsSkipped: skippedDocs,
-  });
+    // Tell the caller what the model could and couldn't read — a report that
+    // silently skipped the financial model must not look complete.
+    return NextResponse.json({
+      report: fullReport,
+      documentsRead: documents.map((d) => d.label),
+      documentsSkipped: skippedDocs,
+    });
+  } catch (err) {
+    const { logSystemEvent } = await import("@/lib/system-events");
+    await logSystemEvent("ai/due-diligence", "error", "Due-diligence report failed", { message: String((err as Error)?.message ?? err).slice(0, 400) }).catch(() => {});
+    return NextResponse.json({ error: "Could not generate the report right now. Please try again." }, { status: 502 });
+  }
 }

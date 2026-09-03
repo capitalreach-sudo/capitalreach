@@ -47,33 +47,40 @@ export async function POST(req: NextRequest) {
 
   // Database-backed daily allowance (migration 042) so OpenAI spend stays
   // bounded even where the Upstash limiter is the no-op mock.
-  {
-    const allowance = await checkAiAllowance(user.id, "pitch-feedback", startup.subscription_tier);
-    if (!allowance.ok) {
-      return allowance.limit === 0
-          ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })
-          : NextResponse.json({ error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` }, { status: 429 });
-    }
-    await logAiUsage(user.id, "pitch-feedback");
+  const allowance = await checkAiAllowance(user.id, "pitch-feedback", startup.subscription_tier);
+  if (!allowance.ok) {
+    return allowance.limit === 0
+        ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })
+        : NextResponse.json({ error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` }, { status: 429 });
   }
 
-  const feedback = await generatePitchFeedback({
-    problem: startup.problem,
-    solution: startup.solution || "",
-    market: startup.market || "",
-    competitive_advantage: startup.competitive_advantage || "",
-    use_of_funds: startup.use_of_funds || "",
-    funding_target: startup.funding_target,
-    stage: startup.stage,
-    industry: startup.industry,
-  });
+  // The model call and its JSON parse can throw (network error, an OpenAI 5xx, a
+  // truncated completion). Unwrapped, that surfaced as a raw 500. Wrapped, and
+  // the daily allowance is charged only AFTER a usable result -- a failed
+  // attempt no longer burns the founder's quota.
+  try {
+    const feedback = await generatePitchFeedback({
+      problem: startup.problem,
+      solution: startup.solution || "",
+      market: startup.market || "",
+      competitive_advantage: startup.competitive_advantage || "",
+      use_of_funds: startup.use_of_funds || "",
+      funding_target: startup.funding_target,
+      stage: startup.stage,
+      industry: startup.industry,
+    });
 
-  // Store the report
-  await supabase.from("ai_reports").insert({
-    startup_id: startupId,
-    type: "pitch_feedback",
-    content: JSON.stringify(feedback),
-  });
+    await supabase.from("ai_reports").insert({
+      startup_id: startupId,
+      type: "pitch_feedback",
+      content: JSON.stringify(feedback),
+    });
+    await logAiUsage(user.id, "pitch-feedback");
 
-  return NextResponse.json(feedback);
+    return NextResponse.json(feedback);
+  } catch (err) {
+    const { logSystemEvent } = await import("@/lib/system-events");
+    await logSystemEvent("ai/pitch-feedback", "error", "Pitch feedback failed", { message: String((err as Error)?.message ?? err).slice(0, 400) }).catch(() => {});
+    return NextResponse.json({ error: "Could not generate feedback right now. Please try again." }, { status: 502 });
+  }
 }

@@ -188,7 +188,12 @@ function SignupForm() {
         fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
         notify.success(t("auth.welcomeToast"));
         router.push(`/onboarding/${role}`);
-      } else { router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`); }
+      } else {
+        // Hand the address over via sessionStorage, not the query string: a URL
+        // carries the email into browser history, Referer headers and logs.
+        try { sessionStorage.setItem("cr_pending_email", email); } catch {}
+        router.push("/auth/verify-email");
+      }
     } catch (err: unknown) {
       // The mapper covers the unreachable-host case that used to be sniffed
       // for here by hand.

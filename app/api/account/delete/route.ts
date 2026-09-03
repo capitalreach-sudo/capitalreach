@@ -131,7 +131,19 @@ export async function DELETE(req: NextRequest) {
     // The listing comes down. It is somebody's public page and there is no
     // longer a somebody.
     await adminClient.from("startups").update({ status: "archived" }).eq("owner_id", user.id);
-    await adminClient.from("investors").update({ is_public: false, display_name: "Former member", bio: null, website: null, linkedin_url: null }).eq("owner_id", user.id);
+    // Null EVERY re-identifying field the public investor page renders, not just
+    // bio. The page fetches by slug and does not hide is_public=false rows, so a
+    // firm name, an investment thesis, an X handle, a portfolio and AUM left
+    // behind kept a "Former member" fully identifiable. display_name is replaced
+    // rather than nulled so the row still reads as a tombstone.
+    await adminClient.from("investors").update({
+      is_public: false,
+      display_name: "Former member",
+      bio: null, website: null, linkedin_url: null,
+      investment_thesis: null, firm_name: null, twitter_url: null,
+      portfolio_json: null, aum: null, avg_hold_period: null,
+      booking_url: null, video_url: null,
+    }).eq("owner_id", user.id);
 
     // The login must stop working. Deleting the auth user would cascade and
     // take the records with it, so the credentials are neutralised instead.
@@ -156,6 +168,19 @@ export async function DELETE(req: NextRequest) {
       // The newsletter row keyed by their old email.
       adminClient.from("subscribers").delete().eq("email", user.email ?? "___none___"),
     ].map(q => q.then(undefined, () => {})));
+
+    // Off-platform contacts this founder entered are third-party PII (an angel's
+    // private email and notes). Their startup is archived, not deleted, so those
+    // rows survive with owner_id NULL and are not caught by the update above.
+    // Scrub the contact fields on every external investor their startups manage.
+    const { data: ownedStartups } = await adminClient.from("startups").select("id").eq("owner_id", uid);
+    const ownedStartupIds = (ownedStartups ?? []).map(s => s.id);
+    if (ownedStartupIds.length) {
+      await adminClient.from("investors")
+        .update({ contact_email: null, contact_note: null })
+        .in("managed_by_startup_id", ownedStartupIds)
+        .then(undefined, () => {});
+    }
 
     await adminClient.auth.admin.updateUserById(user.id, {
       email: scrubbedEmail,

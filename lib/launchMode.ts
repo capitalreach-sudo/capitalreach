@@ -32,30 +32,45 @@ export async function getLaunchStatus(): Promise<LaunchStatus> {
 
 // Called from the webhook handler when a new subscription is created.
 // Increments member_count and flips launch_mode off once >= target.
+//
+// Compare-and-swap, same pattern announceLaunchEnd uses to claim exactly once:
+// a plain read-add-write lost increments when two signups interleaved, and the
+// same counter decides when the "free for our first 100" promise expires — an
+// under-count kept the promo open past its cap. The update only lands when the
+// value is still what was read; on a miss, re-read and try again.
 export async function incrementMemberCount(): Promise<void> {
   const admin = createAdminClient();
 
-  const { data } = await admin
-    .from("platform_config")
-    .select("value")
-    .eq("key", "member_count")
-    .single();
-
-  const current = parseInt(data?.value ?? "0", 10);
-  const next    = current + 1;
-
-  await admin
-    .from("platform_config")
-    .update({ value: String(next) })
-    .eq("key", "member_count");
-
-  if (next >= LAUNCH_TARGET) {
-    await admin
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const { data } = await admin
       .from("platform_config")
-      .update({ value: "false" })
-      .eq("key", "launch_mode");
-    await announceLaunchEnd("member_target");
+      .select("value")
+      .eq("key", "member_count")
+      .single();
+
+    const current = parseInt(data?.value ?? "0", 10);
+    const next    = current + 1;
+
+    const { data: claimed } = await admin
+      .from("platform_config")
+      .update({ value: String(next) })
+      .eq("key", "member_count")
+      .eq("value", String(current))
+      .select("key");
+    if (!claimed?.length) continue; // another signup won the race; re-read
+
+    if (next >= LAUNCH_TARGET) {
+      await admin
+        .from("platform_config")
+        .update({ value: "false" })
+        .eq("key", "launch_mode");
+      await announceLaunchEnd("member_target");
+    }
+    return;
   }
+  // Four straight collisions means heavy signup concurrency; the next signup's
+  // increment will land, and the count self-corrects. Not worth failing the
+  // caller (a webhook) over.
 }
 
 /**

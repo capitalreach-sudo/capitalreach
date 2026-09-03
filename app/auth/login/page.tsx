@@ -62,7 +62,9 @@ function LoginForm() {
       // An unconfirmed address is not a wrong password: send them to the
       // verify screen (with resend) instead of a toast they cannot act on.
       if (/email not confirmed|email_not_confirmed/i.test(error.message)) {
-        router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+        // Via sessionStorage, not the query string (history/Referer/log hygiene).
+        try { sessionStorage.setItem("cr_pending_email", email); } catch {}
+        router.push("/auth/verify-email");
       } else {
         notify.error(authErrorMessage(error, t));
       }

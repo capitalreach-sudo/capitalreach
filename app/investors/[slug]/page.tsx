@@ -84,6 +84,18 @@ export default async function InvestorProfilePage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   const isOwnProfile = !!user && user.id === investor.owner_id;
 
+  // Visibility gate. This page fetched by slug with no filter, so an unlisted
+  // (is_public=false) or off-platform (is_external) investor profile was served
+  // in full -- firm, thesis, portfolio, and for external rows the third party's
+  // contact email and notes -- to anyone who guessed the slug. Every other read
+  // path already filters on is_public=true AND is_external=false; this one is
+  // the gap. Only the row's own owner may load it unlisted; everyone else gets
+  // the same 404 as a missing row. External rows have no owner, so they 404 for
+  // all (admins use /admin, not the public slug).
+  if ((!investor.is_public || investor.is_external) && !isOwnProfile) {
+    notFound();
+  }
+
   // If the viewer is a founder, their own deal with this investor. Same rule
   // as the startup profile: fetched with the caller's client so RLS decides,
   // only the viewer's own deal, never shown to the public.
@@ -157,6 +169,10 @@ export default async function InvestorProfilePage({ params }: Props) {
         .from("investors")
         .select("slug, display_name, firm_name, type, industries")
         .neq("id", investor.id)
+        // Service-role query bypasses RLS, so filter explicitly: never surface an
+        // unlisted or off-platform investor as a "similar" suggestion.
+        .eq("is_public", true)
+        .eq("is_external", false)
         .or(orParts.join(","))
         .limit(4);
       similar = data ?? [];
