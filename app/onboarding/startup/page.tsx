@@ -10,19 +10,23 @@ import { FOUNDER_PLANS } from "@/lib/plans";
 import { slugify } from "@/lib/utils";
 import {
   TrendingUp, ChevronRight, ChevronLeft, Plus, Trash2, Upload,
-  CheckCircle2, Building2, Users, Lightbulb, BarChart3, Target,
-  FileText, CreditCard, Globe, Twitter, Link2, Linkedin, Lock,
+  CheckCircle2, Globe, Twitter, Link2, Linkedin, Lock,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Shared style tokens ────────────────────────────────────────
 const iStyle: React.CSSProperties = {
-  width: "100%", borderRadius: "3px",
+  width: "100%", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
-  background: "var(--cr-paper-2)", padding: "8px 12px",
+  background: "var(--cr-paper-2)", padding: "10px 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
   fontSize: "14px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
+};
+// Numbers are data: numeric and date inputs render in mono like every
+// other figure the product sets.
+const iMono: React.CSSProperties = {
+  ...iStyle, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px",
 };
 const taStyle: React.CSSProperties = { ...iStyle, resize: "none" };
 const selStyle: React.CSSProperties = { ...iStyle, cursor: "pointer" };
@@ -35,19 +39,40 @@ const hintSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
   fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "6px", marginTop: "2px",
 };
+// Mono adornment ($ / %) inside inputs -- currency and percent are data.
+const adornSt: React.CSSProperties = {
+  position: "absolute", top: "50%", transform: "translateY(-50%)",
+  fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+  fontSize: "13px", color: "var(--cr-ink-4)",
+};
+// House buttons: one copper pill per view; secondary is a hairline outline
+// pill; back is a quiet text link. Light-on-copper comes from --cr-band-ink,
+// which is light in every register, so no hex ever enters the component.
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  background: "var(--cr-copper)", color: "#fff",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  background: "var(--cr-copper)", color: "var(--cr-band-ink)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "13px", height: "42px", padding: "0 20px",
-  borderRadius: "4px", border: "none", cursor: "pointer", flexShrink: 0,
+  fontSize: "13px", height: "42px", padding: "0 24px",
+  borderRadius: "999px", border: "none", cursor: "pointer", flexShrink: 0,
 };
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  border: "1px solid var(--cr-paper-4)", color: "var(--cr-ink)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "13px", height: "42px", padding: "0 16px",
-  borderRadius: "4px", background: "transparent", cursor: "pointer", flexShrink: 0,
+  fontSize: "13px", height: "42px", padding: "0 20px",
+  borderRadius: "999px", background: "transparent", cursor: "pointer", flexShrink: 0,
+};
+const quietBtn: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "6px",
+  border: "none", background: "transparent", color: "var(--cr-ink-3)",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
+  fontSize: "13px", height: "42px", padding: "0 12px",
+  cursor: "pointer", flexShrink: 0,
+};
+// Plans render as one ruled ledger, not stacked cards; inside it, structure
+// is hairline rules.
+const optionList: React.CSSProperties = {
+  border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden",
 };
 
 function onFocusCopper(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
@@ -59,13 +84,13 @@ function onBlurRule(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement |
 
 // ── Step config ────────────────────────────────────────────────
 const STEPS = [
-  { id: 1, labelKey: "onboarding.su.step1", icon: Building2,  descKey: "onboarding.su.step1Desc" },
-  { id: 2, labelKey: "onboarding.su.step2", icon: Users,      descKey: "onboarding.su.step2Desc" },
-  { id: 3, labelKey: "onboarding.su.step3", icon: Lightbulb,  descKey: "onboarding.su.step3Desc" },
-  { id: 4, labelKey: "onboarding.su.step4", icon: BarChart3,  descKey: "onboarding.su.step4Desc" },
-  { id: 5, labelKey: "onboarding.su.step5", icon: Target,     descKey: "onboarding.su.step5Desc" },
-  { id: 6, labelKey: "onboarding.su.step6", icon: FileText,   descKey: "onboarding.su.step6Desc" },
-  { id: 7, labelKey: "onboarding.su.step7", icon: CreditCard, descKey: "onboarding.su.step7Desc" },
+  { id: 1, labelKey: "onboarding.su.step1", descKey: "onboarding.su.step1Desc" },
+  { id: 2, labelKey: "onboarding.su.step2", descKey: "onboarding.su.step2Desc" },
+  { id: 3, labelKey: "onboarding.su.step3", descKey: "onboarding.su.step3Desc" },
+  { id: 4, labelKey: "onboarding.su.step4", descKey: "onboarding.su.step4Desc" },
+  { id: 5, labelKey: "onboarding.su.step5", descKey: "onboarding.su.step5Desc" },
+  { id: 6, labelKey: "onboarding.su.step6", descKey: "onboarding.su.step6Desc" },
+  { id: 7, labelKey: "onboarding.su.step7", descKey: "onboarding.su.step7Desc" },
 ];
 
 const BUSINESS_MODELS  = ["B2B", "B2C", "B2B2C", "Marketplace", "Platform", "Direct-to-Consumer", "Other"];
@@ -76,6 +101,25 @@ const COMPANY_TYPES    = ["Private", "Delaware C-Corp", "LLC", "S-Corp", "Sole P
 interface Founder    { name: string; role: string; linkedin_url: string; twitter_url: string; bio: string; }
 interface Milestone  { date: string; description: string; }
 interface Competitor { name: string; differentiator: string; }
+
+// Every step opens the house way: ruled label carrying the mono 01/07
+// counter, then the serif italic step title.
+function StepHead({ n, label, title, sub }: { n: number; label: string; title: string; sub: string }) {
+  return (
+    <>
+      <div className="ruled-label" style={{ marginBottom: "12px" }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "var(--cr-copper)" }}>
+          {String(n).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
+        </span>
+        {label}
+      </div>
+      <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", letterSpacing: "-0.01em", color: "var(--cr-ink)", marginBottom: "6px" }}>
+        {title}
+      </h2>
+      <p style={{ ...hintSt, fontSize: "13px", lineHeight: 1.6, marginBottom: "24px" }}>{sub}</p>
+    </>
+  );
+}
 
 export default function StartupOnboardingPage() {
   const { t } = useTranslation();
@@ -292,17 +336,17 @@ export default function StartupOnboardingPage() {
       {/* Top bar */}
       <div style={{ borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 24px", height: "56px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <TrendingUp style={{ width: 14, height: 14, color: "#fff" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <TrendingUp style={{ width: 14, height: 14, color: "var(--cr-band-ink)" }} />
             </div>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>CapitalReach</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: "160px", height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+            <div className="w-16 sm:w-40" style={{ height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ height: "100%", background: "var(--cr-copper)", borderRadius: "2px", transition: "width 500ms ease", width: `${progress}%` }} />
             </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{progress}%</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{progress}%</span>
           </div>
         </div>
       </div>
@@ -310,13 +354,12 @@ export default function StartupOnboardingPage() {
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "32px 24px" }}>
         <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8">
 
-          {/* Sidebar */}
+          {/* Sidebar: the numbered rail down the steps */}
           <div className="hidden lg:block">
             <div style={{ position: "sticky", top: "72px" }}>
-              <p style={{ ...labelSt, marginBottom: "16px", paddingLeft: "12px" }}>{t("onboarding.su.steps")}</p>
+              <p className="ruled-label" style={{ marginBottom: "16px" }}>{t("onboarding.su.steps")}</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {STEPS.map(s => {
-                  const Icon = s.icon;
                   const done = s.id < step;
                   const active = s.id === step;
                   return (
@@ -327,17 +370,25 @@ export default function StartupOnboardingPage() {
                         width: "100%", textAlign: "left", display: "flex", alignItems: "center", gap: "10px",
                         padding: "10px 12px", borderRadius: "4px", border: "none",
                         background: active ? "var(--cr-copper-bg)" : "transparent",
+                        boxShadow: active ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
                         cursor: done ? "pointer" : active ? "default" : "not-allowed",
                         transition: "background 120ms",
                       }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "3px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: active ? "var(--cr-copper)" : done ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: active ? "none" : done ? "1px solid rgba(45,106,79,0.2)" : "1px solid var(--cr-rule)" }}>
+                      {/* Done is a copper moment, never green -- green is money direction. */}
+                      <span style={{
+                        width: 28, height: 28, borderRadius: "999px", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px",
+                        color: active || done ? "var(--cr-copper)" : "var(--cr-ink-4)",
+                        background: active || done ? "var(--cr-copper-bg)" : "transparent",
+                        border: active || done ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                      }}>
                         {done
-                          ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-up)" }} />
-                          : <Icon style={{ width: 14, height: 14, color: active ? "#fff" : "var(--cr-ink-4)" }} />}
-                      </div>
+                          ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
+                          : String(s.id).padStart(2, "0")}
+                      </span>
                       <div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", lineHeight: 1.2, color: active ? "var(--cr-copper)" : done ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(s.labelKey)}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: active ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t(s.descKey)}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: active ? "var(--cr-ink-3)" : "var(--cr-ink-4)" }}>{t(s.descKey)}</p>
                       </div>
                     </button>
                   );
@@ -348,30 +399,29 @@ export default function StartupOnboardingPage() {
 
           {/* Form */}
           <div>
-            {/* Mobile progress */}
+            {/* Mobile progress -- copper is progress; green stays reserved for money */}
             <div style={{ display: "flex", gap: "4px", marginBottom: "24px" }}>
               {STEPS.map(s => (
-                <div key={s.id} style={{ flex: 1, height: "3px", borderRadius: "2px", background: s.id < step ? "var(--cr-up)" : s.id === step ? "var(--cr-copper)" : "var(--cr-rule-dark)", transition: "background 300ms" }} />
+                <div key={s.id} style={{ flex: 1, height: "3px", borderRadius: "2px", background: s.id <= step ? "var(--cr-copper)" : "var(--cr-rule-dark)", opacity: s.id < step ? 0.45 : 1, transition: "background 300ms" }} />
               ))}
             </div>
 
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+            <div className="p-4 sm:p-8" style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow)" }}>
 
               {/* ─── STEP 1: Company ────────────────────────────────── */}
               {step === 1 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h1")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h1Sub")}</p>
+                  <StepHead n={1} label={t(STEPS[0].labelKey)} title={t("onboarding.su.h1")} sub={t("onboarding.su.h1Sub")} />
 
                   <div className="form-row-2" style={{ gap: "16px" }}>
                     <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={labelSt}>{t("onboarding.su.companyName")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.companyName")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <input type="text" value={name} onChange={e => setName(e.target.value)}
                         placeholder="Acme Inc." onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
                     </div>
 
                     <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={labelSt}>{t("onboarding.su.tagline")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.tagline")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <input type="text" value={tagline} onChange={e => setTagline(e.target.value)}
                         placeholder={t("onboarding.su.taglinePh")} maxLength={120}
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
@@ -408,7 +458,7 @@ export default function StartupOnboardingPage() {
                     <div>
                       <label style={labelSt}>{t("onboarding.su.foundedDate")}</label>
                       <input type="date" value={foundedDate} onChange={e => setFoundedDate(e.target.value)}
-                        onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                        onFocus={onFocusCopper} onBlur={onBlurRule} style={iMono} />
                     </div>
 
                     <div>
@@ -427,7 +477,7 @@ export default function StartupOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>{t("onboarding.su.country")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.country")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       {/* Free text with a suggestion list, not a hard select:
                           steering new entries to one canonical spelling stops
                           the Region facet fragmenting, while a founder in a
@@ -445,7 +495,7 @@ export default function StartupOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>{t("onboarding.su.industry")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.industry")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <select value={industry} onChange={e => setIndustry(e.target.value)}
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={selStyle}>
                         <option value="">{t("onboarding.su.selectIndustry")}</option>
@@ -454,7 +504,7 @@ export default function StartupOnboardingPage() {
                     </div>
 
                     <div>
-                      <label style={labelSt}>{t("onboarding.su.stage")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.stage")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <select value={stage} onChange={e => setStage(e.target.value)}
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={selStyle}>
                         <option value="">{t("onboarding.su.selectStage")}</option>
@@ -495,41 +545,42 @@ export default function StartupOnboardingPage() {
               {/* ─── STEP 2: Team ───────────────────────────────────── */}
               {step === 2 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h2")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h2Sub")}</p>
+                  <StepHead n={2} label={t(STEPS[1].labelKey)} title={t("onboarding.su.h2")} sub={t("onboarding.su.h2Sub")} />
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     {founders.map((f, i) => (
-                      <div key={i} style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", background: "var(--cr-paper-3)", position: "relative" }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                      // Founders are groups split by hairline rules, not cards
+                      // nested in the card. The mono index is the rail.
+                      <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid var(--cr-rule)", paddingTop: i === 0 ? 0 : "24px" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
-                              {i + 1}
-                            </div>
+                            <span style={{ width: 28, height: 28, borderRadius: "999px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                              {String(i + 1).padStart(2, "0")}
+                            </span>
                             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("onboarding.su.founderN", { n: i + 1 })}</span>
                           </div>
                           {founders.length > 1 && (
                             <button onClick={() => removeFounder(i)} aria-label={t("common.remove")}
-                              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)" }}>
+                              style={{ width: 40, height: 40, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                               <Trash2 style={{ width: 14, height: 14 }} />
                             </button>
                           )}
                         </div>
                         <div className="form-row-2" style={{ gap: "12px" }}>
                           <div>
-                            <label style={labelSt}>{t("onboarding.su.fullName")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                            <label style={labelSt}>{t("onboarding.su.fullName")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                             <input type="text" value={f.name} onChange={e => updateFounder(i, "name", e.target.value)}
                               placeholder="Jane Smith" style={iStyle} />
                           </div>
                           <div>
-                            <label style={labelSt}>{t("onboarding.su.roleTitle")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                            <label style={labelSt}>{t("onboarding.su.roleTitle")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                             <input type="text" value={f.role} onChange={e => updateFounder(i, "role", e.target.value)}
                               placeholder="CEO & Co-Founder" style={iStyle} />
                           </div>
                           <div>
                             <label style={labelSt}>{t("onboarding.su.linkedin")}</label>
                             <div style={{ position: "relative" }}>
-                              <Linkedin style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "#0077B5" }} />
+                              <Linkedin style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "var(--cr-ink-4)" }} />
                               <input type="text" value={f.linkedin_url} onChange={e => updateFounder(i, "linkedin_url", e.target.value)}
                                 placeholder="linkedin.com/in/…" style={{ ...iStyle, paddingLeft: "26px", fontSize: "13px" }} />
                             </div>
@@ -554,8 +605,8 @@ export default function StartupOnboardingPage() {
 
                     <button onClick={addFounder}
                       style={{
-                        width: "100%", border: "2px dashed var(--cr-rule-dark)", borderRadius: "4px",
-                        padding: "16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                        width: "100%", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px",
+                        padding: "12px", minHeight: "48px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                         fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
                         color: "var(--cr-ink-4)", background: "transparent", cursor: "pointer",
                         transition: "border-color 120ms, color 120ms",
@@ -571,19 +622,18 @@ export default function StartupOnboardingPage() {
               {/* ─── STEP 3: Pitch ──────────────────────────────────── */}
               {step === 3 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h3")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h3Sub")}</p>
+                  <StepHead n={3} label={t(STEPS[2].labelKey)} title={t("onboarding.su.h3")} sub={t("onboarding.su.h3Sub")} />
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div>
-                      <label style={labelSt}>{t("onboarding.su.problem")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.problem")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <p style={hintSt}>{t("onboarding.su.problemHint")}</p>
                       <textarea value={problem} onChange={e => setProblem(e.target.value)} rows={5}
                         placeholder="Healthcare providers spend 3+ hours per day on administrative documentation, leading to burnout and $18B in lost productivity annually."
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={taStyle} />
                     </div>
                     <div>
-                      <label style={labelSt}>{t("onboarding.su.solution")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.solution")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <p style={hintSt}>{t("onboarding.su.solutionHint")}</p>
                       <textarea value={solution} onChange={e => setSolution(e.target.value)} rows={5}
                         placeholder="Our AI automatically transcribes and codes clinical encounters in real-time, reducing documentation time by 70%."
@@ -610,23 +660,25 @@ export default function StartupOnboardingPage() {
                           <p style={hintSt}>{t("onboarding.su.competitorsHint")}</p>
                         </div>
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                         {competitors.map((c, i) => (
-                          <div key={i} style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                          // Name spans the full width on phones; the row never
+                          // overflows 375px.
+                          <div key={i} className="milestone-row" style={{ gap: "8px", alignItems: "center" }}>
                             <input type="text" value={c.name} onChange={e => updateCompetitor(i, "name", e.target.value)}
-                              placeholder={t("onboarding.su.competitorNamePh")} style={{ ...iStyle, width: "160px", flexShrink: 0, fontSize: "13px" }} />
+                              placeholder={t("onboarding.su.competitorNamePh")} style={{ ...iStyle, fontSize: "13px" }} />
                             <input type="text" value={c.differentiator} onChange={e => updateCompetitor(i, "differentiator", e.target.value)}
-                              placeholder={t("onboarding.su.competitorDiffPh")} style={{ ...iStyle, flex: 1, fontSize: "13px" }} />
+                              placeholder={t("onboarding.su.competitorDiffPh")} style={{ ...iStyle, fontSize: "13px" }} />
                             {competitors.length > 1 && (
                               <button onClick={() => removeCompetitor(i)} aria-label={t("common.remove")}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", paddingTop: "8px", flexShrink: 0 }}>
+                                style={{ width: 40, height: 40, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                                 <Trash2 style={{ width: 14, height: 14 }} />
                               </button>
                             )}
                           </div>
                         ))}
                         <button onClick={addCompetitor}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", alignSelf: "flex-start" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: "6px", minHeight: "40px", padding: "0 8px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", alignSelf: "flex-start" }}>
                           <Plus style={{ width: 12, height: 12 }} /> {t("onboarding.su.addCompetitor")}
                         </button>
                       </div>
@@ -638,46 +690,45 @@ export default function StartupOnboardingPage() {
               {/* ─── STEP 4: Traction ───────────────────────────────── */}
               {step === 4 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h4")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h4Sub")}</p>
+                  <StepHead n={4} label={t(STEPS[3].labelKey)} title={t("onboarding.su.h4")} sub={t("onboarding.su.h4Sub")} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div className="form-row-2" style={{ gap: "16px" }}>
                       <div>
                         <label style={labelSt}>{t("onboarding.su.mrrUsd")}</label>
                         <div style={{ position: "relative" }}>
-                          <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
+                          <span style={{ ...adornSt, left: "12px" }}>$</span>
                           <input type="number" value={mrr} onChange={e => setMrr(e.target.value)}
                             placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule}
-                            style={{ ...iStyle, paddingLeft: "22px" }} />
+                            style={{ ...iMono, paddingLeft: "26px" }} />
                         </div>
                       </div>
                       <div>
                         <label style={labelSt}>{t("onboarding.su.arrUsd")}</label>
                         <div style={{ position: "relative" }}>
-                          <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
+                          <span style={{ ...adornSt, left: "12px" }}>$</span>
                           <input type="number" value={arr} onChange={e => setArr(e.target.value)}
                             placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule}
-                            style={{ ...iStyle, paddingLeft: "22px" }} />
+                            style={{ ...iMono, paddingLeft: "26px" }} />
                         </div>
                       </div>
                       <div>
                         <label style={labelSt}>{t("onboarding.su.totalUsers")}</label>
                         <input type="number" value={userCount} onChange={e => setUserCount(e.target.value)}
-                          placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                          placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule} style={iMono} />
                       </div>
                       <div>
                         <label style={labelSt}>{t("onboarding.su.payingCustomers")}</label>
                         <input type="number" value={payingCustomers} onChange={e => setPayingCustomers(e.target.value)}
-                          placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                          placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule} style={iMono} />
                       </div>
                       <div>
                         <label style={labelSt}>{t("onboarding.su.momGrowth")}</label>
                         <div style={{ position: "relative" }}>
                           <input type="number" value={growthRate} onChange={e => setGrowthRate(e.target.value)}
                             placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule}
-                            style={{ ...iStyle, paddingRight: "28px" }} />
-                          <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>%</span>
+                            style={{ ...iMono, paddingRight: "32px" }} />
+                          <span style={{ ...adornSt, right: "12px" }}>%</span>
                         </div>
                       </div>
                       <div>
@@ -685,8 +736,8 @@ export default function StartupOnboardingPage() {
                         <div style={{ position: "relative" }}>
                           <input type="number" value={churnRate} onChange={e => setChurnRate(e.target.value)}
                             placeholder="0" onFocus={onFocusCopper} onBlur={onBlurRule}
-                            style={{ ...iStyle, paddingRight: "28px" }} />
-                          <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>%</span>
+                            style={{ ...iMono, paddingRight: "32px" }} />
+                          <span style={{ ...adornSt, right: "12px" }}>%</span>
                         </div>
                       </div>
                     </div>
@@ -695,20 +746,20 @@ export default function StartupOnboardingPage() {
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                         <label style={labelSt}>{t("onboarding.su.keyMilestones")}</label>
                         <button onClick={addMilestone}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: "4px", minHeight: "40px", padding: "0 8px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
                           <Plus style={{ width: 12, height: 12 }} /> {t("onboarding.su.addMilestone")}
                         </button>
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                         {milestones.map((m, i) => (
-                          <div key={i} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          <div key={i} className="milestone-row" style={{ gap: "8px", alignItems: "center" }}>
                             <input type="date" value={m.date} onChange={e => updateMilestone(i, "date", e.target.value)}
-                              style={{ ...iStyle, width: "155px", flexShrink: 0, fontSize: "13px" }} />
+                              style={iMono} />
                             <input type="text" value={m.description} onChange={e => updateMilestone(i, "description", e.target.value)}
-                              placeholder={t("onboarding.su.milestonePh")} style={{ ...iStyle, flex: 1, fontSize: "13px" }} />
+                              placeholder={t("onboarding.su.milestonePh")} style={{ ...iStyle, fontSize: "13px" }} />
                             {milestones.length > 1 && (
                               <button onClick={() => removeMilestone(i)} aria-label={t("common.remove")}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
+                                style={{ width: 40, height: 40, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                                 <Trash2 style={{ width: 14, height: 14 }} />
                               </button>
                             )}
@@ -723,17 +774,16 @@ export default function StartupOnboardingPage() {
               {/* ─── STEP 5: The Ask ────────────────────────────────── */}
               {step === 5 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h5")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h5Sub")}</p>
+                  <StepHead n={5} label={t(STEPS[4].labelKey)} title={t("onboarding.su.h5")} sub={t("onboarding.su.h5Sub")} />
 
                   <div className="form-row-2" style={{ gap: "16px" }}>
                     <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={labelSt}>{t("onboarding.su.fundingTarget")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.su.fundingTarget")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <div style={{ position: "relative" }}>
-                        <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
+                        <span style={{ ...adornSt, left: "12px" }}>$</span>
                         <input type="number" value={fundingTarget} onChange={e => setFundingTarget(e.target.value)}
                           placeholder="2000000" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingLeft: "22px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "16px" }} />
+                          style={{ ...iMono, paddingLeft: "26px", fontWeight: 600, fontSize: "16px" }} />
                       </div>
                     </div>
                     <div>
@@ -741,23 +791,23 @@ export default function StartupOnboardingPage() {
                       <div style={{ position: "relative" }}>
                         <input type="number" value={equity} onChange={e => setEquity(e.target.value)}
                           placeholder="10" step="0.1" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingRight: "28px" }} />
-                        <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>%</span>
+                          style={{ ...iMono, paddingRight: "32px" }} />
+                        <span style={{ ...adornSt, right: "12px" }}>%</span>
                       </div>
                     </div>
                     <div>
                       <label style={labelSt}>{t("onboarding.su.minCheckSize")}</label>
                       <div style={{ position: "relative" }}>
-                        <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
+                        <span style={{ ...adornSt, left: "12px" }}>$</span>
                         <input type="number" value={minCheck} onChange={e => setMinCheck(e.target.value)}
                           placeholder="25000" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iStyle, paddingLeft: "22px" }} />
+                          style={{ ...iMono, paddingLeft: "26px" }} />
                       </div>
                     </div>
                     <div style={{ gridColumn: "1 / -1" }}>
                       <label style={labelSt}>{t("onboarding.su.runwayMonths")}</label>
                       <input type="number" value={runway} onChange={e => setRunway(e.target.value)}
-                        placeholder="18" onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                        placeholder="18" onFocus={onFocusCopper} onBlur={onBlurRule} style={iMono} />
                     </div>
                     <div style={{ gridColumn: "1 / -1" }}>
                       <label style={labelSt}>{t("onboarding.su.useOfFunds")}</label>
@@ -768,9 +818,11 @@ export default function StartupOnboardingPage() {
                     </div>
                   </div>
 
-                  <div style={{ marginTop: "20px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.2)", borderRadius: "4px", padding: "14px 16px" }}>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)", lineHeight: 1.5 }}>
-                      <strong>{t("onboarding.su.feeTitle")}</strong> {t("onboarding.su.feeBody")}
+                  {/* The fee note is a copper moment -- green stays reserved
+                      for money direction. */}
+                  <div style={{ marginTop: "24px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px" }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
+                      <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>{t("onboarding.su.feeTitle")}</strong> {t("onboarding.su.feeBody")}
                     </p>
                   </div>
                 </div>
@@ -779,11 +831,10 @@ export default function StartupOnboardingPage() {
               {/* ─── STEP 6: Documents ──────────────────────────────── */}
               {step === 6 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h6")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.su.h6Sub")}</p>
+                  <StepHead n={6} label={t(STEPS[5].labelKey)} title={t("onboarding.su.h6")} sub={t("onboarding.su.h6Sub")} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                    <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px 24px", display: "flex", alignItems: "center", gap: "14px", background: "var(--cr-paper-2)" }}>
+                    <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 24px", display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-paper-2)" }}>
                       <Upload style={{ width: 22, height: 22, color: "var(--cr-copper)", flexShrink: 0 }} />
                       <div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("onboarding.su.uploadTitle")}</p>
@@ -796,7 +847,7 @@ export default function StartupOnboardingPage() {
                         founders filling four link fields while the thing they
                         wanted was to get in. The listing goes to review
                         without them; they can be added any time. */}
-                    <div style={{ background: "var(--cr-paper-3)", border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "14px 16px" }}>
+                    <div style={{ background: "var(--cr-paper-3)", border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "16px" }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", lineHeight: 1.6, margin: 0 }}>
                         {t("onboarding.su.materialsLater")}
                       </p>
@@ -808,10 +859,9 @@ export default function StartupOnboardingPage() {
               {/* ─── STEP 7: Plan ───────────────────────────────────── */}
               {step === 7 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.su.h7")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "16px" }}>{t("onboarding.su.h7Sub")}</p>
+                  <StepHead n={7} label={t(STEPS[6].labelKey)} title={t("onboarding.su.h7")} sub={t("onboarding.su.h7Sub")} />
 
-                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "20px" }}>
+                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px", marginBottom: "24px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.su.unlocksTitle")}</p>
                     <div className="form-row-2" style={{ gap: "6px" }}>
                       {[
@@ -819,15 +869,17 @@ export default function StartupOnboardingPage() {
                         ["Starter", t("onboarding.su.unlockStarter")],
                         ["Growth", t("onboarding.su.unlockGrowth")],
                       ].map(([tier, desc]) => (
-                        <div key={tier} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
+                        <div key={tier} style={{ display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
                           <span><strong>{tier}:</strong> {desc}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {/* Plans as one ruled ledger, not three nested cards. The
+                      highlighted tier carries the single primary pill. */}
+                  <div style={optionList}>
                     {[
                       {
                         tier: "free", name: FOUNDER_PLANS.free.name, price: t("common.free"), highlight: false,
@@ -847,42 +899,40 @@ export default function StartupOnboardingPage() {
                         features: [t("onboarding.su.gf1"), t("onboarding.su.gf2"), t("onboarding.su.gf3"), t("onboarding.su.gf4"), t("onboarding.su.gf5"), t("onboarding.su.gf6"), t("onboarding.su.gf7")],
                         locked: [],
                       },
-                    ].map(plan => (
-                      <div key={plan.tier} style={{
-                        position: "relative", borderRadius: "4px", overflow: "hidden",
-                        border: plan.highlight ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
-                        background: "var(--cr-paper-3)", padding: "18px 20px",
+                    ].map((plan, planIdx) => (
+                      <div key={plan.tier} className="p-4 sm:p-5" style={{
+                        borderTop: planIdx === 0 ? "none" : "1px solid var(--cr-rule)",
+                        background: plan.highlight ? "var(--cr-copper-bg)" : "transparent",
+                        boxShadow: plan.highlight ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
                       }}>
-                        {plan.highlight && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "var(--cr-copper)" }} />}
-                        {plan.highlight && (
-                          <div style={{ position: "absolute", top: "14px", right: "14px" }}>
-                            <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
-                          </div>
-                        )}
-                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
-                          <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <div className="flex flex-wrap items-start justify-between" style={{ gap: "12px", marginBottom: "12px" }}>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)" }}>{plan.name}</span>
                               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: plan.highlight ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{plan.price}</span>
+                              {plan.highlight && (
+                                <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
+                              )}
                             </div>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{plan.desc}</p>
                           </div>
                           <button
                             disabled={loading}
+                            className="w-full sm:w-auto"
                             onClick={async () => {
                               // Only a saved listing may proceed to checkout;
                               // a failed save stays here with the form intact.
                               const ok = await handleSubmit();
                               if (ok && plan.tier !== "free") router.push(`/api/checkout/startup?tier=${plan.tier}&from=onboarding`);
                             }}
-                            style={{ ...plan.highlight ? primaryBtn : outlineBtn, marginLeft: "16px", opacity: loading ? 0.5 : 1 }}>
+                            style={{ ...plan.highlight ? primaryBtn : outlineBtn, opacity: loading ? 0.5 : 1 }}>
                             {loading ? t("common.saving") : plan.tier === "free" ? t("onboarding.su.startFree") : t("onboarding.su.selectPlan", { name: plan.name })}
                           </button>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                           {plan.features.map(f => (
                             <div key={f} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-up)", flexShrink: 0 }} />
+                              <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-copper)", flexShrink: 0 }} />
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{f}</span>
                             </div>
                           ))}
@@ -899,15 +949,15 @@ export default function StartupOnboardingPage() {
                 </div>
               )}
 
-              {/* Navigation */}
-              <div style={{ display: "flex", gap: "10px", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--cr-rule)" }}>
+              {/* Navigation: quiet back link, one copper pill forward */}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--cr-rule)" }}>
                 {step > 1 && (
-                  <button style={outlineBtn} onClick={() => setStep(s => s - 1)}>
+                  <button style={quietBtn} onClick={() => setStep(s => s - 1)}>
                     <ChevronLeft style={{ width: 14, height: 14 }} /> {t("onboarding.back")}
                   </button>
                 )}
                 {step < 7 && (
-                  <button style={{ ...primaryBtn, flex: 1, justifyContent: "center", opacity: !canNext() ? 0.4 : 1, cursor: !canNext() ? "not-allowed" : "pointer" }}
+                  <button style={{ ...primaryBtn, flex: 1, opacity: !canNext() ? 0.4 : 1, cursor: !canNext() ? "not-allowed" : "pointer" }}
                     onClick={() => setStep(s => s + 1)} disabled={!canNext()}>
                     {t("onboarding.continue")} <ChevronRight style={{ width: 14, height: 14 }} />
                   </button>

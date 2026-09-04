@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BellOff, X, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, X, Volume2, VolumeX } from "lucide-react";
 import { TYPE_ICON, FALLBACK_ICON } from "@/lib/notification-icons";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -16,6 +16,34 @@ interface Row {
   id: string; type: string; title: string; body: string | null;
   href: string | null; read_at: string | null; created_at: string;
 }
+
+// ── House register ─────────────────────────────────────────────────────────
+// The feed is one 4px token card; hairline rules separate rows and mark day
+// changes -- never boxes-in-boxes. Filters are Label-type chips (3px radius,
+// hairline border, small caps). Every date renders in JetBrains Mono. One
+// quiet primary per view: mark all read.
+const CARD: React.CSSProperties = {
+  background: "var(--cr-paper)",
+  border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px",
+};
+const CHIP: React.CSSProperties = {
+  minHeight: "40px",
+  padding: "0 12px",
+  borderRadius: "3px",
+  borderWidth: 1,
+  borderStyle: "solid",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "8px",
+  fontSize: "11px",
+  fontWeight: 500,
+  textTransform: "uppercase",
+  letterSpacing: "0.07em",
+  cursor: "pointer",
+  background: "transparent",
+  transition: "color 120ms ease, border-color 120ms ease, background 120ms ease",
+};
 
 /**
  * The bell's dropdown shows the latest few and vanishes on click-away; this is
@@ -133,81 +161,106 @@ export default function NotificationsPage() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <div className="flex items-center gap-3">
+      <main className="container mx-auto px-4 py-8 md:py-12 max-w-2xl" style={{ background: "var(--cr-paper)" }}>
+        <header className="mb-8 pb-6" style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
+          <div className="mb-4">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="gap-1.5">
+              <Button variant="ghost" size="sm" className="-ml-2 h-10 gap-1.5">
                 <ArrowLeft className="h-4 w-4" /> {t("common.back")}
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold text-cr-ink">{t("notifications.title")}</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                const next = !sound;
-                setSoundEnabled(next); setSound(next);
-                // An immediate demo ping doubles as the browser-audio unlock:
-                // enabling sound IS a user gesture, so this primes autoplay.
-                if (next) playPing();
-              }}
-              aria-label={sound ? t("notifications.soundOff") : t("notifications.soundOn")}
-              title={sound ? t("notifications.soundOff") : t("notifications.soundOn")}
-              className="p-2 text-cr-i4 hover:text-cr-i2"
-            >
-              {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-            </button>
-            {unread > 0 && (
-              <Button variant="outline" size="sm" onClick={markAll}>
-                {t("notifications.markAllRead")}
-              </Button>
-            )}
-            {(rows?.some((r) => r.read_at) ?? false) && (
-              <Button variant="ghost" size="sm" onClick={clearRead}>
-                {t("notifications.clearRead")}
-              </Button>
-            )}
+          <div className="flex flex-wrap items-end justify-between" style={{ gap: "16px" }}>
+            <div>
+              <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.inbox")}</div>
+              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", lineHeight: 1.15, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
+                {t("notifications.title")}
+              </h1>
+            </div>
+            <div className="flex flex-wrap items-center" style={{ gap: "12px" }}>
+              <button
+                onClick={() => {
+                  const next = !sound;
+                  setSoundEnabled(next); setSound(next);
+                  // An immediate demo ping doubles as the browser-audio unlock:
+                  // enabling sound IS a user gesture, so this primes autoplay.
+                  if (next) playPing();
+                }}
+                aria-label={sound ? t("notifications.soundOff") : t("notifications.soundOn")}
+                title={sound ? t("notifications.soundOff") : t("notifications.soundOn")}
+                className="flex h-10 w-10 items-center justify-center text-cr-i4 hover:text-cr-i2 transition-colors"
+                style={{ background: "transparent", border: "none", cursor: "pointer" }}
+              >
+                {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+              </button>
+              {(rows?.some((r) => r.read_at) ?? false) && (
+                <button onClick={clearRead}
+                  className="text-cr-i4 hover:text-cr-i2 transition-colors"
+                  style={{ minHeight: "40px", padding: "0 12px", background: "transparent", border: "none", fontSize: "13px", fontWeight: 400, cursor: "pointer" }}>
+                  {t("notifications.clearRead")}
+                </button>
+              )}
+              {/* The one quiet primary on this view. */}
+              {unread > 0 && (
+                <button onClick={markAll}
+                  style={{ minHeight: "40px", padding: "0 16px", borderRadius: "999px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                  {t("notifications.markAllRead")}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        </header>
 
-        <div className="flex items-center gap-1 mb-4 border-b border-cr-p4">
+        {/* One filter lane: type chips left, the unread toggle pushed right. */}
+        <div className="flex flex-wrap items-center" style={{ gap: "12px", marginBottom: "16px" }}>
           {(Object.keys(TAB_TYPES) as Array<keyof typeof TAB_TYPES>).map((k) => (
             <button key={k} onClick={() => setTab(k)}
-              className={`px-3.5 py-2 text-sm transition-colors border-b-2 -mb-px ${
-                tab === k ? "border-cr-copper text-cr-ink font-semibold" : "border-transparent text-cr-i4 hover:text-cr-i2"
-              }`}>
+              className={tab === k ? "text-cr-copper" : "text-cr-i4 hover:text-cr-i2"}
+              style={{
+                ...CHIP,
+                borderColor: tab === k ? "var(--cr-copper-br)" : "var(--cr-paper-4)",
+                background: tab === k ? "var(--cr-copper-bg)" : "transparent",
+              }}>
               {t(`notifications.tab_${k}`)}
             </button>
           ))}
-        </div>
-
-        <div className="flex items-center justify-end mb-3 -mt-1">
           <button onClick={() => setUnreadOnly(v => !v)}
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors ${
-              unreadOnly ? "border-cr-copper text-cr-copper bg-cr-copper/10" : "border-cr-p4 text-cr-i4 hover:text-cr-i2"
-            }`}>
-            {t("notifications.unreadOnly")}{unread > 0 ? ` (${unread})` : ""}
+            className={`ml-auto ${unreadOnly ? "text-cr-copper" : "text-cr-i4 hover:text-cr-i2"}`}
+            style={{
+              ...CHIP,
+              borderColor: unreadOnly ? "var(--cr-copper-br)" : "var(--cr-paper-4)",
+              background: unreadOnly ? "var(--cr-copper-bg)" : "transparent",
+            }}>
+            {t("notifications.unreadOnly")}
+            {unread > 0 && <span className="font-mono" style={{ fontWeight: 600 }}>({unread})</span>}
           </button>
         </div>
 
         {rows === null ? (
-          <p className="text-sm text-cr-i4">{t("common.loading")}</p>
+          <p className="text-sm font-light text-cr-i4">{t("common.loading")}</p>
         ) : loadError ? (
-          <div className="bg-cr-paper border rounded-2xl p-10 text-center">
-            <p className="text-sm text-cr-i3" style={{ marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
+          <div className="text-center" style={{ ...CARD, padding: "48px 24px" }}>
+            <p className="text-sm font-light text-cr-i3" style={{ marginBottom: "16px" }}>{t("errorPage.sectionTitle")}</p>
             <button onClick={() => { setRows(null); load(); }}
-              className="text-sm" style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "6px 16px", cursor: "pointer", color: "var(--cr-ink-3)" }}>
+              className="text-[13px] text-cr-ink" style={{ background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>
               {t("errorPage.retry")}
             </button>
           </div>
         ) : (unreadOnly ? rows.filter((r) => !r.read_at) : rows).length === 0 ? (
-          <div className="bg-cr-paper border rounded-2xl p-10 text-center">
-            <BellOff className="h-8 w-8 text-cr-p4 mx-auto mb-3" />
-            <p className="text-sm text-cr-i3">{t(role === "admin" ? "notifications.emptyAdmin" : role === "startup" ? "notifications.emptyFounder" : "notifications.emptyInvestor")}</p>
+          // Empty state, house grammar: one diamond, one sentence, one quiet action.
+          <div className="text-center" style={{ ...CARD, padding: "48px 24px" }}>
+            <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "16px", lineHeight: 1, marginBottom: "16px" }}>✦</span>
+            <p className="text-sm font-light leading-relaxed text-cr-i3" style={{ maxWidth: "44ch", margin: "0 auto" }}>
+              {t(role === "admin" ? "notifications.emptyAdmin" : role === "startup" ? "notifications.emptyFounder" : "notifications.emptyInvestor")}
+            </p>
+            <Link href="/dashboard"
+              className="inline-flex items-center justify-center text-[13px] text-cr-ink"
+              style={{ minHeight: "40px", padding: "0 16px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)", textDecoration: "none", marginTop: "24px" }}>
+              {t("common.back")}
+            </Link>
           </div>
         ) : (
-          <div className="bg-cr-paper border rounded-2xl divide-y">
+          <div className="overflow-hidden" style={CARD}>
             {(unreadOnly ? rows.filter((r) => !r.read_at) : rows).map((n, idx, view) => {
               // A date rule whenever the day changes: a long feed reads as
               // "today / yesterday / last week", not one undifferentiated wall.
@@ -215,43 +268,47 @@ export default function NotificationsPage() {
               const newDay = idx === 0 || dayOf(view[idx - 1].created_at) !== dayOf(n.created_at);
               const { Icon, color } = TYPE_ICON[n.type] ?? FALLBACK_ICON;
               const inner = (
-                <div className="flex items-start gap-3 p-4">
+                <div className="flex items-start gap-3 p-4 pr-12">
                   <Icon aria-hidden className="h-4 w-4 shrink-0 mt-0.5" style={{ color }} />
                   <div className="min-w-0 flex-1">
                     <p className={`text-sm text-cr-ink ${n.read_at ? "font-normal" : "font-semibold"}`}>
                       {n.title}
                     </p>
-                    {n.body && <p className="text-sm text-cr-i3 mt-0.5">{n.body}</p>}
-                    <p className="text-xs text-cr-i4 mt-1 font-mono">{formatDate(n.created_at)}</p>
+                    {n.body && <p className="text-sm font-light text-cr-i3 mt-0.5">{n.body}</p>}
+                    <p className="text-[11px] text-cr-i4 mt-1 font-mono">{formatDate(n.created_at)}</p>
                   </div>
-                  {!n.read_at && <span className="h-2 w-2 rounded-full bg-cr-copper shrink-0 mt-1.5" />}
+                  {/* Unread marker: the house diamond, copper. */}
+                  {!n.read_at && <span aria-hidden className="shrink-0 text-cr-copper" style={{ fontSize: "10px", lineHeight: 1, marginTop: "4px" }}>✦</span>}
                 </div>
               );
               const row = n.href ? (
                 <Link href={n.href} onClick={() => markOne(n.id)}
-                  className={`block hover:bg-cr-p2 transition-colors ${n.read_at ? "" : "bg-cr-copper/5"}`}>
+                  className={`block hover:bg-cr-p3 transition-colors ${n.read_at ? "" : "bg-cr-copper/5"}`}>
                   {inner}
                 </Link>
               ) : (
                 <button type="button" onClick={() => markOne(n.id)}
-                  className={`block w-full text-left hover:bg-cr-p2 transition-colors ${n.read_at ? "" : "bg-cr-copper/5"}`}>
+                  className={`block w-full text-left hover:bg-cr-p3 transition-colors ${n.read_at ? "" : "bg-cr-copper/5"}`}>
                   {inner}
                 </button>
               );
 
               return (
-                <div key={n.id}>
+                // Ledger lines between entries -- hairline rules, not boxes.
+                <div key={n.id} style={{ borderTop: idx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
                   {newDay && (
-                    <p className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-cr-i4 bg-cr-p2/40">
+                    <p className="bg-cr-p2 font-mono px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-cr-i4">
                       {formatDate(n.created_at)}
                     </p>
                   )}
                   <div className="relative group/row">
                     {row}
+                    {/* Always visible below md: touch has no hover to reveal it. */}
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeOne(n.id); }}
                       aria-label={`dismiss ${n.title}`}
-                      className="absolute top-3 right-3 text-cr-i4 hover:text-cr-ink opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity"
+                      className="absolute top-0 right-0 flex h-10 w-10 items-center justify-center text-cr-i4 hover:text-cr-ink opacity-100 md:opacity-0 md:group-hover/row:opacity-100 md:focus:opacity-100 transition-opacity"
+                      style={{ background: "transparent", border: "none", cursor: "pointer" }}
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -264,7 +321,8 @@ export default function NotificationsPage() {
 
         {more && rows && rows.length > 0 && (
           <div className="mt-4 text-center">
-            <Button variant="outline" size="sm" onClick={loadMore} disabled={loadingMore}>
+            <Button variant="outline" size="sm" onClick={loadMore} disabled={loadingMore}
+              className="h-10 rounded-full border-cr-p4 px-5 text-[13px] text-cr-ink">
               {loadingMore ? t("common.loading") : t("notifications.loadMore")}
             </Button>
           </div>

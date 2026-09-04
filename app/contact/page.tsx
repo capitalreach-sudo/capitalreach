@@ -9,9 +9,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Mail, MessageSquare, Building2, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { brand } from "@/lib/brand";
+
+// House Label type for the rule-separated contact rows.
+const ROW_LABEL: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
+  marginBottom: "4px",
+};
+
+const ROW_BODY: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px",
+  color: "var(--cr-ink-3)", lineHeight: 1.65,
+};
+
+// Form field label -- Label type, overriding the ui/label defaults.
+const FIELD_LABEL = "mb-2 text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3";
+
+const FIELD_INPUT = "rounded-[var(--radius)] bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4";
 
 export default function ContactPage() {
   const { t } = useTranslation();
@@ -67,49 +83,56 @@ export default function ContactPage() {
   const isInstitutional = subject === "institutional";
 
   return (
-    <div className="min-h-screen flex flex-col bg-base">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--cr-paper)" }}>
       <Navbar />
       <main className="container mx-auto px-4 py-16 max-w-5xl flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Left column */}
           <div className="lg:col-span-2">
-            <h1 className="text-3xl font-bold text-cr-ink mb-3">{t("contact.title")}</h1>
-            <p className="text-cr-i3 mb-8 text-sm">
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{brand.name}</div>
+            <h1
+              style={{
+                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontWeight:    700,
+                fontStyle:     "italic",
+                fontSize:      "clamp(30px, 4.5vw, 42px)",
+                color:         "var(--cr-ink)",
+                lineHeight:    1.08,
+                letterSpacing: "-0.02em",
+                textWrap:      "balance",
+              }}
+            >
+              {t("contact.title")}
+            </h1>
+            <p style={{ ...ROW_BODY, fontSize: "14px", marginTop: "12px" }}>
               {t("contact.subtitle")}
             </p>
 
-            <div className="space-y-5">
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 bg-cr-copper/10 rounded-lg flex items-center justify-center flex-shrink-0 border border-cr-copper/20">
-                  <Mail className="h-4 w-4 text-cr-copper" />
-                </div>
-                <div>
-                  <p className="font-medium text-cr-ink text-sm">{t("contact.emailUs")}</p>
-                  <a href={`mailto:${brand.support}`} className="text-sm text-cr-copper hover:text-cr-cu-l transition-colors">{brand.support}</a>
-                </div>
+            {/* Contact facts as ledger rows -- rules, not chips. */}
+            <div style={{ marginTop: "32px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
+                <p style={ROW_LABEL}>{t("contact.emailUs")}</p>
+                <a
+                  href={`mailto:${brand.support}`}
+                  className="text-cr-copper hover:text-cr-cu-l transition-colors"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", textDecoration: "none" }}
+                >
+                  {brand.support}
+                </a>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 bg-cr-copper/10 rounded-lg flex items-center justify-center flex-shrink-0 border border-cr-copper/20">
-                  <MessageSquare className="h-4 w-4 text-cr-copper" />
-                </div>
-                <div>
-                  <p className="font-medium text-cr-ink text-sm">{t("contact.responseTime")}</p>
-                  <p className="text-sm text-cr-i3">{t("contact.responseTimeDesc")}</p>
-                </div>
+              <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
+                <p style={ROW_LABEL}>{t("contact.responseTime")}</p>
+                <p style={ROW_BODY}>{t("contact.responseTimeDesc")}</p>
               </div>
 
               {isInstitutional && (
-                <div className="bg-cr-copper/5 border border-cr-copper/15 rounded-xl p-4">
-                  <div className="flex items-start gap-3">
-                    <Building2 className="h-5 w-5 text-cr-copper flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-cr-ink text-sm mb-1">{t("contact.enterpriseTitle")}</p>
-                      <p className="text-xs text-cr-i3">
-                        {t("contact.enterpriseDesc")}
-                      </p>
-                    </div>
-                  </div>
+                <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "4px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>
+                    {t("contact.enterpriseTitle")}
+                  </p>
+                  <p style={ROW_BODY}>{t("contact.enterpriseDesc")}</p>
                 </div>
               )}
             </div>
@@ -118,46 +141,63 @@ export default function ContactPage() {
           {/* Form */}
           <div className="lg:col-span-3">
             {sent ? (
-              <div className="bg-cr-paper border border-cr-p4 rounded-xl p-10 text-center">
-                <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
-                  <CheckCircle className="h-8 w-8 text-emerald-400" />
-                </div>
-                <h2 className="text-xl font-bold text-cr-ink mb-2">{t("contact.messageSentTitle")}</h2>
-                <p className="text-cr-i3 text-sm">
+              <div
+                className="p-8 text-center"
+                style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", boxShadow: "var(--cr-card-shadow)" }}
+              >
+                <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "22px", lineHeight: 1, marginBottom: "16px" }}>✦</span>
+                <h2
+                  style={{
+                    fontFamily:    "'Playfair Display', Georgia, serif",
+                    fontWeight:    700,
+                    fontStyle:     "italic",
+                    fontSize:      "clamp(22px, 3vw, 28px)",
+                    color:         "var(--cr-ink)",
+                    letterSpacing: "-0.01em",
+                    marginBottom:  "8px",
+                  }}
+                >
+                  {t("contact.messageSentTitle")}
+                </h2>
+                <p style={{ ...ROW_BODY, fontSize: "14px" }}>
                   {t("contact.messageSentDesc", { name: name.split(" ")[0] }).split("{email}")[0]}
-                  <strong className="text-cr-i2">{email}</strong>
+                  <strong className="text-cr-i2" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{email}</strong>
                   {t("contact.messageSentDesc", { name: name.split(" ")[0] }).split("{email}")[1]}
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="bg-cr-paper border border-cr-p4 rounded-xl p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-cr-i2 text-sm">{t("contact.fullName")}</Label>
-                    <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" required className="bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4" />
+              <form
+                onSubmit={handleSubmit}
+                className="p-6 space-y-4"
+                style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", boxShadow: "var(--cr-card-shadow)" }}
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name" className={FIELD_LABEL}>{t("contact.fullName")}</Label>
+                    <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" required className={FIELD_INPUT} />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-cr-i2 text-sm">{t("contact.emailLabel")}</Label>
-                    <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jane@example.com" required className="bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4" />
+                  <div>
+                    <Label htmlFor="email" className={FIELD_LABEL}>{t("contact.emailLabel")}</Label>
+                    <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jane@example.com" required className={FIELD_INPUT} />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="company" className="text-cr-i2 text-sm">{t("contact.companyLabel")}</Label>
-                  <Input id="company" value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Ventures" className="bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4" />
+                <div>
+                  <Label htmlFor="company" className={FIELD_LABEL}>{t("contact.companyLabel")}</Label>
+                  <Input id="company" value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Ventures" className={FIELD_INPUT} />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label className="text-cr-i2 text-sm">{t("contact.subjectLabel")}</Label>
-                  <div className="flex flex-wrap gap-2">
+                <div>
+                  <Label className={FIELD_LABEL}>{t("contact.subjectLabel")}</Label>
+                  <div className="flex flex-wrap gap-3">
                     {SUBJECTS.map(s => (
                       <button
                         key={s.value}
                         type="button"
                         onClick={() => setSubject(s.value)}
-                        className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                        className={`min-h-[40px] px-3 rounded-[3px] border text-[11px] font-medium uppercase tracking-[0.06em] transition-colors ${
                           subject === s.value
-                            ? "bg-cr-copper text-white border-cr-copper"
+                            ? "bg-[var(--cr-copper-bg)] border-[var(--cr-copper-br)] text-cr-copper"
                             : "border-cr-p4 text-cr-i3 hover:border-cr-i4 hover:text-cr-i2"
                         }`}
                       >
@@ -167,13 +207,13 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="message" className="text-cr-i2 text-sm">{t("contact.messageLabel")}</Label>
+                <div>
+                  <Label htmlFor="message" className={FIELD_LABEL}>{t("contact.messageLabel")}</Label>
                   <Textarea
                     id="message"
                     value={message}
                     onChange={e => setMessage(e.target.value)}
-                    className="h-32 bg-cr-p2 border-cr-p4 text-cr-ink placeholder:text-cr-i4"
+                    className={`h-32 ${FIELD_INPUT}`}
                     placeholder={
                       isInstitutional
                         ? t("contact.messagePlaceholderInstitutional")
@@ -183,11 +223,12 @@ export default function ContactPage() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-cr-copper hover:bg-cr-cu-l text-white" disabled={loading}>
+                {/* The one primary action on this view; token-driven Button default. */}
+                <Button type="submit" className="w-full text-[13px] font-semibold" disabled={loading}>
                   {loading ? t("contact.sending") : t("contact.sendMessage")}
                 </Button>
 
-                <p className="text-xs text-cr-i4 text-center">
+                <p className="text-center" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                   {t("contact.agreeToPrivacy")}{" "}
                   <a href="/privacy" className="text-cr-copper hover:underline">{t("auth.privacy")}</a>.
                 </p>

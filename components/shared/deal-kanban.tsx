@@ -18,7 +18,7 @@ const INVESTOR_TYPE_KEYS: Record<string, string> = {
   corporate: "investors.typeCorporate",
 };
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
-import { X, CheckCircle2, TrendingUp, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List, Circle } from "lucide-react";
+import { X, CheckCircle2, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List, Circle } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { InfoTip } from "@/components/shared/info-tip";
@@ -124,8 +124,8 @@ function colBadgeStyle(status: DealStatus, count: number): React.CSSProperties {
     borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase",
     letterSpacing: "0.06em", display: "inline-block",
   };
-  if (status === "closed") return { ...base, background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)" };
-  if (status === "passed") return { ...base, background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", color: "var(--cr-down)" };
+  if (status === "closed") return { ...base, background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)" };
+  if (status === "passed") return { ...base, background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", color: "var(--cr-down)" };
   if (status === "term_sheet") return { ...base, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)" };
   return { ...base, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)" };
 }
@@ -138,7 +138,7 @@ const COLUMN_PREVIEW = 5;
 function EmptySlot() {
   const { t } = useTranslation();
   return (
-    <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", padding: "20px 12px", textAlign: "center" }}>
+    <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", padding: "24px 12px", textAlign: "center" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("deals.noDealsCol")}</p>
     </div>
   );
@@ -362,11 +362,11 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
   return (
     <div
       role="dialog" aria-modal="true"
-      style={{ position: "fixed", inset: 0, background: "rgba(26,22,18,0.4)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}
+      style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}
       onClick={onClose}
     >
       <div
-        style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "420px", padding: "24px", maxHeight: "80vh", overflowY: "auto" }}
+        style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: "100%", maxWidth: "420px", padding: "24px", maxHeight: "80vh", overflowY: "auto" }}
         onClick={e => e.stopPropagation()}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
@@ -457,12 +457,12 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
         <div style={{ display: "flex", gap: "8px" }}>
           <button onClick={handleCreate} disabled={!canSubmit || creating}
-            style={{ flex: 1, height: "38px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+            style={{ flex: 1, height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
             {creating && <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" />}
             {creating ? t("deals.creating") : t("deals.createDeal")}
           </button>
           <button onClick={onClose}
-            style={{ height: "38px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+            style={{ height: "40px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>
             {t("deals.cancel")}
           </button>
         </div>
@@ -616,8 +616,8 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
   const statusStyle: Record<Contract["status"], React.CSSProperties> = {
     draft:  { background: "var(--cr-paper-3)", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule)" },
     sent:   { background: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" },
-    signed: { background: "var(--cr-up-bg)", color: "var(--cr-up)", border: "1px solid rgba(45,106,79,0.25)" },
-    void:   { background: "var(--cr-down-bg)", color: "var(--cr-down)", border: "1px solid rgba(180,50,50,0.2)" },
+    signed: { background: "var(--cr-up-bg)", color: "var(--cr-up)", border: "1px solid var(--cr-up-bg)" },
+    void:   { background: "var(--cr-down-bg)", color: "var(--cr-down)", border: "1px solid var(--cr-down-bg)" },
   };
 
   const STATUS_ACTION_KEY: Record<Contract["status"], string> = {
@@ -649,8 +649,9 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
           {!loading && loaded && contracts.length === 0 && !showForm && (
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noContracts")}</p>
           )}
+          {/* Rows split by hairlines, not boxes-in-boxes. */}
           {!loading && contracts.map(c => (
-            <div key={c.id} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "8px 10px", marginBottom: "6px" }}>
+            <div key={c.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "8px 0" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.title}</p>
                 <span style={{ ...statusStyle[c.status], fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 6px", textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>
@@ -665,7 +666,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               {/* D38: the executed document plus its signature certificate —
                   the artefact a lawyer asks for, printable to PDF. */}
               <a href={`/contracts/${c.id}`} target="_blank" rel="noopener noreferrer"
-                style={{ display: "inline-block", marginTop: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10.5px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                style={{ display: "inline-block", marginTop: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>
                 {c.status === "signed" ? t("contracts.viewExecuted") : t("contracts.viewDocument")} →
               </a>
 
@@ -704,7 +705,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
           ))}
 
           {showForm ? (
-            <div style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px" }}>
+            <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder={t("deals.contractTitlePlaceholder")}
                 style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", boxSizing: "border-box", marginBottom: "6px" }} />
               <select value={type} onChange={e => handleTypeChange(e.target.value as ContractType)}
@@ -730,7 +731,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                 style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", boxSizing: "border-box", marginBottom: "8px", resize: "vertical" }} />
               <div style={{ display: "flex", gap: "6px" }}>
                 <button onClick={handleCreate} disabled={!title.trim() || creating}
-                  style={{ flex: 1, height: "30px", background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#fff", cursor: !title.trim() || creating ? "default" : "pointer", opacity: !title.trim() || creating ? 0.5 : 1 }}>
+                  style={{ flex: 1, height: "30px", background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", cursor: !title.trim() || creating ? "default" : "pointer", opacity: !title.trim() || creating ? 0.5 : 1 }}>
                   {creating ? t("deals.creating") : t("deals.createContract")}
                 </button>
                 <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
@@ -749,14 +750,14 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
 
       {signing && (
         <div role="dialog" aria-modal="true" onClick={() => setSigning(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(26,22,18,0.5)", zIndex: 210, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", zIndex: 210, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "8px", width: "100%", maxWidth: "480px", maxHeight: "86vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ padding: "20px 24px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: "100%", maxWidth: "480px", maxHeight: "86vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ padding: "16px 24px 12px", borderBottom: "1px solid var(--cr-rule)" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("deals.signTitle", { title: signing.title || t("deals.contract") })}</p>
             </div>
             <div style={{ padding: "16px 24px", overflowY: "auto" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.55, marginBottom: "14px" }}>{t("deals.signIntro")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.55, marginBottom: "14px" }}>{t("deals.signIntro")}</p>
               {signing.terms && (
                 <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 16px", margin: "0 0 14px", maxHeight: "180px", overflowY: "auto" }}>{signing.terms}</pre>
               )}
@@ -766,9 +767,9 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                 style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', serif", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", boxSizing: "border-box" }} />
             </div>
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "14px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
-              <button onClick={() => setSigning(null)} style={{ height: "38px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
+              <button onClick={() => setSigning(null)} style={{ height: "40px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
               <button onClick={signContract} disabled={signBusy || signerName.trim().length < 2}
-                style={{ height: "38px", padding: "0 20px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
+                style={{ height: "40px", padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
                 {signBusy ? t("common.saving") : t("deals.signConfirm")}
               </button>
             </div>
@@ -1000,14 +1001,14 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
 
   const row = (label: string, at: string | null, canAct: boolean, step: "sent" | "received") => (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "5px 0" }}>
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11.5px", color: at ? "var(--cr-up)" : "var(--cr-ink-3)" }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: at ? "var(--cr-up)" : "var(--cr-ink-3)" }}>
         {at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
         {label}
         {at && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{formatDate(at)}</span>}
       </span>
       {!at && canAct && (
         <button onClick={() => confirm(step)} disabled={busy}
-          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", padding: "3px 9px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
+          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "3px 9px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
           {t("funding.confirm")}
         </button>
       )}
@@ -1027,7 +1028,7 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
   }
 
   return (
-    <div style={{ marginTop: "10px", background: fundedAt ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: `1px solid ${fundedAt ? "rgba(45,106,79,0.25)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", padding: "10px 12px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
         {fundedAt ? t("funding.fundedTitle") : t("funding.title")}
       </p>
@@ -1037,7 +1038,7 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
         <>
           <input value={ref} onChange={(e) => setRef(e.target.value.slice(0, 120))} placeholder={t("funding.refPh")}
             style={{ width: "100%", boxSizing: "border-box", marginTop: 6, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "5px 8px", outline: "none" }} />
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10.5px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
             {t("funding.fraudWarning")}
           </p>
         </>
@@ -1099,14 +1100,14 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
   if (!open) {
     return (
       <button onClick={() => setOpen(true)}
-        style={{ marginTop: 8, background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", cursor: "pointer", padding: 0 }}>
+        style={{ marginTop: 8, background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", cursor: "pointer", padding: 0 }}>
         {t("tranches.add")}
       </button>
     );
   }
   return (
     <div style={{ marginTop: 8, borderTop: "1px solid var(--cr-rule)", paddingTop: 8 }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", color: "var(--cr-ink)", marginBottom: 6 }}>{t("tranches.editorTitle")}</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink)", marginBottom: 6 }}>{t("tranches.editorTitle")}</p>
       {rows.map((r, i) => (
         <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, marginBottom: 5 }}>
           <input value={r.label} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, label: e.target.value.slice(0, 80) } : x))} placeholder={t("tranches.labelPh")} style={cell} />
@@ -1117,7 +1118,7 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
       ))}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
         <button onClick={() => setRows([...rows, { label: "", amount: "", dueDate: "", condition: "" }])} disabled={rows.length >= 12}
-          style={{ background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", cursor: "pointer", padding: 0, opacity: rows.length >= 12 ? 0.4 : 1 }}>
+          style={{ background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", cursor: "pointer", padding: 0, opacity: rows.length >= 12 ? 0.4 : 1 }}>
           {t("tranches.addRow")}
         </button>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: mismatch ? "var(--cr-down)" : "var(--cr-ink-4)" }}>
@@ -1125,14 +1126,14 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
           {target != null && ` / ${formatMoney(target, deal.currency, { compact: true })}`}
         </span>
       </div>
-      {mismatch && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-down)", marginTop: 5 }}>{t("tranches.mismatch")}</p>}
+      {mismatch && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: 5 }}>{t("tranches.mismatch")}</p>}
       <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
         <button onClick={save} disabled={busy || mismatch}
-          style={{ background: "var(--cr-ink)", border: "none", color: "var(--cr-paper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", padding: "4px 12px", cursor: busy || mismatch ? "not-allowed" : "pointer", opacity: busy || mismatch ? 0.5 : 1 }}>
+          style={{ background: "var(--cr-ink)", border: "none", color: "var(--cr-paper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "4px 12px", cursor: busy || mismatch ? "not-allowed" : "pointer", opacity: busy || mismatch ? 0.5 : 1 }}>
           {t("tranches.save")}
         </button>
         <button onClick={() => setOpen(false)}
-          style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10.5px", padding: "4px 12px", cursor: "pointer" }}>
+          style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "4px 12px", cursor: "pointer" }}>
           {t("common.cancel")}
         </button>
       </div>
@@ -1177,7 +1178,7 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
   const canReceive = viewAs === "startup";
 
   return (
-    <div style={{ marginTop: "10px", background: allIn ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: `1px solid ${allIn ? "rgba(45,106,79,0.25)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", padding: "10px 12px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: allIn ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           {allIn ? t("tranches.fundedTitle") : t("tranches.title")}
@@ -1189,10 +1190,10 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
       {rows.map((r, i) => (
         <div key={r.id} style={{ padding: "6px 0", borderTop: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: "11.5px", color: r.funds_received_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: r.funds_received_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
               {r.funds_received_at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
               <span style={{ fontWeight: 600 }}>{r.label || t("tranches.nth", { n: i + 1 })}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", color: "var(--cr-ink-3)" }}>{formatMoney(Number(r.amount), deal.currency, { compact: true })}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)" }}>{formatMoney(Number(r.amount), deal.currency, { compact: true })}</span>
             </span>
             <span style={{ display: "inline-flex", gap: 5 }}>
               {!r.funds_sent_at && canSend && (
@@ -1209,7 +1210,7 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
               )}
             </span>
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: 2, paddingLeft: 18 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 2, paddingLeft: 18 }}>
             {r.due_date && <span>{t("tranches.due")}: {formatDate(r.due_date)}</span>}
             {r.due_date && r.condition && " · "}
             {r.condition}
@@ -1218,7 +1219,7 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
         </div>
       ))}
       {!allIn && (
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
           {t("funding.fraudWarning")}
         </p>
       )}
@@ -1244,7 +1245,7 @@ function PublicInterestToggle({ deal }: { deal: Deal }) {
       <input type="checkbox" checked={on} onChange={toggle} disabled={busy} style={{ marginTop: 2, accentColor: "var(--cr-copper)", width: 13, height: 13 }} />
       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.45 }}>
         {t("coInvestors.toggle")}
-        <span style={{ display: "block", color: "var(--cr-ink-4)", fontWeight: 300, fontSize: "10.5px" }}>{t("coInvestors.toggleHint")}</span>
+        <span style={{ display: "block", color: "var(--cr-ink-4)", fontWeight: 300, fontSize: "11px" }}>{t("coInvestors.toggleHint")}</span>
       </span>
     </label>
   );
@@ -1283,11 +1284,11 @@ function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; on
 
   const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 11px", outline: "none" };
   return (
-    <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: 16 }} onClick={onClose}>
+    <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: 16 }} onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="animate-fade-up"
-        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, width: "100%", maxWidth: 420, padding: 24 }}>
-        <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: 20, color: "var(--cr-ink)", marginBottom: 4 }}>{t("external.title")}</h3>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 12.5, color: "var(--cr-ink-3)", marginBottom: 16, lineHeight: 1.5 }}>{t("external.intro")}</p>
+        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, width: "100%", maxWidth: 420, padding: 24 }}>
+        <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: 22, color: "var(--cr-ink)", marginBottom: 4 }}>{t("external.title")}</h3>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", marginBottom: 16, lineHeight: 1.5 }}>{t("external.intro")}</p>
         <div style={{ display: "grid", gap: 10 }}>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("external.namePh")} autoFocus maxLength={120} style={input} />
           <input value={firm} onChange={(e) => setFirm(e.target.value)} placeholder={t("external.firmPh")} maxLength={120} style={input} />
@@ -1297,9 +1298,9 @@ function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; on
         </div>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", margin: "10px 0 0", lineHeight: 1.5 }}>{t("external.privacyNote")}</p>
         <div className="flex flex-col-reverse sm:flex-row" style={{ gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
-          <button onClick={onClose} style={{ height: 40, padding: "0 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 13, color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
+          <button onClick={onClose} style={{ height: 40, padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: 999, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 13, color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
           <button onClick={submit} disabled={!name.trim() || busy} className="btn-copper-shimmer"
-            style={{ height: 40, padding: "0 20px", background: "var(--cr-copper)", border: "none", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "#fff", cursor: "pointer", opacity: !name.trim() || busy ? 0.5 : 1 }}>
+            style={{ height: 40, padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: 999, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-band-ink)", cursor: "pointer", opacity: !name.trim() || busy ? 0.5 : 1 }}>
             {busy ? t("common.saving") : t("external.add")}
           </button>
         </div>
@@ -1453,7 +1454,7 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
               <button onClick={() => setExpanded(x => x === i.id ? null : i.id)}
                 style={{ flex: 1, textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: i.done ? "var(--cr-ink-4)" : "var(--cr-ink-2)", textDecoration: i.done ? "line-through" : "none" }}>
                 {i.label}
-                {i.owner_side && <span style={{ marginLeft: 6, fontSize: "9.5px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--cr-ink-4)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
+                {i.owner_side && <span style={{ marginLeft: 6, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--cr-ink-4)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
                 {i.due_date && <span style={{ marginLeft: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: overdue ? "var(--cr-down)" : "var(--cr-ink-4)" }}>{i.due_date}</span>}
               </button>
               <button onClick={() => remove(i.id)} aria-label={`remove ${i.label}`}
@@ -1462,7 +1463,7 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
             {expanded === i.id && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", padding: "6px 0 8px 24px" }}>
                 <select value={i.owner_side ?? ""} onChange={e => patchItem(i.id, { ownerSide: e.target.value || null })} aria-label={t("checklist.owner")}
-                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-ink-3)", padding: "3px 5px" }}>
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "3px 5px" }}>
                   <option value="">{t("checklist.owner")}</option>
                   <option value="investor">{t("checklist.ownerInvestor")}</option>
                   <option value="startup">{t("checklist.ownerStartup")}</option>
@@ -1616,7 +1617,7 @@ function ActivitySection({ dealId }: { dealId: string }) {
               onKeyDown={e => { if (e.key === "Enter") handleAddNote(); }}
               style={{ flex: 1, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none", boxSizing: "border-box" }} />
             <button onClick={handleAddNote} disabled={!note.trim() || posting}
-              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#fff", padding: "0 12px", cursor: !note.trim() || posting ? "default" : "pointer", opacity: !note.trim() || posting ? 0.5 : 1 }}>
+              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", padding: "0 12px", cursor: !note.trim() || posting ? "default" : "pointer", opacity: !note.trim() || posting ? 0.5 : 1 }}>
               {posting ? t("deals.posting") : t("deals.addNote")}
             </button>
           </div>
@@ -1650,16 +1651,16 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
   }
 
   return (
-    <div style={{ marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-down)", marginBottom: "8px" }}>{t("deals.whyPassed")}</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "8px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
         {PASSED_REASONS.map(r => (
           <button key={r.key} onClick={() => setSelected(r.key)}
             style={{
-              background: selected === r.key ? "var(--cr-copper)" : "var(--cr-paper-2)",
-              border: `1px solid ${selected === r.key ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-              borderRadius: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-              color: selected === r.key ? "#fff" : "var(--cr-ink-3)", padding: "5px 11px", cursor: "pointer",
+              background: selected === r.key ? "var(--cr-copper-bg)" : "var(--cr-paper-2)",
+              border: `1px solid ${selected === r.key ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`,
+              borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+              color: selected === r.key ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "5px 11px", cursor: "pointer",
             }}>
             {t(r.labelKey)}
           </button>
@@ -1671,8 +1672,10 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
           style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none", boxSizing: "border-box", marginBottom: "8px" }} />
       )}
       <div style={{ display: "flex", gap: "6px" }}>
+        {/* Quiet outline, not a solid red fill -- red is a money direction,
+            and the view already has its one primary action. */}
         <button onClick={handleConfirm} disabled={!canConfirm}
-          style={{ flex: 1, height: "32px", background: "var(--cr-down)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", cursor: canConfirm ? "pointer" : "default", opacity: canConfirm ? 1 : 0.5 }}>
+          style={{ flex: 1, height: "32px", background: "transparent", border: "1px solid var(--cr-down)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-down)", cursor: canConfirm ? "pointer" : "default", opacity: canConfirm ? 1 : 0.5 }}>
           {t("deals.confirmPass")}
         </button>
         <button onClick={onCancel} aria-label={t("common.close")}
@@ -1752,7 +1755,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
     <div id={`deal-${deal.id}`} className="cr-lift" style={{
       position: "relative",
       background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-      borderRadius: "4px", padding: "14px 16px",
+      borderRadius: "4px", padding: "16px",
       transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease",
     }}
       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)")}
@@ -1828,7 +1831,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               fontFamily: "'DM Sans', sans-serif", fontWeight: over ? 600 : 500, fontSize: "10px",
               color: critical ? "var(--cr-down)" : over ? "var(--cr-copper)" : "var(--cr-ink-3)",
               background: critical ? "var(--cr-down-bg)" : over ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-              border: critical ? "1px solid rgba(180,50,50,0.2)" : over ? "1px solid var(--cr-copper-br)" : "none",
+              border: critical ? "1px solid var(--cr-down-bg)" : over ? "1px solid var(--cr-copper-br)" : "none",
               borderRadius: "3px", padding: "1px 6px",
             }}>
               {t("deals.inStageFor", { n: days })}
@@ -1837,7 +1840,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         })()}
 
         {isActive && daysSince(deal.updated_at) > 21 && (
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", borderRadius: "3px", padding: "1px 6px" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "3px", padding: "1px 6px" }}>
             {t("deals.staleBadge", { n: daysSince(deal.updated_at) })}
           </span>
         )}
@@ -1933,9 +1936,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {onSetCommitment && isActive && (() => {
         const ct = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? "interest") as CommitmentType;
         const chipStyle = (active: boolean): React.CSSProperties => ({
-          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 8px", borderRadius: "999px", cursor: "pointer",
-          background: active ? "var(--cr-copper)" : "var(--cr-paper-2)", color: active ? "#fff" : "var(--cr-ink-3)",
-          border: `1px solid ${active ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", cursor: "pointer",
+          background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
+          border: `1px solid ${active ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`,
         });
         return (
           <div style={{ marginTop: "8px" }}>
@@ -1988,13 +1991,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {/* A pending close proposal — both sides must agree before the fee fires. */}
       {isActive && onDealClose && !showCloseForm && deal.close_proposed_at && (
-        <div style={{ marginTop: "10px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "10px 12px" }}>
+        <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-copper-br)", paddingTop: "10px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", marginBottom: "2px" }}>
             {t("deals.closeProposedAt", { amount: formatMoney(Number(deal.close_proposed_amount ?? 0), deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY) })}
           </p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.closeProposedHint")}</p>
           <button onClick={() => setShowCloseForm(true)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 0", cursor: "pointer" }}>
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "8px 0", cursor: "pointer" }}>
             <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.reviewClose")}
           </button>
         </div>
@@ -2004,14 +2007,14 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           contract lives, not from the middle of a conversation. */}
       {isActive && deal.status === "term_sheet" && onDealClose && !showCloseForm && !deal.close_proposed_at && (
         <button onClick={() => setShowCloseForm(true)}
-          style={{ marginTop: "10px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "7px 0", cursor: "pointer" }}>
+          style={{ marginTop: "12px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "8px 0", cursor: "pointer" }}>
           <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.closeDeal")}
         </button>
       )}
 
       {/* Close form */}
       {showCloseForm && (
-        <div style={{ marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px" }}>
+        <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>{deal.close_proposed_at ? t("deals.confirmClose") : t("deals.proposeClose")}</p>
           <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
             <div style={{ position: "relative", flex: 1 }}>
@@ -2031,14 +2034,14 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           {/* The exact invoice, live, before the click that triggers it.
               Nobody should learn the number from the invoice email. */}
           {parseFloat(closeAmount) > 0 && (
-            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "6px 10px", marginBottom: "8px" }}>
+            <div style={{ borderTop: "1px solid var(--cr-copper-br)", padding: "8px 0", marginBottom: "4px" }}>
               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>
                 {t("deals.feePreview", { fee: formatMoney(parseFloat(closeAmount) * 0.02, closeCurrency) })}
               </p>
               {/* Value framing (Phase 1, mechanism D): the same number next to
                   what a broker would have taken makes 2% read as the cheap
                   option at the exact moment the fee is triggered. */}
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10.5px", color: "var(--cr-ink-3)", marginTop: "3px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "3px" }}>
                 {t("feeCalc.rowBroker", { fee: 6 })}: <s>{formatMoney(parseFloat(closeAmount) * 0.06, closeCurrency)}</s>
                 {" · "}{t("feeCalc.rowSave")}: <span style={{ color: "var(--cr-up)", fontWeight: 500 }}>{formatMoney(parseFloat(closeAmount) * 0.04, closeCurrency)}</span>
               </p>
@@ -2052,7 +2055,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           </p>
           <div style={{ display: "flex", gap: "6px" }}>
             <button onClick={handleClose} disabled={closing}
-              style={{ flex: 1, height: "32px", background: "var(--cr-up)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", cursor: "pointer", opacity: closing ? 0.6 : 1 }}>
+              style={{ flex: 1, height: "32px", background: "var(--cr-up)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: closing ? 0.6 : 1 }}>
               {closing ? t("deals.closing") : t("deals.confirm")}
             </button>
             <button onClick={() => setShowCloseForm(false)}
@@ -2069,7 +2072,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {deal.status === "closed" && <FundingBlock deal={deal} viewAs={viewAs} />}
 
       {deal.success_fee_invoiced && (
-        <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
+        <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
           {t("deals.invoiceSent")}
         </span>
       )}
@@ -2308,13 +2311,13 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const newDealButton = (
     <div style={{ display: "inline-flex", gap: "8px", flexWrap: "wrap" }}>
       <button onClick={() => setShowNewDeal(true)}
-        style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 16px", cursor: "pointer" }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: "6px", height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "0 16px", cursor: "pointer" }}>
         <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
       </button>
       {/* B18: founders only — an off-platform contact belongs to a startup. */}
       {viewAs === "startup" && (
         <button onClick={() => setShowExternal(true)}
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "transparent", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", padding: "9px 16px", cursor: "pointer" }}>
+          style={{ display: "inline-flex", alignItems: "center", gap: "6px", height: "40px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "0 16px", cursor: "pointer" }}>
           <Plus style={{ width: 14, height: 14 }} /> {t("external.button")}
         </button>
       )}
@@ -2340,10 +2343,10 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             <DealProposals variant="column" onChanged={onProposalsChanged} />
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 24px 80px", textAlign: "center" }}>
-          <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("deals.emptyTitle")}</p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 24px 64px", textAlign: "center" }}>
+          <span aria-hidden style={{ fontSize: "24px", lineHeight: 1, color: "var(--cr-copper)", marginBottom: "16px" }}>✦</span>
+          <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("deals.emptyTitle")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
             {t("deals.emptyDesc")}
           </p>
           {newDealButton}
@@ -2356,40 +2359,30 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   return (
     <div>
       {/* Pipeline stats.
-          These were five flex items sized by their own content, so they came
-          out five different widths and wrapped into a ragged block — the "$1.2M
-          + €400k" box is three times the width of "4". An even grid instead:
-          same width each, wrapping into tidy rows. */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(148px, 1fr))", gap: "10px", marginBottom: "16px" }}>
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statActivePipeline")}</p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
-            {stats.byCurrency.size === 0 ? "—" : Array.from(stats.byCurrency.entries()).map(([cur, amt]) => formatMoney(amt, cur, { compact: true })).join(" + ")}
-          </p>
-        </div>
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statActiveDeals")}</p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{stats.activeCount}</p>
-        </div>
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statCloseRate")}</p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
-            {stats.closeRate == null ? "—" : `${Math.round(stats.closeRate * 100)}%`}
-          </p>
-        </div>
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }} title={t("deals.statCycleHint")}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statCycle")}</p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
-            {stats.medianCycle == null ? "—" : t("deals.days", { n: stats.medianCycle })}
-          </p>
-        </div>
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 16px" }} title={t("deals.statAgeHint")}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("deals.statAge")}</p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: stats.medianAge != null && stats.medianAge > 30 ? "var(--cr-copper)" : "var(--cr-ink)" }}>
-            {stats.medianAge == null ? "—" : t("deals.days", { n: stats.medianAge })}
-          </p>
-        </div>
-      </div>
+          One hairline-divided strip -- Label over Data, mono numbers, no
+          boxes. A metric with nothing to measure is omitted entirely:
+          absence is absence, not a dash. */}
+      {(() => {
+        const metrics: { key: string; label: string; value: string; accent?: boolean; hint?: string }[] = [];
+        if (stats.byCurrency.size > 0) metrics.push({
+          key: "pipeline", label: t("deals.statActivePipeline"), accent: true,
+          value: Array.from(stats.byCurrency.entries()).map(([cur, amt]) => formatMoney(amt, cur, { compact: true })).join(" + "),
+        });
+        metrics.push({ key: "active", label: t("deals.statActiveDeals"), value: String(stats.activeCount) });
+        if (stats.closeRate != null) metrics.push({ key: "closeRate", label: t("deals.statCloseRate"), value: `${Math.round(stats.closeRate * 100)}%` });
+        if (stats.medianCycle != null) metrics.push({ key: "cycle", label: t("deals.statCycle"), value: t("deals.days", { n: stats.medianCycle }), hint: t("deals.statCycleHint") });
+        if (stats.medianAge != null) metrics.push({ key: "age", label: t("deals.statAge"), value: t("deals.days", { n: stats.medianAge }), hint: t("deals.statAgeHint"), accent: stats.medianAge > 30 });
+        return (
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>
+            {metrics.map((m, i) => (
+              <div key={m.key} title={m.hint} style={{ padding: i === 0 ? "12px 24px 12px 0" : "12px 24px", borderLeft: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{m.label}</p>
+                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: m.accent ? "var(--cr-copper)" : "var(--cr-ink)", marginTop: "4px" }}>{m.value}</p>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Toolbar.
           This was one wrapping row holding the search box, every filter chip,
@@ -2402,23 +2395,23 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           nothing. */}
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
         <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder={t("deals.filterSearchPlaceholder")}
-          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", flex: "1 1 200px", minWidth: "160px", maxWidth: "320px" }} />
+          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", height: "40px", padding: "0 12px", boxSizing: "border-box", outline: "none", flex: "1 1 200px", minWidth: "160px", maxWidth: "320px" }} />
         <div style={{ flex: 1 }} />
         <select value={sortKey} onChange={e => setSortKey(e.target.value as SortKey)}
           aria-label={t("deals.sortBy")}
-          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", cursor: "pointer" }}>
+          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", height: "40px", padding: "0 12px", outline: "none", cursor: "pointer" }}>
           {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{t(o.labelKey)}</option>)}
         </select>
         {canExport && (
           <button onClick={handleExportCsv}
-            style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>
+            style={{ height: "40px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "0 16px", cursor: "pointer", whiteSpace: "nowrap" }}>
             {t("deals.exportCsv")}
           </button>
         )}
         <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
           {(["kanban", "list"] as const).map(v => (
             <button key={v} onClick={() => chooseView(v)} aria-label={v}
-              style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
+              style={{ padding: "0 12px", height: "38px", background: viewMode === v ? "var(--cr-paper-3)" : "transparent", color: viewMode === v ? "var(--cr-ink)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
               {v === "kanban" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
             </button>
           ))}
@@ -2426,30 +2419,37 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
         {newDealButton}
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
-        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "12px", overflow: "hidden", marginRight: 4, flexWrap: "wrap" }}>
-          {([
-            ["all", t("deals.status_all")],
-            ["proposal", t("deals.colProposal")],
-            ["intro", t("deals.colIntro")],
-            ["due_diligence", t("deals.colNegotiation")],
-            ["term_sheet", t("deals.colTermSheet")],
-            ["closed", t("deals.colClosed")],
-            ["passed", t("deals.colPassed")],
-          ] as const).map(([v, label]) => (
-            <button key={v} onClick={() => setStatusFilter(v)}
-              style={{ background: statusFilter === v ? "var(--cr-band-bg)" : "transparent", color: statusFilter === v ? "var(--cr-band-ink)" : "var(--cr-ink-4)", border: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "6px 11px", cursor: "pointer" }}>
-              {label}
-            </button>
-          ))}
-        </div>
+      {/* Filter chips -- the directories' FilterChip register: copper tint
+          for the selected state (the band slab stays a once-per-page moment,
+          never a chip), hairline borders for the rest. */}
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+        {([
+          ["all", t("deals.status_all")],
+          ["proposal", t("deals.colProposal")],
+          ["intro", t("deals.colIntro")],
+          ["due_diligence", t("deals.colNegotiation")],
+          ["term_sheet", t("deals.colTermSheet")],
+          ["closed", t("deals.colClosed")],
+          ["passed", t("deals.colPassed")],
+        ] as const).map(([v, label]) => (
+          <button key={v} onClick={() => setStatusFilter(v)}
+            style={{
+              background: statusFilter === v ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+              border: `1px solid ${statusFilter === v ? "var(--cr-copper-br)" : "var(--cr-rule)"}`,
+              borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === v ? 500 : 400, fontSize: "13px",
+              color: statusFilter === v ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap",
+            }}>
+            {label}
+          </button>
+        ))}
+        {filterOptions.length > 0 && <span aria-hidden style={{ width: 1, alignSelf: "stretch", background: "var(--cr-rule)" }} />}
         {filterOptions.map(v => (
           <button key={v} onClick={() => toggleFilter(v)}
             style={{
-              background: activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-paper-2)",
-              border: `1px solid ${activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-              borderRadius: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-              color: activeFilters.has(v) ? "#fff" : "var(--cr-ink-3)", padding: "6px 12px", cursor: "pointer",
+              background: activeFilters.has(v) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+              border: `1px solid ${activeFilters.has(v) ? "var(--cr-copper-br)" : "var(--cr-rule)"}`,
+              borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: activeFilters.has(v) ? 500 : 400, fontSize: "13px",
+              color: activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap",
             }}>
             {chipLabel(v)}
           </button>

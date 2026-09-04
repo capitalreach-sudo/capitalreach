@@ -10,7 +10,7 @@ import {
 } from "@/lib/plans";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
-import { Building2, User, Mail, AlertTriangle, ExternalLink, TrendingUp } from "lucide-react";
+import { AlertTriangle, ExternalLink, Mail } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authErrorMessage } from "@/lib/auth-errors";
 
@@ -31,15 +31,21 @@ const iStyle: React.CSSProperties = {
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
   fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
-  letterSpacing: "0.08em", display: "block", marginBottom: "6px",
+  letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
 const primaryBtn: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "4px",
-  background: "var(--cr-copper)", color: "#fff",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
-  fontSize: "14px", border: "none", cursor: "pointer",
+  width: "100%", height: "44px", borderRadius: "999px",
+  background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+  fontSize: "13px", border: "none", cursor: "pointer",
   transition: "opacity 120ms",
 };
+// Banner tiles de-nested to ruled blocks: a 2px accent rail + hairline
+// separation instead of a box inside the card.
+const noticeBlock = (accent: string): React.CSSProperties => ({
+  borderLeft: `2px solid ${accent}`,
+  padding: "4px 0 4px 12px", marginBottom: "16px",
+});
 
 function onFocusCopper(e: React.FocusEvent<HTMLInputElement>) {
   (e.target as HTMLElement).style.borderColor = "var(--cr-copper)";
@@ -48,12 +54,11 @@ function onBlurRule(e: React.FocusEvent<HTMLInputElement>) {
   (e.target as HTMLElement).style.borderColor = "var(--cr-rule-dark)";
 }
 
+// House mark set as the ruled label -- the opener every step shares. Type
+// carries the identity; the icon box is gone (matches update-password).
 const Logo = () => (
-  <Link href="/" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "36px", textDecoration: "none" }}>
-    <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <TrendingUp style={{ width: 14, height: 14, color: "#fff" }} />
-    </div>
-    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: "15px", color: "var(--cr-copper)", letterSpacing: "-0.02em" }}>CapitalReach</span>
+  <Link href="/" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "40px", marginBottom: "32px", textDecoration: "none" }}>
+    <span className="ruled-label">CapitalReach</span>
   </Link>
 );
 
@@ -109,7 +114,9 @@ function SignupForm() {
     return password ? Math.max(1, sc) : 0;
   })();
   const strengthLabel = [null, t("auth.strengthWeak"), t("auth.strengthFair"), t("auth.strengthStrong"), t("auth.strengthVeryStrong")][strength];
-  const strengthColor = ["transparent", "var(--cr-down)", "#B8860B", "var(--cr-copper)", "var(--cr-up)"][strength];
+  // Weak reads as danger; fair and above is copper. Green means money
+  // direction, never a success state -- the fill count carries the grade.
+  const strengthColor = ["transparent", "var(--cr-down)", "var(--cr-copper)", "var(--cr-copper)", "var(--cr-copper)"][strength];
   const passwordsMatch = confirmPassword.length === 0 || confirmPassword === password;
   const canSubmit = termsAccepted && ageConfirmed && password.length >= 8 && confirmPassword === password;
   const router = useRouter();
@@ -254,9 +261,9 @@ function SignupForm() {
   );
 
   const SetupBanner = () => (
-    <div style={{ marginBottom: "16px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
-        <AlertTriangle style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0, marginTop: 1 }} />
+    <div style={noticeBlock("var(--cr-copper)")}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+        <AlertTriangle style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
         <div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.supabaseNotConfigured")}</p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "8px", lineHeight: 1.5 }}>
@@ -272,7 +279,7 @@ function SignupForm() {
   );
 
   const Divider = () => (
-    <div style={{ position: "relative", margin: "20px 0" }}>
+    <div style={{ position: "relative", margin: "24px 0" }}>
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center" }}>
         <div style={{ width: "100%", borderTop: "1px solid var(--cr-rule)" }} />
       </div>
@@ -284,7 +291,7 @@ function SignupForm() {
 
   const GoogleButton = ({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) => (
     <button onClick={onClick} disabled={disabled}
-      style={{ width: "100%", height: "44px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.5 : 1, transition: "border-color 120ms" }}
+      style={{ width: "100%", height: "44px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.5 : 1, transition: "border-color 120ms" }}
       onMouseEnter={e => !disabled && ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}>
       <svg style={{ height: 16, width: 16 }} viewBox="0 0 24 24">
@@ -309,21 +316,20 @@ function SignupForm() {
       <div style={{ width: "100%", maxWidth: "400px" }}>
         <Logo />
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px", textAlign: "center" }}>
-          <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+          <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
             <Mail style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
           </div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "24px" }}>
-            {t("auth.verifyEmailSent")} <strong style={{ fontWeight: 500, color: "var(--cr-ink)" }}>{email}</strong>.
+            {t("auth.verifyEmailSent")} <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)" }}>{email}</strong>.
           </p>
 
-          <div style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px", marginBottom: "20px", textAlign: "left" }}>
+          {/* De-nested: rule-separated rows with mono rails, not a box in a box. */}
+          <div style={{ borderTop: "1px solid var(--cr-rule)", marginBottom: "24px", textAlign: "left" }}>
             {confirmSteps.map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 0", borderBottom: i < 3 ? "1px solid var(--cr-rule)" : "none" }}>
-                <div style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "10px", color: "var(--cr-copper)" }}>{i + 1}</span>
-                </div>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{item}</span>
+              <div key={i} style={{ display: "flex", alignItems: "baseline", gap: "12px", padding: "12px 0", borderBottom: "1px solid var(--cr-rule)" }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", flexShrink: 0 }}>{String(i + 1).padStart(2, "0")}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>{item}</span>
               </div>
             ))}
           </div>
@@ -373,24 +379,30 @@ function SignupForm() {
         <Logo />
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
           {!isSupabaseConfigured && <SetupBanner />}
-          <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "20px" }}>
+          <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.joinTitle")}</h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.joiningAs")}</p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
+          {/* Rule-separated rows with mono rails -- the ledger, not icon cards.
+              The diamond marks the chosen row. */}
+          <div style={{ borderTop: "1px solid var(--cr-rule)", marginBottom: "24px" }}>
             {([
-              { value: "startup",  label: t("auth.startupFounder"), icon: Building2, desc: t("auth.startupDesc") },
-              { value: "investor", label: t("auth.investor"),        icon: User,      desc: t("auth.investorDesc") },
-            ] as { value: Role; label: string; icon: React.ElementType; desc: string }[]).map(opt => {
-              const Icon = opt.icon;
+              { value: "startup",  label: t("auth.startupFounder"), desc: t("auth.startupDesc") },
+              { value: "investor", label: t("auth.investor"),        desc: t("auth.investorDesc") },
+            ] as { value: Role; label: string; desc: string }[]).map((opt, i) => {
               const active = role === opt.value;
               return (
-                <button key={opt.value} onClick={() => setRole(opt.value)}
-                  style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "18px 12px", borderRadius: "4px", border: `2px solid ${active ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", cursor: "pointer", transition: "border-color 120ms, background 120ms" }}>
-                  <Icon style={{ width: 24, height: 24, marginBottom: "10px", color: active ? "var(--cr-copper)" : "var(--cr-ink-4)", strokeWidth: 1.5 }} />
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", display: "block", marginBottom: "2px" }}>{opt.label}</span>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{opt.desc}</span>
+                <button key={opt.value} onClick={() => setRole(opt.value)} aria-pressed={active}
+                  style={{ display: "flex", alignItems: "center", gap: "16px", width: "100%", minHeight: "56px", padding: "12px 8px", textAlign: "left", background: active ? "var(--cr-copper-bg)" : "transparent", border: "none", borderBottom: "1px solid var(--cr-rule)", cursor: "pointer", transition: "background 120ms" }}>
+                  <span aria-hidden style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", display: "block", marginBottom: "4px" }}>{opt.label}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", display: "block" }}>{opt.desc}</span>
+                  </span>
+                  <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px", flexShrink: 0, opacity: active ? 1 : 0, transition: "opacity 120ms" }}>✦</span>
                 </button>
               );
             })}
@@ -417,12 +429,13 @@ function SignupForm() {
       <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
         {!isSupabaseConfigured && <SetupBanner />}
 
+        {/* 40px hit area without moving the text off the left edge. */}
         <button onClick={() => { setStep("role"); setSignupError(""); }}
-          style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-copper)", marginBottom: "16px", padding: 0 }}>
+          style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-copper)", marginBottom: "8px", padding: 0 }}>
           ← {t("common.back")}
         </button>
 
-        <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "20px" }}>
+        <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.createAccount")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
             {t("auth.joiningAsRole")} <span style={{ color: "var(--cr-copper)", fontWeight: 500, textTransform: "capitalize" }}>{role}</span>
@@ -431,20 +444,21 @@ function SignupForm() {
 
         {/* F: an invite is a person vouching for the platform. Saying who,
             by name, is the whole reason the link converts better than an ad. */}
+        {/* Welcome, not profit: copper, never green -- green is money direction. */}
         {inviteParam && invite && (
           invite.valid ? (
-            <div style={{ background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
+            <div style={noticeBlock("var(--cr-copper)")}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
                 {invite.inviterName
                   ? t("invite.bannerNamed", { name: invite.inviterName })
                   : t("invite.banner")}
               </p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                 {t(invite.role === "investor" ? "invite.asInvestor" : "invite.asFounder")}
               </p>
             </div>
           ) : (
-            <div style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
+            <div style={noticeBlock("var(--cr-rule-dark)")}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("invite.expired")}</p>
             </div>
           )
@@ -453,24 +467,24 @@ function SignupForm() {
         {/* Confirms the plan click actually registered. Without this the form
             is identical whether you picked a plan or not. */}
         {presetPlan && (
-          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
+          <div style={noticeBlock("var(--cr-copper)")}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
               {t("auth.selectedPlan", { plan: presetPlan.name })}
             </p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
               {t("auth.selectedPlanLaunch")}
             </p>
           </div>
         )}
 
         {signupError && (
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid rgba(185,28,28,0.2)", borderRadius: "4px", padding: "12px 14px", marginBottom: "16px" }}>
-            <AlertTriangle style={{ width: 14, height: 14, color: "var(--cr-down)", flexShrink: 0, marginTop: 1 }} />
+          <div role="alert" style={{ ...noticeBlock("var(--cr-down)"), display: "flex", alignItems: "flex-start", gap: "8px" }}>
+            <AlertTriangle style={{ width: 14, height: 14, color: "var(--cr-down)", flexShrink: 0 }} />
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-down)" }}>{signupError}</p>
           </div>
         )}
 
-        <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+        <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {([
             { id: "name",     label: t("auth.fullName"), type: "text",     placeholder: "Jane Smith",       value: fullName, onChange: setFullName, minLength: undefined as number | undefined },
             { id: "email",    label: t("auth.email"),    type: "email",    placeholder: "jane@startup.com", value: email,    onChange: setEmail,    minLength: undefined as number | undefined },
@@ -483,7 +497,7 @@ function SignupForm() {
                 autoComplete={id === "password" ? "new-password" : id === "email" ? "email" : "name"}
                 onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
               {id === "password" && password.length > 0 && (
-                <div aria-live="polite" style={{ marginTop: "6px" }}>
+                <div aria-live="polite" style={{ marginTop: "8px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "4px" }}>
                     {[1, 2, 3, 4].map((n) => (
                       <div key={n} style={{ height: "3px", borderRadius: "2px", background: n <= strength ? strengthColor : "var(--cr-paper-4)", transition: "background 200ms" }} />
@@ -504,7 +518,7 @@ function SignupForm() {
               <p role="alert" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: "4px" }}>{t("auth.passwordsMismatch")}</p>
             )}
           </div>
-          <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", cursor: "pointer", marginTop: "2px" }}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", cursor: "pointer", minHeight: "40px" }}>
             <input type="checkbox" checked={ageConfirmed} required
               onChange={e => setAgeConfirmed(e.target.checked)}
               style={{ marginTop: "2px", accentColor: "var(--cr-copper)", cursor: "pointer", flexShrink: 0 }} />
@@ -512,7 +526,7 @@ function SignupForm() {
               {t("auth.ageConfirm")}
             </span>
           </label>
-          <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", cursor: "pointer", marginTop: "2px" }}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", cursor: "pointer", minHeight: "40px" }}>
             <input type="checkbox" checked={termsAccepted} required
               onChange={e => setTermsAccepted(e.target.checked)}
               style={{ marginTop: "2px", accentColor: "var(--cr-copper)", cursor: "pointer", flexShrink: 0 }} />

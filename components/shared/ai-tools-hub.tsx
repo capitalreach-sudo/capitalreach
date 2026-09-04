@@ -11,8 +11,9 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Score helpers ──────────────────────────────────────────────
+// Quality, not money: the fill speaks in copper and ink shades only.
 function ScoreBar({ label, value }: { label: string; value: number }) {
-  const fillColor = value >= 80 ? "var(--cr-up)" : value >= 60 ? "var(--cr-copper)" : "var(--cr-down)";
+  const fillColor = value >= 80 ? "var(--cr-copper)" : value >= 60 ? "var(--cr-ink-2)" : "var(--cr-ink-4)";
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
@@ -26,17 +27,19 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   );
 }
 
+// A verdict is a quality grade, not a money direction: copper for the top
+// grades, quieter ink for the rest.
 function verdictStyle(v: string): React.CSSProperties {
   if (v === "Exceptional" || v === "Strong")
-    return { background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", color: "var(--cr-up)" };
-  if (v === "Promising")
     return { background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)" };
-  return { background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", color: "var(--cr-down)" };
+  if (v === "Promising")
+    return { background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)" };
+  return { background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)" };
 }
 
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.2)", borderRadius: "4px", padding: "12px 16px" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "4px", padding: "12px 16px" }}>
       <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0 }} />
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-down)" }}>{msg}</p>
     </div>
@@ -77,10 +80,11 @@ function PitchTab() {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px" }}>
+    <div className="grid md:grid-cols-2" style={{ gap: "32px" }}>
       {/* Input */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         <div>
+          <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("ai.tabs.pitchDesc")}</div>
           <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.pitch.title")}</h3>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
             {t("ai.pitch.descLong")}
@@ -113,7 +117,7 @@ function PitchTab() {
           <button onClick={analyze} disabled={pitch.trim().length < 30 || loading}
             style={{
               flex: "1 1 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-              background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+              background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
               fontSize: "14px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
               cursor: pitch.trim().length < 30 || loading ? "not-allowed" : "pointer",
               opacity: pitch.trim().length < 30 || loading ? 0.5 : 1, transition: "opacity 150ms",
@@ -161,13 +165,13 @@ function PitchTab() {
             background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px",
             padding: "48px", textAlign: "center",
           }}>
-            <div style={{ position: "relative", display: "inline-flex", marginBottom: "20px" }}>
+            <div style={{ position: "relative", display: "inline-flex", marginBottom: "16px" }}>
               <div style={{ width: 56, height: 56, borderRadius: "4px", background: "var(--cr-paper-2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Sparkles style={{ width: 28, height: 28, color: "var(--cr-copper)" }} />
               </div>
               <Loader2 style={{ position: "absolute", top: "-6px", right: "-6px", width: 20, height: 20, color: "var(--cr-copper)" }} className="animate-spin" />
             </div>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.pitch.evaluating")}</p>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.pitch.evaluating")}</p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
               {t("ai.pitch.evaluatingSub")}
             </p>
@@ -176,8 +180,8 @@ function PitchTab() {
 
         {result && (
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "20px" }}>
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                     <Sparkles style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
@@ -202,10 +206,10 @@ function PitchTab() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-              <div style={{ background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.2)", borderRadius: "4px", padding: "14px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-up)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                  <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("ai.pitch.whatsWorking")}
+            <div className="grid md:grid-cols-2" style={{ gap: "12px" }}>
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink-2)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-copper)" }} /> {t("ai.pitch.whatsWorking")}
                 </p>
                 <ul style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   {result.strengths.map((s) => (
@@ -213,7 +217,7 @@ function PitchTab() {
                   ))}
                 </ul>
               </div>
-              <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px" }}>
+              <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "10px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   ✦ {t("ai.pitch.improveThis")}
                 </p>
@@ -236,7 +240,7 @@ function PitchTab() {
             <Link href="/auth/signup?role=startup"
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                width: "100%", height: "42px", background: "var(--cr-copper)", color: "#fff",
+                width: "100%", height: "42px", background: "var(--cr-copper)", color: "var(--cr-band-ink)",
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
                 borderRadius: "4px", textDecoration: "none", transition: "opacity 150ms",
               }}
@@ -338,15 +342,16 @@ function MatchingTab() {
   }
 
   return (
-    <div id="match" style={{ display: "flex", flexDirection: "column", gap: "28px", scrollMarginTop: "80px" }}>
+    <div id="match" style={{ display: "flex", flexDirection: "column", gap: "32px", scrollMarginTop: "80px" }}>
       <div>
+        <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("ai.tabs.matchDesc")}</div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.matching.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
           {t("ai.matching.descLong")}
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }}>
+      <div className="grid md:grid-cols-3" style={{ gap: "24px" }}>
         <div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>{t("ai.matching.industryLabel")}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -399,7 +404,7 @@ function MatchingTab() {
       <button onClick={findMatches} disabled={loading}
         style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
-          background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+          background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
           fontSize: "14px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
           cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.5 : 1, transition: "opacity 150ms",
         }}>
@@ -420,12 +425,12 @@ function MatchingTab() {
       {matches && matches.length > 0 && (
         <div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-            <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>{t("ai.matching.results")}</h4>
+            <h4 className="ruled-label" style={{ fontFamily: "'DM Sans', sans-serif" }}>{t("ai.matching.results")}</h4>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "3px 10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {t("ai.matching.matches", { count: matches.length })}
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "14px", marginBottom: "20px" }}>
+          <div className="grid md:grid-cols-2" style={{ gap: "16px", marginBottom: "24px" }}>
             {matches.map((m) => (
               <Link key={m.id} href={`/investors/${m.slug}`}
                 style={{
@@ -445,7 +450,7 @@ function MatchingTab() {
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)", flexShrink: 0 }}>{m.matchScore}%</span>
                   </div>
                   {(m.minCheck || m.maxCheck) && (
-                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
                       {fmtCheck(m.minCheck) ?? t("common.open")} – {fmtCheck(m.maxCheck) ?? t("common.open")}
                     </p>
                   )}
@@ -463,7 +468,7 @@ function MatchingTab() {
               </Link>
             ))}
           </div>
-          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("ai.matching.messageCta")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "4px" }}>{t("ai.matching.messageCtaSub")}</p>
@@ -471,8 +476,8 @@ function MatchingTab() {
             <Link href="/auth/signup?role=startup"
               style={{
                 flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "6px",
-                background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 600, fontSize: "13px", padding: "0 20px", height: "40px",
+                background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px",
                 borderRadius: "4px", textDecoration: "none", transition: "opacity 150ms",
               }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
@@ -550,8 +555,9 @@ function DiligenceTab() {
   }
 
   return (
-    <div id="due-diligence" style={{ display: "flex", flexDirection: "column", gap: "28px", scrollMarginTop: "80px" }}>
+    <div id="due-diligence" style={{ display: "flex", flexDirection: "column", gap: "32px", scrollMarginTop: "80px" }}>
       <div>
+        <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("ai.tabs.ddDesc")}</div>
         <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("ai.diligence.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
           {t("ai.diligence.descLong")}
@@ -609,7 +615,7 @@ function DiligenceTab() {
       <button onClick={generateReport} disabled={loading || !selected}
         style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
-          background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+          background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
           fontSize: "14px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
           cursor: loading || !selected ? "not-allowed" : "pointer",
           opacity: loading || !selected ? 0.5 : 1, transition: "opacity 150ms",
@@ -624,14 +630,14 @@ function DiligenceTab() {
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", textAlign: "center" }}>
           <Lock style={{ width: 28, height: 28, color: "var(--cr-copper)", margin: "0 auto 10px" }} />
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("ai.diligence.signInTitle")}</p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "20px" }}>{t("ai.diligence.signInSub")}</p>
-          <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>{t("ai.diligence.signInSub")}</p>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
             <Link href="/auth/login"
-              style={{ border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 20px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+              style={{ border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
               {t("auth.signIn")}
             </Link>
             <Link href="/auth/signup?role=investor"
-              style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 20px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+              style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
               {t("auth.register")}
             </Link>
           </div>
@@ -641,9 +647,9 @@ function DiligenceTab() {
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", textAlign: "center" }}>
           <Zap style={{ width: 28, height: 28, color: "var(--cr-copper)", margin: "0 auto 10px" }} />
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("ai.diligence.upgradeTitle")}</p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "20px" }}>{t("ai.diligence.signInSub")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>{t("ai.diligence.signInSub")}</p>
           <Link href="/pricing"
-            style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 20px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+            style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
             {t("ai.diligence.viewPlans")}
           </Link>
         </div>
@@ -667,8 +673,8 @@ function DiligenceTab() {
 
       {!report && !loading && (
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-          <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "16px" }}>{t("ai.diligence.reportIncludes")}</h4>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+          <h4 className="ruled-label" style={{ fontFamily: "'DM Sans', sans-serif", marginBottom: "16px" }}>{t("ai.diligence.reportIncludes")}</h4>
+          <div className="grid md:grid-cols-2" style={{ gap: "12px" }}>
             {[
               t("ai.diligence.item1"), t("ai.diligence.item2"), t("ai.diligence.item3"), t("ai.diligence.item4"),
               t("ai.diligence.item5"), t("ai.diligence.item6"), t("ai.diligence.item7"), t("ai.diligence.item8"),
@@ -678,13 +684,13 @@ function DiligenceTab() {
               </div>
             ))}
           </div>
-          <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+          <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("ai.diligence.proInvestor")}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)" }}>{t("ai.diligence.proInvestor")}</span>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{t("ai.diligence.unlimitedIncluded")}</p>
             </div>
             <Link href="/auth/signup?role=investor"
-              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 20px", height: "40px", borderRadius: "4px", textDecoration: "none", flexShrink: 0 }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", textDecoration: "none", flexShrink: 0 }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
               {t("pricing.getStartedFree")} <ArrowRight style={{ width: 13, height: 13 }} />
@@ -698,9 +704,11 @@ function DiligenceTab() {
 
 // ── Tier check ─────────────────────────────────────────────────
 
+// Included/excluded is a capability, not a money direction: the check is
+// copper, the absence is a quiet ink dash.
 function TierCheck({ val }: { val: string | boolean }) {
-  if (val === false) return <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink-4)", fontSize: "16px" }}>—</span>;
-  if (val === true)  return <CheckCircle2 style={{ width: 15, height: 15, color: "var(--cr-up)", margin: "0 auto", display: "block" }} />;
+  if (val === false) return <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink-4)", fontSize: "14px" }}>—</span>;
+  if (val === true)  return <CheckCircle2 style={{ width: 15, height: 15, color: "var(--cr-copper)", margin: "0 auto", display: "block" }} />;
   return <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>{val}</span>;
 }
 
@@ -759,30 +767,35 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
     <div style={{ minHeight: "100vh", background: "var(--cr-paper)" }}>
       {/* Hero */}
       <div style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)", marginTop: "64px" }}>
-        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "56px", paddingBottom: "48px" }}>
+        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "48px", paddingBottom: "48px" }}>
           <div className="ruled-label" style={{ marginBottom: "24px" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               {t("ai.hub.heroPowered")}
             </span>
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(34px, 6vw, 58px)", color: "var(--cr-ink)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "16px" }}>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(34px, 6vw, 52px)", color: "var(--cr-ink)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "16px" }}>
             {t("ai.hub.heroLine1")}<br />
             <span style={{ color: "var(--cr-copper)" }}>{t("ai.hub.heroLine2")}</span>
           </h1>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", maxWidth: "480px", marginBottom: "40px", lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", maxWidth: "480px", marginBottom: "32px", lineHeight: 1.6 }}>
             {t("ai.hub.heroSub")}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "12px" }}>
+          {/* One hairline-divided metrics strip (Label + Data) -- stacked
+              ledger rows on mobile, one lane on desktop. No icon cards. */}
+          <div className="flex flex-col md:flex-row" style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)" }}>
             {[
-              { icon: Sparkles,   label: t("ai.hub.statPitchLabel"), val: t("ai.hub.statPitchVal") },
-              { icon: Brain,      label: t("ai.hub.statMatchLabel"), val: t("ai.hub.statMatchVal") },
-              { icon: FileSearch, label: t("ai.hub.statDDLabel"),    val: t("ai.hub.statDDVal")    },
-              { icon: Zap,        label: t("ai.hub.statSpeedLabel"), val: t("ai.hub.statSpeedVal") },
-            ].map(({ icon: Icon, label, val }) => (
-              <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px" }}>
-                <Icon style={{ width: 18, height: 18, color: "var(--cr-copper)", marginBottom: "8px" }} />
+              { label: t("ai.hub.statPitchLabel"), val: t("ai.hub.statPitchVal") },
+              { label: t("ai.hub.statMatchLabel"), val: t("ai.hub.statMatchVal") },
+              { label: t("ai.hub.statDDLabel"),    val: t("ai.hub.statDDVal")    },
+              { label: t("ai.hub.statSpeedLabel"), val: t("ai.hub.statSpeedVal") },
+            ].map(({ label, val }, i) => (
+              <div
+                key={label}
+                className={`flex flex-row-reverse items-baseline justify-between md:flex-1 md:flex-col md:items-start md:justify-start${i > 0 ? " border-t md:border-t-0 md:border-l md:pl-6" : ""}`}
+                style={{ borderColor: "var(--cr-rule)", padding: "12px 0", gap: "4px" }}
+              >
                 <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{val}</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{label}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
               </div>
             ))}
           </div>
@@ -792,7 +805,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
       {/* AI disclosure — persistent, cannot be dismissed. Informational only,
           not investment advice, and the required disclosure that AI produced
           what follows. */}
-      <div role="note" style={{ background: "var(--cr-copper-bg)", borderBottom: "1px solid var(--cr-copper-br)", padding: "9px 24px", textAlign: "center" }}>
+      <div role="note" style={{ background: "var(--cr-copper-bg)", borderBottom: "1px solid var(--cr-copper-br)", padding: "8px 24px", textAlign: "center" }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.5, maxWidth: "900px", margin: "0 auto" }}>
           {t("ai.disclosureStrip")}
         </p>
@@ -805,7 +818,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
             <button key={id} onClick={() => setActiveTab(id)}
               style={{
                 display: "flex", alignItems: "center", gap: "8px",
-                padding: "16px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+                padding: "16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
                 fontSize: "13px", border: "none", borderBottom: `2px solid ${activeTab === id ? "var(--cr-copper)" : "transparent"}`,
                 background: "transparent", color: activeTab === id ? "var(--cr-copper)" : "var(--cr-ink-4)",
                 cursor: "pointer", whiteSpace: "nowrap", transition: "color 120ms, border-color 120ms",
@@ -821,7 +834,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
       {/* Content */}
       <div className="px-5 py-8 md:p-10" style={{ maxWidth: "1100px", margin: "0 auto" }}>
         {usage && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 16px", marginBottom: "20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>
               {usage.unlimited
                 ? t("ai.usageUnlimited")
@@ -829,8 +842,9 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
             </span>
             {!usage.unlimited && (
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ width: "120px", height: "5px", background: "var(--cr-paper-4)", borderRadius: "3px", overflow: "hidden" }}>
-                  <div style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100)}%`, height: "100%", background: usage.remaining === 0 ? "var(--cr-down)" : "var(--cr-copper)" }} />
+                {/* Exhausted is a state, not a loss -- ink, never red. */}
+                <div style={{ width: "120px", height: "4px", background: "var(--cr-paper-4)", borderRadius: "2px", overflow: "hidden" }}>
+                  <div style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100)}%`, height: "100%", background: usage.remaining === 0 ? "var(--cr-ink-3)" : "var(--cr-copper)" }} />
                 </div>
                 <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>
                   {t("ai.usageUpgrade")}
@@ -841,7 +855,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
         )}
 
         {isAuthed === false ? (
-          <div style={{ textAlign: "center", padding: "80px 24px" }}>
+          <div style={{ textAlign: "center", padding: "64px 24px" }}>
             <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>
               {t("ai.signInTitle")}
             </p>
@@ -868,19 +882,19 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
 
       {/* Tier comparison */}
       <div style={{ background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px 40px" }}>
-          <div style={{ textAlign: "center", marginBottom: "40px" }}>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "36px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("ai.hub.tablePlansTitle")}</h2>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>{t("ai.hub.tablePlansSub")}</p>
+        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "64px", paddingBottom: "64px" }}>
+          <div style={{ marginBottom: "32px" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("ai.hub.tablePlansSub")}</div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("ai.hub.tablePlansTitle")}</h2>
           </div>
 
-          <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "8px", overflow: "hidden", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
+          <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", boxShadow: "var(--cr-card-shadow)" }}>
             <div style={{ height: "3px", background: "linear-gradient(90deg, var(--cr-copper-d), var(--cr-copper), var(--cr-copper-l))" }} />
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                    <th style={{ textAlign: "left", padding: "16px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", width: "200px" }}>{t("pricing.feature")}</th>
+                    <th style={{ textAlign: "left", padding: "16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", width: "200px" }}>{t("pricing.feature")}</th>
                     {[
                       { tier: t("pricing.freeLabel"),        sub: t("ai.hub.tierFreeSub"),  highlight: false },
                       { tier: t("ai.hub.tierAngelName"),     sub: t("ai.hub.tierAngelSub"), highlight: false },
@@ -888,9 +902,9 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
                     ].map(({ tier, sub, highlight }) => (
                       <th key={tier} style={{ padding: "16px", textAlign: "center", background: highlight ? "var(--cr-copper-bg)" : "transparent" }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: highlight ? "var(--cr-copper)" : "var(--cr-ink)" }}>{tier}</p>
-                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{sub}</p>
+                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{sub}</p>
                         {highlight && (
-                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", background: "var(--cr-copper)", color: "#fff", borderRadius: "3px", padding: "2px 8px", display: "inline-block", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "3px", padding: "2px 8px", display: "inline-block", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                             {t("pricing.bestValue")}
                           </span>
                         )}
@@ -901,7 +915,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
                 <tbody>
                   {TIER_ROWS.map((row, i) => (
                     <tr key={row.feature} className="pricing-row" style={{ borderBottom: "1px solid var(--cr-rule)", background: i % 2 === 0 ? "transparent" : "var(--cr-paper-2)" }}>
-                      <td style={{ padding: "14px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>{row.feature}</td>
+                      <td style={{ padding: "14px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>{row.feature}</td>
                       <td style={{ padding: "14px", textAlign: "center" }}><TierCheck val={row.free} /></td>
                       <td style={{ padding: "14px", textAlign: "center", background: "var(--cr-copper-bg)" }}><TierCheck val={row.angel} /></td>
                       <td style={{ padding: "14px", textAlign: "center", background: "var(--cr-copper-bg)" }}><TierCheck val={row.pro} /></td>
@@ -914,19 +928,19 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
 
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "32px", flexWrap: "wrap" }}>
             <Link href="/auth/signup?role=investor"
-              style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", height: "48px", padding: "0 28px", borderRadius: "4px", textDecoration: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
               <Users style={{ width: 15, height: 15 }} /> {t("ai.hub.startInvestor")}
             </Link>
             <Link href="/auth/signup?role=startup"
-              style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", height: "48px", padding: "0 28px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
               <TrendingUp style={{ width: 15, height: 15 }} /> {t("ai.hub.listStartup")}
             </Link>
             <Link href="/pricing"
-              style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", height: "48px", padding: "0 20px", borderRadius: "4px", textDecoration: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", height: "48px", padding: "0 16px", borderRadius: "4px", textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--cr-copper)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--cr-ink-4)")}>
               {t("ai.hub.viewPricing")} <ChevronRight style={{ width: 14, height: 14 }} />

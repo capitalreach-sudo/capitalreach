@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import Link from "next/link";
-import { Lock, Eye, EyeOff, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authErrorMessage } from "@/lib/auth-errors";
 
@@ -20,7 +20,7 @@ const iStyle: React.CSSProperties = {
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
   fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
-  letterSpacing: "0.08em", display: "block", marginBottom: "6px",
+  letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
 
 export default function UpdatePasswordPage() {
@@ -80,12 +80,14 @@ export default function UpdatePasswordPage() {
     t("auth.strength0"), t("auth.strength1"), t("auth.strength2"),
     t("auth.strength3"), t("auth.strength4"),
   ];
+  // Weak reads as danger; everything at "fair" and above is copper.
+  // Green is money direction, not a success state.
   const strengthBarColors = [
     "var(--cr-down)",
     "var(--cr-down)",
-    "#D97706",
     "var(--cr-copper)",
-    "var(--cr-up)",
+    "var(--cr-copper)",
+    "var(--cr-copper)",
   ];
 
   const score = strengthScore(password);
@@ -95,34 +97,32 @@ export default function UpdatePasswordPage() {
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "var(--cr-copper)" }} />
 
       <div style={{ width: "100%", maxWidth: "400px" }}>
-        {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "36px", textDecoration: "none" }}>
-          <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <TrendingUp style={{ width: 14, height: 14, color: "#fff" }} />
-          </div>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 800, fontSize: "15px", color: "var(--cr-copper)", letterSpacing: "-0.02em" }}>CapitalReach</span>
+        {/* House mark, set as the ruled label */}
+        <Link href="/" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "40px", marginBottom: "32px", textDecoration: "none" }}>
+          <span className="ruled-label">CapitalReach</span>
         </Link>
 
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
           {ready === false && !done ? (
             <div style={{ textAlign: "center", padding: "16px 0" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, color: "var(--cr-ink)", marginBottom: 8 }}>{t("auth.resetLinkDeadTitle")}</p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: 18 }}>{t("auth.resetLinkDeadBody")}</p>
-              <Link href="/auth/reset-password" style={{ display: "inline-flex", background: "var(--cr-copper)", color: "#fff", borderRadius: 4, padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, textDecoration: "none" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: 16 }}>{t("auth.resetLinkDeadBody")}</p>
+              <Link href="/auth/reset-password" style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: 4, padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, textDecoration: "none" }}>
                 {t("auth.requestNewLink")}
               </Link>
             </div>
           ) : done ? (
             <div style={{ textAlign: "center", padding: "16px 0" }}>
-              <div style={{ width: 48, height: 48, background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.2)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-                <CheckCircle2 style={{ width: 22, height: 22, color: "var(--cr-up)" }} />
+              {/* Success is copper, not green -- green means money direction only. */}
+              <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+                <CheckCircle2 style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("auth.passwordUpdated")}</h2>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.passwordUpdated")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.redirectingSignIn")}</p>
             </div>
           ) : (
             <>
-              <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "20px" }}>
+              <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
                 <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.updateTitle")}</h1>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.updateSub")}</p>
               </div>
@@ -136,9 +136,10 @@ export default function UpdatePasswordPage() {
                       required minLength={8}
                       onFocus={e => (e.target.style.borderColor = "var(--cr-copper)")}
                       onBlur={e => (e.target.style.borderColor = "var(--cr-rule-dark)")}
-                      style={{ ...iStyle, paddingRight: "40px" }} />
+                      style={{ ...iStyle, paddingRight: "48px" }} />
+                    {/* 40x40 hit area; the icon still reads at 12px from the edge. */}
                     <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
-                      style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", padding: 0 }}>
+                      style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", padding: 0 }}>
                       {showPassword ? <EyeOff style={{ width: 16, height: 16 }} /> : <Eye style={{ width: 16, height: 16 }} />}
                     </button>
                   </div>
@@ -167,13 +168,14 @@ export default function UpdatePasswordPage() {
                   )}
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px 12px" }}>
+                {/* Rule-topped label line, not a box-in-a-box. */}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
                   <Lock style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("auth.sslNote")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("auth.sslNote")}</p>
                 </div>
 
                 <button type="submit" disabled={loading || password !== confirm || password.length < 8}
-                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
+                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
                   {loading ? t("auth.updating") : t("auth.updatePassword")}
                 </button>
               </form>

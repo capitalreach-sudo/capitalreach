@@ -6,13 +6,20 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import {
-  Send, MessageSquare, Plus, Search, X, ArrowLeft,
-  CheckCheck, Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Star, Search as SearchIcon } from "lucide-react";
+  Send, Plus, Search, X, ArrowLeft,
+  Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Star, Search as SearchIcon } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** House empty-state mark: one diamond, nothing else. */
+function EmptyDiamond() {
+  return (
+    <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "22px", lineHeight: 1 }}>✦</span>
+  );
+}
 
 function timeAgo(iso: string, t: (key: string, vars?: Record<string, string | number>) => string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -23,7 +30,7 @@ function timeAgo(iso: string, t: (key: string, vars?: Record<string, string | nu
 }
 
 const STATUS_KEYS: Record<string, { labelKey: string; bg: string; color: string; border: string }> = {
-  active:         { labelKey: "dashboard.statusActiveThread", bg: "var(--cr-up-bg)",   color: "var(--cr-up)",    border: "rgba(45,106,79,0.25)"   },
+  active:         { labelKey: "dashboard.statusActiveThread", bg: "var(--cr-up-bg)",   color: "var(--cr-up)",    border: "color-mix(in srgb, var(--cr-up) 25%, transparent)" },
   due_diligence:  { labelKey: "dashboard.statusDueDiligence",  bg: "var(--cr-copper-bg)", color: "var(--cr-copper)", border: "var(--cr-copper-br)" },
   archived:       { labelKey: "dashboard.statusArchived",       bg: "var(--cr-paper-3)", color: "var(--cr-ink-4)", border: "var(--cr-rule)"         },
 };
@@ -364,13 +371,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
   return (
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 40px 60px" }}>
+      <div className="px-6 md:px-8" style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: "48px", paddingBottom: "64px" }}>
 
         {/* Page header */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
           <div>
             <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.inbox")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(24px,3vw,32px)", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px,3vw,28px)", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
               {t("dashboard.messages")}
             </h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
@@ -378,7 +385,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </p>
           </div>
           <button onClick={() => setShowNewModal(true)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 18px", cursor: "pointer" }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "12px 24px", cursor: "pointer" }}>
             <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
           </button>
         </div>
@@ -387,7 +394,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
         <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", height: "620px" }}>
 
           {/* ── Sidebar ── */}
-          <div style={{ width: "300px", flexShrink: 0, display: mobileShowChat ? "none" : "flex", flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
+          <div className="w-full md:w-[300px]" style={{ flexShrink: 0, display: mobileShowChat ? "none" : "flex", flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
             {/* Search */}
             <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
               {/* The archive toggle must live OUTSIDE the relative wrapper:
@@ -395,13 +402,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   button inside it pushed the icon off the input entirely. */}
               <button onClick={() => setShowArchived(v => !v)}
                 aria-pressed={showArchived}
-                style={{ background: showArchived ? "var(--cr-copper-bg)" : "transparent", border: showArchived ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: showArchived ? 600 : 400, fontSize: "11px", color: showArchived ? "var(--cr-copper)" : "var(--cr-ink-4)", padding: "5px 10px", cursor: "pointer", whiteSpace: "nowrap", marginBottom: "8px" }}>
+                style={{ background: showArchived ? "var(--cr-copper-bg)" : "transparent", border: showArchived ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: showArchived ? 600 : 400, fontSize: "11px", color: showArchived ? "var(--cr-copper)" : "var(--cr-ink-4)", padding: "8px 12px", cursor: "pointer", whiteSpace: "nowrap", marginBottom: "8px" }}>
                 {showArchived ? t("messages.showingArchived", { count: archivedIds.size }) : t("messages.viewArchived", { count: archivedIds.size })}
               </button>
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("dashboard.searchConversations")}
-                  style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "10px", paddingTop: "7px", paddingBottom: "7px", outline: "none", boxSizing: "border-box" }} />
+                  style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "10px", paddingTop: "11px", paddingBottom: "11px", outline: "none", boxSizing: "border-box" }} />
               </div>
             </div>
 
@@ -414,7 +421,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 { v: "archived", lk: "dashboard.filterArchived" },
               ].map(f => (
                 <button key={f.v} onClick={() => setStatusFilter(f.v)}
-                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === f.v ? 500 : 300, fontSize: "11px", padding: "4px 10px", borderRadius: "3px", border: statusFilter === f.v ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", background: statusFilter === f.v ? "var(--cr-copper-bg)" : "transparent", color: statusFilter === f.v ? "var(--cr-copper)" : "var(--cr-ink-4)", cursor: "pointer" }}>
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === f.v ? 500 : 300, fontSize: "11px", padding: "8px 12px", borderRadius: "3px", border: statusFilter === f.v ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", background: statusFilter === f.v ? "var(--cr-copper-bg)" : "transparent", color: statusFilter === f.v ? "var(--cr-copper)" : "var(--cr-ink-4)", cursor: "pointer" }}>
                   {t(f.lk)}
                 </button>
               ))}
@@ -424,7 +431,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             <div style={{ flex: 1, overflowY: "auto" }}>
               {filteredThreads.length === 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: "24px", textAlign: "center", gap: "12px" }}>
-                  <MessageSquare style={{ width: 32, height: 32, color: "var(--cr-ink-4)" }} />
+                  <EmptyDiamond />
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noConversationsYet")}</p>
                 </div>
               ) : filteredThreads.map(thread => {
@@ -468,9 +475,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
           {selectedThread ? (
             <div style={{ flex: 1, display: (!mobileShowChat) ? "none" : "flex", flexDirection: "column", minWidth: 0 }} className="md:flex">
               {/* Chat header */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 18px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", flexShrink: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <button onClick={() => setMobileShowChat(false)} aria-label={t("common.back")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", flexShrink: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                  <button onClick={() => setMobileShowChat(false)} aria-label={t("common.back")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0 }}>
                     <ArrowLeft style={{ width: 16, height: 16 }} />
                   </button>
                   <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)" }}>
@@ -490,30 +497,30 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   <button onClick={() => toggleImportant(selectedThread.id)}
                     aria-label={importantIds.has(selectedThread.id) ? t("messages.unmarkImportant") : t("messages.markImportant")}
                     title={importantIds.has(selectedThread.id) ? t("messages.unmarkImportant") : t("messages.markImportant")}
-                    style={{ background: importantIds.has(selectedThread.id) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: importantIds.has(selectedThread.id) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                    style={{ background: importantIds.has(selectedThread.id) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: importantIds.has(selectedThread.id) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                     <Star style={{ width: 13, height: 13, color: importantIds.has(selectedThread.id) ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: importantIds.has(selectedThread.id) ? "var(--cr-copper)" : "none" }} />
                   </button>
                   <button onClick={() => toggleArchive(selectedThread.id)}
                     aria-label={archivedIds.has(selectedThread.id) ? t("messages.unarchive") : t("messages.archive")}
                     title={archivedIds.has(selectedThread.id) ? t("messages.unarchive") : t("messages.archive")}
-                    style={{ background: archivedIds.has(selectedThread.id) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: archivedIds.has(selectedThread.id) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                    style={{ background: archivedIds.has(selectedThread.id) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: archivedIds.has(selectedThread.id) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                     <Archive style={{ width: 13, height: 13, color: archivedIds.has(selectedThread.id) ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
                   </button>
                   {profile.role === "startup" && selectedThread.status === "active" && (
                     <button onClick={() => updateStatus("due_diligence")}
-                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", minHeight: "40px", cursor: "pointer" }}>
                       {t("dashboard.moveToDueDiligence")}
                     </button>
                   )}
                   {profile.role === "startup" && selectedThread.status === "due_diligence" && (
                     <button onClick={() => updateStatus("active")}
-                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", minHeight: "40px", cursor: "pointer" }}>
                       {t("dashboard.backToActive")}
                     </button>
                   )}
                   {(selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : selectedThread.startup?.slug) && (
                     <a href={`/startups/${selectedThread.recipient_startup_id ? otherStartup(selectedThread)?.slug : selectedThread.startup?.slug}`}
-                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", padding: "8px 0", display: "inline-block" }}>
                       {t("dashboard.viewStartup2")} →
                     </a>
                   )}
@@ -524,7 +531,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               {/* In-thread search: threads become unusable at fifty messages
                   without it. Filters the loaded messages client-side -- they
                   are all already here. Cleared automatically on thread switch. */}
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 20px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)" }}>
                 <SearchIcon style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
                 <input value={msgQuery} onChange={e => setMsgQuery(e.target.value)}
                   placeholder={t("messages.searchInThread")}
@@ -536,17 +543,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   </button>
                 )}
               </div>
-              <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "8px", background: "var(--cr-paper)" }}>
+              <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "8px", background: "var(--cr-paper)" }}>
                 {messages.length === 0 && (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "12px", color: "var(--cr-ink-4)" }}>
-                    <MessageSquare style={{ width: 28, height: 28 }} />
+                    <EmptyDiamond />
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.startConversation")}</p>
                   </div>
                 )}
                 {(() => {
                   // One explicit receipt under the newest own message the
-                  // counterpart has read; the per-bubble check colour carries
-                  // the rest.
+                  // counterpart has read -- the ledger states it once, in
+                  // words, instead of a tick on every bubble.
                   const lastReadOwnId = [...messages].reverse().find(m => m.sender_id === profile.id && m.read_at)?.id;
                   const visibleMessages = msgQuery.trim()
                     ? messages.filter(m =>
@@ -577,15 +584,18 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         </div>
                       )}
                       <div style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start" }}>
+                        {/* Own messages: quiet ledger entry on paper, marked
+                            "mine" by a 2px copper rule, not an accent slab. */}
                         <div style={{
                           maxWidth: "70%", borderRadius: "4px", padding: "10px 14px",
-                          background: isOwn ? "var(--cr-copper)" : "var(--cr-paper-2)",
+                          background: isOwn ? "var(--cr-paper-3)" : "var(--cr-paper-2)",
                           border: isOwn ? "none" : "1px solid var(--cr-rule-dark)",
-                          color: isOwn ? "#fff" : "var(--cr-ink)",
+                          borderLeft: isOwn ? "2px solid var(--cr-copper)" : undefined,
+                          color: "var(--cr-ink)",
                         }}>
                           {msg.attachment_path && (
                             <a href={`/api/messages/attachment?id=${msg.id}`}
-                              style={{ display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: msg.body && msg.body !== msg.attachment_name ? "6px" : 0, padding: "7px 10px", borderRadius: "4px", background: isOwn ? "rgba(255,255,255,0.15)" : "var(--cr-paper-3)", border: isOwn ? "1px solid rgba(255,255,255,0.25)" : "1px solid var(--cr-rule-dark)", color: "inherit", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", maxWidth: "100%" }}>
+                              style={{ display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: msg.body && msg.body !== msg.attachment_name ? "6px" : 0, padding: "7px 10px", borderRadius: "4px", background: isOwn ? "var(--cr-paper-2)" : "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "inherit", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", maxWidth: "100%" }}>
                               <Paperclip style={{ width: 12, height: 12, flexShrink: 0 }} />
                               <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{msg.attachment_name}</span>
                             </a>
@@ -595,10 +605,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{msg.body}</p>
                           )}
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", marginTop: "4px" }}>
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: isOwn ? "rgba(255,255,255,0.6)" : "var(--cr-ink-4)" }}>
+                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>
                               {new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                             </span>
-                            {isOwn && <CheckCheck aria-label={msg.read_at ? t("messages.seen") : undefined} style={{ width: 11, height: 11, color: msg.read_at ? "#fff" : "rgba(255,255,255,0.4)" }} />}
                           </div>
                         </div>
                       </div>
@@ -621,7 +630,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 {!newMessage && (
                   <select value="" aria-label={t("messages.templates")}
                     onChange={e => { if (e.target.value) setNewMessage(t(e.target.value)); }}
-                    style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "9px 6px", outline: "none", maxWidth: "90px" }}>
+                    style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "9px 6px", minHeight: "40px", outline: "none", maxWidth: "90px" }}>
                     <option value="">{t("messages.templates")}</option>
                     <option value="messages.tplIntro">{t("messages.tplIntroLabel")}</option>
                     <option value="messages.tplMetrics">{t("messages.tplMetricsLabel")}</option>
@@ -637,21 +646,21 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   }} />
                 <button type="button" onClick={() => fileInputRef.current?.click()}
                   aria-label={t("messages.attachFile")}
-                  style={{ width: 38, height: 38, background: attachedFile ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: attachedFile ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+                  style={{ width: 40, height: 40, background: attachedFile ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: attachedFile ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
                   <Paperclip style={{ width: 14, height: 14, color: attachedFile ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
                 </button>
                 <textarea value={newMessage} onChange={e => setNewMessage(e.target.value.slice(0, 2000))}
                   maxLength={2000}
                   placeholder={attachedFile ? t("messages.attachCaptionPh", { name: attachedFile.name }) : t("dashboard.composePlaceholder")}
-                  rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", resize: "none", minHeight: "38px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
+                  rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", resize: "none", minHeight: "40px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
                   onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim() || attachedFile) sendMessage(e); } }}
                   onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                   onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
                 />
                 <button type="submit" disabled={(!newMessage.trim() && !attachedFile) || sending}
-                  style={{ width: 38, height: 38, background: "var(--cr-copper)", border: "none", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: (!newMessage.trim() && !attachedFile) || sending ? 0.5 : 1 }}>
-                  {sending ? <Loader2 style={{ width: 15, height: 15, color: "#fff" }} /> : <Send style={{ width: 15, height: 15, color: "#fff" }} />}
+                  style={{ width: 40, height: 40, background: "var(--cr-copper)", border: "none", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: (!newMessage.trim() && !attachedFile) || sending ? 0.5 : 1 }}>
+                  {sending ? <Loader2 style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} /> : <Send style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} />}
                 </button>
               </form>
               {/* Character budget only when it matters (>1500 of 2000). */}
@@ -668,7 +677,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
           ) : (
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-paper)" }}>
               <div style={{ textAlign: "center" }}>
-                <MessageSquare style={{ width: 36, height: 36, color: "var(--cr-ink-4)", margin: "0 auto 12px" }} />
+                <div style={{ marginBottom: "12px" }}><EmptyDiamond /></div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
               </div>
@@ -679,16 +688,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
       {/* ── New Message Modal ── */}
       {showNewModal && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "28px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("dashboard.newMessageModalTitle")}</h2>
+                <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("dashboard.messages")}</div>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("dashboard.newMessageModalTitle")}</h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                   {targetKind === "investor" ? t("dashboard.searchInvestorHint") : t("dashboard.searchStartupHint")}
                 </p>
               </div>
-              <button onClick={closeNewModal} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+              <button onClick={closeNewModal} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0, margin: "-8px -8px 0 0" }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
             </div>
@@ -703,7 +713,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     <button key={k}
                       onClick={() => { setTargetKind(k); setAccountSearch(""); setAccountResults([]); setSendNewError(""); }}
                       style={{
-                        flex: 1, height: "36px", borderRadius: "4px",
+                        flex: 1, height: "40px", borderRadius: "4px",
                         border: targetKind === k ? "1px solid var(--cr-copper)" : "1px solid var(--cr-rule-dark)",
                         background: targetKind === k ? "var(--cr-copper-bg)" : "transparent",
                         color: targetKind === k ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -733,7 +743,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         </p>
                       </div>
                       <button onClick={() => { setSelectedAccount(null); setAccountSearch(""); setAccountResults([]); setSendNewError(""); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0, margin: "-8px -8px -8px 0" }}>
                         <X style={{ width: 15, height: 15 }} />
                       </button>
                     </div>
@@ -753,7 +763,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   {!selectedAccount && accountDropOpen && (
                     <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 10, maxHeight: "220px", overflowY: "auto" }}>
                       {accountSearching ? (
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", gap: "8px", color: "var(--cr-ink-4)" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "16px", gap: "8px", color: "var(--cr-ink-4)" }}>
                           <Loader2 style={{ width: 14, height: 14 }} /> <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.searching")}</span>
                         </div>
                       ) : accountResults.length === 0 ? (
@@ -783,7 +793,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                             </p>
                           </div>
                           {a.entity_name && (
-                            <div style={{ width: 20, height: 20, borderRadius: "2px", background: "var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <div style={{ width: 20, height: 20, borderRadius: "3px", background: "var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                               {a.role === "startup" ? <Building2 style={{ width: 11, height: 11, color: "var(--cr-ink-3)" }} /> : <Users style={{ width: 11, height: 11, color: "var(--cr-ink-3)" }} />}
                             </div>
                           )}
@@ -798,7 +808,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
               {/* Error */}
               {sendNewError && (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "rgba(180,50,50,0.06)", border: "1px solid rgba(180,50,50,0.2)", borderRadius: "4px", padding: "10px 12px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "10px 12px" }}>
                   <AlertCircle style={{ width: 14, height: 14, color: "var(--cr-down)", flexShrink: 0, marginTop: "1px" }} />
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-down)" }}>{sendNewError}</p>
                 </div>
@@ -818,11 +828,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
               <div style={{ display: "flex", gap: "10px" }}>
                 <button onClick={closeNewModal}
-                  style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+                  style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", cursor: "pointer" }}>
                   {t("dashboard.cancel")}
                 </button>
                 <button onClick={sendNewMessage} disabled={!selectedAccount || !newBody.trim() || sendingNew}
-                  style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
+                  style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
                   {sendingNew ? <><Loader2 style={{ width: 14, height: 14 }} /> {t("dashboard.sending2")}</> : <><Send style={{ width: 14, height: 14 }} /> {t("dashboard.sendMessageBtn")}</>}
                 </button>
               </div>
