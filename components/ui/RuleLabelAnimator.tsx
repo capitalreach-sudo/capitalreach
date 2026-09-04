@@ -8,14 +8,17 @@ export function RuleLabelAnimator() {
 
   useEffect(() => {
     const observe = () => {
-      const labels = document.querySelectorAll(".ruled-label:not(.visible)");
+      // data-cr-visible rather than a class: React manages className, so a
+      // class added here from outside React tripped dev hydration warnings on
+      // soft navigations. React leaves unknown data attributes alone.
+      const labels = document.querySelectorAll(".ruled-label:not([data-cr-visible])");
       if (labels.length === 0) return;
 
       const obs = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) {
-              e.target.classList.add("visible");
+              (e.target as HTMLElement).dataset.crVisible = "1";
               obs.unobserve(e.target);
             }
           });
