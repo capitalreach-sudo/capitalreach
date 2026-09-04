@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase";
 import { announce } from "@/lib/announce";
 import {
   Search, SlidersHorizontal, X, ChevronDown, ChevronUp,
-  Users, Globe, Filter, Loader2, Crosshair, GitCompareArrows, Clock, BadgeCheck,
+  Users, Globe, Loader2, Crosshair, GitCompareArrows, Clock, BadgeCheck,
 } from "lucide-react";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn, STAGE_LABELS } from "@/lib/utils";
@@ -22,30 +22,18 @@ import { INVESTOR_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
 import { EmptyState } from "@/components/ui/EmptyState";
 
-const TYPE_META: Record<string, { labelKey: string; color: string; bg: string; border: string }> = {
-  angel:         { labelKey: "investors.typeAngel",        color: "text-blue-300",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
-  vc:            { labelKey: "investors.typeVc",           color: "text-cr-cu-l",  bg: "bg-cr-copper/10",  border: "border-cr-copper/30"  },
-  family_office: { labelKey: "investors.typeFamilyOffice", color: "text-amber-300",  bg: "bg-amber-500/10",  border: "border-amber-500/30"  },
-  corporate:     { labelKey: "investors.typeCorporate",    color: "text-rose-300",   bg: "bg-rose-500/10",   border: "border-rose-500/30"   },
+// Labels only. The per-type palette tints (blue/amber/rose) were off-token;
+// in the house register the type is a quiet hairline badge like every other
+// badge, so the map carries nothing but the i18n key.
+const TYPE_META: Record<string, { labelKey: string }> = {
+  angel:         { labelKey: "investors.typeAngel"        },
+  vc:            { labelKey: "investors.typeVc"           },
+  family_office: { labelKey: "investors.typeFamilyOffice" },
+  corporate:     { labelKey: "investors.typeCorporate"    },
 };
 
 // Canonical stage labels from lib/utils -- the local copy had the wrong
 // keys and rendered raw enums for pre-seed and series_b_plus.
-
-const GRAD_COLORS = [
-  "from-cr-cu-l to-blue-600",
-  "from-blue-400 to-cyan-500",
-  "from-emerald-400 to-teal-500",
-  "from-amber-400 to-orange-500",
-  "from-slate-500 to-gray-600",
-  "from-pink-400 to-rose-500",
-  "from-teal-400 to-cyan-500",
-  "from-orange-400 to-red-500",
-  "from-green-400 to-emerald-600",
-  "from-red-400 to-rose-500",
-  "from-cr-copper to-purple-700",
-  "from-blue-500 to-blue-700",
-];
 
 function formatCheck(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M`;
@@ -53,14 +41,40 @@ function formatCheck(n: number) {
   return `$${n}`;
 }
 
+/** One applied filter in the summary row -- same chip as the startups page. */
 function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-cr-copper bg-cr-copper/10 border border-cr-copper/30 rounded px-2 py-0.5">
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "3px 6px 3px 10px" }}>
       {label}
-      <button onClick={onRemove} aria-label={`remove ${label}`} className="flex items-center text-inherit">
-        <X className="h-3 w-3" />
+      <button onClick={onRemove} aria-label={`remove ${label}`}
+        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
+        <X style={{ width: 11, height: 11 }} />
       </button>
     </span>
+  );
+}
+
+/** Option chip, identical register to the startups directory's FilterChip. */
+function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        fontFamily:    "'DM Sans', sans-serif",
+        fontWeight:    active ? 500 : 400,
+        fontSize:      "13px",
+        padding:       "6px 14px",
+        borderRadius:  "3px",
+        border:        active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+        background:    active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+        color:         active ? "var(--cr-copper)" : "var(--cr-ink-3)",
+        cursor:        "pointer",
+        whiteSpace:    "nowrap",
+        transition:    "all 100ms ease",
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -68,10 +82,14 @@ function Section({ title, count = 0, children, defaultOpen = true }: { title: st
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div>
-      <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between py-1 mb-2 group">
-        <p className="text-xs font-bold text-cr-i4 uppercase tracking-wide group-hover:text-cr-i2 transition-colors">
-          {title}{count > 0 && <span className="text-cr-copper normal-case tracking-normal"> · {count}</span>}
-        </p>
+      <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between group"
+        style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: "8px", minHeight: "28px" }}>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", textAlign: "left" }}>
+          {title}
+          {count > 0 && (
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", letterSpacing: 0 }}> · {count}</span>
+          )}
+        </span>
         {open ? <ChevronUp className="h-3.5 w-3.5 text-cr-i4" /> : <ChevronDown className="h-3.5 w-3.5 text-cr-i4" />}
       </button>
       {open && <div>{children}</div>}
@@ -369,23 +387,24 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
   }, [results.length, loading, t]);
 
   const Sidebar = (
-    <aside className="w-64 flex-shrink-0 bg-cr-paper rounded-2xl border border-cr-p4 p-5 space-y-4 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+    <aside className="w-64 flex-shrink-0 space-y-4 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto"
+      style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px" }}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-bold text-cr-ink">
-          <Filter className="h-4 w-4 text-cr-copper" />
+        <div className="ruled-label">
           {t("investors.filters")}
           {activeCount > 0 && (
-            <span className="ml-1 text-[10px] font-bold bg-cr-copper text-white px-1.5 py-0.5 rounded-full">{activeCount}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", letterSpacing: 0 }}>{activeCount}</span>
           )}
         </div>
         {activeCount > 0 && (
-          <button onClick={() => setF(DEFAULT)} className="text-xs text-cr-copper hover:text-cr-cu-l flex items-center gap-1 font-medium">
-            <X className="h-3 w-3" /> {t("investors.clear")}
+          <button onClick={() => setF(DEFAULT)}
+            style={{ display: "flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "4px 0" }}>
+            <X style={{ width: 11, height: 11 }} /> {t("investors.clear")}
           </button>
         )}
       </div>
 
-      <div className="h-px bg-border-dark" />
+      <div style={{ height: 1, background: "var(--cr-rule)" }} />
 
       {/* Sort */}
       <Section title={t("investors.sortBy")}>
@@ -399,50 +418,46 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             ...(myRaise ? [["fit", t("investors.sortFit")] as const] : []),
           ] as const).map(([val, label]) => (
             <button key={val} onClick={() => setF(p => ({ ...p, sort: val }))}
-              className={cn("w-full text-left text-sm px-3 py-1.5 rounded-lg transition-colors",
-                f.sort === val ? "bg-cr-copper/15 text-cr-cu-l font-semibold" : "text-cr-i2 hover:bg-cr-p2")}
+              className={cn("w-full text-left transition-colors", f.sort === val ? "" : "hover:bg-cr-p3")}
+              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: f.sort === val ? 600 : 400, fontSize: "13px", padding: "8px 12px", borderRadius: "3px", border: "none", cursor: "pointer", background: f.sort === val ? "var(--cr-copper-bg)" : "transparent", color: f.sort === val ? "var(--cr-copper)" : "var(--cr-ink-3)" }}
             >{label}</button>
           ))}
         </div>
       </Section>
 
-      <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}>
         <Checkbox checked={f.leadOnly} onCheckedChange={(v) => setF(p => ({ ...p, leadOnly: v === true }))} />
-        <span className="text-sm text-cr-i2">{t("investors.leadOnly")}</span>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t("investors.leadOnly")}</span>
       </label>
-      <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}>
         <Checkbox checked={f.verifiedOnly} onCheckedChange={(v) => setF(p => ({ ...p, verifiedOnly: v === true }))} />
-        <span className="text-sm text-cr-i2">{t("investors.verifiedOnly")}</span>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t("investors.verifiedOnly")}</span>
       </label>
       {myRaise && (
-        <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+        <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}>
           <Checkbox checked={f.fitOnly} onCheckedChange={(v) => setF(p => ({ ...p, fitOnly: v === true }))} />
-          <span className="text-sm text-cr-copper font-medium">{t("investors.fitOnly")}</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}>{t("investors.fitOnly")}</span>
         </label>
       )}
-      <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}>
         <Checkbox checked={f.newOnly} onCheckedChange={(v) => setF(p => ({ ...p, newOnly: v === true }))} />
-        <span className="text-sm text-cr-i2">{t("investors.newMonth")}</span>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t("investors.newMonth")}</span>
       </label>
 
-      <div className="h-px bg-border-dark" />
+      <div style={{ height: 1, background: "var(--cr-rule)" }} />
 
       {/* Investor type */}
       <Section title={t("investors.investorType")} count={f.types.length}>
         <div className="flex flex-wrap gap-1.5">
           {Object.entries(TYPE_META).map(([val, meta]) => (
-            <button key={val} onClick={() => toggle("types", val)}
-              className={cn("text-xs font-medium px-2.5 py-1 rounded-full border transition-all",
-                f.types.includes(val)
-                  ? `${meta.bg} ${meta.color} ${meta.border} font-bold`
-                  : "border-cr-p4 text-cr-i4 hover:border-cr-i4 hover:text-cr-i2"
-              )}
-            >{t(meta.labelKey)}{typeCounts[val] ? ` (${typeCounts[val]})` : ""}</button>
+            <FilterChip key={val} active={f.types.includes(val)} onClick={() => toggle("types", val)}>
+              {t(meta.labelKey)}{typeCounts[val] ? ` (${typeCounts[val]})` : ""}
+            </FilterChip>
           ))}
         </div>
       </Section>
 
-      <div className="h-px bg-border-dark" />
+      <div style={{ height: 1, background: "var(--cr-rule)" }} />
 
       {/* Check size */}
       <Section title={t("investors.checkSizeRange")} count={(f.minCheck > 0 ? 1 : 0) + (f.maxCheck < 100_000_000 ? 1 : 0)}>
@@ -452,7 +467,8 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             value={[f.minCheck, f.maxCheck]}
             onValueChange={([min, max]) => setF(p => ({ ...p, minCheck: min, maxCheck: max }))}
           />
-          <div className="flex justify-between text-xs text-cr-i4 mt-2 font-medium">
+          <div className="flex justify-between mt-2"
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>
             <span>{formatCheck(f.minCheck)}</span>
             <span>{f.maxCheck >= 100_000_000 ? t("investors.noMax") : formatCheck(f.maxCheck)}</span>
           </div>
@@ -460,64 +476,61 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             {([[0, 100_000, "<$100K"], [100_000, 1_000_000, "$100K–$1M"], [1_000_000, 100_000_000, "$1M+"]] as const).map(([min, max, label]) => {
               const active = f.minCheck === min && f.maxCheck === max;
               return (
-                <button key={label}
-                  onClick={() => setF(p => ({ ...p, minCheck: active ? 0 : min, maxCheck: active ? 100_000_000 : max }))}
-                  className={cn("text-xs font-medium px-2.5 py-1 rounded-full border transition-all",
-                    active ? "border-cr-copper/40 text-cr-copper bg-cr-copper/10 font-bold" : "border-cr-p4 text-cr-i4 hover:border-cr-i4 hover:text-cr-i2")}>
+                <FilterChip key={label} active={active}
+                  onClick={() => setF(p => ({ ...p, minCheck: active ? 0 : min, maxCheck: active ? 100_000_000 : max }))}>
                   {label}
-                </button>
+                </FilterChip>
               );
             })}
           </div>
         </div>
       </Section>
 
-      <div className="h-px bg-border-dark" />
+      <div style={{ height: 1, background: "var(--cr-rule)" }} />
 
       {/* Stages */}
       <Section title={t("investors.investmentStage")} count={f.stages.length}>
         <div className="flex flex-wrap gap-1.5">
           {STAGES.map(s => (
-            <button key={s.value} onClick={() => toggle("stages", s.value)}
-              className={cn("text-xs font-medium px-2.5 py-1 rounded-full border transition-all",
-                f.stages.includes(s.value)
-                  ? "bg-cr-copper text-white border-cr-copper"
-                  : "border-cr-p4 text-cr-i4 hover:border-cr-copper/40 hover:text-cr-i2")}
-            >{s.label}</button>
+            <FilterChip key={s.value} active={f.stages.includes(s.value)} onClick={() => toggle("stages", s.value)}>
+              {s.label}
+            </FilterChip>
           ))}
         </div>
       </Section>
 
-      <div className="h-px bg-border-dark" />
+      <div style={{ height: 1, background: "var(--cr-rule)" }} />
 
       {/* Industries */}
       <Section title={t("investors.focusIndustries")} count={f.industries.length} defaultOpen={false}>
         <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
           {INDUSTRIES.map(ind => (
             <label key={ind} className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors",
-              f.industries.includes(ind) ? "bg-cr-copper/10" : "hover:bg-cr-p2"
-            )}>
+              "flex items-center gap-2 cursor-pointer transition-colors",
+              f.industries.includes(ind) ? "" : "hover:bg-cr-p3"
+            )}
+              style={{ padding: "7px 8px", borderRadius: "3px", background: f.industries.includes(ind) ? "var(--cr-copper-bg)" : undefined }}>
               <Checkbox checked={f.industries.includes(ind)} onCheckedChange={() => toggle("industries", ind)} />
-              <span className="text-sm text-cr-i2">{ind}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{ind}</span>
             </label>
           ))}
         </div>
       </Section>
 
-      <div className="h-px bg-border-dark" />
+      <div style={{ height: 1, background: "var(--cr-rule)" }} />
 
-      {/* Geography — options come from the loaded investors, so the list never
+      {/* Geography -- options come from the loaded investors, so the list never
           offers a country with zero investors behind it. */}
       <Section title={t("investors.geography")} count={f.geographies.length} defaultOpen={false}>
         <div className="max-h-44 overflow-y-auto space-y-0.5 pr-1">
           {allGeographies.map(geo => (
             <label key={geo} className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors",
-              f.geographies.includes(geo) ? "bg-cr-copper/10" : "hover:bg-cr-p2"
-            )}>
+              "flex items-center gap-2 cursor-pointer transition-colors",
+              f.geographies.includes(geo) ? "" : "hover:bg-cr-p3"
+            )}
+              style={{ padding: "7px 8px", borderRadius: "3px", background: f.geographies.includes(geo) ? "var(--cr-copper-bg)" : undefined }}>
               <Checkbox checked={f.geographies.includes(geo)} onCheckedChange={() => toggle("geographies", geo)} />
-              <span className="text-sm text-cr-i2">{geo}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{geo}</span>
             </label>
           ))}
         </div>
@@ -527,26 +540,26 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-6xl">
-      {/* Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 bg-cr-copper/10 border border-cr-copper/20 rounded-full px-4 py-1.5 mb-4">
-          <Users className="h-3.5 w-3.5 text-cr-copper" />
-          <span className="text-sm font-semibold text-cr-cu-l">
-            {loading
-              ? t("common.loading")
-              : investors.length === 1
-                ? t("investors.registeredCountOne")
-                : t("investors.registeredCount", { count: investors.length })}
-          </span>
+      {/* Header -- the startups directory register: ruled label opener,
+          serif italic display title, quiet factual sub, hairline underneath. */}
+      <div style={{ borderBottom: "1px solid var(--cr-rule)", paddingBottom: "24px", marginBottom: "32px" }}>
+        <div className="ruled-label" style={{ marginBottom: "12px" }}>
+          {loading
+            ? t("common.loading")
+            : investors.length === 1
+              ? t("investors.registeredCountOne")
+              : t("investors.registeredCount", { count: investors.length })}
         </div>
-        <h1 className="text-4xl font-extrabold text-cr-ink mb-3 tracking-tight">{t("investors.directoryTitle")}</h1>
-        <p className="text-lg text-cr-i3 max-w-xl mx-auto">
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "10px" }}>
+          {t("investors.directoryTitle")}
+        </h1>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "56ch" }}>
           {t("investors.directorySub")}
         </p>
       </div>
 
       <div className="flex gap-6 items-start">
-        {/* Sidebar — desktop */}
+        {/* Sidebar -- desktop */}
         <div className="hidden lg:block flex-shrink-0 w-64">{Sidebar}</div>
 
         {/* Main content */}
@@ -573,21 +586,26 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                   }
                 }}
                 placeholder={t("investors.searchPlaceholder")}
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-cr-p4 bg-cr-paper text-cr-ink text-sm placeholder:text-cr-i4 focus:outline-none focus:ring-2 focus:ring-cr-copper/40 focus:border-cr-copper/50"
+                className="w-full h-11 pl-10 pr-4 focus:outline-none"
+                style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)" }}
+                onFocusCapture={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
+                onBlurCapture={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
               />
               {suggestOpen && f.query.trim().length < 2 && recent.length > 0 && (
-                <div className="absolute top-full mt-1.5 left-0 w-full max-w-sm bg-cr-paper border border-cr-p4 rounded-xl shadow-lg overflow-hidden z-50">
-                  <p className="px-4 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-cr-i4">
+                <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
+                  style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "10px 12px 6px" }}>
                     {t("startups.recentSearches")}
                   </p>
                   {recent.slice(0, 5).map((term) => (
-                    <div key={term} className="flex items-center justify-between gap-2 px-4 py-2">
+                    <div key={term} className="flex items-center justify-between gap-2" style={{ padding: "7px 12px" }}>
                       <button onMouseDown={(e) => { e.preventDefault(); setF(p => ({ ...p, query: term })); }}
-                        className="flex items-center gap-2 text-sm text-cr-i2 flex-1 text-left">
+                        className="flex items-center gap-2 flex-1 text-left"
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", padding: 0 }}>
                         <Clock className="h-3 w-3 text-cr-i4 shrink-0" /> {term}
                       </button>
                       <button onMouseDown={(e) => { e.preventDefault(); forgetQuery(term); }} aria-label={`remove ${term}`}
-                        className="text-cr-i4 text-sm leading-none">×</button>
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", fontSize: "13px", lineHeight: 1, padding: 0 }}>×</button>
                     </div>
                   ))}
                 </div>
@@ -597,12 +615,14 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                   .filter(i => (i.full_name || "").toLowerCase().includes(f.query.trim().toLowerCase()))
                   .slice(0, 6);
                 return hits.length > 0 ? (
-                  <div className="absolute top-full mt-1.5 left-0 w-full max-w-sm bg-cr-paper border border-cr-p4 rounded-xl shadow-lg overflow-hidden z-50">
+                  <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
+                    style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)" }}>
                     {hits.map((i, hi) => (
                       <Link key={i.id} href={`/investors/${i.slug}`}
-                        className={cn("flex flex-col gap-0.5 px-4 py-2.5 border-b border-cr-p4/50 last:border-0 hover:bg-cr-p2 no-underline", hi === suggestIdx && "bg-cr-p2")}>
-                        <span className="text-sm font-semibold text-cr-ink" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>{i.full_name}</span>
-                        <span className="text-xs text-cr-i4">{t((TYPE_META[i.type] ?? TYPE_META.angel).labelKey)}{i.firm ? ` · ${i.firm}` : ""}</span>
+                        className={cn("flex flex-col gap-0.5 hover:bg-cr-p3 no-underline", hi === suggestIdx && "bg-cr-p3")}
+                        style={{ padding: "9px 12px", borderBottom: "1px solid var(--cr-rule)" }}>
+                        <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)" }}>{i.full_name}</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t((TYPE_META[i.type] ?? TYPE_META.angel).labelKey)}{i.firm ? ` · ${i.firm}` : ""}</span>
                       </Link>
                     ))}
                   </div>
@@ -617,17 +637,15 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             </div>
             <button
               onClick={() => setSidebarOpen(o => !o)}
-              className={cn(
-                "lg:hidden inline-flex items-center gap-2 h-11 px-4 rounded-xl border text-sm font-medium transition-colors",
-                sidebarOpen ? "bg-cr-copper text-white border-cr-copper" : "border-cr-p4 text-cr-i2 hover:border-cr-i4"
-              )}
+              className="lg:hidden inline-flex items-center gap-2 h-11 px-4"
+              style={{ background: sidebarOpen ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", border: sidebarOpen ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: sidebarOpen ? "var(--cr-copper)" : "var(--cr-ink-3)", cursor: "pointer", flexShrink: 0 }}
             >
               <SlidersHorizontal className="h-4 w-4" />
-              {t("investors.filters")} {activeCount > 0 && `(${activeCount})`}
+              {t("investors.filters")} {activeCount > 0 && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px" }}>({activeCount})</span>}
             </button>
           </div>
 
-          {/* Mobile: the same filter block as a full-height bottom sheet —
+          {/* Mobile: the same filter block as a full-height bottom sheet --
               header pinned, filters scroll, Reset / Apply·n pinned. */}
           {sidebarOpen && (
             <div role="dialog" aria-modal="true" aria-label={t("investors.filters")} className="lg:hidden" style={{ position: "fixed", inset: 0, zIndex: 50 }}>
@@ -644,8 +662,8 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                     style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                     {t("filters.reset")}
                   </button>
-                  <button onClick={() => setSidebarOpen(false)} className="btn-copper-shimmer"
-                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer" }}>
+                  <button onClick={() => setSidebarOpen(false)} className="btn-copper-shimmer text-white"
+                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", cursor: "pointer" }}>
                     {t("filters.applyCount", { count: results.length })}
                   </button>
                 </div>
@@ -655,15 +673,17 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (
-            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 rounded-md px-4 py-2.5 shadow-2xl" style={{ background: "var(--cr-band-bg)" }}>
-              <span className="text-[13px] text-cr-p2" style={{ color: "var(--cr-paper-2)" }}>
+            <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "0 10px 30px rgba(26,22,18,0.35)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
                 {compareIds.map(id => investors.find(i => i.id === id)?.full_name).filter(Boolean).join(" · ")}
               </span>
               <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
-                className={cn("bg-cr-copper text-white text-xs font-semibold rounded px-3.5 py-1.5", compareIds.length < 2 ? "opacity-50" : "cursor-pointer")}>
-                {t("investors.compare2")} ({compareIds.length})
+                className="text-white"
+                style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "7px 14px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
+                {t("investors.compare2")} (<span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{compareIds.length}</span>)
               </button>
-              <button onClick={() => setCompareIds([])} aria-label={t("investors.clearCompareAria")} className="text-cr-i4 flex">
+              <button onClick={() => setCompareIds([])} aria-label={t("investors.clearCompareAria")}
+                style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex", padding: 0 }}>
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -681,10 +701,12 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             return (
               <div role="dialog" aria-modal="true" className="fixed inset-0 z-[70]">
                 <div className="absolute inset-0 bg-[color:var(--cr-scrim)]" onClick={() => setShowCompare(false)} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto bg-cr-paper border border-cr-p4 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-cr-ink" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>{t("investors.compareInvestors")}</h2>
-                    <button onClick={() => setShowCompare(false)} aria-label={t("common.close")} className="text-cr-i4 flex"><X className="h-5 w-5" /></button>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto"
+                  style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+                  <div className="flex items-center justify-between" style={{ marginBottom: "18px" }}>
+                    <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("investors.compareInvestors")}</h2>
+                    <button onClick={() => setShowCompare(false)} aria-label={t("common.close")}
+                      style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex", padding: 0 }}><X className="h-5 w-5" /></button>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
@@ -692,8 +714,8 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                         <tr>
                           <th className="w-[130px]" />
                           {rows.map(i => (
-                            <th key={i.id} className="text-left px-3 py-2 border-b-2 border-cr-copper">
-                              <Link href={`/investors/${i.slug}`} className="text-[15px] font-bold text-cr-ink no-underline" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>
+                            <th key={i.id} className="text-left" style={{ padding: "8px 12px", borderBottom: "2px solid var(--cr-copper)" }}>
+                              <Link href={`/investors/${i.slug}`} className="no-underline" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
                                 {i.full_name}
                               </Link>
                             </th>
@@ -701,14 +723,18 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                         </tr>
                       </thead>
                       <tbody>
-                        {METRICS.map(m => (
-                          <tr key={m.label}>
-                            <td className="py-2.5 pr-3 text-[10px] font-medium uppercase tracking-wide text-cr-i4 border-b border-cr-p4/60">{m.label}</td>
-                            {rows.map(i => (
-                              <td key={i.id} className="px-3 py-2.5 text-[13px] text-cr-ink border-b border-cr-p4/60">{m.get(i)}</td>
-                            ))}
-                          </tr>
-                        ))}
+                        {METRICS.map(m => {
+                          // Check size is the one numeric row; it renders in mono.
+                          const isNum = m.label === t("investors.checkSize");
+                          return (
+                            <tr key={m.label}>
+                              <td style={{ padding: "9px 12px 9px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
+                              {rows.map(i => (
+                                <td key={i.id} style={{ padding: "9px 12px", fontFamily: isNum ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif", fontWeight: isNum ? 500 : 300, fontSize: "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)" }}>{m.get(i)}</td>
+                              ))}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -718,7 +744,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
           })()}
 
           {/* Same one-click shortcuts as the startups directory. */}
-          <div style={{ marginBottom: "14px" }}>
+          <div style={{ marginBottom: "16px" }}>
             <FilterPresets
               presets={INVESTOR_PRESETS}
               filters={f as unknown as Record<string, unknown>}
@@ -748,7 +774,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
               {f.leadOnly && <AppliedChip label={t("investors.leadOnly")} onRemove={() => setF(p => ({ ...p, leadOnly: false }))} />}
               {f.verifiedOnly && <AppliedChip label={t("investors.verifiedOnly")} onRemove={() => setF(p => ({ ...p, verifiedOnly: false }))} />}
               <button onClick={() => setF(p => ({ ...DEFAULT, query: p.query }))}
-                className="text-xs text-cr-i4 hover:text-cr-i2 underline underline-offset-2 ml-1">
+                style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "4px 10px", cursor: "pointer", marginLeft: "4px" }}>
                 {t("investors.clearAllFilters")}
               </button>
             </div>
@@ -756,31 +782,29 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
           {/* Loading state */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-24 gap-3 text-cr-i4">
+            <div className="flex flex-col items-center justify-center py-24 gap-3">
               <Loader2 className="h-8 w-8 animate-spin text-cr-copper" />
-              <p className="text-sm">{t("investors.loadingInvestors")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("investors.loadingInvestors")}</p>
             </div>
           ) : loadError ? (
-            <div className="text-center py-20 bg-cr-paper rounded-2xl border border-cr-p4">
-              <p className="font-bold text-cr-ink text-lg mb-4">{t("errorPage.sectionTitle")}</p>
+            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
               <button onClick={() => window.location.reload()}
-                className="text-sm" style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "7px 18px", cursor: "pointer", color: "var(--cr-ink-3)" }}>
+                style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "9px 18px", minHeight: "40px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
                 {t("errorPage.retry")}
               </button>
             </div>
           ) : investors.length === 0 ? (
-            /* No investors yet */
-            <div className="text-center py-20 bg-cr-paper rounded-2xl border border-cr-p4">
-              <div className="w-16 h-16 bg-cr-copper/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-cr-copper/40" />
-              </div>
-              <p className="font-bold text-cr-ink text-lg mb-2">{t("investors.noInvestorsYet")}</p>
-              <p className="text-sm text-cr-i3 mb-6 max-w-xs mx-auto">
+            /* No investors yet -- one diamond, one sentence, one quiet action. */
+            <div style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", background: "var(--cr-paper-2)", padding: "64px 24px", textAlign: "center" }}>
+              <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "16px", marginBottom: "16px" }}>✦</span>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("investors.noInvestorsYet")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "40ch", margin: "0 auto 24px" }}>
                 {t("investors.noInvestorsYetSub")}
               </p>
               <Link
                 href="/auth/signup?role=investor"
-                className="inline-flex items-center gap-2 bg-cr-copper text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-cr-cu-l transition-colors"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", minHeight: "40px", padding: "10px 24px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)", textDecoration: "none" }}
               >
                 {t("investors.joinAsInvestor")} →
               </Link>
@@ -788,14 +812,14 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
           ) : (
             <>
               {/* Result count */}
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-cr-i3">
+              <div className="flex items-center justify-between flex-wrap gap-2" style={{ marginBottom: "20px" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                   {results.length === 1
                     ? t("investors.foundCountOne")
                     : t("investors.foundCount", { count: results.length })}
-                  {f.query && <span className="ml-1">{t("investors.forQuery")} &ldquo;<em>{f.query}</em>&rdquo;</span>}
+                  {f.query && <span style={{ marginLeft: "4px" }}>{t("investors.forQuery")} &ldquo;<em>{f.query}</em>&rdquo;</span>}
                   {results.length > 0 && (
-                    <span className="ml-2 text-cr-i4">
+                    <span style={{ marginLeft: "8px" }}>
                       · {t("investors.combinedCapacity", { count: results.length, sum: formatCheck(results.reduce((a, i) => a + (i.max_check || 0), 0)) })}
                     </span>
                   )}
@@ -804,17 +828,19 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                   {activeCount > 0 && (
                     <button
                       onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("startups.linkCopied2")); }}
-                      className="text-xs text-cr-copper hover:underline font-medium">
+                      style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", padding: 0 }}>
                       {t("investors.copyLink")}
                     </button>
                   )}
                   {results.length > 0 && (
-                    <button onClick={exportInvestorsCsv} className="text-xs text-cr-i4 hover:text-cr-i2 hover:underline font-medium">
+                    <button onClick={exportInvestorsCsv}
+                      style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", padding: 0 }}>
                       {t("investors.exportCsv2")}
                     </button>
                   )}
                   {activeCount > 0 && (
-                    <button onClick={() => setF(DEFAULT)} className="text-xs text-cr-copper hover:underline font-medium flex items-center gap-1">
+                    <button onClick={() => setF(DEFAULT)} className="flex items-center gap-1"
+                      style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: 0 }}>
                       <X className="h-3 w-3" /> {t("investors.clearFilters")}
                     </button>
                   )}
@@ -823,7 +849,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
               {/* Investor grid */}
               {results.length === 0 ? (
-                /* The shared shell, same as the startups browse — every list
+                /* The shared shell, same as the startups browse -- every list
                    surface's dead end should look like the same product. */
                 <EmptyState
                   Icon={Users}
@@ -837,13 +863,13 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                   }
                 />
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {results.slice(0, page * INV_PAGE_SIZE).map((inv, idx) => {
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {results.slice(0, page * INV_PAGE_SIZE).map((inv) => {
                     const meta = TYPE_META[inv.type] ?? TYPE_META.angel;
-                    const grad = GRAD_COLORS[idx % GRAD_COLORS.length];
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
-                      <div key={inv.id} className="cr-lift cr-spot cr-tilt group relative bg-cr-paper border border-cr-p4 rounded-2xl p-5 hover:border-cr-copper/30 transition-all duration-200 flex flex-col"
+                      <div key={inv.id} className="cr-lift cr-spot cr-tilt group relative flex flex-col"
+                        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease" }}
                         onMouseMove={e => {
                           const r = e.currentTarget.getBoundingClientRect();
                           const x = e.clientX - r.left, y = e.clientY - r.top;
@@ -851,14 +877,17 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                           e.currentTarget.style.setProperty("--my", `${y}px`);
                           e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
                           e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
+                          e.currentTarget.style.borderColor = "var(--cr-paper-4)";
                         }}
                         onMouseLeave={e => {
                           e.currentTarget.style.setProperty("--rx", "0deg");
                           e.currentTarget.style.setProperty("--ry", "0deg");
+                          e.currentTarget.style.borderColor = "var(--cr-rule-dark)";
                         }}>
                         {/* Top */}
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <div className="flex items-start justify-between" style={{ marginBottom: "14px" }}>
+                          {/* 12px padding gives each icon a 40px tap target. */}
+                          <div className="absolute top-1 right-1 flex items-center">
                             {myRaise && (
                               <button
                                 onClick={async (e) => {
@@ -867,41 +896,43 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                                   if (res.ok) notify.success(t("targets.added")); else notify.error(t("targets.failed"));
                                 }}
                                 aria-label={t("investors.target2")} title={t("investors.target2")}
-                                className="text-cr-p4 hover:text-cr-copper transition-colors">
+                                className="text-cr-p4 hover:text-cr-copper transition-colors"
+                                style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}>
                                 <Crosshair className="h-4 w-4" />
                               </button>
                             )}
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(inv.id); }}
                               aria-label={t("investors.compare2")} title={t("investors.compare2")}
-                              className={cn("transition-colors", compareIds.includes(inv.id) ? "text-cr-copper" : "text-cr-p4 hover:text-cr-copper")}>
+                              className={cn("transition-colors", compareIds.includes(inv.id) ? "text-cr-copper" : "text-cr-p4 hover:text-cr-copper")}
+                              style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}>
                               <GitCompareArrows className="h-4 w-4" />
                             </button>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded bg-cr-copper flex items-center justify-center font-bold text-white text-lg flex-shrink-0">
+                          <div className="flex items-center gap-3" style={{ paddingRight: "72px" }}>
+                            <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
                               {displayName[0].toUpperCase()}
                             </div>
                             <div>
-                              <p className="text-cr-ink leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px" }}>
+                              <p className="leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>
                                 {displayName}
                                 {inv.verified_at && (
                                   <BadgeCheck aria-label={t("investors.verifiedBadge")} className="inline-block ml-1.5 h-3.5 w-3.5 text-cr-copper align-[-2px]" />
                                 )}
                                 {(inv as { is_demo?: boolean }).is_demo && <span className="ml-1.5 align-middle inline-flex"><DemoBadge /></span>}
                               </p>
-                              {inv.firm && <p className="text-xs text-cr-i4 mt-0.5">{inv.firm}</p>}
-                              <div className="flex items-center gap-1.5 mt-1">
-                                <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-sm border bg-transparent uppercase tracking-wide", meta.color, meta.border)}>
+                              {inv.firm && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{inv.firm}</p>}
+                              <div className="flex items-center flex-wrap gap-1.5" style={{ marginTop: "6px" }}>
+                                <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                                   {t(meta.labelKey)}
                                 </span>
                                 {inv.lead_rounds && (
-                                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-sm border border-cr-copper-br text-cr-copper bg-transparent uppercase tracking-wide">
+                                  <span style={{ border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                                     {t("investors.leadsRounds")}
                                   </span>
                                 )}
                                 {myRaise && (inv.stages || []).includes(myRaise.stage) && (inv.industries || []).includes(myRaise.industry) && (
-                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-sm bg-cr-copper text-white uppercase tracking-wide">
+                                  <span className="text-white" style={{ background: "var(--cr-copper)", borderRadius: "999px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                                     {t("investors.fitsYourRaise")}
                                   </span>
                                 )}
@@ -912,14 +943,14 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
                         {/* Bio */}
                         {inv.bio && (
-                          <p className="text-sm text-cr-i3 line-clamp-2 leading-relaxed mb-4 flex-1">{inv.bio}</p>
+                          <p className="line-clamp-2 flex-1" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "14px" }}>{inv.bio}</p>
                         )}
 
-                        {/* Check size */}
+                        {/* Check size -- the card's number, on its own ruled strip. */}
                         {(inv.min_check || inv.max_check) && (
-                          <div className="border-t border-b border-cr-p4 px-0.5 py-2 mb-3">
-                            <p className="text-[10px] text-cr-i4 font-medium mb-0.5 uppercase tracking-wide">{t("investors.checkSize")}</p>
-                            <p className="text-xs text-cr-copper" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
+                          <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "8px 0", marginBottom: "12px" }}>
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("investors.checkSize")}</p>
+                            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>
                               {inv.min_check ? formatCheck(inv.min_check) : t("investors.any")} – {inv.max_check ? formatCheck(inv.max_check) : t("investors.any")}
                             </p>
                           </div>
@@ -927,9 +958,9 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
                         {/* Stages */}
                         {inv.stages && inv.stages.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-3">
+                          <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
                             {inv.stages.map(s => (
-                              <span key={s} className="text-[10px] font-medium px-2 py-0.5 bg-transparent text-cr-i3 border border-cr-p4 rounded-sm uppercase tracking-wide">
+                              <span key={s} style={{ border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                                 {STAGE_LABELS[s] ?? s}
                               </span>
                             ))}
@@ -938,29 +969,30 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
                         {/* Industries */}
                         {inv.industries && inv.industries.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-3">
+                          <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
                             {inv.industries.slice(0, 3).map(ind => (
-                              <span key={ind} className="text-[10px] font-medium px-2 py-0.5 bg-transparent text-cr-i4 border border-cr-p4 rounded-sm">{ind}</span>
+                              <span key={ind} style={{ border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{ind}</span>
                             ))}
                             {inv.industries.length > 3 && (
-                              <span className="text-[10px] font-medium px-2 py-0.5 bg-transparent text-cr-i4 border border-cr-p4 rounded-sm">+{inv.industries.length - 3}</span>
+                              <span style={{ border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)" }}>+{inv.industries.length - 3}</span>
                             )}
                           </div>
                         )}
 
                         {/* Geography */}
                         {inv.geography && inv.geography.length > 0 && (
-                          <div className="flex items-center gap-1.5 text-xs text-cr-i4 mb-4">
+                          <div className="flex items-center gap-1.5" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
                             <Globe className="h-3 w-3" />
                             {inv.geography.slice(0, 2).map(g => countryLabel(t, g)).join(" · ")}
                             {inv.geography.length > 2 && ` +${inv.geography.length - 2}`}
                           </div>
                         )}
 
-                        {/* CTA */}
+                        {/* CTA -- quiet tertiary; the page keeps one primary. */}
                         <Link
                           href={`/investors/${inv.slug}`}
-                          className="mt-auto w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-cr-copper hover:bg-cr-cu-l text-white text-sm font-semibold transition-colors"
+                          className="mt-auto w-full flex items-center gap-2"
+                          style={{ minHeight: "40px", paddingTop: "10px", borderTop: "1px solid var(--cr-rule)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}
                         >
                           {t("investors.viewProfile")} →
                         </Link>
@@ -970,11 +1002,11 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                 </div>
               )}
 
-              {/* Load more — same 24-a-page rhythm as the startup directory. */}
+              {/* Load more -- same 24-a-page rhythm as the startup directory. */}
               {results.length > page * INV_PAGE_SIZE && (
                 <div className="mt-10 flex justify-center">
                   <button onClick={() => setPage(p => p + 1)}
-                    className="text-sm text-cr-copper border border-cr-copper/40 rounded px-8 py-2.5 hover:bg-cr-copper/5 transition-colors">
+                    style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "10px 32px", minHeight: "40px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: "pointer" }}>
                     {t("startups.loadMore", { count: Math.min(INV_PAGE_SIZE, results.length - page * INV_PAGE_SIZE) })}
                   </button>
                 </div>
@@ -982,15 +1014,17 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
             </>
           )}
 
-          {/* Bottom CTA */}
+          {/* Bottom CTA -- the page's one band moment, and its one primary. */}
           {!loading && (
-            <div className="mt-16 bg-cr-copper rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-5 text-white">
+            <div className="mt-16 flex flex-col md:flex-row md:items-center justify-between gap-6"
+              style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "32px" }}>
               <div>
-                <h2 className="text-xl font-bold mb-1">{t("investors.readyFunded")}</h2>
-                <p className="text-white/70 text-sm">{t("investors.readyFundedSub")}</p>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-band-ink)", letterSpacing: "-0.01em", marginBottom: "6px" }}>{t("investors.readyFunded")}</h2>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-band-ink-dim)", lineHeight: 1.6 }}>{t("investors.readyFundedSub")}</p>
               </div>
               <Link href="/auth/signup?role=startup"
-                className="inline-flex items-center gap-2 bg-cr-copper text-white hover:bg-cr-cu-l h-11 px-6 rounded-xl text-sm font-bold whitespace-nowrap transition-colors shadow-lg flex-shrink-0">
+                className="btn-copper-shimmer text-white whitespace-nowrap flex-shrink-0"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "13px 28px", borderRadius: "999px", border: "none", textDecoration: "none" }}>
                 {t("investors.listYourStartup")} →
               </Link>
             </div>

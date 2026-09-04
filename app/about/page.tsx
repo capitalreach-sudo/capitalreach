@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { Users, Target, Zap, Shield, Heart } from "lucide-react";
+import { Target, Zap, Shield, Heart } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 
@@ -32,49 +32,88 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-base">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--cr-paper)" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative bg-cr-paper border-b border-cr-p4 py-20 px-4 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-cr-copper/8 blur-[120px] pointer-events-none" />
-        <div className="container mx-auto max-w-3xl text-center relative">
-          <div className="w-12 h-12 bg-cr-copper/10 rounded-xl flex items-center justify-center mx-auto mb-5 border border-cr-copper/20">
-            <Users className="h-6 w-6 text-cr-copper" />
+      {/* Hero -- eyebrow ruled label, serif italic display, one quiet sub. */}
+      <section style={{ background: "var(--cr-paper)" }}>
+        <div className="max-w-[880px] mx-auto px-6 md:px-10 py-16 md:py-24">
+          <div className="ruled-label" style={{ marginBottom: "28px" }}>
+            {t("about.metaTitle")}
           </div>
-          <h1 className="text-4xl font-extrabold mb-4 text-cr-ink">
+          <h1
+            style={{
+              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontWeight:    700,
+              fontStyle:     "italic",
+              fontSize:      "clamp(30px, 5.5vw, 52px)",
+              color:         "var(--cr-ink)",
+              lineHeight:    1.08,
+              letterSpacing: "-0.02em",
+              textWrap:      "balance",
+              marginBottom:  "24px",
+            }}
+          >
             {t("about.heroTitle")}
           </h1>
-          <p className="text-cr-i3 text-lg max-w-xl mx-auto leading-relaxed">
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.7, maxWidth: "58ch" }}>
             {t("about.heroSub")}
           </p>
         </div>
       </section>
 
-      {/* Mission — also the target of the footer's "How it works" link. */}
-      <section id="how-it-works" className="py-20 px-4 scroll-mt-20">
-        <div className="container mx-auto max-w-4xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* Mission -- the one band moment on this page. Also the target of the
+          footer's "How it works" link. */}
+      <section
+        id="how-it-works"
+        className="scroll-mt-20"
+        style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)" }}
+      >
+        <div className="max-w-[1040px] mx-auto px-6 md:px-10 py-16 md:py-24">
+          <div className="grid md:grid-cols-[1fr_260px] gap-12 md:gap-16 items-start">
             <div>
-              <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3">{t("about.missionLabel")}</p>
-              <h2 className="text-3xl font-extrabold text-cr-ink mb-4">
+              <div className="ruled-label" style={{ color: "var(--cr-band-ink-dim)", marginBottom: "24px" }}>
+                {t("about.missionLabel")}
+              </div>
+              <h2
+                style={{
+                  fontFamily:    "'Playfair Display', Georgia, serif",
+                  fontWeight:    700,
+                  fontStyle:     "italic",
+                  fontSize:      "clamp(22px, 3vw, 28px)",
+                  color:         "var(--cr-band-ink)",
+                  lineHeight:    1.25,
+                  letterSpacing: "-0.01em",
+                  textWrap:      "balance",
+                  marginBottom:  "24px",
+                }}
+              >
                 {t("about.missionTitle")}
               </h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", lineHeight: 1.7, maxWidth: "62ch" }}>
                 {t("about.missionP1")}
               </p>
-              <p className="text-cr-i3 leading-relaxed text-sm mt-3">
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", lineHeight: 1.7, maxWidth: "62ch", marginTop: "16px" }}>
                 {t("about.missionP2")}
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+
+            {/* The two numbers, hairline-ruled rows -- no stat boxes. */}
+            <div style={{ borderTop: "1px solid var(--cr-copper-br)" }}>
               {[
                 { label: t("about.statSuccessFee"), value: "2%" },
                 { label: t("about.statAvgReview"), value: "48h" },
               ].map(stat => (
-                <div key={stat.label} className="bg-cr-paper border border-cr-p4 rounded-xl p-5 text-center">
-                  <p className="text-3xl font-extrabold text-cr-ink">{stat.value}</p>
-                  <p className="text-xs text-cr-i3 mt-1">{stat.label}</p>
+                <div
+                  key={stat.label}
+                  style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", padding: "20px 0", borderBottom: "1px solid var(--cr-copper-br)" }}
+                >
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    {stat.label}
+                  </span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
+                    {stat.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -82,22 +121,47 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-20 px-4 bg-cr-paper border-y border-cr-p4">
-        <div className="container mx-auto max-w-4xl">
-          <p className="text-xs font-semibold text-cr-copper uppercase tracking-widest mb-3 text-center">{t("about.valuesLabel")}</p>
-          <h2 className="text-3xl font-extrabold text-cr-ink text-center mb-12">{t("about.valuesTitle")}</h2>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {VALUES.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="bg-cr-p2 border border-cr-p4 rounded-xl p-6 hover:border-cr-i4 transition-colors">
-                <div className="w-10 h-10 bg-cr-copper/10 rounded-xl flex items-center justify-center mb-4 border border-cr-copper/20">
-                  <Icon className="h-5 w-5 text-cr-copper" />
+      {/* Values -- numbered rail, ledger lines between entries, no icon cards. */}
+      <section style={{ background: "var(--cr-paper)" }}>
+        <div className="max-w-[880px] mx-auto px-6 md:px-10 py-16 md:py-24">
+          <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("about.valuesLabel")}</div>
+          <h2
+            style={{
+              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontWeight:    700,
+              fontStyle:     "italic",
+              fontSize:      "clamp(22px, 3vw, 28px)",
+              color:         "var(--cr-ink)",
+              letterSpacing: "-0.01em",
+              marginBottom:  "40px",
+            }}
+          >
+            {t("about.valuesTitle")}
+          </h2>
+          <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {VALUES.map(({ title, desc }, i) => (
+              <li
+                key={title}
+                className="grid grid-cols-[44px_1fr] md:grid-cols-[64px_1fr]"
+                style={{ gap: "16px", padding: "24px 0", borderTop: "1px solid var(--cr-rule)", borderBottom: i === VALUES.length - 1 ? "1px solid var(--cr-rule)" : "none" }}
+              >
+                <span
+                  aria-hidden
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", lineHeight: 1.5 }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>
+                    {title}
+                  </h3>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13.5px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "58ch" }}>
+                    {desc}
+                  </p>
                 </div>
-                <h3 className="font-bold text-cr-ink text-base mb-2">{title}</h3>
-                <p className="text-sm text-cr-i3 leading-relaxed">{desc}</p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 

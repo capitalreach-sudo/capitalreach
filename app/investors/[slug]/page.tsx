@@ -25,8 +25,48 @@ import { getLocale, getTranslator } from "@/lib/locale-server";
 import { detectLanguage } from "@/lib/detect-language";
 import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 
 interface Props { params: { slug: string } }
+
+// ── House register primitives (style objects only) ──────────────────────────
+
+// Ruled-label companion: the small uppercase label above a value.
+const LABEL: CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+};
+
+// Badge: Label type, 3px radius, hairline border -- the register's one chip shape.
+const BADGE: CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "6px",
+  padding: "3px 8px", borderRadius: "3px",
+  border: "1px solid var(--cr-paper-4)", background: "var(--cr-paper-2)",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
+  textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-3)",
+  whiteSpace: "nowrap", textDecoration: "none",
+};
+
+const BADGE_COPPER: CSSProperties = {
+  ...BADGE,
+  border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)",
+  color: "var(--cr-copper)",
+};
+
+// Interactive chips keep Label type but reach a 40px touch target.
+const BADGE_ACTION: CSSProperties = {
+  ...BADGE_COPPER, minHeight: "40px", padding: "0 12px",
+};
+
+const DATA: CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
+};
+
+// Metric cell in the stats strip: stacked with rules between on mobile,
+// hairline-divided columns from sm up.
+const STAT_CELL =
+  "flex-1 min-w-0 py-3 first:pt-0 last:pb-0 sm:py-0 sm:px-6 sm:first:pl-0 sm:last:pr-0 " +
+  "border-t first:border-t-0 sm:border-t-0 sm:border-l sm:first:border-l-0 border-[color:var(--cr-rule)]";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
@@ -207,10 +247,10 @@ export default async function InvestorProfilePage({ params }: Props) {
           when they differ — always labelled, with the original one click away. */}
       <TranslatedContent entityType="investor" entityId={investor.id}
         sourceLocale={sourceLocale} initialFields={initialTranslation} available={translationAvailable}>
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
+      <main className="container mx-auto px-4 py-12 max-w-3xl" style={{ background: "var(--cr-paper)" }}>
 
         {/* Back nav */}
-        <Link href="/investors" className="inline-flex items-center gap-1.5 text-sm text-cr-i4 hover:text-cr-i2 mb-6 transition-colors">
+        <Link href="/investors" className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i4 hover:text-cr-i2 mb-4 transition-colors">
           ← {t("investorProfile.back")}
         </Link>
 
@@ -218,14 +258,16 @@ export default async function InvestorProfilePage({ params }: Props) {
             An investor's only previous view of their own listing was the
             settings form. This is the page founders actually judge them on. */}
         {isOwnProfile && (
-          <div className="flex items-center justify-between gap-4 bg-cr-copper/10 border border-cr-copper/20 rounded-xl px-4 py-3 mb-6">
+          <div className="flex items-center justify-between gap-4 px-4 py-2 mb-6"
+            style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
             <div className="flex items-center gap-2 min-w-0">
-              <Eye className="h-4 w-4 text-cr-copper flex-shrink-0" />
-              <p className="text-sm text-cr-cu-l">{t("investorProfile.selfPreview")}</p>
+              <Eye className="h-4 w-4 flex-shrink-0" style={{ color: "var(--cr-copper)" }} />
+              <p className="text-cr-cu-l" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px" }}>{t("investorProfile.selfPreview")}</p>
             </div>
             <Link
               href="/dashboard/investor/settings"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-cr-copper hover:underline flex-shrink-0"
+              className="inline-flex items-center gap-1.5 min-h-[40px] flex-shrink-0"
+              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}
             >
               <Pencil className="h-3.5 w-3.5" /> {t("investorProfile.editProfile")}
             </Link>
@@ -233,14 +275,20 @@ export default async function InvestorProfilePage({ params }: Props) {
         )}
 
         {/* ── Profile header ─────────────────────────────────────────────── */}
-        <div className="flex items-start gap-6 mb-8">
-          <Avatar className="h-20 w-20 text-xl flex-shrink-0">
-            <AvatarFallback className="bg-cr-copper/15 text-cr-cu-l text-2xl font-bold">
+        <header className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-8">
+          <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
+            <AvatarFallback className="bg-cr-copper/15 text-cr-cu-l text-2xl"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-cr-ink mb-0.5">
+          <div className="flex-1 min-w-0 w-full">
+            {investor.firm_name && (
+              <p style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "8px" }}>
+                {investor.firm_name}
+              </p>
+            )}
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 5vw, 44px)", lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--cr-ink)", marginBottom: "12px" }}>
               {displayName}
               {investor.verified_at && (
                 <span className="ml-2 align-middle inline-flex">
@@ -248,18 +296,12 @@ export default async function InvestorProfilePage({ params }: Props) {
                 </span>
               )}
             </h1>
-            {investor.firm_name && (
-              <p className="text-cr-copper font-semibold text-sm mb-2">{investor.firm_name}</p>
-            )}
             <div className="flex items-center gap-2 flex-wrap mb-3">
               {viewerDeal && (
                 // Same pill as the startup profile: the two ends of a deal
                 // should both show it. Wording reuses the kanban's own column
                 // labels so profile and pipeline never disagree.
-                <Link
-                  href="/deals"
-                  className="inline-flex items-center gap-1.5 bg-cr-copper/10 border border-cr-copper/25 text-cr-copper rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider no-underline"
-                >
+                <Link href="/deals" style={BADGE_ACTION}>
                   <Handshake className="h-3 w-3" />
                   {t("startupDetail.inYourPipeline")}{" — "}
                   {viewerDeal.status === "intro" ? t("deals.colIntro")
@@ -276,26 +318,25 @@ export default async function InvestorProfilePage({ params }: Props) {
                 <InterestedButton targetType="investor" targetId={investor.id} />
               )}
               {investor.booking_url && user && (
-                <a href={investor.booking_url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 bg-cr-copper/10 border border-cr-copper/25 text-cr-copper rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider no-underline">
+                <a href={investor.booking_url} target="_blank" rel="noopener noreferrer" style={BADGE_ACTION}>
                   {t("startupDetail.bookCall")}
                 </a>
               )}
-              <Badge variant="outline">{typeLabel(investor.type)}</Badge>
-              {investor.is_demo && <span className="ml-2 inline-flex align-middle"><DemoBadge /></span>}
+              <span style={BADGE}>{typeLabel(investor.type)}</span>
+              {investor.is_demo && <span className="inline-flex align-middle"><DemoBadge /></span>}
               {investor.subscription_tier !== "free" && (
-                <Badge className="bg-cr-copper/15 text-cr-cu-l border-0">
+                <span style={BADGE_COPPER}>
                   {investor.subscription_tier === "pro_investor" ? t("investorProfile.tierProInvestor") :
                    investor.subscription_tier === "institutional" ? t("investorProfile.tierInstitutional") :
-                   investor.subscription_tier}
-                </Badge>
+                   String(investor.subscription_tier).replace(/_/g, " ")}
+                </span>
               )}
               {/* One badge per fact. lead_rounds and the profiles copy
                   (lead_investor) are the same flag, and investor_type was
                   rendering the raw enum ("family_office") directly beneath the
                   label-mapped version above. */}
               {investor.lead_rounds && (
-                <Badge className="bg-emerald-100 text-emerald-700 border-0">{t("investors.leadsRounds")}</Badge>
+                <span style={BADGE}>{t("investors.leadsRounds")}</span>
               )}
             </div>
             {/* B23: founder outbound — message / add to pipeline, right here. */}
@@ -306,82 +347,86 @@ export default async function InvestorProfilePage({ params }: Props) {
               <InvestorToInvestor investorId={investor.id} />
             )}
             {investor.bio && (
-              <p className="text-cr-i3 leading-relaxed text-sm"><T field="bio">{investor.bio}</T></p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)", maxWidth: "60ch" }}>
+                <T field="bio">{investor.bio}</T>
+              </p>
             )}
 
             {/* Social / web links */}
-            <div className="flex flex-wrap gap-3 mt-3">
+            <div className="flex flex-wrap gap-x-4 gap-y-0 mt-2">
               {investor.linkedin_url && (
                 <a href={investor.linkedin_url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
+                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors">
                   <Linkedin className="h-4 w-4" /> LinkedIn
                 </a>
               )}
               {investor.twitter_url && (
                 <a href={investor.twitter_url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-sky-500 hover:underline">
+                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors">
                   <Twitter className="h-4 w-4" /> Twitter / X
                 </a>
               )}
               {investor.website && (
                 <a href={investor.website} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-cr-i3 hover:underline">
+                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors">
                   <Globe className="h-4 w-4" /> {t("investorProfile.website")}
                 </a>
               )}
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* ── Investment thesis ──────────────────────────────────────────── */}
+        {/* ── Intro video ────────────────────────────────────────────────── */}
         {/* Intro video — a paid feature that stays paid: rendered only while
             the plan still includes it, so a downgrade retires the video
             without touching the row. */}
         {investor.video_url && (investor.subscription_tier === "pro" || investor.subscription_tier === "institution") && (
-          <div className="bg-cr-paper border border-cr-p4 rounded-2xl p-6 mb-6">
-            <h2 className="font-semibold text-cr-ink mb-3">{t("investorProfile.introVideo")}</h2>
-            <div style={{ aspectRatio: "16/9", borderRadius: 8, overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
+          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investorProfile.introVideo")}</div>
+            <div style={{ aspectRatio: "16/9", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
               <iframe
                 src={investor.video_url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")}
                 style={{ width: "100%", height: "100%" }}
                 allowFullScreen
               />
             </div>
-          </div>
+          </section>
         )}
 
+        {/* ── Investment thesis ──────────────────────────────────────────── */}
         {investor.investment_thesis && (
-          <div className="bg-cr-copper/10 border border-cr-copper/20 rounded-xl p-5 mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-cu-l text-sm">{t("investors.thesis")}</h2>
-            </div>
-            <p className="text-sm text-cr-cu-l leading-relaxed"><T field="investment_thesis">{investor.investment_thesis}</T></p>
-          </div>
+          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investors.thesis")}</div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", lineHeight: 1.65, color: "var(--cr-ink-2)", maxWidth: "62ch" }}>
+              <T field="investment_thesis">{investor.investment_thesis}</T>
+            </p>
+          </section>
         )}
 
-        {/* ── Key stats row ─────────────────────────────────────────────── */}
+        {/* ── Key stats strip ─────────────────────────────────────────────
+            A hairline-divided metrics strip, not three boxes: only metrics
+            that HAVE values render. */}
         {(investor.aum || investor.number_of_investments || investor.avg_hold_period) && (
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <section className="mt-8 pt-8 flex flex-col sm:flex-row" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             {investor.aum && (
-              <div className="bg-cr-paper border rounded-xl p-4 text-center">
-                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">{t("investorProfile.aumFundSize")}</p>
-                <p className="text-lg font-bold text-cr-ink">{investor.aum}</p>
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.aumFundSize")}</p>
+                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", lineHeight: 1, color: "var(--cr-ink)" }}>{investor.aum}</p>
               </div>
             )}
             {investor.number_of_investments != null && (
-              <div className="bg-cr-paper border rounded-xl p-4 text-center">
-                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">{t("investorProfile.investmentsLabel")}</p>
-                <p className="text-lg font-bold text-cr-ink">{investor.number_of_investments}</p>
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.investmentsLabel")}</p>
+                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", lineHeight: 1, color: "var(--cr-ink)" }}>{investor.number_of_investments}</p>
               </div>
             )}
             {investor.avg_hold_period && (
-              <div className="bg-cr-paper border rounded-xl p-4 text-center">
-                <p className="text-xs text-cr-i3 font-medium uppercase tracking-wide mb-1">{t("investorProfile.avgHold")}</p>
-                <p className="text-lg font-bold text-cr-ink">{investor.avg_hold_period}</p>
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.avgHold")}</p>
+                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", lineHeight: 1, color: "var(--cr-ink)" }}>{investor.avg_hold_period}</p>
               </div>
             )}
-          </div>
+          </section>
         )}
 
         {/* A founder deciding whether to spend an intro on someone wants to
@@ -389,7 +434,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             signal the schema currently supports -- there is no last-active
             column, so it is not claimed. */}
         {memberSince && (
-          <p className="text-xs text-cr-i4 mb-6 text-center">
+          <p className="mt-4" style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", letterSpacing: "0.02em" }}>
             {t("investorProfile.memberSince", { date: memberSince })}
           </p>
         )}
@@ -398,13 +443,13 @@ export default async function InvestorProfilePage({ params }: Props) {
         {/* portfolio_count is deliberately not repeated here: it is the same
             number as number_of_investments, already shown in the stats row. */}
         {(investor.min_check || investor.max_check || investor.languages?.length || investor.board_seat_pref || investor.follow_on_policy) && (
-          <div className="bg-cr-paper border rounded-xl p-6 mb-6">
-            <h2 className="font-semibold text-cr-ink mb-4">{t("investorProfile.investorDetail")}</h2>
-            <div className="grid grid-cols-2 gap-4">
+          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investorProfile.investorDetail")}</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
               {(investor.min_check || investor.max_check) && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investors.checkSize")}</p>
-                  <p className="font-mono font-semibold text-cr-ink">
+                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investors.checkSize")}</p>
+                  <p style={{ ...DATA, fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
                     {investor.min_check ? formatCurrency(investor.min_check, true) : "—"}
                     {" – "}
                     {investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}
@@ -413,40 +458,40 @@ export default async function InvestorProfilePage({ params }: Props) {
               )}
               {investor.board_seat_pref && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.boardSeat")}</p>
-                  <p className="text-sm text-cr-ink">{investor.board_seat_pref}</p>
+                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.boardSeat")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.board_seat_pref}</p>
                 </div>
               )}
               {investor.follow_on_policy && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.followOn")}</p>
-                  <p className="text-sm text-cr-ink">{investor.follow_on_policy}</p>
+                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.followOn")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.follow_on_policy}</p>
                 </div>
               )}
               {(investor.languages ?? []).length > 0 && (
-                <div className="col-span-2">
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.languagesLabel")}</p>
+                <div className="sm:col-span-2">
+                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.languagesLabel")}</p>
                   <div className="flex flex-wrap gap-2">
                     {(investor.languages ?? []).map((lang: string) => (
-                      <span key={lang} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{lang}</span>
+                      <span key={lang} style={BADGE}>{lang}</span>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         )}
 
         {/* ── Investment preferences ─────────────────────────────────────── */}
-        <div className="bg-cr-paper border rounded-xl p-6 space-y-5 mb-6">
-          <h2 className="font-semibold text-cr-ink">{t("investorProfile.investmentPreferences")}</h2>
+        <section className="mt-8 pt-8 space-y-6" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+          <div className="ruled-label">{t("investorProfile.investmentPreferences")}</div>
 
           {investor.industries?.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.industriesLabel")}</p>
+              <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.industriesLabel")}</p>
               <div className="flex flex-wrap gap-2">
                 {investor.industries.map((ind: string) => (
-                  <span key={ind} className="text-xs bg-cr-p3 text-cr-i2 px-2.5 py-1 rounded-full">{ind}</span>
+                  <span key={ind} style={BADGE}>{ind}</span>
                 ))}
               </div>
             </div>
@@ -454,10 +499,10 @@ export default async function InvestorProfilePage({ params }: Props) {
 
           {investor.stages?.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-2">{t("investorProfile.stagesLabel")}</p>
+              <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.stagesLabel")}</p>
               <div className="flex flex-wrap gap-2">
                 {investor.stages.map((s: string) => (
-                  <span key={s} className="text-xs bg-blue-100 text-blue-400 px-2.5 py-1 rounded-full capitalize">
+                  <span key={s} style={BADGE}>
                     {s.replace(/_/g, " ")}
                   </span>
                 ))}
@@ -471,74 +516,88 @@ export default async function InvestorProfilePage({ params }: Props) {
 
           {investor.geography?.length > 0 && (
             <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 text-cr-i4 mt-0.5 flex-shrink-0" />
-              <div className="flex flex-wrap gap-1.5">
+              <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: "var(--cr-ink-4)" }} />
+              <div className="flex flex-wrap gap-2">
                 {investor.geography.map((g: string) => (
-                  <span key={g} className="text-xs bg-cr-p3 text-cr-i2 px-2 py-0.5 rounded-full">{countryLabel(t, g)}</span>
+                  <span key={g} style={BADGE}>{countryLabel(t, g)}</span>
                 ))}
               </div>
             </div>
           )}
 
           {(investor.follow_on_policy || investor.board_seat_pref) && (
-            <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
               {investor.follow_on_policy && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.followOnPolicy")}</p>
-                  <p className="text-sm text-cr-i2">{investor.follow_on_policy}</p>
+                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.followOnPolicy")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.follow_on_policy}</p>
                 </div>
               )}
               {investor.board_seat_pref && (
                 <div>
-                  <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-1">{t("investorProfile.boardPreference")}</p>
-                  <p className="text-sm text-cr-i2">{investor.board_seat_pref}</p>
+                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.boardPreference")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.board_seat_pref}</p>
                 </div>
               )}
             </div>
           )}
-        </div>
+        </section>
 
         {/* ── Portfolio companies ────────────────────────────────────────── */}
+        {/* Ledger rows with a numbered rail, not a grid of boxes. */}
         {portfolio.length > 0 && (
-          <div className="bg-cr-paper border rounded-xl p-6 mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Briefcase className="h-4 w-4 text-cr-i4" />
-              <h2 className="font-semibold text-cr-ink">{t("investorProfile.portfolioCompanies")}</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("investorProfile.portfolioCompanies")}</div>
+            <div>
               {portfolio.map((co, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-cr-p2 rounded-lg border">
-                  <span className="text-sm font-medium text-cr-ink">{co.name}</span>
-                  <div className="flex gap-1.5">
+                <div key={i} className="flex items-center justify-between gap-3 flex-wrap"
+                  style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                  <div className="flex items-baseline gap-3 min-w-0">
+                    <span style={{ ...DATA, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", minWidth: "20px", flexShrink: 0 }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="truncate" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{co.name}</span>
+                  </div>
+                  <div className="flex gap-2">
                     {co.stage && (
-                      <span className="text-xs bg-blue-100 text-blue-400 px-2 py-0.5 rounded-full">{co.stage}</span>
+                      <span style={BADGE}>{co.stage.replace(/_/g, " ")}</span>
                     )}
                     {co.outcome && (
-                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">{co.outcome}</span>
+                      <span style={BADGE_COPPER}>{co.outcome.replace(/_/g, " ")}</span>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {/* ── Similar investors ── */}
         {similar.length > 0 && (
-          <div className="mt-8 pt-6 border-t border-cr-p4">
-            <p className="text-xs font-semibold text-cr-i3 uppercase tracking-wide mb-3">{t("investorProfile.similarInvestors")}</p>
-            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-              {similar.map((s) => (
-                <a key={s.slug} href={`/investors/${s.slug}`} className="bg-cr-paper border rounded-xl p-4 hover:border-cr-copper transition-colors">
-                  <p className="font-semibold text-cr-ink text-sm truncate">{s.display_name || s.firm_name || s.slug}</p>
-                  <p className="text-xs text-cr-i4 mt-0.5">{typeLabel(s.type)}{s.firm_name && s.display_name ? ` · ${s.firm_name}` : ""}</p>
+          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("investorProfile.similarInvestors")}</div>
+            <div>
+              {similar.map((s, i) => (
+                <a key={s.slug} href={`/investors/${s.slug}`}
+                  className="group flex items-center justify-between gap-4 hover:bg-cr-p3 transition-colors -mx-2 px-2"
+                  style={{ padding: "12px 8px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none", minHeight: "48px", borderRadius: "4px" }}>
+                  <div className="min-w-0">
+                    <p className="truncate text-cr-ink group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
+                      {s.display_name || s.firm_name || s.slug}
+                    </p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                      {typeLabel(s.type)}{s.firm_name && s.display_name ? ` · ${s.firm_name}` : ""}
+                    </p>
+                  </div>
                   {(s.industries ?? []).length > 0 && (
-                    <p className="text-xs text-cr-i3 mt-1.5 truncate">{(s.industries ?? []).slice(0, 3).join(", ")}</p>
+                    <p className="truncate hidden sm:block text-right" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", maxWidth: "40%" }}>
+                      {(s.industries ?? []).slice(0, 3).join(", ")}
+                    </p>
                   )}
                 </a>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {/* ── CTA ───────────────────────────────────────────────────────────
@@ -546,11 +605,12 @@ export default async function InvestorProfilePage({ params }: Props) {
             sign up as a startup, including the investor viewing their own page
             and founders who already have a listing. */}
         {!user && (
-          <div className="mt-4 text-center">
-            <p className="text-cr-i3 text-sm mb-4">
+          <div className="mt-8 pt-8 flex flex-col items-center text-center" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)", maxWidth: "44ch", marginBottom: "16px" }}>
               {t("investorProfile.founderCta", { name: displayName })}
             </p>
-            <a href="/auth/signup?role=startup" className="text-cr-copper font-medium hover:underline">
+            <a href="/auth/signup?role=startup"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "var(--cr-copper)", color: "white", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", textDecoration: "none" }}>
               {t("investors.listYourStartup")} →
             </a>
           </div>
@@ -572,7 +632,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             claims. Signed-out visitors cannot — a report needs someone to
             come back to. */}
         {user && (
-          <div className="mt-8 text-center">
+          <div className="mt-8" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
             <ReportButton targetType="investor" targetId={investor.id} />
           </div>
         )}

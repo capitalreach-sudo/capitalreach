@@ -8,6 +8,10 @@
   :root {
     /* Backgrounds — warm paper family */
     --cr-paper:   #F5F0E8;
+    /* RGB triplets for Tailwind alpha-modifier support (see tailwind.config). */
+    --cr-paper-rgb: 245 240 232; --cr-p2-rgb: 237 232 222; --cr-p4-rgb: 216 208 196;
+    --cr-copper-rgb: 181 101 29; --cr-cu-d-rgb: 138 74 21; --cr-up-rgb: 45 106 79;
+
     --cr-paper-2: #EDE8DE;
     --cr-paper-3: #E4DDD2;
     --cr-paper-4: #D8D0C4;
@@ -81,6 +85,8 @@
      Set via data-theme on <html>, written by the navbar toggle and read from
      the cr_theme cookie server-side so there is no flash of the wrong theme. */
   [data-theme="dark"] {
+    --cr-paper-rgb: 15 13 10; --cr-p2-rgb: 22 19 15; --cr-p4-rgb: 42 36 27;
+    --cr-copper-rgb: 217 140 51; --cr-cu-d-rgb: 181 101 29; --cr-up-rgb: 85 178 135;
     /* The professional register: deeper, near-black warm charcoal with
        clearer elevation steps. Ink slightly cooled for long reading;
        copper a touch brighter so it reads as brass on black, not orange. */
@@ -155,6 +161,8 @@
      this direction reads as where the money actually lives. */
   [data-style="business"] {
     --cr-paper:   #FFFFFF;
+    --cr-paper-rgb: 255 255 255; --cr-p2-rgb: 250 250 250; --cr-p4-rgb: 228 228 231;
+    --cr-copper-rgb: 4 120 87; --cr-cu-d-rgb: 6 95 70; --cr-up-rgb: 4 120 87;
     --cr-paper-2: #FAFAFA;
     --cr-paper-3: #F4F4F5;
     --cr-paper-4: #E4E4E7;
@@ -220,6 +228,8 @@
      ground -- same relationship copper has to the warm dark theme. */
   [data-style="business"][data-theme="dark"] {
     --cr-paper:   #0A0A0A;
+    --cr-paper-rgb: 10 10 10; --cr-p2-rgb: 17 17 19; --cr-p4-rgb: 38 38 43;
+    --cr-copper-rgb: 52 211 153; --cr-cu-d-rgb: 16 185 129; --cr-up-rgb: 52 211 153;
     --cr-paper-2: #111113;
     --cr-paper-3: #1A1A1D;
     --cr-paper-4: #26262B;

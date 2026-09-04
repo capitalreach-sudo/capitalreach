@@ -1,49 +1,123 @@
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
+
+// The one decorative glyph the house permits.
+function DiamondDot() {
+  return (
+    <svg width="6" height="6" viewBox="0 0 6 6" fill="none" style={{ flexShrink: 0 }} aria-hidden>
+      <path d="M3 0L6 3L3 6L0 3L3 0Z" fill="var(--cr-copper)" />
+    </svg>
+  );
+}
 
 export default async function NotFound() {
   const t = await getTranslator(getLocale());
   return (
-    <div className="min-h-screen flex flex-col bg-base">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--cr-paper)" }}>
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center px-4 py-24">
-        <div className="text-center max-w-lg">
-          {/* Logo mark */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-20 h-20 bg-cr-copper/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(196,158,80,0.2)] border border-cr-copper/20">
-              <span className="text-cr-copper font-black text-2xl">CR</span>
-            </div>
+      <main className="flex-1 flex items-center justify-center px-6 py-24">
+        <div className="w-full max-w-[560px] flex flex-col items-center text-center">
+          {/* House mark, set as the ruled label */}
+          <div className="ruled-label" style={{ justifyContent: "center", marginBottom: "32px" }}>
+            CR
           </div>
 
-          {/* 404 */}
-          <p className="text-9xl font-extrabold text-cr-copper/10 leading-none select-none -mb-4">
+          {/* The number is the moment: oversized mono, copper, tabular */}
+          <p
+            aria-hidden
+            className="select-none"
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 700,
+              fontSize: "clamp(96px, 22vw, 160px)",
+              fontVariantNumeric: "tabular-nums",
+              color: "var(--cr-copper)",
+              lineHeight: 1,
+              letterSpacing: "-0.04em",
+            }}
+          >
             404
           </p>
 
-          <h1 className="text-3xl font-extrabold text-cr-ink mb-3">
+          {/* Ledger line, broken by the diamond */}
+          <div
+            aria-hidden
+            style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", maxWidth: "280px", margin: "32px 0" }}
+          >
+            <span style={{ flex: 1, height: "1px", background: "var(--cr-rule)" }} />
+            <DiamondDot />
+            <span style={{ flex: 1, height: "1px", background: "var(--cr-rule)" }} />
+          </div>
+
+          <h1
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontWeight: 700,
+              fontStyle: "italic",
+              fontSize: "clamp(30px, 5vw, 44px)",
+              color: "var(--cr-ink)",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              textWrap: "balance",
+            }}
+          >
             {t("notFound.title")}
           </h1>
-          <p className="text-cr-i3 mb-8 leading-relaxed text-sm">
+
+          <p
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 300,
+              fontSize: "14px",
+              color: "var(--cr-ink-3)",
+              lineHeight: 1.65,
+              maxWidth: "44ch",
+              marginTop: "16px",
+            }}
+          >
             {t("notFound.body")}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/">
-              <Button className="w-full sm:w-auto gap-2 bg-cr-copper hover:bg-cr-cu-l text-white">
-                <Home className="h-4 w-4" />
-                {t("notFound.goHome")}
-              </Button>
+          {/* One quiet way home; the browse link is quieter still */}
+          <div
+            className="flex flex-col sm:flex-row items-center justify-center"
+            style={{ gap: "12px 32px", marginTop: "32px" }}
+          >
+            <Link
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                minHeight: "40px",
+                padding: "8px 4px",
+                textDecoration: "none",
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 600,
+                fontSize: "14px",
+                color: "var(--cr-copper)",
+              }}
+            >
+              {t("notFound.goHome")} <span aria-hidden>→</span>
             </Link>
-            <Link href="/startups">
-              <Button variant="outline" className="w-full sm:w-auto gap-2 border-cr-p4 text-cr-i2 hover:text-cr-ink hover:bg-cr-paper/5">
-                <ArrowLeft className="h-4 w-4" />
-                {t("notFound.browse")}
-              </Button>
+            <Link
+              href="/startups"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                minHeight: "40px",
+                padding: "8px 4px",
+                textDecoration: "none",
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 400,
+                fontSize: "13px",
+                color: "var(--cr-ink-3)",
+              }}
+            >
+              {t("notFound.browse")}
             </Link>
           </div>
         </div>

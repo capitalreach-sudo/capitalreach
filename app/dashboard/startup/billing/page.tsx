@@ -4,15 +4,70 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, CreditCard, Sparkles, Check, Receipt } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
 import { getFounderPlan, FOUNDER_PLANS_LIST } from "@/lib/plans";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
 import type { Profile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+
+// ── House register: shared presentation constants ─────────────
+
+const MONO: React.CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace",
+  fontVariantNumeric: "tabular-nums",
+};
+
+const BODY: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 300,
+};
+
+const LABEL: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 500,
+  fontSize: "10px",
+  textTransform: "uppercase",
+  letterSpacing: "0.07em",
+};
+
+const CARD: React.CSSProperties = {
+  background: "var(--cr-paper-2)",
+  border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px",
+};
+
+const BTN_OUTLINE: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "40px",
+  padding: "0 16px",
+  borderRadius: "999px",
+  background: "transparent",
+  border: "1px solid var(--cr-paper-4)",
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 500,
+  fontSize: "13px",
+  color: "var(--cr-ink)",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+const BTN_TEXT: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: "40px",
+  padding: 0,
+  background: "none",
+  border: "none",
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 600,
+  fontSize: "12px",
+  cursor: "pointer",
+};
 
 export default function StartupBillingPage() {
   const { t } = useTranslation();
@@ -65,81 +120,105 @@ export default function StartupBillingPage() {
     } finally { setUpgrading(null); }
   }
 
-  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">{t("common.loading")}</div></>;
+  if (loading) return (
+    <>
+      <Navbar />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh", ...BODY, fontSize: "14px", color: "var(--cr-ink-4)" }}>
+        {t("common.loading")}
+      </div>
+    </>
+  );
 
   const currentPlan = getFounderPlan(profile?.subscription_tier);
 
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href="/dashboard/startup">
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.billing")}</h1>
-        </div>
+      <main style={{ background: "var(--cr-paper)", minHeight: "100vh", paddingBottom: "64px" }}>
+        <div style={{ maxWidth: "672px", margin: "0 auto", padding: "40px 24px" }}>
 
-        {isLaunch && (
-          <div className="flex items-center gap-3 bg-cr-copper/10 border border-cr-copper/30 rounded-2xl p-4 mb-6">
-            <Sparkles className="h-5 w-5 text-cr-copper flex-shrink-0" />
-            <p className="text-sm text-cr-ink">
-              {t("dashboard.launchFreeBanner")}
-            </p>
-          </div>
-        )}
-
-        <section className="bg-cr-paper border rounded-2xl p-6 mb-6">
-          <div className="flex items-center gap-2 mb-5">
-            <CreditCard className="h-4 w-4 text-cr-copper" />
-            <h2 className="font-semibold text-cr-ink">{t("dashboard.currentPlan")}</h2>
+          {/* Back + Title */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+            <Link href="/dashboard/startup" style={{ display: "flex", alignItems: "center", gap: "4px", ...BODY, fontSize: "13px", color: "var(--cr-ink-4)", textDecoration: "none" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}>
+              <ArrowLeft style={{ width: 14, height: 14 }} /> {t("common.back")}
+            </Link>
+            <div style={{ width: 1, height: 14, background: "var(--cr-rule-dark)" }} aria-hidden />
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "24px", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
+              {t("dashboard.billing")}
+            </h1>
           </div>
 
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <p className="text-lg font-bold text-cr-ink">{currentPlan.name}</p>
-              <p className="text-sm text-cr-i3">
-                {isLaunch ? t("dashboard.freeDuringLaunch") : currentPlan.price === 0 ? t("common.free") : `$${currentPlan.price}${t("pricing.perMonth")}`}
+          {isLaunch && (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px" }}>
+              <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "13px", flexShrink: 0, lineHeight: 1 }}>✦</span>
+              <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.5, margin: 0 }}>
+                {t("dashboard.launchFreeBanner")}
               </p>
             </div>
-            {profile?.stripe_customer_id && (
-              <Button onClick={handlePortal} disabled={portalLoading} variant="outline" size="sm">
-                {portalLoading ? t("dashboard.opening") : t("dashboard.manageBilling")}
-              </Button>
-            )}
-          </div>
+          )}
 
-          <div className="space-y-2">
-            {Object.entries(currentPlan.features).map(([key, value]) => {
-              if (!value) return null;
-              return (
-                <div key={key} className="flex items-center gap-2 text-sm text-cr-i3">
-                  <Check className="h-3.5 w-3.5 text-cr-copper flex-shrink-0" />
-                  <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
+          <section style={{ marginBottom: "32px" }}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.currentPlan")}</div>
+            <div style={{ ...CARD, padding: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", paddingBottom: "16px" }}>
+                <div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", margin: 0 }}>{currentPlan.name}</p>
+                  <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "4px" }}>
+                    {isLaunch
+                      ? t("dashboard.freeDuringLaunch")
+                      : currentPlan.price === 0
+                        ? t("common.free")
+                        : (<><span style={{ ...MONO, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>${currentPlan.price}</span>{t("pricing.perMonth")}</>)}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </section>
+                {profile?.stripe_customer_id && (
+                  <button onClick={handlePortal} disabled={portalLoading} style={{ ...BTN_OUTLINE, opacity: portalLoading ? 0.6 : 1 }}>
+                    {portalLoading ? t("dashboard.opening") : t("dashboard.manageBilling")}
+                  </button>
+                )}
+              </div>
 
-        <SuccessFees />
-
-        {!isLaunch && currentPlan.id !== "growth" && (
-          <section className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">{t("dashboard.upgradeYourPlan")}</h2>
-            <div className="space-y-3">
-              {FOUNDER_PLANS_LIST.filter(p => p.id !== currentPlan.id && p.price > currentPlan.price).map(p => (
-                <div key={p.id} className="flex items-center justify-between border rounded-xl p-4">
-                  <div>
-                    <p className="font-semibold text-cr-ink">{p.name}</p>
-                    <p className="text-sm text-cr-i4">${p.price}{t("pricing.perMonth")}</p>
-                  </div>
-                  <Button onClick={() => handleUpgrade(p.id)} size="sm">{t("common.upgrade")}</Button>
-                </div>
-              ))}
+              <div>
+                {Object.entries(currentPlan.features).map(([key, value]) => {
+                  if (!value) return null;
+                  return (
+                    <div key={key} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 0", borderTop: "1px solid var(--cr-rule)" }}>
+                      <svg width="6" height="6" viewBox="0 0 6 6" fill="none" style={{ flexShrink: 0 }} aria-hidden>
+                        <path d="M3 0L6 3L3 6L0 3L3 0Z" fill="var(--cr-copper)" />
+                      </svg>
+                      <span style={{ ...LABEL, color: "var(--cr-ink-3)" }}>
+                        {key.replace(/([A-Z])/g, " $1")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
-        )}
+
+          <SuccessFees />
+
+          {!isLaunch && currentPlan.id !== "growth" && (
+            <section>
+              <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.upgradeYourPlan")}</div>
+              <div style={CARD}>
+                {FOUNDER_PLANS_LIST.filter(p => p.id !== currentPlan.id && p.price > currentPlan.price).map((p, idx) => (
+                  <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", padding: "16px 20px", borderTop: idx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                    <div>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", margin: 0 }}>{p.name}</p>
+                      <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "2px" }}>
+                        <span style={{ ...MONO, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>${p.price}</span>{t("pricing.perMonth")}
+                      </p>
+                    </div>
+                    <button onClick={() => handleUpgrade(p.id)} style={BTN_OUTLINE}>{t("common.upgrade")}</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       </main>
     </>
   );
@@ -191,49 +270,52 @@ function SuccessFees() {
 
   if (!fees || fees.length === 0) return null;
 
+  // Money direction, not decoration: settled fees read up-green, anything
+  // still open or contested reads copper, the rest recedes to ink shades.
   const tone: Record<MyFee["state"], string> = {
-    collected: "text-emerald-700", outstanding: "text-amber-700",
-    unbillable: "text-cr-i3", waived: "text-cr-i4", disputed: "text-cr-copper",
+    collected: "var(--cr-up)", outstanding: "var(--cr-copper)",
+    unbillable: "var(--cr-ink-3)", waived: "var(--cr-ink-4)", disputed: "var(--cr-copper)",
   };
 
   return (
-    <section className="bg-cr-paper border rounded-2xl p-6 mb-6">
-      <div className="flex items-center gap-2 mb-2">
-        <Receipt className="h-4 w-4 text-cr-copper" />
-        <h2 className="font-semibold text-cr-ink">{t("myFees.title")}</h2>
-      </div>
-      <p className="text-sm text-cr-i4 mb-5">{t("myFees.intro")}</p>
+    <section style={{ marginBottom: "32px" }}>
+      <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("myFees.title")}</div>
+      <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.6, marginBottom: "12px" }}>{t("myFees.intro")}</p>
 
-      <div className="space-y-3">
-        {fees.map(f => (
-          <div key={f.id} className="border rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <div className="min-w-0">
-                <p className="font-semibold text-cr-ink">{formatMoney(f.feeMajor, f.currency)}</p>
-                <p className="text-xs text-cr-i4 mt-0.5">
+      <div style={CARD}>
+        {fees.map((f, feeIdx) => (
+          <div key={f.id} style={{ padding: "16px 20px", borderTop: feeIdx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ ...MONO, fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", margin: 0, lineHeight: 1.2 }}>
+                  {formatMoney(f.feeMajor, f.currency)}
+                </p>
+                <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
                   {f.investorName ?? t("myFees.anInvestor")}
-                  {f.closedAt && ` · ${t("fees.closed")} ${new Date(f.closedAt).toLocaleDateString()}`}
+                  {f.closedAt && (
+                    <> · {t("fees.closed")} <span style={{ ...MONO, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>{new Date(f.closedAt).toLocaleDateString()}</span></>
+                  )}
                 </p>
               </div>
-              <span className="inline-flex items-center gap-3">
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "12px" }}>
                 {/* The pay area. A fee with a live invoice gets the button
                     that actually settles it — Stripe's hosted page, so no
                     card data ever touches this app. */}
                 {f.payUrl && (
                   <a href={f.payUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-xs font-bold text-white bg-cr-copper rounded px-3 py-1.5">
+                    style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 18px", borderRadius: "999px", background: "var(--cr-copper)", border: "none", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none", whiteSpace: "nowrap" }}>
                     {t("myFees.payNow")} ↗
                   </a>
                 )}
-                <span className={`text-xs font-semibold ${tone[f.state]}`}>{t(`myFees.state.${f.state}`)}</span>
+                <span style={{ ...LABEL, color: tone[f.state] }}>{t(`myFees.state.${f.state}`)}</span>
               </span>
             </div>
 
             {f.state === "disputed" && (
-              <p className="text-xs text-cr-i3 mt-2">{t("myFees.underReview")}{f.disputeReason ? ` — “${f.disputeReason}”` : ""}</p>
+              <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5, marginTop: "8px" }}>{t("myFees.underReview")}{f.disputeReason ? ` — “${f.disputeReason}”` : ""}</p>
             )}
             {f.resolvedAt && f.disputeResolution && (
-              <p className="text-xs text-cr-i3 mt-2">{t("myFees.resolved")}: {f.disputeResolution}</p>
+              <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5, marginTop: "8px" }}>{t("myFees.resolved")}: {f.disputeResolution}</p>
             )}
 
             {/* 087: the objection to the fee is usually timing, not amount. */}
@@ -241,17 +323,17 @@ function SuccessFees() {
 
             {(f.state === "outstanding" || f.state === "unbillable") && (
               openId === f.id ? (
-                <div className="mt-3">
+                <div style={{ marginTop: "12px" }}>
                   <textarea value={reason} onChange={e => setReason(e.target.value.slice(0, 1000))}
                     rows={3} placeholder={t("myFees.disputePlaceholder")}
-                    className="w-full text-sm border rounded-lg p-2 bg-cr-paper-2 text-cr-ink" />
-                  <div className="flex gap-2 mt-2">
-                    <Button size="sm" onClick={() => dispute(f.id)} disabled={busy === f.id}>{t("myFees.submitDispute")}</Button>
-                    <Button size="sm" variant="ghost" onClick={() => { setOpenId(null); setReason(""); }}>{t("common.cancel")}</Button>
+                    style={{ width: "100%", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", ...BODY, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+                    <button onClick={() => dispute(f.id)} disabled={busy === f.id} style={{ ...BTN_OUTLINE, opacity: busy === f.id ? 0.6 : 1 }}>{t("myFees.submitDispute")}</button>
+                    <button onClick={() => { setOpenId(null); setReason(""); }} style={{ ...BTN_TEXT, fontWeight: 400, color: "var(--cr-ink-4)" }}>{t("common.cancel")}</button>
                   </div>
                 </div>
               ) : (
-                <button onClick={() => setOpenId(f.id)} className="text-xs font-semibold text-cr-copper mt-2">
+                <button onClick={() => setOpenId(f.id)} style={{ ...BTN_TEXT, color: "var(--cr-copper)", marginTop: "4px" }}>
                   {t("myFees.disputeCta")}
                 </button>
               )
@@ -304,17 +386,17 @@ function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; 
   if (data.instalments.length > 0) {
     const paid = data.instalments.filter(i => i.paid_at).length;
     return (
-      <div className="mt-3 border-t pt-3">
-        <p className="text-xs font-semibold text-cr-ink mb-2">
+      <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
+        <p style={{ ...LABEL, color: "var(--cr-ink-2)", marginBottom: "8px" }}>
           {t("feePlan.scheduleTitle", { paid, count: data.instalments.length })}
         </p>
-        <ul className="space-y-1">
-          {data.instalments.map(i => (
-            <li key={i.seq} className="flex items-center justify-between text-xs">
-              <span className={i.paid_at ? "text-cr-i4 line-through" : "text-cr-i3"}>
-                {t("feePlan.instalmentN", { n: i.seq })} · {new Date(i.due_date).toLocaleDateString()}
+        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {data.instalments.map((i, idx) => (
+            <li key={i.seq} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "6px 0", borderTop: idx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+              <span style={{ ...BODY, fontSize: "12px", color: i.paid_at ? "var(--cr-ink-4)" : "var(--cr-ink-3)", textDecoration: i.paid_at ? "line-through" : "none" }}>
+                {t("feePlan.instalmentN", { n: i.seq })} · <span style={{ ...MONO, fontWeight: 400, fontSize: "11px" }}>{new Date(i.due_date).toLocaleDateString()}</span>
               </span>
-              <span className={`font-mono ${i.paid_at ? "text-emerald-700" : "text-cr-ink"}`}>
+              <span style={{ ...MONO, fontWeight: 600, fontSize: "12px", color: i.paid_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
                 {(i.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 {i.paid_at ? ` ${t("feePlan.paidMark")}` : ""}
               </span>
@@ -328,18 +410,18 @@ function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; 
   if (!data.eligible || state === "collected") return null;
 
   return (
-    <div className="mt-3 border-t pt-3">
-      <p className="text-xs text-cr-i4 mb-2">{t("feePlan.offer")}</p>
-      <div className="flex items-center gap-2">
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
+      <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("feePlan.offer")}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
         <select value={months} onChange={e => setMonths(Number(e.target.value))}
-          className="text-xs border rounded-lg px-2 py-1 bg-cr-paper text-cr-ink">
+          style={{ minHeight: "40px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", padding: "0 10px" }}>
           {Array.from({ length: data.maxMonths - data.minMonths + 1 }, (_, i) => data.minMonths + i).map(m => (
             <option key={m} value={m}>{t("feePlan.months", { n: m })}</option>
           ))}
         </select>
-        <Button size="sm" variant="outline" onClick={start} disabled={busy}>{t("feePlan.start")}</Button>
+        <button onClick={start} disabled={busy} style={{ ...BTN_OUTLINE, opacity: busy ? 0.6 : 1 }}>{t("feePlan.start")}</button>
       </div>
-      <p className="text-[11px] text-cr-i4 mt-2">{t("feePlan.sameTotal")}</p>
+      <p style={{ ...BODY, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "8px" }}>{t("feePlan.sameTotal")}</p>
     </div>
   );
 }

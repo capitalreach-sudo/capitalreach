@@ -10,11 +10,22 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, UserPlus, Trash2, Users, ShieldCheck } from "lucide-react";
+import { ArrowLeft, UserPlus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { notify } from "@/components/ui/toast-notify";
-import { getInitials } from "@/lib/utils";
+import { getInitials, cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+
+// ── House register ─────────────────────────────────────────────────────────
+// Cards are paper-2 slabs with a hairline border at 4px radius; internal
+// structure is rules, never nested boxes. Field labels use the Label style
+// (small caps, +0.07em). The member count renders in JetBrains Mono.
+const CARD: React.CSSProperties = {
+  background: "var(--cr-paper-2)",
+  border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px",
+};
+const FIELD_LABEL = "text-[11px] font-medium uppercase tracking-[0.07em] text-cr-i3";
 
 type EntityType = "startup" | "investor";
 
@@ -112,46 +123,46 @@ export default function TeamPage() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href={backHref}>
-            <Button variant="ghost" size="sm" className="gap-1.5">
-              <ArrowLeft className="h-4 w-4" /> {t("common.back")}
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">{t("team.title")}</h1>
-        </div>
-
-        {/* Says plainly what a membership grants. The access itself comes from
-            RLS, which is invisible -- without this, "add member" reads as if it
-            only affects some roster page. */}
-        <div className="bg-cr-copper/5 border border-cr-copper/20 rounded-2xl p-4 mb-6 flex gap-3">
-          <ShieldCheck className="h-5 w-5 text-cr-copper shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-cr-ink">{t("team.accessTitle")}</p>
-            <p className="text-sm text-cr-i3 mt-1 leading-relaxed">{t("team.accessBody")}</p>
+      <main className="container mx-auto max-w-2xl px-4 py-8 md:py-12" style={{ background: "var(--cr-paper)" }}>
+        <header className="mb-8 pb-6" style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
+          <div className="mb-4">
+            <Link href={backHref}>
+              <Button variant="ghost" size="sm" className="-ml-2 h-10 gap-1.5">
+                <ArrowLeft className="h-4 w-4" /> {t("common.back")}
+              </Button>
+            </Link>
           </div>
-        </div>
+          <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("team.title")}</div>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", lineHeight: 1.15, letterSpacing: "-0.02em", color: "var(--cr-ink)", textWrap: "balance" }}>
+            {t("team.accessTitle")}
+          </h1>
+          {/* Says plainly what a membership grants. The access itself comes from
+              RLS, which is invisible -- without this, "add member" reads as if it
+              only affects some roster page. A rule-topped paragraph, not a card. */}
+          <p className="mt-4 pt-4 text-sm leading-relaxed text-cr-i3" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            {t("team.accessBody")}
+          </p>
+        </header>
 
         {loading ? (
           <p className="text-sm text-cr-i4">{t("common.loading")}</p>
         ) : unavailable ? (
-          <div className="bg-cr-paper border rounded-2xl p-8 text-center">
-            <Users className="h-8 w-8 text-cr-p4 mx-auto mb-3" />
-            <p className="text-sm text-cr-i3">{t("team.unavailable")}</p>
+          <div className="p-8 text-center" style={CARD}>
+            <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>
+            <p className="mt-3 text-sm text-cr-i3">{t("team.unavailable")}</p>
           </div>
         ) : !entityId ? (
-          <div className="bg-cr-paper border rounded-2xl p-8 text-center">
-            <Users className="h-8 w-8 text-cr-p4 mx-auto mb-3" />
-            <p className="text-sm text-cr-i3">{t("team.noEntity")}</p>
+          <div className="p-8 text-center" style={CARD}>
+            <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>
+            <p className="mt-3 text-sm text-cr-i3">{t("team.noEntity")}</p>
           </div>
         ) : (
           <>
             {canManage && (
-              <form onSubmit={invite} className="bg-cr-paper border rounded-2xl p-5 mb-6 space-y-4">
-                <h2 className="font-semibold text-cr-ink">{t("team.inviteHeading")}</h2>
+              <form onSubmit={invite} className="mb-6 space-y-4 p-4 sm:p-6" style={CARD}>
+                <h2 className="ruled-label">{t("team.inviteHeading")}</h2>
                 <div>
-                  <Label>{t("team.emailLabel")}</Label>
+                  <Label className={FIELD_LABEL}>{t("team.emailLabel")}</Label>
                   <Input
                     type="email" required value={email}
                     onChange={e => setEmail(e.target.value)}
@@ -159,10 +170,10 @@ export default function TeamPage() {
                   />
                   {/* The API rejects unknown emails rather than sending an
                       invite, because outbound mail is not configured yet. */}
-                  <p className="text-xs text-cr-i4 mt-1">{t("team.emailHint")}</p>
+                  <p className="mt-1 text-xs text-cr-i4">{t("team.emailHint")}</p>
                 </div>
                 <div>
-                  <Label>{t("team.roleLabel")}</Label>
+                  <Label className={FIELD_LABEL}>{t("team.roleLabel")}</Label>
                   <Select value={inviteRole} onValueChange={v => setInviteRole(v as "admin" | "member")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -170,35 +181,49 @@ export default function TeamPage() {
                       <SelectItem value="admin">{t("team.roleAdmin")}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-cr-i4 mt-1">
+                  <p className="mt-1 text-xs text-cr-i4">
                     {inviteRole === "admin" ? t("team.roleAdminHint") : t("team.roleMemberHint")}
                   </p>
                 </div>
-                <Button type="submit" disabled={inviting} className="gap-1.5">
+                {/* The one primary action on this view. */}
+                <Button type="submit" disabled={inviting} className="h-11 w-full gap-2 rounded-full bg-cr-copper text-[13px] font-semibold text-white hover:bg-cr-cu-d sm:w-auto sm:px-6">
                   <UserPlus className="h-4 w-4" />
                   {inviting ? t("team.adding") : t("team.addButton")}
                 </Button>
               </form>
             )}
 
-            <div className="bg-cr-paper border rounded-2xl divide-y">
-              <div className="p-4 flex items-center justify-between">
-                <h2 className="font-semibold text-cr-ink">{t("team.rosterHeading")}</h2>
-                <span className="text-xs text-cr-i4">{t("team.count", { n: members.length })}</span>
+            {/* Roster: one slab, rows separated by hairline rules. */}
+            <div style={CARD}>
+              <div className="flex items-center justify-between gap-3 p-4 sm:px-6">
+                <h2 className="ruled-label">{t("team.rosterHeading")}</h2>
+                <span className="mono shrink-0 text-[11px] font-medium text-cr-i4">
+                  {t("team.count", { n: members.length })}
+                </span>
               </div>
 
               {members.map(m => (
-                <div key={m.userId} className="p-4 flex items-center gap-3">
-                  <Avatar className="h-9 w-9">
-                    <AvatarFallback>{getInitials(m.name || m.email || "?")}</AvatarFallback>
+                <div key={m.userId} className="flex items-center gap-3 p-4 sm:px-6" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+                  <Avatar className="h-9 w-9 shrink-0 border border-cr-p4">
+                    <AvatarFallback className="bg-cr-p3 text-[11px] font-semibold text-cr-copper">
+                      {getInitials(m.name || m.email || "?")}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-cr-ink truncate">
+                    <p className="truncate text-sm font-medium text-cr-ink">
                       {m.name || t("team.unnamed")}
                     </p>
-                    <p className="text-xs text-cr-i4 truncate">{m.email}</p>
+                    <p className="truncate text-xs text-cr-i4">{m.email}</p>
                   </div>
-                  <Badge variant={m.role === "owner" ? "default" : "secondary"} className="shrink-0">
+                  <Badge
+                    variant={m.role === "owner" ? "default" : "secondary"}
+                    className={cn(
+                      "shrink-0 rounded-[3px] px-2 py-1 text-[11px] font-medium uppercase tracking-[0.06em]",
+                      m.role === "owner"
+                        ? "border-[var(--cr-copper-br)] bg-[var(--cr-copper-bg)] text-cr-copper hover:bg-[var(--cr-copper-bg)]"
+                        : "border-cr-p4 bg-cr-p2 text-cr-i3 hover:bg-cr-p2"
+                    )}
+                  >
                     {t(`team.role_${m.role}`)}
                   </Badge>
                   {canManage && m.canRemove && m.id && (
@@ -206,7 +231,7 @@ export default function TeamPage() {
                       variant="ghost" size="sm"
                       onClick={() => remove(m.id!)}
                       aria-label={t("team.removeAria", { name: m.name || m.email || "" })}
-                      className="text-cr-down shrink-0"
+                      className="h-10 w-10 shrink-0 p-0 text-cr-down hover:text-cr-down"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -216,7 +241,7 @@ export default function TeamPage() {
             </div>
 
             {!canManage && (
-              <p className="text-xs text-cr-i4 mt-4">{t("team.readOnlyNote")}</p>
+              <p className="mt-4 text-xs text-cr-i4">{t("team.readOnlyNote")}</p>
             )}
           </>
         )}

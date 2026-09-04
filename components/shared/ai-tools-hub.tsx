@@ -215,7 +215,7 @@ function PitchTab() {
               </div>
               <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "10px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                  ⚡ {t("ai.pitch.improveThis")}
+                  ✦ {t("ai.pitch.improveThis")}
                 </p>
                 <ul style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   {result.improvements.map((s) => (
@@ -228,7 +228,7 @@ function PitchTab() {
             {result.key_insight && (
               <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", lineHeight: 1.5 }}>
-                  💡 <strong>{t("ai.pitch.keyTakeaway")}:</strong> {result.key_insight}
+                  ✦ <strong>{t("ai.pitch.keyTakeaway")}:</strong> {result.key_insight}
                 </p>
               </div>
             )}
@@ -670,17 +670,11 @@ function DiligenceTab() {
           <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "16px" }}>{t("ai.diligence.reportIncludes")}</h4>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
             {[
-              ["📋", t("ai.diligence.item1")],
-              ["📊", t("ai.diligence.item2")],
-              ["👥", t("ai.diligence.item3")],
-              ["📈", t("ai.diligence.item4")],
-              ["🛡️", t("ai.diligence.item5")],
-              ["⚠️", t("ai.diligence.item6")],
-              ["🏆", t("ai.diligence.item7")],
-              ["⚡", t("ai.diligence.item8")],
-            ].map(([icon, text]) => (
-              <div key={text as string} style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
-                <span>{icon}</span> {text}
+              t("ai.diligence.item1"), t("ai.diligence.item2"), t("ai.diligence.item3"), t("ai.diligence.item4"),
+              t("ai.diligence.item5"), t("ai.diligence.item6"), t("ai.diligence.item7"), t("ai.diligence.item8"),
+            ].map((text, i) => (
+              <div key={text} style={{ display: "flex", alignItems: "center", gap: "10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)" }}>{String(i + 1).padStart(2, "0")}</span> {text}
               </div>
             ))}
           </div>

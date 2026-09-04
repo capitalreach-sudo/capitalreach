@@ -16,12 +16,16 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Shared style tokens ────────────────────────────────────────
 const iStyle: React.CSSProperties = {
-  width: "100%", borderRadius: "3px",
+  width: "100%", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
-  background: "var(--cr-paper-2)", padding: "8px 12px",
+  background: "var(--cr-paper-2)", padding: "10px 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
   fontSize: "14px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
+};
+// Numbers are data: numeric inputs render in mono like every other figure.
+const iMono: React.CSSProperties = {
+  ...iStyle, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px",
 };
 const taStyle: React.CSSProperties = { ...iStyle, resize: "none" };
 const selStyle: React.CSSProperties = { ...iStyle, cursor: "pointer" };
@@ -34,19 +38,50 @@ const hintSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
   fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "6px", marginTop: "2px",
 };
+// House buttons: one copper pill per view; secondary is a hairline outline
+// pill; back is a quiet text link. Light-on-copper comes from --cr-band-ink,
+// which is light in every register, so no hex ever enters the component.
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  background: "var(--cr-copper)", color: "#fff",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  background: "var(--cr-copper)", color: "var(--cr-band-ink)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "13px", height: "42px", padding: "0 20px",
-  borderRadius: "4px", border: "none", cursor: "pointer", flexShrink: 0,
+  fontSize: "13px", height: "42px", padding: "0 24px",
+  borderRadius: "999px", border: "none", cursor: "pointer", flexShrink: 0,
 };
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  border: "1px solid var(--cr-paper-4)", color: "var(--cr-ink)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "13px", height: "42px", padding: "0 16px",
-  borderRadius: "4px", background: "transparent", cursor: "pointer", flexShrink: 0,
+  fontSize: "13px", height: "42px", padding: "0 20px",
+  borderRadius: "999px", background: "transparent", cursor: "pointer", flexShrink: 0,
+};
+const quietBtn: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "6px",
+  border: "none", background: "transparent", color: "var(--cr-ink-3)",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
+  fontSize: "13px", height: "42px", padding: "0 12px",
+  cursor: "pointer", flexShrink: 0,
+};
+// Hairline rule between option groups within a step -- structure by line,
+// never boxes-in-boxes.
+const groupRule: React.CSSProperties = {
+  borderTop: "1px solid var(--cr-rule)", paddingTop: "24px",
+};
+// A selectable ledger row: hairline-separated inside one bordered list,
+// selection carried by the copper-bg/copper-br tokens plus an inset bar
+// echoing the ruled-label, never a solid fill.
+function optionRow(selected: boolean, first: boolean): React.CSSProperties {
+  return {
+    width: "100%", textAlign: "left", display: "flex", alignItems: "flex-start", gap: "14px",
+    padding: "14px 18px", minHeight: "44px", border: "none",
+    borderTop: first ? "none" : "1px solid var(--cr-rule)",
+    background: selected ? "var(--cr-copper-bg)" : "transparent",
+    boxShadow: selected ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
+    cursor: "pointer", transition: "background 120ms ease, box-shadow 120ms ease",
+  };
+}
+const optionList: React.CSSProperties = {
+  border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden",
 };
 
 function onFocusCopper(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
@@ -90,6 +125,25 @@ const BOARD_OPTIONS = [
 ];
 
 interface PortfolioCompany { name: string; stage: string; year: string; }
+
+// Every step opens the house way: ruled label carrying the mono 01/06
+// counter, then the serif italic step title.
+function StepHead({ n, label, title, sub }: { n: number; label: string; title: string; sub: string }) {
+  return (
+    <>
+      <div className="ruled-label" style={{ marginBottom: "14px" }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "var(--cr-copper)" }}>
+          {String(n).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
+        </span>
+        {label}
+      </div>
+      <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", letterSpacing: "-0.01em", color: "var(--cr-ink)", marginBottom: "6px" }}>
+        {title}
+      </h2>
+      <p style={{ ...hintSt, fontSize: "13px", lineHeight: 1.6, marginBottom: "24px" }}>{sub}</p>
+    </>
+  );
+}
 
 export default function InvestorOnboardingPage() {
   const { t } = useTranslation();
@@ -232,18 +286,18 @@ export default function InvestorOnboardingPage() {
       {/* Top bar */}
       <div style={{ borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 24px", height: "56px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <TrendingUp style={{ width: 14, height: 14, color: "#fff" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <TrendingUp style={{ width: 14, height: 14, color: "var(--cr-band-ink)" }} />
             </div>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>CapitalReach</span>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginLeft: "4px" }}>{t("onboarding.inv.forInvestors")}</span>
+            <span className="hidden sm:inline" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginLeft: "4px" }}>{t("onboarding.inv.forInvestors")}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: "160px", height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+            <div className="w-16 sm:w-40" style={{ height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
               <div style={{ height: "100%", background: "var(--cr-copper)", borderRadius: "2px", transition: "width 500ms ease", width: `${progress}%` }} />
             </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{progress}%</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{progress}%</span>
           </div>
         </div>
       </div>
@@ -251,13 +305,12 @@ export default function InvestorOnboardingPage() {
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "32px 24px" }}>
         <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8">
 
-          {/* Sidebar */}
+          {/* Sidebar: the numbered rail down the steps, ledger-line connected */}
           <div className="hidden lg:block">
             <div style={{ position: "sticky", top: "72px" }}>
-              <p style={{ ...labelSt, marginBottom: "16px", paddingLeft: "12px" }}>{t("onboarding.su.steps")}</p>
+              <p className="ruled-label" style={{ marginBottom: "16px" }}>{t("onboarding.su.steps")}</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                 {STEPS.map(s => {
-                  const Icon = s.icon;
                   const done = s.id < step;
                   const active = s.id === step;
                   return (
@@ -268,17 +321,24 @@ export default function InvestorOnboardingPage() {
                         width: "100%", textAlign: "left", display: "flex", alignItems: "center", gap: "10px",
                         padding: "10px 12px", borderRadius: "4px", border: "none",
                         background: active ? "var(--cr-copper-bg)" : "transparent",
+                        boxShadow: active ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
                         cursor: done ? "pointer" : active ? "default" : "not-allowed",
                         transition: "background 120ms",
                       }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "3px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: active ? "var(--cr-copper)" : done ? "var(--cr-up-bg)" : "var(--cr-paper-3)", border: active ? "none" : done ? "1px solid rgba(45,106,79,0.2)" : "1px solid var(--cr-rule)" }}>
+                      <span style={{
+                        width: 28, height: 28, borderRadius: "999px", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px",
+                        color: active || done ? "var(--cr-copper)" : "var(--cr-ink-4)",
+                        background: active || done ? "var(--cr-copper-bg)" : "transparent",
+                        border: active || done ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                      }}>
                         {done
-                          ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-up)" }} />
-                          : <Icon style={{ width: 14, height: 14, color: active ? "#fff" : "var(--cr-ink-4)" }} />}
-                      </div>
+                          ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
+                          : String(s.id).padStart(2, "0")}
+                      </span>
                       <div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", lineHeight: 1.2, color: active ? "var(--cr-copper)" : done ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(s.labelKey)}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: active ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t(s.descKey)}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: active ? "var(--cr-ink-3)" : "var(--cr-ink-4)" }}>{t(s.descKey)}</p>
                       </div>
                     </button>
                   );
@@ -289,34 +349,29 @@ export default function InvestorOnboardingPage() {
 
           {/* Form */}
           <div>
-            {/* Mobile progress */}
+            {/* Mobile progress -- copper is progress; green stays reserved for money */}
             <div style={{ display: "flex", gap: "4px", marginBottom: "24px" }}>
               {STEPS.map(s => (
-                <div key={s.id} style={{ flex: 1, height: "3px", borderRadius: "2px", background: s.id < step ? "var(--cr-up)" : s.id === step ? "var(--cr-copper)" : "var(--cr-rule-dark)", transition: "background 300ms" }} />
+                <div key={s.id} style={{ flex: 1, height: "3px", borderRadius: "2px", background: s.id <= step ? "var(--cr-copper)" : "var(--cr-rule-dark)", opacity: s.id < step ? 0.45 : 1, transition: "background 300ms" }} />
               ))}
             </div>
 
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+            <div className="p-4 sm:p-8" style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow)" }}>
 
               {/* ─── STEP 1: Type ─────────────────────────────────────── */}
               {step === 1 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h1")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h1Sub")}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {INVESTOR_TYPES.map(ty => (
+                  <StepHead n={1} label={t(STEPS[0].labelKey)} title={t("onboarding.inv.h1")} sub={t("onboarding.inv.h1Sub")} />
+                  <div style={optionList}>
+                    {INVESTOR_TYPES.map((ty, i) => (
                       <button key={ty.value} onClick={() => setInvestorType(ty.value)}
-                        style={{
-                          width: "100%", textAlign: "left", display: "flex", alignItems: "flex-start", gap: "16px",
-                          padding: "18px 20px", borderRadius: "4px",
-                          border: investorType === ty.value ? "2px solid var(--cr-copper)" : "2px solid var(--cr-rule-dark)",
-                          background: investorType === ty.value ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                          cursor: "pointer", transition: "all 120ms ease",
-                        }}>
-                        <span style={{ fontSize: "28px", flexShrink: 0 }}>{ty.emoji}</span>
+                        style={{ ...optionRow(investorType === ty.value, i === 0), padding: "16px 18px" }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", paddingTop: "2px", flexShrink: 0 }}>
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
                         <div style={{ flex: 1 }}>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "3px" }}>{t(ty.labelKey)}</p>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t(ty.descKey)}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "3px" }}>{t(ty.labelKey)}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", lineHeight: 1.55, color: "var(--cr-ink-3)" }}>{t(ty.descKey)}</p>
                         </div>
                         {investorType === ty.value && <CheckCircle2 style={{ width: 18, height: 18, color: "var(--cr-copper)", flexShrink: 0, marginTop: "2px" }} />}
                       </button>
@@ -328,38 +383,37 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 2: Preferences ─────────────────────────────── */}
               {step === 2 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h2")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h2Sub")}</p>
+                  <StepHead n={2} label={t(STEPS[1].labelKey)} title={t("onboarding.inv.h2")} sub={t("onboarding.inv.h2Sub")} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div>
                       <label style={labelSt}>{t("onboarding.inv.industriesLabel")}</label>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "8px" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "12px" }}>
                         {INDUSTRIES.map(ind => (
                           <button key={ind} onClick={() => toggleIndustry(ind)}
                             style={{
-                              display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px",
-                              borderRadius: "3px", border: industries.includes(ind) ? "1px solid var(--cr-copper)" : "1px solid var(--cr-rule-dark)",
-                              background: industries.includes(ind) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                              display: "flex", alignItems: "center", gap: "8px", padding: "11px 10px", minHeight: "40px",
+                              borderRadius: "3px", border: industries.includes(ind) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
+                              background: industries.includes(ind) ? "var(--cr-copper-bg)" : "transparent",
                               cursor: "pointer", transition: "all 120ms ease",
                             }}>
                             <input type="checkbox" readOnly checked={industries.includes(ind)}
                               style={{ accentColor: "var(--cr-copper)", width: 13, height: 13, flexShrink: 0, cursor: "pointer" }} />
-                            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: industries.includes(ind) ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{ind}</span>
+                            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: industries.includes(ind) ? 500 : 400, fontSize: "12px", color: industries.includes(ind) ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{ind}</span>
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    <div>
+                    <div style={groupRule}>
                       <label style={labelSt}>{t("onboarding.inv.preferredStages")}</label>
-                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                         {STAGES.map(s => (
                           <button key={s.value} onClick={() => toggleStage(s.value)}
                             style={{
-                              padding: "8px 16px", borderRadius: "3px",
-                              border: stages.includes(s.value) ? "1px solid var(--cr-copper)" : "1px solid var(--cr-rule-dark)",
-                              background: stages.includes(s.value) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                              padding: "10px 16px", minHeight: "40px", borderRadius: "3px",
+                              border: stages.includes(s.value) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
+                              background: stages.includes(s.value) ? "var(--cr-copper-bg)" : "transparent",
                               fontFamily: "'DM Sans', sans-serif", fontWeight: stages.includes(s.value) ? 600 : 400,
                               fontSize: "13px", color: stages.includes(s.value) ? "var(--cr-copper)" : "var(--cr-ink-3)",
                               cursor: "pointer", transition: "all 120ms",
@@ -370,28 +424,28 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </div>
 
-                    <div className="form-row-2" style={{ gap: "16px" }}>
+                    <div className="form-row-2" style={{ ...groupRule, gap: "16px" }}>
                       <div>
                         <label style={labelSt}>{t("onboarding.inv.minCheck")}</label>
                         <div style={{ position: "relative" }}>
-                          <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
+                          <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)" }}>$</span>
                           <input type="number" value={minCheck} onChange={e => setMinCheck(e.target.value)}
                             placeholder="10,000" onFocus={onFocusCopper} onBlur={onBlurRule}
-                            style={{ ...iStyle, paddingLeft: "24px" }} />
+                            style={{ ...iMono, paddingLeft: "26px" }} />
                         </div>
                       </div>
                       <div>
                         <label style={labelSt}>{t("onboarding.inv.maxCheck")}</label>
                         <div style={{ position: "relative" }}>
-                          <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>$</span>
+                          <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)" }}>$</span>
                           <input type="number" value={maxCheck} onChange={e => setMaxCheck(e.target.value)}
                             placeholder="500,000" onFocus={onFocusCopper} onBlur={onBlurRule}
-                            style={{ ...iStyle, paddingLeft: "24px" }} />
+                            style={{ ...iMono, paddingLeft: "26px" }} />
                         </div>
                       </div>
                     </div>
 
-                    <div>
+                    <div style={groupRule}>
                       <label style={labelSt}>{t("onboarding.inv.geography")}</label>
                       <p style={hintSt}>{t("onboarding.inv.geographyHint")}</p>
                       <input type="text" value={geography} onChange={e => setGeography(e.target.value)}
@@ -399,11 +453,14 @@ export default function InvestorOnboardingPage() {
                         onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
                     </div>
 
-                    <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", padding: "14px 16px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)" }}>
+                    <label style={{
+                      ...groupRule,
+                      display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", minHeight: "40px",
+                    }}>
                       <input type="checkbox" checked={leadRounds} onChange={e => setLeadRounds(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("onboarding.inv.leadRounds")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: leadRounds ? "var(--cr-copper)" : "var(--cr-ink)", marginBottom: "2px" }}>{t("onboarding.inv.leadRounds")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("onboarding.inv.leadRoundsSub")}</p>
                       </div>
                     </label>
@@ -414,8 +471,7 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 3: Profile ─────────────────────────────────── */}
               {step === 3 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h3")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h3Sub")}</p>
+                  <StepHead n={3} label={t(STEPS[2].labelKey)} title={t("onboarding.inv.h3")} sub={t("onboarding.inv.h3Sub")} />
 
                   <div className="form-row-2" style={{ gap: "16px" }}>
                     <div>
@@ -439,7 +495,8 @@ export default function InvestorOnboardingPage() {
                     <div>
                       <label style={labelSt}>{t("onboarding.inv.aumLabel")}</label>
                       <select value={aum} onChange={e => setAum(e.target.value)}
-                        onFocus={onFocusCopper} onBlur={onBlurRule} style={selStyle}>
+                        onFocus={onFocusCopper} onBlur={onBlurRule}
+                        style={{ ...selStyle, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>
                         <option value="">{t("onboarding.inv.selectRange")}</option>
                         {AUM_RANGES.map(r => <option key={r} value={r}>{r}</option>)}
                       </select>
@@ -448,7 +505,7 @@ export default function InvestorOnboardingPage() {
                     <div>
                       <label style={labelSt}>{t("onboarding.inv.numInvestments")}</label>
                       <input type="number" value={numberOfInvestments} onChange={e => setNumberOfInvestments(e.target.value)}
-                        placeholder={t("onboarding.inv.numInvestmentsPh")} onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
+                        placeholder={t("onboarding.inv.numInvestmentsPh")} onFocus={onFocusCopper} onBlur={onBlurRule} style={iMono} />
                     </div>
 
                     <div>
@@ -464,7 +521,7 @@ export default function InvestorOnboardingPage() {
                     <div>
                       <label style={labelSt}>{t("onboarding.inv.linkedin")}</label>
                       <div style={{ position: "relative" }}>
-                        <Linkedin style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "#0077B5" }} />
+                        <Linkedin style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "var(--cr-ink-4)" }} />
                         <input type="text" value={linkedin} onChange={e => setLinkedin(e.target.value)}
                           placeholder="linkedin.com/in/…" onFocus={onFocusCopper} onBlur={onBlurRule}
                           style={{ ...iStyle, paddingLeft: "30px" }} />
@@ -482,7 +539,7 @@ export default function InvestorOnboardingPage() {
                     </div>
 
                     <div style={{ gridColumn: "1 / -1" }}>
-                      <label style={labelSt}>{t("onboarding.inv.shortBio")} <span style={{ color: "var(--cr-down)" }}>*</span></label>
+                      <label style={labelSt}>{t("onboarding.inv.shortBio")} <span style={{ color: "var(--cr-copper)" }}>*</span></label>
                       <p style={hintSt}>{t("onboarding.inv.bioHint")}</p>
                       <textarea value={bio} onChange={e => setBio(e.target.value)} rows={5}
                         placeholder="Angel investor focused on HealthTech and B2B SaaS. Former CMO at Stripe. Led 30+ investments at pre-seed and seed. Board member at 4 portfolio companies."
@@ -503,40 +560,42 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 4: Portfolio ────────────────────────────────── */}
               {step === 4 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h4")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h4Sub")}</p>
+                  <StepHead n={4} label={t(STEPS[3].labelKey)} title={t("onboarding.inv.h4")} sub={t("onboarding.inv.h4Sub")} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     <div>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
                         <div>
                           <label style={labelSt}>{t("onboarding.inv.portfolioLabel")}</label>
                           <p style={hintSt}>{t("onboarding.inv.portfolioHint")}</p>
                         </div>
                         {portfolioCompanies.length < 10 && (
                           <button onClick={addPortfolioCompany}
-                            style={{ display: "flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>
+                            style={{ display: "flex", alignItems: "center", gap: "4px", minHeight: "40px", padding: "0 8px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
                             <Plus style={{ width: 13, height: 13 }} /> {t("onboarding.inv.addCompany")}
                           </button>
                         )}
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                         {portfolioCompanies.map((co, i) => (
-                          <div key={i} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          // Name spans the full width on phones; stage, year and
+                          // remove drop to a second line so nothing overflows 375px.
+                          <div key={i} className="grid grid-cols-[1fr_92px_40px] sm:grid-cols-[1fr_132px_92px_40px] items-center" style={{ gap: "8px" }}>
                             <input type="text" value={co.name} onChange={e => updatePortfolioCompany(i, "name", e.target.value)}
-                              placeholder={t("onboarding.inv.companyNamePh")} style={{ ...iStyle, flex: 1 }} />
+                              className="col-span-3 sm:col-span-1"
+                              placeholder={t("onboarding.inv.companyNamePh")} style={iStyle} />
                             <select value={co.stage} onChange={e => updatePortfolioCompany(i, "stage", e.target.value)}
-                              style={{ ...selStyle, width: "130px" }}>
+                              style={selStyle}>
                               <option value="">{t("onboarding.inv.stagePh")}</option>
                               {["Pre-Seed", "Seed", "Series A", "Series B", "Series C+", "IPO", "Acquired"].map(s => (
                                 <option key={s} value={s}>{s}</option>
                               ))}
                             </select>
                             <input type="number" value={co.year} onChange={e => updatePortfolioCompany(i, "year", e.target.value)}
-                              placeholder={t("onboarding.inv.yearPh")} style={{ ...iStyle, width: "80px" }} />
+                              placeholder={t("onboarding.inv.yearPh")} style={iMono} />
                             {portfolioCompanies.length > 1 && (
                               <button onClick={() => removePortfolioCompany(i)} aria-label={t("common.remove")}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
+                                style={{ width: 40, height: 40, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                                 <Trash2 style={{ width: 14, height: 14 }} />
                               </button>
                             )}
@@ -545,18 +604,16 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <label style={labelSt}>{t("onboarding.inv.followOn")}</label>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-                        {FOLLOW_ON_OPTIONS.map(o => (
+                    <div style={groupRule}>
+                      <label style={{ ...labelSt, marginBottom: "10px" }}>{t("onboarding.inv.followOn")}</label>
+                      <div style={optionList}>
+                        {FOLLOW_ON_OPTIONS.map((o, i) => (
                           <button key={o.value} onClick={() => setFollowOnPolicy(o.value)}
                             style={{
-                              width: "100%", textAlign: "left", padding: "12px 16px", borderRadius: "4px",
-                              border: followOnPolicy === o.value ? "2px solid var(--cr-copper)" : "2px solid var(--cr-rule-dark)",
-                              background: followOnPolicy === o.value ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                              fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+                              ...optionRow(followOnPolicy === o.value, i === 0),
+                              alignItems: "center", padding: "12px 16px",
+                              fontFamily: "'DM Sans', sans-serif", fontWeight: followOnPolicy === o.value ? 600 : 400, fontSize: "13px",
                               color: followOnPolicy === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)",
-                              cursor: "pointer", transition: "all 120ms",
                             }}>
                             {t(o.labelKey)}
                           </button>
@@ -564,18 +621,16 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <label style={labelSt}>{t("onboarding.inv.boardPref")}</label>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-                        {BOARD_OPTIONS.map(o => (
+                    <div style={groupRule}>
+                      <label style={{ ...labelSt, marginBottom: "10px" }}>{t("onboarding.inv.boardPref")}</label>
+                      <div style={optionList}>
+                        {BOARD_OPTIONS.map((o, i) => (
                           <button key={o.value} onClick={() => setBoardSeatPref(o.value)}
                             style={{
-                              width: "100%", textAlign: "left", padding: "12px 16px", borderRadius: "4px",
-                              border: boardSeatPref === o.value ? "2px solid var(--cr-copper)" : "2px solid var(--cr-rule-dark)",
-                              background: boardSeatPref === o.value ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                              fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+                              ...optionRow(boardSeatPref === o.value, i === 0),
+                              alignItems: "center", padding: "12px 16px",
+                              fontFamily: "'DM Sans', sans-serif", fontWeight: boardSeatPref === o.value ? 600 : 400, fontSize: "13px",
                               color: boardSeatPref === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)",
-                              cursor: "pointer", transition: "all 120ms",
                             }}>
                             {t(o.labelKey)}
                           </button>
@@ -583,7 +638,7 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </div>
 
-                    <div>
+                    <div style={groupRule}>
                       <label style={labelSt}>{t("onboarding.inv.holdPeriod")}</label>
                       <input type="text" value={avgHoldPeriod} onChange={e => setAvgHoldPeriod(e.target.value)}
                         placeholder={t("onboarding.inv.holdPeriodPh")}
@@ -596,26 +651,20 @@ export default function InvestorOnboardingPage() {
               {/* ─── STEP 5: Accreditation ───────────────────────────── */}
               {step === 5 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h5")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "24px" }}>{t("onboarding.inv.h5Sub")}</p>
+                  <StepHead n={5} label={t(STEPS[4].labelKey)} title={t("onboarding.inv.h5")} sub={t("onboarding.inv.h5Sub")} />
 
                   <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px 18px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
                     <ShieldCheck style={{ width: 18, height: 18, color: "var(--cr-copper)", flexShrink: 0, marginTop: "1px" }} />
                     <div>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("onboarding.inv.legalReq")}</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-copper)", lineHeight: 1.5 }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
                         {t("onboarding.inv.legalReqBody")}
                       </p>
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    <label style={{
-                      display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px",
-                      border: `2px solid ${accredited ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-                      borderRadius: "4px", cursor: "pointer", background: accredited ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                      transition: "all 120ms",
-                    }}>
+                  <div style={optionList}>
+                    <label style={{ ...optionRow(accredited, true), display: "flex" }}>
                       <input type="checkbox" checked={accredited} onChange={e => setAccredited(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
@@ -629,12 +678,7 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </label>
 
-                    <label style={{
-                      display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px",
-                      border: `2px solid ${accreditedDeclaration ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-                      borderRadius: "4px", cursor: "pointer", background: accreditedDeclaration ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                      transition: "all 120ms",
-                    }}>
+                    <label style={{ ...optionRow(accreditedDeclaration, false), display: "flex" }}>
                       <input type="checkbox" checked={accreditedDeclaration} onChange={e => setAccreditedDeclaration(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
@@ -645,12 +689,7 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </label>
 
-                    <label style={{
-                      display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px",
-                      border: `2px solid ${ageConfirmed ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-                      borderRadius: "4px", cursor: "pointer", background: ageConfirmed ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                      transition: "all 120ms",
-                    }}>
+                    <label style={{ ...optionRow(ageConfirmed, false), display: "flex" }}>
                       <input type="checkbox" checked={ageConfirmed} onChange={e => setAgeConfirmed(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
@@ -661,12 +700,7 @@ export default function InvestorOnboardingPage() {
                       </div>
                     </label>
 
-                    <label style={{
-                      display: "flex", alignItems: "flex-start", gap: "14px", padding: "16px 18px",
-                      border: `2px solid ${riskAcknowledged ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-                      borderRadius: "4px", cursor: "pointer", background: riskAcknowledged ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                      transition: "all 120ms",
-                    }}>
+                    <label style={{ ...optionRow(riskAcknowledged, false), display: "flex" }}>
                       <input type="checkbox" checked={riskAcknowledged} onChange={e => setRiskAcknowledged(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
@@ -676,21 +710,20 @@ export default function InvestorOnboardingPage() {
                         </p>
                       </div>
                     </label>
-
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center" }}>
-                      {t("onboarding.inv.certNote")}
-                    </p>
                   </div>
+
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center", marginTop: "16px" }}>
+                    {t("onboarding.inv.certNote")}
+                  </p>
                 </div>
               )}
 
               {/* ─── STEP 6: Membership ──────────────────────────────── */}
               {step === 6 && (
                 <div>
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.h6")}</h2>
-                  <p style={{ ...hintSt, marginBottom: "16px" }}>{t("onboarding.inv.h6Sub")}</p>
+                  <StepHead n={6} label={t(STEPS[5].labelKey)} title={t("onboarding.inv.h6")} sub={t("onboarding.inv.h6Sub")} />
 
-                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "20px" }}>
+                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "24px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.inv.unlocksTitle")}</p>
                     <div className="form-row-2" style={{ gap: "6px" }}>
                       {[
@@ -699,15 +732,17 @@ export default function InvestorOnboardingPage() {
                         ["Pro", t("onboarding.inv.unlockPro")],
                         ["Institutional", t("onboarding.inv.unlockInst")],
                       ].map(([tier, desc]) => (
-                        <div key={tier} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
+                        <div key={tier} style={{ display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
                           <span><strong>{tier}:</strong> {desc}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {/* Plans as one ruled ledger, not four nested cards. The
+                      highlighted tier carries the single primary pill. */}
+                  <div style={optionList}>
                     {[
                       {
                         tier: "free", name: INVESTOR_PLANS.free.name, price: t("common.free"), highlight: false,
@@ -733,40 +768,38 @@ export default function InvestorOnboardingPage() {
                         features: [t("onboarding.inv.if1"), t("onboarding.inv.if2"), t("onboarding.inv.if3"), t("onboarding.inv.if4"), t("onboarding.inv.if5")],
                         locked: [],
                       },
-                    ].map(plan => (
-                      <div key={plan.tier} style={{
-                        position: "relative", borderRadius: "4px", overflow: "hidden",
-                        border: plan.highlight ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
-                        background: "var(--cr-paper-3)", padding: "18px 20px",
+                    ].map((plan, planIdx) => (
+                      <div key={plan.tier} className="p-4 sm:p-5" style={{
+                        borderTop: planIdx === 0 ? "none" : "1px solid var(--cr-rule)",
+                        background: plan.highlight ? "var(--cr-copper-bg)" : "transparent",
+                        boxShadow: plan.highlight ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
                       }}>
-                        {plan.highlight && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "var(--cr-copper)" }} />}
-                        {plan.highlight && (
-                          <div style={{ position: "absolute", top: "14px", right: "14px" }}>
-                            <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
-                          </div>
-                        )}
-                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
-                          <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <div className="flex flex-wrap items-start justify-between" style={{ gap: "12px", marginBottom: "12px" }}>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)" }}>{plan.name}</span>
                               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: plan.highlight ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{plan.price}</span>
+                              {plan.highlight && (
+                                <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
+                              )}
                             </div>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{plan.desc}</p>
                           </div>
                           <button
                             disabled={loading}
+                            className="w-full sm:w-auto"
                             onClick={() => {
                               if (plan.tier === "institutional") { router.push("/contact?type=institutional"); }
                               else { handleSubmit(plan.tier); }
                             }}
-                            style={{ ...plan.highlight ? primaryBtn : outlineBtn, marginLeft: "16px", opacity: loading ? 0.5 : 1 }}>
+                            style={{ ...plan.highlight ? primaryBtn : outlineBtn, opacity: loading ? 0.5 : 1 }}>
                             {plan.tier === "institutional" ? t("pricing.contactSales") : plan.tier === "free" ? t("onboarding.su.startFree") : t("onboarding.su.selectPlan", { name: plan.name })}
                           </button>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
                           {plan.features.map(f => (
                             <div key={f} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-up)", flexShrink: 0 }} />
+                              <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-copper)", flexShrink: 0 }} />
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{f}</span>
                             </div>
                           ))}
@@ -783,15 +816,15 @@ export default function InvestorOnboardingPage() {
                 </div>
               )}
 
-              {/* Navigation */}
-              <div style={{ display: "flex", gap: "10px", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--cr-rule)" }}>
+              {/* Navigation: quiet back link, one copper pill forward */}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--cr-rule)" }}>
                 {step > 1 && (
-                  <button style={outlineBtn} onClick={() => setStep(s => s - 1)}>
+                  <button style={quietBtn} onClick={() => setStep(s => s - 1)}>
                     <ChevronLeft style={{ width: 14, height: 14 }} /> {t("onboarding.back")}
                   </button>
                 )}
                 {step < 6 && (
-                  <button style={{ ...primaryBtn, flex: 1, justifyContent: "center", opacity: !canNext() ? 0.4 : 1, cursor: !canNext() ? "not-allowed" : "pointer" }}
+                  <button style={{ ...primaryBtn, flex: 1, opacity: !canNext() ? 0.4 : 1, cursor: !canNext() ? "not-allowed" : "pointer" }}
                     onClick={() => setStep(s => s + 1)} disabled={!canNext()}>
                     {t("onboarding.continue")} <ChevronRight style={{ width: 14, height: 14 }} />
                   </button>

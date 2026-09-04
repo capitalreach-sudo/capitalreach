@@ -29,27 +29,32 @@ const config: Config = {
 
         /* ── CapitalReach design tokens ── */
 
-        /* Paper backgrounds */
-        "cr-paper":  "#F5F0E8",
-        "cr-p2":     "#EDE8DE",
-        "cr-p3":     "#E4DDD2",
-        "cr-p4":     "#D8D0C4",
+        /* Paper backgrounds. Var-backed so Tailwind utilities follow the
+           theme (data-theme) and style (data-style) registers -- these were
+           static hex, which froze every Tailwind-styled page in editorial
+           light while the rest of the app re-skinned. Tokens used with alpha
+           modifiers (bg-cr-copper/10 etc.) go through RGB triplets so
+           <alpha-value> still works; the rest bind the var directly. */
+        "cr-paper":  "rgb(var(--cr-paper-rgb) / <alpha-value>)",
+        "cr-p2":     "rgb(var(--cr-p2-rgb) / <alpha-value>)",
+        "cr-p3":     "var(--cr-paper-3)",
+        "cr-p4":     "rgb(var(--cr-p4-rgb) / <alpha-value>)",
 
         /* Ink text */
-        "cr-ink":  "#1A1612",
-        "cr-i2":   "#3D3630",
-        "cr-i3":   "#6B6056",
-        "cr-i4":   "#9C8E82",
+        "cr-ink":  "var(--cr-ink)",
+        "cr-i2":   "var(--cr-ink-2)",
+        "cr-i3":   "var(--cr-ink-3)",
+        "cr-i4":   "var(--cr-ink-4)",
 
         /* Copper accent */
-        "cr-copper": "#B5651D",
-        "cr-cu-l":   "#D4842A",
-        "cr-cu-d":   "#8A4A15",
+        "cr-copper": "rgb(var(--cr-copper-rgb) / <alpha-value>)",
+        "cr-cu-l":   "var(--cr-copper-l)",
+        "cr-cu-d":   "rgb(var(--cr-cu-d-rgb) / <alpha-value>)",
 
         /* Semantic data */
-        "cr-up":      "#2D6A4F",
-        "cr-down":    "#9B2335",
-        "cr-neutral": "#5C6B7A",
+        "cr-up":      "rgb(var(--cr-up-rgb) / <alpha-value>)",
+        "cr-down":    "var(--cr-down)",
+        "cr-neutral": "var(--cr-neutral)",
       },
       fontFamily: {
         sans:    ["DM Sans", "system-ui", "sans-serif"],
@@ -61,6 +66,11 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        /* The house has one card geometry. rounded-xl/2xl were escape hatches
+           to 12/16px template corners on the shadcn-era pages; bind them to
+           the token so the whole app squares up at once. */
+        xl:    "var(--radius)",
+        "2xl": "var(--radius)",
       },
       keyframes: {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },

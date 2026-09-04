@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Save, Trash2, Shield, Bell, CreditCard, Globe } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelector";
 import Link from "next/link";
 import { getInitials } from "@/lib/utils";
@@ -20,6 +20,17 @@ import type { Profile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { TwoFactorSection } from "@/components/settings/two-factor";
 import { SecurityActivity } from "@/components/settings/security-activity";
+
+// ── House register ─────────────────────────────────────────────────────────
+// One section treatment for the whole page: a paper-2 slab with a hairline
+// border at 4px radius. Inside a card, structure is rules, never nested
+// boxes. Section openers are ruled labels; field labels use the Label style.
+const CARD: React.CSSProperties = {
+  background: "var(--cr-paper-2)",
+  border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px",
+};
+const FIELD_LABEL = "text-[11px] font-medium uppercase tracking-[0.07em] text-cr-i3";
 
 const NOTIF_GROUPS: Array<{ labelKey: string; types: string[] }> = [
   { labelKey: "settings.ngDeals",    types: ["deal_opened", "deal_stage", "deal_closed", "deal_passed", "follow_up_due", "contract_status", "nda_signed"] },
@@ -59,16 +70,17 @@ function NotificationPrefs({ supabase }: { supabase: ReturnType<typeof createCli
   if (muted === null) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>
-      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("settings.notifPrefs")}</h3>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>{t("settings.notifPrefsSub")}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div className="p-4 sm:p-6" style={CARD}>
+      <h3 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.notifPrefs")}</h3>
+      <p className="mb-3 text-xs font-light leading-relaxed text-cr-i3">{t("settings.notifPrefsSub")}</p>
+      <div className="flex flex-col">
         {NOTIF_GROUPS.map((g) => {
           const allMuted = g.types.every(ty => muted.has(ty));
           return (
-            <label key={g.labelKey} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-              <input type="checkbox" checked={!allMuted} onChange={e => toggleGroup(g.types, !e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: allMuted ? "var(--cr-ink-4)" : "var(--cr-ink)" }}>{t(g.labelKey)}</span>
+            // Row height >= 40px keeps each checkbox a full touch target.
+            <label key={g.labelKey} className="flex min-h-10 cursor-pointer items-center gap-3">
+              <input type="checkbox" checked={!allMuted} onChange={e => toggleGroup(g.types, !e.target.checked)} style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, flexShrink: 0, cursor: "pointer" }} />
+              <span className={`text-[13px] font-light ${allMuted ? "text-cr-i4" : "text-cr-ink"}`}>{t(g.labelKey)}</span>
             </label>
           );
         })}
@@ -171,38 +183,40 @@ export default function AccountSettingsPage() {
 
   const dashboardPath = profile?.role === "startup" ? "/dashboard/startup" : "/dashboard/investor";
 
-  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">{t("common.loading")}</div></>;
+  if (loading) return <><Navbar /><div className="flex h-64 items-center justify-center text-sm text-cr-i4">{t("common.loading")}</div></>;
 
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href={dashboardPath}>
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">{t("settings.pageTitle")}</h1>
-        </div>
+      <main className="container mx-auto max-w-2xl px-4 py-8 md:py-12" style={{ background: "var(--cr-paper)" }}>
+        <header className="mb-8 pb-6" style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
+          <div className="mb-4">
+            <Link href={dashboardPath}>
+              <Button variant="ghost" size="sm" className="-ml-2 h-10 gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
+            </Link>
+          </div>
+          <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("settings.account")}</div>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
+            {t("settings.pageTitle")}
+          </h1>
+        </header>
 
         <div className="space-y-6">
           {/* Profile section */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <Shield className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">{t("settings.profile")}</h2>
-            </div>
+          <section className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "16px" }}>{t("settings.profile")}</h2>
 
-            <div className="flex items-center gap-4 mb-5">
-              <Avatar className="h-16 w-16">
+            <div className="mb-5 flex items-center gap-4">
+              <Avatar className="h-16 w-16 border border-cr-p4">
                 <AvatarImage src={avatarUrl || undefined} />
-                <AvatarFallback className="bg-cr-copper/15 text-cr-cu-l text-xl">
+                <AvatarFallback className="bg-cr-p3 text-lg font-semibold text-cr-copper">
                   {getInitials(fullName || profile?.email || "")}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <p className="font-medium text-cr-ink">{profile?.full_name || t("settings.noNameSet")}</p>
-                <p className="text-sm text-cr-i3">{profile?.email}</p>
-                <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-cr-copper/15 text-cr-cu-l capitalize">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-cr-ink">{profile?.full_name || t("settings.noNameSet")}</p>
+                <p className="truncate text-sm font-light text-cr-i3">{profile?.email}</p>
+                <span className="mt-1.5 inline-block rounded-[3px] border border-cr-p4 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.07em] text-cr-i3">
                   {profile?.role}
                 </span>
               </div>
@@ -210,20 +224,21 @@ export default function AccountSettingsPage() {
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div className="space-y-1.5">
-                <Label>{t("settings.fullName")}</Label>
+                <Label className={FIELD_LABEL}>{t("settings.fullName")}</Label>
                 <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={t("settings.yourName")} />
               </div>
               <div className="space-y-1.5">
-                <Label>{t("settings.avatarUrl")}</Label>
+                <Label className={FIELD_LABEL}>{t("settings.avatarUrl")}</Label>
                 <Input value={avatarUrl} onChange={e => setAvatarUrl(e.target.value)} placeholder="https://…" />
-                <p className="text-xs text-cr-i4">{t("settings.avatarHint")}</p>
+                <p className="text-xs font-light text-cr-i4">{t("settings.avatarHint")}</p>
               </div>
               <div className="space-y-1.5">
-                <Label>{t("settings.email")}</Label>
-                <Input value={profile?.email || ""} disabled className="bg-cr-p2 text-cr-i3" />
-                <p className="text-xs text-cr-i4">{t("settings.emailHint")}</p>
+                <Label className={FIELD_LABEL}>{t("settings.email")}</Label>
+                <Input value={profile?.email || ""} disabled className="bg-cr-p3 text-cr-i3" />
+                <p className="text-xs font-light text-cr-i4">{t("settings.emailHint")}</p>
               </div>
-              <Button type="submit" className="gap-2" disabled={saving}>
+              {/* The one primary action on this view. */}
+              <Button type="submit" className="h-10 gap-2 rounded-full bg-cr-copper px-5 text-[13px] font-semibold text-white hover:bg-cr-cu-d" disabled={saving}>
                 <Save className="h-4 w-4" />
                 {saving ? t("settings.saving2") : t("settings.saveChanges")}
               </Button>
@@ -231,24 +246,21 @@ export default function AccountSettingsPage() {
           </section>
 
           {/* Two-factor authentication */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
+          <section className="p-4 sm:p-6" style={CARD}>
             <TwoFactorSection />
           </section>
 
           {/* Sessions + sign-in history */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
+          <section className="p-4 sm:p-6" style={CARD}>
             <SecurityActivity />
           </section>
 
           {/* Password section */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <Shield className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">{t("settings.changePassword")}</h2>
-            </div>
+          <section className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "16px" }}>{t("settings.changePassword")}</h2>
             <form onSubmit={handleChangePassword} className="space-y-4">
               <div className="space-y-1.5">
-                <Label>{t("settings.newPassword")}</Label>
+                <Label className={FIELD_LABEL}>{t("settings.newPassword")}</Label>
                 <Input
                   type="password"
                   value={newPassword}
@@ -258,7 +270,7 @@ export default function AccountSettingsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>{t("settings.confirmPassword")}</Label>
+                <Label className={FIELD_LABEL}>{t("settings.confirmPassword")}</Label>
                 <Input
                   type="password"
                   value={confirmPassword}
@@ -266,45 +278,35 @@ export default function AccountSettingsPage() {
                   placeholder={t("settings.reEnterPassword")}
                 />
               </div>
-              <Button type="submit" variant="outline" className="gap-2" disabled={savingPassword || newPassword.length < 8}>
+              <Button type="submit" variant="outline" className="h-10 rounded-full border-cr-p4 px-5 text-[13px] text-cr-ink" disabled={savingPassword || newPassword.length < 8}>
                 {savingPassword ? t("settings.updating") : t("settings.updatePassword")}
               </Button>
             </form>
           </section>
 
           {/* Billing section */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <CreditCard className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">{t("settings.billing")}</h2>
-            </div>
-            <p className="text-sm text-cr-i3 mb-4">
+          <section className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.billing")}</h2>
+            <p className="mb-4 text-sm font-light leading-relaxed text-cr-i3">
               {t("settings.billingDesc")}
             </p>
-            <Button variant="outline" onClick={handlePortal} className="gap-2">
-              <CreditCard className="h-4 w-4" />
+            <Button variant="outline" onClick={handlePortal} className="h-10 rounded-full border-cr-p4 px-5 text-[13px] text-cr-ink">
               {t("settings.openBillingPortal")}
             </Button>
           </section>
 
           {/* Notifications section */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Bell className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">{t("settings.notifications")}</h2>
-            </div>
-            <p className="text-sm text-cr-i3">
-              {t("settings.notificationsDesc")} <strong>{profile?.email}</strong>.
+          <section className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.notifications")}</h2>
+            <p className="text-sm font-light leading-relaxed text-cr-i3">
+              {t("settings.notificationsDesc")} <strong className="font-medium text-cr-ink">{profile?.email}</strong>.
             </p>
           </section>
 
           {/* Language section */}
-          <section className="bg-cr-paper border rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Globe className="h-4 w-4 text-cr-copper" />
-              <h2 className="font-semibold text-cr-ink">{t("settings.language")}</h2>
-            </div>
-            <p className="text-sm text-cr-i3 mb-4">
+          <section className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.language")}</h2>
+            <p className="mb-4 text-sm font-light leading-relaxed text-cr-i3">
               {t("settings.languageDesc")}
             </p>
             <LanguageSettingsSelector />
@@ -314,28 +316,27 @@ export default function AccountSettingsPage() {
           <NotificationPrefs supabase={supabase} />
 
           {/* Data export (GDPR) */}
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>
-            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("settings.exportData")}</h3>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>{t("settings.exportDataSub")}</p>
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h3 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.exportData")}</h3>
+            <p className="mb-4 text-xs font-light leading-relaxed text-cr-i3">{t("settings.exportDataSub")}</p>
             <a href="/api/account/export" download
-              style={{ display: "inline-flex", alignItems: "center", border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "9px 16px", textDecoration: "none" }}>
+              className="inline-flex min-h-10 items-center rounded-full border border-cr-p4 px-5 text-[13px] font-medium text-cr-ink no-underline transition-colors hover:border-cr-i4">
               {t("settings.exportDownload")}
             </a>
           </div>
 
-          {/* Danger zone */}
-          <section className="bg-cr-paper border border-red-100 rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Trash2 className="h-4 w-4 text-red-500" />
-              <h2 className="font-semibold text-red-400">{t("settings.dangerZone")}</h2>
-            </div>
-            <p className="text-sm text-cr-i3 mb-4">
+          {/* Danger zone -- same slab as every other section; the danger is
+              carried by the --cr-down tokens on the text and controls, not by
+              a second design system. */}
+          <section className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.dangerZone")}</h2>
+            <p className="mb-4 text-sm font-light leading-relaxed text-cr-i3">
               {t("settings.dangerZoneDesc")}
             </p>
             {!deletingAccount ? (
               <Button
                 variant="outline"
-                className="border-red-500/20 text-red-600 hover:bg-red-500/10 gap-2"
+                className="h-10 rounded-full border-cr-down px-5 text-[13px] text-cr-down hover:bg-[var(--cr-down-bg)] hover:text-cr-down"
                 onClick={async () => {
                   setDeletingAccount(true);
                   // E49: ask the server what deleting would actually do before
@@ -346,19 +347,21 @@ export default function AccountSettingsPage() {
                   if (res.ok) setDeleteVerdict(await res.json());
                 }}
               >
-                <Trash2 className="h-4 w-4" />
                 {t("settings.deleteAccount")}
               </Button>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm font-medium text-red-400">
+                <p className="text-sm font-medium text-cr-down">
                   {t("settings.deleteConfirm")}
                 </p>
                 {deleteVerdict && (
-                  <div className="text-sm text-cr-i3 bg-cr-p3 border border-cr-p4 rounded-lg p-3 space-y-1">
-                    <p>{deleteVerdict.mode === "anonymise" ? t("deleteAccount.willAnonymise") : t("deleteAccount.willErase")}</p>
+                  // A rule, not a nested box: the verdict separates from the
+                  // confirm line with a hairline. The deal/fee counts are
+                  // data, so the line renders in mono.
+                  <div className="space-y-1 pt-3" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+                    <p className="text-sm font-light text-cr-i3">{deleteVerdict.mode === "anonymise" ? t("deleteAccount.willAnonymise") : t("deleteAccount.willErase")}</p>
                     {deleteVerdict.mode === "anonymise" && (
-                      <p className="text-xs text-cr-i4">
+                      <p className="font-mono text-xs font-medium text-cr-i4">
                         {deleteVerdict.closedDeals > 0 && t("deleteAccount.closedDeals", { count: deleteVerdict.closedDeals })}
                         {deleteVerdict.closedDeals > 0 && deleteVerdict.openFees > 0 && " · "}
                         {deleteVerdict.openFees > 0 && t("deleteAccount.openFees", { count: deleteVerdict.openFees })}
@@ -366,10 +369,10 @@ export default function AccountSettingsPage() {
                     )}
                   </div>
                 )}
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <Button
                     variant="outline"
-                    className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                    className="h-10 rounded-full border-cr-down px-5 text-[13px] text-cr-down hover:bg-[var(--cr-down-bg)] hover:text-cr-down"
                     disabled={deleteLoading}
                     onClick={async () => {
                       setDeleteLoading(true);
@@ -393,7 +396,7 @@ export default function AccountSettingsPage() {
                   >
                     {deleteLoading ? t("settings.deletingAccount") : t("settings.deletePermanently")}
                   </Button>
-                  <Button variant="ghost" onClick={() => setDeletingAccount(false)} disabled={deleteLoading}>{t("common.cancel")}</Button>
+                  <Button variant="ghost" className="h-10 rounded-full px-4 text-[13px]" onClick={() => setDeletingAccount(false)} disabled={deleteLoading}>{t("common.cancel")}</Button>
                 </div>
               </div>
             )}

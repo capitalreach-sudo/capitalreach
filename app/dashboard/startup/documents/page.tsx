@@ -3,15 +3,13 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Upload, FileText, Trash2, ExternalLink } from "lucide-react";
+import { ArrowLeft, Upload, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -21,6 +19,66 @@ const DOC_TYPES = [
   { value: "cap_table",       labelKey: "dashboard.docCapTable"  },
   { value: "other",           labelKey: "dashboard.docOther"     },
 ];
+
+// ── House register: shared presentation constants ─────────────
+
+const MONO: React.CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace",
+  fontVariantNumeric: "tabular-nums",
+};
+
+const BODY: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 300,
+};
+
+const LABEL_TYPE: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 500,
+  fontSize: "10px",
+  textTransform: "uppercase",
+  letterSpacing: "0.07em",
+};
+
+const CARD: React.CSSProperties = {
+  background: "var(--cr-paper-2)",
+  border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px",
+};
+
+const BTN_OUTLINE: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "40px",
+  padding: "0 16px",
+  borderRadius: "999px",
+  background: "transparent",
+  border: "1px solid var(--cr-paper-4)",
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: 500,
+  fontSize: "13px",
+  color: "var(--cr-ink)",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+// Per-row quiet action: a full 40px round target, hairline outline,
+// icon inside -- never a bare 16px glyph.
+const ICON_BTN: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "40px",
+  height: "40px",
+  borderRadius: "999px",
+  background: "transparent",
+  border: "1px solid var(--cr-paper-4)",
+  cursor: "pointer",
+  flexShrink: 0,
+};
+
+const FIELD_LABEL = "mb-2 block text-[11px] font-medium uppercase tracking-[0.07em] text-cr-i3";
 
 /**
  * C28: outstanding document requests. A request used to be a bell and
@@ -45,29 +103,31 @@ function OutstandingRequests() {
     setReqs(prev => (prev ?? []).map(r => r.id === id ? { ...r, status } : r));
   }
   return (
-    <div className="bg-cr-copper/[0.06] border border-cr-copper/25 rounded-2xl p-5 mb-6">
-      <h2 className="font-semibold text-cr-ink mb-1">{t("docReq.outstandingTitle", { count: open.length })}</h2>
-      <p className="text-xs text-cr-i3 mb-4">{t("docReq.outstandingHint")}</p>
-      <div className="space-y-2">
-        {open.map(r => (
-          <div key={r.id} className="flex items-start justify-between gap-3 bg-cr-paper border border-cr-p4 rounded-xl px-4 py-3">
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-cr-ink">{t(LABEL[r.doc_type] ?? "dashboard.docOther")}</p>
-              <p className="text-xs text-cr-i4">
+    <section style={{ marginBottom: "24px" }}>
+      <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("docReq.outstandingTitle", { count: open.length })}</div>
+      <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, marginBottom: "12px" }}>{t("docReq.outstandingHint")}</p>
+      {/* One flat card; requests separated by hairline rules, not boxes. The
+          copper hairline border marks it as the thing being waited on. */}
+      <div style={{ ...CARD, borderColor: "var(--cr-copper-br)" }}>
+        {open.map((r, reqIdx) => (
+          <div key={r.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", padding: "14px 20px", borderTop: reqIdx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", margin: 0 }}>{t(LABEL[r.doc_type] ?? "dashboard.docOther")}</p>
+              <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
                 {r.investor
-                  ? <Link href={`/investors/${r.investor.slug}`} className="text-cr-copper no-underline">{r.investor.display_name || r.investor.firm_name || t("deals.investorFallback")}</Link>
+                  ? <Link href={`/investors/${r.investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{r.investor.display_name || r.investor.firm_name || t("deals.investorFallback")}</Link>
                   : t("deals.investorFallback")}
-                {" · "}{new Date(r.created_at).toLocaleDateString()}
+                {" · "}<span style={{ ...MONO, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>{new Date(r.created_at).toLocaleDateString()}</span>
               </p>
-              {r.message && <p className="text-xs text-cr-i3 mt-1">“{r.message}”</p>}
+              {r.message && <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5, marginTop: "6px" }}>“{r.message}”</p>}
             </div>
-            <Button size="sm" variant="outline" className="text-xs h-7 shrink-0" onClick={() => resolve(r.id, "declined")}>
+            <button onClick={() => resolve(r.id, "declined")} style={{ ...BTN_OUTLINE, flexShrink: 0 }}>
               {t("docReq.decline")}
-            </Button>
+            </button>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -147,99 +207,130 @@ export default function DocumentsPage() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href="/dashboard/startup">
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.docManager")}</h1>
-        </div>
+      <main style={{ background: "var(--cr-paper)", minHeight: "100vh", paddingBottom: "64px" }}>
+        <div style={{ maxWidth: "672px", margin: "0 auto", padding: "40px 24px" }}>
 
-        <OutstandingRequests />
-
-        {isLimitedPlan && (
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-5 flex items-center justify-between">
-            <p className="text-sm text-amber-300">{t("dashboard.docLimitBanner", { count: documents.length })}</p>
-            <Link href="/pricing"><Button size="sm" variant="outline" className="text-xs">{t("common.upgrade")}</Button></Link>
+          {/* Back + Title */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+            <Link href="/dashboard/startup" style={{ display: "inline-flex", alignItems: "center", gap: "4px", minHeight: "40px", ...BODY, fontSize: "13px", color: "var(--cr-ink-4)", textDecoration: "none" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}>
+              <ArrowLeft style={{ width: 14, height: 14 }} /> {t("common.back")}
+            </Link>
+            <div style={{ width: 1, height: 14, background: "var(--cr-rule-dark)" }} aria-hidden />
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "24px", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
+              {t("dashboard.docManager")}
+            </h1>
           </div>
-        )}
 
-        {/* Upload form */}
-        {!atLimit && (
-          <form onSubmit={handleUpload} className="bg-cr-paper border rounded-2xl p-5 mb-6 space-y-4">
-            <h2 className="font-semibold text-cr-ink">{t("dashboard.uploadDocument")}</h2>
-            <div>
-              <Label>{t("dashboard.docType")}</Label>
-              <Select value={docType} onValueChange={setDocType}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.value} value={d.value}>{t(d.labelKey)}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t("dashboard.docLabelOptional")}</Label>
-              <Input value={docLabel} onChange={e => setDocLabel(e.target.value)} placeholder="Pitch Deck v3 — June 2026" />
-            </div>
-            <div>
-              <Label>{t("dashboard.docFile")}</Label>
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".pdf,.xlsx,.xls,.mp4"
-                className="block w-full text-sm text-cr-i3 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-cr-copper/10 file:text-cr-cu-l hover:file:bg-cr-copper/15 cursor-pointer"
-                required
-              />
-              <p className="text-xs text-cr-i4 mt-1">{t("dashboard.docFormats")}</p>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-cr-p2 rounded-lg">
-              <div>
-                <p className="text-sm font-medium text-cr-ink">{t("dashboard.requireNda")}</p>
-                <p className="text-xs text-cr-i3">{t("dashboard.requireNdaSub")}</p>
-              </div>
-              <Switch checked={requiresNda} onCheckedChange={setRequiresNda} />
-            </div>
-            <Button type="submit" className="w-full gap-2" disabled={uploading}>
-              <Upload className="h-4 w-4" />
-              {uploading ? t("dashboard.uploading") : t("dashboard.uploadDocument")}
-            </Button>
-          </form>
-        )}
+          <OutstandingRequests />
 
-        {/* Document list */}
-        <div className="bg-cr-paper border rounded-2xl overflow-hidden">
-          <div className="px-5 py-3 border-b bg-cr-p2">
-            <h2 className="font-semibold text-cr-ink text-sm">{t("dashboard.uploadedDocuments")} ({documents.length})</h2>
-          </div>
-          {docsLoading ? null : documents.length === 0 ? (
-            <div className="p-8 text-center text-cr-i4">
-              <FileText className="h-8 w-8 mx-auto mb-2 text-cr-i4" />
-              <p>{t("startupDetail.noDocumentsUploaded")}</p>
-            </div>
-          ) : (
-            <div className="divide-y">
-              {documents.map(doc => (
-                <div key={doc.id} className="flex items-center justify-between px-5 py-3">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-cr-copper flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-cr-ink">{doc.label}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-xs text-cr-i4 capitalize">{doc.type.replace(/_/g, " ")}</span>
-                        {doc.requires_nda && <Badge variant="warning" className="text-xs py-0">{t("dashboard.ndaRequired")}</Badge>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <a href={`/api/documents/open?id=${doc.id}`} target="_blank" rel="noopener noreferrer" aria-label={t("common.open")} className="text-cr-copper hover:text-cr-cu-l">
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                    <button onClick={() => deleteDocument(doc.id)} aria-label={t("common.delete")} className="text-cr-i4 hover:text-red-500">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+          {isLimitedPlan && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px" }}>
+              <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.5, margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
+                <span aria-hidden style={{ color: "var(--cr-copper)", flexShrink: 0, lineHeight: 1 }}>✦</span>
+                {t("dashboard.docLimitBanner", { count: documents.length })}
+              </p>
+              <Link href="/pricing" style={{ ...BTN_OUTLINE, textDecoration: "none" }}>{t("common.upgrade")}</Link>
             </div>
           )}
+
+          {/* Upload form */}
+          {!atLimit && (
+            <section style={{ marginBottom: "32px" }}>
+              <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.uploadDocument")}</div>
+              <form onSubmit={handleUpload} style={{ ...CARD, padding: "20px" }}>
+                <div style={{ marginBottom: "16px" }}>
+                  <Label className={FIELD_LABEL}>{t("dashboard.docType")}</Label>
+                  <Select value={docType} onValueChange={setDocType}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.value} value={d.value}>{t(d.labelKey)}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div style={{ marginBottom: "16px" }}>
+                  <Label className={FIELD_LABEL}>{t("dashboard.docLabelOptional")}</Label>
+                  <Input value={docLabel} onChange={e => setDocLabel(e.target.value)} placeholder="Pitch Deck v3 — June 2026" />
+                </div>
+                <div style={{ marginBottom: "16px" }}>
+                  <Label className={FIELD_LABEL}>{t("dashboard.docFile")}</Label>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept=".pdf,.xlsx,.xls,.mp4"
+                    className="block w-full max-w-full cursor-pointer text-sm text-cr-i3 file:mr-3 file:cursor-pointer file:rounded-full file:border file:border-solid file:border-cr-p4 file:bg-transparent file:px-4 file:py-2.5 file:text-[13px] file:font-medium file:text-cr-ink hover:file:bg-cr-p2"
+                    required
+                  />
+                  <p className="mt-1 text-xs text-cr-i4">{t("dashboard.docFormats")}</p>
+                </div>
+                {/* NDA toggle: a rule-separated row inside the card, not a
+                    tinted box-in-box. */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--cr-rule)", padding: "14px 0", marginTop: "20px" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", margin: 0 }}>{t("dashboard.requireNda")}</p>
+                    <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "2px", lineHeight: 1.5 }}>{t("dashboard.requireNdaSub")}</p>
+                  </div>
+                  <Switch checked={requiresNda} onCheckedChange={setRequiresNda} />
+                </div>
+                {/* The one primary action on this view. */}
+                <button
+                  type="submit"
+                  disabled={uploading}
+                  className="btn-copper-shimmer inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border-0 bg-cr-copper text-[13px] font-semibold text-white hover:bg-cr-cu-d disabled:opacity-60"
+                  style={{ fontFamily: "'DM Sans', sans-serif", cursor: uploading ? "default" : "pointer" }}
+                >
+                  <Upload style={{ width: 14, height: 14 }} aria-hidden />
+                  {uploading ? t("dashboard.uploading") : t("dashboard.uploadDocument")}
+                </button>
+              </form>
+            </section>
+          )}
+
+          {/* Document list */}
+          <section>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>
+              {t("dashboard.uploadedDocuments")}
+              <span style={{ ...MONO, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)" }}>({documents.length})</span>
+            </div>
+            <div style={CARD}>
+              {docsLoading ? null : documents.length === 0 ? (
+                <div style={{ padding: "48px 24px", textAlign: "center" }}>
+                  <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "14px", lineHeight: 1, marginBottom: "12px" }}>✦</span>
+                  <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-4)", margin: 0 }}>{t("startupDetail.noDocumentsUploaded")}</p>
+                </div>
+              ) : (
+                <div>
+                  {documents.map((doc, docIdx) => (
+                    <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "12px 20px", borderTop: docIdx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
+                        <span aria-hidden style={{ ...MONO, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                          {String(docIdx + 1).padStart(2, "0")}
+                        </span>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.label}</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginTop: "3px" }}>
+                            <span style={{ ...LABEL_TYPE, color: "var(--cr-ink-4)" }}>{doc.type.replace(/_/g, " ")}</span>
+                            {doc.requires_nda && (
+                              <span style={{ ...LABEL_TYPE, color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 6px" }}>
+                                {t("dashboard.ndaRequired")}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+                        <a href={`/api/documents/open?id=${doc.id}`} target="_blank" rel="noopener noreferrer" aria-label={t("common.open")} className="text-cr-copper hover:bg-cr-p2" style={{ ...ICON_BTN, textDecoration: "none" }}>
+                          <ExternalLink style={{ width: 16, height: 16 }} />
+                        </a>
+                        <button onClick={() => deleteDocument(doc.id)} aria-label={t("common.delete")} className="text-cr-i4 hover:bg-cr-p2 hover:text-destructive" style={ICON_BTN}>
+                          <Trash2 style={{ width: 16, height: 16 }} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
         </div>
       </main>
     </>

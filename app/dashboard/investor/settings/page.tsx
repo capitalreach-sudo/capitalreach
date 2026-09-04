@@ -19,6 +19,17 @@ import { INDUSTRIES, STAGES } from "@/types";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 
+// ── House register ─────────────────────────────────────────────────────────
+// Cards are paper-2 slabs with a hairline border at 4px radius; internal
+// structure is rules, never nested boxes. Field labels use the Label style
+// (small caps, +0.07em). Every numeric input renders in JetBrains Mono.
+const CARD: React.CSSProperties = {
+  background: "var(--cr-paper-2)",
+  border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px",
+};
+const FIELD_LABEL = "text-[11px] font-medium uppercase tracking-[0.07em] text-cr-i3";
+
 // ── Simple tag-input component ─────────────────────────────────────────────
 function TagInput({
   tags,
@@ -53,18 +64,18 @@ function TagInput({
   }
 
   return (
-    <div className="border rounded-lg p-2 focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-cr-copper bg-cr-paper min-h-[42px]">
-      <div className="flex flex-wrap gap-1.5">
+    <div className="min-h-10 rounded-md border border-input bg-background px-2 py-1.5 focus-within:border-cr-copper">
+      <div className="flex flex-wrap items-center gap-1.5">
         {tags.map(tag => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 bg-cr-copper/15 text-cr-cu-l text-xs px-2 py-1 rounded-full font-medium"
+            className="inline-flex items-center gap-1 rounded-[3px] border border-cr-p4 bg-cr-p2 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.06em] text-cr-i3"
           >
             {tag}
             <button
               type="button"
               onClick={() => remove(tag)}
-              className="hover:text-cr-cu-l ml-0.5"
+              className="-my-1 -mr-1 flex h-6 w-6 items-center justify-center text-cr-i4 hover:text-cr-ink"
             >
               <X className="h-3 w-3" />
             </button>
@@ -77,7 +88,7 @@ function TagInput({
           onKeyDown={handleKeyDown}
           onBlur={add}
           placeholder={tags.length === 0 ? (placeholder ?? "Type and press Enter…") : ""}
-          className="flex-1 min-w-[120px] text-sm outline-none bg-transparent placeholder:text-cr-i4 py-0.5 px-1"
+          className="min-w-[120px] flex-1 bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-cr-i4"
         />
       </div>
     </div>
@@ -110,37 +121,42 @@ function PortfolioEditor({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {portfolio.map((co, i) => (
-        <div key={i} className="flex gap-2 items-start">
-          <Input
-            value={co.name}
-            onChange={e => update(i, "name", e.target.value)}
-            placeholder={t("onboarding.inv.companyNamePh")}
-            className="flex-1"
-          />
-          <Input
-            value={co.stage || ""}
-            onChange={e => update(i, "stage", e.target.value)}
-            placeholder={t("dashboard.phStage")}
-            className="w-32"
-          />
-          <Input
-            value={co.outcome || ""}
-            onChange={e => update(i, "outcome", e.target.value)}
-            placeholder={t("dashboard.phOutcome")}
-            className="w-36"
-          />
+        // minmax(0,1fr) tracks let every input shrink below its intrinsic
+        // width, so a row never overflows at 375px; below sm the three
+        // fields stack in one column with the remove control alongside.
+        <div key={i} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+          <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
+            <Input
+              value={co.name}
+              onChange={e => update(i, "name", e.target.value)}
+              placeholder={t("onboarding.inv.companyNamePh")}
+              className="min-w-0"
+            />
+            <Input
+              value={co.stage || ""}
+              onChange={e => update(i, "stage", e.target.value)}
+              placeholder={t("dashboard.phStage")}
+              className="min-w-0"
+            />
+            <Input
+              value={co.outcome || ""}
+              onChange={e => update(i, "outcome", e.target.value)}
+              placeholder={t("dashboard.phOutcome")}
+              className="min-w-0"
+            />
+          </div>
           <button
             type="button"
             onClick={() => remove(i)}
-            className="text-cr-i4 hover:text-red-500 mt-2.5 flex-shrink-0"
+            className="flex h-10 w-10 shrink-0 items-center justify-center text-cr-i4 transition-colors hover:text-cr-ink"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       ))}
-      <Button type="button" variant="outline" size="sm" onClick={add} className="gap-1.5 text-xs">
+      <Button type="button" variant="outline" size="sm" onClick={add} className="h-10 gap-1.5 rounded-full px-4 text-xs">
         <Plus className="h-3.5 w-3.5" /> {t("onboarding.inv.addCompany")}
       </Button>
     </div>
@@ -257,55 +273,67 @@ export default function InvestorSettingsPage() {
     setSaving(false);
   }
 
-  if (loading) return <><Navbar /><div className="flex items-center justify-center h-64 text-cr-i4">{t("common.loading")}</div></>;
-  if (!investor) return <><Navbar /><div className="text-center py-20">{t("dashboard.noInvestorProfile")}</div></>;
+  if (loading) return <><Navbar /><div className="flex h-64 items-center justify-center text-sm text-cr-i4">{t("common.loading")}</div></>;
+  if (!investor) return (
+    <>
+      <Navbar />
+      <div className="py-24 text-center">
+        <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>
+        <p className="mt-3 text-sm text-cr-i3">{t("dashboard.noInvestorProfile")}</p>
+      </div>
+    </>
+  );
 
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href="/dashboard/investor">
-            <Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
-          </Link>
-          <h1 className="text-2xl font-bold text-cr-ink">{t("dashboard.investorSettings")}</h1>
-
-          {/* The profile page can preview itself, but nothing led there from
-              the editor -- so the only view of these fields was the form, which
-              shows inputs rather than the result founders actually judge. */}
-          {investor.slug && (
-            <Link
-              href={`/investors/${investor.slug}`}
-              className="ml-auto inline-flex items-center gap-1.5 text-sm text-cr-copper hover:underline"
-            >
-              <Eye className="h-3.5 w-3.5" /> {t("dashboard.viewPublicProfile")}
+      <main className="container mx-auto max-w-2xl px-4 py-8 md:py-12" style={{ background: "var(--cr-paper)" }}>
+        <header className="mb-8 pb-6" style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <Link href="/dashboard/investor">
+              <Button variant="ghost" size="sm" className="-ml-2 h-10 gap-1.5"><ArrowLeft className="h-4 w-4" /> {t("common.back")}</Button>
             </Link>
-          )}
-        </div>
+
+            {/* The profile page can preview itself, but nothing led there from
+                the editor -- so the only view of these fields was the form, which
+                shows inputs rather than the result founders actually judge. */}
+            {investor.slug && (
+              <Link
+                href={`/investors/${investor.slug}`}
+                className="inline-flex min-h-10 items-center gap-1.5 text-sm text-cr-copper hover:underline"
+              >
+                <Eye className="h-3.5 w-3.5" /> {t("dashboard.viewPublicProfile")}
+              </Link>
+            )}
+          </div>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
+            {t("dashboard.investorSettings")}
+          </h1>
+        </header>
 
         <form onSubmit={handleSave} className="space-y-6">
 
           {/* ── Accreditation ─────────────────────────────────────────────── */}
-          <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-2">{t("settings.accTitle")}</h2>
-            <p className="text-sm text-cr-i3 mb-4 leading-relaxed">{t("settings.accBody")}</p>
-            <label className="flex items-start gap-3 cursor-pointer">
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.accTitle")}</h2>
+            <p className="mb-4 text-sm leading-relaxed text-cr-i3">{t("settings.accBody")}</p>
+            <label className="flex cursor-pointer items-start gap-3 py-1">
               <input type="checkbox" checked={accredited} onChange={e => setAccredited(e.target.checked)}
                 style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: 2, flexShrink: 0, cursor: "pointer" }} />
-              <span className="text-sm text-cr-ink leading-relaxed">{t("settings.accCheckbox")}</span>
+              <span className="text-sm leading-relaxed text-cr-ink">{t("settings.accCheckbox")}</span>
             </label>
             {!accredited && (
-              <p className="text-xs text-cr-i4 mt-3 leading-relaxed">{t("settings.accLockedHint")}</p>
+              <p className="mt-3 text-xs leading-relaxed text-cr-i4">{t("settings.accLockedHint")}</p>
             )}
           </div>
 
           {/* ── Identity ──────────────────────────────────────────────────── */}
-          <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">{t("dashboard.secIdentity")}</h2>
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "16px" }}>{t("dashboard.secIdentity")}</h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("dashboard.displayName")}</Label>
+                  <Label className={FIELD_LABEL}>{t("dashboard.displayName")}</Label>
                   <Input
                     value={investor.display_name || ""}
                     onChange={e => set("display_name", e.target.value)}
@@ -313,7 +341,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>{t("onboarding.inv.firmName")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.firmName")}</Label>
                   <Input
                     value={investor.firm_name || ""}
                     onChange={e => set("firm_name", e.target.value)}
@@ -322,7 +350,7 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
               <div>
-                <Label>{t("onboarding.inv.shortBio")}</Label>
+                <Label className={FIELD_LABEL}>{t("onboarding.inv.shortBio")}</Label>
                 <Textarea
                   value={investor.bio || ""}
                   onChange={e => set("bio", e.target.value)}
@@ -330,9 +358,9 @@ export default function InvestorSettingsPage() {
                   placeholder="Angel investor focused on B2B SaaS at the pre-seed stage…"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("onboarding.inv.website")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.website")}</Label>
                   <Input
                     value={investor.website || ""}
                     onChange={e => set("website", e.target.value)}
@@ -340,7 +368,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>{t("settings.bookingUrl")}</Label>
+                  <Label className={FIELD_LABEL}>{t("settings.bookingUrl")}</Label>
                   <Input
                     value={investor.booking_url || ""}
                     onChange={e => set("booking_url", e.target.value)}
@@ -348,7 +376,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>{t("onboarding.inv.linkedin")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.linkedin")}</Label>
                   <Input
                     value={investor.linkedin_url || ""}
                     onChange={e => set("linkedin_url", e.target.value)}
@@ -358,11 +386,11 @@ export default function InvestorSettingsPage() {
               </div>
               {/* Profile image — paid plans; the API enforces, this explains. */}
               <div>
-                <Label>{t("invSettings.profileImage")}</Label>
+                <Label className={FIELD_LABEL}>{t("invSettings.profileImage")}</Label>
                 {investor.subscription_tier && investor.subscription_tier !== "free" ? (
                   <LogoUploader entityType="investor" name={investor.display_name || investor.firm_name || "?"} logoUrl={investor.logo_url ?? null} logoColor={investor.logo_color ?? null} onChanged={(url, color) => setInvestor((i: any) => ({ ...i, logo_url: url, logo_color: color }))} />
                 ) : (
-                  <p className="text-xs text-cr-i4 mt-1">
+                  <p className="mt-1 text-xs text-cr-i4">
                     {t("invSettings.imagePaid")}{" "}
                     <Link href="/pricing" className="text-cr-copper underline underline-offset-2">{t("common.upgrade")}</Link>
                   </p>
@@ -370,7 +398,7 @@ export default function InvestorSettingsPage() {
               </div>
               {/* Intro video — top two investor plans. */}
               <div>
-                <Label>{t("invSettings.introVideo")}</Label>
+                <Label className={FIELD_LABEL}>{t("invSettings.introVideo")}</Label>
                 {investor.subscription_tier === "pro" || investor.subscription_tier === "institution" ? (
                   <Input
                     value={investor.video_url || ""}
@@ -378,14 +406,14 @@ export default function InvestorSettingsPage() {
                     placeholder="https://youtube.com/watch?v=…"
                   />
                 ) : (
-                  <p className="text-xs text-cr-i4 mt-1">
+                  <p className="mt-1 text-xs text-cr-i4">
                     {t("invSettings.videoPaid")}{" "}
                     <Link href="/pricing" className="text-cr-copper underline underline-offset-2">{t("common.upgrade")}</Link>
                   </p>
                 )}
               </div>
               <div>
-                <Label>{t("onboarding.inv.twitterX")}</Label>
+                <Label className={FIELD_LABEL}>{t("onboarding.inv.twitterX")}</Label>
                 <Input
                   value={investor.twitter_url || ""}
                   onChange={e => set("twitter_url", e.target.value)}
@@ -396,11 +424,11 @@ export default function InvestorSettingsPage() {
           </div>
 
           {/* ── Investment Details ─────────────────────────────────────────── */}
-          <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">{t("dashboard.secInvestmentDetails")}</h2>
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "16px" }}>{t("dashboard.secInvestmentDetails")}</h2>
             <div className="space-y-4">
               <div>
-                <Label>{t("onboarding.inv.thesis")}</Label>
+                <Label className={FIELD_LABEL}>{t("onboarding.inv.thesis")}</Label>
                 <Textarea
                   value={investor.investment_thesis || ""}
                   onChange={e => set("investment_thesis", e.target.value)}
@@ -408,29 +436,31 @@ export default function InvestorSettingsPage() {
                   placeholder="We back technical founders solving hard problems in regulated industries…"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("onboarding.inv.aumLabel")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.aumLabel")}</Label>
                   <Input
                     value={investor.aum || ""}
                     onChange={e => set("aum", e.target.value)}
+                    className="font-mono"
                     placeholder="e.g. $50M"
                   />
                 </div>
                 <div>
-                  <Label>{t("onboarding.inv.numInvestments")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.numInvestments")}</Label>
                   <Input
                     type="number"
                     min={0}
                     value={investor.number_of_investments ?? ""}
                     onChange={e => set("number_of_investments", e.target.value)}
+                    className="font-mono"
                     placeholder="e.g. 24"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("onboarding.inv.holdPeriod")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.holdPeriod")}</Label>
                   <Input
                     value={investor.avg_hold_period || ""}
                     onChange={e => set("avg_hold_period", e.target.value)}
@@ -438,7 +468,7 @@ export default function InvestorSettingsPage() {
                   />
                 </div>
                 <div>
-                  <Label>{t("onboarding.inv.followOn")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.followOn")}</Label>
                   <Input
                     value={investor.follow_on_policy || ""}
                     onChange={e => set("follow_on_policy", e.target.value)}
@@ -447,16 +477,18 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
               <div>
-                <Label>{t("onboarding.inv.boardPref")}</Label>
+                <Label className={FIELD_LABEL}>{t("onboarding.inv.boardPref")}</Label>
                 <Input
                   value={investor.board_seat_pref || ""}
                   onChange={e => set("board_seat_pref", e.target.value)}
                   placeholder="e.g. Observer seat preferred"
                 />
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              {/* A rule, not a box: toggles separate from the fields above
+                  with a hairline instead of a nested card. */}
+              <div className="flex items-center justify-between gap-4 pt-4" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                 <div>
-                  <p className="font-medium text-sm text-cr-ink">{t("dashboard.leadRoundsLabel")}</p>
+                  <p className="text-sm font-medium text-cr-ink">{t("dashboard.leadRoundsLabel")}</p>
                   <p className="text-xs text-cr-i3">{t("dashboard.leadRoundsQ")}</p>
                 </div>
                 <Switch
@@ -468,9 +500,9 @@ export default function InvestorSettingsPage() {
           </div>
 
           {/* ── Portfolio ──────────────────────────────────────────────────── */}
-          <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-1">{t("onboarding.inv.portfolioLabel")}</h2>
-            <p className="text-xs text-cr-i3 mb-4">{t("dashboard.portfolioSub")}</p>
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "6px" }}>{t("onboarding.inv.portfolioLabel")}</h2>
+            <p className="mb-4 text-xs text-cr-i3">{t("dashboard.portfolioSub")}</p>
             <PortfolioEditor
               portfolio={investor.portfolio_json || []}
               onChange={p => set("portfolio_json", p)}
@@ -478,14 +510,14 @@ export default function InvestorSettingsPage() {
           </div>
 
           {/* ── Investment Preferences ─────────────────────────────────────── */}
-          <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-4">{t("onboarding.inv.h2")}</h2>
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "16px" }}>{t("onboarding.inv.h2")}</h2>
             <div className="space-y-5">
               <div>
-                <Label className="text-sm font-semibold mb-2 block">{t("dashboard.industriesLabel")}</Label>
-                <div className="grid grid-cols-2 gap-2">
+                <Label className={cn(FIELD_LABEL, "mb-2 block")}>{t("dashboard.industriesLabel")}</Label>
+                <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
                   {INDUSTRIES.map(ind => (
-                    <label key={ind} className="flex items-center gap-2 cursor-pointer">
+                    <label key={ind} className="flex min-h-10 cursor-pointer items-center gap-2">
                       <Checkbox
                         checked={(investor.industries || []).includes(ind)}
                         onCheckedChange={() => toggleArr("industries", ind)}
@@ -497,7 +529,7 @@ export default function InvestorSettingsPage() {
               </div>
 
               <div>
-                <Label className="text-sm font-semibold mb-2 block">{t("dashboard.stagesLabel")}</Label>
+                <Label className={cn(FIELD_LABEL, "mb-2 block")}>{t("dashboard.stagesLabel")}</Label>
                 <div className="flex flex-wrap gap-2">
                   {STAGES.map(s => (
                     <button
@@ -505,9 +537,9 @@ export default function InvestorSettingsPage() {
                       key={s.value}
                       onClick={() => toggleArr("stages", s.value)}
                       className={cn(
-                        "text-xs px-3 py-1.5 rounded-full border transition-colors",
+                        "min-h-10 rounded-full border px-4 text-xs transition-colors",
                         (investor.stages || []).includes(s.value)
-                          ? "bg-cr-cu-d text-white border-cr-cu-d"
+                          ? "border-[var(--cr-copper-br)] bg-[var(--cr-copper-bg)] font-medium text-cr-copper"
                           : "border-cr-p4 text-cr-i3 hover:border-cr-i4"
                       )}
                     >
@@ -517,30 +549,32 @@ export default function InvestorSettingsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("onboarding.inv.minCheck")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.minCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.min_check || ""}
                     onChange={e => set("min_check", e.target.value)}
+                    className="font-mono"
                     placeholder="25000"
                   />
                 </div>
                 <div>
-                  <Label>{t("onboarding.inv.maxCheck")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.maxCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.max_check || ""}
                     onChange={e => set("max_check", e.target.value)}
+                    className="font-mono"
                     placeholder="500000"
                   />
                 </div>
               </div>
 
               <div>
-                <Label className="block mb-1.5">{t("onboarding.inv.geography")}</Label>
-                <p className="text-xs text-cr-i3 mb-2">{t("dashboard.geoHintEnter")}</p>
+                <Label className={cn(FIELD_LABEL, "mb-1.5 block")}>{t("onboarding.inv.geography")}</Label>
+                <p className="mb-2 text-xs text-cr-i3">{t("dashboard.geoHintEnter")}</p>
                 <TagInput
                   tags={investor.geography || []}
                   onChange={tags => set("geography", tags)}
@@ -551,17 +585,17 @@ export default function InvestorSettingsPage() {
           </div>
 
           {/* ── Richer Profile Fields (Feature 3) ─────────────────────── */}
-          <div className="bg-cr-paper border rounded-2xl p-6">
-            <h2 className="font-semibold text-cr-ink mb-1">{t("dashboard.secProfileDetail")}</h2>
-            <p className="text-xs text-cr-i3 mb-4">{t("dashboard.profileDetailSub")}</p>
+          <div className="p-4 sm:p-6" style={CARD}>
+            <h2 className="ruled-label" style={{ marginBottom: "6px" }}>{t("dashboard.secProfileDetail")}</h2>
+            <p className="mb-4 text-xs text-cr-i3">{t("dashboard.profileDetailSub")}</p>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("onboarding.inv.step1")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.step1")}</Label>
                   <select
                     value={investor.investor_type || ""}
                     onChange={e => set("investor_type", e.target.value)}
-                    className="w-full border rounded-md px-3 py-2 text-sm bg-background"
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                   >
                     <option value="">{t("dashboard.selectDots")}</option>
                     {[
@@ -576,18 +610,20 @@ export default function InvestorSettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <Label>{t("dashboard.portfolioCount")}</Label>
+                  <Label className={FIELD_LABEL}>{t("dashboard.portfolioCount")}</Label>
                   <Input
                     type="number"
                     value={investor.portfolio_count ?? ""}
                     onChange={e => set("portfolio_count", e.target.value)}
+                    className="font-mono"
                     placeholder="e.g. 12"
                   />
                 </div>
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              {/* Same treatment as the lead-rounds toggle: rule, not box. */}
+              <div className="flex items-center justify-between gap-4 pt-4" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                 <div>
-                  <p className="font-medium text-sm text-cr-ink">{t("dashboard.willingLead")}</p>
+                  <p className="text-sm font-medium text-cr-ink">{t("dashboard.willingLead")}</p>
                   <p className="text-xs text-cr-i3">{t("dashboard.willingLeadSub")}</p>
                 </div>
                 <Switch
@@ -595,28 +631,30 @@ export default function InvestorSettingsPage() {
                   onCheckedChange={v => set("lead_investor", v)}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>{t("onboarding.inv.minCheck")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.minCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.check_size_min ?? ""}
                     onChange={e => set("check_size_min", e.target.value)}
+                    className="font-mono"
                     placeholder="10000"
                   />
                 </div>
                 <div>
-                  <Label>{t("onboarding.inv.maxCheck")}</Label>
+                  <Label className={FIELD_LABEL}>{t("onboarding.inv.maxCheck")}</Label>
                   <Input
                     type="number"
                     value={investor.check_size_max ?? ""}
                     onChange={e => set("check_size_max", e.target.value)}
+                    className="font-mono"
                     placeholder="500000"
                   />
                 </div>
               </div>
               <div>
-                <Label className="block mb-1.5">{t("dashboard.languagesSpoken")}</Label>
+                <Label className={cn(FIELD_LABEL, "mb-1.5 block")}>{t("dashboard.languagesSpoken")}</Label>
                 <TagInput
                   tags={investor.languages || []}
                   onChange={tags => set("languages", tags)}
@@ -626,19 +664,20 @@ export default function InvestorSettingsPage() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full gap-2" disabled={saving}>
+          {/* The one primary action on this view. */}
+          <Button type="submit" className="h-11 w-full gap-2 rounded-full bg-cr-copper text-[13px] font-semibold text-white hover:bg-cr-cu-d" disabled={saving}>
             <Save className="h-4 w-4" />
             {saving ? t("common.saving") : t("dashboard.saveAll")}
           </Button>
         </form>
 
         {/* Language section (outside form — has its own save) */}
-        <section className="bg-cr-paper border rounded-2xl p-6 mt-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Globe className="h-4 w-4 text-cr-copper" />
-            <h2 className="font-semibold text-cr-ink">{t("settings.language")}</h2>
-          </div>
-          <p className="text-sm text-cr-i3 mb-4">
+        <section className="mt-6 p-4 sm:p-6" style={CARD}>
+          <h2 className="ruled-label" style={{ marginBottom: "8px" }}>
+            <Globe className="h-3.5 w-3.5 text-cr-copper" aria-hidden />
+            {t("settings.language")}
+          </h2>
+          <p className="mb-4 text-sm text-cr-i3">
             {t("settings.languageDesc")}
           </p>
           <LanguageSettingsSelector />
