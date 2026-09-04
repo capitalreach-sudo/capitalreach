@@ -34,19 +34,25 @@ export function TractionChart({ points }: { points: MetricPoint[] }) {
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
         {useMrr ? t("traction.mrrTitle") : t("traction.usersTitle")}
       </p>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: "6px", height: "110px" }}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: "6px" }}>
         {points.map((p) => {
           const v = value(p);
-          const h = Math.max((v / max) * 100, v > 0 ? 4 : 1);
+          // Pixel heights, not percentages: a percentage height resolves
+          // against the PARENT's definite height, and these bars sit inside an
+          // auto-height flex column -- so `${h}%` computed to nothing and
+          // every bar collapsed to its 2px minimum. $1k and $2k charted
+          // identically for as long as this chart has existed. 72px is the
+          // drawing area; the labels ride above and below it.
+          const h = v > 0 ? Math.max((v / max) * 72, 4) : 2;
           const monthLabel = p.month.slice(2, 7).replace("-", "/");
           return (
-            <div key={p.month} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "5px", minWidth: 0 }}>
+            <div key={p.month} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: "5px", minWidth: 0 }}>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-3)", whiteSpace: "nowrap" }}>
                 {v > 0 ? fmt(v) : "—"}
               </span>
               <div
                 title={`${monthLabel}: ${v > 0 ? fmt(v) : "—"}`}
-                style={{ width: "100%", maxWidth: "42px", height: `${h}%`, minHeight: "2px", background: v > 0 ? "var(--cr-copper)" : "var(--cr-paper-4)", borderRadius: "2px 2px 0 0", opacity: v > 0 ? 0.9 : 1 }}
+                style={{ width: "100%", maxWidth: "42px", height: `${h}px`, background: v > 0 ? "var(--cr-copper)" : "var(--cr-paper-4)", borderRadius: "2px 2px 0 0", opacity: v > 0 ? 0.9 : 1 }}
               />
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {monthLabel}
