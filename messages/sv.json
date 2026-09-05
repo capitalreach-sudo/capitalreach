@@ -3563,5 +3563,10 @@
     "investorJoined": "En ny investerare gick med",
     "ndaSigned": "Ett NDA undertecknades",
     "roundClosed": "En runda stängdes framgångsrikt"
+  },
+  "radar": {
+    "title": "Investerare som matchar din runda",
+    "ofTotal": "av {total} aktiva investerare matchar din bransch och fas",
+    "browse": "Se dem i katalogen"
   }
 }

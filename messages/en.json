@@ -3563,5 +3563,10 @@
     "investorJoined": "A new investor joined",
     "ndaSigned": "An NDA was signed",
     "roundClosed": "A round closed successfully"
+  },
+  "radar": {
+    "title": "Investors matching your round",
+    "ofTotal": "of {total} live investors match your industry and stage",
+    "browse": "Browse them in the directory"
   }
 }

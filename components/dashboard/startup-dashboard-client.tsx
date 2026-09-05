@@ -116,6 +116,56 @@ const VIS_ROWS = [
  * conversations. Counts only, no identity, so it is ungated like the stat
  * tiles; renders nothing until something has happened.
  */
+/**
+ * The match radar: live demand for THIS round, counted from the preferences
+ * investors published. A founder opens the dashboard and sees "37 of 131
+ * investors fit what you are raising" -- the marketplace working for them,
+ * stated in one number. Identities stay behind the directory and its gates.
+ */
+function MatchRadar() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{ count: number; byType: Record<string, number>; total: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/startups/match-radar")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  if (!data || data.count === 0) return null;
+  const types = Object.entries(data.byType).sort((a, b) => b[1] - a[1]).slice(0, 4);
+
+  return (
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ minWidth: 0 }}>
+          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "6px" }}>
+            {t("radar.title")}
+          </h3>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-copper)", marginRight: "8px", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
+            {t("radar.ofTotal", { total: data.total })}
+          </p>
+        </div>
+        <Link href="/investors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", minHeight: "40px", display: "inline-flex", alignItems: "center" }}>
+          {t("radar.browse")} {"\u2192"}
+        </Link>
+      </div>
+      {types.length > 1 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+          {types.map(([type, n]) => (
+            <span key={type} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px", border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "3px 8px" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink-2)" }}>{n}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{type.replace(/_/g, " ")}</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function EngagementPanel() {
   const { t } = useTranslation();
   const [data, setData] = useState<{
@@ -1252,6 +1302,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             )}
             <ErrorBoundary labelKey="sections.fundraiseChecklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.tractionHistory"><MetricsRecorder /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.targetInvestors"><MatchRadar /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.investorInterest"><EngagementPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.investorInterest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.profileViewers"><ViewersPanel /></ErrorBoundary>

@@ -3563,5 +3563,10 @@
     "investorJoined": "새 투자자가 합류",
     "ndaSigned": "NDA가 체결됨",
     "roundClosed": "라운드가 성공적으로 마감"
+  },
+  "radar": {
+    "title": "내 라운드에 맞는 투자자",
+    "ofTotal": "활성 투자자 {total}명 중 산업과 단계가 일치",
+    "browse": "디렉터리에서 보기"
   }
 }

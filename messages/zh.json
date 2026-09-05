@@ -3563,5 +3563,10 @@
     "investorJoined": "一位新投资人加入",
     "ndaSigned": "一份保密协议已签署",
     "roundClosed": "一轮融资成功完成"
+  },
+  "radar": {
+    "title": "与你的融资轮匹配的投资人",
+    "ofTotal": "在 {total} 位活跃投资人中与你的行业和阶段匹配",
+    "browse": "在名录中查看"
   }
 }

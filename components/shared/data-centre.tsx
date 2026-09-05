@@ -290,7 +290,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
 
       {/* Header strip */}
       <div style={{ position: "relative",  background: "var(--cr-band-bg)", borderBottom: "1px solid var(--cr-copper-br)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px 40px 48px" }}>
+        {/* Side gutters relax on small screens: a fixed 40px left 295px of
+            content at 375px, which forced every grid into a squeeze. */}
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px clamp(24px, 5vw, 40px) 48px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
             <BarChart3 style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("data.eyebrow")}</span>
@@ -342,7 +344,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 80px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px clamp(24px, 5vw, 40px) 80px" }}>
 
         {/* Loading skeleton */}
         {loading && (
@@ -387,31 +389,41 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         {/* Data loaded */}
         {!loading && !error && data && data.startupCount > 0 && (
           <>
-            {/* Stat cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "32px" }}>
-              <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}   color="var(--cr-copper)" />
-              <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}       color="var(--cr-neutral)" />
-              <StatCard label={t("data.raised")}    value={data.totalRaised}   prefix="$" Icon={DollarSign} color="var(--cr-up)" />
-              <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="var(--cr-copper)" />
-            </div>
+            {/* ── Chapter: the platform in four numbers ─────────────────────
+                Every chapter on this page opens with the ruled-label, the same
+                section marker as every other surface -- the page used to be a
+                wall of equal tiles with nothing saying where one topic ended
+                and the next began. The opener reuses the header eyebrow key:
+                same fact, now anchoring the totals it describes. */}
+            <section style={{ marginBottom: "48px" }}>
+              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("data.eyebrow")}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+                <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}   color="var(--cr-copper)" />
+                <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}       color="var(--cr-neutral)" />
+                <StatCard label={t("data.raised")}    value={data.totalRaised}   prefix="$" Icon={DollarSign} color="var(--cr-up)" />
+                <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="var(--cr-copper)" />
+              </div>
+            </section>
 
-            {/* ── Growth over time ─────────────────────────────────────────
+            {/* ── Chapter: growth over time ─────────────────────────────────
                 Totals say how big the platform is and nothing about whether
                 it is growing. Twelve months, empty months included: dropping
                 them draws a straight line across the gap, which reads as
-                steady activity and is the opposite of what happened. */}
+                steady activity and is the opposite of what happened. The old
+                panel title is promoted to the chapter opener; each chart
+                frame inside carries its own caption plus an explicit unit
+                marker, so a visitor knows what each line counts before
+                reading a single value. */}
             {monthly.length > 0 && (
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "18px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Activity style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.overTime")}</h3>
-                  </div>
+              <section style={{ marginBottom: "48px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
+                  <div className="ruled-label">{t("data.overTime")}</div>
                   <button onClick={() => setShowTable(v => !v)}
                     style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)" }}>
                     {showTable ? t("data.showChart") : t("data.showTable")}
                   </button>
                 </div>
+                <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
 
                 {showTable ? (
                   /* Every chart has a table behind it: some of these fills sit
@@ -440,6 +452,13 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   </div>
                 ) : (
                   <>
+                    {/* The caption names both series in the frame; the mono
+                        "/mo" says what one point on the line IS -- a count
+                        for that month, not a running total. */}
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", margin: "0 0 6px" }}>
+                      {t("data.newListings")} · {t("data.dealsClosed")}
+                      <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: "8px", color: "var(--cr-ink-4)" }}>/mo</span>
+                    </p>
                     <LineChart
                       labels={monthly.map(m => monthLabel(m.month))}
                       series={[
@@ -452,6 +471,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         you like, which is the commonest way a chart lies. */}
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", margin: "22px 0 6px" }}>
                       {t("data.capitalSought")}
+                      <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: "8px", color: "var(--cr-ink-4)" }}>$/mo</span>
                     </p>
                     <LineChart
                       height={140}
@@ -461,25 +481,23 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     />
                   </>
                 )}
-              </div>
+                </div>
+              </section>
             )}
 
-            {/* ── Deal flow ────────────────────────────────────────────────
+            {/* ── Chapter: deal flow ────────────────────────────────────────
                 The pipeline is the part of this product that isn't a
                 directory, and until now it was invisible to anyone who hadn't
                 signed in. Aggregate counts only -- the API deliberately sends
                 no startup, investor or per-deal amount, because deals are
-                private between their two participants. */}
+                private between their two participants. The two headline
+                figures sit in the opener line itself, so the chapter answers
+                "how many deals, how many close" before the funnel is read. */}
             {data.byDealStage && (
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <TrendingUp style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-                      {t("data.dealFlow")}
-                    </h3>
-                  </div>
-                  <div style={{ display: "flex", gap: "20px" }}>
+              <section style={{ marginBottom: "48px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
+                  <div className="ruled-label">{t("data.dealFlow")}</div>
+                  <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
                       {t("data.liveDeals")}{" "}
                       <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-ink)" }}>{data.activeDeals}</strong>
@@ -492,14 +510,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     )}
                   </div>
                 </div>
+                <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "10px" }}>
-                  {DEAL_STAGES.map(({ key, color }) => {
+                  {DEAL_STAGES.map(({ key, color }, idx) => {
                     const n = data.byDealStage[key] ?? 0;
                     const max = Math.max(...Object.values(data.byDealStage), 1);
                     return (
                       <div key={key} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 12px" }}>
+                        {/* Numbered rail: five tiles in a grid read as five
+                            equal facts; the 01-05 says they are one sequence,
+                            read left to right, ending in the two outcomes. */}
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", marginRight: "6px" }}>{`0${idx + 1}`}</span>
                           {t(`data.stage_${key}`)}
                         </p>
                         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink)", marginBottom: "10px" }}>{n}</p>
@@ -516,11 +539,18 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
                   </p>
                 )}
-              </div>
+                </div>
+              </section>
             )}
 
-            {/* Charts */}
-            <div className="grid-half-stack" style={{ gap: "20px", marginBottom: "28px" }}>
+            {/* ── Chapter: the startup population, cut two ways ─────────────
+                Both charts slice the same thing -- the active startups the
+                first stat card counts -- by industry and by stage. The opener
+                reuses that stat's key, which also names the unit behind every
+                figure in this chapter: each count is a number of startups. */}
+            <section style={{ marginBottom: "48px" }}>
+              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("data.startups")}</div>
+              <div className="grid-half-stack" style={{ gap: "20px" }}>
 
               {/* Industry breakdown */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>

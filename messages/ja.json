@@ -3563,5 +3563,10 @@
     "investorJoined": "新しい投資家が参加",
     "ndaSigned": "NDAが締結されました",
     "roundClosed": "ラウンドが成立しました"
+  },
+  "radar": {
+    "title": "あなたのラウンドに合う投資家",
+    "ofTotal": "{total}人のアクティブ投資家のうち、業界とステージが一致",
+    "browse": "ディレクトリで見る"
   }
 }

@@ -3563,5 +3563,10 @@
     "investorJoined": "Un nouvel investisseur a rejoint",
     "ndaSigned": "Un NDA a été signé",
     "roundClosed": "Un tour s'est clôturé avec succès"
+  },
+  "radar": {
+    "title": "Investisseurs correspondant à votre tour",
+    "ofTotal": "sur {total} investisseurs actifs correspondent à votre secteur et stade",
+    "browse": "Les voir dans l'annuaire"
   }
 }

@@ -3563,5 +3563,10 @@
     "investorJoined": "Een nieuwe investeerder sloot zich aan",
     "ndaSigned": "Een NDA werd ondertekend",
     "roundClosed": "Een ronde werd succesvol gesloten"
+  },
+  "radar": {
+    "title": "Investeerders die bij je ronde passen",
+    "ofTotal": "van {total} actieve investeerders passen bij je sector en fase",
+    "browse": "Bekijk ze in de directory"
   }
 }
