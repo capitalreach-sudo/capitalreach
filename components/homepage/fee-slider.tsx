@@ -39,7 +39,8 @@ export function FeeSlider() {
           type="range" min={0} max={STEPS.length - 1} step={1} value={idx}
           onChange={(e) => setIdx(Number(e.target.value))}
           aria-label={t("feeCalc.inputRaise")}
-          style={{ width: "100%", accentColor: "var(--cr-copper)", cursor: "pointer", height: "28px" }}
+          className="cr-range"
+          style={{ "--fill": `${(idx / (STEPS.length - 1)) * 100}%` } as React.CSSProperties}
         />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1px", background: "color-mix(in srgb, var(--cr-band-ink) 10%, transparent)", marginTop: "20px", border: "1px solid color-mix(in srgb, var(--cr-band-ink) 10%, transparent)", borderRadius: "4px", overflow: "hidden" }}>
           {[

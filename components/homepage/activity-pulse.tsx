@@ -53,17 +53,21 @@ export function ActivityPulse() {
     <section aria-label={t("feed.title")} style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)" }}>
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-8">
         <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("feed.title")}</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 24px" }}>
-          {events.slice(0, 6).map((e, i) => (
-            <span key={`${e.kind}-${e.at}-${i}`} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px" }}>
-              <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px" }}>✦</span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
-                {t(KIND_KEY[e.kind], e.name ? { name: e.name } : undefined)}
+        {/* Ledger rows, not floating fragments: each event is an entry with
+            its timestamp on the right margin, the way a register reads. */}
+        <div style={{ maxWidth: "560px" }}>
+          {events.slice(0, 5).map((e, i) => (
+            <div key={`${e.kind}-${e.at}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", padding: "8px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+              <span style={{ display: "inline-flex", alignItems: "baseline", gap: "10px", minWidth: 0 }}>
+                <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {t(KIND_KEY[e.kind], e.name ? { name: e.name } : undefined)}
+                </span>
               </span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {rel(e.at)}
               </span>
-            </span>
+            </div>
           ))}
         </div>
       </div>

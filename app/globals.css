@@ -1638,3 +1638,38 @@ html { scroll-behavior: smooth; }
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+
+/* ── House range input: hairline track, copper fill, machined thumb.
+   The native slider read as template furniture on the fee band. ── */
+.cr-range {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 28px; background: transparent; cursor: pointer;
+}
+.cr-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(90deg, var(--cr-copper) 0%, var(--cr-copper) var(--fill, 40%), color-mix(in srgb, var(--cr-band-ink) 18%, transparent) var(--fill, 40%));
+  border-radius: 1px;
+}
+.cr-range::-moz-range-track {
+  height: 2px;
+  background: color-mix(in srgb, var(--cr-band-ink) 18%, transparent);
+  border-radius: 1px;
+}
+.cr-range::-moz-range-progress { height: 2px; background: var(--cr-copper); border-radius: 1px; }
+.cr-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--cr-band-bg);
+  border: 2px solid var(--cr-copper);
+  margin-top: -8px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cr-copper) 12%, transparent);
+}
+.cr-range::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--cr-band-bg);
+  border: 2px solid var(--cr-copper);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cr-copper) 12%, transparent);
+}
+.cr-range:focus-visible { outline: none; }
+.cr-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cr-copper) 22%, transparent); }

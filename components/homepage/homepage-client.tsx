@@ -373,7 +373,7 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
             </div>
 
             <div style={{ border: "1px solid rgba(26,22,18,0.15)", borderRadius: "8px", overflow: "hidden", background: "var(--cr-paper)", boxShadow: "0 2px 16px rgba(26,22,18,0.04)" }}>
-              <div style={{ height: "3px", background: "linear-gradient(90deg, #8A4A15, #B5651D, #D4842A)" }} />
+              <div style={{ height: "3px", background: "linear-gradient(90deg, var(--cr-copper-d), var(--cr-copper), var(--cr-copper-l))" }} />
 
               {/* Desktop header. No MRR column: revenue figures are gated to
                   the financials tier, and this table reaches every anonymous

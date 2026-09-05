@@ -34,9 +34,13 @@ export async function GET(req: NextRequest) {
   const industry = (sp.get("industry") ?? "").slice(0, 60);
 
   const prefs = await loadPrefs();
+  // EXPLICIT declarations only: an investor open to anything matches every
+  // combo, which froze the number and made the widget read as broken. The
+  // copy says "declare appetite for exactly this round" -- so count exactly
+  // that, and the number moves the moment you touch a chip.
   const count = prefs.filter((p) => {
-    const stgOk = !stage || p.stages.length === 0 || p.stages.includes(stage);
-    const indOk = !industry || p.industries.length === 0 || p.industries.includes(industry);
+    const stgOk = !stage || p.stages.includes(stage);
+    const indOk = !industry || p.industries.includes(industry);
     return stgOk && indOk;
   }).length;
 
