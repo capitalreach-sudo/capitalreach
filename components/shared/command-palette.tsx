@@ -25,7 +25,8 @@ import { useProfile } from "@/hooks/useProfile";
 type Hit = { kind: "startup" | "investor"; slug: string; name: string; sub?: string | null };
 type Row =
   | { type: "hit"; hit: Hit }
-  | { type: "route"; href: string; label: string; Icon: typeof Search };
+  | { type: "route"; href: string; label: string; Icon: typeof Search }
+  | { type: "action"; id: string; label: string; Icon: typeof Search; run: () => void };
 
 export function CommandPalette() {
   const { t } = useTranslation();
@@ -43,6 +44,43 @@ export function CommandPalette() {
     profile?.role === "startup" ? "/dashboard/startup"
     : profile?.role === "admin" ? "/admin"
     : "/dashboard/investor";
+
+  // The terminal remembers: the last five entities opened through it.
+  const [recents, setRecents] = useState<Array<{ kind: "startup" | "investor"; slug: string; name: string }>>([]);
+  useEffect(() => {
+    if (!open) return;
+    try { setRecents(JSON.parse(localStorage.getItem("cr_palette_recents") || "[]").slice(0, 5)); } catch { /* fresh */ }
+  }, [open]);
+  const remember = useCallback((r: { kind: "startup" | "investor"; slug: string; name: string }) => {
+    try {
+      const cur: typeof recents = JSON.parse(localStorage.getItem("cr_palette_recents") || "[]");
+      const next = [r, ...cur.filter((c) => c.slug !== r.slug)].slice(0, 5);
+      localStorage.setItem("cr_palette_recents", JSON.stringify(next));
+    } catch { /* storage unavailable -- recents are a convenience */ }
+  }, []);
+
+  // Quick actions: the things a keyboard-first user does constantly. Labels
+  // read the CURRENT state at open time so they always say what will happen.
+  const actions = useMemo<Row[]>(() => {
+    if (!open) return [];
+    const isDark = typeof document !== "undefined" && document.documentElement.dataset.theme === "dark";
+    const isBiz  = typeof document !== "undefined" && document.documentElement.dataset.style === "business";
+    return [
+      { type: "action", id: "copy", label: t("share.copyLink"), Icon: Search, run: () => {
+          navigator.clipboard?.writeText(window.location.href).catch(() => {});
+        } },
+      { type: "action", id: "theme", label: isDark ? t("theme.toLight") : t("theme.toDark"), Icon: Search, run: () => {
+          const next = isDark ? "light" : "dark";
+          document.documentElement.dataset.theme = next;
+          document.cookie = `cr_theme=${next};path=/;max-age=31536000;SameSite=Lax`;
+        } },
+      { type: "action", id: "style", label: isBiz ? t("style.toEditorial") : t("style.toBusiness"), Icon: Search, run: () => {
+          const next = isBiz ? "editorial" : "business";
+          document.documentElement.dataset.style = next;
+          document.cookie = `cr_style=${next};path=/;max-age=31536000;SameSite=Lax`;
+        } },
+    ];
+  }, [open, t]);
 
   const routes = useMemo<Row[]>(() => {
     const pub: Row[] = [
@@ -85,7 +123,12 @@ export function CommandPalette() {
 
   // ── Search ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    const term = q.trim();
+    // Prefix filters, terminal-style: "s term" searches startups only,
+    // "i term" investors only. The bare term searches both.
+    const raw = q.trim();
+    const scoped = /^([si])\s+(.*)$/i.exec(raw);
+    const scope = scoped ? scoped[1].toLowerCase() : null;
+    const term = scoped ? scoped[2].trim() : raw;
     if (term.length < 2) { setHits([]); return; }
     const ctl = new AbortController();
     const id = window.setTimeout(async () => {
@@ -94,12 +137,12 @@ export function CommandPalette() {
         if (!res.ok) return;
         const data = await res.json();
         setHits([
-          ...(data.startups ?? []).map((s: { slug: string; name: string; tagline?: string }) => ({
+          ...(scope === "i" ? [] : (data.startups ?? []).map((s: { slug: string; name: string; tagline?: string }) => ({
             kind: "startup" as const, slug: s.slug, name: s.name, sub: s.tagline,
-          })),
-          ...(data.investors ?? []).map((i: { slug: string; name: string; firm?: string | null }) => ({
+          }))),
+          ...(scope === "s" ? [] : (data.investors ?? []).map((i: { slug: string; name: string; firm?: string | null }) => ({
             kind: "investor" as const, slug: i.slug, name: i.name, sub: i.firm,
-          })),
+          }))),
         ]);
       } catch { /* aborted or offline -- the previous hits stay on screen */ }
     }, 160);
@@ -110,20 +153,28 @@ export function CommandPalette() {
   // empty the palette is a pure jump-list, which is its most common use.
   const rows = useMemo<Row[]>(() => {
     const term = q.trim().toLowerCase();
-    const matched = term
+    const matchedRoutes = term
       ? routes.filter((r) => r.type === "route" && r.label.toLowerCase().includes(term))
       : routes;
-    return [...hits.map((hit) => ({ type: "hit" as const, hit })), ...matched];
-  }, [hits, routes, q]);
+    const matchedActions = term
+      ? actions.filter((a) => a.type === "action" && a.label.toLowerCase().includes(term))
+      : actions;
+    const recentRows: Row[] = term ? [] : recents.map((r) => ({ type: "hit" as const, hit: { kind: r.kind, slug: r.slug, name: r.name, sub: undefined } }));
+    return [...recentRows, ...hits.map((hit) => ({ type: "hit" as const, hit })), ...matchedRoutes, ...matchedActions];
+  }, [hits, routes, actions, recents, q]);
 
   useEffect(() => { setActive(0); }, [rows.length]);
 
   const go = useCallback((row: Row) => {
     setOpen(false);
-    router.push(row.type === "hit"
-      ? `/${row.hit.kind === "startup" ? "startups" : "investors"}/${row.hit.slug}`
-      : row.href);
-  }, [router]);
+    if (row.type === "action") { row.run(); return; }
+    if (row.type === "hit") {
+      remember({ kind: row.hit.kind, slug: row.hit.slug, name: row.hit.name });
+      router.push(`/${row.hit.kind === "startup" ? "startups" : "investors"}/${row.hit.slug}`);
+      return;
+    }
+    router.push(row.href);
+  }, [router, remember]);
 
   function onInputKey(e: React.KeyboardEvent) {
     if (e.key === "ArrowDown") { e.preventDefault(); setActive((i) => Math.min(i + 1, rows.length - 1)); }
@@ -141,7 +192,7 @@ export function CommandPalette() {
   return (
     <div
       className="fixed inset-0 z-[120] flex items-start justify-center"
-      style={{ background: "rgba(26,22,18,0.45)", padding: "10vh 16px 16px" }}
+      style={{ background: "var(--cr-scrim)", padding: "10vh 16px 16px" }}
       onClick={() => setOpen(false)}
     >
       <div
@@ -154,8 +205,8 @@ export function CommandPalette() {
           maxWidth: "560px",
           background: "var(--cr-paper-2)",
           border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "10px",
-          boxShadow: "0 24px 64px rgba(26,22,18,0.28)",
+          borderRadius: "4px",
+          boxShadow: "var(--cr-card-shadow-hover)",
           overflow: "hidden",
         }}
       >
@@ -192,10 +243,12 @@ export function CommandPalette() {
 
           {rows.map((row, i) => {
             const isActive = i === active;
-            const key = row.type === "hit" ? `${row.hit.kind}-${row.hit.slug}` : row.href;
+            const key = row.type === "hit" ? `${row.hit.kind}-${row.hit.slug}` : row.type === "action" ? `action-${row.id}` : row.href;
             const label = row.type === "hit" ? row.hit.name : row.label;
             const sub = row.type === "hit" ? row.hit.sub : null;
+            const isAction = row.type === "action";
             const Icon = row.type === "hit" ? (row.hit.kind === "startup" ? Rocket : Users) : row.Icon;
+            void isAction;
             return (
               <button
                 key={key}
@@ -232,6 +285,16 @@ export function CommandPalette() {
               </button>
             );
           })}
+        </div>
+
+        {/* The keybar: how a terminal signs its name. */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", padding: "8px 14px", borderTop: "1px solid var(--cr-rule)" }}>
+          {[["\u2191\u2193", t("shortcuts.move")], ["\u21B5", t("shortcuts.open")], ["esc", t("shortcuts.close")], ["s\u00A0/\u00A0i", t("palette.results")]].map(([k, label]) => (
+            <span key={k} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px" }}>
+              <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 4px" }}>{k}</kbd>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>{label}</span>
+            </span>
+          ))}
         </div>
       </div>
     </div>
