@@ -25,7 +25,8 @@ export default async function StartupsPage() {
   // has not unlocked financials before the rows are serialized to the browser.
   const canSeeFinancials = await viewerCanSeeFinancials();
   const loaded = await loadActiveStartups();
-  const initial = loaded ? stripBrowseFinancials(loaded, canSeeFinancials) : loaded;
+  const initial = loaded ? stripBrowseFinancials(loaded.rows, canSeeFinancials) : null;
+  const marketTotal = loaded?.total ?? 0;
   return (
     <>
       <Navbar />
@@ -37,7 +38,7 @@ export default async function StartupsPage() {
         {/* First page only: 103 full listings serialized twice (HTML + RSC
             payload) made this route a 300KB document. 48 rows cover two
             pages of the grid; the client tops up from the cached API. */}
-        <StartupsSearch initialStartups={initial ? initial.slice(0, 48) : undefined} initialIsPartial={(initial?.length ?? 0) > 48} />
+        <StartupsSearch initialStartups={initial ? initial.slice(0, 48) : undefined} initialIsPartial={(initial?.length ?? 0) > 48} marketTotal={marketTotal} />
       </Suspense>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
         <LegalDisclaimer />

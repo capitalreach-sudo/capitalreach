@@ -568,7 +568,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function StartupsSearch({ initialStartups, initialIsPartial }: { initialStartups?: Startup[]; initialIsPartial?: boolean } = {}) {
+export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal = 0 }: { initialStartups?: Startup[]; initialIsPartial?: boolean; marketTotal?: number } = {}) {
   const { t } = useTranslation();
   const searchParams  = useSearchParams();
 
@@ -609,6 +609,18 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
   // the finished directory rather than a skeleton; the client fetch below
   // then only runs when nothing was provided (or to refresh).
   const [allStartups, setAllStartups] = useState<Startup[]>(initialStartups ?? []);
+  // The true market size (server count). The loaded set is a WINDOW of it;
+  // load-more pages deeper, and a text query searches the whole market
+  // server-side and merges hits into the window.
+  const [serverTotal, setServerTotal] = useState<number>(marketTotal);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const mergeRows = useCallback((rows: Startup[]) => {
+    setAllStartups(prev => {
+      const seen = new Set(prev.map(r => r.id));
+      const fresh = rows.filter(r => !seen.has(r.id));
+      return fresh.length ? [...prev, ...fresh] : prev;
+    });
+  }, []);
   const [loading, setLoading]         = useState(!initialStartups);
   const [page, setPage]               = useState(1);
   const [savedIds, setSavedIds]       = useState<Set<string>>(new Set());
@@ -737,7 +749,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
       if (initialStartups && initialIsPartial) {
         fetch("/api/startups/list")
           .then(r => (r.ok ? r.json() : null))
-          .then(j => { if (j?.startups) setAllStartups(j.startups as Startup[]); })
+          .then(j => { if (j?.startups) { setAllStartups(j.startups as Startup[]); if (j.total) setServerTotal(j.total); } })
           .catch(() => {});
         return;
       }
@@ -748,6 +760,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
         if (!res.ok) throw new Error();
         setLoadError(false);
         setAllStartups((json.startups as Startup[]) ?? []);
+        if (json.total) setServerTotal(json.total);
       } catch {
         // A failed fetch must not render as "no listings exist".
         setLoadError(true);
@@ -799,6 +812,35 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // Whole-market text search: the local filter only sees the loaded window,
+  // so a query also asks the SERVER (debounced) and merges its hits in --
+  // a listing outside the window becomes findable the moment it is typed for.
+  const queryForServer = filters.query.trim();
+  useEffect(() => {
+    if (queryForServer.length < 2) return;
+    if (serverTotal > 0 && allStartups.length >= serverTotal) return;
+    const ctl = new AbortController();
+    const id = window.setTimeout(() => {
+      fetch(`/api/startups/list?q=${encodeURIComponent(queryForServer)}`, { signal: ctl.signal })
+        .then(r => (r.ok ? r.json() : null))
+        .then(j => { if (j?.startups?.length) mergeRows(j.startups as Startup[]); })
+        .catch(() => {});
+    }, 300);
+    return () => { ctl.abort(); window.clearTimeout(id); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryForServer]);
+
+  async function loadMoreRows() {
+    if (loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const r = await fetch(`/api/startups/list?offset=${allStartups.length}`);
+      const j = await r.json();
+      if (r.ok && j?.startups) { mergeRows(j.startups as Startup[]); if (j.total) setServerTotal(j.total); }
+    } catch { /* the button stays; retry is a click away */ }
+    setLoadingMore(false);
+  }
 
   // How many listings each option would return, computed from the loaded
   // set. Counts ignore the dimension they belong to (picking a second
@@ -1355,16 +1397,21 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
           </div>
         )}
 
-        {/* Load more */}
-        {hasMore && !loading && (
+        {/* Load more: pages the local window first; when the window is spent
+            but the server holds more of the market, the SAME button fetches
+            the next thousand and keeps going. One control, whole market. */}
+        {(hasMore || allStartups.length < serverTotal) && !loading && (
           <div style={{ marginTop: "40px", display: "flex", justifyContent: "center" }}>
-            <button onClick={() => setPage((p) => p + 1)}
-              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "10px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: "pointer" }}>
-              {t("startups.loadMore", { count: Math.min(PAGE_SIZE, filtered.length - visible.length) })}
+            <button disabled={loadingMore}
+              onClick={() => { if (hasMore) setPage((p) => p + 1); else void loadMoreRows(); }}
+              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "10px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1 }}>
+              {loadingMore
+                ? t("common.loading")
+                : t("startups.loadMore", { count: hasMore ? Math.min(PAGE_SIZE, filtered.length - visible.length) : Math.min(1000, serverTotal - allStartups.length) })}
             </button>
           </div>
         )}
-        {!hasMore && !loading && filtered.length > 0 && (
+        {!hasMore && allStartups.length >= serverTotal && !loading && filtered.length > 0 && (
           <p style={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "40px" }}>
             {t("startups.allLoaded", { count: filtered.length })}
           </p>

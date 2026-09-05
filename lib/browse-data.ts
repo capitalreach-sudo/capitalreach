@@ -65,27 +65,41 @@ const trendingIds = unstable_cache(async (): Promise<string[]> => {
   }
 }, ["trending-startups"], { revalidate: 300 });
 
-export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
+/**
+ * The browse window. The browser filters INSTANTLY over the newest `limit`
+ * rows (the working set); `offset` pages deeper for load-more; `q` runs a
+ * server-side text search across the WHOLE market so a query is never blind
+ * to rows outside the loaded window. `total` is the true market size, so the
+ * UI can say "1,000 of 10,127" honestly.
+ */
+export async function loadActiveStartups(opts: { offset?: number; limit?: number; q?: string } = {}):
+  Promise<{ rows: BrowseStartup[]; total: number } | null> {
+  const offset = Math.max(0, Math.trunc(opts.offset ?? 0));
+  const limit = Math.min(Math.max(1, Math.trunc(opts.limit ?? 1000)), 1000);
+  const q = (opts.q ?? "").trim().slice(0, 80);
   try {
     const supabase = createAdminClient();
-    const [{ data, error }, hot] = await Promise.all([
-      supabase
-        .from("startups")
-        .select(STARTUP_LIST_COLUMNS)
-        .eq("status", "active")
-        // B16: a founder-paused round is off the market until they resume it.
-        .neq("round_state", "paused")
-        .order("created_at", { ascending: false })
-        // Scale bound: at 10k+ listings the unbounded set was a 600 KB payload
-        // and a browser-side filter over the whole market. The newest 1000
-        // keep browse instant; past that, server-side search is the answer
-        // (logged as the pagination follow-up).
-        .limit(1000),
+    let query = supabase
+      .from("startups")
+      .select(STARTUP_LIST_COLUMNS, { count: "exact" })
+      .eq("status", "active")
+      // B16: a founder-paused round is off the market until they resume it.
+      .neq("round_state", "paused");
+    if (q.length >= 2) {
+      // Escape LIKE metacharacters so "50%" matches the text "50%".
+      const term = `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
+      query = query.or(`name.ilike.${term},tagline.ilike.${term},industry.ilike.${term}`);
+    }
+    const [{ data, error, count }, hot] = await Promise.all([
+      query.order("created_at", { ascending: false }).range(offset, offset + limit - 1),
       trendingIds(),
     ]);
     if (error) return null;
     const hotSet = new Set(hot);
-    return (data ?? []).map((r) => ({ ...(r as unknown as BrowseStartup), trending: hotSet.has((r as { id: string }).id) }));
+    return {
+      rows: (data ?? []).map((r) => ({ ...(r as unknown as BrowseStartup), trending: hotSet.has((r as { id: string }).id) })),
+      total: count ?? 0,
+    };
   } catch {
     return null;
   }
