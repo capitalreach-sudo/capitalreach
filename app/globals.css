@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,6 +6,14 @@
 
 @layer base {
   :root {
+    /* The commissioned-type effect on a free budget: Fraunces' optical-size
+       axis hand-sets headlines; SOFT warms quotes; WONK is the homepage H1's
+       signature and appears nowhere else. */
+    --font-serif: 'Fraunces', Georgia, serif;
+    /* Verdigris: copper that has matured. Closed deals, invoiced fees, the
+       wax seal, success. Two accents maximum -- this is the second. */
+    --verdigris: #3E7C6A;
+
     /* Backgrounds — warm paper family */
     --cr-paper:   #F5F0E8;
     /* RGB triplets for Tailwind alpha-modifier support (see tailwind.config). */
@@ -160,6 +168,11 @@
      SaaS take on "business" was tried first and read as generic software;
      this direction reads as where the money actually lives. */
   [data-style="business"] {
+    /* Emerald owns the accent here, so matured-state verdigris shifts to a
+       deep teal that cannot be mistaken for it. */
+    --verdigris: #2F6D77;
+    /* Business serif: the register flattens display type to the sans. */
+    --font-serif: 'DM Sans', system-ui, sans-serif;
     --cr-paper:   #FFFFFF;
     --cr-paper-rgb: 255 255 255; --cr-p2-rgb: 250 250 250; --cr-p4-rgb: 228 228 231;
     --cr-copper-rgb: 4 120 87; --cr-cu-d-rgb: 6 95 70; --cr-up-rgb: 4 120 87;
@@ -227,6 +240,8 @@
   /* Business × dark: slate night, blue brightened for contrast on the dark
      ground -- same relationship copper has to the warm dark theme. */
   [data-style="business"][data-theme="dark"] {
+    --verdigris: #6FB5BF;
+    --font-serif: 'DM Sans', system-ui, sans-serif;
     --cr-paper:   #0A0A0A;
     --cr-paper-rgb: 10 10 10; --cr-p2-rgb: 17 17 19; --cr-p4-rgb: 38 38 43;
     --cr-copper-rgb: 52 211 153; --cr-cu-d-rgb: 16 185 129; --cr-up-rgb: 52 211 153;
@@ -350,12 +365,25 @@
 }
 
 /* ── Typography utilities ─────────────────────────────────── */
+/* Fraunces migration: 57 components set 'Playfair Display' inline, so ONE
+   attribute override moves them all -- the var respects each register (the
+   business style resolves --font-serif to the sans, replacing the old
+   flatten hack for font family; its style/weight flatten rules still win
+   on specificity). */
+[style*="Playfair"], .font-serif {
+  font-family: var(--font-serif) !important;
+  font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
+}
 .display {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-serif);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 0.95;
+  font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
 }
+/* The homepage H1's signature -- WONK appears here and nowhere else. */
+.display-wonk { font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 1 !important; }
+blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 0; }
 .headline {
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 700;
@@ -1673,3 +1701,73 @@ html { scroll-behavior: smooth; }
 }
 .cr-range:focus-visible { outline: none; }
 .cr-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cr-copper) 22%, transparent); }
+
+
+/* ── Paper grain: every page feels like stock, not hex. GPU-composited
+   fixed pseudo-element over an SVG turbulence filter (in layout.tsx). ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9999;
+  filter: url(#paper-grain);
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+[data-theme="dark"] body::before { mix-blend-mode: screen; opacity: 0.25; }
+
+/* ── Ink-bleed: the H1 reveals like ink into paper. Pure CSS mask -- the
+   text is always in the DOM with its real spaces; it cannot break. ── */
+.ink-bleed {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 40%, transparent 60%);
+  mask-image: linear-gradient(90deg, #000 0%, #000 40%, transparent 60%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  animation: inkBleed 1.4s cubic-bezier(.65,0,.35,1) 200ms both;
+}
+@keyframes inkBleed { to { -webkit-mask-position: 0% 0; mask-position: 0% 0; } }
+
+/* ── Guilloche: banknote texture, never decoration. ── */
+@keyframes guillocheSpin { to { transform: rotate(360deg); } }
+.guilloche-spin { animation: guillocheSpin 120s linear infinite; transform-origin: center; }
+
+/* ── The ledger loader ticks, it does not glide. ── */
+@keyframes ledgerTick {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(100%, 0); }
+  34%  { transform: translate(0, 14px); }
+  66%  { transform: translate(100%, 14px); }
+  67%  { transform: translate(0, 28px); }
+  100% { transform: translate(100%, 28px); }
+}
+
+/* ── The wax seal stamps. ── */
+@keyframes sealStamp {
+  0%   { transform: scale(1.6) rotate(-8deg); opacity: 0; }
+  64%  { transform: scale(0.95) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes sealThud {
+  0%, 100% { transform: translateY(0); }
+  64% { transform: translateY(2px); }
+}
+
+/* ── Focus: keyboard users get copper. The cheapest finished-feeling. ── */
+*:focus-visible {
+  outline: 2px solid var(--cr-copper);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Reduced motion, global. Per-feature opt-outs ride on top. ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  body::before { display: none; }
+  .ink-bleed { animation: none; -webkit-mask-image: none; mask-image: none; }
+}

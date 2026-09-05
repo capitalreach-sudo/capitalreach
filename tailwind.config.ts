@@ -58,7 +58,7 @@ const config: Config = {
       },
       fontFamily: {
         sans:    ["DM Sans", "system-ui", "sans-serif"],
-        serif:   ["Playfair Display", "Georgia", "serif"],
+        serif:   ["Fraunces", "Georgia", "serif"],
         mono:    ["JetBrains Mono", "monospace"],
         arabic:  ["Cairo", "Noto Sans Arabic", "system-ui", "sans-serif"],
       },

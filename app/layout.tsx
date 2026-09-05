@@ -137,6 +137,17 @@ export default async function RootLayout({
         <ToastNotifyProvider />
         <ServiceWorkerRegistrar />
         </LocaleProvider>
+        {/* The paper-grain source: an SVG turbulence filter referenced by
+            body::before. Rendered once, invisible, zero layout cost. */}
+        <svg className="hidden" aria-hidden="true" width="0" height="0">
+          <filter id="paper-grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncA type="discrete" tableValues="0 0 0 0 0.04 0.04 0.06" />
+            </feComponentTransfer>
+          </filter>
+        </svg>
       </body>
     </html>
   );
