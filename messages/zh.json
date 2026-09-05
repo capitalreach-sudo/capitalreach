@@ -1471,7 +1471,8 @@
     "remove": "移除",
     "you": "您",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "emptyDrawer": "此处暂无归档"
   },
   "onboarding": {
     "welcomeTitle": "欢迎来到CapitalReach",
@@ -3605,5 +3606,15 @@
     "s4d": "条款就在完整记录所在之处协商敲定。",
     "s5t": "落定",
     "s5d": "融资完成,2% 费用向创业公司开具发票。永远不向投资人收取。"
+  },
+  "cert": {
+    "title": "引荐证书",
+    "body": "兹证明 {startup} 与 {investor} 经由 CapitalReach 引荐相识,且下方记录的融资轮次已在双方之间完成。",
+    "amount": "成交金额",
+    "date": "成交日期",
+    "ref": "编号",
+    "print": "下载 / 打印",
+    "footer": "本证书记录了在 CapitalReach 上完成的一次引荐。可凭编号核验。",
+    "link": "证书"
   }
 }

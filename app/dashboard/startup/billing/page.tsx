@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -123,8 +124,8 @@ export default function StartupBillingPage() {
   if (loading) return (
     <>
       <Navbar />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh", ...BODY, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-        {t("common.loading")}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
+        <LedgerLoader />
       </div>
     </>
   );

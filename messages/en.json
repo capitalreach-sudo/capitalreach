@@ -1482,7 +1482,8 @@
     "remove": "Remove",
     "you": "you",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "emptyDrawer": "Nothing filed here"
   },
   "onboarding": {
     "welcomeTitle": "Welcome to CapitalReach",
@@ -3605,5 +3606,15 @@
     "s4d": "Terms are worked out where the whole record already lives.",
     "s5t": "Sealed",
     "s5d": "The round closes and the 2% fee is invoiced to the startup. Never to investors."
+  },
+  "cert": {
+    "title": "Certificate of Introduction",
+    "body": "This certifies that {startup} and {investor} were introduced through CapitalReach, and that the round recorded below was closed between them.",
+    "amount": "Amount closed",
+    "date": "Date closed",
+    "ref": "Reference",
+    "print": "Download / print",
+    "footer": "This certificate records an introduction made on CapitalReach. Verify by reference.",
+    "link": "Certificate"
   }
 }

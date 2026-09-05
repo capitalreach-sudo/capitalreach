@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { isPasswordBreached } from "@/lib/password-check";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -183,7 +184,7 @@ export default function AccountSettingsPage() {
 
   const dashboardPath = profile?.role === "startup" ? "/dashboard/startup" : "/dashboard/investor";
 
-  if (loading) return <><Navbar /><div className="flex h-64 items-center justify-center text-sm text-cr-i4">{t("common.loading")}</div></>;
+  if (loading) return <><Navbar /><div className="flex h-64 items-center justify-center"><LedgerLoader /></div></>;
 
   return (
     <>

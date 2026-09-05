@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
@@ -146,7 +147,7 @@ export default function ComplaintsPage() {
         )}
 
         {rows === null ? (
-          <p className="text-sm text-cr-i4">{t("common.loading")}</p>
+          <LedgerLoader />
         ) : rows.length === 0 ? (
           <div className="p-8 text-center" style={CARD}>
             <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>

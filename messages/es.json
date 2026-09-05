@@ -1471,7 +1471,8 @@
     "remove": "Quitar",
     "you": "tú",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "emptyDrawer": "Nada archivado aquí"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenido a CapitalReach",
@@ -3605,5 +3606,15 @@
     "s4d": "Los términos se negocian donde ya vive todo el expediente.",
     "s5t": "Sellada",
     "s5d": "La ronda se cierra y la comisión del 2% se factura a la startup. Nunca a los inversores."
+  },
+  "cert": {
+    "title": "Certificado de Presentación",
+    "body": "Se certifica que {startup} e {investor} fueron presentados a través de CapitalReach, y que la ronda registrada abajo se cerró entre ellos.",
+    "amount": "Importe cerrado",
+    "date": "Fecha de cierre",
+    "ref": "Referencia",
+    "print": "Descargar / imprimir",
+    "footer": "Este certificado registra una presentación realizada en CapitalReach. Verifique por referencia.",
+    "link": "Certificado"
   }
 }

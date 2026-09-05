@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -145,7 +146,7 @@ export default function TeamPage() {
         </header>
 
         {loading ? (
-          <p className="text-sm text-cr-i4">{t("common.loading")}</p>
+          <LedgerLoader />
         ) : unavailable ? (
           <div className="p-8 text-center" style={CARD}>
             <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>

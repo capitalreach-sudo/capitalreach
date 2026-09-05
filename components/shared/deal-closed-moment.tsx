@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { formatMoney } from "@/lib/currency";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
+import { WaxSeal } from "@/components/ui/WaxSeal";
 
 /**
  * The moment a round closes.
@@ -41,6 +42,10 @@ export function DealClosedMoment({ amount, currency, counterpartName, onDone }: 
         cursor: "pointer", animation: "cr-fade-in 400ms ease",
       }}>
       <div style={{ textAlign: "center", padding: 24 }}>
+        {/* The stamp lands first: verdigris wax on the biggest moment. */}
+        <div style={{ marginBottom: 20 }}>
+          <WaxSeal size={88} stamp />
+        </div>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.3em", color: "var(--cr-copper-l)", marginBottom: 16 }}>
           {t("closed.kicker")}
         </p>

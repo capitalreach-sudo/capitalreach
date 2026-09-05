@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { StickyNote, Trash2 } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -66,7 +67,7 @@ export function AdminNotes({ targetType, targetId }: {
       </div>
 
       {notes === null ? (
-        <p className="text-xs text-cr-i4">{t("common.loading")}</p>
+        <LedgerLoader />
       ) : notes.length === 0 ? (
         <p className="text-xs text-cr-i4">{t("adminNotes.empty")}</p>
       ) : (

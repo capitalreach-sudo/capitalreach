@@ -1771,3 +1771,28 @@ body::before {
   body::before { display: none; }
   .ink-bleed { animation: none; -webkit-mask-image: none; mask-image: none; }
 }
+
+
+/* ── Toast motion: filed in from the left, drains before it leaves. ── */
+@keyframes toastInLeft {
+  from { transform: translateX(-14px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes toastDrain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* ── Sparklines draw themselves; the endpoint arrives last. ── */
+@keyframes sparkDraw { to { stroke-dashoffset: 0; } }
+@keyframes sparkDot  { to { opacity: 1; } }
+
+/* ── The tabular-nums audit, closed by one rule: anything set in the mono
+   face is a figure, and figures do not shimmy when they change. ── */
+[style*="JetBrains"], .font-mono { font-variant-numeric: tabular-nums; }
+
+
+/* ── Certificate print: the sheet is the page; everything else leaves. ── */
+@media print {
+  .no-print, nav, header { display: none !important; }
+  body::before { display: none; }
+  body { background: #fff !important; }
+  .cert-sheet { width: 100% !important; border: none !important; box-shadow: none !important; }
+}

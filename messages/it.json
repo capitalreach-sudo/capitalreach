@@ -1305,7 +1305,8 @@
     "remove": "Rimuovi",
     "you": "tu",
     "yes": "Sì",
-    "no": "No"
+    "no": "No",
+    "emptyDrawer": "Niente in archivio"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -3605,5 +3606,15 @@
     "s4d": "I termini si negoziano dove vive già l'intero fascicolo.",
     "s5t": "Sigillato",
     "s5d": "Il round si chiude e la commissione del 2% viene fatturata alla startup. Mai agli investitori."
+  },
+  "cert": {
+    "title": "Certificato di Presentazione",
+    "body": "Si certifica che {startup} e {investor} sono stati presentati tramite CapitalReach e che il round registrato sotto è stato chiuso tra loro.",
+    "amount": "Importo chiuso",
+    "date": "Data di chiusura",
+    "ref": "Riferimento",
+    "print": "Scarica / stampa",
+    "footer": "Questo certificato registra una presentazione avvenuta su CapitalReach. Verifica tramite riferimento.",
+    "link": "Certificato"
   }
 }

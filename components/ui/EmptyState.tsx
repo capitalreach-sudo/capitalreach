@@ -1,6 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 /**
  * The shared "there is nothing here" block.
@@ -27,6 +28,7 @@ export function EmptyState({
   body?: string;
   action?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -42,6 +44,11 @@ export function EmptyState({
         background: "var(--cr-paper-2)",
       }}
     >
+      {/* The drawer tag: empty lists are museum drawers, and drawers are
+          labelled even when nothing is filed in them. */}
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--cr-ink-4)" }}>
+        {t("common.emptyDrawer")}
+      </span>
       {Icon && (
         <span
           aria-hidden
@@ -61,7 +68,7 @@ export function EmptyState({
       )}
       <p
         style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-serif)",
           fontWeight: 700,
           fontSize: "17px",
           color: "var(--cr-ink)",

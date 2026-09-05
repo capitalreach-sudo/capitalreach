@@ -1478,7 +1478,8 @@
     "remove": "Entfernen",
     "you": "Sie",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "emptyDrawer": "Nichts abgelegt"
   },
   "onboarding": {
     "welcomeTitle": "Willkommen bei CapitalReach",
@@ -3605,5 +3606,15 @@
     "s4d": "Die Konditionen werden dort verhandelt, wo die gesamte Akte bereits liegt.",
     "s5t": "Besiegelt",
     "s5d": "Die Runde schliesst, und die 2%-Gebuehr wird dem Startup in Rechnung gestellt. Nie den Investoren."
+  },
+  "cert": {
+    "title": "Zertifikat der Vorstellung",
+    "body": "Hiermit wird bestaetigt, dass {startup} und {investor} ueber CapitalReach zusammengefuehrt wurden und die unten verzeichnete Runde zwischen ihnen geschlossen wurde.",
+    "amount": "Geschlossener Betrag",
+    "date": "Abschlussdatum",
+    "ref": "Referenz",
+    "print": "Herunterladen / drucken",
+    "footer": "Dieses Zertifikat dokumentiert eine Vorstellung auf CapitalReach. Pruefung per Referenz.",
+    "link": "Zertifikat"
   }
 }

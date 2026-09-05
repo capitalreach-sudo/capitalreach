@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
@@ -501,7 +502,7 @@ function ReportQueue() {
     void load(status);
   }
 
-  if (reports === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
+  if (reports === null) return <div className="py-8 text-center"><LedgerLoader /></div>;
 
   return (
     <div>
@@ -591,7 +592,7 @@ function ComplaintQueue() {
     void load(status);
   }
 
-  if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
+  if (rows === null) return <div className="py-8 text-center"><LedgerLoader /></div>;
 
   return (
     <div>
@@ -788,7 +789,7 @@ function FeeLedger() {
     void load();
   }
 
-  if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
+  if (rows === null) return <div className="py-8 text-center"><LedgerLoader /></div>;
   // A dispute is open business too -- it is the one state that needs a person.
   const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable" || r.state === "disputed" || r.state === "reversed") : rows;
 

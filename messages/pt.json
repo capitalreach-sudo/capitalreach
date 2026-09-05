@@ -1305,7 +1305,8 @@
     "remove": "Remover",
     "you": "você",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "emptyDrawer": "Nada arquivado aqui"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -3605,5 +3606,15 @@
     "s4d": "Os termos são negociados onde todo o histórico já vive.",
     "s5t": "Selada",
     "s5d": "A rodada fecha e a taxa de 2% é faturada à startup. Nunca aos investidores."
+  },
+  "cert": {
+    "title": "Certificado de Apresentação",
+    "body": "Certifica-se que {startup} e {investor} foram apresentados através da CapitalReach, e que a rodada registrada abaixo foi fechada entre eles.",
+    "amount": "Valor fechado",
+    "date": "Data de fechamento",
+    "ref": "Referência",
+    "print": "Baixar / imprimir",
+    "footer": "Este certificado registra uma apresentação feita na CapitalReach. Verifique pela referência.",
+    "link": "Certificado"
   }
 }

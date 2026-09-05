@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { notifTitle, notifBody } from "@/lib/notification-text";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
@@ -238,7 +239,7 @@ export default function NotificationsPage() {
         </div>
 
         {rows === null ? (
-          <p className="text-sm font-light text-cr-i4">{t("common.loading")}</p>
+          <LedgerLoader />
         ) : loadError ? (
           <div className="text-center" style={{ ...CARD, padding: "48px 24px" }}>
             <p className="text-sm font-light text-cr-i3" style={{ marginBottom: "16px" }}>{t("errorPage.sectionTitle")}</p>

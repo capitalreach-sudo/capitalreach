@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { LogoUploader } from "@/components/shared/logo-uploader";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -273,7 +274,7 @@ export default function InvestorSettingsPage() {
     setSaving(false);
   }
 
-  if (loading) return <><Navbar /><div className="flex h-64 items-center justify-center text-sm text-cr-i4">{t("common.loading")}</div></>;
+  if (loading) return <><Navbar /><div className="flex h-64 items-center justify-center"><LedgerLoader /></div></>;
   if (!investor) return (
     <>
       <Navbar />

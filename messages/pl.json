@@ -1305,7 +1305,8 @@
     "remove": "Usuń",
     "you": "ty",
     "yes": "Tak",
-    "no": "Nie"
+    "no": "Nie",
+    "emptyDrawer": "Nic tu nie zarchiwizowano"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -3605,5 +3606,15 @@
     "s4d": "Warunki negocjuje się tam, gdzie już znajduje się cała dokumentacja.",
     "s5t": "Przypieczętowana",
     "s5d": "Runda się zamyka, a prowizja 2% jest fakturowana startupowi. Nigdy inwestorom."
+  },
+  "cert": {
+    "title": "Certyfikat Przedstawienia",
+    "body": "Niniejszym poświadcza się, że {startup} i {investor} zostali sobie przedstawieni przez CapitalReach, a odnotowana poniżej runda została między nimi zamknięta.",
+    "amount": "Zamknięta kwota",
+    "date": "Data zamknięcia",
+    "ref": "Referencja",
+    "print": "Pobierz / drukuj",
+    "footer": "Ten certyfikat dokumentuje przedstawienie dokonane na CapitalReach. Weryfikacja po referencji.",
+    "link": "Certyfikat"
   }
 }

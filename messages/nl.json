@@ -1305,7 +1305,8 @@
     "remove": "Verwijderen",
     "you": "u",
     "yes": "Ja",
-    "no": "Nee"
+    "no": "Nee",
+    "emptyDrawer": "Niets gearchiveerd"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -3605,5 +3606,15 @@
     "s4d": "De voorwaarden worden uitgewerkt waar het hele dossier al staat.",
     "s5t": "Bezegeld",
     "s5d": "De ronde sluit en de 2%-fee wordt aan de startup gefactureerd. Nooit aan investeerders."
+  },
+  "cert": {
+    "title": "Certificaat van Introductie",
+    "body": "Hierbij wordt bevestigd dat {startup} en {investor} via CapitalReach aan elkaar zijn voorgesteld en dat de hieronder vermelde ronde tussen hen is gesloten.",
+    "amount": "Gesloten bedrag",
+    "date": "Sluitingsdatum",
+    "ref": "Referentie",
+    "print": "Downloaden / afdrukken",
+    "footer": "Dit certificaat legt een introductie op CapitalReach vast. Verifieer via de referentie.",
+    "link": "Certificaat"
   }
 }

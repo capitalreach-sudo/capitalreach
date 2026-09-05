@@ -1305,7 +1305,8 @@
     "remove": "Ta bort",
     "you": "du",
     "yes": "Ja",
-    "no": "Nej"
+    "no": "Nej",
+    "emptyDrawer": "Inget arkiverat här"
   },
   "errors": {
     "required": "Det här fältet är obligatoriskt",
@@ -3605,5 +3606,15 @@
     "s4d": "Villkoren förhandlas där hela akten redan finns.",
     "s5t": "Förseglad",
     "s5d": "Rundan stängs och avgiften på 2% faktureras startupen. Aldrig investerarna."
+  },
+  "cert": {
+    "title": "Introduktionscertifikat",
+    "body": "Detta intygar att {startup} och {investor} introducerades via CapitalReach och att rundan nedan stängdes mellan dem.",
+    "amount": "Stängt belopp",
+    "date": "Stängningsdatum",
+    "ref": "Referens",
+    "print": "Ladda ner / skriv ut",
+    "footer": "Detta certifikat dokumenterar en introduktion gjord på CapitalReach. Verifiera via referensen.",
+    "link": "Certifikat"
   }
 }

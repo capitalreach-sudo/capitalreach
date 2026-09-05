@@ -24,6 +24,7 @@ import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { InfoTip } from "@/components/shared/info-tip";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { WaxSeal } from "@/components/ui/WaxSeal";
 import { scheduleTotal, scheduleReconciles, receivedTotal, allReceived } from "@/lib/tranches";
 
 const CONTRACT_TYPES: ContractType[] = ["term_sheet", "safe", "convertible_note", "nda", "custom"];
@@ -1762,7 +1763,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
     >
       {deal.status === "closed" && (
-        <span className="cr-stamp" aria-hidden>{t("deals.colClosed")}</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+          <WaxSeal size={24} />
+          <span className="cr-stamp" aria-hidden>{t("deals.colClosed")}</span>
+        </span>
       )}
       <div aria-hidden style={{ display: "flex", gap: 4, marginBottom: 8 }}>
         {[1, 2, 3, 4].map(i => (
@@ -1898,6 +1902,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             ? ` · ${t("deals.feeBilled", { amount: formatMoney(deal.success_fee_amount / 100, deal.currency || DEFAULT_CURRENCY) })}`
             : ""}
         </p>
+      )}
+      {deal.closed_at && (
+        <a href={`/deals/${deal.id}/certificate`}
+          style={{ display: "inline-block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none", marginTop: "6px" }}>
+          {t("cert.link")} →
+        </a>
       )}
 
       {showPassedPicker && onStatusChange && (

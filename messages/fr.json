@@ -1471,7 +1471,8 @@
     "remove": "Supprimer",
     "you": "vous",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "emptyDrawer": "Rien au dossier"
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue sur CapitalReach",
@@ -3605,5 +3606,15 @@
     "s4d": "Les conditions se négocient là où tout le dossier se trouve déjà.",
     "s5t": "Scellé",
     "s5d": "Le tour se conclut et les 2% de frais sont facturés à la startup. Jamais aux investisseurs."
+  },
+  "cert": {
+    "title": "Certificat d'Introduction",
+    "body": "Ceci certifie que {startup} et {investor} ont été mis en relation via CapitalReach, et que le tour enregistré ci-dessous a été conclu entre eux.",
+    "amount": "Montant conclu",
+    "date": "Date de clôture",
+    "ref": "Référence",
+    "print": "Télécharger / imprimer",
+    "footer": "Ce certificat atteste d'une mise en relation effectuée sur CapitalReach. Vérification par référence.",
+    "link": "Certificat"
   }
 }

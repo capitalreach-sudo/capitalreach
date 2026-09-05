@@ -17,8 +17,11 @@ export function Sparkline({ points, width = 64, height = 20 }: {
   const lastY = y(points[points.length - 1]);
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden style={{ flexShrink: 0, display: "block" }}>
-      <polyline points={path} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" opacity="0.85" />
-      <circle cx={lastX} cy={lastY} r="2" fill={color} />
+      <polyline points={path} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" opacity="0.85"
+        pathLength={1} strokeDasharray={1} strokeDashoffset={1}
+        style={{ animation: "sparkDraw 700ms ease-out forwards" }} />
+      <circle cx={lastX} cy={lastY} r="2" fill={color}
+        style={{ opacity: 0, animation: "sparkDot 200ms ease 600ms forwards" }} />
     </svg>
   );
 }
