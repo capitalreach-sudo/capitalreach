@@ -32,7 +32,22 @@ export default async function StartupsPage() {
       <Navbar />
       <Suspense
         fallback={
-          <div style={{ minHeight: "80vh", background: "var(--cr-paper)" }} aria-busy="true" />
+          /* The fallback at the page's TRUE geometry: header line, toolbar
+             bar, and a grid of card frames at real card height. The old
+             empty 80vh box swapped for a ~3000px page and threw everything
+             below it across the viewport -- measured CLS 0.48 on mobile.
+             Quiet frames in the right places make the swap invisible. */
+          <div aria-busy="true" style={{ background: "var(--cr-paper)" }}>
+            <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "32px", paddingBottom: "64px" }}>
+              <div style={{ height: "34px", width: "min(340px, 70%)", background: "var(--cr-paper-3)", borderRadius: "4px", marginBottom: "18px" }} />
+              <div style={{ height: "44px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", marginBottom: "24px" }} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+                {Array.from({ length: 9 }, (_, i) => (
+                  <div key={i} style={{ height: "224px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px" }} />
+                ))}
+              </div>
+            </div>
+          </div>
         }
       >
         {/* First page only: 103 full listings serialized twice (HTML + RSC

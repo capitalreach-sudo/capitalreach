@@ -109,6 +109,12 @@ export default async function RootLayout({
         )}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        {/* The house families load from the head, in parallel with the app
+            CSS -- this used to be an @import inside globals.css, which
+            chained html -> css -> google css -> font and billed ~1s of
+            render-blocking to every page. Fraunces requests only the axis
+            ranges the site actually sets (wght 600-700, SOFT 0-50). */}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,600..700,0..50,0..1;1,9..144,600..700,0..50,0..1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@300;400;500;600;700&display=swap" />
         {extraFont && (
           <link
             rel="stylesheet"

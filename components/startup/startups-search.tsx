@@ -414,7 +414,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
 
   return (
-    <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none" }}>
+    <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none", minWidth: 0, overflow: "hidden" }}>
       <div
         className="cr-lift cr-spot cr-tilt"
         onMouseMove={e => {
