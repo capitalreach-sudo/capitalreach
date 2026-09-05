@@ -3586,5 +3586,10 @@
     "waitlistTitle": "一位投资人加入了你的候补名单",
     "waitlistBodyOversub": "如有空位，他们希望加入。",
     "waitlistBodyClosed": "他们希望在你再次融资时得到通知。"
+  },
+  "match": {
+    "title": "谁在等你",
+    "hint": "选择你的阶段和行业。",
+    "result": "在 {total} 位活跃投资人中明确表示对这类轮次有兴趣"
   }
 }

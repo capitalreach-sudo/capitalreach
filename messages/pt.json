@@ -3586,5 +3586,10 @@
     "waitlistTitle": "Um investidor entrou na sua lista de espera",
     "waitlistBodyOversub": "Querem entrar se abrir espaço.",
     "waitlistBodyClosed": "Querem saber quando voltar a captar."
+  },
+  "match": {
+    "title": "Quem espera por si",
+    "hint": "Escolha a sua fase e setor.",
+    "result": "de {total} investidores ativos declaram apetite por exatamente esta ronda"
   }
 }

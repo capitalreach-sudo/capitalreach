@@ -3586,5 +3586,10 @@
     "waitlistTitle": "Een investeerder sloot zich aan bij je wachtlijst",
     "waitlistBodyOversub": "Ze willen meedoen als er ruimte vrijkomt.",
     "waitlistBodyClosed": "Ze willen horen wanneer je opnieuw ophaalt."
+  },
+  "match": {
+    "title": "Wie er op je wacht",
+    "hint": "Kies je fase en sector.",
+    "result": "van {total} actieve investeerders verklaren interesse in precies deze ronde"
   }
 }

@@ -3586,5 +3586,10 @@
     "waitlistTitle": "Inwestor dołączył do Twojej listy oczekujących",
     "waitlistBodyOversub": "Chcą dołączyć, jeśli zwolni się miejsce.",
     "waitlistBodyClosed": "Chcą wiedzieć, gdy znów będziesz pozyskiwać kapitał."
+  },
+  "match": {
+    "title": "Kto na Ciebie czeka",
+    "hint": "Wybierz etap i branżę.",
+    "result": "z {total} aktywnych inwestorów deklaruje apetyt na dokładnie taką rundę"
   }
 }

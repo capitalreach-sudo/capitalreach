@@ -3586,5 +3586,10 @@
     "waitlistTitle": "En investerare gick med på din väntelista",
     "waitlistBodyOversub": "De vill vara med om plats öppnas.",
     "waitlistBodyClosed": "De vill veta när du reser kapital igen."
+  },
+  "match": {
+    "title": "Vem som väntar på dig",
+    "hint": "Välj din fas och sektor.",
+    "result": "av {total} aktiva investerare förklarar aptit på exakt denna runda"
   }
 }

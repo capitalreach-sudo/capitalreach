@@ -3586,5 +3586,10 @@
     "waitlistTitle": "Un investisseur a rejoint votre liste d'attente",
     "waitlistBodyOversub": "Ils veulent participer si une place se libère.",
     "waitlistBodyClosed": "Ils veulent être informés de votre prochaine levée."
+  },
+  "match": {
+    "title": "Qui vous attend",
+    "hint": "Choisissez votre stade et votre secteur.",
+    "result": "sur {total} investisseurs actifs déclarent un appétit pour ce tour précis"
   }
 }

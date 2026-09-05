@@ -3586,5 +3586,10 @@
     "waitlistTitle": "An investor joined your waitlist",
     "waitlistBodyOversub": "They want in if space opens up.",
     "waitlistBodyClosed": "They want to hear when you raise again."
+  },
+  "match": {
+    "title": "Who's waiting for you",
+    "hint": "Pick your stage and sector.",
+    "result": "of {total} live investors declare appetite for exactly this round"
   }
 }

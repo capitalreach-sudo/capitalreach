@@ -3586,5 +3586,10 @@
     "waitlistTitle": "Un inversor se unió a tu lista de espera",
     "waitlistBodyOversub": "Quieren entrar si se abre espacio.",
     "waitlistBodyClosed": "Quieren saber cuándo vuelvas a levantar capital."
+  },
+  "match": {
+    "title": "Quién te espera",
+    "hint": "Elige tu etapa y sector.",
+    "result": "de {total} inversores activos declaran apetito por exactamente esta ronda"
   }
 }

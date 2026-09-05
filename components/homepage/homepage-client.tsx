@@ -9,6 +9,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
+import { MarketMatcher } from "@/components/homepage/market-matcher";
+import { FeeSlider } from "@/components/homepage/fee-slider";
 import { safeFormatCurrency } from "@/lib/format";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
@@ -91,6 +93,12 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       <section
         style={{ background: "var(--cr-paper)", position: "relative", overflow: "hidden" }}
         className="min-h-[calc(100svh-56px)] flex items-center"
+        onMouseMove={(e) => {
+          // The glow leans toward the cursor -- alive, never distracting.
+          const r = e.currentTarget.getBoundingClientRect();
+          e.currentTarget.style.setProperty("--glow-x", `${((e.clientX - r.left) / r.width) * 100}%`);
+          e.currentTarget.style.setProperty("--glow-y", `${((e.clientY - r.top) / r.height) * 100}%`);
+        }}
       >
         <div className="hero-glow" aria-hidden />
         <div className="hero-noise" aria-hidden />
@@ -346,6 +354,9 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
         </div>
       </section>
 
+      {/* ── 3b. WHO'S WAITING ───────────────────────────────── */}
+      <MarketMatcher />
+
       {/* ── 4. TOP LISTINGS (only when there is something to show) ── */}
       {listings.length > 0 && (
         <section
@@ -451,6 +462,9 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
           </div>
         </section>
       )}
+
+      {/* ── 4b. THE FEE, FELT ───────────────────────────────── */}
+      <FeeSlider />
 
       {/* ── 5. PULL QUOTE ───────────────────────────────────── */}
       {/* The creed, said once, on the dark slab. Serif in editorial; the

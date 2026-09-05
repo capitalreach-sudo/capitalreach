@@ -3586,5 +3586,10 @@
     "waitlistTitle": "Ein Investor ist deiner Warteliste beigetreten",
     "waitlistBodyOversub": "Sie wollen dabei sein, falls Platz frei wird.",
     "waitlistBodyClosed": "Sie wollen erfahren, wenn du wieder raisen solltest."
+  },
+  "match": {
+    "title": "Wer auf dich wartet",
+    "hint": "Wähle Phase und Branche.",
+    "result": "von {total} aktiven Investoren erklären Interesse an genau dieser Runde"
   }
 }
