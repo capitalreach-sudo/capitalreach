@@ -148,7 +148,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
             fontFamily:    "'DM Sans', sans-serif",
             fontWeight:    500,
             fontSize:      "10px",
-            borderRadius:  "2px",
+            borderRadius:  "3px",
             padding:       "2px 8px",
             textTransform: "uppercase",
             letterSpacing: "0.05em",
@@ -162,18 +162,18 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
             fontFamily:    "'DM Sans', sans-serif",
             fontWeight:    400,
             fontSize:      "10px",
-            borderRadius:  "2px",
+            borderRadius:  "3px",
             padding:       "2px 8px",
             textTransform: "uppercase",
             letterSpacing: "0.04em",
           }}>
-            {STAGE_LABELS[startup.stage] ?? startup.stage}
+            {STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " ")}
           </span>
           {isNew && (
             <span style={{
               background:    "transparent",
-              border:        "1px solid rgba(45,106,79,0.35)",
-              color:         "var(--cr-up)",
+              border:        "1px solid var(--cr-copper-br)",
+              color:         "var(--cr-copper)",
               fontFamily:    "'DM Sans', sans-serif",
               fontWeight:    500,
               fontSize:      "10px",

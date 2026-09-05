@@ -10,7 +10,7 @@ type Note = { id: string; body: string; created_at: string; admin_id: string | n
 /**
  * E53: the operator's memory of an account.
  *
- * Deliberately plain — this is a notebook, not a feature. What matters is
+ * Deliberately plain -- this is a notebook, not a feature. What matters is
  * that it is attached to the record rather than to whoever happened to
  * handle it, and that the person it is about can never read it (admin_notes
  * has RLS on with no permissive policy).
@@ -76,11 +76,11 @@ export function AdminNotes({ targetType, targetId }: {
               <div className="min-w-0">
                 <p className="text-sm text-cr-ink break-words">{n.body}</p>
                 <p className="text-[11px] text-cr-i4 mt-0.5">
-                  {n.authorName ?? t("adminNotes.unknownAuthor")} · {new Date(n.created_at).toLocaleString()}
+                  {n.authorName ?? t("adminNotes.unknownAuthor")} · <span className="font-mono">{new Date(n.created_at).toLocaleString()}</span>
                 </p>
               </div>
               <button onClick={() => remove(n.id)} title={t("adminNotes.deleteOwn")}
-                className="text-cr-i4 hover:text-red-600 shrink-0"><Trash2 className="h-3.5 w-3.5" /></button>
+                className="text-cr-i4 hover:text-cr-down shrink-0"><Trash2 className="h-3.5 w-3.5" /></button>
             </li>
           ))}
         </ul>

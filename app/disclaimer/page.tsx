@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { ShieldCheck } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import { brand } from "@/lib/brand";
 
@@ -20,104 +19,134 @@ export async function generateMetadata() {
   };
 }
 
+// House prose register for the legal pages: quiet rule-separated sections,
+// Label-style section openers, body in DM Sans light.
+const BODY: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
+  color: "var(--cr-ink-3)", lineHeight: 1.7,
+};
+
+function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section style={{ borderTop: "1px solid var(--cr-rule)", padding: "24px 0" }}>
+      <h2 className="ruled-label" style={{ marginBottom: "12px" }}>{title}</h2>
+      <div style={BODY}>{children}</div>
+    </section>
+  );
+}
+
 export default async function DisclaimerPage() {
   const t = await getTranslator(getLocale());
 
   return (
-    <div className="min-h-screen flex flex-col bg-cr-paper">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--cr-paper)" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0F0C0A] via-[#1A1612] to-slate-900 text-white py-16 px-4">
-        <div className="container mx-auto max-w-3xl text-center">
-          <div className="w-12 h-12 bg-cr-paper/10 rounded-2xl flex items-center justify-center mx-auto mb-5 backdrop-blur">
-            <ShieldCheck className="h-6 w-6 text-white" />
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">{t("disclaimer.title")}</h1>
-          <p className="text-cr-cu-l text-sm">{t("disclaimer.lastUpdatedPrefix")} {t("disclaimer.lastUpdated")}</p>
+      <main className="mx-auto w-full px-6 md:px-10 py-16 md:py-24 max-w-3xl flex-1">
+        {/* Header -- ruled-label opener, serif italic display, date in mono. */}
+        <header style={{ marginBottom: "48px" }}>
+          <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("privacy.legalLabel")}</div>
+          <h1
+            style={{
+              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontWeight:    700,
+              fontStyle:     "italic",
+              fontSize:      "clamp(30px, 5vw, 44px)",
+              color:         "var(--cr-ink)",
+              lineHeight:    1.08,
+              letterSpacing: "-0.02em",
+              textWrap:      "balance",
+              marginBottom:  "12px",
+            }}
+          >
+            {t("disclaimer.title")}
+          </h1>
+          <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-4)" }}>
+            {t("disclaimer.lastUpdatedPrefix")}{" "}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+              {t("disclaimer.lastUpdated")}
+            </span>
+          </p>
+        </header>
+
+        {/* The one loud moment on the page: the risk notice, on copper --
+            quality/warning states are copper, never amber or green. */}
+        <div
+          style={{
+            background:   "var(--cr-copper-bg)",
+            border:       "1px solid var(--cr-copper-br)",
+            borderRadius: "var(--radius)",
+            padding:      "16px 24px",
+            marginBottom: "32px",
+          }}
+        >
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
+            {t("disclaimer.noticeLabel")}
+          </p>
+          <p style={{ ...BODY, color: "var(--cr-ink-2)" }}>
+            {t("disclaimer.noticeText")}
+          </p>
         </div>
-      </section>
 
-      {/* Content */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-3xl">
-          <div className="prose prose-gray max-w-none space-y-10">
+        <div>
+          <LegalSection title={t("disclaimer.s1Title")}>
+            <p>
+              {t("disclaimer.s1Text")}
+            </p>
+          </LegalSection>
 
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
-              <p className="text-sm font-bold text-amber-300 mb-2">{t("disclaimer.noticeLabel")}</p>
-              <p className="text-sm text-amber-400 leading-relaxed">
-                {t("disclaimer.noticeText")}
-              </p>
-            </div>
+          <LegalSection title={t("disclaimer.s2Title")}>
+            <p style={{ marginBottom: "12px" }}>
+              {t("disclaimer.s2Intro")}
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>{t("disclaimer.s2l1")}</li>
+              <li>{t("disclaimer.s2l2")}</li>
+              <li>{t("disclaimer.s2l3")}</li>
+              <li>{t("disclaimer.s2l4")}</li>
+              <li>{t("disclaimer.s2l5")}</li>
+            </ul>
+          </LegalSection>
 
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s1Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s1Text")}
-              </p>
-            </section>
+          <LegalSection title={t("disclaimer.s3Title")}>
+            <p>
+              {t("disclaimer.s3Text")}
+            </p>
+          </LegalSection>
 
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s2Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm mb-3">
-                {t("disclaimer.s2Intro")}
-              </p>
-              <ul className="list-disc list-inside text-sm text-cr-i3 space-y-1.5 ml-2">
-                <li>{t("disclaimer.s2l1")}</li>
-                <li>{t("disclaimer.s2l2")}</li>
-                <li>{t("disclaimer.s2l3")}</li>
-                <li>{t("disclaimer.s2l4")}</li>
-                <li>{t("disclaimer.s2l5")}</li>
-              </ul>
-            </section>
+          <LegalSection title={t("disclaimer.s4Title")}>
+            <p>
+              {t("disclaimer.s4Text")}
+            </p>
+          </LegalSection>
 
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s3Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s3Text")}
-              </p>
-            </section>
+          <LegalSection title={t("disclaimer.s5Title")}>
+            <p>
+              {t("disclaimer.s5Text")}
+            </p>
+          </LegalSection>
 
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s4Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s4Text")}
-              </p>
-            </section>
+          <LegalSection title={t("disclaimer.s6Title")}>
+            <p>
+              {t("disclaimer.s6Text")}
+            </p>
+          </LegalSection>
 
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s5Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s5Text")}
-              </p>
-            </section>
+          <LegalSection title={t("disclaimer.s7Title")}>
+            <p>
+              {t("disclaimer.s7Text")}
+            </p>
+          </LegalSection>
 
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s6Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s6Text")}
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s7Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s7Text")}
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold text-cr-ink mb-3">{t("disclaimer.s8Title")}</h2>
-              <p className="text-cr-i3 leading-relaxed text-sm">
-                {t("disclaimer.s8Text").split("{link}")[0]}
-                <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline">{brand.legal}</a>
-                {t("disclaimer.s8Text").split("{link}")[1]}
-              </p>
-            </section>
-
-          </div>
+          <LegalSection title={t("disclaimer.s8Title")}>
+            <p>
+              {t("disclaimer.s8Text").split("{link}")[0]}
+              <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{brand.legal}</a>
+              {t("disclaimer.s8Text").split("{link}")[1]}
+            </p>
+          </LegalSection>
         </div>
-      </section>
+      </main>
 
       <Footer />
     </div>

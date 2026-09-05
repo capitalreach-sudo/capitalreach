@@ -112,15 +112,15 @@ export function Navbar() {
               </span>
             </Link>
 
-            {/* {t("navbar.feeBadge")} signal — desktop only */}
+            {/* {t("navbar.feeBadge")} signal -- desktop only */}
             <div className="hidden xl:flex items-center gap-3 whitespace-nowrap" aria-label={t("navbar.feeBadgeAria")}>
-              <div style={{ width: "1px", height: "20px", background: "rgba(26,22,18,0.15)" }} />
+              <div style={{ width: "1px", height: "20px", background: "var(--cr-rule-dark)" }} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
                 fontSize: "11px", color: "var(--cr-copper)", letterSpacing: "0.02em",
                 display: "flex", alignItems: "center", gap: "5px",
               }}>
-                <span style={{ fontSize: "9px" }}>◆</span>
+                <span style={{ fontSize: "9px" }}>✦</span>
                 {t("navbar.feeBadge")}
               </span>
             </div>
@@ -164,7 +164,7 @@ export function Navbar() {
               onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
               aria-label={t("palette.openAria")}
               className="hidden xl:inline-flex"
-              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "3px 7px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
+              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
               ⌘K
             </button>
             <StyleToggle />
@@ -206,12 +206,12 @@ export function Navbar() {
                     className={`absolute right-0 mt-1 w-52 py-1 transition-all duration-150 z-50 ${menuOpen ? "opacity-100 visible" : "opacity-0 invisible"} group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible`}
                     style={{
                       background:   "var(--cr-paper-2)",
-                      border:       "1px solid rgba(26,22,18,0.2)",
-                      borderRadius: "6px",
-                      boxShadow:    "0 8px 32px rgba(26,22,18,0.12)",
+                      border:       "1px solid var(--cr-rule-dark)",
+                      borderRadius: "4px",
+                      boxShadow:    "var(--cr-card-shadow-hover)",
                     }}
                   >
-                    <div className="px-4 py-3 mb-1" style={{ borderBottom: "1px solid rgba(26,22,18,0.1)" }}>
+                    <div className="px-4 py-3 mb-1" style={{ borderBottom: "1px solid var(--cr-rule)" }}>
                       <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif" }} className="truncate">
                         {profile.full_name || t("nav.account")}
                       </p>
@@ -240,11 +240,11 @@ export function Navbar() {
                         <Icon className="h-3.5 w-3.5" /> {label}
                       </Link>
                     ))}
-                    <div className="mt-1 pt-1 mx-1" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>
+                    <div className="mt-1 pt-1 mx-1" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                       <button onClick={signOut}
                         className="w-full flex items-center gap-3 px-4 py-2 rounded-[3px] transition-colors"
                         style={{ fontSize: "13px", fontFamily: "'DM Sans', sans-serif", color: "var(--cr-down)", background: "transparent", border: "none", cursor: "pointer" }}
-                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "rgba(155,35,53,0.08)")}
+                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-down-bg)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "")}
                       >
                         <LogOut className="h-3.5 w-3.5" /> {t("nav.logOut")}
@@ -277,7 +277,7 @@ export function Navbar() {
                     display:      "inline-block",
                     textDecoration: "none",
                     background:   "var(--cr-copper)",
-                    color:        "#fff",
+                    color:        "var(--cr-band-ink)",
                     fontFamily:   "'DM Sans', sans-serif",
                     fontWeight:   600,
                     fontSize:     "14px",
@@ -303,7 +303,7 @@ export function Navbar() {
             <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
           </div>
 
-          {/* Mobile hamburger — 24px icon, 44px touch target */}
+          {/* Mobile hamburger -- 24px icon, 44px touch target */}
           <button
             className="lg:hidden flex items-center justify-center"
             style={{
@@ -324,7 +324,7 @@ export function Navbar() {
         <>
           <div
             className="fixed inset-0 z-[98]"
-            style={{ background: "rgba(26,22,18,0.4)" }}
+            style={{ background: "var(--cr-scrim)" }}
             onClick={() => setMobileOpen(false)}
           />
           <div
@@ -332,13 +332,13 @@ export function Navbar() {
             style={{
               width:       "min(80vw, 320px)",
               background:  "var(--cr-paper-2)",
-              borderRight: "1px solid rgba(26,22,18,0.15)",
+              borderRight: "1px solid var(--cr-rule-dark)",
             }}
           >
             {/* Drawer header */}
             <div
               className="flex items-center justify-between px-5 flex-shrink-0"
-              style={{ height: "56px", borderBottom: "1px solid rgba(26,22,18,0.1)" }}
+              style={{ height: "56px", borderBottom: "1px solid var(--cr-rule)" }}
             >
               <Link href="/" className="flex items-center gap-[10px]" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
                 <DiamondLogo size={10} />
@@ -361,12 +361,12 @@ export function Navbar() {
               </button>
             </div>
 
-            {/* Signed-in identity — who you are and where your work lives,
+            {/* Signed-in identity -- who you are and where your work lives,
                 before any navigation. */}
             {profile && (
               <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-5 py-4 flex-shrink-0"
-                style={{ borderBottom: "1px solid rgba(26,22,18,0.1)", textDecoration: "none" }}>
+                style={{ borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
                 <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", flexShrink: 0 }}>
                   {getInitials(profile.full_name || profile.email)}
                 </div>
@@ -413,12 +413,12 @@ export function Navbar() {
                         aria-current={active ? "page" : undefined}
                         className="flex items-center gap-3 px-5"
                         style={{
-                          height:         "46px",
+                          height:         "48px",
                           fontFamily:     "'DM Sans', sans-serif",
                           fontWeight:     active ? 600 : 400,
                           fontSize:       "15px",
                           color:          active ? "var(--cr-copper)" : "var(--cr-ink)",
-                          boxShadow:      active ? "inset 2px 0 0 #B5651D" : "none",
+                          boxShadow:      active ? "inset 2px 0 0 var(--cr-copper)" : "none",
                           background:     active ? "var(--cr-copper-bg)" : "transparent",
                           textDecoration: "none",
                         }}>
@@ -432,7 +432,7 @@ export function Navbar() {
             </div>
 
             {/* Language, demoted from prime position to just above the footer. */}
-            <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.08)" }}>
+            <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
               <StyleToggle />
               <ThemeToggle />
               <LanguageSwitcher currentLocale={locale} />
@@ -440,10 +440,10 @@ export function Navbar() {
 
             {/* Drawer footer */}
             {!profile ? (
-              <div className="px-5 py-5 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>
+              <div className="px-5 py-5 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    height: "44px", background: "var(--cr-copper)", color: "#fff",
+                    height: "44px", background: "var(--cr-copper)", color: "var(--cr-band-ink)",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
                     borderRadius: "4px", border: "none", cursor: "pointer", textDecoration: "none",
                   }}>
@@ -466,14 +466,14 @@ export function Navbar() {
                 </p>
               </div>
             ) : (
-              <div className="px-5 py-5 flex-shrink-0" style={{ borderTop: "1px solid rgba(26,22,18,0.1)" }}>
+              <div className="px-5 py-5 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                 <button
                   onClick={() => { signOut(); setMobileOpen(false); }}
                   className="w-full"
                   style={{
                     height: "44px", background: "transparent", color: "var(--cr-down)",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
-                    borderRadius: "4px", border: "1px solid rgba(155,35,53,0.3)", cursor: "pointer",
+                    borderRadius: "4px", border: "1px solid color-mix(in srgb, var(--cr-down) 30%, transparent)", cursor: "pointer",
                   }}
                 >
                   {t("nav.logOut")}

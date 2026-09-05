@@ -16,7 +16,7 @@ export function Footer() {
   const { t } = useTranslation();
 
   const LINK_GROUPS: [string, [string, string][]][] = [
-    // The sector landing pages are the site's search-traffic catchers —
+    // The sector landing pages are the site's search-traffic catchers --
     // linking them from every page's footer keeps them one hop from
     // anywhere, which is what tells crawlers they matter.
     [t("footer.sectors"), SECTOR_SLUGS.slice(0, 6).map(({ slug, industry }) =>
@@ -55,8 +55,8 @@ export function Footer() {
   ];
 
   return (
-    <footer style={{ background: "var(--cr-paper-2)", borderTop: "1px solid rgba(26,22,18,0.15)" }}>
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-8">
+    <footer style={{ background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule-dark)" }}>
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-16 pb-8">
 
         {/* Copper promise line */}
         <div style={{
@@ -71,12 +71,12 @@ export function Footer() {
             fontSize: "12px", color: "var(--cr-copper)", letterSpacing: "0.05em",
             textAlign: "center",
           }}>
-            ◆ {t("footer.feeStrip")}
+            ✦ {t("footer.feeStrip")}
           </span>
         </div>
 
         {/* Row 1 — logo + link groups */}
-        <div className="flex flex-col lg:flex-row justify-between gap-10 mb-14">
+        <div className="flex flex-col lg:flex-row justify-between gap-10 mb-12">
 
           {/* Brand */}
           <div className="flex-shrink-0" style={{ maxWidth: "220px" }}>
@@ -147,7 +147,7 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <hr style={{ border: "none", borderTop: "1px solid rgba(26,22,18,0.1)", marginBottom: "32px" }} />
+        <hr style={{ border: "none", borderTop: "1px solid var(--cr-rule)", marginBottom: "32px" }} />
 
         {/* Row 2 — copyright / legal / social */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -158,7 +158,7 @@ export function Footer() {
             color:      "var(--cr-ink-4)",
             flexShrink: 0,
           }}>
-            © {new Date().getFullYear()} CapitalReach Ltd.
+            © <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{new Date().getFullYear()}</span> CapitalReach Ltd.
           </p>
 
           <p style={{

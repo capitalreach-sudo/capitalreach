@@ -107,11 +107,11 @@ function exportPlatformCsv(d: PlatformData) {
 // outcomes. Colours match the Deal Portal's own columns so the public view and
 // the signed-in board read as the same object.
 const DEAL_STAGES = [
-  { key: "intro",         color: "#8A8178" },
-  { key: "due_diligence", color: "#3B82F6" },
+  { key: "intro",         color: "var(--cr-ink-3)" },
+  { key: "due_diligence", color: "var(--cr-neutral)" },
   { key: "term_sheet",    color: "var(--cr-copper)" },
   { key: "closed",        color: "var(--cr-up)" },
-  { key: "passed",        color: "#B43232" },
+  { key: "passed",        color: "var(--cr-down)" },
 ] as const;
 
 // The canonical map lives in lib/utils. A local copy here had the wrong
@@ -211,11 +211,12 @@ function SkeletonCard() {
 
 function ScorePill({ score }: { score: number | null }) {
   if (!score) return <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>—</span>;
-  const color = score >= 80 ? "var(--cr-up)" : score >= 60 ? "var(--cr-copper)" : score >= 40 ? "#B45309" : "#B91C1C";
+  // Quality reads in copper and ink, never green/red -- those mean money direction.
+  const color = score >= 80 ? "var(--cr-copper)" : score >= 60 ? "var(--cr-ink-2)" : score >= 40 ? "var(--cr-ink-3)" : "var(--cr-ink-4)";
   return (
     <span style={{
       fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px",
-      color, background: `${color}14`, border: `1px solid ${color}40`,
+      color, background: `color-mix(in srgb, ${color} 8%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 25%, transparent)`,
       borderRadius: "3px", padding: "2px 7px",
     }}>
       {score}
@@ -301,29 +302,29 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
           <svg className="cr-pulse" aria-hidden viewBox="0 0 480 40" style={{ position: "absolute", left: 0, right: 0, top: 8, width: "min(480px, 90%)", height: 40, pointerEvents: "none" }}>
             <path d="M0 20 H140 L155 20 165 6 178 34 190 14 200 20 H300 L315 20 325 10 338 30 350 20 H480" />
           </svg>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)", maxWidth: "480px", lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", maxWidth: "480px", lineHeight: 1.6 }}>
             {t("data.subtitle")}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", marginTop: 6 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-band-ink-dim)", marginTop: 6 }}>
             {t("data.sampleNote")}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "20px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Activity style={{ width: 12, height: 12, color: "#4ADE80" }} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)" }}>{t("data.live")}</span>
+              <Activity style={{ width: 12, height: 12, color: "var(--cr-up)" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>{t("data.live")}</span>
             </div>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>
               <LiveClock />
             </span>
             {data && (
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>
                 {t("data.updated", { time: timeAgo(data.lastUpdated) })}
               </span>
             )}
             {data && (
               <button
                 onClick={() => exportPlatformCsv(data)}
-                style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", padding: 0 }}
+                style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: "pointer", color: "var(--cr-band-ink-dim)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", padding: 0 }}
               >
                 <Download style={{ width: 11, height: 11 }} />
                 {t("data.exportCsv")}
@@ -364,7 +365,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.errorSub")}</p>
             <button
               onClick={fetchData}
-              style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", border: "none", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
             >
               <RefreshCw style={{ width: 13, height: 13 }} /> {t("data.retry")}
             </button>
@@ -377,7 +378,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             <Building2 style={{ width: 32, height: 32, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("data.noData")}</p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.beFirstFounders")}</p>
-            <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
+            <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
               {t("data.listYourStartup")} →
             </Link>
           </div>
@@ -389,9 +390,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             {/* Stat cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "32px" }}>
               <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}   color="var(--cr-copper)" />
-              <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}       color="#3B82F6" />
+              <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}       color="var(--cr-neutral)" />
               <StatCard label={t("data.raised")}    value={data.totalRaised}   prefix="$" Icon={DollarSign} color="var(--cr-up)" />
-              <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="#B45309" />
+              <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="var(--cr-copper)" />
             </div>
 
             {/* ── Growth over time ─────────────────────────────────────────
@@ -473,7 +474,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginBottom: "28px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <TrendingUp style={{ width: 13, height: 13, color: "#B45309" }} />
+                    <TrendingUp style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
                     <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                       {t("data.dealFlow")}
                     </h3>
@@ -589,7 +590,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {fmtMrr(s.mrr, t("data.preRev"))}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{fmtMrr(s.mrr, t("data.preRev"))}</span></p>
                       </div>
                       <ScorePill score={s.ai_score} />
                     </Link>
@@ -620,7 +621,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
                         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)" }}>{fmtRaising(s.funding_target)}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)" }}>{timeAgo(s.created_at)}</p>
+                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)" }}>{timeAgo(s.created_at)}</p>
                       </div>
                     </Link>
                   ))
@@ -629,12 +630,12 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             </div>
 
             {/* CTA */}
-            <div style={{ background: "var(--cr-band-bg)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
+            <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
                 {t("data.featuredHereSub")}
               </p>
-              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
+              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
                 {t("data.listFree")} →
               </Link>
             </div>

@@ -3,49 +3,76 @@
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { BookOpen, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { BLOG_POSTS } from "@/lib/blog-posts";
 import { SubscribeForm } from "@/components/blog/subscribe-form";
+import { brand } from "@/lib/brand";
 
 export default function BlogPage() {
   const { t } = useTranslation();
+  const posts = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date));
   return (
-    <div className="min-h-screen flex flex-col bg-base">
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--cr-paper)" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative bg-cr-paper border-b border-cr-p4 py-20 px-4 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-cr-copper/8 blur-[120px] pointer-events-none" />
-        <div className="container mx-auto max-w-3xl text-center relative">
-          <div className="w-12 h-12 bg-cr-copper/10 rounded-xl flex items-center justify-center mx-auto mb-5 border border-cr-copper/20">
-            <BookOpen className="h-6 w-6 text-cr-copper" />
+      {/* Hero -- eyebrow ruled label, serif italic display, one quiet sub. */}
+      <section style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)" }}>
+        <div className="max-w-[880px] mx-auto w-full px-6 md:px-10 py-16 md:py-24">
+          <div className="ruled-label" style={{ marginBottom: "24px" }}>
+            {brand.name}
           </div>
-          <h1 className="text-4xl font-extrabold mb-3 text-cr-ink">{t("blog.heroTitle")}</h1>
-          <p className="text-cr-i3 text-lg max-w-xl mx-auto">
+          <h1
+            style={{
+              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontWeight:    700,
+              fontStyle:     "italic",
+              fontSize:      "clamp(30px, 5.5vw, 52px)",
+              color:         "var(--cr-ink)",
+              lineHeight:    1.08,
+              letterSpacing: "-0.02em",
+              textWrap:      "balance",
+              marginBottom:  "16px",
+            }}
+          >
+            {t("blog.heroTitle")}
+          </h1>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.7, maxWidth: "58ch" }}>
             {t("blog.heroSub")}
           </p>
         </div>
       </section>
 
-      {/* Article list — real posts from lib/blog-posts replaced the
-          coming-soon block that sat here since launch. */}
-      <section className="flex-1 py-16 px-4">
-        <div className="container mx-auto max-w-3xl flex flex-col gap-5">
-          {[...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date)).map((post) => (
-            <Link key={post.slug} href={`/blog/${post.slug}`}
-              className="block bg-cr-paper border border-cr-p4 rounded-2xl p-6 hover:border-cr-copper/30 transition-colors">
-              <p className="text-[11px] font-mono uppercase tracking-widest text-cr-copper mb-2">
-                {post.date} · {t("blog.minRead", { minutes: post.minutes })}
-              </p>
-              <h2 className="text-xl font-bold text-cr-ink mb-2">{post.title}</h2>
-              <p className="text-sm text-cr-i3 leading-relaxed mb-3">{post.description}</p>
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-cr-copper">
-                {t("blog.readArticle")} <ArrowRight className="h-4 w-4" />
-              </span>
-            </Link>
-          ))}
-          <SubscribeForm />
+      {/* Article index -- real posts from lib/blog-posts replaced the
+          coming-soon block that sat here since launch. Rule-separated
+          entries, dates in mono; no boxes. */}
+      <section className="flex-1" style={{ background: "var(--cr-paper)" }}>
+        <div className="max-w-[880px] mx-auto w-full px-6 md:px-10 py-16 md:py-24">
+          <div>
+            {posts.map((post, i) => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group block"
+                style={{ padding: "24px 0", borderTop: "1px solid var(--cr-rule)", borderBottom: i === posts.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}
+              >
+                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
+                  {post.date} · {t("blog.minRead", { minutes: post.minutes })}
+                </p>
+                <h2 className="text-cr-ink group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
+                  {post.title}
+                </h2>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "12px", maxWidth: "62ch" }}>
+                  {post.description}
+                </p>
+                <span className="inline-flex items-center" style={{ gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-copper)" }}>
+                  {t("blog.readArticle")} →
+                </span>
+              </Link>
+            ))}
+          </div>
+          <div style={{ marginTop: "48px" }}>
+            <SubscribeForm />
+          </div>
         </div>
       </section>
 

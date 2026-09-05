@@ -75,9 +75,9 @@ export const STAGE_LABELS: Record<string, string> = {
 
 
 export const STATUS_COLORS: Record<string, string> = {
-  pending_review: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  active: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  suspended: "bg-red-500/10 text-red-400 border border-red-500/20",
+  pending_review: "bg-[var(--cr-copper-bg)] text-cr-copper border border-cr-copper/25",
+  active: "bg-[var(--cr-up-bg)] text-cr-up border border-cr-up/25",
+  suspended: "bg-[var(--cr-down-bg)] text-cr-down border border-cr-p4",
   archived: "bg-cr-p3 text-cr-i4 border border-cr-p4",
   draft: "bg-cr-p3 text-cr-i4 border border-cr-p4",
 };

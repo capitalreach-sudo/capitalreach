@@ -2,19 +2,28 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/*
+ * The register's one chip shape: Label type (11px, 500, uppercase, tracked),
+ * 3px radius, hairline border, tinted paper fill. Variant names are API --
+ * call sites depend on them -- but every color is a token:
+ *   default / success / purple -> copper (accent + success/quality states;
+ *     green is reserved for money direction, which no variant here means)
+ *   destructive -> --cr-down
+ *   blue -> --cr-neutral        warning / secondary / outline -> ink on paper
+ */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center whitespace-nowrap rounded-[3px] border px-2 py-[3px] font-sans text-[11px] font-medium uppercase tracking-[0.06em] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-        success: "border-transparent bg-green-100 text-green-700",
-        warning: "border-transparent bg-yellow-100 text-yellow-700",
-        purple: "border-transparent bg-purple-100 text-purple-700",
-        blue: "border-transparent bg-blue-100 text-blue-700",
+        default: "border-[var(--cr-copper-br)] bg-[var(--cr-copper-bg)] text-cr-copper",
+        secondary: "border-cr-p4 bg-cr-p2 text-cr-i3",
+        destructive: "border-[color-mix(in_srgb,var(--cr-down)_30%,transparent)] bg-[var(--cr-down-bg)] text-cr-down",
+        outline: "border-cr-p4 bg-transparent text-cr-i2",
+        success: "border-[var(--cr-copper-br)] bg-[var(--cr-copper-bg)] text-cr-copper",
+        warning: "border-[var(--cr-rule-dark)] bg-cr-p3 text-cr-i2",
+        purple: "border-[var(--cr-copper-br)] bg-[var(--cr-copper-bg)] text-cr-copper",
+        blue: "border-[color-mix(in_srgb,var(--cr-neutral)_30%,transparent)] bg-[color-mix(in_srgb,var(--cr-neutral)_10%,transparent)] text-cr-neutral",
       },
     },
     defaultVariants: { variant: "default" },

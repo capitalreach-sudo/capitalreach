@@ -1,60 +1,75 @@
+import { Skeleton } from "@/components/ui/Skeleton";
+
+/**
+ * Homepage loading state.
+ *
+ * The hero's static chrome renders immediately at the page's TRUE geometry --
+ * the 56px navbar slot, the full-viewport centered column with its glow and
+ * grain, the copper ruled-label opener, the two serif display line boxes at
+ * their real clamp metrics, and the CTA pill pair. Only locale text is
+ * suppressed: quiet paper-3 blocks hold each slot so nothing shifts when the
+ * page streams in. The hero fills the first viewport, so nothing below the
+ * fold needs a stand-in.
+ */
 export default function HomeLoading() {
   return (
-    <div className="min-h-screen bg-[#080808] animate-pulse">
-      {/* Hero skeleton */}
-      <div className="relative overflow-hidden bg-[#080808] min-h-[680px] flex items-center">
-        <div className="container mx-auto px-4 py-16 lg:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-12 items-center">
-            <div>
-              <div className="h-8 w-64 bg-base/10 rounded-full mb-7" />
-              <div className="h-16 w-4/5 bg-base/10 rounded-2xl mb-3" />
-              <div className="h-16 w-3/5 bg-base/10 rounded-2xl mb-5" />
-              <div className="h-5 w-full max-w-lg bg-base/8 rounded-lg mb-2" />
-              <div className="h-5 w-3/4 max-w-lg bg-base/8 rounded-lg mb-9" />
-              <div className="flex gap-3 mb-10">
-                <div className="h-12 w-44 bg-cr-cu-d/40 rounded-xl" />
-                <div className="h-12 w-44 bg-base/8 rounded-xl" />
-              </div>
-            </div>
-            <div className="hidden lg:block relative h-[380px]">
-              {[0, 1, 2].map(i => (
-                <div key={i} className="absolute w-64 h-36 rounded-2xl bg-base/5 border border-white/10"
-                  style={{ top: i * 105, left: i * 52 }} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen" style={{ background: "var(--cr-paper)" }} aria-busy="true">
+      {/* The sticky navbar is mounted by the page, not the layout; hold its
+          56px so the hero sits exactly where it will land. */}
+      <div style={{ height: "56px" }} aria-hidden />
 
-      {/* Features strip skeleton */}
-      <div className="bg-base py-14">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="h-6 w-48 bg-[#1a1a1a] rounded mx-auto mb-3" />
-          <div className="h-9 w-80 bg-[#1a1a1a] rounded mx-auto mb-10" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-36 rounded-2xl bg-cr-p2" />
-            ))}
-          </div>
-        </div>
-      </div>
+      <section
+        className="min-h-[calc(100svh-56px)] flex items-center"
+        style={{ background: "var(--cr-paper)", position: "relative", overflow: "hidden" }}
+      >
+        <div className="hero-glow" aria-hidden />
+        <div className="hero-noise" aria-hidden />
 
-      {/* Marketplace skeleton */}
-      <div className="container mx-auto px-4 py-10">
-        <div className="flex gap-8">
-          <div className="w-64 hidden lg:block">
-            <div className="h-96 rounded-xl bg-cr-p2" />
+        <div
+          className="max-w-[1040px] mx-auto w-full px-6 md:px-10 py-16 md:py-0 flex flex-col items-center text-center"
+          style={{ position: "relative", zIndex: 1 }}
+        >
+          {/* Ruled label: the copper bar is real chrome and renders at once;
+              the eyebrow text is locale data, so a quiet slug holds its slot. */}
+          <div className="ruled-label" style={{ marginBottom: "40px", justifyContent: "center" }}>
+            <Skeleton w="128px" h="11px" />
           </div>
-          <div className="flex-1">
-            <div className="h-11 rounded-xl bg-cr-p2 mb-6" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-64 rounded-2xl bg-cr-p2" />
-              ))}
+
+          {/* Two display lines at the real serif metrics (clamp 38-78px at
+              1.02 line height), the second one shorter -- the shape of a
+              headline, not a stack of equal bars. */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", width: "100%", marginBottom: "28px" }}>
+            <Skeleton w="min(560px, 92%)" h="clamp(34px, 6vw, 70px)" />
+            <Skeleton w="min(440px, 72%)" h="clamp(34px, 6vw, 70px)" />
+          </div>
+
+          {/* One-liner at its 17px/1.7 line box, max-width 520px. */}
+          <div style={{ height: "29px", display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+            <Skeleton w="min(460px, 86%)" h="13px" />
+          </div>
+
+          {/* CTA pair at true pill geometry: the primary slot is a quiet
+              block (no copper until there is a button to press), the
+              secondary is its real hairline frame with the label suppressed. */}
+          <div className="flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto" style={{ gap: "12px", marginTop: "36px" }}>
+            <div
+              className="animate-pulse w-full sm:w-44"
+              style={{ height: "46px", background: "var(--cr-paper-3)", borderRadius: "999px" }}
+            />
+            <div
+              className="w-full sm:w-44"
+              style={{ height: "46px", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center" }}
+            >
+              <Skeleton w="88px" h="11px" />
             </div>
           </div>
+
+          {/* Trust row line box (12px type at 28px top). */}
+          <div style={{ height: "18px", display: "flex", alignItems: "center", marginTop: "28px" }}>
+            <Skeleton w="min(300px, 80%)" h="10px" />
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

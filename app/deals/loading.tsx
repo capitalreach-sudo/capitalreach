@@ -35,17 +35,17 @@ const monoDash: React.CSSProperties = {
 export default function DealsLoading() {
   return (
     <div className="min-h-screen" style={{ background: "var(--cr-paper)" }} aria-busy="true">
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
         {/* Ruled label: the copper bar is real chrome and renders at once;
             the label text is locale data, so a quiet slug holds its slot. */}
         <div className="ruled-label" style={{ marginBottom: "16px" }}>
           <Skeleton w="96px" h="11px" />
         </div>
 
-        {/* The h1 line box at the real serif metrics (clamp 28-44px at 1.5
+        {/* The h1 line box at the real serif metrics (clamp 30-44px at 1.5
             line height), so nothing shifts when the title streams in. */}
-        <div style={{ height: "clamp(42px, 6vw, 66px)", display: "flex", alignItems: "center", marginBottom: "32px" }}>
-          <Skeleton w="min(340px, 75%)" h="clamp(28px, 4vw, 44px)" />
+        <div style={{ height: "clamp(45px, 6vw, 66px)", display: "flex", alignItems: "center", marginBottom: "32px" }}>
+          <Skeleton w="min(340px, 75%)" h="clamp(30px, 4vw, 44px)" />
         </div>
 
         {/* Five stat cells: real frames, suppressed contents. The dash is the

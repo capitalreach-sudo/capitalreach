@@ -19,13 +19,20 @@ const ToastViewport = React.forwardRef<
 ));
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
+/*
+ * A slip of paper laid on the page, not a colored slab: paper-2 fill, 4px
+ * radius, hairline border, token shadow. The destructive variant speaks
+ * through a claret hairline and title (--cr-down), never a red fill --
+ * the `destructive group` classes stay so child group-[.destructive]
+ * modifiers keep working.
+ */
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-[4px] border p-4 pr-12 font-sans shadow-[var(--cr-card-shadow-hover)] transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
-        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground",
+        default: "border-[var(--cr-rule-dark)] bg-cr-p2 text-cr-ink",
+        destructive: "destructive group border-[color-mix(in_srgb,var(--cr-down)_35%,transparent)] bg-cr-p2 text-cr-ink",
       },
     },
     defaultVariants: { variant: "default" },
@@ -40,25 +47,27 @@ const Toast = React.forwardRef<
 ));
 Toast.displayName = ToastPrimitives.Root.displayName;
 
+/* Secondary-button register: hairline outline pill, ink text, 40px tall. */
 const ToastAction = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Action>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Action
     ref={ref}
-    className={cn("inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive", className)}
+    className={cn("inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-cr-p4 bg-transparent px-4 font-sans text-[13px] font-medium text-cr-ink ring-offset-background transition-colors hover:bg-cr-p3 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-[color-mix(in_srgb,var(--cr-down)_35%,transparent)] group-[.destructive]:text-cr-down group-[.destructive]:hover:bg-[var(--cr-down-bg)] group-[.destructive]:focus:ring-[var(--cr-down)]", className)}
     {...props}
   />
 ));
 ToastAction.displayName = ToastPrimitives.Action.displayName;
 
+/* Always visible -- a control that only exists on hover fails on touch. */
 const ToastClose = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Close>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Close
     ref={ref}
-    className={cn("absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600", className)}
+    className={cn("absolute right-0 top-0 inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-cr-i4 transition-colors hover:text-cr-ink focus:outline-none focus:ring-2 focus:ring-ring group-[.destructive]:focus:ring-[var(--cr-down)]", className)}
     toast-close=""
     {...props}
   >
@@ -71,7 +80,7 @@ const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Title ref={ref} className={cn("text-sm font-semibold", className)} {...props} />
+  <ToastPrimitives.Title ref={ref} className={cn("font-sans text-sm font-semibold text-cr-ink group-[.destructive]:text-cr-down", className)} {...props} />
 ));
 ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
@@ -79,7 +88,7 @@ const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
+  <ToastPrimitives.Description ref={ref} className={cn("font-sans text-[13px] font-normal leading-[1.65] text-cr-i3", className)} {...props} />
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 

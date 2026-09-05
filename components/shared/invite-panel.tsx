@@ -15,7 +15,7 @@ type Invite = {
  * F: bring the other side.
  *
  * A two-sided marketplace has one problem before it has any others, and
- * everybody already on it knows people on the other side — founders have
+ * everybody already on it knows people on the other side -- founders have
  * investors who passed, investors have founders they liked but could not
  * fund. This is a link they copy and send themselves, through the
  * relationship that makes the invite worth anything. No email is sent: the
@@ -105,7 +105,7 @@ export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investo
               <button onClick={() => copy(i.url)} title={t("invite.copy")} className="text-cr-copper shrink-0">
                 {copied === i.url ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
-              <button onClick={() => revoke(i.id)} title={t("invite.revoke")} className="text-cr-i4 hover:text-red-600 shrink-0">
+              <button onClick={() => revoke(i.id)} title={t("invite.revoke")} className="text-cr-i4 hover:text-cr-down shrink-0">
                 <X className="h-3.5 w-3.5" />
               </button>
             </li>

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { TrendingUp } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { ServerT } from "@/lib/locale-server";
 import { brand } from "@/lib/brand";
@@ -24,13 +23,25 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// House prose register for the legal pages: quiet rule-separated sections,
+// Label-style section openers, body in DM Sans light.
+const BODY: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
+  color: "var(--cr-ink-3)", lineHeight: 1.7,
+};
+
+const SUBHEAD: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+  color: "var(--cr-ink)",
+};
+
 function Bullet({ t, k }: { t: ServerT; k: string }) {
   const raw = t(`terms.${k}`);
   if (!raw.includes("|||")) return <li>{raw}</li>;
   const [bold, rest] = raw.split("|||");
   return (
     <li>
-      <strong>{bold}</strong> {rest}
+      <strong style={{ fontWeight: 600, color: "var(--cr-ink-2)" }}>{bold}</strong> {rest}
     </li>
   );
 }
@@ -54,22 +65,37 @@ export default async function TermsPage() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-16 max-w-3xl">
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-cr-cu-d rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-sm font-medium text-cr-copper">{t("terms.brandLabel")}</span>
-          </div>
-          <h1 className="text-4xl font-bold text-cr-ink mb-3">{t("terms.title")}</h1>
-          <p className="text-sm text-cr-i4">{t("terms.lastUpdatedPrefix")} {t("terms.lastUpdated")}</p>
-        </div>
+      <main className="mx-auto px-6 md:px-10 py-16 md:py-24 max-w-3xl">
+        {/* Header -- ruled-label opener, serif italic display, date in mono. */}
+        <header style={{ marginBottom: "48px" }}>
+          <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("terms.brandLabel")}</div>
+          <h1
+            style={{
+              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontWeight:    700,
+              fontStyle:     "italic",
+              fontSize:      "clamp(30px, 5vw, 44px)",
+              color:         "var(--cr-ink)",
+              lineHeight:    1.08,
+              letterSpacing: "-0.02em",
+              textWrap:      "balance",
+              marginBottom:  "12px",
+            }}
+          >
+            {t("terms.title")}
+          </h1>
+          <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-4)" }}>
+            {t("terms.lastUpdatedPrefix")}{" "}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+              {t("terms.lastUpdated")}
+            </span>
+          </p>
+        </header>
 
-        <div className="prose prose-gray max-w-none space-y-8">
+        <div>
 
-          <section>
-            <p className="text-cr-i3 leading-relaxed">
+          <section style={{ paddingBottom: "24px" }}>
+            <p style={BODY}>
               {t("terms.introText")}
             </p>
           </section>
@@ -81,7 +107,7 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s2Title")}>
             <p>{t("terms.s2p1")}</p>
-            <ul className="mt-3 space-y-1.5 list-disc pl-5 text-cr-i3">
+            <ul className="mt-3 space-y-2 list-disc pl-5">
               <Bullet t={t} k="s2l1" />
               <Bullet t={t} k="s2l2" />
               <Bullet t={t} k="s2l3" />
@@ -100,17 +126,17 @@ export default async function TermsPage() {
           <Section title={t("terms.s4Title")}>
             <p>{t("terms.s4p1")}</p>
 
-            <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h1")}</h3>
+            <h3 className="mt-4 mb-2" style={SUBHEAD}>{t("terms.s4h1")}</h3>
             <p>
               <InlineLink t={t} k="s4h1p1" href="/pricing" label={t("pricing.title")} />
             </p>
 
-            <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h2")}</h3>
+            <h3 className="mt-4 mb-2" style={SUBHEAD}>{t("terms.s4h2")}</h3>
             <p>{t("terms.s4h2p1")}</p>
             <p className="mt-3">{t("terms.s4h2p2")}</p>
             <p className="mt-3">{t("terms.s4h2p3", { email: brand.billing })}</p>
 
-            <h3 className="font-semibold text-cr-ink mt-4 mb-2">{t("terms.s4h3")}</h3>
+            <h3 className="mt-4 mb-2" style={SUBHEAD}>{t("terms.s4h3")}</h3>
             <p>
               <InlineLink t={t} k="s4h3p1" href={`mailto:${brand.billing}`} label={brand.billing} />
             </p>
@@ -119,7 +145,7 @@ export default async function TermsPage() {
           <Section title={t("terms.s5Title")}>
             <p>{t("terms.s5p1")}</p>
             <p className="mt-3">{t("terms.s5p2")}</p>
-            <ul className="mt-2 space-y-1.5 list-disc pl-5 text-cr-i3">
+            <ul className="mt-2 space-y-2 list-disc pl-5">
               <li>{t("terms.s5l1")}</li>
               <li>{t("terms.s5l2")}</li>
               <li>{t("terms.s5l3")}</li>
@@ -130,7 +156,7 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s6Title")}>
             <p>{t("terms.s6p1")}</p>
-            <ul className="mt-3 space-y-1.5 list-disc pl-5 text-cr-i3">
+            <ul className="mt-3 space-y-2 list-disc pl-5">
               <li>{t("terms.s6l1")}</li>
               <li>{t("terms.s6l2")}</li>
               <li>{t("terms.s6l3")}</li>
@@ -145,7 +171,7 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s7Title")}>
             <p>
-              <strong>{t("terms.s7p1Bold")}</strong> {t("terms.s7p1Rest")}
+              <strong style={{ fontWeight: 600, color: "var(--cr-ink-2)" }}>{t("terms.s7p1Bold")}</strong> {t("terms.s7p1Rest")}
             </p>
             <p className="mt-3">{t("terms.s7p2")}</p>
             <p className="mt-3">{t("terms.s7p3")}</p>
@@ -199,21 +225,22 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s17Title")}>
             <p>{t("terms.s17p1")}</p>
-            <div className="mt-3 bg-cr-paper border border-cr-p4 rounded-xl p-4 text-sm text-cr-i2 space-y-1">
-              <p className="font-semibold">{t("terms.contactBrand")}</p>
-              <p>
+            {/* Contact block as a rule-topped ledger entry, not a box. */}
+            <div style={{ marginTop: "16px", borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
+              <p style={{ ...SUBHEAD, marginBottom: "4px" }}>{t("terms.contactBrand")}</p>
+              <p style={BODY}>
                 {t("terms.emailLabel")}{" "}
-                <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline">{brand.legal}</a>
+                <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{brand.legal}</a>
               </p>
-              <p>
+              <p style={{ ...BODY, marginTop: "4px" }}>
                 {t("terms.supportLabel")}{" "}
-                <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline">{brand.support}</a>
+                <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{brand.support}</a>
               </p>
             </div>
           </Section>
 
-          <div className="border-t pt-8 text-sm text-cr-i4">
-            <p>
+          <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "24px" }}>
+            <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-4)" }}>
               {t("terms.footerAck")}
             </p>
           </div>
@@ -227,9 +254,9 @@ export default async function TermsPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section>
-      <h2 className="text-xl font-bold text-cr-ink mb-3">{title}</h2>
-      <div className="text-cr-i3 leading-relaxed">{children}</div>
+    <section style={{ borderTop: "1px solid var(--cr-rule)", padding: "24px 0" }}>
+      <h2 className="ruled-label" style={{ marginBottom: "12px" }}>{title}</h2>
+      <div style={BODY}>{children}</div>
     </section>
   );
 }

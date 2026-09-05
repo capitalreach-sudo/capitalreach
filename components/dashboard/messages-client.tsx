@@ -376,7 +376,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
         {/* Page header */}
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.inbox")}</div>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.inbox")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px,3vw,28px)", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
               {t("dashboard.messages")}
             </h1>
@@ -396,7 +396,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
           {/* ── Sidebar ── */}
           <div className="w-full md:w-[300px]" style={{ flexShrink: 0, display: mobileShowChat ? "none" : "flex", flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
             {/* Search */}
-            <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+            <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
               {/* The archive toggle must live OUTSIDE the relative wrapper:
                   the magnifier is absolutely centred in that wrapper, and a
                   button inside it pushed the icon off the input entirely. */}
@@ -408,12 +408,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("dashboard.searchConversations")}
-                  style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "10px", paddingTop: "11px", paddingBottom: "11px", outline: "none", boxSizing: "border-box" }} />
+                  style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "12px", paddingBottom: "12px", outline: "none", boxSizing: "border-box" }} />
               </div>
             </div>
 
             {/* Status filters */}
-            <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--cr-rule)", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+            <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)", display: "flex", gap: "6px", flexWrap: "wrap" }}>
               {[
                 { v: "all", lk: "dashboard.filterAll" },
                 { v: "active", lk: "dashboard.filterActive" },
@@ -439,8 +439,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 const st = thread.status || "active";
                 return (
                   <button key={thread.id} onClick={() => selectThread(thread)}
-                    style={{ width: "100%", textAlign: "left", padding: "14px 16px", borderBottom: "1px solid var(--cr-rule)", background: isSelected ? "var(--cr-paper-3)" : "transparent", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent", cursor: "pointer" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                    style={{ width: "100%", textAlign: "left", padding: "16px", borderBottom: "1px solid var(--cr-rule)", background: isSelected ? "var(--cr-paper-3)" : "transparent", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent", cursor: "pointer" }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
                       <div style={{ width: 36, height: 36, borderRadius: "4px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)" }}>
                         {getInitials(getLabel(thread))}
                       </div>
@@ -562,10 +562,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     : messages;
                   if (visibleMessages.length === 0 && msgQuery.trim()) {
                     return (
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "10px", color: "var(--cr-ink-4)" }}>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "12px", color: "var(--cr-ink-4)" }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("messages.noMatches", { query: msgQuery.trim() })}</p>
                         <button onClick={() => setMsgQuery("")}
-                          style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "5px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                          style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
                           {t("messages.clearSearch")}
                         </button>
                       </div>
@@ -578,7 +578,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     <div key={msg.id}>
                       {showTime && (
                         <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
-                          <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", padding: "3px 10px" }}>
+                          <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", padding: "3px 8px" }}>
                             {new Date(msg.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
@@ -587,7 +587,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         {/* Own messages: quiet ledger entry on paper, marked
                             "mine" by a 2px copper rule, not an accent slab. */}
                         <div style={{
-                          maxWidth: "70%", borderRadius: "4px", padding: "10px 14px",
+                          maxWidth: "70%", borderRadius: "4px", padding: "12px 16px",
                           background: isOwn ? "var(--cr-paper-3)" : "var(--cr-paper-2)",
                           border: isOwn ? "none" : "1px solid var(--cr-rule-dark)",
                           borderLeft: isOwn ? "2px solid var(--cr-copper)" : undefined,
@@ -595,7 +595,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         }}>
                           {msg.attachment_path && (
                             <a href={`/api/messages/attachment?id=${msg.id}`}
-                              style={{ display: "inline-flex", alignItems: "center", gap: "7px", marginBottom: msg.body && msg.body !== msg.attachment_name ? "6px" : 0, padding: "7px 10px", borderRadius: "4px", background: isOwn ? "var(--cr-paper-2)" : "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "inherit", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", maxWidth: "100%" }}>
+                              style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: msg.body && msg.body !== msg.attachment_name ? "8px" : 0, padding: "8px 12px", borderRadius: "4px", background: isOwn ? "var(--cr-paper-2)" : "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "inherit", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", maxWidth: "100%" }}>
                               <Paperclip style={{ width: 12, height: 12, flexShrink: 0 }} />
                               <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{msg.attachment_name}</span>
                             </a>
@@ -612,7 +612,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         </div>
                       </div>
                       {isOwn && msg.id === lastReadOwnId && (
-                        <p style={{ textAlign: "right", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+                        <p style={{ textAlign: "right", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                           {t("messages.seen")}
                         </p>
                       )}
@@ -630,7 +630,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 {!newMessage && (
                   <select value="" aria-label={t("messages.templates")}
                     onChange={e => { if (e.target.value) setNewMessage(t(e.target.value)); }}
-                    style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "9px 6px", minHeight: "40px", outline: "none", maxWidth: "90px" }}>
+                    style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "8px", minHeight: "40px", outline: "none", maxWidth: "90px" }}>
                     <option value="">{t("messages.templates")}</option>
                     <option value="messages.tplIntro">{t("messages.tplIntroLabel")}</option>
                     <option value="messages.tplMetrics">{t("messages.tplMetricsLabel")}</option>
@@ -652,7 +652,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 <textarea value={newMessage} onChange={e => setNewMessage(e.target.value.slice(0, 2000))}
                   maxLength={2000}
                   placeholder={attachedFile ? t("messages.attachCaptionPh", { name: attachedFile.name }) : t("dashboard.composePlaceholder")}
-                  rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", resize: "none", minHeight: "40px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
+                  rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px", resize: "none", minHeight: "40px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
                   onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim() || attachedFile) sendMessage(e); } }}
                   onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
@@ -670,7 +670,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 </p>
               )}
               {/* Messages are part of the deal record — say so where they are written. */}
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "center", padding: "6px 12px 8px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "center", padding: "8px 12px" }}>
                 {t("messages.legalNote")}
               </p>
             </div>
@@ -730,7 +730,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 <span style={labelStyle}>{t("dashboard.toLabel")}</span>
                 <div style={{ position: "relative" }}>
                   {selectedAccount ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", border: "1px solid var(--cr-copper)", borderRadius: "4px", padding: "10px 12px", background: "var(--cr-copper-bg)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", border: "1px solid var(--cr-copper)", borderRadius: "4px", padding: "12px", background: "var(--cr-copper-bg)" }}>
                       <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
                         {getInitials(selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount"))}
                       </div>
@@ -755,7 +755,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                         onFocus={() => setAccountDropOpen(true)}
                         placeholder={profile.role === "investor" ? t("dashboard.searchStartupsPh") : targetKind === "investor" ? t("dashboard.searchInvestorsPh") : t("dashboard.searchStartupsPh")}
                         autoFocus
-                        style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "9px", paddingBottom: "9px", outline: "none", boxSizing: "border-box" }} />
+                        style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "12px", paddingBottom: "12px", outline: "none", boxSizing: "border-box" }} />
                     </>
                   )}
 
@@ -777,7 +777,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           )}
                           {accountResults.map(a => (
                         <button key={a.id} onClick={() => { setSelectedAccount(a); setAccountDropOpen(false); setAccountSearch(""); }}
-                          style={{ width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px", textAlign: "left" }}
+                          style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px", textAlign: "left" }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                         >
@@ -808,7 +808,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
               {/* Error */}
               {sendNewError && (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "10px 12px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "12px" }}>
                   <AlertCircle style={{ width: 14, height: 14, color: "var(--cr-down)", flexShrink: 0, marginTop: "1px" }} />
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-down)" }}>{sendNewError}</p>
                 </div>
@@ -820,13 +820,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 <textarea value={newBody} onChange={e => setNewBody(e.target.value)}
                   placeholder={selectedAccount ? t("dashboard.messageTo", { name: selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount") }) : t("dashboard.selectRecipientFirst")}
                   rows={5} disabled={!selectedAccount}
-                  style={{ width: "100%", background: selectedAccount ? "var(--cr-paper-3)" : "var(--cr-paper-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", resize: "none", outline: "none", boxSizing: "border-box", opacity: selectedAccount ? 1 : 0.5 }}
+                  style={{ width: "100%", background: selectedAccount ? "var(--cr-paper-3)" : "var(--cr-paper-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px", resize: "none", outline: "none", boxSizing: "border-box", opacity: selectedAccount ? 1 : 0.5 }}
                   onFocus={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                   onBlur={e   => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "12px" }}>
                 <button onClick={closeNewModal}
                   style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", cursor: "pointer" }}>
                   {t("dashboard.cancel")}

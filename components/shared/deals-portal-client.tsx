@@ -71,7 +71,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       : ((closedDeal?.startup as { name?: string } | undefined)?.name ?? null);
     setClosedMoment({ amount: amount || null, currency, counterpartName });
     // The fee couldn't be invoiced because the founder has no payment method on
-    // file — say so rather than letting the revenue leak silently.
+    // file -- say so rather than letting the revenue leak silently.
     if (data.feeNotBilled) notify.info(t("deals.feeNotBilled"));
     router.refresh();
   }
@@ -112,19 +112,19 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       // Two SECTIONS, not a widget: the platform ledger and your own
       // pipeline inside it, underlined like the tabs they are.
       return (
-        <div style={{ display: "flex", gap: 4, borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 4, borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: 24 }}>
           {([["all", t("deals.scopeAll"), deals.length], ["mine", t("deals.scopeMine"), mineCount]] as const).map(([v, label, n]) => (
             <button key={v} onClick={() => setScope(v)}
               style={{
                 background: "none", border: "none", cursor: "pointer",
                 borderBottom: scope === v ? "2px solid var(--cr-copper)" : "2px solid transparent",
-                marginBottom: -1, padding: "10px 18px",
+                marginBottom: -1, padding: "8px 16px", minHeight: 40,
                 fontFamily: "'DM Sans', sans-serif", fontWeight: scope === v ? 700 : 400, fontSize: 14,
                 color: scope === v ? "var(--cr-ink)" : "var(--cr-ink-4)",
                 display: "inline-flex", alignItems: "center", gap: 8,
               }}>
               {label}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: 11, color: scope === v ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{n}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 11, color: scope === v ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{n}</span>
             </button>
           ))}
         </div>

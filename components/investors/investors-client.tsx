@@ -593,7 +593,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
               />
               {suggestOpen && f.query.trim().length < 2 && recent.length > 0 && (
                 <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
-                  style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)" }}>
+                  style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "10px 12px 6px" }}>
                     {t("startups.recentSearches")}
                   </p>
@@ -616,7 +616,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                   .slice(0, 6);
                 return hits.length > 0 ? (
                   <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
-                    style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)" }}>
+                    style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
                     {hits.map((i, hi) => (
                       <Link key={i.id} href={`/investors/${i.slug}`}
                         className={cn("flex flex-col gap-0.5 hover:bg-cr-p3 no-underline", hi === suggestIdx && "bg-cr-p3")}
@@ -649,8 +649,8 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
               header pinned, filters scroll, Reset / Apply·n pinned. */}
           {sidebarOpen && (
             <div role="dialog" aria-modal="true" aria-label={t("investors.filters")} className="lg:hidden" style={{ position: "fixed", inset: 0, zIndex: 50 }}>
-              <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.45)" }} onClick={() => setSidebarOpen(false)} />
-              <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "0 -12px 40px rgba(26,22,18,0.2)" }}>
+              <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setSidebarOpen(false)} />
+              <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
                 <div style={{ padding: "10px 20px 0", flexShrink: 0 }}>
                   <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 4px" }} />
                 </div>
@@ -673,7 +673,7 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (
-            <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "0 10px 30px rgba(26,22,18,0.35)" }}>
+            <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "var(--cr-card-shadow-hover)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
                 {compareIds.map(id => investors.find(i => i.id === id)?.full_name).filter(Boolean).join(" · ")}
               </span>

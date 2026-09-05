@@ -62,7 +62,7 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
   if (variant === "strip" && (!loaded || (incoming.length === 0 && outgoing.length === 0))) return null;
 
   const row = (p: Proposal) => (
-    <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
+    <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
       <EntityLogo name={p.counterpart.name} logoUrl={p.counterpart.logoUrl} logoColor={p.counterpart.logoColor} size={32} radius={4} />
       <div style={{ flex: 1, minWidth: 160 }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)" }}>
@@ -76,21 +76,21 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
         {p.note && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "var(--cr-ink-3)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 420 }}>“{p.note}”</p>}
       </div>
       {p.direction === "incoming" ? (
-        <span style={{ display: "inline-flex", gap: 6 }}>
+        <span style={{ display: "inline-flex", gap: 12 }}>
           <button onClick={() => act(p.id, "accept")} disabled={busy === p.id}
-            style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "var(--cr-up)", color: "#fff", border: "none", borderRadius: 4, padding: "6px 12px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: 999, minHeight: 40, padding: "0 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13 }}>
             <Check style={{ width: 12, height: 12 }} /> {t("proposals.accept")}
           </button>
           <button onClick={() => act(p.id, "decline")} disabled={busy === p.id}
-            style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "transparent", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "6px 12px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "transparent", color: "var(--cr-ink)", border: "1px solid var(--cr-paper-4)", borderRadius: 999, minHeight: 40, padding: "0 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: 13 }}>
             <X style={{ width: 12, height: 12 }} /> {t("proposals.decline")}
           </button>
         </span>
       ) : (
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)" }}>{t("proposals.waiting")}</span>
           <button onClick={() => act(p.id, "withdraw")} disabled={busy === p.id}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)", textDecoration: "underline" }}>
+            style={{ display: "inline-flex", alignItems: "center", background: "none", border: "none", cursor: "pointer", minHeight: 40, padding: "0 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)", textDecoration: "underline" }}>
             {t("proposals.withdraw")}
           </button>
         </span>
@@ -103,14 +103,15 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
     return (
       <div style={{ width: "264px", flexShrink: 0, display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 260px)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 3, padding: "3px 10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-copper)" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 3, padding: "3px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-copper)" }}>
             <Handshake style={{ width: 11, height: 11 }} /> {t("deals.colProposal")}
           </span>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{all.length}</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{all.length}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", paddingRight: "2px", minHeight: 0 }}>
           {all.length === 0 ? (
-            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "18px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)" }}>
+            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)" }}>
+              <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", marginBottom: 8 }}>✦</span>
               {t("proposals.emptyColumn")}
             </div>
           ) : all.map(p => (
@@ -118,7 +119,7 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                 <EntityLogo name={p.counterpart.name} logoUrl={p.counterpart.logoUrl} logoColor={p.counterpart.logoColor} size={28} radius={4} />
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12.5, color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.counterpart.name}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.counterpart.name}</p>
                   {p.amount != null && (
                     <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 11, color: "var(--cr-copper)" }}>{formatMoney(p.amount, p.currency, { compact: true })}</p>
                   )}
@@ -126,21 +127,21 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
               </div>
               {p.note && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "var(--cr-ink-3)", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>“{p.note}”</p>}
               {p.direction === "incoming" ? (
-                <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ display: "flex", gap: 12 }}>
                   <button onClick={() => act(p.id, "accept")} disabled={busy === p.id}
-                    style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, background: "var(--cr-up)", color: "#fff", border: "none", borderRadius: 4, padding: "6px 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11.5 }}>
+                    style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: 999, minHeight: 40, padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
                     <Check style={{ width: 11, height: 11 }} /> {t("proposals.accept")}
                   </button>
                   <button onClick={() => act(p.id, "decline")} disabled={busy === p.id}
-                    style={{ flex: 1, background: "transparent", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "6px 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11.5 }}>
+                    style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "transparent", color: "var(--cr-ink)", border: "1px solid var(--cr-paper-4)", borderRadius: 999, minHeight: 40, padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: 12 }}>
                     {t("proposals.decline")}
                   </button>
                 </div>
               ) : (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 10.5, color: "var(--cr-ink-4)" }}>{t("proposals.waiting")}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)" }}>{t("proposals.waiting")}</span>
                   <button onClick={() => act(p.id, "withdraw")} disabled={busy === p.id}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 10.5, color: "var(--cr-ink-4)", textDecoration: "underline" }}>
+                    style={{ display: "inline-flex", alignItems: "center", background: "none", border: "none", cursor: "pointer", minHeight: 40, padding: "0 8px", marginRight: -8, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)", textDecoration: "underline" }}>
                     {t("proposals.withdraw")}
                   </button>
                 </div>
@@ -153,9 +154,8 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
   }
 
   return (
-    <section style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "14px 18px", marginBottom: 20 }}>
-      <p style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)", marginBottom: 2 }}>
-        <Handshake style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
+    <section style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "16px", marginBottom: 24 }}>
+      <p className="ruled-label" style={{ marginBottom: 4 }}>
         {t("proposals.title")}
       </p>
       {incoming.map(row)}

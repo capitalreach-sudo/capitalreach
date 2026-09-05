@@ -23,11 +23,32 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// House prose register for the legal pages: quiet rule-separated sections,
+// Label-style section openers, body in DM Sans light.
+const BODY: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
+  color: "var(--cr-ink-3)", lineHeight: 1.7,
+};
+
+const SUBHEAD: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+  color: "var(--cr-ink)",
+};
+
+function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section style={{ borderTop: "1px solid var(--cr-rule)", padding: "24px 0" }}>
+      <h2 className="ruled-label" style={{ marginBottom: "12px" }}>{title}</h2>
+      <div style={BODY}>{children}</div>
+    </section>
+  );
+}
+
 function Bullet({ t, k }: { t: ServerT; k: string }) {
   const [bold, rest] = t(`privacy.${k}`).split("|||");
   return (
     <li>
-      <strong>{bold}</strong> {rest}
+      <strong style={{ fontWeight: 600, color: "var(--cr-ink-2)" }}>{bold}</strong> {rest}
     </li>
   );
 }
@@ -51,26 +72,44 @@ export default async function PrivacyPage() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
-        {/* Header */}
-        <div className="mb-10">
-          <p className="text-sm text-cr-copper font-semibold uppercase tracking-wide mb-2">{t("privacy.legalLabel")}</p>
-          <h1 className="text-4xl font-extrabold text-cr-ink mb-3">{t("privacy.title")}</h1>
-          <p className="text-cr-i3 text-sm">{t("privacy.effectiveDatePrefix")} {t("privacy.effectiveDate")}</p>
-        </div>
+      <main className="mx-auto px-6 md:px-10 py-16 md:py-24 max-w-3xl" style={{ background: "var(--cr-paper)" }}>
+        {/* Header -- ruled-label opener, serif italic display, date in mono. */}
+        <header style={{ marginBottom: "48px" }}>
+          <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("privacy.legalLabel")}</div>
+          <h1
+            style={{
+              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontWeight:    700,
+              fontStyle:     "italic",
+              fontSize:      "clamp(30px, 5vw, 44px)",
+              color:         "var(--cr-ink)",
+              lineHeight:    1.08,
+              letterSpacing: "-0.02em",
+              textWrap:      "balance",
+              marginBottom:  "12px",
+            }}
+          >
+            {t("privacy.title")}
+          </h1>
+          <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-4)" }}>
+            {t("privacy.effectiveDatePrefix")}{" "}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+              {t("privacy.effectiveDate")}
+            </span>
+          </p>
+        </header>
 
-        <div className="prose prose-gray max-w-none space-y-8 text-cr-i2 leading-relaxed">
+        <div>
 
-          <section>
-            <p>
+          <section style={{ paddingBottom: "24px" }}>
+            <p style={BODY}>
               <InlineLink t={t} k="introP1" href={brand.url} label={brand.domain} />
             </p>
           </section>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s1Title")}</h2>
-            <h3 className="text-base font-semibold text-[#f0f0f0] mb-2">{t("privacy.s1h1")}</h3>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+          <LegalSection title={t("privacy.s1Title")}>
+            <h3 style={{ ...SUBHEAD, marginBottom: "8px" }}>{t("privacy.s1h1")}</h3>
+            <ul className="list-disc pl-5 space-y-2">
               <Bullet t={t} k="s1l1" />
               <Bullet t={t} k="s1l2" />
               <Bullet t={t} k="s1l3" />
@@ -78,17 +117,16 @@ export default async function PrivacyPage() {
               <Bullet t={t} k="s1l5" />
             </ul>
 
-            <h3 className="text-base font-semibold text-[#f0f0f0] mb-2 mt-4">{t("privacy.s1h2")}</h3>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+            <h3 style={{ ...SUBHEAD, marginBottom: "8px", marginTop: "16px" }}>{t("privacy.s1h2")}</h3>
+            <ul className="list-disc pl-5 space-y-2">
               <Bullet t={t} k="s1l6" />
               <Bullet t={t} k="s1l7" />
               <Bullet t={t} k="s1l8" />
             </ul>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s2Title")}</h2>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+          <LegalSection title={t("privacy.s2Title")}>
+            <ul className="list-disc pl-5 space-y-2">
               <li>{t("privacy.s2l1")}</li>
               <li>{t("privacy.s2l2")}</li>
               <li>{t("privacy.s2l3")}</li>
@@ -97,49 +135,45 @@ export default async function PrivacyPage() {
               <li><InlineLink t={t} k="s2l6" href="/terms" label={t("privacy.termsOfServiceLabel")} /></li>
               <li>{t("privacy.s2l7")}</li>
             </ul>
-          </section>
+          </LegalSection>
 
           {/* E58. Audited rather than assumed: this app loads no third-party
               script, sets no analytics or advertising cookie, and stores
               nothing that identifies a visitor before they sign in. Under
-              GDPR/ePrivacy that means no consent banner is required — and a
+              GDPR/ePrivacy that means no consent banner is required -- and a
               banner asking permission for nothing would be theatre. What IS
               stored is listed here instead, exactly. */}
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.cookiesTitle")}</h2>
-            <p className="text-sm mb-3">{t("privacy.cookiesIntro")}</p>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+          <LegalSection title={t("privacy.cookiesTitle")}>
+            <p style={{ marginBottom: "12px" }}>{t("privacy.cookiesIntro")}</p>
+            <ul className="list-disc pl-5 space-y-2">
               <li>{t("privacy.cookiesAuth")}</li>
               <li>{t("privacy.cookiesLocale")}</li>
               <li>{t("privacy.cookiesLocal")}</li>
             </ul>
-            <p className="text-sm mt-3">{t("privacy.cookiesNoTracking")}</p>
-          </section>
+            <p style={{ marginTop: "12px" }}>{t("privacy.cookiesNoTracking")}</p>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s3Title")}</h2>
-            <p className="text-sm mb-3">
+          <LegalSection title={t("privacy.s3Title")}>
+            <p style={{ marginBottom: "12px" }}>
               {t("privacy.s3Intro")}
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-sm">
+            <ul className="list-disc pl-5 space-y-2">
               <Bullet t={t} k="s3l1" />
               <Bullet t={t} k="s3l2" />
               <Bullet t={t} k="s3l3" />
               <Bullet t={t} k="s3l4" />
             </ul>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s4Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s4Title")}>
+            <p>
               {t("privacy.s4Text")}
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s5Title")}</h2>
-            <p className="text-sm mb-3">{t("privacy.s5Intro")}</p>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+          <LegalSection title={t("privacy.s5Title")}>
+            <p style={{ marginBottom: "12px" }}>{t("privacy.s5Intro")}</p>
+            <ul className="list-disc pl-5 space-y-2">
               <Bullet t={t} k="s5l1" />
               <Bullet t={t} k="s5l2" />
               <li><InlineLink t={t} k="s5l3" href={`mailto:${brand.support}`} label={brand.support} /></li>
@@ -147,80 +181,79 @@ export default async function PrivacyPage() {
               <Bullet t={t} k="s5l5" />
               <Bullet t={t} k="s5l6" />
             </ul>
-            <p className="text-sm mt-3">
+            <p style={{ marginTop: "12px" }}>
               <InlineLink t={t} k="s5Footer" href={`mailto:${brand.support}`} label={brand.support} />
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s6Title")}</h2>
-            <p className="text-sm mb-3">{t("privacy.s6Intro")}</p>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+          <LegalSection title={t("privacy.s6Title")}>
+            <p style={{ marginBottom: "12px" }}>{t("privacy.s6Intro")}</p>
+            <ul className="list-disc pl-5 space-y-2">
               <Bullet t={t} k="s6l1" />
               <Bullet t={t} k="s6l2" />
               <Bullet t={t} k="s6l3" />
             </ul>
-            <p className="text-sm mt-2">
+            <p style={{ marginTop: "8px" }}>
               {t("privacy.s6Footer")}
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s7Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s7Title")}>
+            <p>
               <InlineLink t={t} k="s7Text" href="https://openai.com/enterprise-privacy" label={t("privacy.s7LinkLabel")} />
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s8Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s8Title")}>
+            <p>
               <InlineLink t={t} k="s8Text" href={`mailto:${brand.support}`} label={brand.support} />
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s9Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s9Title")}>
+            <p>
               {t("privacy.s9Text")}
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s10Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s10Title")}>
+            <p>
               {t("privacy.s10Text")}
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s11Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s11Title")}>
+            <p>
               {t("privacy.s11Text")}
             </p>
-          </section>
+          </LegalSection>
 
-          <section>
-            <h2 className="text-xl font-bold text-cr-ink mb-3">{t("privacy.s12Title")}</h2>
-            <p className="text-sm">
+          <LegalSection title={t("privacy.s12Title")}>
+            <p>
               {t("privacy.s12Text")}
             </p>
-            <div className="mt-3 bg-cr-paper border rounded-xl p-4 text-sm">
-              <p className="font-semibold text-cr-ink">CapitalReach</p>
-              <p className="text-cr-i3">{t("privacy.contactBoxEmailLabel")} <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline">{brand.support}</a></p>
-              <p className="text-cr-i3 mt-1">
+            {/* Controller block as a rule-topped ledger entry, not a box. */}
+            <div style={{ marginTop: "16px", borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
+              <p style={{ ...SUBHEAD, marginBottom: "4px" }}>CapitalReach</p>
+              <p style={BODY}>
+                {t("privacy.contactBoxEmailLabel")}{" "}
+                <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>
+                  {brand.support}
+                </a>
+              </p>
+              <p style={{ ...BODY, marginTop: "4px" }}>
                 <Link href="/contact" className="text-cr-copper hover:underline">{t("privacy.contactFormLink")}</Link>
               </p>
             </div>
-          </section>
+          </LegalSection>
 
         </div>
 
-        {/* Footer links */}
-        <div className="mt-12 pt-8 border-t flex flex-wrap gap-4 text-sm text-cr-i3">
-          <Link href="/terms" className="hover:text-cr-copper">{t("privacy.termsOfServiceLabel")}</Link>
-          <Link href="/contact" className="hover:text-cr-copper">{t("privacy.footerContactUs")}</Link>
-          <Link href="/" className="hover:text-cr-copper">{t("privacy.footerBackHome")}</Link>
+        {/* Footer links -- quiet, rule-topped, 40px touch rows. */}
+        <div className="mt-12 flex flex-wrap gap-x-6 gap-y-0" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
+          <Link href="/terms" className="text-cr-i3 hover:text-cr-copper inline-flex items-center min-h-[40px] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", textDecoration: "none" }}>{t("privacy.termsOfServiceLabel")}</Link>
+          <Link href="/contact" className="text-cr-i3 hover:text-cr-copper inline-flex items-center min-h-[40px] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", textDecoration: "none" }}>{t("privacy.footerContactUs")}</Link>
+          <Link href="/" className="text-cr-i3 hover:text-cr-copper inline-flex items-center min-h-[40px] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", textDecoration: "none" }}>{t("privacy.footerBackHome")}</Link>
         </div>
       </main>
       <Footer />

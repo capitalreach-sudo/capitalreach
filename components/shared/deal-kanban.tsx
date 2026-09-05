@@ -236,7 +236,7 @@ function CounterpartPicker({ search, placeholder, note, autoFocus = false }: {
 
   if (selected) {
     return (
-      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 12px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px", marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{selected.name}</p>
           {selected.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{selected.sub}</p>}
@@ -263,28 +263,28 @@ function CounterpartPicker({ search, placeholder, note, autoFocus = false }: {
   }
 
   return (
-    <div style={{ marginBottom: "14px" }}>
+    <div style={{ marginBottom: "16px" }}>
       <input
         autoFocus={autoFocus}
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
         placeholder={placeholder}
-        style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", boxSizing: "border-box" }}
+        style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box" }}
       />
       <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px", maxHeight: "180px", overflowY: "auto" }}>
         {searching && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("dashboard.searching")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 0" }}>{t("dashboard.searching")}</p>
         )}
         {!searching && query.trim() && results.length === 0 && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("deals.noResults")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 0" }}>{t("deals.noResults")}</p>
         )}
         {!searching && !query.trim() && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 0" }}>{t("deals.startTyping")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 0" }}>{t("deals.startTyping")}</p>
         )}
         {results.map(r => (
           <button key={r.id} onClick={() => setSelected(r)}
-            style={{ textAlign: "left", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "8px 10px", cursor: "pointer" }}>
+            style={{ textAlign: "left", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "8px 12px", cursor: "pointer" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{r.name}</p>
             {r.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{r.sub}</p>}
             {(() => {
@@ -403,14 +403,14 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
           />
         )}
 
-        <div style={{ display: "flex", gap: "6px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
           <div style={{ position: "relative", flex: 1 }}>
             <span style={{ position: "absolute", left: "9px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)", pointerEvents: "none" }}>
               {getCurrency(currency).symbol}
             </span>
             <input type="number" placeholder={t("deals.amountOptional")}
               value={amount} onChange={e => setAmount(e.target.value)}
-              style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "34px", paddingRight: "10px", paddingTop: "9px", paddingBottom: "9px", outline: "none", boxSizing: "border-box" }} />
+              style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "34px", paddingRight: "12px", paddingTop: "8px", paddingBottom: "8px", outline: "none", boxSizing: "border-box" }} />
           </div>
           <select value={currency} onChange={e => setCurrency(e.target.value as typeof DEFAULT_CURRENCY)}
             aria-label={t("deals.currency")}
@@ -422,7 +422,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
 
         {/* Starting stage + follow-up date */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
+        <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
           {/* No stage picker: a deal is a PROCESS. It starts as a Proposal;
               on approval it enters Talking; from there it moves one stage at
               a time. The path is stated so nobody looks for the dropdown. */}
@@ -444,11 +444,11 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
             starts empty and gives no record of why the deal was opened. */}
         <textarea value={note} onChange={e => setNote(e.target.value)}
           placeholder={t("deals.openingNotePlaceholder")} rows={2} maxLength={2000}
-          style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", marginBottom: "12px", resize: "vertical", boxSizing: "border-box" }} />
+          style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", marginBottom: "12px", resize: "vertical", boxSizing: "border-box" }} />
 
         {/* The consent contract, stated where the button is: nothing lands
             in anyone's pipeline until the other side says yes. */}
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "6px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "8px" }}>
           {t("deals.consentNotice")}
         </p>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
@@ -457,7 +457,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
         <div style={{ display: "flex", gap: "8px" }}>
           <button onClick={handleCreate} disabled={!canSubmit || creating}
-            style={{ flex: 1, height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+            style={{ flex: 1, height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
             {creating && <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" />}
             {creating ? t("deals.creating") : t("deals.createDeal")}
           </button>
@@ -631,10 +631,10 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
   };
 
   return (
-    <div style={{ marginTop: "10px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <button onClick={toggle}
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           <FileText style={{ width: 11, height: 11 }} />
           {t("deals.contracts")}{loaded && contracts.length > 0 ? ` (${contracts.length})` : ""}
         </span>
@@ -642,7 +642,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
       </button>
 
       {open && (
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "12px" }}>
           {loading && (
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>
           )}
@@ -652,9 +652,9 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
           {/* Rows split by hairlines, not boxes-in-boxes. */}
           {!loading && contracts.map(c => (
             <div key={c.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "8px 0" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.title}</p>
-                <span style={{ ...statusStyle[c.status], fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 6px", textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>
+                <span style={{ ...statusStyle[c.status], fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>
                   {t(`deals.contractStatus${c.status.charAt(0).toUpperCase()}${c.status.slice(1)}`)}
                 </span>
               </div>
@@ -671,7 +671,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               </a>
 
               {c.contract_type === "nda" && (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", marginTop: "6px", paddingTop: "6px", borderTop: "1px solid var(--cr-rule)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: ndaStatus === "signed" ? "var(--cr-up)" : "var(--cr-ink-4)" }}>
                     {ndaStatusLabel[ndaStatus || "none"]}
                   </span>
@@ -685,7 +685,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               )}
 
               {NEXT_CONTRACT_STATUSES[c.status].length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "6px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
                   {NEXT_CONTRACT_STATUSES[c.status].map(next => (
                     next === "signed" ? (
                       <button key={next} onClick={() => { setSigning(c); setSignerName(""); }}
@@ -705,31 +705,31 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
           ))}
 
           {showForm ? (
-            <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+            <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder={t("deals.contractTitlePlaceholder")}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", boxSizing: "border-box", marginBottom: "6px" }} />
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box", marginBottom: "8px" }} />
               <select value={type} onChange={e => handleTypeChange(e.target.value as ContractType)}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", cursor: "pointer", marginBottom: "6px" }}>
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", cursor: "pointer", marginBottom: "8px" }}>
                 {CONTRACT_TYPES.map(ct => <option key={ct} value={ct}>{t(CONTRACT_TYPE_KEY[ct])}</option>)}
               </select>
-              <div style={{ display: "flex", gap: "6px", marginBottom: "6px" }}>
+              <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                 <div style={{ position: "relative", flex: 1 }}>
                   <span style={{ position: "absolute", left: "7px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", pointerEvents: "none" }}>
                     {getCurrency(currency).symbol}
                   </span>
                   <input type="number" placeholder={t("deals.amountOptional")} value={amount} onChange={e => setAmount(e.target.value)}
-                    style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", paddingLeft: "26px", paddingRight: "8px", paddingTop: "6px", paddingBottom: "6px", outline: "none", boxSizing: "border-box" }} />
+                    style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", paddingLeft: "26px", paddingRight: "8px", paddingTop: "8px", paddingBottom: "8px", outline: "none", boxSizing: "border-box" }} />
                 </div>
                 <select value={currency} onChange={e => setCurrency(e.target.value as typeof DEFAULT_CURRENCY)}
-                  style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink)", padding: "0 6px", outline: "none", cursor: "pointer" }}>
+                  style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink)", padding: "0 8px", outline: "none", cursor: "pointer" }}>
                   {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
                 </select>
               </div>
               <input type="number" value={equity} onChange={e => setEquity(e.target.value)} placeholder={t("deals.equityOptional")}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", boxSizing: "border-box", marginBottom: "6px" }} />
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box", marginBottom: "8px" }} />
               <textarea value={terms} onChange={e => setTerms(e.target.value)} placeholder={TERMS_PLACEHOLDER[type]} rows={2}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", boxSizing: "border-box", marginBottom: "8px", resize: "vertical" }} />
-              <div style={{ display: "flex", gap: "6px" }}>
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box", marginBottom: "8px", resize: "vertical" }} />
+              <div style={{ display: "flex", gap: "8px" }}>
                 <button onClick={handleCreate} disabled={!title.trim() || creating}
                   style={{ flex: 1, height: "30px", background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", cursor: !title.trim() || creating ? "default" : "pointer", opacity: !title.trim() || creating ? 0.5 : 1 }}>
                   {creating ? t("deals.creating") : t("deals.createContract")}
@@ -741,7 +741,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
             </div>
           ) : (
             <button onClick={() => setShowForm(true)}
-              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "transparent", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "7px 0", cursor: "pointer" }}>
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "transparent", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "8px 0", cursor: "pointer" }}>
               <Plus style={{ width: 11, height: 11 }} /> {t("deals.newContract")}
             </button>
           )}
@@ -757,16 +757,16 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("deals.signTitle", { title: signing.title || t("deals.contract") })}</p>
             </div>
             <div style={{ padding: "16px 24px", overflowY: "auto" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.55, marginBottom: "14px" }}>{t("deals.signIntro")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.55, marginBottom: "16px" }}>{t("deals.signIntro")}</p>
               {signing.terms && (
-                <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 16px", margin: "0 0 14px", maxHeight: "180px", overflowY: "auto" }}>{signing.terms}</pre>
+                <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px", margin: "0 0 16px", maxHeight: "180px", overflowY: "auto" }}>{signing.terms}</pre>
               )}
-              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{t("deals.signNameLabel")}</label>
+              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>{t("deals.signNameLabel")}</label>
               <input value={signerName} onChange={e => setSignerName(e.target.value)} autoFocus
                 placeholder={t("deals.signNamePlaceholder")}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', serif", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', serif", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box" }} />
             </div>
-            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "14px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
+            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", padding: "16px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
               <button onClick={() => setSigning(null)} style={{ height: "40px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
               <button onClick={signContract} disabled={signBusy || signerName.trim().length < 2}
                 style={{ height: "40px", padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
@@ -855,10 +855,10 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
   }
 
   return (
-    <div style={{ marginTop: "10px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <button onClick={toggle}
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           <FileText style={{ width: 11, height: 11 }} />
           {t("deals.resources")}
         </span>
@@ -866,7 +866,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
       </button>
 
       {open && (
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "12px" }}>
           {loading && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>}
 
           {!loading && loaded && data && (
@@ -876,8 +876,8 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noDocuments")}</p>
               )}
               {data.documents.map(doc => (
-                <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", padding: "5px 0" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: "5px" }}>
+                <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "4px 0" }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: "4px" }}>
                     {doc.locked && <Lock style={{ width: 10, height: 10 }} />}
                     {doc.label}
                   </span>
@@ -892,7 +892,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
               ))}
 
               {/* Shared deal room — both sides upload here (append-only). */}
-              <div style={{ marginTop: "10px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
+              <div style={{ marginTop: "12px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{t("deals.sharedRoom")}</p>
                   {(viewAs === "startup" || viewAs === "investor") && (
@@ -910,8 +910,8 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.sharedRoomEmpty")}</p>
                 )}
                 {dealDocs.map(d => (
-                  <div key={d.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", padding: "5px 0" }}>
-                    <span style={{ minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
+                  <div key={d.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "4px 0" }}>
+                    <span style={{ minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
                       <FileText style={{ width: 11, height: 11, flexShrink: 0 }} />
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.file_name}</span>
                       <span style={{ flexShrink: 0, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.04em" }}>· {d.uploader_side === "startup" ? t("deals.fromFounder") : t("deals.fromInvestor")}</span>
@@ -925,19 +925,19 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
               </div>
 
               {(viewAs === "investor" || data.reports.length > 0) && (
-                <div style={{ marginTop: "10px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
+                <div style={{ marginTop: "12px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>{t("deals.dueDiligenceReports")}</p>
                   {data.reports.length === 0 && (
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noReports")}</p>
                   )}
                   {data.reports.map(r => (
-                    <div key={r.id} style={{ marginBottom: "6px" }}>
+                    <div key={r.id} style={{ marginBottom: "8px" }}>
                       <button onClick={() => setExpandedReport(expandedReport === r.id ? null : r.id)}
                         style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
                         {formatDate(r.created_at)} {expandedReport === r.id ? "▲" : "▼"}
                       </button>
                       {expandedReport === r.id && (
-                        <div style={{ marginTop: "6px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)", whiteSpace: "pre-wrap", maxHeight: "240px", overflowY: "auto" }}>
+                        <div style={{ marginTop: "8px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)", whiteSpace: "pre-wrap", maxHeight: "240px", overflowY: "auto" }}>
                           {r.content}
                         </div>
                       )}
@@ -945,7 +945,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
                   ))}
                   {viewAs === "investor" && (
                     <button onClick={generateReport} disabled={generating}
-                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "transparent", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "7px 0", cursor: "pointer", opacity: generating ? 0.6 : 1 }}>
+                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "transparent", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "8px 0", cursor: "pointer", opacity: generating ? 0.6 : 1 }}>
                       {generating && <Loader2 style={{ width: 11, height: 11 }} className="animate-spin" />}
                       {generating ? t("deals.generating") : t("deals.generateReport")}
                     </button>
@@ -1000,15 +1000,15 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
   }
 
   const row = (label: string, at: string | null, canAct: boolean, step: "sent" | "received") => (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "5px 0" }}>
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: at ? "var(--cr-up)" : "var(--cr-ink-3)" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "4px 0" }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: at ? "var(--cr-up)" : "var(--cr-ink-3)" }}>
         {at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
         {label}
         {at && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{formatDate(at)}</span>}
       </span>
       {!at && canAct && (
         <button onClick={() => confirm(step)} disabled={busy}
-          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "3px 9px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
+          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "3px 8px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
           {t("funding.confirm")}
         </button>
       )}
@@ -1028,7 +1028,7 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
   }
 
   return (
-    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
         {fundedAt ? t("funding.fundedTitle") : t("funding.title")}
       </p>
@@ -1037,8 +1037,8 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
       {!fundedAt && (viewAs === "startup" || viewAs === "investor") && (
         <>
           <input value={ref} onChange={(e) => setRef(e.target.value.slice(0, 120))} placeholder={t("funding.refPh")}
-            style={{ width: "100%", boxSizing: "border-box", marginTop: 6, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "5px 8px", outline: "none" }} />
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
+            style={{ width: "100%", boxSizing: "border-box", marginTop: 8, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-down)", marginTop: 8, lineHeight: 1.45 }}>
             {t("funding.fraudWarning")}
           </p>
         </>
@@ -1095,7 +1095,7 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
     notify.success(t("tranches.saved"));
   }
 
-  const cell: React.CSSProperties = { background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 7px", outline: "none", minWidth: 0 };
+  const cell: React.CSSProperties = { background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none", minWidth: 0 };
 
   if (!open) {
     return (
@@ -1107,16 +1107,16 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
   }
   return (
     <div style={{ marginTop: 8, borderTop: "1px solid var(--cr-rule)", paddingTop: 8 }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink)", marginBottom: 6 }}>{t("tranches.editorTitle")}</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink)", marginBottom: 8 }}>{t("tranches.editorTitle")}</p>
       {rows.map((r, i) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, marginBottom: 5 }}>
+        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginBottom: 4 }}>
           <input value={r.label} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, label: e.target.value.slice(0, 80) } : x))} placeholder={t("tranches.labelPh")} style={cell} />
           <input value={r.amount} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, amount: e.target.value } : x))} inputMode="decimal" placeholder={t("tranches.amountPh")} style={cell} />
           <input type="date" value={r.dueDate} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, dueDate: e.target.value } : x))} style={cell} />
           <input value={r.condition} onChange={e => setRows(rows.map((x, j) => j === i ? { ...x, condition: e.target.value.slice(0, 200) } : x))} placeholder={t("tranches.conditionPh")} style={cell} />
         </div>
       ))}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
         <button onClick={() => setRows([...rows, { label: "", amount: "", dueDate: "", condition: "" }])} disabled={rows.length >= 12}
           style={{ background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", cursor: "pointer", padding: 0, opacity: rows.length >= 12 ? 0.4 : 1 }}>
           {t("tranches.addRow")}
@@ -1126,8 +1126,8 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
           {target != null && ` / ${formatMoney(target, deal.currency, { compact: true })}`}
         </span>
       </div>
-      {mismatch && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: 5 }}>{t("tranches.mismatch")}</p>}
-      <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+      {mismatch && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: 4 }}>{t("tranches.mismatch")}</p>}
+      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
         <button onClick={save} disabled={busy || mismatch}
           style={{ background: "var(--cr-ink)", border: "none", color: "var(--cr-paper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "4px 12px", cursor: busy || mismatch ? "not-allowed" : "pointer", opacity: busy || mismatch ? 0.5 : 1 }}>
           {t("tranches.save")}
@@ -1178,8 +1178,8 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
   const canReceive = viewAs === "startup";
 
   return (
-    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: allIn ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           {allIn ? t("tranches.fundedTitle") : t("tranches.title")}
         </p>
@@ -1188,14 +1188,14 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
         </span>
       </div>
       {rows.map((r, i) => (
-        <div key={r.id} style={{ padding: "6px 0", borderTop: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
+        <div key={r.id} style={{ padding: "8px 0", borderTop: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: r.funds_received_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: r.funds_received_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
               {r.funds_received_at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
               <span style={{ fontWeight: 600 }}>{r.label || t("tranches.nth", { n: i + 1 })}</span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)" }}>{formatMoney(Number(r.amount), deal.currency, { compact: true })}</span>
             </span>
-            <span style={{ display: "inline-flex", gap: 5 }}>
+            <span style={{ display: "inline-flex", gap: 4 }}>
               {!r.funds_sent_at && canSend && (
                 <button onClick={() => confirm(r, "sent")} disabled={busy === r.id}
                   style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "2px 8px", cursor: "pointer" }}>
@@ -1219,7 +1219,7 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
         </div>
       ))}
       {!allIn && (
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: 7, lineHeight: 1.45 }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: 8, lineHeight: 1.45 }}>
           {t("funding.fraudWarning")}
         </p>
       )}
@@ -1241,7 +1241,7 @@ function PublicInterestToggle({ deal }: { deal: Deal }) {
     if (!res.ok) { setOn(!next); notify.error(t("errors.generic")); }
   }
   return (
-    <label style={{ display: "flex", alignItems: "flex-start", gap: "7px", marginTop: "8px", cursor: "pointer" }}>
+    <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginTop: "8px", cursor: "pointer" }}>
       <input type="checkbox" checked={on} onChange={toggle} disabled={busy} style={{ marginTop: 2, accentColor: "var(--cr-copper)", width: 13, height: 13 }} />
       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.45 }}>
         {t("coInvestors.toggle")}
@@ -1282,21 +1282,21 @@ function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; on
     onCreated(); onClose();
   }
 
-  const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 11px", outline: "none" };
+  const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none" };
   return (
     <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: 16 }} onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="animate-fade-up"
         style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, width: "100%", maxWidth: 420, padding: 24 }}>
         <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: 22, color: "var(--cr-ink)", marginBottom: 4 }}>{t("external.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", marginBottom: 16, lineHeight: 1.5 }}>{t("external.intro")}</p>
-        <div style={{ display: "grid", gap: 10 }}>
+        <div style={{ display: "grid", gap: 12 }}>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("external.namePh")} autoFocus maxLength={120} style={input} />
           <input value={firm} onChange={(e) => setFirm(e.target.value)} placeholder={t("external.firmPh")} maxLength={120} style={input} />
           <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("external.emailPh")} maxLength={254} style={input} />
           <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" placeholder={t("external.amountPh")} style={input} />
           <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder={t("external.notePh")} maxLength={1000} style={{ ...input, resize: "vertical" }} />
         </div>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", margin: "10px 0 0", lineHeight: 1.5 }}>{t("external.privacyNote")}</p>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", margin: "12px 0 0", lineHeight: 1.5 }}>{t("external.privacyNote")}</p>
         <div className="flex flex-col-reverse sm:flex-row" style={{ gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
           <button onClick={onClose} style={{ height: 40, padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: 999, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 13, color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
           <button onClick={submit} disabled={!name.trim() || busy} className="btn-copper-shimmer"
@@ -1434,17 +1434,17 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
   }
 
   return (
-    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "8px" }}>
         {t("deals.checklist")}{items && items.length > 0 ? ` · ${doneCount}/${items.length}` : ""}
       </p>
       {items !== null && items.length === 0 && STAGE_CHECKLIST_KEYS[stage] && (
         <button onClick={seedStageChecklist} disabled={seeding}
-          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-copper-bg)", border: "1px dashed var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "7px 0", cursor: "pointer", marginBottom: "8px", opacity: seeding ? 0.6 : 1 }}>
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "var(--cr-copper-bg)", border: "1px dashed var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", padding: "8px 0", cursor: "pointer", marginBottom: "8px", opacity: seeding ? 0.6 : 1 }}>
           <Plus style={{ width: 11, height: 11 }} /> {seeding ? t("common.saving") : t("deals.seedChecklist")}
         </button>
       )}
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {(items ?? []).map(i => {
           const overdue = !i.done && i.due_date && new Date(i.due_date) < new Date();
           return (
@@ -1454,45 +1454,45 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
               <button onClick={() => setExpanded(x => x === i.id ? null : i.id)}
                 style={{ flex: 1, textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: i.done ? "var(--cr-ink-4)" : "var(--cr-ink-2)", textDecoration: i.done ? "line-through" : "none" }}>
                 {i.label}
-                {i.owner_side && <span style={{ marginLeft: 6, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--cr-ink-4)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
-                {i.due_date && <span style={{ marginLeft: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: overdue ? "var(--cr-down)" : "var(--cr-ink-4)" }}>{i.due_date}</span>}
+                {i.owner_side && <span style={{ marginLeft: 8, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--cr-ink-4)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
+                {i.due_date && <span style={{ marginLeft: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: overdue ? "var(--cr-down)" : "var(--cr-ink-4)" }}>{i.due_date}</span>}
               </button>
               <button onClick={() => remove(i.id)} aria-label={`remove ${i.label}`}
                 style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "12px", lineHeight: 1, padding: 0 }}>×</button>
             </div>
             {expanded === i.id && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", padding: "6px 0 8px 24px" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", padding: "8px 0 8px 24px" }}>
                 <select value={i.owner_side ?? ""} onChange={e => patchItem(i.id, { ownerSide: e.target.value || null })} aria-label={t("checklist.owner")}
-                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "3px 5px" }}>
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "3px 4px" }}>
                   <option value="">{t("checklist.owner")}</option>
                   <option value="investor">{t("checklist.ownerInvestor")}</option>
                   <option value="startup">{t("checklist.ownerStartup")}</option>
                 </select>
                 <input type="date" value={i.due_date ?? ""} onChange={e => patchItem(i.id, { dueDate: e.target.value || null })} aria-label={t("checklist.due")}
-                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", padding: "2px 5px" }} />
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", padding: "2px 4px" }} />
                 <input defaultValue={i.evidence ?? ""} placeholder={t("checklist.evidencePh")} maxLength={500}
                   onBlur={e => { if ((e.target.value || null) !== (i.evidence ?? null)) patchItem(i.id, { evidence: e.target.value }); }}
-                  style={{ flex: 1, minWidth: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "3px 7px", outline: "none" }} />
+                  style={{ flex: 1, minWidth: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "3px 8px", outline: "none" }} />
               </div>
             )}
           </div>
           );
         })}
       </div>
-      <div style={{ display: "flex", gap: "6px", marginTop: "8px" }}>
+      <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
         <input value={label} onChange={e => setLabel(e.target.value)} maxLength={200} placeholder={t("deals.addItem")}
           onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
-          style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "6px 9px", outline: "none" }} />
+          style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none" }} />
         <button onClick={add} disabled={!label.trim()}
-          style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "6px 10px", cursor: "pointer", opacity: label.trim() ? 1 : 0.5 }}>
+          style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "8px 12px", cursor: "pointer", opacity: label.trim() ? 1 : 0.5 }}>
           {t("deals.checkAdd")}
         </button>
       </div>
       {viewAs === "investor" && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "8px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginTop: "8px" }}>
           {templates.length > 0 && (
             <select defaultValue="" onChange={e => { if (e.target.value) { applyTemplate(e.target.value); e.target.value = ""; } }} aria-label={t("checklist.applyTemplate")}
-              style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 6px", cursor: "pointer" }}>
+              style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 8px", cursor: "pointer" }}>
               <option value="">{t("checklist.applyTemplate")}</option>
               {templates.map(tp => <option key={tp.id} value={tp.id}>{tp.name}</option>)}
             </select>
@@ -1552,17 +1552,17 @@ function ActivitySection({ dealId }: { dealId: string }) {
   }
 
   return (
-    <div style={{ marginTop: "10px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <button onClick={toggle}
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           {t("deals.activity")}{loaded && activity.length > 0 ? ` (${activity.length})` : ""}
         </span>
         <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }} />
       </button>
 
       {open && (
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "12px" }}>
           {loading && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>}
           {!loading && loaded && activity.length === 0 && (
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noActivity")}</p>
@@ -1592,9 +1592,9 @@ function ActivitySection({ dealId }: { dealId: string }) {
                   body = `${LBL[from] ?? from} → ${LBL[to] ?? to}${notePart ? ` · ${notePart}` : ""}`;
                 }
                 return (
-                  <div key={a.id} style={{ position: "relative", padding: "6px 0" }}>
+                  <div key={a.id} style={{ position: "relative", padding: "8px 0" }}>
                     <span aria-hidden style={{ position: "absolute", left: -16, top: 12, width: 8, height: 8, borderRadius: "50%", background: DOT[a.type] ?? "var(--cr-ink-4)", border: "2px solid var(--cr-paper-2)" }} />
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)" }}>
                         {t(ACTIVITY_ICON_KEY[a.type])}
                         {a.actor?.full_name ? ` · ${a.actor.full_name}` : ""}
@@ -1612,10 +1612,10 @@ function ActivitySection({ dealId }: { dealId: string }) {
             </div>
           )}
 
-          <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
+          <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
             <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder={t("deals.addNotePlaceholder")}
               onKeyDown={e => { if (e.key === "Enter") handleAddNote(); }}
-              style={{ flex: 1, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none", boxSizing: "border-box" }} />
+              style={{ flex: 1, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box" }} />
             <button onClick={handleAddNote} disabled={!note.trim() || posting}
               style={{ background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", padding: "0 12px", cursor: !note.trim() || posting ? "default" : "pointer", opacity: !note.trim() || posting ? 0.5 : 1 }}>
               {posting ? t("deals.posting") : t("deals.addNote")}
@@ -1651,7 +1651,7 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
   }
 
   return (
-    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+    <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-down)", marginBottom: "8px" }}>{t("deals.whyPassed")}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
         {PASSED_REASONS.map(r => (
@@ -1660,7 +1660,7 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
               background: selected === r.key ? "var(--cr-copper-bg)" : "var(--cr-paper-2)",
               border: `1px solid ${selected === r.key ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`,
               borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-              color: selected === r.key ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "5px 11px", cursor: "pointer",
+              color: selected === r.key ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "4px 12px", cursor: "pointer",
             }}>
             {t(r.labelKey)}
           </button>
@@ -1669,9 +1669,9 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
       {selected === "other" && (
         <input type="text" value={detail} onChange={e => setDetail(e.target.value)} placeholder={t("deals.passedReasonOtherPlaceholder")}
           autoFocus
-          style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none", boxSizing: "border-box", marginBottom: "8px" }} />
+          style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box", marginBottom: "8px" }} />
       )}
-      <div style={{ display: "flex", gap: "6px" }}>
+      <div style={{ display: "flex", gap: "8px" }}>
         {/* Quiet outline, not a solid red fill -- red is a money direction,
             and the view already has its one primary action. */}
         <button onClick={handleConfirm} disabled={!canConfirm}
@@ -1781,7 +1781,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
         color: masked ? "var(--cr-ink-4)" : "var(--cr-ink)",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        display: "flex", alignItems: "center", gap: "5px",
+        display: "flex", alignItems: "center", gap: "4px",
       }}>
         {masked && <Lock style={{ width: 11, height: 11, flexShrink: 0 }} />}
         {counterpartHref ? (
@@ -1791,7 +1791,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         ) : name}
         {/* B18: say plainly that this one is not on the platform. */}
         {isExternal && (
-          <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 5px" }}>
+          <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 4px" }}>
             {t("external.badge")}
           </span>
         )}
@@ -1802,12 +1802,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </a>
       )}
       {deal.amount != null && (
-        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginTop: "4px", display: "flex", alignItems: "baseline", gap: "5px" }}>
+        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginTop: "4px", display: "flex", alignItems: "baseline", gap: "4px" }}>
           {formatMoney(deal.amount, deal.currency, { compact: true })}
           <span style={{ fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
         </p>
       )}
-      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
         {formatDate(deal.updated_at)}
 
         {/* Time in the current stage, which is the question a pipeline review
@@ -1832,7 +1832,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               color: critical ? "var(--cr-down)" : over ? "var(--cr-copper)" : "var(--cr-ink-3)",
               background: critical ? "var(--cr-down-bg)" : over ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
               border: critical ? "1px solid var(--cr-down-bg)" : over ? "1px solid var(--cr-copper-br)" : "none",
-              borderRadius: "3px", padding: "1px 6px",
+              borderRadius: "3px", padding: "1px 8px",
             }}>
               {t("deals.inStageFor", { n: days })}
             </span>
@@ -1840,7 +1840,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         })()}
 
         {isActive && daysSince(deal.updated_at) > 21 && (
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "3px", padding: "1px 6px" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "3px", padding: "1px 8px" }}>
             {t("deals.staleBadge", { n: daysSince(deal.updated_at) })}
           </span>
         )}
@@ -1848,7 +1848,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {/* Quick-move buttons */}
       {onStatusChange && isActive && !showPassedPicker && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "12px" }}>
           {validMoves(deal.status).map((s) => (
             <button key={s} onClick={() => {
                 if (s === "passed") { setShowPassedPicker(true); return; }
@@ -1876,7 +1876,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           allow, muddying the history. Closed stays terminal on purpose: it has
           raised an invoice. */}
       {onStatusChange && deal.status === "passed" && (
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "12px" }}>
           <button onClick={() => onStatusChange(deal.id, "intro")}
             style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
             ↺ {t("deals.reopen")}
@@ -1917,7 +1917,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           Collapsed by default. The card shows who, how much, and how long it
           has been sitting; the rest opens on demand. */}
       <button onClick={() => setExpanded(v => !v)}
-        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, marginTop: "10px",
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, marginTop: "12px",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)",
           display: "flex", alignItems: "center", gap: "4px" }}
         aria-expanded={expanded}>
@@ -1942,7 +1942,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         });
         return (
           <div style={{ marginTop: "8px" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "5px" }}>{t("deals.commitmentLabel")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{t("deals.commitmentLabel")}</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
               <InfoTip termKey="glossary.softCircle" />
               {(["interest", "soft_circle", "verbal", "committed"] as CommitmentType[]).map((c) => (
@@ -1957,11 +1957,11 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {/* Follow-up date */}
       {onSetFollowUp && (
-        <div style={{ marginTop: "6px" }}>
+        <div style={{ marginTop: "8px" }}>
           {editingFollowUp ? (
-            <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <input type="date" value={followUpDraft} onChange={e => setFollowUpDraft(e.target.value)}
-                style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 6px", outline: "none" }} />
+                style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
               <button onClick={() => { onSetFollowUp(deal.id, followUpDraft || null); setEditingFollowUp(false); }}
                 style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
                 {t("deals.save")}
@@ -1991,13 +1991,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {/* A pending close proposal — both sides must agree before the fee fires. */}
       {isActive && onDealClose && !showCloseForm && deal.close_proposed_at && (
-        <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-copper-br)", paddingTop: "10px" }}>
+        <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-copper-br)", paddingTop: "12px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", marginBottom: "2px" }}>
             {t("deals.closeProposedAt", { amount: formatMoney(Number(deal.close_proposed_amount ?? 0), deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY) })}
           </p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.closeProposedHint")}</p>
           <button onClick={() => setShowCloseForm(true)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "8px 0", cursor: "pointer" }}>
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "8px 0", cursor: "pointer" }}>
             <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.reviewClose")}
           </button>
         </div>
@@ -2007,27 +2007,27 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           contract lives, not from the middle of a conversation. */}
       {isActive && deal.status === "term_sheet" && onDealClose && !showCloseForm && !deal.close_proposed_at && (
         <button onClick={() => setShowCloseForm(true)}
-          style={{ marginTop: "12px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "8px 0", cursor: "pointer" }}>
+          style={{ marginTop: "12px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-up)", padding: "8px 0", cursor: "pointer" }}>
           <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.closeDeal")}
         </button>
       )}
 
       {/* Close form */}
       {showCloseForm && (
-        <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "10px" }}>
+        <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", marginBottom: "8px" }}>{deal.close_proposed_at ? t("deals.confirmClose") : t("deals.proposeClose")}</p>
-          <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
+          <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
             <div style={{ position: "relative", flex: 1 }}>
               <span style={{ position: "absolute", left: "9px", top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)", pointerEvents: "none" }}>
                 {getCurrency(closeCurrency).symbol}
               </span>
               <input type="number" placeholder={t("deals.amountRaisedPlaceholder")}
                 value={closeAmount} onChange={e => setCloseAmount(e.target.value)}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "34px", paddingRight: "10px", paddingTop: "6px", paddingBottom: "6px", outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "34px", paddingRight: "12px", paddingTop: "8px", paddingBottom: "8px", outline: "none", boxSizing: "border-box" }} />
             </div>
             <select value={closeCurrency} onChange={e => setCloseCurrency(e.target.value)}
               aria-label={t("deals.currency")}
-              style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "6px 8px", outline: "none", cursor: "pointer" }}>
+              style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", cursor: "pointer" }}>
               {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
             </select>
           </div>
@@ -2047,13 +2047,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               </p>
             </div>
           )}
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
             {t("deals.feeNotice")}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "10px", lineHeight: 1.5 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px", lineHeight: 1.5 }}>
             {t("deals.moneyWorks")}
           </p>
-          <div style={{ display: "flex", gap: "6px" }}>
+          <div style={{ display: "flex", gap: "8px" }}>
             <button onClick={handleClose} disabled={closing}
               style={{ flex: 1, height: "32px", background: "var(--cr-up)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: closing ? 0.6 : 1 }}>
               {closing ? t("deals.closing") : t("deals.confirm")}
@@ -2072,7 +2072,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {deal.status === "closed" && <FundingBlock deal={deal} viewAs={viewAs} />}
 
       {deal.success_fee_invoiced && (
-        <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
+        <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px" }}>
           {t("deals.invoiceSent")}
         </span>
       )}
@@ -2311,13 +2311,13 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const newDealButton = (
     <div style={{ display: "inline-flex", gap: "8px", flexWrap: "wrap" }}>
       <button onClick={() => setShowNewDeal(true)}
-        style={{ display: "inline-flex", alignItems: "center", gap: "6px", height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "0 16px", cursor: "pointer" }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "0 16px", cursor: "pointer" }}>
         <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
       </button>
       {/* B18: founders only — an off-platform contact belongs to a startup. */}
       {viewAs === "startup" && (
         <button onClick={() => setShowExternal(true)}
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px", height: "40px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "0 16px", cursor: "pointer" }}>
+          style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "40px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "0 16px", cursor: "pointer" }}>
           <Plus style={{ width: 14, height: 14 }} /> {t("external.button")}
         </button>
       )}
@@ -2339,7 +2339,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     return (
       <div>
         <div style={{ overflowX: "auto", marginBottom: 8 }}>
-          <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
+          <div style={{ display: "flex", gap: "16px", minWidth: "max-content", paddingBottom: "8px" }}>
             <DealProposals variant="column" onChanged={onProposalsChanged} />
           </div>
         </div>
@@ -2393,7 +2393,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           Two rows now. The things you act WITH stay put on the first row;
           the filters, whose number varies, wrap on their own below and move
           nothing. */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
         <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder={t("deals.filterSearchPlaceholder")}
           style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", height: "40px", padding: "0 12px", boxSizing: "border-box", outline: "none", flex: "1 1 200px", minWidth: "160px", maxWidth: "320px" }} />
         <div style={{ flex: 1 }} />
@@ -2437,7 +2437,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
               background: statusFilter === v ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
               border: `1px solid ${statusFilter === v ? "var(--cr-copper-br)" : "var(--cr-rule)"}`,
               borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === v ? 500 : 400, fontSize: "13px",
-              color: statusFilter === v ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap",
+              color: statusFilter === v ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap",
             }}>
             {label}
           </button>
@@ -2449,7 +2449,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
               background: activeFilters.has(v) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
               border: `1px solid ${activeFilters.has(v) ? "var(--cr-copper-br)" : "var(--cr-rule)"}`,
               borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: activeFilters.has(v) ? 500 : 400, fontSize: "13px",
-              color: activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "6px 14px", cursor: "pointer", whiteSpace: "nowrap",
+              color: activeFilters.has(v) ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap",
             }}>
             {chipLabel(v)}
           </button>
@@ -2464,7 +2464,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
 
       {viewMode === "kanban" ? (
         <div style={{ overflowX: "auto" }}>
-          <div style={{ display: "flex", gap: "14px", minWidth: "max-content", paddingBottom: "8px" }}>
+          <div style={{ display: "flex", gap: "16px", minWidth: "max-content", paddingBottom: "8px" }}>
             {/* Stage zero. A deal's life starts as a REQUEST — it deserves a
                 column, not a banner: Proposal → Talking → Negotiation →
                 Final proposal → Finalised, left to right. */}
@@ -2529,7 +2529,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             <thead>
               <tr style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
                 {[t("deals.csvCounterpart"), t("deals.listStageOrType"), t("deals.csvAmount"), t("deals.csvStatus"), t("deals.sortFollowUp"), t("deals.csvUpdated")].map(h => (
-                  <th key={h} style={{ textAlign: "left", padding: "8px 10px", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                  <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -2540,12 +2540,12 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                 const stageOrType = viewAs === "startup" ? d.investor?.type : d.startup?.stage;
                 return (
                   <tr key={d.id} id={`deal-${d.id}`} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                    <td style={{ padding: "8px 10px", color: "var(--cr-ink)" }}>{name}</td>
-                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)" }}>{stageOrType ? chipLabel(String(stageOrType)) : "—"}</td>
-                    <td style={{ padding: "8px 10px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>
-                    <td style={{ padding: "8px 10px" }}><span style={colBadgeStyle(d.status, 0)}>{columns.find(c => c.status === d.status)?.label}</span></td>
-                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-3)", fontFamily: "'JetBrains Mono', monospace" }}>{d.next_follow_up ? formatDate(d.next_follow_up) : "—"}</td>
-                    <td style={{ padding: "8px 10px", color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(d.updated_at)}</td>
+                    <td style={{ padding: "8px 12px", color: "var(--cr-ink)" }}>{name}</td>
+                    <td style={{ padding: "8px 12px", color: "var(--cr-ink-3)" }}>{stageOrType ? chipLabel(String(stageOrType)) : "—"}</td>
+                    <td style={{ padding: "8px 12px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>
+                    <td style={{ padding: "8px 12px" }}><span style={colBadgeStyle(d.status, 0)}>{columns.find(c => c.status === d.status)?.label}</span></td>
+                    <td style={{ padding: "8px 12px", color: "var(--cr-ink-3)", fontFamily: "'JetBrains Mono', monospace" }}>{d.next_follow_up ? formatDate(d.next_follow_up) : "—"}</td>
+                    <td style={{ padding: "8px 12px", color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(d.updated_at)}</td>
                   </tr>
                 );
               })}

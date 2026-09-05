@@ -5,7 +5,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
  *
  * The static chrome renders immediately at the dashboard's TRUE geometry --
  * the copper ruled bar, the serif h1 line box, the header action frames, the
- * four stat-cell frames, and the tab bar with its copper active underline.
+ * four stat-cell frames, the tab bar with its copper active underline, and
+ * the engagement panel frame above the watchlist grid.
  * Only the data is suppressed: quiet paper-3 slugs hold the place of text,
  * and a mono dash holds the place of every number, which is exactly how the
  * live dashboard writes absence.
@@ -20,6 +21,12 @@ const ACTION_WIDTHS = [72, 56, 64];
 // The watchlist grid previews a plausible shelf of saved companies, not six
 // identical gray towers: card heights vary the way real listings do.
 const CARD_HEIGHTS = [232, 248, 220, 240, 228, 244];
+
+// The engagement panel previews its real shape -- a header line with two
+// mono stats, then viewer rows split by hairline rules. Name slugs vary in
+// width the way real names do; every number is a mono dash.
+const PANEL_STAT_WIDTHS = [56, 72];
+const VIEWER_ROW_WIDTHS = [148, 180, 124];
 
 const monoDash: React.CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace",
@@ -93,9 +100,31 @@ export default function Loading() {
           ))}
         </div>
 
-        {/* Watchlist region: one full-width activity block above the saved
-            count line, then the card grid at its true 260px column floor. */}
-        <Skeleton h="120px" className="mb-6" />
+        {/* Watchlist region at the tab's true geometry: the engagement panel
+            frame (header line, then viewer rows split by hairline rules)
+            above the saved count line, then the card grid at its true 260px
+            column floor. The frame is real chrome; its contents are data. */}
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
+            <span style={{ height: "17px", display: "flex", alignItems: "center" }}>
+              <Skeleton w="128px" h="11px" />
+            </span>
+            <span style={{ display: "flex", alignItems: "baseline", gap: "16px" }}>
+              {PANEL_STAT_WIDTHS.map((w, i) => (
+                <span key={i} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px" }}>
+                  <span style={{ ...monoDash, fontSize: "14px" }} aria-hidden>{"—"}</span>
+                  <Skeleton w={`${w}px`} h="9px" />
+                </span>
+              ))}
+            </span>
+          </div>
+          {VIEWER_ROW_WIDTHS.map((w, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "7px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+              <Skeleton w={`${w}px`} h="11px" />
+              <span style={{ ...monoDash, fontWeight: 300, fontSize: "10px" }} aria-hidden>{"—"}</span>
+            </div>
+          ))}
+        </div>
         <div style={{ height: "20px", display: "flex", alignItems: "center", marginBottom: "16px" }}>
           <Skeleton w="104px" h="13px" />
         </div>

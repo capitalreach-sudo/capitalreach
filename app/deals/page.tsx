@@ -58,9 +58,9 @@ export default async function DealsPage() {
       <>
         <Navbar />
         <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
               {t("deals.yourDeals")}
             </h1>
             <DealsPortalClient
@@ -106,9 +106,9 @@ export default async function DealsPage() {
       <>
         <Navbar />
         <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
               {t("deals.yourDeals")}
             </h1>
             <DealsPortalClient
@@ -135,7 +135,7 @@ export default async function DealsPage() {
     // "Every deal across every startup and investor" was a promise this page
     // could not keep: there are no admin RLS policies on deals, so reading
     // through the admin's own session returned only the deals they personally
-    // participate in — an empty page on a platform with 42 of them. The read
+    // participate in -- an empty page on a platform with 42 of them. The read
     // has to bypass RLS, so the role is re-verified with the service role
     // rather than trusted from the session read above.
     const resolved = await resolveAdmin();
@@ -146,7 +146,7 @@ export default async function DealsPage() {
       .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name, is_external)")
       .order("updated_at", { ascending: false })
       // 250 most-recent: the board previews columns and the list paginates
-      // visually anyway — 500 rows of joined JSON was pure transfer weight.
+      // visually anyway -- 500 rows of joined JSON was pure transfer weight.
       .limit(250);
 
     // The operator who is ALSO a participant (an admin with their own
@@ -166,9 +166,9 @@ export default async function DealsPage() {
       <>
         <Navbar />
         <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px 64px" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "8px" }}>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "8px" }}>
               {t("deals.allDeals")}
             </h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
@@ -187,9 +187,12 @@ export default async function DealsPage() {
     <>
       <Navbar />
       <main style={{ background: "var(--cr-paper)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", padding: "100px 24px" }}>
-          {t("deals.availableTo")}
-        </p>
+        <div style={{ padding: "96px 24px", textAlign: "center" }}>
+          <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "14px", marginBottom: "12px" }}>✦</span>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>
+            {t("deals.availableTo")}
+          </p>
+        </div>
       </main>
       <Footer />
     </>

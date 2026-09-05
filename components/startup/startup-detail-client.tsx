@@ -89,7 +89,7 @@ type Tab = typeof TABS[number];
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{title}</h3>
+      <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{title}</h3>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.7 }}>{children}</p>
     </div>
   );
@@ -162,7 +162,7 @@ function SharePicker({ startupId }: { startupId: string }) {
         <Share2 style={{ width: 13, height: 13 }} /> {t("startupDetail.shareWith")}
       </button>
       {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "260px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "10px", zIndex: 55 }}>
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "260px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: "10px", zIndex: 55 }}>
           <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder={t("startupDetail.shareSearchPh")}
             style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
           <textarea value={shareNote} onChange={e => setShareNote(e.target.value.slice(0, 2000))} rows={2} placeholder={t("startupDetail.shareNotePh")}
@@ -347,7 +347,7 @@ function ScorecardPanel({ startupId }: { startupId: string }) {
   return (
     <div style={{ marginTop: "8px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("scorecard.title")}</h3>
+        <h3 className="ruled-label">{t("scorecard.title")}</h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {total != null && (
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "16px", color: "var(--cr-copper)" }}>{total}<span style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>/100</span></span>
@@ -357,7 +357,7 @@ function ScorecardPanel({ startupId }: { startupId: string }) {
           </button>
         </div>
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("scorecard.privateHint")}</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("scorecard.privateHint")}</p>
       {open && (
         <div style={{ marginTop: "10px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 16px" }}>
           {SCORECARD_CRITERIA.map((k) => (
@@ -377,7 +377,7 @@ function ScorecardPanel({ startupId }: { startupId: string }) {
           ))}
           <textarea value={note} onChange={(e) => { setNote(e.target.value.slice(0, 2000)); persist(scores, weights, e.target.value.slice(0, 2000)); }}
             rows={2} placeholder={t("scorecard.notePh")}
-            style={{ width: "100%", boxSizing: "border-box", marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
+            style={{ width: "100%", boxSizing: "border-box", marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
         </div>
       )}
     </div>
@@ -429,13 +429,13 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
           if (res.ok) { setDone(true); notify.success(t("startupDetail.answered")); }
           else notify.error(t("errors.generic"));
         }}
-        style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+        style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.answerSend")}
       </button>
     </div>
     {/* B20: private answers — the asker and you only. Public is the default,
         because answered questions are the listing's living FAQ. */}
-    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)" }}>
+    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
       <input type="checkbox" checked={priv} onChange={e => setPriv(e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
       {t("startupDetail.answerPrivately")}
     </label>
@@ -684,7 +684,7 @@ export function StartupDetailClient({
 
       {/* ── Editorial hero ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 36px" }}>
+        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "40px", paddingBottom: "36px" }}>
 
           {/* Back link */}
           <Link href="/startups" style={{
@@ -776,7 +776,7 @@ export function StartupDetailClient({
                     {startup.industry}
                   </span>
                   <span style={{ background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    {STAGE_LABELS[startup.stage] ?? startup.stage}
+                    {STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " ")}
                   </span>
                   {/* Same model as the browse card (lib/round-close), so the
                       two surfaces cannot disagree about "closing soon". */}
@@ -796,7 +796,7 @@ export function StartupDetailClient({
                   )}
                   {viewerCount > 1 && (
                     <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-                      <Eye style={{ width: 11, height: 11 }} /> {viewerCount} viewing
+                      <Eye style={{ width: 11, height: 11 }} /> <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-3)" }}>{viewerCount}</span> viewing
                     </span>
                   )}
                   {score != null && (
@@ -908,7 +908,7 @@ export function StartupDetailClient({
                 {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
                   <button onClick={startInterest}
                     className="btn-copper-shimmer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer" }}>
+                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 18px", cursor: "pointer" }}>
                     <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.expressInterest")}
                   </button>
                 )}
@@ -982,7 +982,7 @@ export function StartupDetailClient({
       </div>
 
       {/* ── Body ── */}
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "32px 40px 64px" }}>
+      <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "32px", paddingBottom: "64px" }}>
 
         {/* AI report CTA */}
         {canAi && !aiReport && (
@@ -995,14 +995,14 @@ export function StartupDetailClient({
               </div>
             </div>
             <button onClick={generateAiReport} disabled={generatingReport}
-              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
+              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
               {generatingReport ? t("startupDetail.generating") : t("startupDetail.generateReport")}
             </button>
             {/* C29: your own questions, answered in their own section. The
                 report reads the data-room files you are entitled to open. */}
             <textarea value={ddQuestions} onChange={(e) => setDdQuestions(e.target.value.slice(0, 1500))} rows={2}
               placeholder={t("startupDetail.ddQuestionsPh")}
-              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", resize: "vertical" }} />
+              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", resize: "vertical" }} />
           </div>
         )}
 
@@ -1017,7 +1017,7 @@ export function StartupDetailClient({
             {/* What the model could actually read. A report that silently
                 skipped the financial model must not look complete. */}
             {ddSources && (ddSources.read.length > 0 || ddSources.skipped.length > 0) && (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginBottom: "12px", lineHeight: 1.5 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "12px", lineHeight: 1.5 }}>
                 {ddSources.read.length > 0
                   ? t("startupDetail.ddRead", { docs: ddSources.read.join(", ") })
                   : t("startupDetail.ddReadNone")}
@@ -1060,7 +1060,7 @@ export function StartupDetailClient({
             {/* Market sizing — only when at least one figure exists (never an empty card). */}
             {(startup.tam || startup.sam || startup.som) ? (
               <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("startupDetail.marketOpportunity")}</h3>
+                <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("startupDetail.marketOpportunity")}</h3>
                 <div className="grid grid-cols-3" style={{ gap: "10px" }}>
                   {([["TAM", startup.tam], ["SAM", startup.sam], ["SOM", startup.som]] as Array<[string, number | null | undefined]>).map(([k, v]) => (
                     <div key={k} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
@@ -1185,7 +1185,7 @@ export function StartupDetailClient({
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: q.answer ? "8px" : "8px" }}>
                           {t("startupDetail.askedBy")}{" "}
                           <Link href={`/investors/${q.asker.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none", fontWeight: 500 }}>{q.asker.name || t("deals.investorFallback")}</Link>
-                          {" · "}{formatDate(q.created_at)}
+                          {" · "}<span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400 }}>{formatDate(q.created_at)}</span>
                         </p>
                       )}
                       {q.answer ? (
@@ -1242,17 +1242,17 @@ export function StartupDetailClient({
               const cur = interestCurrency;
               const cell = (label: string, value: string, note?: string, termKey?: string) => (
                 <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(15px, 2.4vw, 19px)", color: "var(--cr-copper)" }}>{value}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(15px, 2.4vw, 20px)", color: "var(--cr-copper)" }}>{value}</div>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>
                     {label}
                     {termKey && <InfoTip termKey={termKey} />}
                   </div>
-                  {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
+                  {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
                 </div>
               );
               return (
                 <div>
-                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("round.title")}</h3>
+                  <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("round.title")}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "10px" }}>
                     {post !== null && cell(isImplied ? t("round.impliedPost") : t("round.postMoney"), formatMoney(post, cur, { compact: true }), isImplied ? t("round.impliedNote") : undefined, "glossary.preMoney")}
                     {pre !== null && cell(t("round.preMoney"), formatMoney(pre, cur, { compact: true }), undefined, "glossary.preMoney")}
@@ -1261,7 +1261,7 @@ export function StartupDetailClient({
                     {st.safe_cap ? cell(t("round.cap"), formatMoney(st.safe_cap, cur, { compact: true }), st.safe_discount ? `${st.safe_discount}% ${t("round.discountShort")}` : undefined, "glossary.safe") : null}
                   </div>
                   {st.instrument && (
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
                       {t(st.instrument === "safe" ? "round.safe" : st.instrument === "convertible_note" ? "round.note" : "round.equity")}
                     </p>
                   )}
@@ -1278,7 +1278,7 @@ export function StartupDetailClient({
                 {!isOwner && !viewerIsAdmin && <RiskWarning />}
                   {/* Owners see the contradiction before investors do. */}
                   {isOwner && gap !== null && gap > 0.5 && (
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11.5px", color: "var(--cr-down)", marginTop: "8px", lineHeight: 1.5 }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-down)", marginTop: "8px", lineHeight: 1.5 }}>
                       {t("round.mismatch", { stated: String(startup.equity_offered), implied: (impliedDilutionPct(inputs) ?? 0).toFixed(1) })}
                     </p>
                   )}
@@ -1290,13 +1290,13 @@ export function StartupDetailClient({
                 at close, and nothing before. Investors see their share of it on
                 their own check size (it is zero); founders see 2% vs a broker. */}
             <div style={{ marginTop: "8px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px", letterSpacing: "-0.01em" }}>{t("feeCalc.sectionTitle")}</h3>
+              <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("feeCalc.sectionTitle")}</h3>
               <FeeCalculator
                 variant={isOwner ? "raise" : "check"}
                 currency={interestCurrency}
                 defaultAmount={isOwner ? (startup.funding_target ?? 500_000) : (startup.min_check_size ?? 50_000)}
               />
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "8px", lineHeight: 1.5 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "8px", lineHeight: 1.5 }}>
                 {t("feeCalc.detailNote")}
               </p>
             </div>
@@ -1325,7 +1325,7 @@ export function StartupDetailClient({
         {activeTab === "team" && canTeam && !identityRevealed && startup.founders && startup.founders.length > 0 && (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", marginBottom: "14px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
             <Lock style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12.5px", color: "var(--cr-ink-2)", lineHeight: 1.5 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.5 }}>
               {t("startupDetail.identityProtected")}{" "}
               {investorId && !viewerDeal && !viewerSuspended && (
                 <button onClick={startInterest} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--cr-copper)" }}>
@@ -1428,9 +1428,9 @@ export function StartupDetailClient({
                     ))}
                   </div>
                 </div>
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(245,240,232,0.95) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "20px" }}>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, color-mix(in srgb, var(--cr-paper) 95%, transparent) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "20px" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("startupDetail.signUpPitchDeck")}</p>
-                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "9px 22px", borderRadius: "4px", textDecoration: "none" }}>
+                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "9px 22px", borderRadius: "4px", textDecoration: "none" }}>
                     {t("startupDetail.createFreeAccount")} →
                   </Link>
                 </div>
@@ -1466,12 +1466,12 @@ export function StartupDetailClient({
                       ) : (
                         (doc.is_pdf ?? /\.pdf(\?|$)/i.test(doc.file_url)) ? (
                           <button onClick={() => { trackDoc(doc.id); setViewerDoc({ url: doc.file_url, label: doc.label }); }}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", cursor: "pointer" }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "7px 14px", cursor: "pointer" }}>
                             <Eye style={{ width: 11, height: 11 }} /> {t("common.view")}
                           </button>
                         ) : (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer" onClick={() => trackDoc(doc.id)}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", textDecoration: "none" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "7px 14px", textDecoration: "none" }}>
                           <ExternalLink style={{ width: 11, height: 11 }} /> {t("common.view")}
                         </a>
                         )
@@ -1489,7 +1489,7 @@ export function StartupDetailClient({
 
         {viewerDoc && (
           <div role="dialog" aria-modal="true" aria-label={viewerDoc.label} style={{ position: "fixed", inset: 0, zIndex: 80 }}>
-            <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.6)" }} onClick={() => setViewerDoc(null)} />
+            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setViewerDoc(null)} />
             <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", width: "min(94vw, 900px)", height: "92vh", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: "1px solid var(--cr-rule-dark)", flexShrink: 0 }}>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{viewerDoc.label}</span>
@@ -1549,20 +1549,20 @@ export function StartupDetailClient({
 
       {/* ── NDA accept dialog ── */}
       {ndaModalOpen && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "560px", maxHeight: "88vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "22px 26px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startupDetail.ndaTitle")}</h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "24px 24px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startupDetail.ndaTitle")}</h3>
               <button onClick={() => setNdaModalOpen(false)} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}><X style={{ width: 18, height: 18 }} /></button>
             </div>
-            <div style={{ padding: "18px 26px", overflowY: "auto" }}>
+            <div style={{ padding: "16px 24px", overflowY: "auto" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "14px", lineHeight: 1.55 }}>{t("startupDetail.ndaIntro", { name: startup.name })}</p>
-              <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px", margin: 0 }}>{ndaText(startup.name)}</pre>
+              <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px", margin: 0 }}>{ndaText(startup.name)}</pre>
             </div>
-            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "16px 26px 20px", borderTop: "1px solid var(--cr-rule)" }}>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "16px 24px 24px", borderTop: "1px solid var(--cr-rule)" }}>
               <button onClick={() => setNdaModalOpen(false)} style={{ height: "40px", padding: "0 18px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
               <button onClick={acceptNda} disabled={ndaLoading}
-                style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: "pointer", opacity: ndaLoading ? 0.6 : 1 }}>
+                style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: ndaLoading ? 0.6 : 1 }}>
                 {ndaLoading ? t("common.saving") : t("startupDetail.ndaAcceptBtn")}
               </button>
             </div>
@@ -1581,10 +1581,10 @@ export function StartupDetailClient({
 
       {/* ── Message dialog ── */}
       {messageOpen && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "28px", width: "100%", maxWidth: "440px" }}>
+        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", width: "100%", maxWidth: "440px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startupDetail.expressInterest")}</h3>
+              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startupDetail.expressInterest")}</h3>
               <button onClick={() => setMessageOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
@@ -1621,7 +1621,7 @@ export function StartupDetailClient({
               </button>
               <button onClick={expressInterest} disabled={sendingMessage || !messageBody.trim()}
                 className="btn-copper-shimmer"
-                style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer", opacity: sendingMessage || !messageBody.trim() ? 0.5 : 1 }}>
+                style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: sendingMessage || !messageBody.trim() ? 0.5 : 1 }}>
                 {sendingMessage ? t("common.saving") : t("startupDetail.expressInterestBtn")}
               </button>
             </div>
@@ -1657,7 +1657,7 @@ export function StartupDetailClient({
               flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
               height: "44px", minWidth: 0,
               background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer",
             }}
           >
             <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />
@@ -1672,7 +1672,7 @@ export function StartupDetailClient({
               flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
               height: "44px", minWidth: 0, textDecoration: "none",
               background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)",
             }}
           >
             <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />
@@ -1687,14 +1687,14 @@ export function StartupDetailClient({
           the fallback link inside the modal covers those. */}
       {bookingOpen && startup.booking_url && (
         <div role="dialog" aria-modal="true" onClick={() => setBookingOpen(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 90, background: "rgba(26,22,18,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          style={{ position: "fixed", inset: 0, zIndex: 90, background: "var(--cr-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
           <div onClick={e => e.stopPropagation()}
             style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 8, width: "min(920px, 96vw)", height: "min(700px, 90vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)" }}>{t("startupDetail.bookCall")}</span>
               <span style={{ display: "inline-flex", gap: 12, alignItems: "center" }}>
                 <a href={startup.booking_url} target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11.5, color: "var(--cr-copper)" }}>
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 12, color: "var(--cr-copper)" }}>
                   {t("startupDetail.bookInNewTab")} ↗
                 </a>
                 <button onClick={() => setBookingOpen(false)} aria-label={t("common.close")}

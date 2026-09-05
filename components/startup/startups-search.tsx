@@ -176,13 +176,13 @@ function SavedSearches({ filters, onApply, isDefault }: {
 
   return (
     <div style={{ background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule)" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "8px 80px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "8px", paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>
           {t("startups.savedSearches")}
         </span>
 
         {searches.map((s) => (
-          <span key={s.id} style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "20px", padding: "3px 4px 3px 11px" }}>
+          <span key={s.id} style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "3px 4px 3px 11px" }}>
             <button onClick={() => onApply(s.filters)}
               style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: 0 }}>
               {s.name}
@@ -205,7 +205,7 @@ function SavedSearches({ filters, onApply, isDefault }: {
             }}
             maxLength={80}
             placeholder={t("startups.savedSearchNamePlaceholder")}
-            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-copper)", borderRadius: "20px", padding: "4px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none", width: "180px" }}
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-copper)", borderRadius: "999px", padding: "4px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none", width: "180px" }}
           />
         ) : (
           // Saving the default, empty filter set would just create an entry
@@ -263,7 +263,7 @@ function FilterGroup({ label, count, open, onToggle, children }: {
       </button>
       {/* Desktop: a panel anchored under its chip. */}
       {open && (
-        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", padding: "12px", flexWrap: "wrap", gap: "6px", zIndex: 50 }}>
+        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: "12px", flexWrap: "wrap", gap: "6px", zIndex: 50 }}>
           {children}
         </div>
       )}
@@ -278,7 +278,7 @@ function FilterGroup({ label, count, open, onToggle, children }: {
       {open && (
         <div className="lg:hidden">
           <div
-            style={{ position: "fixed", inset: 0, background: "rgba(26,22,18,0.4)", zIndex: 95 }}
+            style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", zIndex: 95 }}
             onClick={onToggle}
           />
           <div
@@ -292,7 +292,7 @@ function FilterGroup({ label, count, open, onToggle, children }: {
               background: "var(--cr-paper-2)",
               borderTop: "1px solid var(--cr-rule-dark)",
               borderRadius: "12px 12px 0 0",
-              boxShadow: "0 -10px 34px rgba(26,22,18,0.22)",
+              boxShadow: "var(--cr-card-shadow-hover)",
               maxHeight: "70vh",
               display: "flex", flexDirection: "column",
             }}
@@ -494,19 +494,19 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
             </span>
           )}
           {match !== undefined && match >= 40 && (
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "#fff", background: "var(--cr-copper)", borderRadius: "999px", padding: "2px 8px", letterSpacing: "0.03em" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-band-ink)", background: "var(--cr-copper)", borderRadius: "3px", padding: "2px 8px", letterSpacing: "0.03em" }}>
               {t("filters.matchPct", { pct: match })}
             </span>
           )}
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "2px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             {s.industry}
           </span>
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "2px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            {STAGE_LABELS[s.stage] ?? s.stage}
+          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            {STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ")}
           </span>
           {isNew && (
-            <span style={{ background: "transparent", border: "1px solid rgba(45,106,79,0.35)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              New
+            <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {t("startup.new")}
             </span>
           )}
         </div>
@@ -962,7 +962,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
     <div style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
 
       {/* ── Page header ── */}
-      <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "48px 80px 32px" }}>
+      <div className="px-6 md:px-10 lg:px-20" style={{ borderBottom: "1px solid var(--cr-rule)", paddingTop: "48px", paddingBottom: "32px" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
@@ -1006,7 +1006,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
               <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
                 {(["grid", "list"] as const).map((v) => (
                   <button key={v} onClick={() => chooseView(v)} aria-label={v} aria-pressed={viewMode === v}
-                    style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "#fff" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
+                    style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
                     {v === "grid" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
                   </button>
                 ))}
@@ -1027,7 +1027,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
       <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>
         {/* No overflowX here: it clipped the open filter-group panels. The three
             groups fit every viewport; anything past them wraps instead. */}
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "10px 80px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+        <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "10px", paddingBottom: "10px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           {/* Search */}
           <div style={{ position: "relative", flexShrink: 0 }}>
             <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
@@ -1060,7 +1060,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
               onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
             />
             {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", overflow: "hidden", zIndex: 50 }}>
+              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "10px 12px 6px" }}>
                   {t("startups.recentSearches")}
                 </p>
@@ -1077,7 +1077,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
               </div>
             )}
             {suggestOpen && suggestions.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 8px 24px rgba(26,22,18,0.12)", overflow: "hidden", zIndex: 50 }}>
+              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 {suggestions.map((s, si) => (
                   <Link key={s.id} href={`/startups/${s.slug}`} onClick={() => rememberQuery(filters.query)}
                     style={{ display: "flex", flexDirection: "column", gap: "1px", padding: "9px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
@@ -1205,7 +1205,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
 
         {/* One-click shortcuts. Above the applied chips so the relationship
             reads top-down: pick a preset, see what it applied. */}
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 80px 10px" }}>
+        <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "10px" }}>
           <FilterPresets
             presets={STARTUP_PRESETS}
             filters={filters as unknown as Record<string, unknown>}
@@ -1217,13 +1217,13 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
         {/* Applied filters, each individually removable. Rendered only when
             something is applied, so the bar stays one quiet row by default. */}
         {activeCount > 0 && (
-          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 80px 10px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "10px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
             {filters.industries.map((ind) => (
               <AppliedChip key={`i-${ind}`} label={ind}
                 onRemove={() => patch({ industries: filters.industries.filter(i => i !== ind) })} />
             ))}
             {filters.stages.map((st) => (
-              <AppliedChip key={`s-${st}`} label={STAGES.find(x => x.value === st)?.label ?? st}
+              <AppliedChip key={`s-${st}`} label={STAGES.find(x => x.value === st)?.label ?? st.replace(/_/g, " ")}
                 onRemove={() => patch({ stages: filters.stages.filter(x => x !== st) })} />
             ))}
             {filters.mrrMin > 0 && (
@@ -1270,7 +1270,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
       )}
 
       {/* ── Content ── */}
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "32px 80px 60px" }}>
+      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "32px", paddingBottom: "64px" }}>
         {/* Count + mobile sort */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
@@ -1370,12 +1370,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
       {/* The tray clears the mobile tab bar via --cr-tabbar-h, which is 0
           wherever no tab bar is on screen (desktop, or signed out). */}
       {compareIds.length > 0 && (
-        <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "0 10px 30px rgba(0,0,0,0.35)" }}>
+        <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "var(--cr-card-shadow-hover)" }}>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
             {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
           </span>
           <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
-            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", padding: "7px 14px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
+            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "7px 14px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
             {t("startups.compare")} ({compareIds.length})
           </button>
           <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
@@ -1389,7 +1389,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
         // C34: the comparison a real shortlist needs — terms and team as well
         // as traction, and your own score/note beside the AI's number.
         const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
-          { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage },
+          { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ") },
           { label: t("onboarding.su.industry"),  get: (s) => s.industry },
           { label: t("startups.region"),         get: (s) => s.country ?? "—" },
           { label: t("startupDetail.founded"),   get: (s) => s.founded_year ? String(s.founded_year) : "—" },
@@ -1415,10 +1415,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
         }
         return (
           <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
-            <div style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.5)" }} onClick={() => setShowCompare(false)} />
+            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
             <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <button onClick={() => {
                   const url = `${window.location.origin}/startups?compare=1&cmp=${compareIds.join(",")}`;
@@ -1482,9 +1482,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
         const bmodels = Array.from(new Set(allStartups.map(x => x.business_model).filter((m): m is string => !!m))).sort();
         return (
         <div role="dialog" aria-modal="true" aria-label={t("filters.title")} style={{ position: "fixed", inset: 0, zIndex: 50 }}>
-          <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "rgba(26,22,18,0.45)" }} onClick={() => setSidebarOpen(false)} />
+          <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setSidebarOpen(false)} />
           {/* Full-height bottom sheet: header pinned, sections scroll, footer pinned. */}
-          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "0 -12px 40px rgba(26,22,18,0.2)" }}>
+          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
             <div style={{ padding: "10px 20px 12px", borderBottom: "1px solid var(--cr-rule)", flexShrink: 0 }}>
               <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 12px" }} />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1581,7 +1581,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial }: { initialS
               </button>
               <button onClick={() => setSidebarOpen(false)}
                 className="btn-copper-shimmer"
-                style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#fff", cursor: "pointer" }}>
+                style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer" }}>
                 {t("filters.applyCount", { count: filtered.length })}
               </button>
             </div>

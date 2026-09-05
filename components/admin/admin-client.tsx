@@ -112,8 +112,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
   return (
     <main className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center">
-          <AlertCircle className="h-5 w-5 text-white" />
+        <div className="w-10 h-10 bg-cr-copper rounded-xl flex items-center justify-center">
+          <AlertCircle className="h-5 w-5 text-cr-paper" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-cr-ink">{t("admin.panelTitle")}</h1>
@@ -137,7 +137,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             className={`text-xs font-medium px-4 py-2 rounded-lg border transition-colors ${
               launch.isLaunch
                 ? "border-cr-copper text-cr-copper hover:bg-cr-copper/10"
-                : "bg-cr-copper text-white border-cr-copper"
+                : "bg-cr-copper text-cr-paper border-cr-copper"
             }`}
           >
             {savingLaunch ? t("common.loading") : launch.isLaunch ? t("admin.launchTurnOff") : t("admin.launchTurnOn")}
@@ -150,7 +150,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         <Card className="mb-8">
           <CardContent className="p-5">
             <div className="flex items-baseline justify-between gap-3 flex-wrap mb-4">
-              <h2 className="font-bold text-cr-ink">{t("revenue.title")}</h2>
+              <h2 className="ruled-label">{t("revenue.title")}</h2>
               <span className="text-[11px] text-cr-i4">
                 {t("revenue.payingAccounts", { count: revenue.payingAccounts })}
                 {revenue.feeCurrencies.length > 1 && ` · ${t("revenue.mixedCurrencies", { list: revenue.feeCurrencies.join(", ") })}`}
@@ -159,26 +159,26 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
                 { k: "revenue.feesBilled", v: revenue.feesBilled, cls: "text-cr-ink" },
-                { k: "revenue.feesCollected", v: revenue.feesCollected, cls: "text-emerald-600" },
-                { k: "revenue.feesOutstanding", v: revenue.feesOutstanding, cls: revenue.feesOutstanding > 0 ? "text-amber-600" : "text-cr-i3" },
-                { k: "revenue.feesUnbillable", v: revenue.feesUnbillable, cls: revenue.feesUnbillable > 0 ? "text-red-600" : "text-cr-i3" },
-                { k: "revenue.feesReversed", v: revenue.feesReversed, cls: revenue.feesReversed > 0 ? "text-red-600" : "text-cr-i3" },
+                { k: "revenue.feesCollected", v: revenue.feesCollected, cls: "text-cr-up" },
+                { k: "revenue.feesOutstanding", v: revenue.feesOutstanding, cls: revenue.feesOutstanding > 0 ? "text-cr-copper" : "text-cr-i3" },
+                { k: "revenue.feesUnbillable", v: revenue.feesUnbillable, cls: revenue.feesUnbillable > 0 ? "text-cr-down" : "text-cr-i3" },
+                { k: "revenue.feesReversed", v: revenue.feesReversed, cls: revenue.feesReversed > 0 ? "text-cr-down" : "text-cr-i3" },
               ].map(({ k, v, cls }) => (
                 <div key={k}>
-                  <p className={`text-xl font-bold ${cls}`}>{formatCurrency(v)}</p>
+                  <p className={`font-mono text-xl font-bold ${cls}`}>{formatCurrency(v)}</p>
                   <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-1">{t(k)}</p>
                 </div>
               ))}
             </div>
             {revenue.feesUnbillable > 0 && (
-              <p className="text-[11px] text-red-600 mt-3">{t("revenue.unbillableNote")}</p>
+              <p className="text-[11px] text-cr-down mt-3">{t("revenue.unbillableNote")}</p>
             )}
             {revenue.byTier.length > 0 && (
               <div className="flex flex-wrap gap-x-5 gap-y-1 mt-4 pt-3 border-t border-cr-p4">
                 {revenue.byTier.map((row) => (
                   <span key={row.tier} className="text-[11px] text-cr-i3">
                     <span className="font-semibold text-cr-ink capitalize">{row.tier.replace(/_/g, " ")}</span>
-                    {" "}×{row.count} · {formatCurrency(row.mrr)}/mo
+                    {" "}<span className="font-mono">×{row.count}</span> · <span className="font-mono">{formatCurrency(row.mrr)}</span>/mo
                   </span>
                 ))}
               </div>
@@ -186,7 +186,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
 
             {/* Fee flow over time, same chart kit as the public data centre.
                 Billed and collected on ONE frame because they share a unit and
-                a scale — the gap between the lines IS the outstanding money.
+                a scale -- the gap between the lines IS the outstanding money.
                 MRR gets no line: tier changes are not logged, so an MRR
                 history would be a reconstruction, and charting a guess on the
                 page an operator bills from is how guesses become facts. */}
@@ -211,10 +211,10 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-blue-600" },
-          { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-emerald-400" },
+          { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-cr-i3" },
+          { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-cr-i3" },
           { label: t("revenue.subscriptionMrr"), value: formatCurrency(revenue?.subscriptionMrr ?? stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
-          { label: t("revenue.feesCollected"), value: formatCurrency(revenue?.feesCollected ?? 0), icon: TrendingUp, color: "text-emerald-600" },
+          { label: t("revenue.feesCollected"), value: formatCurrency(revenue?.feesCollected ?? 0), icon: TrendingUp, color: "text-cr-up" },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4">
@@ -222,7 +222,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 <p className="text-xs text-cr-i3">{s.label}</p>
                 <s.icon className={`h-4 w-4 ${s.color}`} />
               </div>
-              <p className="text-2xl font-bold text-cr-ink">{s.value}</p>
+              <p className="font-mono text-2xl font-bold text-cr-ink">{s.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -233,7 +233,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <TabsTrigger value="pending">
             {t("admin.tabPending")}
             {pendingStartups.length > 0 && (
-              <span className="ml-1.5 bg-red-100 text-red-700 text-xs px-1.5 py-0.5 rounded-full">
+              <span className="ml-1.5 bg-cr-copper/15 text-cr-copper font-mono text-xs px-1.5 py-0.5 rounded-full">
                 {pendingStartups.length}
               </span>
             )}
@@ -250,7 +250,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         <TabsContent value="pending">
           {pendingStartups.length === 0 ? (
             <div className="text-center py-12 text-cr-i4">
-              <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+              <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-cr-copper" />
               <p>{t("admin.allCaughtUp")}</p>
             </div>
           ) : (
@@ -267,13 +267,13 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                         </div>
                         <p className="text-sm text-cr-i3">{s.tagline}</p>
                         <p className="text-xs text-cr-i4 mt-1">
-                          {t("admin.byLabel")} {s.owner?.full_name || s.owner?.email} · {formatDate(s.created_at)}
+                          {t("admin.byLabel")} {s.owner?.full_name || s.owner?.email} · <span className="font-mono">{formatDate(s.created_at)}</span>
                         </p>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
                         <Button
                           size="sm"
-                          className="bg-green-600 hover:bg-green-700 gap-1.5"
+                          className="bg-cr-copper hover:bg-cr-cu-d text-cr-paper gap-1.5"
                           onClick={() => approveStartup(s.id)}
                           disabled={processingId === s.id}
                         >
@@ -320,7 +320,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     <p className="text-xs text-cr-i4">
                       {s.owner?.email} · {s.industry} · {s.stage}
                       {" · "}
-                      {/* The founder dashboard as its founder sees it — every
+                      {/* The founder dashboard as its founder sees it -- every
                           feature they have, read-only, visit audited. */}
                       <Link href={`/admin/view/startup/${s.id}`} className="text-cr-copper underline underline-offset-2">
                         {t("admin.viewDashboard")}
@@ -340,7 +340,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                   {/* Live listing edited by the founder since approval: stays live,
                       flagged here for a re-check. Clicking clears the flag. */}
                   {s.status === "active" && s.edited_since_review_at && (
-                    <Button size="sm" variant="outline" className="text-xs h-7 text-amber-700 border-amber-400/50"
+                    <Button size="sm" variant="outline" className="text-xs h-7 text-cr-copper border-cr-copper/50"
                       title={new Date(s.edited_since_review_at).toLocaleString()}
                       onClick={async () => {
                         const res = await fetch("/api/admin/startup/ack-edits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: s.id }) });
@@ -421,7 +421,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     {deal.startup?.name} ↔ {deal.investor?.slug}
                   </p>
                   <p className="text-xs text-cr-i4">
-                    {deal.amount ? formatCurrency(deal.amount) : t("admin.amountTBD")} · {formatDate(deal.updated_at)}
+                    {deal.amount ? <span className="font-mono">{formatCurrency(deal.amount)}</span> : t("admin.amountTBD")} · <span className="font-mono">{formatDate(deal.updated_at)}</span>
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -449,7 +449,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <ReportQueue />
         </TabsContent>
 
-        {/* Complaints: "something went wrong for me" — distinct lifecycle
+        {/* Complaints: "something went wrong for me" -- distinct lifecycle
             from content reports, same operator discipline: every complaint
             leaves with a recorded outcome and the filer is told. */}
         <TabsContent value="complaints">
@@ -472,7 +472,7 @@ type ReportRow = {
  *
  * Two outcomes, both recorded: "actioned" means something was done about the
  * content, "dismissed" means it was looked at and was fine. Nothing is
- * deleted from here — suspending a listing still goes through the route that
+ * deleted from here -- suspending a listing still goes through the route that
  * audits it. The reporter is told either way, because a report that vanishes
  * teaches people not to file the next one.
  */
@@ -516,7 +516,7 @@ function ReportQueue() {
 
       {reports.length === 0 ? (
         <div className="text-center py-12 text-cr-i4">
-          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-cr-copper" />
           <p>{t("report.queueEmpty")}</p>
         </div>
       ) : (
@@ -531,7 +531,7 @@ function ReportQueue() {
                     ) : (r.targetName ?? r.target_type)}
                     <span className="text-cr-i4 font-normal"> · {t(`report.reason.${r.reason}`)}</span>
                   </p>
-                  <p className="text-xs text-cr-i4">{formatDate(r.created_at)}{r.targetStatus && ` · ${r.targetStatus.replace(/_/g, " ")}`}</p>
+                  <p className="text-xs text-cr-i4"><span className="font-mono">{formatDate(r.created_at)}</span>{r.targetStatus && ` · ${r.targetStatus.replace(/_/g, " ")}`}</p>
                 </div>
                 {r.status === "open" ? (
                   <div className="flex items-center gap-3">
@@ -606,7 +606,7 @@ function ComplaintQueue() {
 
       {rows.length === 0 ? (
         <div className="text-center py-12 text-cr-i4">
-          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-cr-copper" />
           <p>{t("complaints.queueEmpty")}</p>
         </div>
       ) : (
@@ -620,7 +620,7 @@ function ComplaintQueue() {
                     <span className="text-cr-i4 font-normal"> · {t(`complaints.cat.${r.category}`)}</span>
                   </p>
                   <p className="text-xs text-cr-i4">
-                    {r.filerName}{r.filerRole ? ` (${r.filerRole})` : ""} · {formatDate(r.created_at)}
+                    {r.filerName}{r.filerRole ? ` (${r.filerRole})` : ""} · <span className="font-mono">{formatDate(r.created_at)}</span>
                   </p>
                 </div>
                 {(r.status === "open" || r.status === "in_review") ? (
@@ -652,7 +652,7 @@ function ComplaintQueue() {
  * E54: search, paging and CSV over an admin table.
  *
  * These tabs used to render a hardcoded first fifty rows with nothing saying
- * so — at 100+ accounts the operator was looking at an arbitrary slice of the
+ * so -- at 100+ accounts the operator was looking at an arbitrary slice of the
  * platform and could not tell. The server render is still the first page, so
  * the tab paints instantly; anything else comes from /api/admin/list.
  */
@@ -702,7 +702,7 @@ function AdminList({ entity, initial, statuses, children }: {
           <option value="">{t("dashboard.filterAll")}</option>
           {statuses.map(s => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
         </select>
-        <span className="text-xs text-cr-i4">
+        <span className="font-mono text-xs text-cr-i4">
           {loading ? t("common.loading")
             : total == null ? ""
             : t("adminList.showing", { shown: rows.length, total })}
@@ -719,7 +719,7 @@ function AdminList({ entity, initial, statuses, children }: {
         <div className="flex items-center justify-center gap-3 mt-4">
           <button disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); void load(p, q, status); }}
             className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("common.back")}</button>
-          <span className="text-xs text-cr-i4">{t("adminList.page", { page, pages })}</span>
+          <span className="font-mono text-xs text-cr-i4">{t("adminList.page", { page, pages })}</span>
           <button disabled={page >= pages} onClick={() => { const p = page + 1; setPage(p); void load(p, q, status); }}
             className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("adminList.next")}</button>
         </div>
@@ -738,18 +738,18 @@ type LedgerRow = {
 };
 
 const STATE_STYLE: Record<LedgerRow["state"], string> = {
-  collected:   "bg-emerald-50 text-emerald-700 border-emerald-200",
-  outstanding: "bg-amber-50 text-amber-700 border-amber-200",
-  unbillable:  "bg-red-50 text-red-700 border-red-200",
+  collected:   "bg-[var(--cr-up-bg)] text-cr-up border-cr-up/30",
+  outstanding: "bg-[var(--cr-copper-bg)] text-cr-copper border-cr-copper/30",
+  unbillable:  "bg-[var(--cr-down-bg)] text-cr-down border-cr-p4",
   waived:      "bg-cr-p3 text-cr-i3 border-cr-p4",
-  disputed:    "bg-cr-copper/10 text-cr-copper border-cr-copper/30",
-  reversed:    "bg-red-100 text-red-800 border-red-300",
+  disputed:    "bg-cr-copper/15 text-cr-copper border-cr-copper/40",
+  reversed:    "bg-[var(--cr-down-bg)] text-cr-down border-[color:var(--cr-down)]",
 };
 
 /**
  * E46: every fee the platform is owed, in one list, with the three things an
  * operator can actually do about one. Before this, a fee that failed to bill
- * was visible only by opening the deal it belonged to — which is to say, it
+ * was visible only by opening the deal it belonged to -- which is to say, it
  * was not visible.
  */
 function FeeLedger() {
@@ -789,7 +789,7 @@ function FeeLedger() {
   }
 
   if (rows === null) return <p className="text-sm text-cr-i4 py-8 text-center">{t("common.loading")}</p>;
-  // A dispute is open business too — it is the one state that needs a person.
+  // A dispute is open business too -- it is the one state that needs a person.
   const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable" || r.state === "disputed" || r.state === "reversed") : rows;
 
   return (
@@ -798,7 +798,7 @@ function FeeLedger() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           {(["outstanding", "unbillable", "disputed", "reversed"] as const).map(k => (
             <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
-              <p className="text-lg font-bold text-cr-ink">{formatCurrency(totals[k] ?? 0)}</p>
+              <p className="font-mono text-lg font-bold text-cr-ink">{formatCurrency(totals[k] ?? 0)}</p>
               <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
             </div>
           ))}
@@ -809,11 +809,11 @@ function FeeLedger() {
           className="text-xs font-semibold text-cr-copper">
           {filter === "open" ? t("fees.showAll") : t("fees.showOpen")}
         </button>
-        <span className="text-xs text-cr-i4">{t("fees.count", { count: shown.length })}</span>
+        <span className="font-mono text-xs text-cr-i4">{t("fees.count", { count: shown.length })}</span>
       </div>
       {shown.length === 0 ? (
         <div className="text-center py-12 text-cr-i4">
-          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-cr-copper" />
           <p>{t("fees.allSettled")}</p>
         </div>
       ) : (
@@ -824,8 +824,8 @@ function FeeLedger() {
                 <div className="min-w-0">
                   <p className="font-medium text-cr-ink text-sm truncate">{row.startupName ?? t("admin.amountTBD")}</p>
                   <p className="text-xs text-cr-i4">
-                    {formatCurrency(row.feeMajor)}
-                    {row.closed_at && ` · ${t("fees.closed")} ${formatDate(row.closed_at)}`}
+                    <span className="font-mono">{formatCurrency(row.feeMajor)}</span>
+                    {row.closed_at && <>{" · "}{t("fees.closed")} <span className="font-mono">{formatDate(row.closed_at)}</span></>}
                     {(row.fee_reminder_count ?? 0) > 0 && ` · ${t("fees.chased", { count: row.fee_reminder_count ?? 0 })}`}
                   </p>
                 </div>
@@ -844,7 +844,7 @@ function FeeLedger() {
                   {(row.state === "unbillable" || row.state === "outstanding") && (
                     <>
                       <button onClick={() => act(row, "markPaid")} disabled={busy === row.id}
-                        className="text-xs font-semibold text-emerald-700 disabled:opacity-50">{t("fees.markPaid")}</button>
+                        className="text-xs font-semibold text-cr-up disabled:opacity-50">{t("fees.markPaid")}</button>
                       <button onClick={() => act(row, "waive")} disabled={busy === row.id}
                         className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("fees.waive")}</button>
                     </>
@@ -852,7 +852,7 @@ function FeeLedger() {
                 </div>
               </div>
               {row.fee_billing_error && (
-                <p className="text-[11px] text-red-600 mt-1.5 break-words">{row.fee_billing_error}</p>
+                <p className="text-[11px] text-cr-down mt-1.5 break-words">{row.fee_billing_error}</p>
               )}
               {row.state === "disputed" && row.fee_dispute_reason && (
                 <p className="text-[11px] text-cr-copper mt-1.5 break-words">“{row.fee_dispute_reason}”</p>

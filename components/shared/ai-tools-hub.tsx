@@ -11,7 +11,9 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Score helpers ──────────────────────────────────────────────
-// Quality, not money: the fill speaks in copper and ink shades only.
+// Quality, not money: the fill speaks in copper and ink shades only. The
+// track is definite pixel height (4px) with a solid paper-4 lane -- same as
+// the usage meter -- so a low score still shows its lane on business dark.
 function ScoreBar({ label, value }: { label: string; value: number }) {
   const fillColor = value >= 80 ? "var(--cr-copper)" : value >= 60 ? "var(--cr-ink-2)" : "var(--cr-ink-4)";
   return (
@@ -20,7 +22,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>{label}</span>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>{value}</span>
       </div>
-      <div style={{ height: "4px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
+      <div style={{ height: "4px", background: "var(--cr-paper-4)", borderRadius: "2px", overflow: "hidden" }}>
         <div style={{ height: "100%", borderRadius: "2px", transition: "width 700ms ease", width: `${value}%`, background: fillColor }} />
       </div>
     </div>
@@ -37,11 +39,13 @@ function verdictStyle(v: string): React.CSSProperties {
   return { background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)" };
 }
 
+// A failed request is a state, not a loss -- the box speaks in the notice
+// register (copper frame, ink text); red stays reserved for money direction.
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "4px", padding: "12px 16px" }}>
-      <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0 }} />
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-down)" }}>{msg}</p>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px" }}>
+      <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{msg}</p>
     </div>
   );
 }

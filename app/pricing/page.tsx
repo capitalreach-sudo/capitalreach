@@ -182,13 +182,13 @@ function PlanCard({
       )}
       {hi && !isCurrent && (
         <div style={{ position: "absolute", top: "18px", right: "18px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
             <Zap style={{ width: 10, height: 10 }} /> {plan.highlight}
           </span>
         </div>
       )}
 
-      <div style={{ padding: "24px 24px 28px", display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "20px" }}>{plan.name}</p>
 
         <div style={{ marginBottom: "8px" }}>
@@ -196,7 +196,7 @@ function PlanCard({
             <div>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: "var(--cr-copper)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", textDecoration: "line-through" }}>
-                ${plan.price}{t("pricing.perMonth")} {t("pricing.afterLaunch")}
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>${plan.price}</span>{t("pricing.perMonth")} {t("pricing.afterLaunch")}
               </p>
             </div>
           ) : price === null ? (
@@ -213,7 +213,7 @@ function PlanCard({
           )}
         </div>
         {!isLaunch && annual && saved > 0 && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: Math.round(saved) })} · {yearly?.percentOff}%</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: Math.round(saved) })} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{yearly?.percentOff}%</span></p>
         )}
 
         <div style={{ height: "1px", background: "var(--cr-rule)", margin: "16px 0 24px" }} />
@@ -222,8 +222,8 @@ function PlanCard({
           {features.map((f) => (
             <li key={f.text} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               {f.on ? (
-                <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-up)" }} />
+                <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-copper)" }} />
                 </span>
               ) : (
                 <span style={{ width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -243,7 +243,7 @@ function PlanCard({
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
             textDecoration: "none", transition: "opacity 150ms", border: "none", cursor: "pointer",
             background: hi || isLaunch ? "var(--cr-copper)" : "transparent",
-            color: hi || isLaunch ? "#fff" : "var(--cr-ink-3)",
+            color: hi || isLaunch ? "var(--cr-band-ink)" : "var(--cr-ink-3)",
             borderColor: hi || isLaunch ? "transparent" : "var(--cr-rule-dark)",
             borderWidth: hi || isLaunch ? 0 : "1px",
             borderStyle: "solid",
@@ -355,8 +355,8 @@ export default function PricingPage() {
       <main style={{ background: "var(--cr-paper)" }}>
 
         {/* Hero */}
-        <section style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)", marginTop: "64px", padding: "80px 0 72px" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
+        <section style={{ background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule)", marginTop: "64px", padding: "64px 0" }}>
+          <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             <div className="pricing-hero-grid">
               <div>
                 <div className="ruled-label" style={{ marginBottom: "24px" }}>
@@ -412,7 +412,7 @@ export default function PricingPage() {
         {/* Plans */}
         <section id="founders" style={{ padding: "64px 0", scrollMarginTop: "60px" }}>
           <span id="investors" aria-hidden />
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
+          <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", marginBottom: "48px", flexWrap: "wrap" }}>
 
               {/* Tab switcher */}
@@ -445,7 +445,7 @@ export default function PricingPage() {
                     }}>
                     <span style={{
                       position: "absolute", top: "3px", left: "3px", width: "18px", height: "18px",
-                      borderRadius: "50%", background: "#fff", transition: "transform 200ms",
+                      borderRadius: "50%", background: "var(--cr-band-ink)", transition: "transform 200ms",
                       transform: annual ? "translateX(20px)" : "none",
                     }} />
                   </button>
@@ -533,8 +533,8 @@ export default function PricingPage() {
         </section>
 
         {/* 2% comparison */}
-        <section style={{ padding: "72px 0", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
+        <section style={{ padding: "64px 0", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)" }}>
+          <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             <div style={{ marginBottom: "48px" }}>
               <div className="ruled-label" style={{ marginBottom: "16px" }}>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("pricing.modelEyebrow")}</span>
@@ -548,7 +548,7 @@ export default function PricingPage() {
               {[
                 {
                   label: t("pricing.colTraditional"), fee: "5–7%",
-                  border: "rgba(180,50,50,0.2)", bg: "var(--cr-down-bg)", feeClr: "var(--cr-down)", badge: false, isUs: false,
+                  border: "color-mix(in srgb, var(--cr-down) 20%, transparent)", bg: "var(--cr-down-bg)", feeClr: "var(--cr-down)", badge: false, isUs: false,
                   items: [t("pricing.tradItem1"), t("pricing.tradItem2"), t("pricing.tradItem3"), t("pricing.tradItem4"), t("pricing.tradItem5")],
                 },
                 {
@@ -562,10 +562,10 @@ export default function PricingPage() {
                   items: [t("pricing.diyItem1"), t("pricing.diyItem2"), t("pricing.diyItem3"), t("pricing.diyItem4"), t("pricing.diyItem5")],
                 },
               ].map((col) => (
-                <div key={col.label} style={{ position: "relative", borderRadius: "4px", border: `1px solid ${col.border}`, padding: "28px", background: col.bg }}>
+                <div key={col.label} style={{ position: "relative", borderRadius: "4px", border: `1px solid ${col.border}`, padding: "24px", background: col.bg }}>
                   {col.badge && (
                     <div style={{ position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)" }}>
-                      <span style={{ background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "4px 12px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>✓ {t("pricing.bestValue")}</span>
+                      <span style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "4px 12px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>✓ {t("pricing.bestValue")}</span>
                     </div>
                   )}
                   <div style={{ textAlign: "center", marginBottom: "24px" }}>
@@ -577,7 +577,7 @@ export default function PricingPage() {
                     {col.items.map((item) => (
                       <li key={item} style={{ display: "flex", alignItems: "center", gap: "10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
                         {col.isUs
-                          ? <span style={{ width: 14, height: 14, borderRadius: "50%", background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--cr-up)" }} /></span>
+                          ? <span style={{ width: 14, height: 14, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--cr-copper)" }} /></span>
                           : <X style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
                         }
                         {item}
@@ -599,7 +599,7 @@ export default function PricingPage() {
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               <Link href="/auth/signup"
                 className="btn-copper-shimmer"
-                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                 onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
                 {t("hero.ctaPrimary")} <ArrowRight style={{ width: 14, height: 14 }} />
@@ -615,11 +615,11 @@ export default function PricingPage() {
         </section>
 
         {/* AI report callout */}
-        <section style={{ padding: "40px 0", borderTop: "1px solid var(--cr-rule)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
+        <section style={{ padding: "48px 0", borderTop: "1px solid var(--cr-rule)" }}>
+          <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             {/* flexWrap: three fixed-width flex children overflowed a 375px
                 screen by 23px and put a sideways scroll on the whole page. */}
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px 28px", display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", transition: "border-color 150ms" }}
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", transition: "border-color 150ms" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper-br)")}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}>
               <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -637,8 +637,8 @@ export default function PricingPage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ padding: "72px 0", borderTop: "1px solid var(--cr-rule)" }}>
-          <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 40px" }}>
+        <section style={{ padding: "64px 0", borderTop: "1px solid var(--cr-rule)" }}>
+          <div className="max-w-[800px] mx-auto px-6 md:px-10">
             <div style={{ marginBottom: "48px" }}>
               <div className="ruled-label" style={{ marginBottom: "16px" }}>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>FAQ</span>
@@ -654,11 +654,11 @@ export default function PricingPage() {
         </section>
 
         {/* Final CTA */}
-        <section style={{ padding: "72px 0", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 40px" }}>
+        <section style={{ padding: "64px 0", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)" }}>
+          <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
               <div style={{ height: "3px", background: "var(--cr-copper)" }} />
-              <div style={{ padding: "64px 80px", textAlign: "center" }}>
+              <div style={{ padding: "64px 24px", textAlign: "center" }}>
                 <div className="ruled-label" style={{ justifyContent: "center", marginBottom: "24px" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                     {!loading && isLaunch ? t("pricing.limitedLaunchSpots") : t("pricing.earlyAccess")}
@@ -674,7 +674,7 @@ export default function PricingPage() {
                 </p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
                   <Link href="/auth/signup"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                     onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
                     {t("pricing.listStartupFree")} <ArrowRight style={{ width: 14, height: 14 }} />
