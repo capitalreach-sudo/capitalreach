@@ -21,7 +21,9 @@ export default async function InvestorsPage() {
   return (
     <>
       <Navbar />
-      <InvestorsClient initialInvestors={initial ?? undefined} />
+      {/* First screenfuls only: at scale (10k+ rows) the full directory was a
+          600 KB payload serialized into every visit. The client tops up. */}
+      <InvestorsClient initialInvestors={initial ? initial.slice(0, 60) : undefined} />
       <Footer />
     </>
   );

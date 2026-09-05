@@ -75,7 +75,12 @@ export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
         .eq("status", "active")
         // B16: a founder-paused round is off the market until they resume it.
         .neq("round_state", "paused")
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })
+        // Scale bound: at 10k+ listings the unbounded set was a 600 KB payload
+        // and a browser-side filter over the whole market. The newest 1000
+        // keep browse instant; past that, server-side search is the answer
+        // (logged as the pagination follow-up).
+        .limit(1000),
       trendingIds(),
     ]);
     if (error) return null;
@@ -156,7 +161,9 @@ export async function loadPublicInvestors(): Promise<BrowseInvestor[] | null> {
       // B18: off-platform contacts are private to the startup that created
       // them; is_public is already false on them, this is belt and braces.
       .eq("is_external", false)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      // Same scale bound as the startups loader.
+      .limit(1000);
     if (error) return null;
     return (data ?? []).map((inv) => ({
       id: inv.id,

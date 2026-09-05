@@ -61,7 +61,10 @@ interface Props {
  * "0 startups listed" is not a trust signal.
  */
 export function HomepageClient({ stats, listings, tickerListings, launch, viewerRole = null }: Props & { viewerRole?: string | null }) {
-  const lane = (tickerListings && tickerListings.length ? tickerListings : listings);
+  const laneAll = (tickerListings && tickerListings.length ? tickerListings : listings);
+  // The marquee renders the lane TWICE for the seamless loop, so DOM cost is
+  // 2x lane length. 150 rounds is minutes of unrepeated tape; more is payload.
+  const lane = laneAll.slice(0, 150);
   const { t } = useTranslation();
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const router  = useRouter();
