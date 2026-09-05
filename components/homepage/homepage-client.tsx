@@ -9,8 +9,9 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
+import { Guilloche } from "@/components/ui/Guilloche";
+import { WaxSeal } from "@/components/ui/WaxSeal";
 import { MarketMatcher } from "@/components/homepage/market-matcher";
-import { FeeSlider } from "@/components/homepage/fee-slider";
 import { safeFormatCurrency } from "@/lib/format";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
@@ -79,10 +80,11 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
     [stats.dealsClosedCount, t("trustIndicators.dealsClosed",       { count: stats.dealsClosedCount })],
   ].filter(([v]) => (v as number) > 0) as [number, string][];
 
-  const proof: [string, string][] = [
-    ["2%",   t("hero.proofFee")],
-    ["€0",   t("hero.proofUpfront")],
-    ["100%", t("hero.proofVetted")],
+  // value, label, needle position (percent along the gauge hairline)
+  const proof: [string, string, number][] = [
+    ["2%",   t("hero.proofFee"),      8],
+    ["€0",   t("hero.proofUpfront"),  0],
+    ["100%", t("hero.proofVetted"), 100],
   ];
 
   return (
@@ -129,10 +131,13 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
             </div>
           )}
 
+          {/* The one place WONK is allowed: the homepage's opening claim,
+              revealed as ink bleeding into paper (pure CSS mask -- the text
+              is always real DOM and cannot break). */}
           <h1
-            className="animate-fade-up-1"
+            className="ink-bleed display-wonk"
             style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontFamily:    "var(--font-serif)",
               fontWeight:    700,
               fontStyle:     "italic",
               fontSize:      "clamp(38px, 6.6vw, 78px)",
@@ -179,6 +184,12 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
               {t("hero.ctaSecondary")} →
             </Link>
           </div>
+
+          {!viewerRole && (
+            <Link href="/demo" className="animate-fade-up-3" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "4px", textDecorationColor: "var(--cr-paper-4)", marginTop: "14px" }}>
+              {t("hero.ctaDemo")} {"\u2192"}
+            </Link>
+          )}
 
           {/* Trust row */}
           <p
@@ -256,22 +267,31 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
         </div>
       </section>
 
-      {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
+      {/* ── 2. INSTRUMENT PANEL ─────────────────────────────── */}
+      {/* The proof strip, machined: guilloche under glass, each figure a
+          gauge with its needle at rest. Bank-note texture, never louder
+          than the numbers. */}
       <section
         aria-label={t("hero.proofAria")}
         style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", position: "relative", overflow: "hidden" }}
       >
-        <div className="hero-noise" aria-hidden />
+        <div aria-hidden style={{ position: "absolute", inset: "-40%", color: "var(--cr-copper)", pointerEvents: "none" }}>
+          <Guilloche className="w-full h-full" seed={3} lines={18} opacity={0.05} />
+        </div>
         <div className="max-w-[1200px] mx-auto px-6 md:px-10" style={{ position: "relative" }}>
           <div className="grid grid-cols-3">
-            {proof.map(([value, label], i) => (
+            {proof.map(([value, label, gauge], i) => (
               <div
                 key={label}
                 className="flex flex-col items-center justify-center text-center py-7 md:py-9"
                 style={{ borderLeft: i > 0 ? "1px solid var(--cr-copper-br)" : undefined }}
               >
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
                   {value}
+                </div>
+                {/* The needle: a hairline dial under each figure. */}
+                <div aria-hidden style={{ position: "relative", width: "56px", height: "1px", background: "color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", marginTop: "10px" }}>
+                  <span style={{ position: "absolute", left: `calc(${gauge}% - 1px)`, top: "-3px", width: "2px", height: "7px", background: "var(--cr-copper)" }} />
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
                   {label}
@@ -322,35 +342,33 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       <section aria-label={t("howItWorks.title")} style={{ background: "var(--cr-paper)", borderTop: "1px solid var(--cr-rule)" }}>
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24">
           <div className="ruled-label" style={{ marginBottom: "40px" }}>{t("howItWorks.sectionLabel")}</div>
-          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
-            {([
-              { track: t("howItWorks.forFounders"),  steps: [1, 2, 3, 4].map(n => ({ title: t(`howItWorks.f${n}title`), desc: t(`howItWorks.f${n}desc`) })) },
-              { track: t("howItWorks.forInvestors"), steps: [1, 2, 3, 4].map(n => ({ title: t(`howItWorks.i${n}title`), desc: t(`howItWorks.i${n}desc`) })) },
-            ]).map(({ track, steps }) => (
-              <div key={track}>
-                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "28px" }}>
-                  {track}
-                </h2>
-                <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                  {steps.map((step, i) => (
-                    <li key={step.title} style={{ display: "flex", gap: "18px", paddingBottom: i === steps.length - 1 ? 0 : "22px", position: "relative" }}>
-                      {/* Rail: number + connecting rule, the ledger line down the steps. */}
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "999px", width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        {i < steps.length - 1 && <span aria-hidden style={{ flex: 1, width: 1, background: "var(--cr-rule)", marginTop: 6 }} />}
-                      </div>
-                      <div style={{ paddingTop: 3 }}>
-                        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "5px" }}>{step.title}</h3>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13.5px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "46ch" }}>{step.desc}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
+          {/* Bento: each track is a row of four cells on a shared hairline
+              grid -- the first step set wider and rail-marked, so the eye
+              knows where each journey begins. Same sixteen strings the
+              two-column list used; all fifteen locales already carry them. */}
+          {([
+            { track: t("howItWorks.forFounders"),  steps: [1, 2, 3, 4].map(n => ({ title: t(`howItWorks.f${n}title`), desc: t(`howItWorks.f${n}desc`) })) },
+            { track: t("howItWorks.forInvestors"), steps: [1, 2, 3, 4].map(n => ({ title: t(`howItWorks.i${n}title`), desc: t(`howItWorks.i${n}desc`) })) },
+          ]).map(({ track, steps }, ti) => (
+            <div key={track} style={{ marginTop: ti > 0 ? "40px" : 0 }}>
+              <h2 style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "20px" }}>
+                {track}
+              </h2>
+              <div className="grid md:grid-cols-2 lg:[grid-template-columns:1.35fr_1fr_1fr_1fr]"
+                style={{ gap: "1px", background: "var(--cr-rule)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
+                {steps.map((step, i) => (
+                  <div key={step.title} style={{ background: i === 0 ? "var(--cr-paper-2)" : "var(--cr-paper)", padding: "22px 20px 24px", position: "relative" }}>
+                    {i === 0 && <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: "2px", background: "var(--cr-copper)" }} />}
+                    <span aria-hidden style={{ position: "absolute", top: "14px", right: "16px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: i === 0 ? "var(--cr-copper)" : "var(--cr-paper-4)", lineHeight: 1, opacity: i === 0 ? 0.55 : 0.8 }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px", paddingRight: "36px" }}>{step.title}</h3>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>{step.desc}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -463,20 +481,34 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
         </section>
       )}
 
-      {/* ── 4b. THE FEE, FELT ───────────────────────────────── */}
-      <FeeSlider />
-
-      {/* ── 5. PULL QUOTE ───────────────────────────────────── */}
-      {/* The creed, said once, on the dark slab. Serif in editorial; the
-          business style flattens it to sans automatically. */}
+      {/* ── 5. THE CHARTER ──────────────────────────────────── */}
+      {/* The creed as a compliance artifact: the same sentence, set as a
+          document -- ref line, guilloche under glass, sealed. A page that
+          means it files it. */}
       <section aria-label={t("pullQuote.attribution")} style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)" }}>
-        <div className="max-w-[880px] mx-auto px-6 md:px-10 py-16 md:py-20 text-center">
-          <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3.4vw, 34px)", color: "var(--cr-band-ink)", lineHeight: 1.35, letterSpacing: "-0.01em", textWrap: "balance" }}>
-            “{t("pullQuote.text")}”
-          </p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: "20px" }}>
-            {t("pullQuote.attribution")}
-          </p>
+        <div className="max-w-[760px] mx-auto px-6 md:px-10 py-16 md:py-20">
+          <div style={{ position: "relative", border: "1px solid color-mix(in srgb, var(--cr-band-ink) 28%, transparent)", borderRadius: "2px", padding: "32px 28px 40px", overflow: "hidden" }}>
+            <div aria-hidden style={{ position: "absolute", top: "-90px", right: "-90px", width: "260px", height: "260px", color: "var(--cr-copper)", pointerEvents: "none" }}>
+              <Guilloche className="w-full h-full" seed={7} lines={16} opacity={0.09} />
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "24px", position: "relative" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--cr-band-ink-dim)" }}>
+                CAPITALREACH {"\u00b7"} CHARTER
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.14em", color: "var(--cr-band-ink-dim)" }}>
+                {"\u2116"} 0001{"\u2013"}A
+              </span>
+            </div>
+            <blockquote style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontStyle: "italic", fontSize: "clamp(20px, 3vw, 30px)", color: "var(--cr-band-ink)", lineHeight: 1.4, letterSpacing: "-0.01em", textWrap: "balance", margin: 0, position: "relative" }}>
+              {"\u201c"}{t("pullQuote.text")}{"\u201d"}
+            </blockquote>
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: "20px", position: "relative" }}>
+              {t("pullQuote.attribution")}
+            </p>
+            <div aria-hidden style={{ position: "absolute", bottom: "-14px", right: "18px", transform: "rotate(-9deg)", opacity: 0.92 }}>
+              <WaxSeal size={72} />
+            </div>
+          </div>
         </div>
       </section>
 

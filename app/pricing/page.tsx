@@ -13,6 +13,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import { PlanComparison } from "@/components/pricing/plan-comparison";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
+import { FeeSlider } from "@/components/homepage/fee-slider";
 import { founderCan, investorCan } from "@/lib/access";
 
 // ── Feature row builders ──────────────────────────────────────
@@ -408,6 +409,10 @@ export default function PricingPage() {
             </div>
           </div>
         </section>
+
+        {/* The fee, felt: the slider moved here from the homepage -- the
+            pricing page opens with the only number that matters, movable. */}
+        <FeeSlider />
 
         {/* Plans */}
         <section id="founders" style={{ padding: "64px 0", scrollMarginTop: "60px" }}>
