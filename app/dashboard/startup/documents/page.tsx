@@ -151,7 +151,15 @@ export default function DocumentsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
       const { data: s } = await supabase.from("startups").select("id, name, subscription_tier").eq("owner_id", user.id).single();
-      if (!s) { router.push("/onboarding/startup"); return; }
+      if (!s) {
+        // No listing on this account. Only a genuine startup-role user belongs
+        // in the create-a-listing wizard; an admin poking around (or anyone
+        // else) was being dumped into onboarding, which read as the page being
+        // broken. Route by role instead.
+        const { data: prof } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+        router.push(prof?.role === "admin" ? "/admin" : prof?.role === "investor" ? "/dashboard/investor" : "/onboarding/startup");
+        return;
+      }
       setStartup(s);
       const { data: docs } = await supabase.from("startup_documents").select("*").eq("startup_id", s.id);
       setDocuments(docs || []);

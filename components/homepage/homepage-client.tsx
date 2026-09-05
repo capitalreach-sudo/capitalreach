@@ -11,7 +11,7 @@ import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { safeFormatCurrency } from "@/lib/format";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
-import type { ListingSnippet } from "@/app/page";
+import type { ListingSnippet, TickerSnippet } from "@/app/page";
 
 // ── Primitives ────────────────────────────────────────────────
 
@@ -46,6 +46,8 @@ const TH: React.CSSProperties = {
 interface Props {
   stats:    PlatformStats;
   listings: ListingSnippet[];
+  /** Every active round, light projection -- the ticker shows the whole market. */
+  tickerListings?: TickerSnippet[];
   launch:   LaunchStatus;
 }
 
@@ -57,7 +59,8 @@ interface Props {
  * "$100000000B". Counts are shown only when they are greater than zero —
  * "0 startups listed" is not a trust signal.
  */
-export function HomepageClient({ stats, listings, launch, viewerRole = null }: Props & { viewerRole?: string | null }) {
+export function HomepageClient({ stats, listings, tickerListings, launch, viewerRole = null }: Props & { viewerRole?: string | null }) {
+  const lane = (tickerListings && tickerListings.length ? tickerListings : listings);
   const { t } = useTranslation();
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const router  = useRouter();
@@ -89,9 +92,10 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
         <div className="hero-noise" aria-hidden />
 
         <div
-          className="max-w-[1040px] mx-auto w-full px-6 md:px-10 py-16 md:py-0 flex flex-col items-center text-center"
+          className="max-w-[1200px] mx-auto w-full px-6 md:px-10 py-16 md:py-0 grid lg:grid-cols-12 gap-12 items-center"
           style={{ position: "relative", zIndex: 1 }}
         >
+        <div className="lg:col-span-7 flex flex-col items-center text-center lg:items-start lg:text-left">
           {launch.isLaunch ? (
             <Link
               href="/pricing"
@@ -193,6 +197,47 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
             </div>
           )}
         </div>
+
+        {/* Live market panel: real figures, ticking, desktop only. The page
+            opens like a terminal, not a brochure -- the numbers ARE the pitch. */}
+        <aside className="hidden lg:block lg:col-span-5 animate-fade-up-2" aria-label={t("stats.capitalRaised")}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow)", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--cr-ink-3)" }}>
+                {t("nav.data")}
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-up)" }}>
+                <span className="animate-pulse" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-up)", display: "inline-block" }} />
+                LIVE
+              </span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--cr-rule)" }}>
+              {([
+                [safeFormatCurrency(lane.reduce((a, l) => a + (l.funding_target ?? 0), 0)), t("listings.raising")],
+                [String(stats.startupCount), t("stats.startupsListed")],
+                [String(stats.investorCount), t("stats.verifiedInvestors")],
+                [String(stats.dealsClosedCount), t("stats.dealsClosed")],
+              ] as Array<[string, string]>).map(([v, label]) => (
+                <div key={label} style={{ background: "var(--cr-paper-2)", padding: "14px 16px" }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "20px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "6px" }}>{label}</div>
+                </div>
+              ))}
+            </div>
+            {/* The three freshest rounds, as ledger rows. */}
+            <div style={{ borderTop: "1px solid var(--cr-rule)" }}>
+              {lane.slice(0, 3).map((l, i) => (
+                <Link key={l.id} href={`/startups/${l.slug}`}
+                  style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", padding: "10px 16px", textDecoration: "none", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.name}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "capitalize", whiteSpace: "nowrap" }}>{l.stage.replace(/_/g, " ")}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-copper)", whiteSpace: "nowrap" }}>{safeFormatCurrency(l.funding_target)}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </aside>
+        </div>
       </section>
 
       {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
@@ -229,12 +274,12 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null }: P
       {/* One slow lane of what is actually raising right now — the ledger
           moving. Data the page already holds; duplicated once for a
           seamless loop; pauses on hover; absent under reduced motion. */}
-      {listings.length >= 4 && (
+      {lane.length >= 4 && (
         <div className="cr-ticker" aria-label={t("ticker.aria")}
           style={{ borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)", padding: "10px 0" }}>
           <div className="cr-ticker-lane">
-            {[...listings, ...listings].map((l, i) => (
-              <Link key={`${l.id}-${i}`} href={`/startups/${l.slug}`} aria-hidden={i >= listings.length}
+            {[...lane, ...lane].map((l, i) => (
+              <Link key={`${l.id}-${i}`} href={`/startups/${l.slug}`} aria-hidden={i >= lane.length}
                 style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", padding: "0 28px", textDecoration: "none", borderLeft: "1px solid var(--cr-rule)" }}>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)" }}>{l.name}</span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{l.stage.replace(/_/g, " ")}</span>

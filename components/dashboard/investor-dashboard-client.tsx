@@ -315,6 +315,7 @@ function WatchlistTriage({ startupId, status, priority, onChange }: { startupId:
         {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
       </select>
       {/* Priority: three dots, click to set, click the current one to clear. */}
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "8px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
       <div style={{ display: "inline-flex", gap: "3px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
         {[1, 2, 3].map((n) => (
           <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
@@ -662,7 +663,9 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               {t("dashboard.membership", { tier: tierLabel })}
             </p>
           </div>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {/* Hidden in view-as: these navigate the ADMIN's own surfaces and
+              silently leave the impersonation -- the banner owns the exit. */}
+          {!viewingAs && <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <Link href="/dashboard/messages" style={outlineBtn}>
               <MessageSquare style={{ width: 13, height: 13 }} /> {t("dashboard.messages")}
             </Link>
@@ -672,7 +675,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             <Link href="/dashboard/investor/settings" style={outlineBtn}>
               <Settings style={{ width: 13, height: 13 }} /> {t("dashboard.settings")}
             </Link>
-          </div>
+          </div>}
         </div>
       </div>
 
@@ -759,11 +762,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* ── Watchlist ── */}
         {activeTab === "watchlist" && (
           <div>
-            <ErrorBoundary labelKey="sections.profileViewers"><WhoViewedYou /></ErrorBoundary>
+            {!viewingAs && <ErrorBoundary labelKey="sections.profileViewers"><WhoViewedYou /></ErrorBoundary>}
             {/* What moved on the companies already saved, above the list of
                 them: the list says what you picked, this says what happened. */}
             <ErrorBoundary labelKey="sections.recentlyViewed"><WatchlistChanges /></ErrorBoundary>
-            <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>
+            {/* Fetches the CALLER's own view history -- in view-as that is the
+                admin's trail, not the member's. Hidden rather than wrong. */}
+            {!viewingAs && <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>}
             {allocation && caps.allocationTracking && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
             <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>

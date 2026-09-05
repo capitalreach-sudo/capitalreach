@@ -36,8 +36,11 @@ const NO_LAUNCH   = { isLaunch: false, memberCount: 0, target: 100 };
  * Promise.all — never serial awaits — and a database outage renders the
  * shell rather than an error page.
  */
+export type TickerSnippet = Pick<ListingSnippet, "id" | "name" | "slug" | "stage" | "funding_target">;
+
 export default async function HomePage() {
   let listings: ListingSnippet[] = [];
+  let tickerListings: TickerSnippet[] = [];
   let stats = EMPTY_STATS;
   let launch = NO_LAUNCH;
 
@@ -50,7 +53,7 @@ export default async function HomePage() {
       () => getPlatformStats(createAdminClient()),
       ["home-stats"], { revalidate: 60 },
     );
-    const [statsRes, launchRes, listingsRes] = await Promise.all([
+    const [statsRes, launchRes, listingsRes, tickerRes] = await Promise.all([
       cachedStats(),
       getLaunchStatus(),
       supabase
@@ -59,10 +62,21 @@ export default async function HomePage() {
         .eq("status", "active")
         .order("vaultrise_score", { ascending: false, nullsFirst: false })
         .limit(8),
+      // The ticker is the whole market moving, not a shortlist: EVERY active
+      // round rides the lane (Jack's call). Light projection, cached with the
+      // stats, so the full market costs a few KB.
+      supabase
+        .from("startups")
+        .select("id,name,slug,stage,funding_target")
+        .eq("status", "active")
+        .neq("round_state", "paused")
+        .order("created_at", { ascending: false })
+        .limit(500),
     ]);
     stats    = statsRes;
     launch   = launchRes;
     listings = (listingsRes.data ?? []) as ListingSnippet[];
+    tickerListings = (tickerRes.data ?? []) as TickerSnippet[];
   } catch {
     /* DB not configured — render the shell with zero counts */
   }
@@ -86,7 +100,7 @@ export default async function HomePage() {
       <Navbar />
       <JsonLdScript data={organizationJsonLd()} />
       <JsonLdScript data={webSiteJsonLd()} />
-      <HomepageClient stats={stats} listings={listings} launch={launch} viewerRole={viewerRole} />
+      <HomepageClient stats={stats} listings={listings} tickerListings={tickerListings} launch={launch} viewerRole={viewerRole} />
       <Footer />
     </>
   );
