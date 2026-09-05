@@ -1137,7 +1137,8 @@
     "snoozeForever": "Dauerhaft ausblenden",
     "snooze30": "30 Tage ausblenden",
     "snooze90": "90 Tage ausblenden",
-    "snooze180": "6 Monate ausblenden"
+    "snooze180": "6 Monate ausblenden",
+    "trending": "Im Trend"
   },
   "startup": {
     "back": "Zurück zum Verzeichnis",
@@ -3555,5 +3556,12 @@
     "views30d": "Aufrufe in 30 Tagen",
     "interestedInYou": "interessiert",
     "conversations30d": "Gespräche"
+  },
+  "feed": {
+    "title": "Live auf CapitalReach",
+    "listingJoined": "{name} hat eine Runde eröffnet",
+    "investorJoined": "Ein neuer Investor ist beigetreten",
+    "ndaSigned": "Eine NDA wurde unterzeichnet",
+    "roundClosed": "Eine Runde wurde erfolgreich abgeschlossen"
   }
 }

@@ -1121,7 +1121,8 @@
     "snoozeForever": "Ukryj na stałe",
     "snooze30": "Ukryj 30 dni",
     "snooze90": "Ukryj 90 dni",
-    "snooze180": "Ukryj 6 miesięcy"
+    "snooze180": "Ukryj 6 miesięcy",
+    "trending": "Na fali"
   },
   "startupDetail": {
     "overview": "Przegląd",
@@ -3555,5 +3556,12 @@
     "views30d": "wyświetleń w 30 dni",
     "interestedInYou": "zainteresowanych",
     "conversations30d": "rozmów"
+  },
+  "feed": {
+    "title": "Na żywo na CapitalReach",
+    "listingJoined": "{name} otworzył rundę",
+    "investorJoined": "Dołączył nowy inwestor",
+    "ndaSigned": "Podpisano NDA",
+    "roundClosed": "Runda zakończyła się sukcesem"
   }
 }

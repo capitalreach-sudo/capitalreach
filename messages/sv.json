@@ -1121,7 +1121,8 @@
     "snoozeForever": "Dölj för alltid",
     "snooze30": "Dölj 30 dagar",
     "snooze90": "Dölj 90 dagar",
-    "snooze180": "Dölj 6 månader"
+    "snooze180": "Dölj 6 månader",
+    "trending": "Trendar"
   },
   "startupDetail": {
     "overview": "Översikt",
@@ -3555,5 +3556,12 @@
     "views30d": "visningar på 30 dagar",
     "interestedInYou": "intresserade",
     "conversations30d": "konversationer"
+  },
+  "feed": {
+    "title": "Live på CapitalReach",
+    "listingJoined": "{name} öppnade en runda",
+    "investorJoined": "En ny investerare gick med",
+    "ndaSigned": "Ett NDA undertecknades",
+    "roundClosed": "En runda stängdes framgångsrikt"
   }
 }

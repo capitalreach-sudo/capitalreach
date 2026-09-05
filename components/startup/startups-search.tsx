@@ -509,6 +509,11 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
               {t("startup.new")}
             </span>
           )}
+          {(s as { trending?: boolean }).trending && (
+            <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              ▲ {t("startups.trending")}
+            </span>
+          )}
         </div>
 
         {/* Metrics. Only the numbers this viewer actually HAS render -- a row of

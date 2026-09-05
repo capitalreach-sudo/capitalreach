@@ -8,6 +8,7 @@ import { useReveal } from "@/hooks/useReveal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { ActivityPulse } from "@/components/homepage/activity-pulse";
 import { safeFormatCurrency } from "@/lib/format";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
@@ -291,6 +292,9 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
           </div>
         </div>
       )}
+
+      {/* ── 2c. THE HEARTBEAT ──────────────────────────────── */}
+      <ActivityPulse />
 
       {/* ── 3. HOW IT WORKS ─────────────────────────────────── */}
       {/* Two tracks side by side: the reader self-selects founder or investor

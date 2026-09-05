@@ -1130,7 +1130,8 @@
     "snoozeForever": "إخفاء نهائيًا",
     "snooze30": "إخفاء 30 يومًا",
     "snooze90": "إخفاء 90 يومًا",
-    "snooze180": "إخفاء 6 أشهر"
+    "snooze180": "إخفاء 6 أشهر",
+    "trending": "رائج"
   },
   "startup": {
     "back": "العودة إلى الدليل",
@@ -3555,5 +3556,12 @@
     "views30d": "مشاهدة خلال 30 يومًا",
     "interestedInYou": "مهتمون",
     "conversations30d": "محادثات"
+  },
+  "feed": {
+    "title": "مباشر على CapitalReach",
+    "listingJoined": "فتح {name} جولة تمويل",
+    "investorJoined": "انضم مستثمر جديد",
+    "ndaSigned": "تم توقيع اتفاقية سرية",
+    "roundClosed": "أُغلقت جولة بنجاح"
   }
 }

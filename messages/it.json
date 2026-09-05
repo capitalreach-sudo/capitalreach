@@ -1121,7 +1121,8 @@
     "snoozeForever": "Nascondi per sempre",
     "snooze30": "Nascondi 30 giorni",
     "snooze90": "Nascondi 90 giorni",
-    "snooze180": "Nascondi 6 mesi"
+    "snooze180": "Nascondi 6 mesi",
+    "trending": "In tendenza"
   },
   "startupDetail": {
     "overview": "Panoramica",
@@ -3555,5 +3556,12 @@
     "views30d": "visite in 30 giorni",
     "interestedInYou": "interessati",
     "conversations30d": "conversazioni"
+  },
+  "feed": {
+    "title": "In diretta su CapitalReach",
+    "listingJoined": "{name} ha aperto un round",
+    "investorJoined": "Un nuovo investitore si è unito",
+    "ndaSigned": "È stato firmato un NDA",
+    "roundClosed": "Un round si è chiuso con successo"
   }
 }

@@ -1130,7 +1130,8 @@
     "snoozeForever": "永久隐藏",
     "snooze30": "隐藏 30 天",
     "snooze90": "隐藏 90 天",
-    "snooze180": "隐藏 6 个月"
+    "snooze180": "隐藏 6 个月",
+    "trending": "热门"
   },
   "startup": {
     "back": "返回目录",
@@ -3555,5 +3556,12 @@
     "views30d": "30天内浏览",
     "interestedInYou": "感兴趣",
     "conversations30d": "对话"
+  },
+  "feed": {
+    "title": "CapitalReach 实时动态",
+    "listingJoined": "{name} 开启了一轮融资",
+    "investorJoined": "一位新投资人加入",
+    "ndaSigned": "一份保密协议已签署",
+    "roundClosed": "一轮融资成功完成"
   }
 }

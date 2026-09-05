@@ -1121,7 +1121,8 @@
     "snoozeForever": "हमेशा के लिए छिपाएँ",
     "snooze30": "30 दिन छिपाएँ",
     "snooze90": "90 दिन छिपाएँ",
-    "snooze180": "6 महीने छिपाएँ"
+    "snooze180": "6 महीने छिपाएँ",
+    "trending": "ट्रेंडिंग"
   },
   "startupDetail": {
     "overview": "अवलोकन",
@@ -3555,5 +3556,12 @@
     "views30d": "30 दिनों में व्यू",
     "interestedInYou": "इच्छुक",
     "conversations30d": "बातचीत"
+  },
+  "feed": {
+    "title": "CapitalReach पर लाइव",
+    "listingJoined": "{name} ने राउंड खोला",
+    "investorJoined": "एक नया निवेशक जुड़ा",
+    "ndaSigned": "एक NDA साइन हुआ",
+    "roundClosed": "एक राउंड सफलतापूर्वक बंद हुआ"
   }
 }

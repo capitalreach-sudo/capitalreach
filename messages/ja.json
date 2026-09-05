@@ -1130,7 +1130,8 @@
     "snoozeForever": "ずっと非表示",
     "snooze30": "30日間 非表示",
     "snooze90": "90日間 非表示",
-    "snooze180": "6か月 非表示"
+    "snooze180": "6か月 非表示",
+    "trending": "急上昇"
   },
   "startup": {
     "back": "ディレクトリに戻る",
@@ -3555,5 +3556,12 @@
     "views30d": "30日間の閲覧",
     "interestedInYou": "関心あり",
     "conversations30d": "会話"
+  },
+  "feed": {
+    "title": "CapitalReachのライブ動向",
+    "listingJoined": "{name}がラウンドを開始",
+    "investorJoined": "新しい投資家が参加",
+    "ndaSigned": "NDAが締結されました",
+    "roundClosed": "ラウンドが成立しました"
   }
 }

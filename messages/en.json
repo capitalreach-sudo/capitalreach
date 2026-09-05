@@ -1141,7 +1141,8 @@
     "snoozeForever": "Hide for good",
     "snooze30": "Hide 30 days",
     "snooze90": "Hide 90 days",
-    "snooze180": "Hide 6 months"
+    "snooze180": "Hide 6 months",
+    "trending": "Trending"
   },
   "startup": {
     "back": "Back to directory",
@@ -3555,5 +3556,12 @@
     "views30d": "views in 30 days",
     "interestedInYou": "interested",
     "conversations30d": "conversations"
+  },
+  "feed": {
+    "title": "Live on CapitalReach",
+    "listingJoined": "{name} opened a round",
+    "investorJoined": "A new investor joined",
+    "ndaSigned": "An NDA was signed",
+    "roundClosed": "A round closed successfully"
   }
 }

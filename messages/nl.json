@@ -1121,7 +1121,8 @@
     "snoozeForever": "Voorgoed verbergen",
     "snooze30": "30 dagen verbergen",
     "snooze90": "90 dagen verbergen",
-    "snooze180": "6 maanden verbergen"
+    "snooze180": "6 maanden verbergen",
+    "trending": "Trending"
   },
   "startupDetail": {
     "overview": "Overzicht",
@@ -3555,5 +3556,12 @@
     "views30d": "weergaven in 30 dagen",
     "interestedInYou": "geïnteresseerd",
     "conversations30d": "gesprekken"
+  },
+  "feed": {
+    "title": "Live op CapitalReach",
+    "listingJoined": "{name} opende een ronde",
+    "investorJoined": "Een nieuwe investeerder sloot zich aan",
+    "ndaSigned": "Een NDA werd ondertekend",
+    "roundClosed": "Een ronde werd succesvol gesloten"
   }
 }

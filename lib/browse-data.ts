@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
@@ -28,20 +29,58 @@ export type BrowseStartup = {
   logo_url?: string | null;
   logo_color?: string | null;
   is_demo?: boolean;
+  /** View velocity: markedly more views this week than last (momentum badge). */
+  trending?: boolean;
 };
+
+/**
+ * Which listings have MOMENTUM: markedly more views this week than last.
+ * Computed from the pageviews the detail page already records -- at least five
+ * views in the last seven days AND 1.5x the prior seven. Cached for five
+ * minutes; the badge is a signal, not a stock price.
+ */
+const trendingIds = unstable_cache(async (): Promise<string[]> => {
+  try {
+    const admin = createAdminClient();
+    const since = new Date(Date.now() - 14 * 86_400_000).toISOString();
+    const { data } = await admin
+      .from("pageviews")
+      .select("startup_id, created_at")
+      .gte("created_at", since)
+      .limit(10000);
+    const weekAgo = Date.now() - 7 * 86_400_000;
+    const recent = new Map<string, number>();
+    const prior = new Map<string, number>();
+    for (const r of data ?? []) {
+      const m = new Date(r.created_at).getTime() >= weekAgo ? recent : prior;
+      m.set(r.startup_id, (m.get(r.startup_id) ?? 0) + 1);
+    }
+    const out: string[] = [];
+    recent.forEach((n, id) => {
+      if (n >= 5 && n > (prior.get(id) ?? 0) * 1.5) out.push(id);
+    });
+    return out;
+  } catch {
+    return [];
+  }
+}, ["trending-startups"], { revalidate: 300 });
 
 export async function loadActiveStartups(): Promise<BrowseStartup[] | null> {
   try {
     const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from("startups")
-      .select(STARTUP_LIST_COLUMNS)
-      .eq("status", "active")
-      // B16: a founder-paused round is off the market until they resume it.
-      .neq("round_state", "paused")
-      .order("created_at", { ascending: false });
+    const [{ data, error }, hot] = await Promise.all([
+      supabase
+        .from("startups")
+        .select(STARTUP_LIST_COLUMNS)
+        .eq("status", "active")
+        // B16: a founder-paused round is off the market until they resume it.
+        .neq("round_state", "paused")
+        .order("created_at", { ascending: false }),
+      trendingIds(),
+    ]);
     if (error) return null;
-    return (data ?? []) as unknown as BrowseStartup[];
+    const hotSet = new Set(hot);
+    return (data ?? []).map((r) => ({ ...(r as unknown as BrowseStartup), trending: hotSet.has((r as { id: string }).id) }));
   } catch {
     return null;
   }

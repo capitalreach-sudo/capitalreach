@@ -1121,7 +1121,8 @@
     "snoozeForever": "Скрыть навсегда",
     "snooze30": "Скрыть на 30 дней",
     "snooze90": "Скрыть на 90 дней",
-    "snooze180": "Скрыть на 6 месяцев"
+    "snooze180": "Скрыть на 6 месяцев",
+    "trending": "В тренде"
   },
   "startupDetail": {
     "overview": "Обзор",
@@ -3555,5 +3556,12 @@
     "views30d": "просмотров за 30 дней",
     "interestedInYou": "заинтересованы",
     "conversations30d": "диалогов"
+  },
+  "feed": {
+    "title": "Сейчас на CapitalReach",
+    "listingJoined": "{name} открыл раунд",
+    "investorJoined": "Присоединился новый инвестор",
+    "ndaSigned": "Подписано NDA",
+    "roundClosed": "Раунд успешно закрыт"
   }
 }
