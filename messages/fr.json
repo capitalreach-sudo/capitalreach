@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Signaler",
     "tab": "Signalements",
-    "title": "Signaler ceci",
+    "title": "État du marché",
     "intro": "Dites-nous ce qui ne va pas. Les signalements sont confidentiels : la personne signalée ne les voit pas, ni qui les a envoyés.",
     "detailPh": "Autre chose à nous dire ? (facultatif)",
     "submit": "Envoyer le signalement",
@@ -3149,7 +3149,9 @@
       "abuse": "Abusif ou harcelant",
       "not_raising": "Ne lève pas réellement",
       "other": "Autre chose"
-    }
+    },
+    "medianTarget": "Objectif médian de tour",
+    "newThisMonth": "Nouveaux tours ce mois-ci"
   },
   "deleteAccount": {
     "willAnonymise": "Votre compte a des opérations clôturées sur la plateforme : il ne peut donc pas être simplement effacé — la contrepartie en garde trace, et une commission due ne disparaît pas avec le compte. À la place, vos nom, e-mail, photo et textes de profil sont supprimés définitivement et l'annonce est retirée. Il ne reste qu'un enregistrement de transaction sans données personnelles.",

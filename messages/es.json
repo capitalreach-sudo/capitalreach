@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Denunciar",
     "tab": "Denuncias",
-    "title": "Denunciar esto",
+    "title": "Estado del mercado",
     "intro": "Dinos qué falla. Las denuncias son privadas: la persona denunciada nunca las ve ni sabe quién las presentó.",
     "detailPh": "¿Algo más que debamos saber? (opcional)",
     "submit": "Enviar denuncia",
@@ -3149,7 +3149,9 @@
       "abuse": "Abusivo o acoso",
       "not_raising": "No está levantando realmente",
       "other": "Otra cosa"
-    }
+    },
+    "medianTarget": "Objetivo mediano de ronda",
+    "newThisMonth": "Rondas nuevas este mes"
   },
   "deleteAccount": {
     "willAnonymise": "Tu cuenta tiene operaciones cerradas en la plataforma, así que no puede borrarse sin más: la otra parte también tiene registro y una comisión pendiente no desaparece con la cuenta. En su lugar, tu nombre, correo, foto y textos de perfil se eliminan de forma permanente y la ficha se retira. Queda un registro de transacción sin datos personales.",

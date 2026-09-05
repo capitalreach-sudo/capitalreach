@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Melden",
     "tab": "Meldungen",
-    "title": "Das hier melden",
+    "title": "Marktlage",
     "intro": "Sag uns, was nicht stimmt. Meldungen sind vertraulich — die gemeldete Person sieht weder die Meldung noch, wer sie eingereicht hat.",
     "detailPh": "Sonst noch etwas? (optional)",
     "submit": "Meldung senden",
@@ -3149,7 +3149,9 @@
       "abuse": "Beleidigend oder belästigend",
       "not_raising": "Sammelt gar kein Kapital",
       "other": "Etwas anderes"
-    }
+    },
+    "medianTarget": "Medianes Rundenziel",
+    "newThisMonth": "Neue Runden diesen Monat"
   },
   "deleteAccount": {
     "willAnonymise": "Dein Konto hat abgeschlossene Deals auf der Plattform und kann deshalb nicht einfach gelöscht werden — die Gegenseite hat ebenfalls einen Beleg, und offene Gebühren verschwinden nicht mit dem Konto. Stattdessen werden Name, E-Mail, Foto und Profiltexte dauerhaft entfernt und das Listing geht offline. Übrig bleibt ein Transaktionsbeleg ohne persönliche Daten.",

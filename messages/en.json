@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Report",
     "tab": "Reports",
-    "title": "Report this",
+    "title": "State of the market",
     "intro": "Tell us what is wrong. Reports are private — the person you are reporting never sees them or who filed them.",
     "detailPh": "Anything else we should know? (optional)",
     "submit": "Send report",
@@ -3149,7 +3149,9 @@
       "abuse": "Abusive or harassing",
       "not_raising": "Not actually raising",
       "other": "Something else"
-    }
+    },
+    "medianTarget": "Median round target",
+    "newThisMonth": "New rounds this month"
   },
   "deleteAccount": {
     "willAnonymise": "Your account has closed deals on the platform, so it cannot simply be erased — the other side of those deals has a record too, and any fee still owed does not disappear with the account. Instead your name, email, photo and profile text are permanently removed and the listing comes down. What is left is a transaction record with nothing personal on it.",

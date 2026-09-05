@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Zgłoś",
     "tab": "Zgłoszenia",
-    "title": "Zgłoś to",
+    "title": "Stan rynku",
     "intro": "Napisz, co jest nie tak. Zgłoszenia są poufne — osoba zgłaszana ich nie widzi ani nie wie, kto je złożył.",
     "detailPh": "Coś jeszcze, co powinniśmy wiedzieć? (opcjonalnie)",
     "submit": "Wyślij zgłoszenie",
@@ -3149,7 +3149,9 @@
       "abuse": "Obraźliwe lub nękające",
       "not_raising": "Wcale nie zbiera kapitału",
       "other": "Coś innego"
-    }
+    },
+    "medianTarget": "Mediana celu rundy",
+    "newThisMonth": "Nowe rundy w tym miesiącu"
   },
   "deleteAccount": {
     "willAnonymise": "Twoje konto ma zamknięte transakcje na platformie, więc nie da się go po prostu usunąć — druga strona też ma zapis, a nieopłacona prowizja nie znika razem z kontem. Zamiast tego trwale usuwamy imię i nazwisko, e-mail, zdjęcie i teksty profilu, a ogłoszenie znika. Zostaje zapis transakcji bez danych osobowych.",

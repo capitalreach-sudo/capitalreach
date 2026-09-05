@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Rapportera",
     "tab": "Rapporter",
-    "title": "Rapportera det här",
+    "title": "Marknadsläget",
     "intro": "Berätta vad som är fel. Rapporter är privata — den som rapporteras ser dem aldrig, och inte heller vem som skickade dem.",
     "detailPh": "Något mer vi bör veta? (valfritt)",
     "submit": "Skicka rapport",
@@ -3149,7 +3149,9 @@
       "abuse": "Kränkande eller trakasserande",
       "not_raising": "Reser faktiskt inte kapital",
       "other": "Något annat"
-    }
+    },
+    "medianTarget": "Medianmål för runda",
+    "newThisMonth": "Nya rundor denna månad"
   },
   "deleteAccount": {
     "willAnonymise": "Ditt konto har avslutade affärer på plattformen och kan därför inte bara raderas — motparten har också en notering, och en obetald avgift försvinner inte med kontot. I stället tas namn, e-post, foto och profiltexter bort permanent och annonsen plockas ned. Kvar blir en transaktionsnotering utan personuppgifter.",

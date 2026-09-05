@@ -32,6 +32,11 @@ export interface PlatformData {
   recentStartups: PlatformTopStartup[];
   /** Twelve months to now, oldest first. Always twelve entries, zeros included. */
   monthly: PlatformMonth[];
+  /** The state-of-the-market report band: medians and this-month movement. */
+  report: {
+    medianByStage: Record<string, number>;
+    newThisMonth: number;
+  };
   lastUpdated: string;
 }
 
@@ -40,6 +45,7 @@ export const EMPTY_PLATFORM_DATA: PlatformData = {
   byDealStage: { intro: 0, due_diligence: 0, term_sheet: 0, closed: 0, passed: 0 },
   activeDeals: 0, closeRate: null, closedCurrencies: [],
   byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [], monthly: [],
+  report: { medianByStage: {}, newThisMonth: 0 },
   lastUpdated: new Date(0).toISOString(),
 };
 
@@ -175,6 +181,25 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         created_at: s.created_at,
       }));
 
+
+    // ── The report band: median round target per stage, and this month's
+    // new rounds. Medians, not means -- one mega-round must not move the
+    // "typical" number the report claims.
+    const targetsByStage: Record<string, number[]> = {};
+    for (const st of startupData) {
+      if (st.stage && st.funding_target) {
+        (targetsByStage[st.stage] ??= []).push(st.funding_target);
+      }
+    }
+    const medianByStage: Record<string, number> = {};
+    for (const [stage, arr] of Object.entries(targetsByStage)) {
+      arr.sort((a, b) => a - b);
+      medianByStage[stage] = arr[Math.floor(arr.length / 2)];
+    }
+    const monthStart = new Date();
+    monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+    const newThisMonth = startupData.filter((st) => new Date(st.created_at) >= monthStart).length;
+
     return {
       startupCount: startupData.length,
       investorCount: investors.count ?? 0,
@@ -189,6 +214,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       topStartups,
       recentStartups,
       monthly,
+      report: { medianByStage, newThisMonth },
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {

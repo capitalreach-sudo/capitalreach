@@ -3125,7 +3125,7 @@
   "report": {
     "cta": "Denunciar",
     "tab": "Denúncias",
-    "title": "Denunciar isto",
+    "title": "Estado do mercado",
     "intro": "Diga-nos o que está errado. As denúncias são privadas — a pessoa denunciada nunca as vê nem sabe quem as fez.",
     "detailPh": "Mais alguma coisa que devamos saber? (opcional)",
     "submit": "Enviar denúncia",
@@ -3149,7 +3149,9 @@
       "abuse": "Abusivo ou assédio",
       "not_raising": "Não está mesmo a angariar",
       "other": "Outra coisa"
-    }
+    },
+    "medianTarget": "Objetivo mediano da ronda",
+    "newThisMonth": "Novas rondas este mês"
   },
   "deleteAccount": {
     "willAnonymise": "A sua conta tem negócios fechados na plataforma, por isso não pode ser simplesmente apagada — a contraparte também tem registo e uma comissão em dívida não desaparece com a conta. Em vez disso, o seu nome, email, foto e textos de perfil são removidos definitivamente e o anúncio é retirado. Fica um registo de transação sem dados pessoais.",

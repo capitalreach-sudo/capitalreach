@@ -42,6 +42,7 @@ interface PlatformData {
   topStartups: TopStartup[];
   recentStartups: TopStartup[];
   monthly?: Array<{ month: string; listings: number; closed: number; sought: number }>;
+  report?: { medianByStage: Record<string, number>; newThisMonth: number };
   lastUpdated: string;
 }
 
@@ -404,6 +405,41 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="var(--cr-copper)" />
               </div>
             </section>
+
+            {/* ── Chapter: state of the market ──────────────────────────────
+                The report band -- the page's one slab moment. Medians, not
+                means: one mega-round must not move what the market calls a
+                typical raise. Top three stages by listing count. */}
+            {Object.keys(data.report?.medianByStage ?? {}).length > 0 && (
+              <section style={{ marginBottom: "48px", background: "var(--cr-band-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "24px" }}>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("report.title")}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "24px 48px" }}>
+                  {Object.entries(data.report!.medianByStage)
+                    .sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
+                    .slice(0, 3)
+                    .map(([stage, median]) => (
+                      <div key={stage}>
+                        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                          {"$" + (median >= 1_000_000 ? (median / 1_000_000).toFixed(1) + "M" : Math.round(median / 1000) + "k")}
+                        </div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
+                          {t("report.medianTarget")} {"\u00B7"} {(STAGE_LABELS[stage] ?? stage).replace(/_/g, " ")}
+                        </div>
+                      </div>
+                    ))}
+                  {data.report!.newThisMonth > 0 && (
+                    <div>
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-band-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                        {data.report!.newThisMonth}
+                      </div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
+                        {t("report.newThisMonth")}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
 
             {/* ── Chapter: growth over time ─────────────────────────────────
                 Totals say how big the platform is and nothing about whether
