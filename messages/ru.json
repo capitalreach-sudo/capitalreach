@@ -3568,5 +3568,21 @@
     "title": "Инвесторы, подходящие вашему раунду",
     "ofTotal": "из {total} активных инвесторов подходят по отрасли и стадии",
     "browse": "Смотреть в каталоге"
+  },
+  "notif": {
+    "savedTitle": "Инвестор сохранил ваш листинг",
+    "savedBody": "Откройте дашборд, чтобы увидеть, сколько инвесторов вас сохранили.",
+    "questionAskedTitle": "{name} задал вопрос о {startup}",
+    "questionAnsweredTitle": "{name} ответил на ваш вопрос",
+    "interestTitle": "{name} заинтересован",
+    "interestBodyInvestor": "Инвестор проявил интерес к вашему раунду. Откройте сделку, чтобы начать разговор.",
+    "interestBodyStartup": "Стартап заинтересован в сотрудничестве с вами.",
+    "messageTitle": "Новое сообщение от {name}",
+    "docOpenedTitle": "{name} открыл {label}",
+    "docOpenedAnonTitle": "Инвестор открыл {label}",
+    "docOpenedBody": "Хороший момент для фоллоу-апа.",
+    "waitlistTitle": "Инвестор встал в ваш лист ожидания",
+    "waitlistBodyOversub": "Хотят участвовать, если появится место.",
+    "waitlistBodyClosed": "Хотят узнать о вашем следующем раунде."
   }
 }

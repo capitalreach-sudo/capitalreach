@@ -3568,5 +3568,21 @@
     "title": "Investidores compatíveis com a sua ronda",
     "ofTotal": "de {total} investidores ativos correspondem ao seu setor e fase",
     "browse": "Vê-los no diretório"
+  },
+  "notif": {
+    "savedTitle": "Um investidor guardou a sua listagem",
+    "savedBody": "Abra o painel para ver quantos investidores o guardaram.",
+    "questionAskedTitle": "{name} fez uma pergunta sobre {startup}",
+    "questionAnsweredTitle": "{name} respondeu à sua pergunta",
+    "interestTitle": "{name} está interessado",
+    "interestBodyInvestor": "Um investidor mostrou interesse na sua ronda. Abra um deal para iniciar a conversa.",
+    "interestBodyStartup": "Uma startup mostrou interesse em trabalhar consigo.",
+    "messageTitle": "Nova mensagem de {name}",
+    "docOpenedTitle": "{name} abriu {label}",
+    "docOpenedAnonTitle": "Um investidor abriu {label}",
+    "docOpenedBody": "Bom momento para dar seguimento.",
+    "waitlistTitle": "Um investidor entrou na sua lista de espera",
+    "waitlistBodyOversub": "Querem entrar se abrir espaço.",
+    "waitlistBodyClosed": "Querem saber quando voltar a captar."
   }
 }

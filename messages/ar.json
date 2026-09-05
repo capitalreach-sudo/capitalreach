@@ -3568,5 +3568,21 @@
     "title": "مستثمرون يناسبون جولتك",
     "ofTotal": "من أصل {total} مستثمرًا نشطًا يناسبون قطاعك ومرحلتك",
     "browse": "تصفحهم في الدليل"
+  },
+  "notif": {
+    "savedTitle": "حفظ مستثمر إدراجك",
+    "savedBody": "افتح لوحتك لترى عدد المستثمرين الذين حفظوك.",
+    "questionAskedTitle": "طرح {name} سؤالًا حول {startup}",
+    "questionAnsweredTitle": "أجاب {name} عن سؤالك",
+    "interestTitle": "{name} مهتم",
+    "interestBodyInvestor": "أبدى مستثمر اهتمامًا بجولتك. افتح صفقة لبدء المحادثة.",
+    "interestBodyStartup": "أبدت شركة ناشئة اهتمامًا بالعمل معك.",
+    "messageTitle": "رسالة جديدة من {name}",
+    "docOpenedTitle": "فتح {name} {label}",
+    "docOpenedAnonTitle": "فتح مستثمر {label}",
+    "docOpenedBody": "وقت مناسب للمتابعة.",
+    "waitlistTitle": "انضم مستثمر إلى قائمة انتظارك",
+    "waitlistBodyOversub": "يريدون المشاركة إذا توفر مكان.",
+    "waitlistBodyClosed": "يريدون معرفة موعد جولتك القادمة."
   }
 }

@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
     userId: startup.owner_id,
     type: "question_asked",
     title: `${inv.display_name ?? inv.firm_name ?? "An investor"} asked a question on ${startup.name}`,
+    titleKey: "notif.questionAskedTitle",
+    params: { name: inv.display_name ?? inv.firm_name ?? "An investor", startup: startup.name },
     body: question.trim().slice(0, 140),
     href: `/startups/${startup.slug}`,
   });
@@ -82,6 +84,8 @@ export async function PATCH(req: NextRequest) {
       userId: asker.owner_id,
       type: "question_answered",
       title: `${st?.name ?? "A founder"} answered your question`,
+      titleKey: "notif.questionAnsweredTitle",
+      params: { name: st?.name ?? "A founder" },
       body: answer.trim().slice(0, 140),
       href: st?.slug ? `/startups/${st.slug}` : null,
     });

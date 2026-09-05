@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { notifTitle, notifBody } from "@/lib/notification-text";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
@@ -272,9 +273,9 @@ export default function NotificationsPage() {
                   <Icon aria-hidden className="h-4 w-4 shrink-0 mt-0.5" style={{ color }} />
                   <div className="min-w-0 flex-1">
                     <p className={`text-sm text-cr-ink ${n.read_at ? "font-normal" : "font-semibold"}`}>
-                      {n.title}
+                      {notifTitle(n, t)}
                     </p>
-                    {n.body && <p className="text-sm font-light text-cr-i3 mt-0.5">{n.body}</p>}
+                    {notifBody(n, t) && <p className="text-sm font-light text-cr-i3 mt-0.5">{notifBody(n, t)}</p>}
                     <p className="text-[11px] text-cr-i4 mt-1 font-mono">{formatDate(n.created_at)}</p>
                   </div>
                   {/* Unread marker: the house diamond, copper. */}
@@ -306,7 +307,7 @@ export default function NotificationsPage() {
                     {/* Always visible below md: touch has no hover to reveal it. */}
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeOne(n.id); }}
-                      aria-label={`dismiss ${n.title}`}
+                      aria-label={`dismiss ${notifTitle(n, t)}`}
                       className="absolute top-0 right-0 flex h-10 w-10 items-center justify-center text-cr-i4 hover:text-cr-ink opacity-100 md:opacity-0 md:group-hover/row:opacity-100 md:focus:opacity-100 transition-opacity"
                       style={{ background: "transparent", border: "none", cursor: "pointer" }}
                     >

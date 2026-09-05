@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
     body: st.round_state === "oversubscribed"
       ? "They want in if space opens up."
       : "They want to hear when you raise again.",
+    titleKey: "notif.waitlistTitle",
+    bodyKey: st.round_state === "oversubscribed" ? "notif.waitlistBodyOversub" : "notif.waitlistBodyClosed",
     href: "/dashboard/startup",
   }).catch(() => {});
 

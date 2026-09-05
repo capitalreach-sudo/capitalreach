@@ -106,6 +106,9 @@ export async function POST(req: NextRequest) {
       body: fromType === "investor"
         ? "An investor signalled interest in your round. Open a deal to start the conversation."
         : "A startup signalled interest in working with you.",
+      titleKey: "notif.interestTitle",
+      bodyKey: fromType === "investor" ? "notif.interestBodyInvestor" : "notif.interestBodyStartup",
+      params: { name },
       href: fromType === "investor" ? "/dashboard/startup" : "/dashboard/investor",
     }).catch(() => {});
   }

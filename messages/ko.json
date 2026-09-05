@@ -3568,5 +3568,21 @@
     "title": "내 라운드에 맞는 투자자",
     "ofTotal": "활성 투자자 {total}명 중 산업과 단계가 일치",
     "browse": "디렉터리에서 보기"
+  },
+  "notif": {
+    "savedTitle": "투자자가 회사 정보를 저장했습니다",
+    "savedBody": "대시보드에서 몇 명의 투자자가 저장했는지 확인하세요.",
+    "questionAskedTitle": "{name}님이 {startup}에 대해 질문했습니다",
+    "questionAnsweredTitle": "{name}님이 질문에 답했습니다",
+    "interestTitle": "{name}님이 관심을 보였습니다",
+    "interestBodyInvestor": "투자자가 라운드에 관심을 보였습니다. 딜을 열어 대화를 시작하세요.",
+    "interestBodyStartup": "스타트업이 협업에 관심을 보였습니다.",
+    "messageTitle": "{name}님의 새 메시지",
+    "docOpenedTitle": "{name}님이 {label}을(를) 열었습니다",
+    "docOpenedAnonTitle": "투자자가 {label}을(를) 열었습니다",
+    "docOpenedBody": "관심이 있을 때 후속 연락을 해보세요.",
+    "waitlistTitle": "투자자가 대기자 명단에 등록했습니다",
+    "waitlistBodyOversub": "자리가 나면 참여하고 싶어 합니다.",
+    "waitlistBodyClosed": "다음 라운드 소식을 듣고 싶어 합니다."
   }
 }

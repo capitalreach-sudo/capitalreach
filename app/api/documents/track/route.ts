@@ -90,6 +90,9 @@ async function alertFounder(documentId: string, investorId: string): Promise<voi
       type: "listing_update",
       title: who ? `${who} opened ${doc?.label ?? "a document"}` : `An investor opened ${doc?.label ?? "a document"}`,
       body: "Worth a follow-up while it is front of mind.",
+      titleKey: who ? "notif.docOpenedTitle" : "notif.docOpenedAnonTitle",
+      bodyKey: "notif.docOpenedBody",
+      params: { name: who ?? "", label: doc?.label ?? "a document" },
       href: "/dashboard/startup",
     });
   } catch (err) {

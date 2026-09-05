@@ -3568,5 +3568,21 @@
     "title": "आपके राउंड से मेल खाते निवेशक",
     "ofTotal": "{total} सक्रिय निवेशकों में से आपके उद्योग और चरण से मेल खाते हैं",
     "browse": "डायरेक्टरी में देखें"
+  },
+  "notif": {
+    "savedTitle": "एक निवेशक ने आपकी लिस्टिंग सेव की",
+    "savedBody": "डैशबोर्ड खोलकर देखें कितने निवेशकों ने आपको सेव किया है।",
+    "questionAskedTitle": "{name} ने {startup} पर सवाल पूछा",
+    "questionAnsweredTitle": "{name} ने आपके सवाल का जवाब दिया",
+    "interestTitle": "{name} इच्छुक है",
+    "interestBodyInvestor": "एक निवेशक ने आपके राउंड में रुचि दिखाई। बातचीत शुरू करने के लिए डील खोलें।",
+    "interestBodyStartup": "एक स्टार्टअप ने आपके साथ काम करने में रुचि दिखाई।",
+    "messageTitle": "{name} का नया संदेश",
+    "docOpenedTitle": "{name} ने {label} खोला",
+    "docOpenedAnonTitle": "एक निवेशक ने {label} खोला",
+    "docOpenedBody": "फॉलो-अप के लिए सही समय है।",
+    "waitlistTitle": "एक निवेशक आपकी प्रतीक्षा सूची में जुड़ा",
+    "waitlistBodyOversub": "जगह खुलने पर वे शामिल होना चाहते हैं।",
+    "waitlistBodyClosed": "वे आपके अगले राउंड की खबर चाहते हैं।"
   }
 }

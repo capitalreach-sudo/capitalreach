@@ -595,24 +595,43 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   />
                 )}
               </div>
-            </div>
+              </div>
+            </section>
 
-            {/* Top startups + Recent */}
-            <div className="grid-half-stack" style={{ gap: "20px", marginBottom: "40px" }}>
+            {/* ── Chapter: the rounds themselves ────────────────────────────
+                After three chapters of aggregates, the individual listings.
+                The opener reuses the homepage's label for the same content,
+                so the two surfaces speak one vocabulary. */}
+            <section style={{ marginBottom: "48px" }}>
+              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("listings.sectionLabel")}</div>
+              <div className="grid-half-stack" style={{ gap: "20px" }}>
 
               {/* Top AI scores */}
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <Brain style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
                     <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.topAiScores")}</h3>
                   </div>
                   <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("common.viewAll")} →</Link>
                 </div>
+                {/* One plain-language line saying what the ranking is. The
+                    key sat unused in the dictionary; "Top AI Scores" alone
+                    told a first-time visitor nothing about what is scored. */}
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", margin: "0 0 14px" }}>
+                  {t("data.topPerforming")}
+                </p>
                 {data.topStartups.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noScoresYet")}</p>
                 ) : (
-                  data.topStartups.map((s, i) => (
+                  <>
+                  {/* A header line names the columns, so the right-hand pill
+                      is identified as the AI score before the first row. */}
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.company")}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.aiScore")}</span>
+                  </div>
+                  {data.topStartups.map((s, i) => (
                     <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.topStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink-4)", width: "16px", flexShrink: 0 }}>{i + 1}</span>
                       <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -620,11 +639,16 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{fmtMrr(s.mrr, t("data.preRev"))}</span></p>
+                        {/* The bare "$12K" said nothing about what was
+                            measured; the existing MRR key names the unit.
+                            Pre-revenue rows skip it -- "MRR Pre-rev" would
+                            label an absence. */}
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {s.mrr ? `${t("listings.mrr")} ` : ""}<span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{fmtMrr(s.mrr, t("data.preRev"))}</span></p>
                       </div>
                       <ScorePill score={s.ai_score} />
                     </Link>
-                  ))
+                  ))}
+                  </>
                 )}
               </div>
 
@@ -640,7 +664,14 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 {data.recentStartups.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noListingsYet")}</p>
                 ) : (
-                  data.recentStartups.map((s, i) => (
+                  <>
+                  {/* The right-hand mono figure is the round being raised;
+                      without a column name it read as any number at all. */}
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.company")}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.raising")}</span>
+                  </div>
+                  {data.recentStartups.map((s, i) => (
                     <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.recentStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
                       <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink-3)" }}>{s.name[0]}</span>
@@ -654,10 +685,12 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)" }}>{timeAgo(s.created_at)}</p>
                       </div>
                     </Link>
-                  ))
+                  ))}
+                  </>
                 )}
               </div>
-            </div>
+              </div>
+            </section>
 
             {/* CTA */}
             <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>

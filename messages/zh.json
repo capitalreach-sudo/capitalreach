@@ -3568,5 +3568,21 @@
     "title": "与你的融资轮匹配的投资人",
     "ofTotal": "在 {total} 位活跃投资人中与你的行业和阶段匹配",
     "browse": "在名录中查看"
+  },
+  "notif": {
+    "savedTitle": "一位投资人收藏了你的项目",
+    "savedBody": "打开仪表盘查看有多少投资人收藏了你。",
+    "questionAskedTitle": "{name} 就 {startup} 提出了问题",
+    "questionAnsweredTitle": "{name} 回答了你的问题",
+    "interestTitle": "{name} 表示了兴趣",
+    "interestBodyInvestor": "一位投资人对你的融资轮表示了兴趣。开启交易以开始对话。",
+    "interestBodyStartup": "一家初创公司表示希望与你合作。",
+    "messageTitle": "来自 {name} 的新消息",
+    "docOpenedTitle": "{name} 打开了 {label}",
+    "docOpenedAnonTitle": "一位投资人打开了 {label}",
+    "docOpenedBody": "趁热打铁，适合跟进。",
+    "waitlistTitle": "一位投资人加入了你的候补名单",
+    "waitlistBodyOversub": "如有空位，他们希望加入。",
+    "waitlistBodyClosed": "他们希望在你再次融资时得到通知。"
   }
 }

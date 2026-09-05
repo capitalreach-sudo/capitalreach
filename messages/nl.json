@@ -3568,5 +3568,21 @@
     "title": "Investeerders die bij je ronde passen",
     "ofTotal": "van {total} actieve investeerders passen bij je sector en fase",
     "browse": "Bekijk ze in de directory"
+  },
+  "notif": {
+    "savedTitle": "Een investeerder heeft je vermelding opgeslagen",
+    "savedBody": "Open je dashboard om te zien hoeveel investeerders je hebben opgeslagen.",
+    "questionAskedTitle": "{name} stelde een vraag over {startup}",
+    "questionAnsweredTitle": "{name} beantwoordde je vraag",
+    "interestTitle": "{name} is geïnteresseerd",
+    "interestBodyInvestor": "Een investeerder toonde interesse in je ronde. Open een deal om het gesprek te starten.",
+    "interestBodyStartup": "Een startup toonde interesse om met je samen te werken.",
+    "messageTitle": "Nieuw bericht van {name}",
+    "docOpenedTitle": "{name} opende {label}",
+    "docOpenedAnonTitle": "Een investeerder opende {label}",
+    "docOpenedBody": "Een goed moment voor een follow-up.",
+    "waitlistTitle": "Een investeerder sloot zich aan bij je wachtlijst",
+    "waitlistBodyOversub": "Ze willen meedoen als er ruimte vrijkomt.",
+    "waitlistBodyClosed": "Ze willen horen wanneer je opnieuw ophaalt."
   }
 }

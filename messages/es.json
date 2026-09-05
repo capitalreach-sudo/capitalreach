@@ -3568,5 +3568,21 @@
     "title": "Inversores que encajan con tu ronda",
     "ofTotal": "de {total} inversores activos encajan con tu sector y etapa",
     "browse": "Verlos en el directorio"
+  },
+  "notif": {
+    "savedTitle": "Un inversor guardó tu listado",
+    "savedBody": "Abre tu panel para ver cuántos inversores te han guardado.",
+    "questionAskedTitle": "{name} hizo una pregunta sobre {startup}",
+    "questionAnsweredTitle": "{name} respondió a tu pregunta",
+    "interestTitle": "{name} está interesado",
+    "interestBodyInvestor": "Un inversor mostró interés en tu ronda. Abre un deal para iniciar la conversación.",
+    "interestBodyStartup": "Una startup mostró interés en trabajar contigo.",
+    "messageTitle": "Nuevo mensaje de {name}",
+    "docOpenedTitle": "{name} abrió {label}",
+    "docOpenedAnonTitle": "Un inversor abrió {label}",
+    "docOpenedBody": "Buen momento para dar seguimiento.",
+    "waitlistTitle": "Un inversor se unió a tu lista de espera",
+    "waitlistBodyOversub": "Quieren entrar si se abre espacio.",
+    "waitlistBodyClosed": "Quieren saber cuándo vuelvas a levantar capital."
   }
 }

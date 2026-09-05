@@ -3568,5 +3568,21 @@
     "title": "Investisseurs correspondant à votre tour",
     "ofTotal": "sur {total} investisseurs actifs correspondent à votre secteur et stade",
     "browse": "Les voir dans l'annuaire"
+  },
+  "notif": {
+    "savedTitle": "Un investisseur a enregistré votre annonce",
+    "savedBody": "Ouvrez votre tableau de bord pour voir combien d'investisseurs vous ont enregistré.",
+    "questionAskedTitle": "{name} a posé une question sur {startup}",
+    "questionAnsweredTitle": "{name} a répondu à votre question",
+    "interestTitle": "{name} est intéressé",
+    "interestBodyInvestor": "Un investisseur a manifesté son intérêt pour votre tour. Ouvrez un deal pour lancer la conversation.",
+    "interestBodyStartup": "Une startup a manifesté son intérêt à travailler avec vous.",
+    "messageTitle": "Nouveau message de {name}",
+    "docOpenedTitle": "{name} a ouvert {label}",
+    "docOpenedAnonTitle": "Un investisseur a ouvert {label}",
+    "docOpenedBody": "Le bon moment pour une relance.",
+    "waitlistTitle": "Un investisseur a rejoint votre liste d'attente",
+    "waitlistBodyOversub": "Ils veulent participer si une place se libère.",
+    "waitlistBodyClosed": "Ils veulent être informés de votre prochaine levée."
   }
 }

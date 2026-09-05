@@ -1688,31 +1688,40 @@ export type Database = {
       notifications: {
         Row: {
           body: string | null
+          body_key: string | null
           created_at: string
           href: string | null
           id: string
+          params: Json | null
           read_at: string | null
           title: string
+          title_key: string | null
           type: string
           user_id: string
         }
         Insert: {
           body?: string | null
+          body_key?: string | null
           created_at?: string
           href?: string | null
           id?: string
+          params?: Json | null
           read_at?: string | null
           title: string
+          title_key?: string | null
           type: string
           user_id: string
         }
         Update: {
           body?: string | null
+          body_key?: string | null
           created_at?: string
           href?: string | null
           id?: string
+          params?: Json | null
           read_at?: string | null
           title?: string
+          title_key?: string | null
           type?: string
           user_id?: string
         }

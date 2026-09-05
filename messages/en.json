@@ -3568,5 +3568,21 @@
     "title": "Investors matching your round",
     "ofTotal": "of {total} live investors match your industry and stage",
     "browse": "Browse them in the directory"
+  },
+  "notif": {
+    "savedTitle": "An investor saved your listing",
+    "savedBody": "Open your dashboard to see how many investors have saved you.",
+    "questionAskedTitle": "{name} asked a question on {startup}",
+    "questionAnsweredTitle": "{name} answered your question",
+    "interestTitle": "{name} is interested",
+    "interestBodyInvestor": "An investor signalled interest in your round. Open a deal to start the conversation.",
+    "interestBodyStartup": "A startup signalled interest in working with you.",
+    "messageTitle": "New message from {name}",
+    "docOpenedTitle": "{name} opened {label}",
+    "docOpenedAnonTitle": "An investor opened {label}",
+    "docOpenedBody": "Worth a follow-up while it is front of mind.",
+    "waitlistTitle": "An investor joined your waitlist",
+    "waitlistBodyOversub": "They want in if space opens up.",
+    "waitlistBodyClosed": "They want to hear when you raise again."
   }
 }

@@ -3568,5 +3568,21 @@
     "title": "あなたのラウンドに合う投資家",
     "ofTotal": "{total}人のアクティブ投資家のうち、業界とステージが一致",
     "browse": "ディレクトリで見る"
+  },
+  "notif": {
+    "savedTitle": "投資家があなたのリスティングを保存しました",
+    "savedBody": "ダッシュボードで何人の投資家が保存したか確認できます。",
+    "questionAskedTitle": "{name}が{startup}について質問しました",
+    "questionAnsweredTitle": "{name}があなたの質問に回答しました",
+    "interestTitle": "{name}が関心を示しています",
+    "interestBodyInvestor": "投資家があなたのラウンドに関心を示しました。ディールを開いて会話を始めましょう。",
+    "interestBodyStartup": "スタートアップがあなたとの協業に関心を示しました。",
+    "messageTitle": "{name}から新着メッセージ",
+    "docOpenedTitle": "{name}が{label}を開きました",
+    "docOpenedAnonTitle": "投資家が{label}を開きました",
+    "docOpenedBody": "記憶が新しいうちにフォローアップを。",
+    "waitlistTitle": "投資家がウェイトリストに登録しました",
+    "waitlistBodyOversub": "枠が空けば参加を希望しています。",
+    "waitlistBodyClosed": "次の資金調達の際に知りたいそうです。"
   }
 }

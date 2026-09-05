@@ -44,6 +44,11 @@ interface NotifyInput {
   title: string;
   body?: string | null;
   href?: string | null;
+  /** Locale key + params (108): when present, clients render t(titleKey, params)
+      in the READER's language; the stored title/body stay as the fallback. */
+  titleKey?: string;
+  bodyKey?: string | null;
+  params?: Record<string, string | number> | null;
 }
 
 /**
@@ -71,11 +76,14 @@ export async function notifyUser(input: NotifyInput): Promise<void> {
       .maybeSingle();
     if (prefs?.muted_notification_types?.includes(input.type)) return;
     const { error } = await admin.from("notifications").insert({
-      user_id: input.userId,
-      type:    input.type,
-      title:   input.title.slice(0, 200),
-      body:    input.body ? input.body.slice(0, 500) : null,
-      href:    input.href ?? null,
+      user_id:   input.userId,
+      type:      input.type,
+      title:     input.title.slice(0, 200),
+      body:      input.body ? input.body.slice(0, 500) : null,
+      href:      input.href ?? null,
+      title_key: input.titleKey ?? null,
+      body_key:  input.bodyKey ?? null,
+      params:    input.params ?? null,
     });
     // supabase-js resolves with an { error } object rather than throwing, so
     // the catch below never saw a database failure. A rejected insert -- a

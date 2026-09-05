@@ -3568,5 +3568,21 @@
     "title": "Inwestorzy pasujący do Twojej rundy",
     "ofTotal": "z {total} aktywnych inwestorów pasuje do branży i etapu",
     "browse": "Zobacz ich w katalogu"
+  },
+  "notif": {
+    "savedTitle": "Inwestor zapisał Twój profil",
+    "savedBody": "Otwórz panel, aby zobaczyć ilu inwestorów Cię zapisało.",
+    "questionAskedTitle": "{name} zadał pytanie o {startup}",
+    "questionAnsweredTitle": "{name} odpowiedział na Twoje pytanie",
+    "interestTitle": "{name} jest zainteresowany",
+    "interestBodyInvestor": "Inwestor wyraził zainteresowanie Twoją rundą. Otwórz deal, aby rozpocząć rozmowę.",
+    "interestBodyStartup": "Startup wyraził zainteresowanie współpracą z Tobą.",
+    "messageTitle": "Nowa wiadomość od {name}",
+    "docOpenedTitle": "{name} otworzył {label}",
+    "docOpenedAnonTitle": "Inwestor otworzył {label}",
+    "docOpenedBody": "Dobry moment na follow-up.",
+    "waitlistTitle": "Inwestor dołączył do Twojej listy oczekujących",
+    "waitlistBodyOversub": "Chcą dołączyć, jeśli zwolni się miejsce.",
+    "waitlistBodyClosed": "Chcą wiedzieć, gdy znów będziesz pozyskiwać kapitał."
   }
 }

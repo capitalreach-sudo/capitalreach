@@ -3568,5 +3568,21 @@
     "title": "Investerare som matchar din runda",
     "ofTotal": "av {total} aktiva investerare matchar din bransch och fas",
     "browse": "Se dem i katalogen"
+  },
+  "notif": {
+    "savedTitle": "En investerare sparade din notering",
+    "savedBody": "Öppna din instrumentpanel för att se hur många investerare som sparat dig.",
+    "questionAskedTitle": "{name} ställde en fråga om {startup}",
+    "questionAnsweredTitle": "{name} besvarade din fråga",
+    "interestTitle": "{name} är intresserad",
+    "interestBodyInvestor": "En investerare visade intresse för din runda. Öppna en deal för att starta samtalet.",
+    "interestBodyStartup": "En startup visade intresse för att arbeta med dig.",
+    "messageTitle": "Nytt meddelande från {name}",
+    "docOpenedTitle": "{name} öppnade {label}",
+    "docOpenedAnonTitle": "En investerare öppnade {label}",
+    "docOpenedBody": "Ett bra tillfälle för uppföljning.",
+    "waitlistTitle": "En investerare gick med på din väntelista",
+    "waitlistBodyOversub": "De vill vara med om plats öppnas.",
+    "waitlistBodyClosed": "De vill veta när du reser kapital igen."
   }
 }

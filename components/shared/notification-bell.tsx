@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { notifTitle, notifBody } from "@/lib/notification-text";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -155,11 +156,11 @@ export function NotificationBell() {
                     />
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: n.read_at ? 400 : 600, fontSize: "12px", color: "var(--cr-ink)", lineHeight: 1.4 }}>
-                        {n.title}
+                        {notifTitle(n, t)}
                       </p>
-                      {n.body && (
+                      {notifBody(n, t) && (
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)", lineHeight: 1.45, marginTop: "2px" }}>
-                          {n.body}
+                          {notifBody(n, t)}
                         </p>
                       )}
                       <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-4)", marginTop: "3px" }}>

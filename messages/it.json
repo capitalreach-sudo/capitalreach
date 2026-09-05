@@ -3568,5 +3568,21 @@
     "title": "Investitori adatti al tuo round",
     "ofTotal": "su {total} investitori attivi corrispondono a settore e fase",
     "browse": "Vedili nella directory"
+  },
+  "notif": {
+    "savedTitle": "Un investitore ha salvato il tuo annuncio",
+    "savedBody": "Apri la dashboard per vedere quanti investitori ti hanno salvato.",
+    "questionAskedTitle": "{name} ha fatto una domanda su {startup}",
+    "questionAnsweredTitle": "{name} ha risposto alla tua domanda",
+    "interestTitle": "{name} è interessato",
+    "interestBodyInvestor": "Un investitore ha mostrato interesse per il tuo round. Apri un deal per iniziare la conversazione.",
+    "interestBodyStartup": "Una startup ha mostrato interesse a lavorare con te.",
+    "messageTitle": "Nuovo messaggio da {name}",
+    "docOpenedTitle": "{name} ha aperto {label}",
+    "docOpenedAnonTitle": "Un investitore ha aperto {label}",
+    "docOpenedBody": "Un buon momento per un follow-up.",
+    "waitlistTitle": "Un investitore si è unito alla tua lista d'attesa",
+    "waitlistBodyOversub": "Vogliono entrare se si libera spazio.",
+    "waitlistBodyClosed": "Vogliono sapere quando raccoglierai di nuovo."
   }
 }

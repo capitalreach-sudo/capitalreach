@@ -111,6 +111,7 @@ export async function POST(req: NextRequest) {
           type: "listing_saved",
           title: "An investor saved your listing",
           body: "Open your dashboard to see how many investors have saved you.",
+          titleKey: "notif.savedTitle", bodyKey: "notif.savedBody",
           href: "/dashboard/startup",
         });
       }

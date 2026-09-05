@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
       if (other.owner_id && other.owner_id !== user.id) {
         const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
-        await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${myName}`, body: preview, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
+        await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${myName}`, body: preview, titleKey: "notif.messageTitle", params: { name: myName }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
         const { data: p } = await admin.from("profiles").select("email").eq("id", other.owner_id).maybeSingle();
         if (p?.email) await sendNewMessageEmail(p.email, myName, myName, preview).catch(() => {});
       }
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
       if (st.owner_id && st.owner_id !== user.id) {
         const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
-        await notifyUser({ userId: st.owner_id, type: "message", title: `New message from ${myName}`, body: preview, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
+        await notifyUser({ userId: st.owner_id, type: "message", title: `New message from ${myName}`, body: preview, titleKey: "notif.messageTitle", params: { name: myName }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
         const { data: p } = await admin.from("profiles").select("email").eq("id", st.owner_id).maybeSingle();
         if (p?.email) await sendNewMessageEmail(p.email, myName, myName, preview).catch(() => {});
       }
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
 
     if (other.owner_id && other.owner_id !== user.id) {
       const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
-      await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${me.name}`, body: preview, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
+      await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${me.name}`, body: preview, titleKey: "notif.messageTitle", params: { name: me.name }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
       const { data: p } = await admin.from("profiles").select("email").eq("id", other.owner_id).maybeSingle();
       if (p?.email) await sendNewMessageEmail(p.email, me.name, me.name, preview).catch(() => {});
     }
@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
 
   if (inv.owner_id && inv.owner_id !== user.id) {
     const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
-    await notifyUser({ userId: inv.owner_id, type: "message", title: `New message from ${st.name}`, body: preview, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
+    await notifyUser({ userId: inv.owner_id, type: "message", title: `New message from ${st.name}`, body: preview, titleKey: "notif.messageTitle", params: { name: st.name }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
     const { data: p } = await admin.from("profiles").select("email").eq("id", inv.owner_id).maybeSingle();
     if (p?.email) await sendNewMessageEmail(p.email, st.name, st.name, preview).catch(() => {});
   }
