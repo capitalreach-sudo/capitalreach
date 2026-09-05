@@ -1019,7 +1019,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </h1>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>
                 {loading ? t("common.loading") : allStartups.length > 0
-                  ? t("startups.pageSubtitle", { count: allStartups.length })
+                  ? t("startups.pageSubtitle", { count: serverTotal || allStartups.length })
                   : t("startups.noListings")}
               </p>
             </div>

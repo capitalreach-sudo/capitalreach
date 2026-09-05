@@ -877,7 +877,9 @@ body::before {
 .cr-ticker { overflow: hidden; position: relative; }
 .cr-ticker-lane {
   display: inline-flex; gap: 0; white-space: nowrap; width: max-content;
-  animation: cr-ticker-roll 60s linear infinite;
+  /* Duration rides the lane length (set inline as --ticker-secs): a
+     150-round tape at a fixed 60s sprints past unreadably. */
+  animation: cr-ticker-roll var(--ticker-secs, 60s) linear infinite;
 }
 .cr-ticker:hover .cr-ticker-lane { animation-play-state: paused; }
 @keyframes cr-ticker-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -1325,7 +1327,9 @@ a:hover > .cr-diamond-live {
 .cr-ticker { overflow: hidden; position: relative; }
 .cr-ticker-lane {
   display: inline-flex; gap: 0; white-space: nowrap; width: max-content;
-  animation: cr-ticker-roll 60s linear infinite;
+  /* Duration rides the lane length (set inline as --ticker-secs): a
+     150-round tape at a fixed 60s sprints past unreadably. */
+  animation: cr-ticker-roll var(--ticker-secs, 60s) linear infinite;
 }
 .cr-ticker:hover .cr-ticker-lane { animation-play-state: paused; }
 @keyframes cr-ticker-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }

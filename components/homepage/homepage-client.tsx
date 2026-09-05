@@ -215,11 +215,12 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
                 LIVE
               </span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--cr-rule)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "var(--cr-rule)" }}>
+              {/* Money and outcomes only -- the account counts came out
+                  (Jack's call): capital sought, capital raised, deals done. */}
               {([
-                [safeFormatCurrency(lane.reduce((a, l) => a + (l.funding_target ?? 0), 0)), t("listings.raising")],
-                [String(stats.startupCount), t("stats.startupsListed")],
-                [String(stats.investorCount), t("stats.verifiedInvestors")],
+                [safeFormatCurrency(laneAll.reduce((a, l) => a + (l.funding_target ?? 0), 0)), t("listings.raising")],
+                [safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")],
                 [String(stats.dealsClosedCount), t("stats.dealsClosed")],
               ] as Array<[string, string]>).map(([v, label]) => (
                 <div key={label} style={{ background: "var(--cr-paper-2)", padding: "14px 16px" }}>
@@ -230,14 +231,17 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
             </div>
             {/* The three freshest rounds, as ledger rows. */}
             <div style={{ borderTop: "1px solid var(--cr-rule)" }}>
-              {lane.slice(0, 3).map((l, i) => (
-                <Link key={l.id} href={`/startups/${l.slug}`}
+              {lane.slice(0, 3).map((l, i) => {
+                const Row = (viewerRole ? Link : "div") as React.ElementType;
+                return (
+                <Row key={l.id} {...(viewerRole ? { href: `/startups/${l.slug}` } : {})}
                   style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", padding: "10px 16px", textDecoration: "none", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.name}</span>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "capitalize", whiteSpace: "nowrap" }}>{l.stage.replace(/_/g, " ")}</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-copper)", whiteSpace: "nowrap" }}>{safeFormatCurrency(l.funding_target)}</span>
-                </Link>
-              ))}
+                </Row>
+                );
+              })}
             </div>
           </div>
         </aside>
@@ -281,17 +285,20 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       {lane.length >= 4 && (
         <div className="cr-ticker" aria-label={t("ticker.aria")}
           style={{ borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper)", padding: "10px 0" }}>
-          <div className="cr-ticker-lane">
-            {[...lane, ...lane].map((l, i) => (
-              <Link key={`${l.id}-${i}`} href={`/startups/${l.slug}`} aria-hidden={i >= lane.length}
+          <div className="cr-ticker-lane" style={{ "--ticker-secs": `${Math.max(60, lane.length * 3)}s` } as React.CSSProperties}>
+            {[...lane, ...lane].map((l, i) => {
+              const Item = (viewerRole ? Link : "span") as React.ElementType;
+              return (
+              <Item key={`${l.id}-${i}`} {...(viewerRole ? { href: `/startups/${l.slug}` } : {})} aria-hidden={i >= lane.length}
                 style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", padding: "0 28px", textDecoration: "none", borderLeft: "1px solid var(--cr-rule)" }}>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)" }}>{l.name}</span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{l.stage.replace(/_/g, " ")}</span>
                 {l.funding_target ? (
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-copper)" }}>{safeFormatCurrency(l.funding_target)}</span>
                 ) : null}
-              </Link>
-            ))}
+              </Item>
+              );
+            })}
           </div>
         </div>
       )}
