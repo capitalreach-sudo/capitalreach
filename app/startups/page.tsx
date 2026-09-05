@@ -39,11 +39,14 @@ export default async function StartupsPage() {
              Quiet frames in the right places make the swap invisible. */
           <div aria-busy="true" style={{ background: "var(--cr-paper)" }}>
             <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "32px", paddingBottom: "64px" }}>
-              <div style={{ height: "34px", width: "min(340px, 70%)", background: "var(--cr-paper-3)", borderRadius: "4px", marginBottom: "18px" }} />
-              <div style={{ height: "44px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", marginBottom: "24px" }} />
+              {/* 105px above the grid and 255px per card frame: measured
+                  from the live mobile page, so the streamed swap lands the
+                  real grid exactly where the frames stood. */}
+              <div style={{ height: "33px", width: "min(340px, 70%)", background: "var(--cr-paper-3)", borderRadius: "4px", marginBottom: "18px" }} />
+              <div style={{ height: "44px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", marginBottom: "10px" }} />
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
                 {Array.from({ length: 9 }, (_, i) => (
-                  <div key={i} style={{ height: "224px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px" }} />
+                  <div key={i} style={{ height: "255px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px" }} />
                 ))}
               </div>
             </div>
