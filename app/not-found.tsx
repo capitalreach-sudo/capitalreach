@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Guilloche } from "@/components/ui/Guilloche";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { getLocale, getTranslator } from "@/lib/locale-server";
@@ -25,22 +26,31 @@ export default async function NotFound() {
             CR
           </div>
 
-          {/* The number is the moment: oversized mono, copper, tabular */}
-          <p
-            aria-hidden
-            className="select-none"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontWeight: 700,
-              fontSize: "clamp(96px, 22vw, 160px)",
-              fontVariantNumeric: "tabular-nums",
-              color: "var(--cr-copper)",
-              lineHeight: 1,
-              letterSpacing: "-0.04em",
-            }}
-          >
-            404
-          </p>
+          {/* The number is the moment: the site's largest type, set in the
+              serif with WONK on, over guilloche -- a misprint from a fine
+              print shop, not an error screen. */}
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <div aria-hidden style={{ position: "absolute", inset: "-30%", color: "var(--cr-copper)", pointerEvents: "none" }}>
+              <Guilloche className="w-full h-full" seed={11} lines={14} opacity={0.1} />
+            </div>
+            <p
+              aria-hidden
+              className="select-none display-wonk"
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontWeight: 700,
+                fontStyle: "italic",
+                fontSize: "clamp(120px, 28vw, 220px)",
+                fontVariantNumeric: "tabular-nums",
+                color: "var(--cr-ink)",
+                lineHeight: 1,
+                letterSpacing: "-0.06em",
+                position: "relative",
+              }}
+            >
+              404
+            </p>
+          </div>
 
           {/* Ledger line, broken by the diamond */}
           <div

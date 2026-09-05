@@ -3592,5 +3592,18 @@
     "title": "Qui vous attend",
     "hint": "Choisissez votre stade et votre secteur.",
     "result": "sur {total} investisseurs actifs déclarent un appétit pour ce tour précis"
+  },
+  "pipeline": {
+    "title": "Comment un tour se conclut",
+    "s1t": "Publié",
+    "s1d": "Un fondateur dépose le tour. Chaque annonce passe la revue de l'équipe avant mise en ligne.",
+    "s2t": "Présenté",
+    "s2d": "Un investisseur demande l'accès et le NDA est signé sur la plateforme.",
+    "s3t": "Examiné",
+    "s3d": "La data room s'ouvre : deck, finances, les chiffres derrière le pitch.",
+    "s4t": "Convenu",
+    "s4d": "Les conditions se négocient là où tout le dossier se trouve déjà.",
+    "s5t": "Scellé",
+    "s5d": "Le tour se conclut et les 2% de frais sont facturés à la startup. Jamais aux investisseurs."
   }
 }

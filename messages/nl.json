@@ -3592,5 +3592,18 @@
     "title": "Wie er op je wacht",
     "hint": "Kies je fase en sector.",
     "result": "van {total} actieve investeerders verklaren interesse in precies deze ronde"
+  },
+  "pipeline": {
+    "title": "Hoe een ronde sluit",
+    "s1t": "Genoteerd",
+    "s1d": "Een founder dient de ronde in. Elke listing passeert de admin-review voordat die live gaat.",
+    "s2t": "Voorgesteld",
+    "s2d": "Een investeerder vraagt toegang aan en de NDA wordt op het platform getekend.",
+    "s3t": "Onderzocht",
+    "s3d": "De dataroom gaat open: deck, financiën, de cijfers achter de pitch.",
+    "s4t": "Overeengekomen",
+    "s4d": "De voorwaarden worden uitgewerkt waar het hele dossier al staat.",
+    "s5t": "Bezegeld",
+    "s5d": "De ronde sluit en de 2%-fee wordt aan de startup gefactureerd. Nooit aan investeerders."
   }
 }

@@ -3592,5 +3592,18 @@
     "title": "Chi ti sta aspettando",
     "hint": "Scegli fase e settore.",
     "result": "su {total} investitori attivi dichiarano interesse proprio per questo round"
+  },
+  "pipeline": {
+    "title": "Come si chiude un round",
+    "s1t": "Pubblicato",
+    "s1d": "Un founder presenta il round. Ogni annuncio passa la revisione del team prima di andare online.",
+    "s2t": "Presentato",
+    "s2d": "Un investitore richiede l'accesso e l'NDA viene firmato sulla piattaforma.",
+    "s3t": "Esaminato",
+    "s3d": "Si apre la data room: deck, finanze, i numeri dietro il pitch.",
+    "s4t": "Concordato",
+    "s4d": "I termini si negoziano dove vive già l'intero fascicolo.",
+    "s5t": "Sigillato",
+    "s5d": "Il round si chiude e la commissione del 2% viene fatturata alla startup. Mai agli investitori."
   }
 }

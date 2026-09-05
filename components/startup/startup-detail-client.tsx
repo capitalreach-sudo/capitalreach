@@ -23,7 +23,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ScoreBadge } from "@/components/ui/score-badge";
+import { ScoreDial } from "@/components/ui/score-dial";
 import { InfoTip } from "@/components/shared/info-tip";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { track } from "@/lib/track";
@@ -801,7 +801,7 @@ export function StartupDetailClient({
                   )}
                   {score != null && (
                     <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                      <ScoreBadge score={score} size="sm" />
+                      <ScoreDial score={score} />
                       {/* A model produced this number about somebody's
                           company. Say what it measures, next to it. */}
                       <InfoTip termKey="glossary.aiScore" />

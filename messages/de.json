@@ -3592,5 +3592,18 @@
     "title": "Wer auf dich wartet",
     "hint": "Wähle Phase und Branche.",
     "result": "von {total} aktiven Investoren erklären Interesse an genau dieser Runde"
+  },
+  "pipeline": {
+    "title": "Wie eine Runde schliesst",
+    "s1t": "Gelistet",
+    "s1d": "Ein Gruender reicht die Runde ein. Jedes Listing durchlaeuft vor Veroeffentlichung die Admin-Pruefung.",
+    "s2t": "Vorgestellt",
+    "s2d": "Ein Investor beantragt Zugang, und das NDA wird auf der Plattform unterzeichnet.",
+    "s3t": "Geprueft",
+    "s3d": "Der Datenraum oeffnet sich: Deck, Finanzen, die Zahlen hinter dem Pitch.",
+    "s4t": "Vereinbart",
+    "s4d": "Die Konditionen werden dort verhandelt, wo die gesamte Akte bereits liegt.",
+    "s5t": "Besiegelt",
+    "s5d": "Die Runde schliesst, und die 2%-Gebuehr wird dem Startup in Rechnung gestellt. Nie den Investoren."
   }
 }

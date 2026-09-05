@@ -3592,5 +3592,18 @@
     "title": "Quién te espera",
     "hint": "Elige tu etapa y sector.",
     "result": "de {total} inversores activos declaran apetito por exactamente esta ronda"
+  },
+  "pipeline": {
+    "title": "Cómo se cierra una ronda",
+    "s1t": "Publicada",
+    "s1d": "Un fundador presenta la ronda. Cada listado pasa la revisión del equipo antes de publicarse.",
+    "s2t": "Presentada",
+    "s2d": "Un inversor solicita acceso y el NDA se firma en la plataforma.",
+    "s3t": "Examinada",
+    "s3d": "Se abre el data room: deck, finanzas, los números detrás del pitch.",
+    "s4t": "Acordada",
+    "s4d": "Los términos se negocian donde ya vive todo el expediente.",
+    "s5t": "Sellada",
+    "s5d": "La ronda se cierra y la comisión del 2% se factura a la startup. Nunca a los inversores."
   }
 }

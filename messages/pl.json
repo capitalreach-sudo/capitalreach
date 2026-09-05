@@ -3592,5 +3592,18 @@
     "title": "Kto na Ciebie czeka",
     "hint": "Wybierz etap i branżę.",
     "result": "z {total} aktywnych inwestorów deklaruje apetyt na dokładnie taką rundę"
+  },
+  "pipeline": {
+    "title": "Jak zamyka się runda",
+    "s1t": "Opublikowana",
+    "s1d": "Founder zgłasza rundę. Każda oferta przechodzi weryfikację zespołu przed publikacją.",
+    "s2t": "Przedstawiona",
+    "s2d": "Inwestor prosi o dostęp, a NDA zostaje podpisane na platformie.",
+    "s3t": "Zbadana",
+    "s3d": "Otwiera się data room: deck, finanse, liczby stojące za pitchem.",
+    "s4t": "Uzgodniona",
+    "s4d": "Warunki negocjuje się tam, gdzie już znajduje się cała dokumentacja.",
+    "s5t": "Przypieczętowana",
+    "s5d": "Runda się zamyka, a prowizja 2% jest fakturowana startupowi. Nigdy inwestorom."
   }
 }

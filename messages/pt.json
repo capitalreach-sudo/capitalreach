@@ -3592,5 +3592,18 @@
     "title": "Quem espera por si",
     "hint": "Escolha a sua fase e setor.",
     "result": "de {total} investidores ativos declaram apetite por exatamente esta ronda"
+  },
+  "pipeline": {
+    "title": "Como uma rodada fecha",
+    "s1t": "Listada",
+    "s1d": "Um fundador submete a rodada. Cada listagem passa pela revisão da equipe antes de ir ao ar.",
+    "s2t": "Apresentada",
+    "s2d": "Um investidor solicita acesso e o NDA é assinado na plataforma.",
+    "s3t": "Examinada",
+    "s3d": "O data room abre: deck, finanças, os números por trás do pitch.",
+    "s4t": "Acordada",
+    "s4d": "Os termos são negociados onde todo o histórico já vive.",
+    "s5t": "Selada",
+    "s5d": "A rodada fecha e a taxa de 2% é faturada à startup. Nunca aos investidores."
   }
 }

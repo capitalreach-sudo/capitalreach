@@ -3592,5 +3592,18 @@
     "title": "Vem som väntar på dig",
     "hint": "Välj din fas och sektor.",
     "result": "av {total} aktiva investerare förklarar aptit på exakt denna runda"
+  },
+  "pipeline": {
+    "title": "Hur en runda stängs",
+    "s1t": "Listad",
+    "s1d": "En grundare lämnar in rundan. Varje notering granskas av teamet innan den går live.",
+    "s2t": "Presenterad",
+    "s2d": "En investerare begär åtkomst och NDA:t signeras på plattformen.",
+    "s3t": "Granskad",
+    "s3d": "Datarummet öppnas: deck, finanser, siffrorna bakom pitchen.",
+    "s4t": "Överenskommen",
+    "s4d": "Villkoren förhandlas där hela akten redan finns.",
+    "s5t": "Förseglad",
+    "s5d": "Rundan stängs och avgiften på 2% faktureras startupen. Aldrig investerarna."
   }
 }

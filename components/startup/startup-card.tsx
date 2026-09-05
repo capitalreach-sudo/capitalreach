@@ -41,6 +41,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
   const isNew            = daysSince(startup.created_at) <= 5;
   const closing          = roundCloseState(startup.round_close_date);
   const score            = startup.vaultrise_score ?? null;
+  // The catalogue number: stable per company, derived from the id. A card
+  // is a specimen in a drawer, and specimens are numbered.
+  const specimen         = "CR\u2013" + String(parseInt(startup.id.replace(/-/g, "").slice(0, 6), 16) % 10000).padStart(4, "0");
 
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();
@@ -86,6 +89,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)";
         }}
       >
+        <span aria-hidden style={{ position: "absolute", bottom: "10px", right: "14px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "8.5px", letterSpacing: "0.14em", color: "var(--cr-ink-4)", opacity: 0.65 }}>
+          {specimen}
+        </span>
 
         {/* Bookmark */}
         {onSave && (

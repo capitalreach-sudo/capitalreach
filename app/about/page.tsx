@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
+import { DealStory } from "@/components/about/deal-story";
 import { Target, Zap, Shield, Heart } from "lucide-react";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
@@ -122,6 +123,8 @@ export default async function AboutPage() {
       </section>
 
       {/* Values -- numbered rail, ledger lines between entries, no icon cards. */}
+      <DealStory />
+
       <section style={{ background: "var(--cr-paper)" }}>
         <div className="max-w-[880px] mx-auto px-6 md:px-10 py-16 md:py-24">
           <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("about.valuesLabel")}</div>

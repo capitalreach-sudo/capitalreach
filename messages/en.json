@@ -3592,5 +3592,18 @@
     "title": "Who's waiting for you",
     "hint": "Pick your stage and sector.",
     "result": "of {total} live investors declare appetite for exactly this round"
+  },
+  "pipeline": {
+    "title": "How a round closes",
+    "s1t": "Listed",
+    "s1d": "A founder files the round. Every listing passes admin review before it goes live.",
+    "s2t": "Introduced",
+    "s2d": "An investor requests access and the NDA is signed on the platform.",
+    "s3t": "Examined",
+    "s3d": "The data room opens: deck, financials, the numbers behind the pitch.",
+    "s4t": "Agreed",
+    "s4d": "Terms are worked out where the whole record already lives.",
+    "s5t": "Sealed",
+    "s5d": "The round closes and the 2% fee is invoiced to the startup. Never to investors."
   }
 }

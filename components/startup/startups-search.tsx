@@ -442,6 +442,11 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
           e.currentTarget.style.setProperty("--ry", "0deg");
         }}
       >
+        {/* The catalogue number: stable per company, derived from the id.
+            A card is a specimen in a drawer, and specimens are numbered. */}
+        <span aria-hidden style={{ position: "absolute", bottom: "10px", right: "14px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "8.5px", letterSpacing: "0.14em", color: "var(--cr-ink-4)", opacity: 0.65 }}>
+          {"CR–" + String(parseInt(s.id.replace(/-/g, "").slice(0, 6), 16) % 10000).padStart(4, "0")}
+        </span>
         {/* Bookmark */}
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSave(s.id); }}
