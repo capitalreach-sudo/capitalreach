@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { investorGate, planRequired } from "@/lib/plan-gate";
 
 /**
  * D43: an investor's deployment plan for the period. The target is stored;
@@ -10,6 +11,11 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Plan gate: deploy-against-target is a Pro/Institution capability
+  // (launch mode lifts this via the ctx builder).
+  const caps = await investorGate(user.id);
+  if (!caps.allocationTracking) return NextResponse.json(planRequired("Allocation tracking", "Pro Investor"), { status: 402 });
 
   const { target, period } = await req.json().catch(() => ({}));
   const patch: { allocation_target?: number | null; allocation_period?: string | null } = {};

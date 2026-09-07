@@ -188,24 +188,6 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     };
   }
 
-  // C33: who else is looking — only investors who explicitly opted in, and
-  // only shown to other investors. Never to the public, never amounts.
-  let coInvestors: Array<{ slug: string; name: string | null; type: string | null }> = [];
-  if (investorId) {
-    const { data: pub } = await createAdminClient()
-      .from("deals")
-      .select("investor:investors(slug, display_name, firm_name, type)")
-      .eq("startup_id", startup.id)
-      .eq("public_interest", true)
-      .neq("status", "passed")
-      .neq("investor_id", investorId)
-      .limit(24);
-    coInvestors = (pub ?? []).map((d) => {
-      const i = d.investor as unknown as { slug: string; display_name: string | null; firm_name: string | null; type: string | null } | null;
-      return i ? { slug: i.slug, name: i.display_name || i.firm_name || null, type: i.type } : null;
-    }).filter((x): x is { slug: string; name: string | null; type: string | null } => !!x);
-  }
-
   // Non-circumvention acknowledgment for this pair (Phase 1). Read with the
   // caller's client — RLS scopes acks to the investor who made them.
   let circumventionAcked = false;
@@ -270,6 +252,29 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     isLaunchMode: isLaunch,
     suspended: previewing ? false : viewerSuspended,
   });
+
+  // C33: who else is looking -- only investors who explicitly opted in, and
+  // only shown to other investors. Never to the public, never amounts.
+  // Gated on the viewer's coInvestorVisibility capability (pro/institution,
+  // or everyone under launch mode), derived from viewerCaps above -- which is
+  // why this fetch sits after that computation rather than with the other
+  // per-viewer reads.
+  let coInvestors: Array<{ slug: string; name: string | null; type: string | null }> = [];
+  if (investorId && viewerCaps.coInvestorVisibility) {
+    const { data: pub } = await createAdminClient()
+      .from("deals")
+      .select("investor:investors(slug, display_name, firm_name, type)")
+      .eq("startup_id", startup.id)
+      .eq("public_interest", true)
+      .neq("status", "passed")
+      .neq("investor_id", investorId)
+      .limit(24);
+    coInvestors = (pub ?? []).map((d) => {
+      const i = d.investor as unknown as { slug: string; display_name: string | null; firm_name: string | null; type: string | null } | null;
+      return i ? { slug: i.slug, name: i.display_name || i.firm_name || null, type: i.type } : null;
+    }).filter((x): x is { slug: string; name: string | null; type: string | null } => !!x);
+  }
+
   // 089: a share link the founder minted can carry deck access for someone
   // with no account. The TOKEN is re-checked here against this startup rather
   // than trusting a query parameter — ?share=anything would otherwise be a
@@ -300,9 +305,12 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
 
   const docCtx = {
     isOwnerOrAdmin: previewing ? false : isOwner || viewerIsAdmin,
-    // Any signed-in investor is in the room (preview simulates one); NDA-gated
-    // docs still need the NDA below.
+    // A signed-in investor is in the room (preview simulates one) only with
+    // the viewDocuments capability -- paid tier, or launch mode via viewerCaps,
+    // which under preview is the free tier's. A share-token grant keeps its
+    // own path. NDA-gated docs still need the NDA below.
     isInvestor: previewing ? true : !!investorId || shareGrantsDocs,
+    canViewDocuments: viewerCaps.viewDocuments || shareGrantsDocs,
     startupRequiresNda: !!startup.require_nda,
     ndaSigned: previewing ? false : ndaSigned,
   };

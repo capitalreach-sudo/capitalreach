@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { maskName } from "@/lib/identity";
 
 /**
  * Who you may start a conversation with.
@@ -13,10 +14,18 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
  * So: the search moved server-side, it matches on names and entity names only,
  * and it never returns an email. What comes back is what the directory already
  * shows publicly, narrowed to accounts you are allowed to write to.
+ *
+ * Names follow the directory too, never `profiles.full_name` (migration 019
+ * made profiles non-public, and this endpoint must not undo that): founders
+ * come back masked via maskName -- identity protection means a full name costs
+ * a deal, not a search -- and investors come back as the display_name /
+ * firm_name they chose to list publicly.
  */
 
 export interface AccountResult {
   id: string;                    // profile id of the recipient
+  /** Display label only: masked founder name or the investor's public
+   *  display name -- never the raw profiles.full_name. */
   full_name: string | null;
   role: string;
   avatar_url: string | null;
@@ -64,7 +73,9 @@ export async function GET(req: NextRequest) {
       const owner = owners.find(o => o.id === s.owner_id);
       return {
         id: s.owner_id,
-        full_name: owner?.full_name ?? null,
+        // Masked, like everywhere a founder is shown pre-deal: "Sarah K.",
+        // never the full profile name.
+        full_name: owner?.full_name ? maskName(owner.full_name) : null,
         role: owner?.role ?? "startup",
         avatar_url: owner?.avatar_url ?? null,
         entity_name: s.name,
@@ -89,18 +100,20 @@ export async function GET(req: NextRequest) {
   const { data: investors } = await query;
 
   const ownerIds = (investors ?? []).map(i => i.owner_id).filter((id): id is string => !!id);
+  // role + avatar only -- an investor's name comes from the investors row they
+  // chose to publish, exactly what the public directory shows.
   const owners = ownerIds.length
-    ? (await admin.from("profiles").select("id, full_name, role, avatar_url").in("id", ownerIds)).data ?? []
+    ? (await admin.from("profiles").select("id, role, avatar_url").in("id", ownerIds)).data ?? []
     : [];
 
   const results: AccountResult[] = (investors ?? []).map(i => {
     const owner = owners.find(o => o.id === i.owner_id);
     return {
       id: i.owner_id as string,
-      full_name: owner?.full_name ?? null,
+      full_name: i.display_name || i.firm_name || null,
       role: owner?.role ?? "investor",
       avatar_url: owner?.avatar_url ?? null,
-      entity_name: i.firm_name || i.display_name || owner?.full_name || undefined,
+      entity_name: i.firm_name || i.display_name || undefined,
       entity_slug: i.slug,
       entity_type: i.type,
       kind: "investor" as const,

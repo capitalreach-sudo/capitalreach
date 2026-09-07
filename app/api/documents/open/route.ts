@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { mayOpenDocument } from "@/lib/document-access";
+import { investorGate } from "@/lib/plan-gate";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -43,6 +44,7 @@ export async function GET(req: NextRequest) {
 
   let isOwnerOrAdmin = false;
   let investorId: string | null = null;
+  let canViewDocuments = false;
   let ndaSigned = false;
   if (user) {
     if (user.id === startup.owner_id) isOwnerOrAdmin = true;
@@ -54,6 +56,12 @@ export async function GET(req: NextRequest) {
       if (prof?.suspended_at) return NextResponse.json({ error: "Account suspended" }, { status: 403 });
       if (prof?.role === "admin") isOwnerOrAdmin = true;
       investorId = inv?.id ?? null;
+      // Tier gate: viewDocuments is a paid capability (lib/access.ts), and the
+      // pricing page sells it that way. Derived through investorGate, so launch
+      // mode lifts it like every other paywall while platform launch mode is on.
+      if (investorId && !isOwnerOrAdmin) {
+        canViewDocuments = (await investorGate(user.id)).viewDocuments;
+      }
       if (investorId && startup.require_nda) {
         const { data: nda } = await admin.from("nda_records")
           .select("signed_at").match({ startup_id: startup.id, investor_id: investorId }).maybeSingle();
@@ -82,6 +90,9 @@ export async function GET(req: NextRequest) {
   const allowed = mayOpenDocument(doc, {
     isOwnerOrAdmin,
     isInvestor: !!investorId || shareGrantsDocs,
+    // A share-token grant keeps its own path: the founder minted it, no tier
+    // is involved.
+    canViewDocuments: canViewDocuments || shareGrantsDocs,
     startupRequiresNda: !!startup.require_nda,
     ndaSigned,
   });

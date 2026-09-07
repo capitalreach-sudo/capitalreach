@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { resolveEntity } from "@/lib/membership";
 import { isUuid, slugify } from "@/lib/utils";
+import { founderGate, planRequired } from "@/lib/plan-gate";
 
 /**
  * B18: off-platform investors. The angel who will never make an account is
@@ -29,6 +30,11 @@ export async function POST(req: NextRequest) {
 
   const mine = await resolveEntity(user.id, "startup");
   if (!mine) return NextResponse.json({ error: "Founders only" }, { status: 403 });
+
+  // Plan gate: same capability as the target list -- off-platform contacts
+  // are a Starter feature (launch mode lifts this via the ctx builder).
+  const caps = await founderGate(user.id);
+  if (!caps.externalContacts) return NextResponse.json(planRequired("Off-platform investor contacts", "Starter"), { status: 402 });
 
   const body = await req.json().catch(() => ({}));
   const name = typeof body.name === "string" ? body.name.trim().slice(0, 120) : "";
@@ -105,6 +111,9 @@ export async function PATCH(req: NextRequest) {
   const mine = await resolveEntity(user.id, "startup");
   if (!mine) return NextResponse.json({ error: "Founders only" }, { status: 403 });
 
+  const caps = await founderGate(user.id);
+  if (!caps.externalContacts) return NextResponse.json(planRequired("Off-platform investor contacts", "Starter"), { status: 402 });
+
   const { id, name, email, firm, note } = await req.json().catch(() => ({}));
   if (!isUuid(id ?? "")) return NextResponse.json({ error: "id required" }, { status: 400 });
   const patch: { display_name?: string; contact_email?: string | null; firm_name?: string | null; contact_note?: string | null } = {};
@@ -133,6 +142,10 @@ export async function DELETE(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const mine = await resolveEntity(user.id, "startup");
   if (!mine) return NextResponse.json({ error: "Founders only" }, { status: 403 });
+
+  const caps = await founderGate(user.id);
+  if (!caps.externalContacts) return NextResponse.json(planRequired("Off-platform investor contacts", "Starter"), { status: 402 });
+
   const { id } = await req.json().catch(() => ({}));
   if (!isUuid(id ?? "")) return NextResponse.json({ error: "id required" }, { status: 400 });
 

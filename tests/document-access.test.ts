@@ -4,7 +4,7 @@ import { mayOpenDocument, stripLockedUrl } from "../lib/document-access";
 const openDoc = { id: "11111111-1111-1111-1111-111111111111", requires_nda: false, file_url: "https://example.com/deck.pdf" };
 const ndaDoc = { id: "22222222-2222-2222-2222-222222222222", requires_nda: true, file_url: "https://example.com/financials.pdf" };
 
-const base = { isOwnerOrAdmin: false, isInvestor: true, startupRequiresNda: true, ndaSigned: false };
+const base = { isOwnerOrAdmin: false, isInvestor: true, canViewDocuments: true, startupRequiresNda: true, ndaSigned: false };
 
 describe("mayOpenDocument", () => {
   it("owner and admin always open, even NDA-gated documents unsigned", () => {

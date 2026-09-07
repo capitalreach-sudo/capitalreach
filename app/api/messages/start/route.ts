@@ -6,6 +6,43 @@ import { resolveEntity } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { isUuid } from "@/lib/utils";
+import { getLaunchStatus } from "@/lib/launchMode";
+import { buildAccessContext, canSendMessages, getMessageLimit, type AccessContext } from "@/lib/access";
+import { messageRatelimit, isRedisConfigured } from "@/lib/redis";
+
+/**
+ * The plan's monthly new-thread allowance, enforced on every path that OPENS
+ * a thread (openOnly included -- opening is the metered act). null = unlimited:
+ * launch mode and admins resolve to unlimited through the ctx builders, so the
+ * window below never runs for them. For finite limits the Redis window fails
+ * CLOSED -- an unconfigured or erroring limiter refuses the NEW thread rather
+ * than turning a metered tier into an unmetered one. Replies inside existing
+ * threads are unaffected (they go through /api/messages/reply).
+ *
+ * Keyed by the investor entity id, same as /api/messages/send, so both routes
+ * spend from the one monthly window.
+ */
+async function newThreadLimitResponse(ctx: AccessContext, investorEntityId: string): Promise<NextResponse | null> {
+  const messageLimit = getMessageLimit(ctx);
+  if (messageLimit === null) return null;
+  if (messageLimit <= 0) {
+    return NextResponse.json({ error: "Messaging is not included in your plan. Upgrade to start conversations." }, { status: 403 });
+  }
+  if (!isRedisConfigured) {
+    return NextResponse.json({ error: "New conversations are temporarily unavailable. Please try again shortly." }, { status: 503 });
+  }
+  try {
+    const { success } = await messageRatelimit.limit(investorEntityId);
+    if (!success) {
+      return NextResponse.json({
+        error: `Monthly message limit reached (${messageLimit} threads). Upgrade to Pro for unlimited messaging.`,
+      }, { status: 429 });
+    }
+  } catch {
+    return NextResponse.json({ error: "New conversations are temporarily unavailable. Please try again shortly." }, { status: 503 });
+  }
+  return null;
+}
 
 /**
  * POST { investorId, body } — founder outbound (B23): start (or continue)
@@ -21,6 +58,11 @@ import { isUuid } from "@/lib/utils";
  * Since 098 the sender may also be an INVESTOR: investor→startup opens the
  * classic (startup, investor) pair, investor→investor opens a direct thread
  * with no startup anchor. Every pairing on the platform can now talk.
+ *
+ * Investor senders carry the same tier gate as /api/messages/send: the plan
+ * must include messaging at all, and every NEW thread spends from the same
+ * monthly allowance (newThreadLimitResponse below). Founder senders stay
+ * ungated -- founder outbound has never had a paywall.
  */
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -52,9 +94,23 @@ export async function POST(req: NextRequest) {
     const myInv = await resolveEntity(user.id, "investor");
     if (!myInv) return NextResponse.json({ error: "Create a profile first" }, { status: 403 });
     const { data: me } = await admin.from("investors")
-      .select("id, display_name, firm_name").eq("id", myInv.entityId).maybeSingle();
+      .select("id, display_name, firm_name, subscription_tier").eq("id", myInv.entityId).maybeSingle();
     if (!me) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const myName = me.display_name ?? me.firm_name ?? "An investor";
+
+    // Tier gate, same derivation as /api/messages/send: capabilities come
+    // from the ctx builders (never tier-name checks), so launch mode and
+    // admin accounts pass through exactly as they do everywhere else. The
+    // investor entity's tier governs over the profile's (plan-gate.ts rule).
+    const [{ data: senderProfile }, { isLaunch }] = await Promise.all([
+      admin.from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", user.id).maybeSingle(),
+      getLaunchStatus(),
+    ]);
+    const baseCtx = buildAccessContext(senderProfile ?? null, isLaunch);
+    const ctx: AccessContext = me.subscription_tier ? { ...baseCtx, tier: me.subscription_tier } : baseCtx;
+    if (!canSendMessages(ctx)) {
+      return NextResponse.json({ error: "Messaging is not included in your plan. Upgrade to start conversations." }, { status: 403 });
+    }
 
     // investor → investor: a direct thread, no startup anchor (098).
     if (isUuid(investorId)) {
@@ -69,6 +125,8 @@ export async function POST(req: NextRequest) {
         .limit(1).maybeSingle();
       let threadId = existing?.id;
       if (!threadId) {
+        const limited = await newThreadLimitResponse(ctx, me.id);
+        if (limited) return limited;
         const { data: created, error } = await admin.from("threads")
           .insert({ investor_id: me.id, recipient_investor_id: other.id, status: "active" }).select("id").single();
         if (error || !created) {
@@ -107,6 +165,8 @@ export async function POST(req: NextRequest) {
         .match({ startup_id: st.id, investor_id: me.id }).maybeSingle();
       let threadId = existing?.id;
       if (!threadId) {
+        const limited = await newThreadLimitResponse(ctx, me.id);
+        if (limited) return limited;
         const { data: created, error } = await admin.from("threads")
           .insert({ startup_id: st.id, investor_id: me.id, status: "active" }).select("id").single();
         if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });

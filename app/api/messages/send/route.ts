@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
-import { messageRatelimit } from "@/lib/redis";
+import { messageRatelimit, isRedisConfigured } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
-import { buildAccessContext, getMessageLimit } from "@/lib/access";
+import { buildAccessContext, canSendMessages, getMessageLimit } from "@/lib/access";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -59,11 +59,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
 
-  // First contact is free — a marketplace where the two sides can't say hello
-  // isn't a marketplace. Volume is still bounded: the monthly new-thread rate
-  // limit below applies to every tier that isn't unlimited (free included),
-  // and replies within an existing thread go through the client's own path.
-  // Paid tiers raise or remove that cap; that's the upgrade.
+  // Capability gate: the free tier's message allowance is zero, so senders
+  // whose plan doesn't include messaging are refused outright. Derived from
+  // the ctx builders, never from tier names -- launch mode puts everyone on
+  // the top tier and passes through here like on every other gated surface.
+  if (!canSendMessages(ctx)) {
+    return NextResponse.json({ error: "Messaging is not included in your plan. Upgrade to start conversations." }, { status: 403 });
+  }
 
   // The target listing must be publicly active — no messaging a draft, rejected
   // or suspended startup that isn't visible in the directory.
@@ -80,9 +82,17 @@ export async function POST(req: NextRequest) {
     .match({ startup_id: startupId, investor_id: investorId })
     .single();
 
-  // Rate limit new threads against the plan's monthly message limit (null = unlimited)
+  // Rate limit new threads against the plan's monthly message limit (null =
+  // unlimited -- launch mode and admins resolve to unlimited via the ctx
+  // builders, so the window never runs for them). For finite limits the
+  // window fails CLOSED: an unconfigured or erroring limiter refuses the NEW
+  // thread rather than turning a metered tier into an unmetered one. Replies
+  // inside existing threads are unaffected, here and in /api/messages/reply.
   const messageLimit = getMessageLimit(ctx);
   if (!existingThread && messageLimit !== null) {
+    if (!isRedisConfigured) {
+      return NextResponse.json({ error: "New conversations are temporarily unavailable. Please try again shortly." }, { status: 503 });
+    }
     try {
       const { success } = await messageRatelimit.limit(investorId);
       if (!success) {
@@ -91,7 +101,7 @@ export async function POST(req: NextRequest) {
         }, { status: 429 });
       }
     } catch {
-      // Redis unavailable — fail open and allow the request through
+      return NextResponse.json({ error: "New conversations are temporarily unavailable. Please try again shortly." }, { status: 503 });
     }
   }
 

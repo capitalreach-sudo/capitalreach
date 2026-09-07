@@ -111,12 +111,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 
-  // Get signed URL (valid 1 year)
-  const { data: signedUrlData } = await adminClient.storage
-    .from("startup-assets")
-    .createSignedUrl(filePath, 365 * 24 * 60 * 60);
-
-  const fileUrl = signedUrlData?.signedUrl || uploadData.path;
+  // Store the bucket-relative storage path, never a signed URL. A signed URL
+  // in the row is a long-lived credential: anything that reads the row hands
+  // out working access, and revocation cannot claw it back. Every viewer goes
+  // through /api/documents/open, which re-authorises the click and mints a
+  // 60-second URL; it accepts both this path form and the legacy signed-URL
+  // rows written before this change.
+  const fileUrl = uploadData.path;
 
   // Save document record. The error was previously discarded, so a failed
   // insert still returned { success: true, document: undefined } while the

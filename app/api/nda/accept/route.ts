@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
+import { investorGate, planRequired } from "@/lib/plan-gate";
 import { notifyUser } from "@/lib/notify-user";
 import { NDA_VERSION } from "@/lib/nda-text";
 
@@ -48,6 +49,15 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
   if (!investor) {
     return NextResponse.json({ error: "Only investors can accept an NDA" }, { status: 403 });
+  }
+
+  // Plan gate: signing NDAs (and the documents behind them) is a paid
+  // capability -- investorCan().ndaRequest, the same matrix the pricing page
+  // sells from. Derived through investorGate, so launch mode lifts this gate
+  // like every other paywall while it is on.
+  const caps = await investorGate(user.id);
+  if (!caps.ndaRequest) {
+    return NextResponse.json(planRequired("Signing NDAs", "Angel"), { status: 402 });
   }
 
   // Protected financials are shared on the strength of this attestation —

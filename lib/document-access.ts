@@ -13,10 +13,17 @@
 export interface DocumentAccessContext {
   /** Owner of the listing or an admin: always allowed. */
   isOwnerOrAdmin: boolean;
-  /** Viewer is a signed-in investor (any tier). Reading the data room is not a
-   *  paid gate — evaluating a deal requires seeing the documents. Monetization
-   *  lives in tools and volume, not in charging investors to look. */
+  /** Viewer is a signed-in investor, or holds a valid share-token grant. */
   isInvestor: boolean;
+  /**
+   * The viewer's investorCan(ctx).viewDocuments capability (lib/access.ts),
+   * or a share-token document grant. Documents sit behind the same paywall
+   * the pricing page sells: free-tier investors still see the rows, just
+   * nothing openable. Callers MUST derive this through the ctx builders
+   * (investorGate / investorCan with isLaunchMode), never from a tier name,
+   * so launch mode keeps lifting this gate like every other paywall.
+   */
+  canViewDocuments: boolean;
   /** The listing demands an NDA before its gated documents. */
   startupRequiresNda: boolean;
   /** This viewer has a signed NDA with this startup. */
@@ -30,7 +37,10 @@ export function mayOpenDocument(
   if (ctx.isOwnerOrAdmin) return true;
   // Anonymous visitors don't get the data room at all.
   if (!ctx.isInvestor) return false;
-  // NDA-gated documents still require an accepted NDA — that gate is real.
+  // Tier gate: viewDocuments is a paid capability. It arrives pre-resolved by
+  // the ctx builders, so launch mode and admin overrides already applied.
+  if (!ctx.canViewDocuments) return false;
+  // NDA-gated documents still require an accepted NDA -- that gate is real.
   if (doc.requires_nda && ctx.startupRequiresNda && !ctx.ndaSigned) return false;
   return true;
 }
