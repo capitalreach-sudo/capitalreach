@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "연락하기 전에",
     "title": "{name}에 연락하기 전에",
-    "intro": "연락을 시작하면 다음 사항을 공식적으로 확인하는 것입니다:",
-    "bullet1": "이 소개는 CapitalReach를 통해 이루어집니다.",
-    "bullet2": "오늘부터 {months}개월 동안 이 연결을 통해 스타트업이 유치한 자본에 {fee}%의 성공 수수료가 적용됩니다.",
-    "bullet3": "거래가 플랫폼 안에서 성사되든 밖에서 성사되든 동일하게 적용됩니다. 수수료는 스타트업이 부담하며 투자자는 부담하지 않습니다.",
-    "bullet4": "이 확인은 타임스탬프와 함께 법적 기록으로 저장됩니다. IP 주소가 기록됩니다.",
+    "intro": "연락을 개시함으로써 귀하는 다음을 확인하며, 당사는 이를 기록합니다.",
+    "bullet1": "CapitalReach는 최초 연락 일자, 연락이 이루어진 경로, 현재 유효한 본 약관의 버전을 소개 기록으로 남깁니다.",
+    "bullet2": "기록된 소개 일자로부터 {months}개월 이내에 라운드가 종결되는 경우, 본 회사가 귀하로부터 조달한 자본에 대하여 {fee}%의 성공보수가 발생합니다. 이는 회사에 청구되며, 귀하에게는 청구되지 않습니다.",
+    "bullet3": "라운드의 종결 장소는 영향을 미치지 않으며, 귀하가 지배, 운용 또는 자문하는 모든 펀드, 투자기구, 고용주 또는 당사자에게 적용됩니다. 귀하를 대신하여 계열사를 내세우더라도 의무는 소멸하지 않습니다.",
+    "bullet4": "청구는 당사의 기록에 근거합니다. 시각과 IP 주소가 포함된 본 확인, 소개 기록, 본 회사에 대하여 귀하가 체결한 비밀유지계약, 그리고 그에 따라 귀하에게 공개된 내역의 기록입니다.",
     "checkbox": "위 조건을 읽었으며 동의합니다",
     "checkboxHint": "계속하려면 필수",
     "confirm": "확인하고 계속",
-    "footer": "타임스탬프 {time} · IP 기록됨"
+    "footer": "타임스탬프 {time} · IP 기록됨",
+    "bullet5": "본 소개보다 앞선 것으로 입증할 수 있는 관계에는 적용되지 않습니다. 지금 신고하시면 어떠한 청구가 제기되기 전에 기록으로 남습니다.",
+    "notCoveredTitle": "적용되지 않는 경우",
+    "notCoveredBody": "본 소개 이전의 기존 투자, 텀시트, 체결된 비밀유지계약 또는 문서로 남은 실질적 접촉. 귀하가 소개하지 않았고 지배하지도 않는 당사자로부터 조달한 자본. 기간 종료 후에 종결되는 라운드.",
+    "priorRelationshipLabel": "오늘 이전에 이미 이 회사를 알고 있었습니다",
+    "priorRelationshipHint": "언제, 어떻게 처음 알게 되었는지 기재하십시오. 지금 신고하면 증거가 되지만, 보수가 청구된 뒤에 제시하면 주장에 그칩니다.",
+    "priorRelationshipPlaceholder": "기존 투자, 텀시트, 비밀유지계약, 이전의 대화",
+    "introducedOn": "소개일 {date}",
+    "tailEnds": "보수 기간 종료 {date}",
+    "termsVersion": "약관 버전 {version}",
+    "readFullTerms": "약정 전문 보기"
   },
   "feeCalc": {
     "title": "CapitalReach 수수료 계산",
@@ -3804,6 +3814,14 @@
       "bank_connection": "은행 연동",
       "manual_upload": "서류 업로드",
       "manual_review": "수기 검토"
+    },
+    "sig": {
+      "offplatform_contact": "메시지에서 공유된 연락처",
+      "offplatform_contact_note": "이곳에서 소개된 두 당사자 간의 메시지에 이메일 주소, 전화번호 또는 메신저 아이디가 나타났습니다. 연락처 공유는 통상적인 일이며 그 자체로 위반은 아닙니다. 본 기록은 그 시점과 위치만을 남깁니다.",
+      "circumvention_reported": "우회 가능성",
+      "circumvention_quiet_after_access": "데이터룸 전체 열람 후 연락 두절, 이곳에서 개설된 딜 없음",
+      "circumvention_round_closed_no_deal": "소개된 투자자에 대한 딜 기록 없이 라운드가 종결로 표시됨",
+      "reviewNote": "확정된 판단이 아니라 담당자가 검토할 단서입니다. 여기의 모든 패턴에는 의심스러운 해석뿐 아니라 정상적인 설명도 존재합니다."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "귀하의 검증이 부여되지 않았습니다. {note}",
     "notifyMoreTitle": "추가 증빙이 필요합니다",
     "notifyMoreBody": "이 사항에 대한 회신이 있을 때까지 검증이 보류됩니다. {note}"
+  },
+  "gate": {
+    "publishBlocked": "귀하의 회사와 회사를 대리할 권한이 확인되면 등록 정보가 공개됩니다.",
+    "messageBlocked": "대화를 시작하려면 본인 확인을 완료하십시오. 창업자는 신원이 확인된 사람에게서만 연락을 받습니다.",
+    "dataroomBlocked": "데이터룸을 열려면 본인 확인을 완료하십시오. 비밀유지계약은 신원이 특정된 상대방에 대해서만 집행할 수 있습니다."
+  },
+  "nda": {
+    "parties": "당사자",
+    "recipientYou": "수령인, {name}",
+    "recipientUnnamed": "확인된 귀하의 성명은 동의와 함께 기록되며 본 계약의 일부를 구성합니다.",
+    "version": "버전 {version}",
+    "fingerprint": "지문값",
+    "fingerprintHint": "위 문안 원문의 SHA-256 해시입니다. 동의와 함께 보관되므로 합의된 내용을 이후에 입증할 수 있습니다.",
+    "accessLogged": "본 계약에 따라 열람하는 모든 문서는 대상, 시각, 접속 위치가 기록됩니다.",
+    "obligationsUntil": "의무는 {date}까지 존속합니다.",
+    "tailMonths": "우회금지 의무는 소개 시점부터 {months}개월간 존속합니다.",
+    "signedOnVersion": "귀하는 {date}에 버전 {version}에 동의하였습니다. 해당 문안이 귀하의 동의에 계속 적용됩니다.",
+    "wordingChanged": "귀하가 동의한 이후 현행 문안이 변경되었습니다."
+  },
+  "discLog": {
+    "title": "비밀유지 기록",
+    "lead": "본 등록 정보에서 귀사의 비밀유지계약에 서명한 모든 투자자입니다. 서명 당시의 신원, 동의한 문안 원문, 그리고 이후 열람한 각 항목이 담겨 있습니다. 누가 무엇을 언제 제공받았는지 변호사에게 제시해야 할 경우, 이것이 그 기록입니다.",
+    "limits": "무엇이 누구에게 언제 제공되었는지를 기록합니다. 이후 그 자료를 어떻게 사용했는지는 나타내지 않으며, 오용이 있었다는 판단도 아닙니다.",
+    "counterparties": "상대방",
+    "loading": "기록을 불러오는 중",
+    "error": "기록을 불러오지 못했습니다. 잠시 후 다시 시도하십시오.",
+    "empty": "아직 본 등록 정보에서 비밀유지계약에 서명한 투자자가 없습니다. 서명이 이루어지면 해당 계약과 열람 내역이 여기에 표시됩니다.",
+    "emptyAction": "문서를 NDA 전용으로 지정",
+    "unnamed": "성명 미기재 상대방",
+    "agreement": "계약 내용",
+    "agreedAt": "동의 일시",
+    "method": {
+      "clickwrap": "앱 내 동의",
+      "docusign": "DocuSign 서명"
+    },
+    "version": "버전",
+    "hash": "문안 해시 (SHA-256)",
+    "hashNote": "해시는 동의된 문안 원문을 특정합니다. 이후 수정된 문안은 해시와 일치하지 않습니다.",
+    "hashMissing": "본 서명은 해시 도입 이전의 것이므로, 문안은 위 버전을 기준으로 합니다.",
+    "trustThen": "서명 당시 확인 수준",
+    "trustNow": "현재 확인 수준",
+    "snapshotMissing": "본 서명은 상대방 정보 스냅숏 도입 이전의 것입니다. 표시된 성명은 당시 기록된 것이 아니라 투자자의 현재 성명입니다.",
+    "notRecorded": "기록 없음",
+    "obligationEnds": "의무 종료",
+    "obligationLive": "존속 중",
+    "obligationEnded": "종료됨",
+    "obligationDerived": "서명 시 기록된 값이 아니라, 동의한 버전에 명시된 기간에서 산출되었습니다.",
+    "introTitle": "소개",
+    "firstContact": "최초 연락",
+    "channel": {
+      "message": "메시지",
+      "deal": "딜",
+      "nda": "NDA",
+      "interest": "관심 표명",
+      "data_room": "데이터룸",
+      "introduction_request": "소개 요청"
+    },
+    "tailEnds": "우회금지 종료",
+    "noIntro": "본 조합에 대해 기록된 소개가 없습니다.",
+    "disclosures": "공개 내역",
+    "noDisclosures": "본 계약에 따라 열람된 항목이 없습니다.",
+    "beforeSigning": "이 투자자에 대해 서명 이전 시점의 항목 {count}건이 추가로 기록되어 있습니다. 이는 본 계약에 따른 공개가 아닙니다.",
+    "beforeSigning_one": "이 투자자에 대해 서명 이전 시점의 항목 1건이 추가로 기록되어 있습니다. 이는 본 계약에 따른 공개가 아닙니다.",
+    "item": {
+      "data_room_open": "데이터룸 열람",
+      "document": "문서",
+      "financials": "재무자료",
+      "metrics": "지표",
+      "deck": "피치덱",
+      "update": "투자자 업데이트",
+      "message_thread": "메시지 스레드"
+    },
+    "ip": "IP",
+    "truncated": "최근 항목만 표시됩니다. 전체 기록이 필요하시면 당사에 요청하십시오.",
+    "retentionNote": "각 항목에는 전체 IP 주소와 기기 정보도 저장되며, 여기서는 가려져 있고 적법한 요청이 있을 때 제공됩니다.",
+    "notAdvice": "CapitalReach는 본 기록을 보관합니다. 이에 관한 법률 자문은 제공하지 않습니다.",
+    "methodLabel": "방식",
+    "channelLabel": "경로"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "데이터룸 열람자 보기"
   }
 }

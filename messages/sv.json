@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "Innan du tar kontakt",
     "title": "Innan du kontaktar {name}",
-    "intro": "Genom att ta kontakt bekräftar du formellt:",
-    "bullet1": "Denna introduktion förmedlas av CapitalReach.",
-    "bullet2": "En framgångsavgift på {fee}% gäller på kapital som startupen reser via denna kontakt i {months} månader från idag.",
-    "bullet3": "Detta gäller oavsett om affären stängs på eller utanför plattformen. Avgiften debiteras startupen, aldrig dig.",
-    "bullet4": "Denna bekräftelse tidsstämplas och sparas som juridiskt underlag. Din IP-adress registreras.",
+    "intro": "Genom att ta kontakt bekräftar du följande, som vi registrerar:",
+    "bullet1": "CapitalReach registrerar denna introduktion: datum för den första kontakten, den kanal den skedde genom och den version av dessa villkor som gäller i dag.",
+    "bullet2": "En framgångsersättning om {fee} % utgår på kapital som detta bolag reser från dig om rundan slutförs inom {months} månader från det registrerade introduktionsdatumet. Den debiteras bolaget, aldrig dig.",
+    "bullet3": "Var rundan slutförs saknar betydelse, och åtagandet omfattar varje fond, bolag, arbetsgivare eller part som du kontrollerar, förvaltar eller är rådgivare åt. Att sätta ett närstående bolag i ditt ställe upphäver inte förpliktelsen.",
+    "bullet4": "Ett anspråk vilar på vår dokumentation: denna bekräftelse med tidsstämpel och IP-adress, introduktionsregistreringen, varje sekretessavtal du godkänner för detta bolag samt loggen över vad som röjts för dig under det.",
     "checkbox": "Jag har läst och godkänner villkoren ovan",
     "checkboxHint": "Krävs för att fortsätta",
     "confirm": "Bekräfta och fortsätt",
-    "footer": "Tidsstämplat {time} · IP registrerad"
+    "footer": "Tidsstämplat {time} · IP registrerad",
+    "bullet5": "Det omfattar inte en relation som du kan visa förelåg före denna introduktion. Anmäl den nu, så finns den dokumenterad innan något anspråk någonsin framställs.",
+    "notCoveredTitle": "Vad detta inte omfattar",
+    "notCoveredBody": "En tidigare investering, ett term sheet, ett undertecknat sekretessavtal eller dokumenterad substantiell kontakt från tiden före denna introduktion. Kapital som rests från en part som du varken introducerat eller kontrollerar. En runda som slutförs efter att perioden löpt ut.",
+    "priorRelationshipLabel": "Jag kände redan till detta bolag före i dag",
+    "priorRelationshipHint": "Ange hur och när ni först möttes. Anmält nu är det bevisning; framfört efter att ersättning krävts är det ett påstående.",
+    "priorRelationshipPlaceholder": "En tidigare investering, ett term sheet, ett sekretessavtal, ett tidigare samtal",
+    "introducedOn": "Introducerad {date}",
+    "tailEnds": "Perioden löper ut {date}",
+    "termsVersion": "Villkorsversion {version}",
+    "readFullTerms": "Läs hela åtagandet"
   },
   "feeCalc": {
     "title": "Beräkna din CapitalReach-avgift",
@@ -3804,6 +3814,14 @@
       "bank_connection": "Bankkoppling",
       "manual_upload": "Dokumentuppladdning",
       "manual_review": "Manuellt granskad"
+    },
+    "sig": {
+      "offplatform_contact": "Kontaktuppgifter delade i ett meddelande",
+      "offplatform_contact_note": "En e-postadress, ett telefonnummer eller ett användarnamn för meddelandetjänst förekom i ett meddelande mellan två parter som introducerats här. Att dela kontaktuppgifter är normalt och utgör inte i sig ett avtalsbrott; detta registrerar endast var och när det skedde.",
+      "circumvention_reported": "Möjligt kringgående",
+      "circumvention_quiet_after_access": "Fullständig åtkomst till datarummet, därefter tystnad, utan att någon affär inletts här",
+      "circumvention_round_closed_no_deal": "Rundan markerad som slutförd utan registrerad affär med en introducerad investerare",
+      "reviewNote": "Ett uppslag för en mänsklig bedömning, inte ett konstaterande. Varje mönster här har både en oskyldig och en misstänkt förklaring."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "Er verifiering beviljades inte. {note}",
     "notifyMoreTitle": "Ytterligare underlag krävs",
     "notifyMoreBody": "Er verifiering är vilande tills detta besvarats. {note}"
+  },
+  "gate": {
+    "publishBlocked": "Din annons publiceras när ditt bolag och din behörighet att företräda det har verifierats.",
+    "messageBlocked": "Verifiera din identitet för att inleda samtal. Grundare hör bara från namngivna personer.",
+    "dataroomBlocked": "Verifiera din identitet för att öppna datarum. Ett sekretessavtal kan endast göras gällande mot en namngiven motpart."
+  },
+  "nda": {
+    "parties": "Parter",
+    "recipientYou": "Du, {name}",
+    "recipientUnnamed": "Ditt verifierade namn registreras i samband med ditt godkännande och utgör en del av detta avtal.",
+    "version": "Version {version}",
+    "fingerprint": "Fingeravtryck",
+    "fingerprintHint": "SHA-256 av exakt den text som visas ovan. Den lagras tillsammans med ditt godkännande, så att det som avtalats kan styrkas i efterhand.",
+    "accessLogged": "Varje handling du öppnar under detta avtal loggas: vad, när och varifrån.",
+    "obligationsUntil": "Förpliktelserna gäller till och med {date}.",
+    "tailMonths": "Kringgåendeförbudet gäller i {months} månader från introduktionen.",
+    "signedOnVersion": "Du godkände version {version} den {date}. Den lydelsen gäller alltjämt för ditt godkännande.",
+    "wordingChanged": "Den nuvarande lydelsen har ändrats sedan du godkände avtalet."
+  },
+  "discLog": {
+    "title": "Sekretessregister",
+    "lead": "Varje investerare som undertecknat ditt sekretessavtal för denna annons: vem de var vid undertecknandet, den exakta lydelse de godkände och varje post de öppnat därefter. Om du någon gång behöver visa ett juridiskt ombud vem som fick vad, och när, är detta det registret.",
+    "limits": "Registret visar vad som gjorts tillgängligt, för vem och när. Det visar inte vad någon därefter gjort med materialet, och det utgör inte ett konstaterande av att något missbrukats.",
+    "counterparties": "Motparter",
+    "loading": "Läser registret",
+    "error": "Registret kunde inte läsas in. Försök igen om en stund.",
+    "empty": "Ingen investerare har ännu undertecknat ett sekretessavtal för denna annons. När någon gör det visas avtalet och allt de öppnar här.",
+    "emptyAction": "Märk en handling som NDA-skyddad",
+    "unnamed": "Namnlös motpart",
+    "agreement": "Avtalet",
+    "agreedAt": "Godkänt",
+    "method": {
+      "clickwrap": "Godkänt i appen",
+      "docusign": "Undertecknat via DocuSign"
+    },
+    "version": "Version",
+    "hash": "Texthash (SHA-256)",
+    "hashNote": "Hashen fastställer den exakta lydelse som godkändes. En lydelse som ändrats i efterhand stämmer inte överens med den.",
+    "hashMissing": "Denna underskrift föregår hashfunktionen, så lydelsen vilar på versionen ovan.",
+    "trustThen": "Verifiering vid undertecknandet",
+    "trustNow": "Verifiering i dag",
+    "snapshotMissing": "Denna underskrift föregår ögonblicksbilden av motparten. Namnet som visas är investerarens nuvarande namn, inte det som registrerades vid tillfället.",
+    "notRecorded": "Ej registrerat",
+    "obligationEnds": "Förpliktelsen upphör",
+    "obligationLive": "Gällande",
+    "obligationEnded": "Upphörd",
+    "obligationDerived": "Härlett ur den löptid som anges i den godkända versionen, inte registrerat vid undertecknandet.",
+    "introTitle": "Introduktion",
+    "firstContact": "Första kontakten",
+    "channel": {
+      "message": "Ett meddelande",
+      "deal": "En affär",
+      "nda": "Ett sekretessavtal",
+      "interest": "En intresseanmälan",
+      "data_room": "Datarummet",
+      "introduction_request": "En begäran om introduktion"
+    },
+    "tailEnds": "Kringgåendeförbudet upphör",
+    "noIntro": "Ingen introduktion är registrerad för detta partsförhållande.",
+    "disclosures": "Röjt",
+    "noDisclosures": "Ingenting har öppnats under detta avtal.",
+    "beforeSigning": "{count} ytterligare poster är loggade för denna investerare från tiden före undertecknandet. De utgör inte röjanden under detta avtal.",
+    "beforeSigning_one": "En ytterligare post är loggad för denna investerare från tiden före undertecknandet. Den utgör inte ett röjande under detta avtal.",
+    "item": {
+      "data_room_open": "Datarummet öppnat",
+      "document": "Handling",
+      "financials": "Finansiell information",
+      "metrics": "Nyckeltal",
+      "deck": "Presentationsmaterial",
+      "update": "Investerarrapport",
+      "message_thread": "Meddelandetråd"
+    },
+    "ip": "IP",
+    "truncated": "Endast de senaste posterna visas. Kontakta oss för hela loggen om du behöver den.",
+    "retentionNote": "Varje post lagrar även fullständig IP-adress och enhetsuppgifter, som maskeras här och lämnas ut efter laglig begäran.",
+    "notAdvice": "CapitalReach för detta register. Vi lämnar ingen juridisk rådgivning om det.",
+    "methodLabel": "Metod",
+    "channelLabel": "Genom"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "Vilka som har haft åtkomst till ditt datarum"
   }
 }

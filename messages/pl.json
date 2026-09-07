@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "Zanim nawiążesz kontakt",
     "title": "Zanim skontaktujesz się z {name}",
-    "intro": "Nawiązując kontakt, formalnie potwierdzasz, że:",
-    "bullet1": "To przedstawienie jest pośredniczone przez CapitalReach.",
-    "bullet2": "Od kapitału pozyskanego przez startup dzięki temu kontaktowi przez {months} miesięcy od dziś naliczana jest prowizja od sukcesu w wysokości {fee}%.",
-    "bullet3": "Dotyczy to zarówno transakcji zamkniętych na platformie, jak i poza nią. Prowizję ponosi startup, nigdy Ty.",
-    "bullet4": "To potwierdzenie jest opatrzone znacznikiem czasu i przechowywane jako dowód prawny. Twój adres IP jest rejestrowany.",
+    "intro": "Nawiązując kontakt, potwierdzasz, a my odnotowujemy:",
+    "bullet1": "CapitalReach odnotowuje to skojarzenie stron: datę pierwszego kontaktu, kanał, w którym do niego doszło, oraz wersję niniejszych warunków obowiązującą dzisiaj.",
+    "bullet2": "Wynagrodzenie za sukces w wysokości {fee}% jest należne od kapitału pozyskanego przez tę spółkę od Ciebie, jeżeli runda zostanie zamknięta w ciągu {months} mies. od odnotowanej daty skojarzenia stron. Obciąża ono spółkę, nigdy Ciebie.",
+    "bullet3": "Miejsce zamknięcia rundy nie ma znaczenia, a postanowienie obejmuje każdy fundusz, wehikuł, pracodawcę lub podmiot, który kontrolujesz, którym zarządzasz lub któremu doradzasz. Wstawienie w swoje miejsce podmiotu powiązanego nie znosi tego zobowiązania.",
+    "bullet4": "Roszczenie opiera się na naszych zapisach: niniejszym potwierdzeniu wraz ze znacznikiem czasu i adresem IP, zapisie skojarzenia stron, każdej umowie NDA zaakceptowanej przez Ciebie wobec tej spółki oraz rejestrze informacji ujawnionych Ci na jej podstawie.",
     "checkbox": "Przeczytałem/am i akceptuję powyższe warunki",
     "checkboxHint": "Wymagane, aby kontynuować",
     "confirm": "Potwierdź i kontynuuj",
-    "footer": "Znacznik czasu {time} · IP zarejestrowane"
+    "footer": "Znacznik czasu {time} · IP zarejestrowane",
+    "bullet5": "Postanowienie nie obejmuje relacji, co do której możesz wykazać, że powstała przed tym skojarzeniem stron. Zgłoś ją teraz, a znajdzie się w rejestrze, zanim ktokolwiek wystąpi z roszczeniem.",
+    "notCoveredTitle": "Czego to nie obejmuje",
+    "notCoveredBody": "Wcześniejszej inwestycji, term sheetu, podpisanej umowy NDA ani udokumentowanego istotnego kontaktu sprzed tego skojarzenia stron. Kapitału pozyskanego od podmiotu, którego nie wskazałeś i którego nie kontrolujesz. Rundy zamkniętej po upływie okresu ochronnego.",
+    "priorRelationshipLabel": "Znałem tę spółkę już przed dzisiejszym dniem",
+    "priorRelationshipHint": "Wskaż, w jaki sposób i kiedy poznałeś ją po raz pierwszy. Zgłoszone teraz stanowi dowód; przedstawione po zgłoszeniu roszczenia jest jedynie argumentem.",
+    "priorRelationshipPlaceholder": "Wcześniejsza inwestycja, term sheet, umowa NDA, wcześniejsza rozmowa",
+    "introducedOn": "Skojarzenie: {date}",
+    "tailEnds": "Okres wynagrodzenia kończy się {date}",
+    "termsVersion": "Wersja warunków {version}",
+    "readFullTerms": "Przeczytaj pełne zobowiązanie"
   },
   "feeCalc": {
     "title": "Oblicz swoją prowizję CapitalReach",
@@ -3804,6 +3814,14 @@
       "bank_connection": "Połączenie bankowe",
       "manual_upload": "Przesłanie dokumentu",
       "manual_review": "Ocena ręczna"
+    },
+    "sig": {
+      "offplatform_contact": "Dane kontaktowe przekazane w wiadomości",
+      "offplatform_contact_note": "W wiadomości między stronami skojarzonymi w serwisie pojawił się adres e-mail, numer telefonu lub identyfikator komunikatora. Przekazywanie danych kontaktowych jest normalne i samo w sobie nie stanowi naruszenia; odnotowujemy jedynie, gdzie i kiedy do tego doszło.",
+      "circumvention_reported": "Możliwe obejście pośrednictwa",
+      "circumvention_quiet_after_access": "Pełny dostęp do data roomu, potem cisza, bez otwarcia transakcji w serwisie",
+      "circumvention_round_closed_no_deal": "Runda oznaczona jako zamknięta bez transakcji odnotowanej wobec skojarzonego inwestora",
+      "reviewNote": "Trop do weryfikacji przez człowieka, nie ustalenie. Każdy z tych wzorców ma zarówno niewinne, jak i podejrzane wyjaśnienie."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "Państwa weryfikacja nie została przyznana. {note}",
     "notifyMoreTitle": "Potrzebne dodatkowe dowody",
     "notifyMoreBody": "Państwa weryfikacja jest wstrzymana do czasu odpowiedzi. {note}"
+  },
+  "gate": {
+    "publishBlocked": "Twoja oferta zostanie opublikowana po zweryfikowaniu spółki oraz Twojego umocowania do działania w jej imieniu.",
+    "messageBlocked": "Zweryfikuj swoją tożsamość, aby rozpocząć rozmowy. Założyciele otrzymują wiadomości wyłącznie od osób wskazanych z imienia i nazwiska.",
+    "dataroomBlocked": "Zweryfikuj swoją tożsamość, aby otworzyć data roomy. Umowa NDA jest egzekwowalna wyłącznie wobec oznaczonego kontrahenta."
+  },
+  "nda": {
+    "parties": "Strony",
+    "recipientYou": "Ty, {name}",
+    "recipientUnnamed": "Twoje zweryfikowane imię i nazwisko zostaje odnotowane wraz z akceptacją i stanowi część niniejszej umowy.",
+    "version": "Wersja {version}",
+    "fingerprint": "Odcisk",
+    "fingerprintHint": "SHA-256 dokładnej treści powyżej. Jest przechowywany wraz z Twoją akceptacją, dzięki czemu uzgodnioną treść można później wykazać.",
+    "accessLogged": "Każdy dokument otwarty przez Ciebie na podstawie niniejszej umowy jest rejestrowany: co, kiedy i skąd.",
+    "obligationsUntil": "Zobowiązania obowiązują do {date}.",
+    "tailMonths": "Zakaz obchodzenia pośrednictwa obowiązuje przez {months} mies. od dnia skojarzenia stron.",
+    "signedOnVersion": "Zaakceptowałeś wersję {version} w dniu {date}. Ta treść nadal reguluje Twoją akceptację.",
+    "wordingChanged": "Obecna treść uległa zmianie od czasu Twojej akceptacji."
+  },
+  "discLog": {
+    "title": "Rejestr poufności",
+    "lead": "Każdy inwestor, który podpisał Twoją umowę NDA przy tej ofercie: kim był w chwili podpisania, jaką dokładnie treść zaakceptował oraz każda pozycja, którą następnie otworzył. Jeżeli kiedykolwiek będziesz musiał wykazać przed prawnikiem, kto co otrzymał i kiedy, to jest właśnie ten rejestr.",
+    "limits": "Rejestr odnotowuje, co, komu i kiedy udostępniono. Nie pokazuje, co dana osoba później zrobiła z materiałem, i nie stanowi ustalenia, że doszło do nieuprawnionego wykorzystania.",
+    "counterparties": "Kontrahenci",
+    "loading": "Wczytywanie rejestru",
+    "error": "Nie udało się wczytać rejestru. Spróbuj ponownie za chwilę.",
+    "empty": "Żaden inwestor nie podpisał jeszcze umowy NDA przy tej ofercie. Gdy to nastąpi, jego umowa i wszystko, co otworzy, pojawi się tutaj.",
+    "emptyAction": "Oznacz dokument jako dostępny tylko po NDA",
+    "unnamed": "Kontrahent bez nazwy",
+    "agreement": "Umowa",
+    "agreedAt": "Zaakceptowano",
+    "method": {
+      "clickwrap": "Akceptacja w aplikacji",
+      "docusign": "Podpis przez DocuSign"
+    },
+    "version": "Wersja",
+    "hash": "Skrót treści (SHA-256)",
+    "hashNote": "Skrót utrwala dokładną treść, na którą wyrażono zgodę. Treść zmieniona później nie będzie z nim zgodna.",
+    "hashMissing": "Ten podpis pochodzi sprzed wprowadzenia skrótu, więc o treści rozstrzyga wersja wskazana powyżej.",
+    "trustThen": "Weryfikacja w chwili podpisania",
+    "trustNow": "Weryfikacja dzisiaj",
+    "snapshotMissing": "Ten podpis pochodzi sprzed wprowadzenia migawki danych kontrahenta. Wyświetlana nazwa jest obecną nazwą inwestora, a nie odnotowaną w tamtym czasie.",
+    "notRecorded": "Nie odnotowano",
+    "obligationEnds": "Koniec zobowiązania",
+    "obligationLive": "Obowiązuje",
+    "obligationEnded": "Zakończone",
+    "obligationDerived": "Ustalone na podstawie okresu wskazanego w zaakceptowanej wersji, nieodnotowanego przy podpisaniu.",
+    "introTitle": "Skojarzenie stron",
+    "firstContact": "Pierwszy kontakt",
+    "channel": {
+      "message": "Wiadomość",
+      "deal": "Transakcja",
+      "nda": "Umowa NDA",
+      "interest": "Wyrażenie zainteresowania",
+      "data_room": "Data room",
+      "introduction_request": "Prośba o skojarzenie"
+    },
+    "tailEnds": "Koniec zakazu obchodzenia",
+    "noIntro": "Dla tej pary nie odnotowano skojarzenia stron.",
+    "disclosures": "Ujawnione",
+    "noDisclosures": "Na podstawie tej umowy nic nie zostało otwarte.",
+    "beforeSigning": "Dla tego inwestora odnotowano {count} dalszych wpisów sprzed podpisania. Nie stanowią one ujawnień na podstawie tej umowy.",
+    "beforeSigning_one": "Dla tego inwestora odnotowano jeden dalszy wpis sprzed podpisania. Nie stanowi on ujawnienia na podstawie tej umowy.",
+    "item": {
+      "data_room_open": "Otwarcie data roomu",
+      "document": "Dokument",
+      "financials": "Dane finansowe",
+      "metrics": "Wskaźniki",
+      "deck": "Prezentacja inwestorska",
+      "update": "Aktualizacja dla inwestorów",
+      "message_thread": "Wątek wiadomości"
+    },
+    "ip": "IP",
+    "truncated": "Wyświetlane są wyłącznie najnowsze wpisy. Poproś nas o pełny rejestr, jeżeli go potrzebujesz.",
+    "retentionNote": "Każdy wpis zawiera także pełny adres IP i dane urządzenia, które są tutaj maskowane i udostępniane na zgodne z prawem żądanie.",
+    "notAdvice": "CapitalReach prowadzi ten rejestr. Nie udziela w związku z nim porad prawnych.",
+    "methodLabel": "Sposób",
+    "channelLabel": "Kanał"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "Kto uzyskał dostęp do Twojego data roomu"
   }
 }

@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "Voordat u contact opneemt",
     "title": "Voordat u contact opneemt met {name}",
-    "intro": "Door contact op te nemen bevestigt u formeel:",
-    "bullet1": "Deze introductie wordt gefaciliteerd door CapitalReach.",
-    "bullet2": "Op kapitaal dat de startup via deze connectie ophaalt geldt {months} maanden vanaf vandaag een succesfee van {fee}%.",
-    "bullet3": "Dit geldt ongeacht of de deal op of buiten dit platform wordt gesloten. De fee wordt aan de startup gerekend, nooit aan u.",
-    "bullet4": "Deze bevestiging wordt met tijdstempel opgeslagen als juridisch bewijs. Uw IP-adres wordt vastgelegd.",
+    "intro": "Door contact op te nemen erkent u het volgende, en leggen wij dit vast:",
+    "bullet1": "CapitalReach legt deze introductie vast: de datum van het eerste contact, het kanaal waarlangs dit plaatsvond en de versie van deze voorwaarden die vandaag van kracht is.",
+    "bullet2": "Over kapitaal dat deze onderneming bij u ophaalt, is een succesfee van {fee}% verschuldigd wanneer de ronde binnen {months} maanden na die vastgelegde introductiedatum wordt gesloten. De fee wordt in rekening gebracht bij de onderneming, nooit bij u.",
+    "bullet3": "Waar de ronde wordt gesloten, maakt geen verschil, en het beding geldt voor elk fonds, elke entiteit, elke werkgever of elke partij die u beheerst, beheert of adviseert. Het in uw plaats stellen van een gelieerde onderneming beëindigt de verplichting niet.",
+    "bullet4": "Een vordering steunt op onze vastlegging: deze erkenning met tijdstempel en IP-adres, het introductierecord, elke NDA die u voor deze onderneming aanvaardt, en het logboek van wat u daaronder is verstrekt.",
     "checkbox": "Ik heb bovenstaande voorwaarden gelezen en ga akkoord",
     "checkboxHint": "Vereist om door te gaan",
     "confirm": "Bevestigen en doorgaan",
-    "footer": "Tijdstempel {time} · IP vastgelegd"
+    "footer": "Tijdstempel {time} · IP vastgelegd",
+    "bullet5": "Het beding geldt niet voor een relatie waarvan u kunt aantonen dat deze aan deze introductie voorafgaat. Meld die nu, dan staat zij vast voordat er ooit iets wordt gevorderd.",
+    "notCoveredTitle": "Waarvoor dit niet geldt",
+    "notCoveredBody": "Een eerdere investering, een term sheet, een ondertekende NDA of gedocumenteerd inhoudelijk contact van voor deze introductie. Kapitaal opgehaald bij een partij die u niet hebt geïntroduceerd en niet beheerst. Een ronde die na afloop van de termijn wordt gesloten.",
+    "priorRelationshipLabel": "Ik kende deze onderneming al voor vandaag",
+    "priorRelationshipHint": "Geef aan hoe en wanneer u hen voor het eerst hebt ontmoet. Nu gemeld is het bewijs; pas aangevoerd nadat een fee is gevorderd is het een stelling.",
+    "priorRelationshipPlaceholder": "Een eerdere investering, een term sheet, een NDA, een eerder gesprek",
+    "introducedOn": "Geïntroduceerd op {date}",
+    "tailEnds": "Feetermijn eindigt {date}",
+    "termsVersion": "Voorwaarden versie {version}",
+    "readFullTerms": "Lees de volledige verbintenis"
   },
   "feeCalc": {
     "title": "Bereken uw CapitalReach-fee",
@@ -3804,6 +3814,14 @@
       "bank_connection": "Bankkoppeling",
       "manual_upload": "Documentupload",
       "manual_review": "Handmatig beoordeeld"
+    },
+    "sig": {
+      "offplatform_contact": "Contactgegevens gedeeld in een bericht",
+      "offplatform_contact_note": "In een bericht tussen twee hier geïntroduceerde partijen is een e-mailadres, telefoonnummer of messaging-account verschenen. Het delen van contactgegevens is gebruikelijk en op zichzelf geen inbreuk; hier wordt uitsluitend vastgelegd waar en wanneer dit gebeurde.",
+      "circumvention_reported": "Mogelijke circumventie",
+      "circumvention_quiet_after_access": "Volledige toegang tot de dataroom, daarna stilte, zonder dat hier een deal is geopend",
+      "circumvention_round_closed_no_deal": "Ronde als gesloten gemarkeerd zonder dat een deal is vastgelegd bij een geïntroduceerde investeerder",
+      "reviewNote": "Een aanwijzing voor een mens, geen vaststelling. Elk patroon hier heeft naast een verdachte ook een onschuldige verklaring."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "Uw verificatie is niet toegekend. {note}",
     "notifyMoreTitle": "Aanvullend bewijs nodig",
     "notifyMoreBody": "Uw verificatie ligt stil tot dit is beantwoord. {note}"
+  },
+  "gate": {
+    "publishBlocked": "Uw aanbieding gaat live zodra uw onderneming en uw bevoegdheid om namens haar te handelen zijn geverifieerd.",
+    "messageBlocked": "Verifieer uw identiteit om gesprekken te beginnen. Oprichters horen uitsluitend van personen die bij naam bekend zijn.",
+    "dataroomBlocked": "Verifieer uw identiteit om datarooms te openen. Een NDA is alleen afdwingbaar tegen een bij naam bekende wederpartij."
+  },
+  "nda": {
+    "parties": "Partijen",
+    "recipientYou": "U, {name}",
+    "recipientUnnamed": "Uw geverifieerde naam wordt vastgelegd bij uw aanvaarding en maakt deel uit van deze overeenkomst.",
+    "version": "Versie {version}",
+    "fingerprint": "Vingerafdruk",
+    "fingerprintHint": "SHA-256 van de exacte tekst hierboven. Deze wordt met uw aanvaarding bewaard, zodat later kan worden bewezen wat is overeengekomen.",
+    "accessLogged": "Elk document dat u onder deze overeenkomst opent, wordt vastgelegd: wat, wanneer en vanwaar.",
+    "obligationsUntil": "De verplichtingen lopen tot {date}.",
+    "tailMonths": "Het non-circumventiebeding loopt {months} maanden vanaf de introductie.",
+    "signedOnVersion": "U hebt versie {version} aanvaard op {date}. Die tekst blijft bepalend voor uw aanvaarding.",
+    "wordingChanged": "De huidige tekst is gewijzigd sinds uw aanvaarding."
+  },
+  "discLog": {
+    "title": "Vertrouwelijkheidsregister",
+    "lead": "Elke investeerder die uw NDA bij deze aanbieding heeft ondertekend: wie zij waren op het moment van ondertekening, de exacte tekst waarmee zij hebben ingestemd, en elk item dat zij daarna hebben geopend. Moet u ooit aan een advocaat aantonen wie wat heeft ontvangen, en wanneer, dan is dit dat register.",
+    "limits": "Het legt vast wat aan wie en wanneer beschikbaar is gesteld. Het toont niet wat iemand daarna met het materiaal heeft gedaan, en het is geen vaststelling dat er misbruik van is gemaakt.",
+    "counterparties": "Wederpartijen",
+    "loading": "Register wordt gelezen",
+    "error": "Het register kon niet worden geladen. Probeer het zo meteen opnieuw.",
+    "empty": "Nog geen investeerder heeft een NDA bij deze aanbieding ondertekend. Zodra dat gebeurt, verschijnen hier hun overeenkomst en alles wat zij openen.",
+    "emptyAction": "Document als alleen-NDA markeren",
+    "unnamed": "Wederpartij zonder naam",
+    "agreement": "De overeenkomst",
+    "agreedAt": "Overeengekomen",
+    "method": {
+      "clickwrap": "Aanvaard in de app",
+      "docusign": "Ondertekend via DocuSign"
+    },
+    "version": "Versie",
+    "hash": "Teksthash (SHA-256)",
+    "hashNote": "De hash legt de exacte overeengekomen tekst vast. Tekst die daarna is gewijzigd, komt er niet mee overeen.",
+    "hashMissing": "Deze ondertekening dateert van voor de hash; de tekst berust daarom op de versie hierboven.",
+    "trustThen": "Verificatie bij ondertekening",
+    "trustNow": "Verificatie vandaag",
+    "snapshotMissing": "Deze ondertekening dateert van voor de momentopname van de wederpartij. De getoonde naam is de huidige naam van de investeerder, niet de destijds vastgelegde naam.",
+    "notRecorded": "Niet vastgelegd",
+    "obligationEnds": "Verplichting eindigt",
+    "obligationLive": "Van kracht",
+    "obligationEnded": "Beëindigd",
+    "obligationDerived": "Ontleend aan de termijn in de aanvaarde versie, niet vastgelegd bij ondertekening.",
+    "introTitle": "Introductie",
+    "firstContact": "Eerste contact",
+    "channel": {
+      "message": "Een bericht",
+      "deal": "Een deal",
+      "nda": "Een NDA",
+      "interest": "Een blijk van interesse",
+      "data_room": "De dataroom",
+      "introduction_request": "Een verzoek om introductie"
+    },
+    "tailEnds": "Non-circumventie eindigt",
+    "noIntro": "Voor deze combinatie is geen introductie vastgelegd.",
+    "disclosures": "Verstrekt",
+    "noDisclosures": "Er is niets geopend onder deze overeenkomst.",
+    "beforeSigning": "Voor deze investeerder zijn {count} verdere vermeldingen vastgelegd van voor de ondertekening. Dat zijn geen verstrekkingen onder deze overeenkomst.",
+    "beforeSigning_one": "Voor deze investeerder is een verdere vermelding vastgelegd van voor de ondertekening. Dat is geen verstrekking onder deze overeenkomst.",
+    "item": {
+      "data_room_open": "Dataroom geopend",
+      "document": "Document",
+      "financials": "Cijfers",
+      "metrics": "Kerncijfers",
+      "deck": "Pitchdeck",
+      "update": "Investeerdersupdate",
+      "message_thread": "Berichtenreeks"
+    },
+    "ip": "IP",
+    "truncated": "Alleen de meest recente vermeldingen worden getoond. Vraag ons om het volledige logboek als u dat nodig hebt.",
+    "retentionNote": "Bij elke vermelding worden ook het volledige IP-adres en de apparaatgegevens bewaard; deze zijn hier gemaskeerd en worden op rechtmatig verzoek verstrekt.",
+    "notAdvice": "CapitalReach houdt dit register bij. Het geeft daarover geen juridisch advies.",
+    "methodLabel": "Wijze",
+    "channelLabel": "Via"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "Wie uw dataroom heeft geraadpleegd"
   }
 }

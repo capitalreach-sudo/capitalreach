@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordDisclosure } from "@/lib/nda-record";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { mayOpenDocument } from "@/lib/document-access";
 import { investorGate } from "@/lib/plan-gate";
 import { isUuid } from "@/lib/utils";
+import { evaluateGate, gateRefusal, getGateConfig, investorGateSubject, type GateVerdict } from "@/lib/trust-gates";
 
 /**
  * Opening a data-room document, re-authorised at the moment of the click.
@@ -35,7 +37,7 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
 
   const { data: doc } = await admin.from("startup_documents")
-    .select("id, startup_id, file_url, requires_nda").eq("id", id).maybeSingle();
+    .select("id, startup_id, file_url, requires_nda, label").eq("id", id).maybeSingle();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const { data: startup } = await admin.from("startups")
@@ -46,6 +48,9 @@ export async function GET(req: NextRequest) {
   let investorId: string | null = null;
   let canViewDocuments = false;
   let ndaSigned = false;
+  // Held rather than returned on the spot so a suspended or removed listing
+  // still answers 404 first, exactly as it did before the gate existed.
+  let gateRefused: Extract<GateVerdict, { allowed: false }> | null = null;
   if (user) {
     if (user.id === startup.owner_id) isOwnerOrAdmin = true;
     else {
@@ -61,6 +66,17 @@ export async function GET(req: NextRequest) {
       // mode lifts it like every other paywall while platform launch mode is on.
       if (investorId && !isOwnerOrAdmin) {
         canViewDocuments = (await investorGate(user.id)).viewDocuments;
+        // Trust gate: a SECOND, independent check beside the tier gate above.
+        // The room is where the confidential material actually leaves the
+        // founder's hands, so it asks for an identified counterparty (level 2)
+        // as well as a paid plan. Only reachable here -- the owner and admin
+        // branches above never enter this block, and a share-token holder has
+        // no investor entity to gate.
+        const gateSubject = await investorGateSubject(user.id);
+        if (gateSubject) {
+          const verdict = evaluateGate("dataroom", gateSubject, await getGateConfig());
+          if (!verdict.allowed) gateRefused = verdict;
+        }
       }
       if (investorId && startup.require_nda) {
         const { data: nda } = await admin.from("nda_records")
@@ -74,6 +90,9 @@ export async function GET(req: NextRequest) {
   if (!isOwnerOrAdmin && startup.status !== "active") {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  // Distinguishable from the tier refusal below ("Locked"): this one names the
+  // rung and where to earn it, because it is fixable by the viewer.
+  if (gateRefused) return NextResponse.json(gateRefusal(gateRefused), { status: 403 });
 
   let shareGrantsDocs = false;
   if (shareToken && !investorId && !isOwnerOrAdmin) {
@@ -102,5 +121,20 @@ export async function GET(req: NextRequest) {
   if (!path) return NextResponse.json({ error: "File missing" }, { status: 404 });
   const { data: signed } = await admin.storage.from("startup-assets").createSignedUrl(path, 60);
   if (!signed?.signedUrl) return NextResponse.json({ error: "File missing" }, { status: 404 });
+
+  // The record a founder needs on the day somebody copies their idea: not
+  // "an investor had access" but this named person opened this document at
+  // this moment. Owners and admins reading their own room are not disclosures.
+  if (investorId && !isOwnerOrAdmin) {
+    await recordDisclosure({
+      startupId: doc.startup_id,
+      investorId,
+      itemType: "document",
+      itemId: doc.id,
+      itemLabel: doc.label ?? null,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+      userAgent: req.headers.get("user-agent")?.slice(0, 400) ?? null,
+    });
+  }
   return NextResponse.redirect(signed.signedUrl, 302);
 }

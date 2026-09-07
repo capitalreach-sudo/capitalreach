@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "Before you connect",
     "title": "Before you connect with {name}",
-    "intro": "By initiating contact, you formally acknowledge:",
-    "bullet1": "This introduction is facilitated by CapitalReach.",
-    "bullet2": "A {fee}% success fee applies on capital the startup raises through this connection for {months} months from today.",
-    "bullet3": "This applies whether the deal closes on or off this platform. The fee is charged to the startup, never to you.",
-    "bullet4": "This acknowledgment is timestamped and stored as a legal record. Your IP address is recorded.",
+    "intro": "By making contact you acknowledge, and we record:",
+    "bullet1": "CapitalReach records this introduction: the date of first contact, the channel it happened through, and the version of these terms in force today.",
+    "bullet2": "A {fee}% success fee is due on capital this company raises from you where the round closes within {months} months of that recorded introduction date. It is charged to the company, never to you.",
+    "bullet3": "Where the round closes makes no difference, and it covers any fund, vehicle, employer or party you control, manage or advise. Substituting an affiliate for yourself does not end the obligation.",
+    "bullet4": "A claim rests on our records: this acknowledgment with its timestamp and IP address, the introduction record, any NDA you accept for this company, and the log of what was disclosed to you under it.",
     "checkbox": "I have read and agree to the above terms",
     "checkboxHint": "Required to continue",
     "confirm": "Confirm and proceed",
-    "footer": "Timestamped {time} · IP recorded"
+    "footer": "Timestamped {time} · IP recorded",
+    "bullet5": "It does not cover a relationship you can show predates this introduction. Declare one now and it is on the record before anything is ever claimed.",
+    "notCoveredTitle": "What this does not cover",
+    "notCoveredBody": "A prior investment, a term sheet, a signed NDA or documented substantive contact from before this introduction. Capital raised from a party you did not introduce and do not control. A round closing after the window ends.",
+    "priorRelationshipLabel": "I already knew this company before today",
+    "priorRelationshipHint": "Say how and when you first met them. Declared now it is evidence; offered after a fee is claimed it is an argument.",
+    "priorRelationshipPlaceholder": "A prior investment, a term sheet, an NDA, an earlier conversation",
+    "introducedOn": "Introduced {date}",
+    "tailEnds": "Fee window ends {date}",
+    "termsVersion": "Terms version {version}",
+    "readFullTerms": "Read the full undertaking"
   },
   "feeCalc": {
     "title": "Calculate your CapitalReach fee",
@@ -3804,6 +3814,14 @@
       "bank_connection": "Bank connection",
       "manual_upload": "Document upload",
       "manual_review": "Reviewed by hand"
+    },
+    "sig": {
+      "offplatform_contact": "Contact details shared in a message",
+      "offplatform_contact_note": "An email address, phone number or messaging handle appeared in a message between two parties introduced here. Sharing contact details is normal and is not itself a breach; this only records where and when it happened.",
+      "circumvention_reported": "Possible circumvention",
+      "circumvention_quiet_after_access": "Full data-room access, then silence, with no deal opened here",
+      "circumvention_round_closed_no_deal": "Round marked closed with no deal recorded against an introduced investor",
+      "reviewNote": "A lead for a human, not a finding. Every pattern here has an innocent explanation as well as a suspicious one."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "Your verification was not granted. {note}",
     "notifyMoreTitle": "More evidence needed",
     "notifyMoreBody": "Your verification is on hold until this is answered. {note}"
+  },
+  "gate": {
+    "publishBlocked": "Your listing goes live once your company and your authority to act for it are verified.",
+    "messageBlocked": "Verify your identity to start conversations. Founders only hear from named people.",
+    "dataroomBlocked": "Verify your identity to open data rooms. An NDA is only enforceable against a named counterparty."
+  },
+  "nda": {
+    "parties": "Parties",
+    "recipientYou": "You, {name}",
+    "recipientUnnamed": "Your verified name is recorded with your acceptance and forms part of this agreement.",
+    "version": "Version {version}",
+    "fingerprint": "Fingerprint",
+    "fingerprintHint": "SHA-256 of the exact text above. It is stored with your acceptance, so what was agreed can be proved later.",
+    "accessLogged": "Every document you open under this agreement is logged: what, when, and from where.",
+    "obligationsUntil": "Obligations run until {date}.",
+    "tailMonths": "Non-circumvention runs {months} months from the introduction.",
+    "signedOnVersion": "You accepted version {version} on {date}. That wording still governs your acceptance.",
+    "wordingChanged": "The current wording has changed since you accepted."
+  },
+  "discLog": {
+    "title": "Confidentiality record",
+    "lead": "Every investor who has signed your NDA on this listing: who they were when they signed, the exact wording they agreed to, and each item they opened afterwards. If you ever need to show a lawyer who received what, and when, this is that record.",
+    "limits": "It records what was made available, to whom, and when. It does not show what anyone did with the material afterwards, and it is not a finding that anything was misused.",
+    "counterparties": "Counterparties",
+    "loading": "Reading the record",
+    "error": "The record could not be loaded. Try again in a moment.",
+    "empty": "No investor has signed an NDA on this listing yet. When one does, their agreement and everything they open appears here.",
+    "emptyAction": "Mark a document NDA-only",
+    "unnamed": "Unnamed counterparty",
+    "agreement": "The agreement",
+    "agreedAt": "Agreed",
+    "method": {
+      "clickwrap": "Accepted in app",
+      "docusign": "Signed via DocuSign"
+    },
+    "version": "Version",
+    "hash": "Text hash (SHA-256)",
+    "hashNote": "The hash fixes the exact wording that was agreed to. Wording edited afterwards will not match it.",
+    "hashMissing": "This signature predates the hash, so the wording rests on the version above.",
+    "trustThen": "Verification at signing",
+    "trustNow": "Verification today",
+    "snapshotMissing": "This signature predates the counterparty snapshot. The name shown is the investor's current name, not one recorded at the time.",
+    "notRecorded": "Not recorded",
+    "obligationEnds": "Obligation ends",
+    "obligationLive": "In force",
+    "obligationEnded": "Ended",
+    "obligationDerived": "Taken from the term stated in the version agreed to, not recorded at signing.",
+    "introTitle": "Introduction",
+    "firstContact": "First contact",
+    "channel": {
+      "message": "A message",
+      "deal": "A deal",
+      "nda": "An NDA",
+      "interest": "An expression of interest",
+      "data_room": "The data room",
+      "introduction_request": "An introduction request"
+    },
+    "tailEnds": "Non-circumvention ends",
+    "noIntro": "No introduction is recorded for this pair.",
+    "disclosures": "Disclosed",
+    "noDisclosures": "Nothing has been opened under this agreement.",
+    "beforeSigning": "{count} further entries are logged for this investor from before they signed. They are not disclosures under this agreement.",
+    "beforeSigning_one": "One further entry is logged for this investor from before they signed. It is not a disclosure under this agreement.",
+    "item": {
+      "data_room_open": "Data room opened",
+      "document": "Document",
+      "financials": "Financials",
+      "metrics": "Metrics",
+      "deck": "Pitch deck",
+      "update": "Investor update",
+      "message_thread": "Message thread"
+    },
+    "ip": "IP",
+    "truncated": "Only the most recent entries are shown. Ask us for the full log if you need it.",
+    "retentionNote": "Each entry also stores the full IP address and device details, which are masked here and released on a lawful request.",
+    "notAdvice": "CapitalReach keeps this record. It does not give legal advice on it.",
+    "methodLabel": "Method",
+    "channelLabel": "Through"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "Who has accessed your data room"
   }
 }

@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "Antes de entrar em contacto",
     "title": "Antes de contactar a {name}",
-    "intro": "Ao iniciar o contacto, reconhece formalmente que:",
-    "bullet1": "Esta apresentação é facilitada pela CapitalReach.",
-    "bullet2": "Aplica-se uma comissão de sucesso de {fee}% sobre o capital que a startup angariar através desta ligação durante {months} meses a partir de hoje.",
-    "bullet3": "Aplica-se quer o negócio feche dentro ou fora da plataforma. A comissão é paga pela startup, nunca por si.",
-    "bullet4": "Este reconhecimento fica registado com data e hora como prova legal. O seu endereço IP é registado.",
+    "intro": "Ao estabelecer contacto, reconhece o seguinte, que fica registado:",
+    "bullet1": "A CapitalReach regista esta apresentação: a data do primeiro contacto, o canal através do qual ocorreu e a versão destes termos em vigor nesta data.",
+    "bullet2": "É devida uma comissão de êxito de {fee}% sobre o capital que esta empresa venha a captar junto de si, caso a ronda seja concluída no prazo de {months} meses a contar da data de apresentação registada. É cobrada à empresa e nunca a si.",
+    "bullet3": "O local de conclusão da ronda é irrelevante, e a obrigação abrange qualquer fundo, veículo, entidade empregadora ou parte que controle, faça a gestão ou assessorie. A substituição por uma entidade relacionada não faz cessar a obrigação.",
+    "bullet4": "Uma reclamação assenta nos nossos registos: o presente reconhecimento com a respetiva data, hora e endereço IP, o registo da apresentação, qualquer NDA que aceite quanto a esta empresa e o registo do que lhe foi divulgado ao seu abrigo.",
     "checkbox": "Li e aceito os termos acima",
     "checkboxHint": "Obrigatório para continuar",
     "confirm": "Confirmar e continuar",
-    "footer": "Registado {time} · IP guardado"
+    "footer": "Registado {time} · IP guardado",
+    "bullet5": "Não abrange uma relação que consiga demonstrar ser anterior a esta apresentação. Declare-a agora e fica registada antes de ser feita qualquer reclamação.",
+    "notCoveredTitle": "O que não é abrangido",
+    "notCoveredBody": "Um investimento anterior, um term sheet, um NDA assinado ou contactos substantivos documentados anteriores a esta apresentação. Capital captado junto de uma parte que não tenha apresentado nem controle. Uma ronda concluída após o termo do prazo.",
+    "priorRelationshipLabel": "Já conhecia esta empresa antes de hoje",
+    "priorRelationshipHint": "Indique como e quando os conheceu. Declarado agora, constitui prova; apresentado depois de reclamada a comissão, é apenas um argumento.",
+    "priorRelationshipPlaceholder": "Um investimento anterior, um term sheet, um NDA, uma conversa anterior",
+    "introducedOn": "Apresentação em {date}",
+    "tailEnds": "Prazo da comissão termina em {date}",
+    "termsVersion": "Termos versão {version}",
+    "readFullTerms": "Ler o compromisso integral"
   },
   "feeCalc": {
     "title": "Calcule a sua comissão CapitalReach",
@@ -3804,6 +3814,14 @@
       "bank_connection": "Ligação bancária",
       "manual_upload": "Envio de documento",
       "manual_review": "Análise manual"
+    },
+    "sig": {
+      "offplatform_contact": "Contactos partilhados numa mensagem",
+      "offplatform_contact_note": "Um endereço de email, número de telefone ou identificador de mensagens surgiu numa mensagem entre duas partes aqui apresentadas. Partilhar contactos é normal e não constitui, por si só, um incumprimento; isto apenas regista onde e quando ocorreu.",
+      "circumvention_reported": "Possível contorno",
+      "circumvention_quiet_after_access": "Acesso integral à data room, seguido de silêncio, sem qualquer operação aberta aqui",
+      "circumvention_round_closed_no_deal": "Ronda marcada como concluída sem operação registada com um investidor apresentado",
+      "reviewNote": "Um indício para análise humana, não uma conclusão. Cada padrão aqui apresentado tem tanto uma explicação inocente como uma suspeita."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "A sua verificação não foi concedida. {note}",
     "notifyMoreTitle": "São necessárias mais provas",
     "notifyMoreBody": "A sua verificação fica suspensa até que isto seja respondido. {note}"
+  },
+  "gate": {
+    "publishBlocked": "O seu anúncio é publicado assim que forem verificadas a sua empresa e a sua qualidade para a representar.",
+    "messageBlocked": "Verifique a sua identidade para iniciar conversas. Os fundadores só recebem contactos de pessoas identificadas.",
+    "dataroomBlocked": "Verifique a sua identidade para aceder a data rooms. Um NDA só é oponível a uma contraparte identificada."
+  },
+  "nda": {
+    "parties": "Partes",
+    "recipientYou": "O signatário, {name}",
+    "recipientUnnamed": "O seu nome verificado é registado com a sua aceitação e passa a integrar o presente acordo.",
+    "version": "Versão {version}",
+    "fingerprint": "Impressão digital",
+    "fingerprintHint": "SHA-256 do texto exato acima. É conservado com a sua aceitação, de modo a que o teor acordado possa ser provado posteriormente.",
+    "accessLogged": "Cada documento que abrir ao abrigo do presente acordo fica registado: o quê, quando e a partir de onde.",
+    "obligationsUntil": "As obrigações vigoram até {date}.",
+    "tailMonths": "A cláusula de não contorno vigora por {months} meses a contar da apresentação.",
+    "signedOnVersion": "Aceitou a versão {version} em {date}. É essa redação que continua a reger a sua aceitação.",
+    "wordingChanged": "A redação atual foi alterada desde a sua aceitação."
+  },
+  "discLog": {
+    "title": "Registo de confidencialidade",
+    "lead": "Todos os investidores que assinaram o seu NDA neste anúncio: quem eram no momento da assinatura, a redação exata que aceitaram e cada elemento que abriram depois. Se alguma vez precisar de demonstrar a um advogado quem recebeu o quê, e quando, é este o registo.",
+    "limits": "Regista o que foi disponibilizado, a quem e quando. Não indica o que cada pessoa fez com o material depois, nem constitui uma conclusão de que houve utilização indevida.",
+    "counterparties": "Contrapartes",
+    "loading": "A consultar o registo",
+    "error": "Não foi possível carregar o registo. Tente novamente dentro de momentos.",
+    "empty": "Ainda nenhum investidor assinou um NDA neste anúncio. Quando tal suceder, o respetivo acordo e tudo o que abrir surgem aqui.",
+    "emptyAction": "Marcar um documento como exclusivo de NDA",
+    "unnamed": "Contraparte não identificada",
+    "agreement": "O acordo",
+    "agreedAt": "Aceite em",
+    "method": {
+      "clickwrap": "Aceite na aplicação",
+      "docusign": "Assinado via DocuSign"
+    },
+    "version": "Versão",
+    "hash": "Hash do texto (SHA-256)",
+    "hashNote": "O hash fixa a redação exata que foi acordada. Uma redação alterada posteriormente não corresponderá ao hash.",
+    "hashMissing": "Esta assinatura é anterior ao hash, pelo que a redação assenta na versão indicada acima.",
+    "trustThen": "Verificação à data da assinatura",
+    "trustNow": "Verificação atual",
+    "snapshotMissing": "Esta assinatura é anterior ao registo instantâneo da contraparte. O nome apresentado é o nome atual do investidor e não o registado à data.",
+    "notRecorded": "Não registado",
+    "obligationEnds": "Obrigação termina",
+    "obligationLive": "Em vigor",
+    "obligationEnded": "Cessada",
+    "obligationDerived": "Extraída do prazo previsto na versão aceite, não registada à data da assinatura.",
+    "introTitle": "Apresentação",
+    "firstContact": "Primeiro contacto",
+    "channel": {
+      "message": "Uma mensagem",
+      "deal": "Uma operação",
+      "nda": "Um NDA",
+      "interest": "Uma manifestação de interesse",
+      "data_room": "A data room",
+      "introduction_request": "Um pedido de apresentação"
+    },
+    "tailEnds": "Não contorno termina",
+    "noIntro": "Não há qualquer apresentação registada para este par.",
+    "disclosures": "Divulgado",
+    "noDisclosures": "Nada foi aberto ao abrigo do presente acordo.",
+    "beforeSigning": "Estão registadas mais {count} entradas relativas a este investidor, anteriores à assinatura. Não constituem divulgações ao abrigo do presente acordo.",
+    "beforeSigning_one": "Está registada mais uma entrada relativa a este investidor, anterior à assinatura. Não constitui uma divulgação ao abrigo do presente acordo.",
+    "item": {
+      "data_room_open": "Data room aberta",
+      "document": "Documento",
+      "financials": "Informação financeira",
+      "metrics": "Métricas",
+      "deck": "Apresentação institucional",
+      "update": "Atualização a investidores",
+      "message_thread": "Conversa de mensagens"
+    },
+    "ip": "IP",
+    "truncated": "São apresentadas apenas as entradas mais recentes. Solicite-nos o registo completo, se necessário.",
+    "retentionNote": "Cada entrada conserva ainda o endereço IP completo e os dados do dispositivo, aqui ocultados e divulgados mediante pedido legítimo.",
+    "notAdvice": "A CapitalReach mantém este registo. Não presta aconselhamento jurídico sobre o mesmo.",
+    "methodLabel": "Método",
+    "channelLabel": "Através de"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "Quem acedeu à sua data room"
   }
 }

@@ -229,6 +229,13 @@ export default function DocumentsPage() {
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "24px", color: "var(--cr-ink)", letterSpacing: "-0.02em" }}>
               {t("dashboard.docManager")}
             </h1>
+            <div style={{ flex: 1 }} />
+            {/* The other half of a data room: who opened what, under which
+                NDA. Sits here because this is where a founder thinks about
+                who can see their documents. */}
+            <Link href="/dashboard/startup/nda" style={{ display: "inline-flex", alignItems: "center", gap: "6px", minHeight: "40px", ...BODY, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+              {t("ndaLog.linkFromDocuments")} {"\u2192"}
+            </Link>
           </div>
 
           <OutstandingRequests />

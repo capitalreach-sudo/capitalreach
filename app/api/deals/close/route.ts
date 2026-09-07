@@ -7,6 +7,7 @@ import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { notifyUsers } from "@/lib/notify-user";
 import { postMoney } from "@/lib/round-math";
+import { recordIntroduction, withinTail } from "@/lib/introductions";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -156,6 +157,25 @@ export async function POST(req: NextRequest) {
     ? deal.close_proposed_currency
     : dealCurrency;
 
+  // ── The introduction behind the fee ───────────────────────────────────────
+  // A 2% success fee is a claim about who introduced these two parties, and a
+  // claim needs a record. This is the backstop, not the main path: the first
+  // contact points (message, NDA, interest, deal creation) record the pair
+  // months earlier and FIRST contact wins, so this only fires for a deal that
+  // closed with no introduction on file -- which is itself worth knowing, and
+  // is exactly the case where the fee would otherwise rest on nothing.
+  //
+  // The deal's own creation date is the fallback for when they met: never
+  // later than the close, never invented, and it does not stretch the tail the
+  // way stamping now() would.
+  const intro = await recordIntroduction({
+    startupId: deal.startup_id,
+    investorId: deal.investor_id,
+    channel: "deal",
+    ackId: deal.circumvention_ack_id,
+    firstContactAt: deal.created_at,
+  });
+
   const { data: closedRows } = await adminClient
     .from("deals")
     .update({
@@ -201,6 +221,23 @@ export async function POST(req: NextRequest) {
             ownership_percent: ownership,
             valuation_at_close: post ?? null,
             at: new Date().toISOString(),
+            // The basis of the fee, frozen with the rest of the record: which
+            // introduction it rests on, the terms in force when that
+            // introduction was made, and whether this close landed inside the
+            // non-circumvention tail. It changes nothing about what is billed
+            // below -- it is the evidence for what was, kept next to the
+            // numbers rather than reconstructed from timestamps later.
+            introduction: intro
+              ? {
+                  id: intro.id,
+                  first_contact_at: intro.first_contact_at,
+                  channel: intro.channel,
+                  terms_version: intro.terms_version,
+                  tail_ends_at: intro.tail_ends_at,
+                  within_tail: withinTail(intro),
+                  ack_id: intro.ack_id,
+                }
+              : null,
           },
         };
       })(),

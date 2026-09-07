@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
+import { recordSignal } from "@/lib/trust-signals";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
 import { messageRatelimit, isRedisConfigured } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, canSendMessages, getMessageLimit } from "@/lib/access";
+import { evaluateGate, gateRefusal, getGateConfig, investorGateSubject } from "@/lib/trust-gates";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -40,9 +43,11 @@ export async function POST(req: NextRequest) {
   // Suspension lives on the profile, not the investor row — read it, or a
   // suspended investor keeps messaging (buildAccessContext would default to
   // suspended: false).
+  // `role` rides along for the trust gate below -- it stays out of the access
+  // context, which deliberately treats this route's sender as an investor.
   const { data: senderStatus } = await adminClient
     .from("profiles")
-    .select("suspended, account_status")
+    .select("role, suspended, account_status")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -65,6 +70,19 @@ export async function POST(req: NextRequest) {
   // the top tier and passes through here like on every other gated surface.
   if (!canSendMessages(ctx)) {
     return NextResponse.json({ error: "Messaging is not included in your plan. Upgrade to start conversations." }, { status: 403 });
+  }
+
+  // Trust gate: a SECOND, independent check beside the plan gate above. The
+  // plan says the account may message at all; level 2 says a verified human is
+  // behind it, which is the thing an advance-fee approach cannot supply. This
+  // route is the investor to founder direction only, so no founder is gated on
+  // their own reply. Refused before any thread or message row is written.
+  if (senderStatus?.role !== "admin") {
+    const gateSubject = await investorGateSubject(user.id);
+    if (gateSubject) {
+      const verdict = evaluateGate("message", gateSubject, await getGateConfig());
+      if (!verdict.allowed) return NextResponse.json(gateRefusal(verdict), { status: 403 });
+    }
   }
 
   // The target listing must be publicly active — no messaging a draft, rejected
@@ -169,6 +187,15 @@ export async function POST(req: NextRequest) {
       startup?.name || "your startup",
       messageBody
     ).catch(() => {});
+  }
+
+  await recordIntroduction({ startupId, investorId, channel: "message" });
+  {
+    const found = detectOffPlatformContact(messageBody);
+    if (found.length) {
+      await recordSignal("investor", investorId, "offplatform_contact", offPlatformSeverity(found),
+        { kinds: found.map((f) => f.kind), startupId, at: "message" });
+    }
   }
 
   return NextResponse.json({ success: true, threadId });

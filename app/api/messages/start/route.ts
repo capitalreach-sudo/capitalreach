@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
+import { recordSignal } from "@/lib/trust-signals";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
@@ -9,6 +11,7 @@ import { isUuid } from "@/lib/utils";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { buildAccessContext, canSendMessages, getMessageLimit, type AccessContext } from "@/lib/access";
 import { messageRatelimit, isRedisConfigured } from "@/lib/redis";
+import { evaluateGate, gateRefusal, getGateConfig, investorGateSubject } from "@/lib/trust-gates";
 
 /**
  * The plan's monthly new-thread allowance, enforced on every path that OPENS
@@ -112,6 +115,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Messaging is not included in your plan. Upgrade to start conversations." }, { status: 403 });
     }
 
+    // Trust gate: a SECOND, independent check that sits beside the plan gate
+    // rather than replacing it -- a paid plan says the account may message,
+    // level 2 says there is an identified human behind it. Advance-fee
+    // approaches need an anonymous sender, so this is where they stop. It
+    // refuses before any thread or message row exists, and only on the
+    // investor side: a founder answering their own inbound is never held
+    // hostage by their own verification state. Admins pass, as everywhere.
+    if (senderProfile?.role !== "admin") {
+      const gateSubject = await investorGateSubject(user.id);
+      if (gateSubject) {
+        const verdict = evaluateGate("message", gateSubject, await getGateConfig());
+        if (!verdict.allowed) return NextResponse.json(gateRefusal(verdict), { status: 403 });
+      }
+    }
+
     // investor → investor: a direct thread, no startup anchor (098).
     if (isUuid(investorId)) {
       const { data: other } = await admin.from("investors")
@@ -172,10 +190,24 @@ export async function POST(req: NextRequest) {
         if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
         threadId = created.id;
       }
+      // First contact between this pair, if it is the first. The fee claim
+      // and the non-circumvention tail both date from here, and opening the
+      // thread IS the contact -- so it is recorded before the openOnly return.
+      await recordIntroduction({ startupId: st.id, investorId: me.id, channel: "message" });
       if (openOnly) return NextResponse.json({ success: true, threadId });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
+      // Contact details in a first approach are the circumvention vector, and
+      // often the opening move of an advance-fee pitch. Flagged for a human,
+      // never blocked: founders legitimately swap calendar links.
+      {
+        const found = detectOffPlatformContact(body);
+        if (found.length) {
+          await recordSignal("investor", me.id, "offplatform_contact", offPlatformSeverity(found),
+            { kinds: found.map((f) => f.kind), startupId: st.id, at: "first_message" });
+        }
+      }
       if (st.owner_id && st.owner_id !== user.id) {
         const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
         await notifyUser({ userId: st.owner_id, type: "message", title: `New message from ${myName}`, body: preview, titleKey: "notif.messageTitle", params: { name: myName }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});

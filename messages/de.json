@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "Bevor Sie Kontakt aufnehmen",
     "title": "Bevor Sie {name} kontaktieren",
-    "intro": "Mit der Kontaktaufnahme bestätigen Sie ausdrücklich:",
-    "bullet1": "Diese Vorstellung wird durch CapitalReach vermittelt.",
-    "bullet2": "Auf Kapital, das das Startup über diese Verbindung einwirbt, fällt {months} Monate lang ab heute eine Erfolgsgebühr von {fee}% an.",
-    "bullet3": "Das gilt unabhängig davon, ob der Deal auf oder außerhalb der Plattform abgeschlossen wird. Die Gebühr trägt das Startup, nie Sie.",
-    "bullet4": "Diese Bestätigung wird mit Zeitstempel als rechtlicher Nachweis gespeichert. Ihre IP-Adresse wird erfasst.",
+    "intro": "Mit der Kontaktaufnahme erkennen Sie an, und wir halten fest:",
+    "bullet1": "CapitalReach erfasst diese Vermittlung: das Datum der ersten Kontaktaufnahme, den Kanal, über den sie erfolgte, und die heute geltende Fassung dieser Bedingungen.",
+    "bullet2": "Für Kapital, das dieses Unternehmen von Ihnen einwirbt, wird eine Erfolgsprovision von {fee} % fällig, sofern die Runde innerhalb von {months} Monaten nach dem erfassten Vermittlungsdatum abgeschlossen wird. Sie wird dem Unternehmen berechnet, niemals Ihnen.",
+    "bullet3": "Wo die Runde abgeschlossen wird, ist unerheblich; erfasst sind auch alle Fonds, Vehikel, Arbeitgeber oder Parteien, die Sie kontrollieren, verwalten oder beraten. Die Substitution eines verbundenen Unternehmens an Ihrer Stelle beendet die Verpflichtung nicht.",
+    "bullet4": "Ein Anspruch stützt sich auf unsere Aufzeichnungen: diese Anerkenntnis mit Zeitstempel und IP-Adresse, den Vermittlungsnachweis, jede von Ihnen für dieses Unternehmen angenommene Vertraulichkeitsvereinbarung sowie das Protokoll der Ihnen darunter offengelegten Inhalte.",
     "checkbox": "Ich habe die obigen Bedingungen gelesen und stimme zu",
     "checkboxHint": "Erforderlich, um fortzufahren",
     "confirm": "Bestätigen und fortfahren",
-    "footer": "Zeitstempel {time} · IP erfasst"
+    "footer": "Zeitstempel {time} · IP erfasst",
+    "bullet5": "Nicht erfasst ist eine Geschäftsbeziehung, die nachweislich vor dieser Vermittlung bestand. Erklären Sie sie jetzt, dann ist sie aktenkundig, bevor überhaupt ein Anspruch erhoben wird.",
+    "notCoveredTitle": "Was nicht erfasst ist",
+    "notCoveredBody": "Eine frühere Beteiligung, ein Term Sheet, eine unterzeichnete Vertraulichkeitsvereinbarung oder dokumentierter substanzieller Kontakt aus der Zeit vor dieser Vermittlung. Kapital von einer Partei, die Sie nicht vermittelt haben und nicht kontrollieren. Eine Runde, die nach Ablauf des Zeitraums abgeschlossen wird.",
+    "priorRelationshipLabel": "Ich kannte dieses Unternehmen bereits vor heute",
+    "priorRelationshipHint": "Beschreiben Sie, wie und wann Sie erstmals in Kontakt kamen. Jetzt erklärt, ist es ein Nachweis; erst nach einer Provisionsforderung vorgebracht, ist es eine Behauptung.",
+    "priorRelationshipPlaceholder": "Eine frühere Beteiligung, ein Term Sheet, eine Vertraulichkeitsvereinbarung, ein früheres Gespräch",
+    "introducedOn": "Vermittelt am {date}",
+    "tailEnds": "Provisionszeitraum endet am {date}",
+    "termsVersion": "Fassung {version}",
+    "readFullTerms": "Vollständige Verpflichtung lesen"
   },
   "feeCalc": {
     "title": "Berechnen Sie Ihre CapitalReach-Gebühr",
@@ -3804,6 +3814,14 @@
       "bank_connection": "Bankanbindung",
       "manual_upload": "Dokumenten-Upload",
       "manual_review": "Manuell geprüft"
+    },
+    "sig": {
+      "offplatform_contact": "In einer Nachricht geteilte Kontaktdaten",
+      "offplatform_contact_note": "In einer Nachricht zwischen zwei hier vermittelten Parteien ist eine E-Mail-Adresse, Telefonnummer oder ein Messenger-Kontakt aufgetaucht. Das Teilen von Kontaktdaten ist üblich und für sich genommen kein Verstoß; hier wird lediglich festgehalten, wo und wann es geschah.",
+      "circumvention_reported": "Mögliche Umgehung",
+      "circumvention_quiet_after_access": "Vollständiger Datenraumzugriff, danach Funkstille, ohne dass hier ein Deal eröffnet wurde",
+      "circumvention_round_closed_no_deal": "Runde als abgeschlossen markiert, ohne dass zu einem vermittelten Investor ein Deal erfasst ist",
+      "reviewNote": "Ein Hinweis zur menschlichen Prüfung, kein Befund. Jedes Muster hier hat auch eine harmlose Erklärung."
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "Ihre Verifizierung wurde nicht erteilt. {note}",
     "notifyMoreTitle": "Weitere Belege erforderlich",
     "notifyMoreBody": "Ihre Verifizierung ruht, bis dies beantwortet ist. {note}"
+  },
+  "gate": {
+    "publishBlocked": "Ihr Angebot wird veröffentlicht, sobald Ihr Unternehmen und Ihre Vertretungsbefugnis verifiziert sind.",
+    "messageBlocked": "Verifizieren Sie Ihre Identität, um Gespräche zu beginnen. Gründer hören nur von namentlich bekannten Personen.",
+    "dataroomBlocked": "Verifizieren Sie Ihre Identität, um Datenräume zu öffnen. Eine Vertraulichkeitsvereinbarung ist nur gegenüber einer namentlich benannten Gegenpartei durchsetzbar."
+  },
+  "nda": {
+    "parties": "Vertragsparteien",
+    "recipientYou": "Sie, {name}",
+    "recipientUnnamed": "Ihr verifizierter Name wird mit Ihrer Annahme erfasst und ist Bestandteil dieser Vereinbarung.",
+    "version": "Fassung {version}",
+    "fingerprint": "Prüfwert",
+    "fingerprintHint": "SHA-256 des vorstehenden Wortlauts. Er wird mit Ihrer Annahme gespeichert, sodass der vereinbarte Inhalt später nachweisbar ist.",
+    "accessLogged": "Jedes Dokument, das Sie unter dieser Vereinbarung öffnen, wird protokolliert: was, wann und von wo.",
+    "obligationsUntil": "Die Pflichten gelten bis zum {date}.",
+    "tailMonths": "Das Umgehungsverbot gilt für {months} Monate ab der Vermittlung.",
+    "signedOnVersion": "Sie haben die Fassung {version} am {date} angenommen. Für Ihre Annahme gilt weiterhin dieser Wortlaut.",
+    "wordingChanged": "Der aktuelle Wortlaut hat sich seit Ihrer Annahme geändert."
+  },
+  "discLog": {
+    "title": "Vertraulichkeitsnachweis",
+    "lead": "Jeder Investor, der Ihre Vertraulichkeitsvereinbarung zu diesem Angebot unterzeichnet hat: wer er bei Unterzeichnung war, welchem Wortlaut er genau zugestimmt hat und was er anschließend geöffnet hat. Wenn Sie einem Anwalt je darlegen müssen, wer was und wann erhalten hat, ist dies der Nachweis.",
+    "limits": "Erfasst wird, was wem wann zugänglich gemacht wurde. Nicht ersichtlich ist, was damit anschließend geschehen ist; es ist kein Befund einer missbräuchlichen Verwendung.",
+    "counterparties": "Gegenparteien",
+    "loading": "Nachweis wird gelesen",
+    "error": "Der Nachweis konnte nicht geladen werden. Versuchen Sie es in Kürze erneut.",
+    "empty": "Noch kein Investor hat eine Vertraulichkeitsvereinbarung zu diesem Angebot unterzeichnet. Sobald das geschieht, erscheinen hier seine Vereinbarung und alles, was er öffnet.",
+    "emptyAction": "Dokument als NDA-pflichtig markieren",
+    "unnamed": "Unbenannte Gegenpartei",
+    "agreement": "Die Vereinbarung",
+    "agreedAt": "Vereinbart",
+    "method": {
+      "clickwrap": "In der App angenommen",
+      "docusign": "Über DocuSign unterzeichnet"
+    },
+    "version": "Fassung",
+    "hash": "Text-Hash (SHA-256)",
+    "hashNote": "Der Hash fixiert den genau vereinbarten Wortlaut. Nachträglich geänderter Wortlaut stimmt damit nicht überein.",
+    "hashMissing": "Diese Unterzeichnung liegt vor Einführung des Hashwerts; maßgeblich ist daher die oben genannte Fassung.",
+    "trustThen": "Verifizierung bei Unterzeichnung",
+    "trustNow": "Verifizierung heute",
+    "snapshotMissing": "Diese Unterzeichnung liegt vor Einführung der Momentaufnahme zur Gegenpartei. Angezeigt wird der aktuelle Name des Investors, nicht der damals erfasste.",
+    "notRecorded": "Nicht erfasst",
+    "obligationEnds": "Pflicht endet",
+    "obligationLive": "In Kraft",
+    "obligationEnded": "Beendet",
+    "obligationDerived": "Abgeleitet aus der Laufzeit der vereinbarten Fassung, nicht bei Unterzeichnung erfasst.",
+    "introTitle": "Vermittlung",
+    "firstContact": "Erster Kontakt",
+    "channel": {
+      "message": "Eine Nachricht",
+      "deal": "Ein Deal",
+      "nda": "Eine Vertraulichkeitsvereinbarung",
+      "interest": "Eine Interessenbekundung",
+      "data_room": "Der Datenraum",
+      "introduction_request": "Eine Vermittlungsanfrage"
+    },
+    "tailEnds": "Umgehungsverbot endet",
+    "noIntro": "Für diese Paarung ist keine Vermittlung erfasst.",
+    "disclosures": "Offengelegt",
+    "noDisclosures": "Unter dieser Vereinbarung wurde nichts geöffnet.",
+    "beforeSigning": "Für diesen Investor sind {count} weitere Einträge aus der Zeit vor der Unterzeichnung protokolliert. Sie sind keine Offenlegungen unter dieser Vereinbarung.",
+    "beforeSigning_one": "Für diesen Investor ist ein weiterer Eintrag aus der Zeit vor der Unterzeichnung protokolliert. Er ist keine Offenlegung unter dieser Vereinbarung.",
+    "item": {
+      "data_room_open": "Datenraum geöffnet",
+      "document": "Dokument",
+      "financials": "Finanzzahlen",
+      "metrics": "Kennzahlen",
+      "deck": "Pitch Deck",
+      "update": "Investoren-Update",
+      "message_thread": "Nachrichtenverlauf"
+    },
+    "ip": "IP",
+    "truncated": "Es werden nur die neuesten Einträge angezeigt. Fordern Sie bei Bedarf das vollständige Protokoll bei uns an.",
+    "retentionNote": "Zu jedem Eintrag werden zusätzlich die vollständige IP-Adresse und Gerätedaten gespeichert; sie sind hier maskiert und werden auf rechtmäßiges Ersuchen herausgegeben.",
+    "notAdvice": "CapitalReach führt diesen Nachweis. Eine Rechtsberatung dazu erfolgt nicht.",
+    "methodLabel": "Verfahren",
+    "channelLabel": "Über"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "Wer auf Ihren Datenraum zugegriffen hat"
   }
 }

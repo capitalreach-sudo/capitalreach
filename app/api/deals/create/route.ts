@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordIntroduction } from "@/lib/introductions";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
@@ -231,6 +232,16 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ error: "Failed to create deal" }, { status: 500 });
   }
+
+  // A deal is the strongest evidence of introduction the platform has. If this
+  // pair reached here with no earlier recorded contact, the non-circumvention
+  // tail starts now; if they did have one, that earlier date stands.
+  await recordIntroduction({
+    startupId: startup_id,
+    investorId: investor_id,
+    channel: "deal",
+    ackId: ack?.id ?? null,
+  });
 
   // Seed the timeline. Without this the activity feed on a new deal is empty
   // until someone happens to act on it, so there is no record of who opened it,

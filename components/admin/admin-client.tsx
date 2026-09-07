@@ -108,8 +108,16 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       body: JSON.stringify({ startupId: id }),
     });
     setProcessingId(null);
-    if (res.ok) { toast({ title: t("admin.toastApproved") }); window.location.reload(); }
-    else toast({ title: t("admin.toastApproveFailed"), variant: "destructive" });
+    if (res.ok) { toast({ title: t("admin.toastApproved") }); window.location.reload(); return; }
+    // A trust-gate refusal is not a failure to approve -- it is the listing
+    // not being verified yet, and the operator needs to read that rather than
+    // a generic error.
+    const detail = await res.json().catch(() => null) as { adminMessage?: string; error?: string } | null;
+    toast({
+      title: t("admin.toastApproveFailed"),
+      description: detail?.adminMessage ?? undefined,
+      variant: "destructive",
+    });
   }
 
   async function rejectStartup(id: string) {

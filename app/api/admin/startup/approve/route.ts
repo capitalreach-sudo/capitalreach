@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/admin-guard";
 import { sendListingLiveEmail } from "@/lib/resend";
 import { notifyUser } from "@/lib/notify-user";
 import { scoreStartup, isOpenAIConfigured } from "@/lib/openai";
+import { evaluateGate, gateRefusal, getGateConfig, startupGateSubject } from "@/lib/trust-gates";
 
 export async function POST(req: NextRequest) {
   const guard = await requireAdmin("operator");
@@ -19,6 +20,29 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (!startup) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+
+  // The publish gate is on the LISTING, never on the operator clicking the
+  // button. Approval is a judgement about the pitch; level 3 is a register
+  // confirming the company exists and that this founder may act for it, which
+  // no amount of admin goodwill can substitute. The attack this stops is the
+  // one that cannot be undone: a real company listed by a stranger.
+  const gateSubject = await startupGateSubject(startupId);
+  if (gateSubject) {
+    const verdict = evaluateGate("publish", gateSubject, await getGateConfig());
+    if (!verdict.allowed) {
+      return NextResponse.json(
+        {
+          ...gateRefusal(verdict),
+          // The refusal body is the founder-facing contract; the operator
+          // needs plain words for why their click did nothing.
+          adminMessage:
+            `Not approved. This listing stands at trust level ${verdict.held} and publishing requires level ${verdict.required}. ` +
+            `The founder has to reach level ${verdict.required} (company registry and director authority) before the listing can go live.`,
+        },
+        { status: 403 },
+      );
+    }
+  }
 
   // Approve and set active
   await adminClient

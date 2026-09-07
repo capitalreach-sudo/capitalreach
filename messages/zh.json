@@ -2861,15 +2861,25 @@
   "circumvention": {
     "eyebrow": "联系前须知",
     "title": "在联系 {name} 之前",
-    "intro": "发起联系即表示您正式确认：",
-    "bullet1": "本次引荐由 CapitalReach 促成。",
-    "bullet2": "自今日起 {months} 个月内，创业公司通过此联系筹得的资金将适用 {fee}% 的成功费。",
-    "bullet3": "无论交易在平台内或平台外完成均适用。费用由创业公司承担，与您无关。",
-    "bullet4": "本确认将附带时间戳并作为法律记录保存。您的 IP 地址将被记录。",
+    "intro": "建立联系即表示您确认下列事项，并由本平台予以记录：",
+    "bullet1": "CapitalReach 记录本次引荐：首次联系日期、联系所经渠道，以及当日生效的本条款版本。",
+    "bullet2": "若本轮融资在上述引荐记录日期起 {months} 个月内完成交割，则该公司自您处募得的资金应支付 {fee}% 的成功费。该费用由公司承担，绝不向您收取。",
+    "bullet3": "融资于何处完成交割在所不问，且适用于由您控制、管理或提供顾问服务的任何基金、载体、雇主或主体。以关联方替代您本人，并不免除该项义务。",
+    "bullet4": "任何主张均以本平台记录为据：本确认及其时间戳与 IP 地址、引荐记录、您就该公司接受的任何 NDA，以及依该协议向您披露内容的记录。",
     "checkbox": "我已阅读并同意上述条款",
     "checkboxHint": "继续操作必须勾选",
     "confirm": "确认并继续",
-    "footer": "时间戳 {time} · 已记录 IP"
+    "footer": "时间戳 {time} · 已记录 IP",
+    "bullet5": "本条款不适用于您能够证明先于本次引荐存在的既有关系。现在申报，即在任何费用主张提出之前形成记录。",
+    "notCoveredTitle": "本条款不适用的情形",
+    "notCoveredBody": "本次引荐之前的既往投资、条款清单、已签署的保密协议或有据可查的实质性接触。自非经本平台引荐且不受您控制的主体处募得的资金。在费用期间届满之后完成交割的融资。",
+    "priorRelationshipLabel": "我在今日之前已认识该公司",
+    "priorRelationshipHint": "请说明您与其首次结识的方式及时间。此时申报即为证据；待费用主张提出后再行提出，则仅为申辩。",
+    "priorRelationshipPlaceholder": "既往投资、条款清单、保密协议或此前的沟通",
+    "introducedOn": "引荐于 {date}",
+    "tailEnds": "费用期间止于 {date}",
+    "termsVersion": "条款版本 {version}",
+    "readFullTerms": "阅读承诺全文"
   },
   "feeCalc": {
     "title": "计算您的 CapitalReach 费用",
@@ -3804,6 +3814,14 @@
       "bank_connection": "银行连接",
       "manual_upload": "文件上传",
       "manual_review": "人工审核"
+    },
+    "sig": {
+      "offplatform_contact": "消息中提供了联系方式",
+      "offplatform_contact_note": "经本平台引荐的双方在消息往来中出现了电子邮箱、电话号码或即时通讯账号。提供联系方式属正常情形，本身并不构成违约；此处仅记录其发生的位置与时间。",
+      "circumvention_reported": "可能存在绕开行为",
+      "circumvention_quiet_after_access": "已完整查阅资料室后无后续往来，且未在本平台开启交易",
+      "circumvention_round_closed_no_deal": "融资已标记为完成交割，但未记录与经引荐投资人之间的交易",
+      "reviewNote": "此为供人工核查的线索，而非结论。此处每一项特征既可能有正当解释，也可能确有可疑之处。"
     }
   },
   "reviewQueue": {
@@ -3895,5 +3913,86 @@
     "notifyRejectedBody": "您的验证未获授予。{note}",
     "notifyMoreTitle": "需要补充证据",
     "notifyMoreBody": "在此问题得到答复之前，您的验证将暂缓处理。{note}"
+  },
+  "gate": {
+    "publishBlocked": "完成公司主体及您代表该公司行事之授权的核验后，您的项目即会正式发布。",
+    "messageBlocked": "请先完成身份核验，方可发起对话。创始人仅接收具名人士的来信。",
+    "dataroomBlocked": "请先完成身份核验，方可查阅资料室。保密协议仅可对具名相对方主张。"
+  },
+  "nda": {
+    "parties": "协议双方",
+    "recipientYou": "您，{name}",
+    "recipientUnnamed": "您经核验的姓名将随您的接受一并存档，并构成本协议的组成部分。",
+    "version": "版本 {version}",
+    "fingerprint": "文本指纹",
+    "fingerprintHint": "以上文本的 SHA-256 值。该值随您的接受一并存档，日后可据以证明所约定的内容。",
+    "accessLogged": "您依本协议查阅的每一份文件均予记录：查阅内容、时间及来源。",
+    "obligationsUntil": "各项义务持续至 {date}。",
+    "tailMonths": "禁止绕开条款自引荐之日起 {months} 个月内持续有效。",
+    "signedOnVersion": "您已于 {date} 接受版本 {version}。该版本文本仍对您的接受具有约束力。",
+    "wordingChanged": "自您接受之后，现行文本已有修订。"
+  },
+  "discLog": {
+    "title": "保密披露记录",
+    "lead": "已就本项目签署您保密协议的全部投资人：签署时的身份信息、其所同意的确切文本，以及此后查阅的每一项内容。若日后需向律师说明何人于何时收到何种材料，此即该项记录。",
+    "limits": "本记录载明所提供的材料、提供对象及提供时间。它不显示任何人此后如何使用相关材料，亦不构成材料遭滥用的结论。",
+    "counterparties": "相对方",
+    "loading": "正在读取记录",
+    "error": "记录加载失败。请稍后重试。",
+    "empty": "尚无投资人就本项目签署保密协议。一经签署，其协议及所查阅的全部内容将在此显示。",
+    "emptyAction": "将文件设为仅限签署 NDA 后查阅",
+    "unnamed": "未具名相对方",
+    "agreement": "协议",
+    "agreedAt": "同意时间",
+    "method": {
+      "clickwrap": "应用内接受",
+      "docusign": "经 DocuSign 签署"
+    },
+    "version": "版本",
+    "hash": "文本哈希值（SHA-256）",
+    "hashNote": "哈希值固定所同意的确切文本。此后修订的文本将与之不符。",
+    "hashMissing": "本次签署早于哈希值机制启用，故文本以上述版本为准。",
+    "trustThen": "签署时的核验状态",
+    "trustNow": "当前核验状态",
+    "snapshotMissing": "本次签署早于相对方信息留存机制启用。此处显示的是该投资人的现用名称，而非签署时所记录的名称。",
+    "notRecorded": "无记录",
+    "obligationEnds": "义务终止于",
+    "obligationLive": "有效中",
+    "obligationEnded": "已终止",
+    "obligationDerived": "依所同意版本载明的期限推算，非签署时所记录。",
+    "introTitle": "引荐",
+    "firstContact": "首次联系",
+    "channel": {
+      "message": "消息",
+      "deal": "交易",
+      "nda": "NDA",
+      "interest": "意向表达",
+      "data_room": "资料室",
+      "introduction_request": "引荐请求"
+    },
+    "tailEnds": "禁止绕开条款终止于",
+    "noIntro": "该双方之间无引荐记录。",
+    "disclosures": "已披露",
+    "noDisclosures": "依本协议尚无任何内容被查阅。",
+    "beforeSigning": "该投资人另有 {count} 条签署之前的记录。该等记录不属于依本协议作出的披露。",
+    "beforeSigning_one": "该投资人另有一条签署之前的记录。该记录不属于依本协议作出的披露。",
+    "item": {
+      "data_room_open": "已开启资料室",
+      "document": "文件",
+      "financials": "财务资料",
+      "metrics": "经营指标",
+      "deck": "融资推介材料",
+      "update": "投资人通报",
+      "message_thread": "消息会话"
+    },
+    "ip": "IP",
+    "truncated": "此处仅显示最近的记录。如需完整日志，请与我们联系。",
+    "retentionNote": "每条记录另存有完整 IP 地址及设备信息，此处作脱敏显示，仅依合法请求予以提供。",
+    "notAdvice": "CapitalReach 仅负责保存本记录，不就其内容提供法律意见。",
+    "methodLabel": "方式",
+    "channelLabel": "经由"
+  },
+  "ndaLog": {
+    "linkFromDocuments": "谁查阅过您的资料室"
   }
 }
