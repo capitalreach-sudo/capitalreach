@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { countryLabel } from "@/lib/country-label";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
@@ -89,6 +89,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function InvestorProfilePage({ params }: Props) {
+  // Same rule as the directory: investor identities are for signed-in users.
+  {
+    const gate = await createServerSupabaseClient();
+    const { data: { user: gateUser } } = await gate.auth.getUser();
+    if (!gateUser) redirect(`/auth/login?redirect=/investors/${params.slug}`);
+  }
   const supabase = await createServerSupabaseClient();
   const t = await getTranslator(getLocale());
 

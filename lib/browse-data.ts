@@ -119,7 +119,11 @@ export async function loadActiveStartups(opts: { offset?: number; limit?: number
  */
 export function stripBrowseFinancials(rows: BrowseStartup[], canSeeFinancials: boolean): BrowseStartup[] {
   if (canSeeFinancials) return rows;
-  return rows.map(r => ({ ...r, mrr: null, arr: null }));
+  // growth_rate and runway_months joined the strip in the entitlement audit:
+  // they are company financials like mrr/arr. The AI score deliberately
+  // stays public everywhere -- it is CapitalReach's own rating, not the
+  // company's confidential data, and it is the browse page's hook.
+  return rows.map(r => ({ ...r, mrr: null, arr: null, growth_rate: null, runway_months: null }));
 }
 
 /**

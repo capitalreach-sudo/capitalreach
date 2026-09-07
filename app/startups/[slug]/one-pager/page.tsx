@@ -7,6 +7,7 @@ import { safeFormatCurrencyAmount, safeFormatMRR } from "@/lib/validators";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { roundCloseState } from "@/lib/round-close";
 import { protectFounders } from "@/lib/identity";
+import { viewerCanSeeFinancials } from "@/lib/browse-data";
 
 /**
  * The one-pager: the single sheet investors ask for by email.
@@ -69,7 +70,17 @@ export default async function OnePagerPage({ params }: Props) {
       }
     }
   }
-  const founders = protectFounders(startup.founders ?? [], reveal);
+  // Financials and the founder roster sit behind the SAME tier gate as the
+  // detail page (audit finding: this sheet rendered MRR/ARR/runway and the
+  // team to anonymous visitors while the listing page stripped them). The
+  // sheet stays printable by anyone; gated numbers just are not on it
+  // unless the viewer is entitled (owner, admin, deal party, or paid tier).
+  const gatedOk = reveal || (await viewerCanSeeFinancials());
+  if (!gatedOk) {
+    startup.mrr = null; startup.arr = null; startup.growth_rate = null;
+    startup.runway_months = null; startup.paying_customers = null; startup.user_count = null;
+  }
+  const founders = gatedOk ? protectFounders(startup.founders ?? [], reveal) : [];
 
   const closing = roundCloseState(startup.round_close_date);
   const metrics: Array<[string, string]> = [];

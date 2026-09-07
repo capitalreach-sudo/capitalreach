@@ -55,7 +55,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: Array<Omit<MetadataRoute.Sitemap[number], "lastModified">> = [
     { url: baseUrl,                  changeFrequency: "daily",   priority: 1.0 },
     { url: `${baseUrl}/startups`,    changeFrequency: "daily",   priority: 0.9 },
-    { url: `${baseUrl}/investors`,   changeFrequency: "daily",   priority: 0.8 },
     { url: `${baseUrl}/pricing`,     changeFrequency: "weekly",  priority: 0.8 },
     { url: `${baseUrl}/ai`,          changeFrequency: "weekly",  priority: 0.7 },
     { url: `${baseUrl}/data`,        changeFrequency: "weekly",  priority: 0.6 },
@@ -92,7 +91,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  const investorRoutes: MetadataRoute.Sitemap = (investors || []).map(i => ({
+  // Investor pages are login-gated now (audit): a sitemap entry that 307s
+  // to /auth/login is worse than no entry.
+  const investorRoutes: MetadataRoute.Sitemap = ([] as typeof investors extends null ? never[] : NonNullable<typeof investors>).map(i => ({
     url: `${baseUrl}/investors/${i.slug}`,
     lastModified: new Date(i.created_at),
     changeFrequency: "weekly" as const,

@@ -2,6 +2,8 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { InvestorsClient } from "@/components/investors/investors-client";
 import { loadPublicInvestors } from "@/lib/browse-data";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +17,12 @@ export const metadata: Metadata = {
 };
 
 export default async function InvestorsPage() {
+  // The directory names real people and their check sizes. Jack's call:
+  // signed-in users only -- anonymous visitors browse startups, not backers.
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/auth/login?redirect=/investors");
+
   // Server-fetched so the directory is in the HTML on first paint (no
   // "Loading investors…"); the client only fetches if this returns null.
   const initial = await loadPublicInvestors();

@@ -64,7 +64,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
     const [startups, investors, deals] = await Promise.all([
       supabase
         .from("startups")
-        .select("id, name, industry, stage, mrr, vaultrise_score, funding_target, status, slug, created_at")
+        .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at")
         .eq("status", "active"),
       supabase
         .from("profiles")
@@ -160,7 +160,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         slug: s.slug,
         industry: s.industry,
         stage: s.stage,
-        mrr: s.mrr,
+        mrr: null,
         ai_score: s.vaultrise_score,
         funding_target: s.funding_target,
         created_at: s.created_at,
@@ -175,7 +175,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         slug: s.slug,
         industry: s.industry,
         stage: s.stage,
-        mrr: s.mrr,
+        mrr: null,
         ai_score: s.vaultrise_score,
         funding_target: s.funding_target,
         created_at: s.created_at,
