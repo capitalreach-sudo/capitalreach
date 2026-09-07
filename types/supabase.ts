@@ -1353,6 +1353,9 @@ export type Database = {
           slug: string
           stages: string[]
           subscription_tier: string
+          trust_expires_at: string | null
+          trust_level: number
+          trust_reviewed_at: string | null
           twitter_url: string | null
           type: string
           verification_checks: Json | null
@@ -1398,6 +1401,9 @@ export type Database = {
           slug: string
           stages?: string[]
           subscription_tier?: string
+          trust_expires_at?: string | null
+          trust_level?: number
+          trust_reviewed_at?: string | null
           twitter_url?: string | null
           type: string
           verification_checks?: Json | null
@@ -1443,6 +1449,9 @@ export type Database = {
           slug?: string
           stages?: string[]
           subscription_tier?: string
+          trust_expires_at?: string | null
+          trust_level?: number
+          trust_reviewed_at?: string | null
           twitter_url?: string | null
           type?: string
           verification_checks?: Json | null
@@ -1846,6 +1855,7 @@ export type Database = {
           preferred_locale: string | null
           preferred_stages: string[] | null
           role: string
+          signup_stage: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           subscription_status: string | null
@@ -1888,6 +1898,7 @@ export type Database = {
           preferred_locale?: string | null
           preferred_stages?: string[] | null
           role: string
+          signup_stage?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_status?: string | null
@@ -1930,6 +1941,7 @@ export type Database = {
           preferred_locale?: string | null
           preferred_stages?: string[] | null
           role?: string
+          signup_stage?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_status?: string | null
@@ -2509,6 +2521,9 @@ export type Database = {
           tam: number | null
           target_markets: string[] | null
           team_size: string | null
+          trust_expires_at: string | null
+          trust_level: number
+          trust_reviewed_at: string | null
           twitter_url: string | null
           updated_at: string
           use_of_funds: string | null
@@ -2592,6 +2607,9 @@ export type Database = {
           tam?: number | null
           target_markets?: string[] | null
           team_size?: string | null
+          trust_expires_at?: string | null
+          trust_level?: number
+          trust_reviewed_at?: string | null
           twitter_url?: string | null
           updated_at?: string
           use_of_funds?: string | null
@@ -2675,6 +2693,9 @@ export type Database = {
           tam?: number | null
           target_markets?: string[] | null
           team_size?: string | null
+          trust_expires_at?: string | null
+          trust_level?: number
+          trust_reviewed_at?: string | null
           twitter_url?: string | null
           updated_at?: string
           use_of_funds?: string | null
@@ -2953,6 +2974,143 @@ export type Database = {
           },
         ]
       }
+      trust_signals: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          signal: string
+          subject_id: string
+          subject_type: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          signal: string
+          subject_id: string
+          subject_type: string
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          signal?: string
+          subject_id?: string
+          subject_type?: string
+        }
+        Relationships: []
+      }
+      verification_cases: {
+        Row: {
+          created_at: string
+          decision_note: string | null
+          expires_at: string | null
+          id: string
+          level_granted: number | null
+          level_requested: number
+          owner_id: string
+          reviewed_at: string | null
+          reviewer_id: string | null
+          risk_flags: Json
+          risk_score: number | null
+          status: string
+          subject_id: string
+          subject_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decision_note?: string | null
+          expires_at?: string | null
+          id?: string
+          level_granted?: number | null
+          level_requested?: number
+          owner_id: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          risk_flags?: Json
+          risk_score?: number | null
+          status?: string
+          subject_id: string
+          subject_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decision_note?: string | null
+          expires_at?: string | null
+          id?: string
+          level_granted?: number | null
+          level_requested?: number
+          owner_id?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          risk_flags?: Json
+          risk_score?: number | null
+          status?: string
+          subject_id?: string
+          subject_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      verification_evidence: {
+        Row: {
+          case_id: string
+          checked_at: string | null
+          created_at: string
+          detail: Json
+          id: string
+          kind: string
+          method: string
+          status: string
+          storage_path: string | null
+          vendor_ref: string | null
+        }
+        Insert: {
+          case_id: string
+          checked_at?: string | null
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind: string
+          method: string
+          status?: string
+          storage_path?: string | null
+          vendor_ref?: string | null
+        }
+        Update: {
+          case_id?: string
+          checked_at?: string | null
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind?: string
+          method?: string
+          status?: string
+          storage_path?: string | null
+          vendor_ref?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_evidence_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "verification_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       watchlists: {
         Row: {
           changes_seen_at: string | null
@@ -3009,6 +3167,101 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_startup: {
+        Args: never
+        Returns: {
+          arr: number | null
+          booking_url: string | null
+          business_model: string | null
+          churn_rate: number | null
+          city: string | null
+          company_type: string | null
+          competitive_advantage: string | null
+          competitors_json: Json
+          country: string
+          created_at: string
+          deck_language: string | null
+          demo_video_url: string | null
+          description: string | null
+          draft_nudge_count: number
+          draft_nudged_at: string | null
+          edited_since_review_at: string | null
+          equity_offered: number | null
+          featured: boolean
+          founded_date: string | null
+          founded_year: number | null
+          funding_target: number
+          growth_rate: number | null
+          id: string
+          industry: string
+          instrument: string | null
+          is_demo: boolean
+          languages: string[] | null
+          languages_spoken: string[] | null
+          lead_investor: string | null
+          lead_investor_status: string | null
+          listed_at: string | null
+          logo_color: string | null
+          logo_url: string | null
+          looking_for: string[] | null
+          market: string | null
+          min_check_size: number | null
+          mrr: number | null
+          name: string
+          owner_id: string
+          pageviews: number
+          paying_customers: number | null
+          pitch_deck_url: string | null
+          previous_funding: number | null
+          problem: string | null
+          product_hunt_url: string | null
+          require_nda: boolean
+          revenue_model: string | null
+          round_close_date: string | null
+          round_state: string
+          round_state_changed_at: string | null
+          runway_months: number | null
+          safe_cap: number | null
+          safe_discount: number | null
+          sam: number | null
+          scored_at: string | null
+          search_vector: unknown
+          show_momentum: boolean
+          slug: string
+          social_proof: Json | null
+          solution: string | null
+          som: number | null
+          stage: string
+          status: string
+          subscription_tier: string
+          tagline: string
+          tags: string[] | null
+          tam: number | null
+          target_markets: string[] | null
+          team_size: string | null
+          trust_expires_at: string | null
+          trust_level: number
+          trust_reviewed_at: string | null
+          twitter_url: string | null
+          updated_at: string
+          use_of_funds: string | null
+          user_count: number | null
+          valuation: number | null
+          valuation_type: string | null
+          vaultrise_score: number | null
+          verification_checks: Json | null
+          verified_at: string | null
+          verified_by: string | null
+          video_pitch_url: string | null
+          website: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "startups"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_startup_daily_views: {
         Args: { p_startup_id: string }
         Returns: {
