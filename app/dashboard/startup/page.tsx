@@ -21,7 +21,8 @@ export default async function StartupDashboardPage() {
 
   if (profile?.role !== "startup") redirect("/dashboard/investor");
 
-  const { data: startup } = await supabase
+  // Owner verified above; the service role sees past the column grants.
+  const { data: startup } = await createAdminClient()
     .from("startups")
     .select(`
       *,

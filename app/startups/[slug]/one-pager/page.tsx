@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { safeFormatCurrencyAmount, safeFormatMRR } from "@/lib/validators";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
@@ -35,7 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function OnePagerPage({ params }: Props) {
   const supabase = await createServerSupabaseClient();
 
-  const { data: startup } = await supabase
+  // Service-role read; the entitlement strip below governs what renders.
+  const { data: startup } = await createAdminClient()
     .from("startups")
     .select(`
       name, slug, tagline, industry, stage, country, website, status,

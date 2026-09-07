@@ -252,7 +252,11 @@ export default function EditStartupPage() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
-      const { data } = await supabase.from("startups").select("*").eq("owner_id", user.id).order("status", { ascending: true }).order("created_at", { ascending: true }).limit(1).maybeSingle();
+      // Column grants hide financials from the browser client since 109;
+      // the owner's full row comes through the security-definer RPC, which
+      // authorizes by auth.uid() and returns rows pre-ordered.
+      const { data: ownRows } = await (supabase.rpc as CallableFunction)("get_my_startup");
+      const data = (Array.isArray(ownRows) ? ownRows[0] : null) ?? null;
       if (data) data.competitors_json = Array.isArray(data.competitors_json) ? data.competitors_json : [];
       // A local backup newer than the database (tab closed mid-edit) is
       // restored — the founder loses nothing.

@@ -66,7 +66,10 @@ export async function generateStaticParams() {
 export default async function StartupDetailPage({ params, searchParams }: Props) {
   const supabase = await createServerSupabaseClient();
 
-  const { data: startup } = await supabase
+  // The service role reads the full row (column grants hide financials from
+  // user-bound clients since 109); this page is the strip point -- what
+  // leaves here is exactly what the viewer's entitlement allows.
+  const { data: startup } = await createAdminClient()
     .from("startups")
     .select(`
       *,
@@ -233,7 +236,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   ]);
 
   // Related startups
-  const { data: related } = await supabase
+  const { data: related } = await createAdminClient()
     .from("startups")
     .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score, round_close_date")
     .eq("status", "active")

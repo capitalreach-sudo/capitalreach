@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Deal } from "@/types";
@@ -33,7 +33,8 @@ export default async function DealsPage() {
   if (isSuspended(ctx)) redirect("/suspended");
 
   if (profile.role === "startup") {
-    const { data: startup } = await supabase
+    // Owner's own listing incl. financials: service role (column grants).
+    const { data: startup } = await createAdminClient()
       .from("startups")
       .select("id, subscription_tier, funding_target, equity_offered, stage, industry, mrr, arr")
       .eq("owner_id", user.id)
@@ -94,7 +95,10 @@ export default async function DealsPage() {
       .maybeSingle();
     if (!investor) redirect("/onboarding/investor");
 
-    const { data: deals } = await supabase
+    // A deal party sees the counterpart's financials on the board -- that
+    // read now needs the service role (column grants); the investor_id
+    // filter above scopes it exactly as the old RLS path did.
+    const { data: deals } = await createAdminClient()
       .from("deals")
       .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr)")
       .eq("investor_id", investor.id)
