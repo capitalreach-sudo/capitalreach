@@ -342,19 +342,30 @@ export interface AnnualPricing {
   percentOff: number;
 }
 
-export function annualPricing(plan: FounderPlan | InvestorPlan): AnnualPricing | null {
-  if (!plan.annualPrice || plan.price <= 0) return null;
-  const monthlyTotal = plan.price * 12;
-  const saved = monthlyTotal - plan.annualPrice;
+/**
+ * The same arithmetic over a bare pair of numbers, because the price a buyer
+ * is quoted today is not always the plan's standard price: lib/pricing-stage.ts
+ * owns what a NEW subscriber pays, and the saving has to be computed from that
+ * number or the annual toggle advertises a discount off a price nobody is
+ * charged.
+ */
+export function annualPricingFrom(price: number, annualPrice: number | null): AnnualPricing | null {
+  if (!annualPrice || price <= 0) return null;
+  const monthlyTotal = price * 12;
+  const saved = monthlyTotal - annualPrice;
   if (saved <= 0) return null;
   return {
-    total: plan.annualPrice,
+    total: annualPrice,
     // Rounded to the nearest whole currency unit for display; the charge is
-    // always plan.annualPrice, never this number × 12.
-    effectiveMonthly: Math.round(plan.annualPrice / 12),
+    // always annualPrice, never this number × 12.
+    effectiveMonthly: Math.round(annualPrice / 12),
     saved,
     percentOff: Math.round((saved / monthlyTotal) * 100),
   };
+}
+
+export function annualPricing(plan: FounderPlan | InvestorPlan): AnnualPricing | null {
+  return annualPricingFrom(plan.price, plan.annualPrice);
 }
 
 /** The Stripe price env var for a plan at a given interval. */

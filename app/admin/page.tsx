@@ -194,6 +194,7 @@ export default async function AdminPage() {
         }}
         revenue={revenue}
         feeMonths={feeMonths}
+        adminLevel={guard.level}
       />
     </>
   );

@@ -34,6 +34,7 @@ import { FounderToFounder } from "@/components/startup/founder-to-founder";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { RiskWarning } from "@/components/startup/risk-warning";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
+import { TrustPanel, trustBadgeVisible } from "@/components/shared/trust-panel";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { RoundCalculator } from "@/components/startup/round-calculator";
 import { roundCloseState } from "@/lib/round-close";
@@ -73,6 +74,9 @@ interface Props {
   coInvestors?: Array<{ slug: string; name: string | null; type: string | null }>;
   /** B19: public momentum aggregate (only when the founder opted in). */
   momentum?: { interested: number; committedCount: number; committedAmount: number; softAmount: number; currency: string } | null;
+  /** A verification_cases row is open for this listing. Server-supplied only:
+      the badge never guesses that a silent listing is "pending". */
+  verificationCaseOpen?: boolean;
   /** Auto-translation: the listing's detected language, a server-cached
       translation for the viewer's locale (if any), and whether translation is
       configured on the server. */
@@ -444,7 +448,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [], sourceLocale = null, initialTranslation = null, translationAvailable = true,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [], verificationCaseOpen = false, sourceLocale = null, initialTranslation = null, translationAvailable = true,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -717,13 +721,40 @@ export function StartupDetailClient({
                   <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 38px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
                     {startup.name}
                   </h1>
-                  {startup.verified_at && (
-                    <VerifiedBadge
-                      kind="startup"
-                      checks={(startup as { verification_checks?: { checks?: string[]; at?: string } | null }).verification_checks}
-                      verifiedAt={startup.verified_at}
-                    />
-                  )}
+                  {/* The rung this listing stands on, opening onto the checks
+                      behind it. Silent at level 0 and after an expiry, which
+                      is why the slot is not reserved unconditionally. */}
+                  {(() => {
+                    const legacyChecks = (startup as { verification_checks?: { checks?: string[]; at?: string } | null }).verification_checks ?? null;
+                    if (!trustBadgeVisible({
+                      level: startup.trust_level, verifiedAt: startup.verified_at,
+                      expiresAt: startup.trust_expires_at, caseOpen: verificationCaseOpen, isOwner,
+                    })) return null;
+                    return (
+                      <VerifiedBadge
+                        kind="startup"
+                        checks={legacyChecks}
+                        verifiedAt={startup.verified_at}
+                        trustLevel={startup.trust_level}
+                        trustReviewedAt={startup.trust_reviewed_at}
+                        trustExpiresAt={startup.trust_expires_at}
+                        caseOpen={verificationCaseOpen}
+                        isOwner={isOwner}
+                        panel={
+                          <TrustPanel
+                            subject="startup"
+                            level={startup.trust_level}
+                            reviewedAt={startup.trust_reviewed_at}
+                            expiresAt={startup.trust_expires_at}
+                            legacyChecks={legacyChecks}
+                            verifiedAt={startup.verified_at}
+                            caseOpen={verificationCaseOpen}
+                            isOwner={isOwner}
+                          />
+                        }
+                      />
+                    );
+                  })()}
                   {(startup as { is_demo?: boolean }).is_demo && <DemoBadge />}
                   {startup.subscription_tier === "growth" && (
                     <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>

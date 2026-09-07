@@ -2,6 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { countryLabel } from "@/lib/country-label";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
+import { TrustPanel } from "@/components/shared/trust-panel";
+import { effectiveTrustLevel } from "@/lib/trust";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
@@ -202,6 +204,38 @@ export default async function InvestorProfilePage({ params }: Props) {
     }
   }
 
+  // An open verification case, so an unbadged profile can read as "in
+  // progress" rather than as a permanent blank -- during the founding stage
+  // most unbadged accounts are simply queued behind human review.
+  //
+  // Read with the service role because the RLS policy on verification_cases is
+  // owner-only, so no other viewer could see the row at all. Exactly one bit
+  // leaves this query: whether a case is open. risk_score and risk_flags are
+  // revoked from client keys by migration 111 and are never selected here.
+  //
+  // The level is derived here rather than imported from trust-panel: every
+  // export of a "use client" module is a client reference, and a server
+  // component may not call one. Pre-ladder rows carry no trust_level, and
+  // migration 111 settles a manual verification at level 2.
+  const rawTrust = investor.trust_level > 0 ? investor.trust_level : (investor.verified_at ? 2 : 0);
+  const effectiveLevel = effectiveTrustLevel(rawTrust, investor.trust_expires_at);
+  let verificationCaseOpen = false;
+  if (effectiveLevel === 0) {
+    const { data: openCase } = await createAdminClient()
+      .from("verification_cases")
+      .select("id")
+      .eq("subject_type", "investor")
+      .eq("subject_id", investor.id)
+      .in("status", ["submitted", "in_review", "needs_more"])
+      .limit(1)
+      .maybeSingle();
+    verificationCaseOpen = !!openCase;
+  }
+  const legacyChecks = investor.verification_checks as { checks?: string[]; at?: string } | null;
+  // A standing rung, a case in flight, or -- for the owner alone -- a lapse
+  // worth acting on. Everyone else sees plain absence, never a grey scold.
+  const showTrust = effectiveLevel > 0 || verificationCaseOpen || (rawTrust > 0 && isOwnProfile);
+
   const displayName = investor.display_name || investor.slug;
   const memberSince = investor.created_at
     ? new Date(investor.created_at).toLocaleDateString(getLocale(), { month: "long", year: "numeric" })
@@ -299,14 +333,38 @@ export default async function InvestorProfilePage({ params }: Props) {
                 {investor.firm_name}
               </p>
             )}
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 5vw, 44px)", lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--cr-ink)", marginBottom: "12px" }}>
-              {displayName}
-              {investor.verified_at && (
-                <span className="ml-2 align-middle inline-flex">
-                  <VerifiedBadge checks={investor.verification_checks as { checks?: string[]; at?: string } | null} verifiedAt={investor.verified_at} />
-                </span>
+            {/* The badge is a sibling of the name, not a child of it: it opens
+                a panel, and a dialog nested inside an h1 is neither valid nor
+                readable to a screen reader announcing the heading. */}
+            <div className="flex items-center flex-wrap gap-x-3 gap-y-2" style={{ marginBottom: "12px" }}>
+              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 5vw, 44px)", lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
+                {displayName}
+              </h1>
+              {showTrust && (
+                <VerifiedBadge
+                  kind="investor"
+                  checks={legacyChecks}
+                  verifiedAt={investor.verified_at}
+                  trustLevel={investor.trust_level}
+                  trustReviewedAt={investor.trust_reviewed_at}
+                  trustExpiresAt={investor.trust_expires_at}
+                  caseOpen={verificationCaseOpen}
+                  isOwner={isOwnProfile}
+                  panel={
+                    <TrustPanel
+                      subject="investor"
+                      level={investor.trust_level}
+                      reviewedAt={investor.trust_reviewed_at}
+                      expiresAt={investor.trust_expires_at}
+                      legacyChecks={legacyChecks}
+                      verifiedAt={investor.verified_at}
+                      caseOpen={verificationCaseOpen}
+                      isOwner={isOwnProfile}
+                    />
+                  }
+                />
               )}
-            </h1>
+            </div>
             <div className="flex items-center gap-2 flex-wrap mb-3">
               {viewerDeal && (
                 // Same pill as the startup profile: the two ends of a deal

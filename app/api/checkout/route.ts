@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
-import { getLaunchStatus } from "@/lib/launchMode";
+import { getStageStatus, resolveStagePriceId } from "@/lib/pricing-stage";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, priceEnvKey, type BillingInterval } from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 
@@ -36,29 +36,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}${dashboardPath}` });
   }
 
-  // Launch mode — skip payment, grant access immediately. Persist the tier so
-  // it survives launch ending: without this, a first-100 user who upgrades
-  // here kept the tier only while access.ts forced it during launch, then
-  // silently dropped to free. The onboarding routes already persist; this
-  // brings the pricing/billing path in line.
-  const { isLaunch } = await getLaunchStatus();
-  if (isLaunch) {
-    const admin = createAdminClient();
-    const entityTable = userType === "founder" ? "startups" : "investors";
-    await Promise.all([
-      admin.from("profiles").update({ subscription_tier: plan.id, subscription_status: "active" }).eq("id", user.id),
-      admin.from(entityTable).update({ subscription_tier: plan.id }).eq("owner_id", user.id),
-    ]);
-    return NextResponse.json({
-      url: `${process.env.NEXT_PUBLIC_APP_URL}${dashboardPath}?upgraded=1&launch=1`,
-    });
+  // The stage decides what a NEW subscriber pays, so it decides whether there
+  // is anything to sell at all.
+  const { stage } = await getStageStatus();
+
+  // Founding stage: every paywall is already lifted for everyone (access.ts
+  // reads the same flag), so there is nothing to buy. No session is created --
+  // opening one would take money for access the member already has.
+  if (stage === "founding") {
+    return NextResponse.json(
+      {
+        error: "Everything is free during the founding stage. You already have full access -- there is nothing to pay for yet.",
+        stage,
+      },
+      { status: 409 },
+    );
   }
 
-  // Stripe price must be configured
+  // Stripe price must be configured. The stage-specific variable wins
+  // (STRIPE_PRICE_..._EARLY) and the plain one is the fallback, so a stage can
+  // advance before its prices exist in the Stripe dashboard without the
+  // checkout going dark.
   const envKey = priceEnvKey(plan, interval) ?? plan.envKey;
-  const priceId = process.env[envKey];
+  const priceId = resolveStagePriceId(envKey, stage, interval);
   if (!priceId) {
-    console.error(`Stripe price not configured: ${envKey}`);
+    console.error(`Stripe price not configured: ${envKey} (stage: ${stage})`);
     return NextResponse.json(
       { error: "This plan is not available right now. Please contact support." },
       { status: 503 },
@@ -84,7 +86,9 @@ export async function POST(req: NextRequest) {
     priceId,
     successUrl: `${process.env.NEXT_PUBLIC_APP_URL}${dashboardPath}?upgraded=1`,
     cancelUrl:  `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    metadata:   { userId: user.id, role: userType, tier: plan.id, interval },
+    // The stage rides along: a subscription keeps the price it was created at
+    // forever, so the rung it was sold on has to be recoverable later.
+    metadata:   { userId: user.id, role: userType, tier: plan.id, interval, stage },
   });
 
   return NextResponse.json({ url: session.url });

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import VerificationQueue from "@/components/admin/verification-queue";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { notify } from "@/components/ui/toast-notify";
@@ -28,24 +29,49 @@ interface Props {
   revenue?: RevenueSummary;
   /** Twelve months of fee flow, oldest first. */
   feeMonths?: Array<{ month: string; billed: number; collected: number }>;
+  /** The viewer's admin level. The review bench refuses to let anyone below
+   *  "owner" clear a blocked case, and needs to know before rendering. */
+  adminLevel?: string;
 }
 
-export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue, feeMonths = [] }: Props) {
-  // Launch mode: the everyone-gets-top-tier state. null until loaded.
-  const [launch, setLaunch] = useState<{ isLaunch: boolean; memberCount: number; target: number } | null>(null);
-  const [savingLaunch, setSavingLaunch] = useState(false);
+/** What /api/admin/pricing-stage answers with. The stage list comes from the
+ *  server so the ladder's order stays defined in lib/pricing-stage.ts alone. */
+type StageInfo = {
+  stage: string;
+  memberCount: number;
+  target: number;
+  isFounding: boolean;
+  stages: string[];
+};
+
+export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue, feeMonths = [], adminLevel }: Props) {
+  // The price ladder: founding (everyone free) -> early -> standard.
+  // null until loaded.
+  const [stageInfo, setStageInfo] = useState<StageInfo | null>(null);
+  const [savingStage, setSavingStage] = useState(false);
+  // Advancing changes what every new customer pays, so the click that picks a
+  // stage only ARMS it; a second, explicit click applies it.
+  const [pendingStage, setPendingStage] = useState<string | null>(null);
+  const [editingTarget, setEditingTarget] = useState(false);
+  const [targetDraft, setTargetDraft] = useState("");
   useEffect(() => {
-    fetch("/api/admin/launch-mode").then(r => r.ok ? r.json() : null).then(setLaunch).catch(() => {});
+    fetch("/api/admin/pricing-stage").then(r => r.ok ? r.json() : null).then(setStageInfo).catch(() => {});
   }, []);
-  async function setLaunchMode(enabled: boolean) {
-    setSavingLaunch(true);
-    const res = await fetch("/api/admin/launch-mode", {
+  async function savePricingStage(patch: { stage?: string; foundingTarget?: number }) {
+    setSavingStage(true);
+    const res = await fetch("/api/admin/pricing-stage", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enabled }),
+      body: JSON.stringify(patch),
     });
-    setSavingLaunch(false);
-    if (res.ok) setLaunch(await res.json());
-    else toast({ title: t("errors.generic"), variant: "destructive" });
+    const data = await res.json().catch(() => null);
+    setSavingStage(false);
+    if (res.ok && data) {
+      setStageInfo(data);
+      setPendingStage(null);
+      setEditingTarget(false);
+    } else {
+      toast({ title: data?.error || t("errors.generic"), variant: "destructive" });
+    }
   }
   const { t } = useTranslation();
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
@@ -122,27 +148,114 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         </div>
       </div>
 
-      {launch !== null && (
-        <div className="bg-cr-paper border rounded-2xl p-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-sm font-medium text-cr-ink">{t("admin.launchTitle")}</p>
-            <p className="text-xs text-cr-i3 mt-0.5">
-              {launch.isLaunch
-                ? t("admin.launchOnSub", { memberCount: launch.memberCount, target: launch.target })
-                : t("admin.launchOffSub")}
-            </p>
+      {stageInfo !== null && (
+        <div className="bg-cr-paper border rounded-2xl p-4 mb-6">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-sm font-medium text-cr-ink">{t("admin.stageTitle")}</p>
+              <p className="text-xs text-cr-i3 mt-0.5">
+                {stageInfo.stage === "founding"
+                  ? t("admin.launchOnSub", { memberCount: stageInfo.memberCount, target: stageInfo.target })
+                  : stageInfo.stage === "early"
+                    ? t("admin.stageSubEarly")
+                    : t("admin.launchOffSub")}
+              </p>
+            </div>
+
+            {/* Segmented control: the live stage is filled, the rest are quiet. */}
+            <div className="flex rounded-[4px] border border-cr-p4 overflow-hidden">
+              {stageInfo.stages.map((s) => {
+                const live   = s === stageInfo.stage;
+                const armed  = s === pendingStage;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={live}
+                    disabled={savingStage || live}
+                    onClick={() => setPendingStage(s)}
+                    className={`text-xs font-medium px-3 py-2 border-l border-cr-p4 first:border-l-0 transition-colors ${
+                      live  ? "bg-cr-copper text-cr-paper"
+                      : armed ? "bg-cr-copper/10 text-cr-copper"
+                      : "text-cr-i3 hover:text-cr-copper"
+                    }`}
+                  >
+                    {live && <span aria-hidden className="mr-1.5">✦</span>}
+                    {t(`stage.${s}`)}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <button
-            onClick={() => setLaunchMode(!launch.isLaunch)}
-            disabled={savingLaunch}
-            className={`text-xs font-medium px-4 py-2 rounded-lg border transition-colors ${
-              launch.isLaunch
-                ? "border-cr-copper text-cr-copper hover:bg-cr-copper/10"
-                : "bg-cr-copper text-cr-paper border-cr-copper"
-            }`}
-          >
-            {savingLaunch ? t("common.loading") : launch.isLaunch ? t("admin.launchTurnOff") : t("admin.launchTurnOn")}
-          </button>
+
+          {/* The founding cohort: how many are in, out of a target the operator
+              can move -- the cohort size is a review-capacity number, not a law. */}
+          {stageInfo.isFounding && (
+            <div className="mt-3 pt-3 border-t border-cr-p4 flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] uppercase tracking-wider text-cr-i4">{t("admin.foundingCohort")}</span>
+              <span className="font-mono text-sm font-semibold text-cr-ink tabular-nums">{stageInfo.memberCount}</span>
+              <span className="text-cr-i4 text-xs">/</span>
+              {editingTarget ? (
+                <>
+                  <input
+                    type="number" min={1} max={10000} value={targetDraft}
+                    onChange={e => setTargetDraft(e.target.value)}
+                    className="w-20 font-mono text-sm border rounded-[4px] px-2 py-1 bg-cr-paper text-cr-ink"
+                  />
+                  <button
+                    type="button"
+                    disabled={savingStage}
+                    onClick={() => savePricingStage({ foundingTarget: parseInt(targetDraft, 10) })}
+                    className="text-xs font-medium text-cr-copper underline underline-offset-2"
+                  >
+                    {savingStage ? t("common.saving") : t("common.save")}
+                  </button>
+                  <button type="button" onClick={() => setEditingTarget(false)} className="text-xs text-cr-i4">
+                    {t("common.cancel")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="font-mono text-sm font-semibold text-cr-ink tabular-nums">{stageInfo.target}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setTargetDraft(String(stageInfo.target)); setEditingTarget(true); }}
+                    className="text-xs text-cr-copper underline underline-offset-2 ml-1"
+                  >
+                    {t("common.edit")}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {pendingStage && (
+            <div className="mt-3 pt-3 border-t border-cr-p4">
+              <p className="text-xs text-cr-i3">
+                {t("admin.stageConfirm", { from: t(`stage.${stageInfo.stage}`), to: t(`stage.${pendingStage}`) })}
+              </p>
+              {stageInfo.isFounding && pendingStage !== "founding" && (
+                <p className="text-xs text-cr-copper mt-1">{t("admin.stageConfirmEndsFounding")}</p>
+              )}
+              <div className="flex gap-2 mt-2">
+                <button
+                  type="button"
+                  disabled={savingStage}
+                  onClick={() => savePricingStage({ stage: pendingStage })}
+                  className="text-xs font-medium px-4 py-2 rounded-[4px] bg-cr-copper text-cr-paper"
+                >
+                  {savingStage ? t("common.loading") : t("common.confirm")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPendingStage(null)}
+                  className="text-xs font-medium px-4 py-2 rounded-[4px] border border-cr-p4 text-cr-i3"
+                >
+                  {t("common.cancel")}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -239,6 +352,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               </span>
             )}
           </TabsTrigger>
+          <TabsTrigger value="verification">{t("reviewQueue.title")}</TabsTrigger>
           <TabsTrigger value="startups">{t("admin.tabAllStartups")}</TabsTrigger>
           <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
           <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
@@ -438,6 +552,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           </div>
             )}
           </AdminList>
+        </TabsContent>
+
+        {/* The verification bench: cases waiting on a human. */}
+        <TabsContent value="verification">
+          <VerificationQueue myLevel={adminLevel} />
         </TabsContent>
 
         {/* E46: the fee ledger. */}
