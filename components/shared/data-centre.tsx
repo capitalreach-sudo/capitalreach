@@ -149,13 +149,6 @@ const DEAL_STAGES = [
 // stage breakdown and recent listings showed raw enum values for half the
 // stages.
 
-function fmtMrr(n: number | null, preRevLabel = "Pre-rev") {
-  if (!n) return preRevLabel;
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
-  return `$${n}`;
-}
-
 // Both go through the shared safety net: implausible values render "—".
 function fmtRaising(n: number | null | undefined) { return safeFormatCurrency(n); }
 function fmtMoney(n: number | null | undefined)   { return safeFormatCurrency(n); }
@@ -783,11 +776,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                        {/* The bare "$12K" said nothing about what was
-                            measured; the existing MRR key names the unit.
-                            Pre-revenue rows skip it -- "MRR Pre-rev" would
-                            label an absence. */}
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {s.mrr ? `${t("listings.mrr")} ` : ""}<span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{fmtMrr(s.mrr, t("data.preRev"))}</span></p>
+                        {/* Per-startup MRR left this public surface with the
+                            entitlement lockdown (109) -- the row would have
+                            labelled every company "Pre-rev". Industry and
+                            stage, like the recent-listings ledger. */}
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
                       </div>
                       <ScorePill score={s.ai_score} />
                     </Link>
