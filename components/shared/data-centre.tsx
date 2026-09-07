@@ -3,13 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { STAGE_LABELS } from "@/lib/utils";
 import {
-  TrendingUp, BarChart3, Users, DollarSign,
-  Zap, Activity, Building2, Brain,
-  Loader2, RefreshCw, AlertTriangle, Download,
+  TrendingUp, Users, DollarSign, Building2,
+  RefreshCw, AlertTriangle, Download,
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { LiveClock } from "@/components/ui/LiveClock";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Guilloche } from "@/components/ui/Guilloche";
 import { safeFormatCurrency } from "@/lib/format";
 import { LineChart } from "@/components/charts/line-chart";
 import { DonutChart } from "@/components/charts/donut-chart";
@@ -48,7 +50,34 @@ interface PlatformData {
 
 const cellTd: React.CSSProperties = {
   padding: "6px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11.5px",
-  color: "var(--cr-ink-2)", borderTop: "1px solid var(--cr-rule)",
+  fontVariantNumeric: "tabular-nums", color: "var(--cr-ink-2)", borderTop: "1px solid var(--cr-rule)",
+};
+
+// Ledger alignment: text columns sit left, figures sit right, the way any
+// statistical yearbook sets a table.
+const cellTdNum: React.CSSProperties = { ...cellTd, textAlign: "right" };
+
+// The chapter number that opens each section: the numbered-rail motif applied
+// to the chapters themselves, so the page reads as a report with a sequence,
+// not a stack of interchangeable panels.
+const chapterNum: React.CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px",
+  color: "var(--cr-copper)",
+};
+
+// The three voices this page speaks in, defined once so every figure and
+// every label on the surface is set identically.
+const capsLabel: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+};
+
+// A chart plate: charts need solid paper under them (gridlines over the
+// page's graph-paper texture read as noise), so they are the only content
+// that still sits in a framed box. Everything else is rules and whitespace.
+const plate: React.CSSProperties = {
+  background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
+  borderRadius: "4px", padding: "clamp(16px, 3vw, 24px)",
 };
 
 /** Axis money: "$100M", never "100000000". */
@@ -165,42 +194,40 @@ function useCountUp(target: number, duration = 900) {
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
+// The boxed tile is gone: an annual report rules a figure, it does not
+// frame it. Each stat is an overline hairline, a small-caps label and a
+// confident mono figure sitting directly on the paper. `lead` promotes one
+// figure per section to the commanding size under a heavier ink rule;
+// Icon/color stay in the signature so call sites are untouched, but a
+// figure this large needs no pictogram beside it.
 function StatCard({
-  label, value, prefix = "", Icon, color,
+  label, value, prefix = "", Icon: _Icon, color: _color, lead = false,
 }: {
   label: string;
   value: number;
   prefix?: string;
   Icon: React.ElementType;
   color: string;
+  lead?: boolean;
 }) {
   const { value: displayed, done } = useCountUp(value);
   return (
-    <div className="cr-lift" style={{
-      background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-      borderRadius: "4px", padding: "20px 22px",
+    <div style={{
+      borderTop: lead ? "2px solid var(--cr-ink)" : "1px solid var(--cr-rule-dark)",
+      paddingTop: lead ? "16px" : "12px",
     }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
-        <Icon style={{ width: 13, height: 13, color: "var(--cr-paper-4)" }} />
-      </div>
+      <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: lead ? "12px" : "8px" }}>{label}</p>
       <p
         className={done ? "count-glow-done" : ""}
-        style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(20px, 2.2vw + 8px, 32px)", color: "var(--cr-ink)", lineHeight: 1, overflowWrap: "anywhere" }}
+        style={{
+          fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+          fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
+          fontSize: lead ? "clamp(40px, 5vw + 20px, 72px)" : "clamp(20px, 1.4vw + 12px, 28px)",
+          color: "var(--cr-ink)", lineHeight: 1, overflowWrap: "anywhere",
+        }}
       >
         {prefix}{displayed.toLocaleString()}
       </p>
-    </div>
-  );
-}
-
-// ── Skeleton card ─────────────────────────────────────────────────────────────
-
-function SkeletonCard() {
-  return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px 22px" }}>
-      <div style={{ height: 10, width: "55%", background: "var(--cr-paper-4)", borderRadius: 3, marginBottom: 16, opacity: 0.6 }} />
-      <div style={{ height: 32, width: "40%", background: "var(--cr-paper-4)", borderRadius: 3, opacity: 0.5 }} />
     </div>
   );
 }
@@ -286,6 +313,13 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     ? Object.entries(data.byStage).sort((a, b) => b[1] - a[1])
     : [];
 
+  // Chapters number themselves in render order, so the conditional chapters
+  // (the band, the time series, deal flow) never leave a gap in the sequence.
+  // The counter resets every render; JSX evaluates top to bottom, so the
+  // numbering is always 01..N down the page.
+  let chapterCount = 0;
+  const chapterMark = () => String(++chapterCount).padStart(2, "0");
+
   return (
     <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
 
@@ -294,10 +328,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         {/* Side gutters relax on small screens: a fixed 40px left 295px of
             content at 375px, which forced every grid into a squeeze. */}
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px clamp(24px, 5vw, 40px) 48px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-            <BarChart3 style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("data.eyebrow")}</span>
-          </div>
+          {/* The masthead opens like every chapter below it: the ruled label,
+              not an icon -- the pictogram repeated what the words say. */}
+          <div className="ruled-label" style={{ marginBottom: "16px", color: "var(--cr-band-ink-dim)" }}>{t("data.eyebrow")}</div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(32px,5vw,52px)", color: "var(--cr-band-ink)", letterSpacing: "-0.03em", marginBottom: "12px" }}>
             {t("data.title")}
           </h1>
@@ -311,9 +344,13 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-band-ink-dim)", marginTop: 6 }}>
             {t("data.sampleNote")}
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "20px", flexWrap: "wrap" }}>
+          {/* The meta row set as a colophon: one hairline above, then the
+              live mark, the clock, the freshness stamp and the two quiet
+              utilities on a single line. The live dot is copper -- active
+              state -- because green means money direction, nothing else. */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px 24px", marginTop: "32px", paddingTop: "16px", borderTop: "1px solid color-mix(in srgb, var(--cr-band-ink) 18%, transparent)", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Activity style={{ width: 12, height: 12, color: "var(--cr-up)" }} />
+              <span aria-hidden style={{ width: 6, height: 6, borderRadius: "999px", background: "var(--cr-copper)", flexShrink: 0 }} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>{t("data.live")}</span>
             </div>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>
@@ -345,19 +382,13 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px clamp(24px, 5vw, 40px) 80px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px clamp(24px, 5vw, 40px) 96px" }}>
 
-        {/* Loading skeleton */}
+        {/* Loading: the ledger being written, not a soup of gray bars. */}
         {loading && (
-          <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "32px" }}>
-              {[0, 1, 2, 3].map(i => <SkeletonCard key={i} />)}
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 0", gap: "12px" }}>
-              <Loader2 style={{ width: 24, height: 24, color: "var(--cr-copper)", animation: "spin 1s linear infinite" }} />
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("data.loading")}</p>
-            </div>
-          </>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "96px 0" }}>
+            <LedgerLoader label={t("data.loading")} />
+          </div>
         )}
 
         {/* Error state */}
@@ -368,22 +399,26 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.errorSub")}</p>
             <button
               onClick={fetchData}
-              style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: "999px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
             >
               <RefreshCw style={{ width: 13, height: 13 }} /> {t("data.retry")}
             </button>
           </div>
         )}
 
-        {/* Empty platform state */}
+        {/* Empty platform state: the shared drawer-tag block, one quiet way out. */}
         {!loading && !error && data && data.startupCount === 0 && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
-            <Building2 style={{ width: 32, height: 32, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("data.noData")}</p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.beFirstFounders")}</p>
-            <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
-              {t("data.listYourStartup")} →
-            </Link>
+          <div style={{ padding: "32px 0" }}>
+            <EmptyState
+              Icon={Building2}
+              title={t("data.noData")}
+              body={t("data.beFirstFounders")}
+              action={
+                <Link href="/auth/signup?role=startup" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                  {t("data.listYourStartup")} →
+                </Link>
+              }
+            />
           </div>
         )}
 
@@ -396,13 +431,34 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 wall of equal tiles with nothing saying where one topic ended
                 and the next began. The opener reuses the header eyebrow key:
                 same fact, now anchoring the totals it describes. */}
-            <section style={{ marginBottom: "48px" }}>
-              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("data.eyebrow")}</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
-                <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}   color="var(--cr-copper)" />
-                <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}       color="var(--cr-neutral)" />
-                <StatCard label={t("data.raised")}    value={data.totalRaised}   prefix="$" Icon={DollarSign} color="var(--cr-up)" />
-                <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp}  color="var(--cr-copper)" />
+            <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
+              <div className="ruled-label" style={{ marginBottom: "32px" }}>
+                <span aria-hidden style={chapterNum}>{chapterMark()}</span>
+                {t("data.eyebrow")}
+              </div>
+              {/* One commanding figure leads the page -- total capital raised,
+                  under a heavier ink rule -- and the other three totals stand
+                  quieter beneath it as a hairline-ruled strip. Four identical
+                  tiles said four equal facts; a report has a headline. */}
+              <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$" Icon={DollarSign} color="var(--cr-up)" />
+              {/* The three supporting totals as one hairline-divided strip:
+                  vertical rules between the figures, not a grid of tiles.
+                  The 25px crop trick (overflow hidden + negative left
+                  margin) hides the first divider in every wrap state, so
+                  the strip is flush left on desktop and each stat stacks
+                  clean at phone widths. */}
+              <div style={{ overflow: "hidden", marginTop: "32px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", rowGap: "24px", marginLeft: "-25px" }}>
+                  <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                    <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}  color="var(--cr-copper)" />
+                  </div>
+                  <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                    <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}      color="var(--cr-neutral)" />
+                  </div>
+                  <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                    <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp} color="var(--cr-copper)" />
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -411,32 +467,55 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 means: one mega-round must not move what the market calls a
                 typical raise. Top three stages by listing count. */}
             {Object.keys(data.report?.medianByStage ?? {}).length > 0 && (
-              <section style={{ marginBottom: "48px", background: "var(--cr-band-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "24px" }}>
-                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("report.title")}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "24px 48px" }}>
-                  {Object.entries(data.report!.medianByStage)
-                    .sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
-                    .slice(0, 3)
-                    .map(([stage, median]) => (
-                      <div key={stage}>
-                        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-                          {"$" + (median >= 1_000_000 ? (median / 1_000_000).toFixed(1) + "M" : Math.round(median / 1000) + "k")}
+              <section style={{ position: "relative", overflow: "hidden", marginBottom: "clamp(64px, 9vw, 96px)", background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px)" }}>
+                {/* The page's one signature texture: a guilloche medallion
+                    half-cropped at the band's edge, banknote-fashion. The
+                    radial mask fades the pattern out toward its rim -- the
+                    curves' square envelope otherwise prints a hard edge
+                    across the band, worst at phone widths where the
+                    medallion spans most of the slab. */}
+                <div aria-hidden style={{ position: "absolute", top: "50%", right: "-140px", transform: "translateY(-50%)", width: "420px", height: "420px", color: "var(--cr-band-ink)", pointerEvents: "none", WebkitMaskImage: "radial-gradient(closest-side, var(--cr-ink) 40%, transparent 75%)", maskImage: "radial-gradient(closest-side, var(--cr-ink) 40%, transparent 75%)" }}>
+                  <Guilloche className="w-full h-full" seed={3} lines={16} opacity={0.06} />
+                </div>
+                <div style={{ position: "relative" }}>
+                  <div className="ruled-label" style={{ marginBottom: "48px", color: "var(--cr-band-ink-dim)" }}>
+                    <span aria-hidden style={chapterNum}>{chapterMark()}</span>
+                    {t("report.title")}
+                  </div>
+                  {/* The centerpiece figures as one hairline-divided strip,
+                      the same language as the totals above: vertical rules in
+                      band ink between the medians, the 25px crop trick hiding
+                      the first divider in every wrap state. Cards-on-a-band
+                      read as tiles; a strip reads as a table of record. */}
+                  <div style={{ overflow: "hidden" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", rowGap: "48px", marginLeft: "-25px" }}>
+                      {Object.entries(data.report!.medianByStage)
+                        .sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
+                        .slice(0, 3)
+                        .map(([stage, median]) => (
+                          <div key={stage} style={{ flex: "1 1 190px", minWidth: 0, borderLeft: "1px solid color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", padding: "0 24px" }}>
+                            {/* Label above the figure, as everywhere else on
+                                the page: rule, name, number, top to bottom. */}
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px" }}>
+                              {t("report.medianTarget")} {"\u00B7"} {(STAGE_LABELS[stage] ?? stage).replace(/_/g, " ")}
+                            </div>
+                            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(32px, 3vw + 18px, 52px)", color: "var(--cr-copper)", lineHeight: 1, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>
+                              {"$" + (median >= 1_000_000 ? (median / 1_000_000).toFixed(1) + "M" : Math.round(median / 1000) + "k")}
+                            </div>
+                          </div>
+                        ))}
+                      {data.report!.newThisMonth > 0 && (
+                        <div style={{ flex: "1 1 190px", minWidth: 0, borderLeft: "1px solid color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", padding: "0 24px" }}>
+                          <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px" }}>
+                            {t("report.newThisMonth")}
+                          </div>
+                          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(32px, 3vw + 18px, 52px)", color: "var(--cr-band-ink)", lineHeight: 1, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>
+                            {data.report!.newThisMonth}
+                          </div>
                         </div>
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
-                          {t("report.medianTarget")} {"\u00B7"} {(STAGE_LABELS[stage] ?? stage).replace(/_/g, " ")}
-                        </div>
-                      </div>
-                    ))}
-                  {data.report!.newThisMonth > 0 && (
-                    <div>
-                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-band-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-                        {data.report!.newThisMonth}
-                      </div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
-                        {t("report.newThisMonth")}
-                      </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </section>
             )}
@@ -451,15 +530,18 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 marker, so a visitor knows what each line counts before
                 reading a single value. */}
             {monthly.length > 0 && (
-              <section style={{ marginBottom: "48px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
-                  <div className="ruled-label">{t("data.overTime")}</div>
+              <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
+                  <div className="ruled-label">
+                    <span aria-hidden style={chapterNum}>{chapterMark()}</span>
+                    {t("data.overTime")}
+                  </div>
                   <button onClick={() => setShowTable(v => !v)}
                     style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)" }}>
                     {showTable ? t("data.showChart") : t("data.showTable")}
                   </button>
                 </div>
-                <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+                <div style={plate}>
 
                 {showTable ? (
                   /* Every chart has a table behind it: some of these fills sit
@@ -469,8 +551,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "420px" }}>
                       <thead>
                         <tr>
-                          {[t("data.month"), t("data.newListings"), t("data.dealsClosed"), t("data.capitalSought")].map(h => (
-                            <th key={h} style={{ textAlign: "left", padding: "6px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", borderBottom: "1px solid var(--cr-rule-dark)" }}>{h}</th>
+                          {/* Ledger alignment: the month reads left, every
+                              figure right, so magnitudes line up down each
+                              column the way a yearbook sets them. */}
+                          {[t("data.month"), t("data.newListings"), t("data.dealsClosed"), t("data.capitalSought")].map((h, i) => (
+                            <th key={h} style={{ textAlign: i === 0 ? "left" : "right", padding: "6px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", borderBottom: "1px solid var(--cr-rule-dark)" }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -478,9 +563,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         {monthly.map(m => (
                           <tr key={m.month}>
                             <td style={cellTd}>{m.month}</td>
-                            <td style={cellTd}>{m.listings}</td>
-                            <td style={cellTd}>{m.closed}</td>
-                            <td style={cellTd}>{safeFormatCurrency(m.sought)}</td>
+                            <td style={cellTdNum}>{m.listings}</td>
+                            <td style={cellTdNum}>{m.closed}</td>
+                            <td style={cellTdNum}>{safeFormatCurrency(m.sought)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -530,52 +615,69 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 figures sit in the opener line itself, so the chapter answers
                 "how many deals, how many close" before the funnel is read. */}
             {data.byDealStage && (
-              <section style={{ marginBottom: "48px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
-                  <div className="ruled-label">{t("data.dealFlow")}</div>
-                  <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+              <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
+                  <div className="ruled-label">
+                    <span aria-hidden style={chapterNum}>{chapterMark()}</span>
+                    {t("data.dealFlow")}
+                  </div>
+                  <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
                       {t("data.liveDeals")}{" "}
-                      <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-ink)" }}>{data.activeDeals}</strong>
+                      <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>{data.activeDeals}</strong>
                     </span>
                     {data.closeRate != null && (
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
                         {t("data.closeRate")}{" "}
-                        <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-up)" }}>{data.closeRate}%</strong>
+                        <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-up)" }}>{data.closeRate}%</strong>
                       </span>
                     )}
                   </div>
                 </div>
-                <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "10px" }}>
-                  {DEAL_STAGES.map(({ key, color }, idx) => {
-                    const n = data.byDealStage[key] ?? 0;
-                    const max = Math.max(...Object.values(data.byDealStage), 1);
-                    return (
-                      <div key={key} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 12px" }}>
-                        {/* Numbered rail: five tiles in a grid read as five
-                            equal facts; the 01-05 says they are one sequence,
-                            read left to right, ending in the two outcomes. */}
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", marginRight: "6px" }}>{`0${idx + 1}`}</span>
-                          {t(`data.stage_${key}`)}
-                        </p>
-                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink)", marginBottom: "10px" }}>{n}</p>
-                        <div style={{ height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
-                          <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
+                {/* The funnel as an open strip, not a boxed grid: five
+                    columns split by vertical hairlines, each opened by its
+                    own overline rule, sitting directly on the paper. The
+                    25px crop trick handles every wrap state -- five across
+                    on desktop, a stacked funnel at phone widths -- without
+                    a media query. */}
+                <div style={{ overflow: "hidden" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", rowGap: "32px", marginLeft: "-25px" }}>
+                    {DEAL_STAGES.map(({ key, color }, idx) => {
+                      const n = data.byDealStage[key] ?? 0;
+                      const max = Math.max(...Object.values(data.byDealStage), 1);
+                      return (
+                        <div key={key} style={{ flex: "1 1 150px", minWidth: 0, display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule-dark)", borderLeft: "1px solid var(--cr-rule)", padding: "12px 24px 0" }}>
+                          {/* Numbered rail: the 01-05 says these are one
+                              sequence, read left to right, ending in the two
+                              outcomes. */}
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
+                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", marginRight: "6px" }}>{`0${idx + 1}`}</span>
+                            {t(`data.stage_${key}`)}
+                          </p>
+                          {/* Same figure size as the supporting totals above:
+                              one voice for every second-rank number. The
+                              meter pins to the bottom so the five bars align
+                              even when a stage name wraps. */}
+                          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontVariantNumeric: "tabular-nums", fontSize: "clamp(20px, 1.4vw + 12px, 28px)", lineHeight: 1, color: "var(--cr-ink)", marginBottom: "12px" }}>{n}</p>
+                          {/* The track is capped at a fixed width: when the
+                              strip wraps, cells differ in width, and a
+                              percentage of the cell would give the same count
+                              a longer bar on a wider row. */}
+                          <div style={{ height: "2px", maxWidth: "120px", background: "var(--cr-rule)", overflow: "hidden", marginTop: "auto" }}>
+                            <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {data.closedCurrencies?.length > 1 && (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "14px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "12px" }}>
                     {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
                   </p>
                 )}
-                </div>
               </section>
             )}
 
@@ -584,16 +686,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 first stat card counts -- by industry and by stage. The opener
                 reuses that stat's key, which also names the unit behind every
                 figure in this chapter: each count is a number of startups. */}
-            <section style={{ marginBottom: "48px" }}>
-              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("data.startups")}</div>
-              <div className="grid-half-stack" style={{ gap: "20px" }}>
+            <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
+              <div className="ruled-label" style={{ marginBottom: "24px" }}>
+                <span aria-hidden style={chapterNum}>{chapterMark()}</span>
+                {t("data.startups")}
+              </div>
+              <div className="grid-half-stack" style={{ gap: "24px" }}>
 
-              {/* Industry breakdown */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-                  <BarChart3 style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.industryBreakdown")}</h3>
-                </div>
+              {/* Industry breakdown. The panel titles drop their pictograms:
+                  a small-caps label over a hairline is the house column
+                  header, and four different icons in copper said nothing the
+                  words did not. */}
+              <div style={plate}>
+                <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)", paddingBottom: "8px", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>{t("data.industryBreakdown")}</h3>
                 {industryEntries.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
@@ -615,11 +720,8 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               </div>
 
               {/* Stage breakdown */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-                  <Zap style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.stageBreakdown")}</h3>
-                </div>
+              <div style={plate}>
+                <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)", paddingBottom: "8px", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>{t("data.stageBreakdown")}</h3>
                 {stageEntries.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
                 ) : (
@@ -638,23 +740,26 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 After three chapters of aggregates, the individual listings.
                 The opener reuses the homepage's label for the same content,
                 so the two surfaces speak one vocabulary. */}
-            <section style={{ marginBottom: "48px" }}>
-              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("listings.sectionLabel")}</div>
-              <div className="grid-half-stack" style={{ gap: "20px" }}>
+            <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
+              <div className="ruled-label" style={{ marginBottom: "24px" }}>
+                <span aria-hidden style={chapterNum}>{chapterMark()}</span>
+                {t("listings.sectionLabel")}
+              </div>
+              {/* Two open ledgers, not two boxed cards: the rows and their
+                  hairlines ARE the structure, sitting directly on the paper
+                  the way a report sets its tables. */}
+              <div className="grid-half-stack" style={{ gap: "32px 48px" }}>
 
               {/* Top AI scores */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Brain style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.topAiScores")}</h3>
-                  </div>
-                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("common.viewAll")} →</Link>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
+                  <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)" }}>{t("data.topAiScores")}</h3>
+                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("common.viewAll")} →</Link>
                 </div>
                 {/* One plain-language line saying what the ranking is. The
                     key sat unused in the dictionary; "Top AI Scores" alone
                     told a first-time visitor nothing about what is scored. */}
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", margin: "0 0 14px" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", margin: "0 0 16px" }}>
                   {t("data.topPerforming")}
                 </p>
                 {data.topStartups.length === 0 ? (
@@ -662,17 +767,20 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 ) : (
                   <>
                   {/* A header line names the columns, so the right-hand pill
-                      is identified as the AI score before the first row. */}
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                      is identified as the AI score before the first row. The
+                      2px ink rule over it is the classic yearbook table head:
+                      heavy rule, column names, light rule, then the rows. */}
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: "8px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.company")}</span>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.aiScore")}</span>
                   </div>
+                  {/* Ledger rows: the 01-style mono rail replaces the
+                      monogram tile -- a rank is a number, not a picture --
+                      and .listing-row gives the house hover (paper-3 wash,
+                      copper edge) shared with the startups directory. */}
                   {data.topStartups.map((s, i) => (
-                    <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.topStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink-4)", width: "16px", flexShrink: 0 }}>{i + 1}</span>
-                      <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)" }}>{s.name[0]}</span>
-                      </div>
+                    <Link key={s.slug} href={`/startups/${s.slug}`} className="listing-row" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
+                      <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
                         {/* The bare "$12K" said nothing about what was
@@ -689,29 +797,29 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               </div>
 
               {/* Recent listings */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Activity style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("data.recentListings")}</h3>
-                  </div>
-                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("common.viewAll")} →</Link>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "24px" }}>
+                  <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)" }}>{t("data.recentListings")}</h3>
+                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("common.viewAll")} →</Link>
                 </div>
+
                 {data.recentStartups.length === 0 ? (
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noListingsYet")}</p>
                 ) : (
                   <>
                   {/* The right-hand mono figure is the round being raised;
-                      without a column name it read as any number at all. */}
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                      without a column name it read as any number at all. Same
+                      double-rule table head as the ranking beside it. */}
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: "8px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.company")}</span>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.raising")}</span>
                   </div>
+                  {/* Same ledger voice as the ranking beside it: numbered
+                      rail, name, figures -- the initial-letter tile said
+                      nothing the name does not. */}
                   {data.recentStartups.map((s, i) => (
-                    <Link key={s.slug} href={`/startups/${s.slug}`} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < data.recentStartups.length - 1 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink-3)" }}>{s.name[0]}</span>
-                      </div>
+                    <Link key={s.slug} href={`/startups/${s.slug}`} className="listing-row" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
+                      <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
@@ -728,13 +836,15 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               </div>
             </section>
 
-            {/* CTA */}
-            <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "48px 40px", textAlign: "center" }}>
+            {/* CTA: a closing band, not a card -- hairlines top and bottom,
+                no radius, the diamond as the single ornament. */}
+            <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 5vw, 40px)", textAlign: "center" }}>
+              <div aria-hidden style={{ fontSize: "14px", color: "var(--cr-copper)", marginBottom: "16px", lineHeight: 1 }}>{"✦"}</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", marginBottom: "28px", maxWidth: "380px", margin: "0 auto 28px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
                 {t("data.featuredHereSub")}
               </p>
-              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
+              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
                 {t("data.listFree")} →
               </Link>
             </div>

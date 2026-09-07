@@ -4,7 +4,10 @@ import { useRouter } from "next/navigation";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertCircle, Bookmark, Brain, CheckCircle2, Circle, CreditCard, Crosshair, ExternalLink, Eye, FileText, Handshake, LayoutGrid, Lock, MessageSquare, Settings, TrendingUp, Users, X, Zap } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, Lock, X } from "lucide-react";
+import { Guilloche } from "@/components/ui/Guilloche";
+import { ScoreDial } from "@/components/ui/score-dial";
+import { Sparkline } from "@/components/ui/sparkline";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -48,9 +51,9 @@ type StartupTab = "overview" | "documents" | "ai" | "billing";
 function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   const styles: Record<string, { bg: string; color: string; border: string }> = {
-    active:         { bg: "var(--cr-up-bg)",     color: "var(--cr-up)",      border: "rgba(45,106,79,0.25)" },
-    pending_review: { bg: "rgba(245,158,11,0.08)", color: "#B45309",          border: "rgba(180,83,9,0.25)"  },
-    suspended:      { bg: "var(--cr-down-bg)",   color: "var(--cr-down)",    border: "rgba(180,50,50,0.2)"  },
+    active:         { bg: "var(--cr-up-bg)",     color: "var(--cr-up)",      border: "color-mix(in srgb, var(--cr-up) 25%, transparent)"   },
+    pending_review: { bg: "var(--cr-copper-bg)", color: "var(--cr-copper)",  border: "var(--cr-copper-br)"                                  },
+    suspended:      { bg: "var(--cr-down-bg)",   color: "var(--cr-down)",    border: "color-mix(in srgb, var(--cr-down) 25%, transparent)"  },
     draft:          { bg: "var(--cr-paper-3)",   color: "var(--cr-ink-4)",   border: "var(--cr-rule)"       },
   };
   const labelKeys: Record<string, string> = {
@@ -69,19 +72,33 @@ function StatusBadge({ status }: { status: string }) {
 
 // ── Shared btn styles ─────────────────────────────────────────────────────────
 
+// Secondary: hairline outline pill, ink text. Primary: the one copper fill
+// per view. --cr-band-ink resolves to the light paper tone in both themes,
+// which is what "white on copper" means without a hex literal.
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)",
-  borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
-  fontSize: "13px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer",
+  display: "inline-flex", alignItems: "center", gap: "8px",
+  border: "1px solid var(--cr-paper-4)", background: "transparent",
+  borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+  fontSize: "13px", color: "var(--cr-ink-2)", padding: "7px 16px", cursor: "pointer",
   textDecoration: "none",
 };
 
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  background: "var(--cr-copper)", border: "none", borderRadius: "4px",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-  color: "#fff", padding: "8px 18px", cursor: "pointer", textDecoration: "none",
+  display: "inline-flex", alignItems: "center", gap: "8px",
+  background: "var(--cr-copper)", border: "none",
+  borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+  fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 16px", cursor: "pointer",
+  textDecoration: "none",
+};
+
+// Tertiary: quiet text + arrow. For actions that matter but must not compete
+// with the pills -- four identical pills in a row is noise, not hierarchy.
+const tertiaryBtn: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "5px",
+  background: "transparent", border: "none",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+  fontSize: "12px", color: "var(--cr-copper)", padding: "7px 4px",
+  minHeight: "40px", cursor: "pointer", textDecoration: "none",
 };
 
 // ── Visibility feature rows ───────────────────────────────────────────────────
@@ -137,14 +154,14 @@ function MatchRadar() {
   const types = Object.entries(data.byType).sort((a, b) => b[1] - a[1]).slice(0, 4);
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "6px" }}>
+          <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "12px" }}>
             {t("radar.title")}
           </h3>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-copper)", marginRight: "8px", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-copper)", marginRight: "10px", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
             {t("radar.ofTotal", { total: data.total })}
           </p>
         </div>
@@ -195,17 +212,17 @@ function EngagementPanel() {
   if (!rows.length) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-          {t("engagement.title")}
-        </h3>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "1px", background: "var(--cr-rule)", border: "1px solid var(--cr-rule)", borderRadius: "3px", overflow: "hidden" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
+        {t("engagement.title")}
+      </h3>
+      {/* An instrument strip in miniature: each figure stands on its own
+          hairline tick, no grid of boxed tiles. */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", rowGap: "16px" }}>
         {rows.map(([label, value]) => (
-          <div key={label} style={{ background: "var(--cr-paper-2)", padding: "12px 14px" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", color: "var(--cr-copper)", lineHeight: 1 }}>{value}</div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "6px" }}>{label}</div>
+          <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "2px 16px" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{value}</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "8px" }}>{label}</div>
           </div>
         ))}
       </div>
@@ -232,13 +249,12 @@ function SaversPanel() {
   if (!data || data.count === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-        <Bookmark style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">
           {t("dashboard.whoSaved")}
         </h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{data.count}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
       </div>
 
       {data.locked ? (
@@ -250,8 +266,8 @@ function SaversPanel() {
               <div key={i} style={{ height: "14px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
             ))}
           </div>
-          <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "14px", width: "100%", boxSizing: "border-box" }}>
-            {t("dashboard.upgradeSeeWho")}
+          <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+            {t("dashboard.upgradeSeeWho")} {"→"}
           </Link>
         </>
       ) : (
@@ -300,13 +316,12 @@ function ViewersPanel() {
   if (!data || data.count === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-        <Eye style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">
           {t("dashboard.whoViewed")}
         </h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{data.count}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
       </div>
 
       {data.locked ? (
@@ -316,8 +331,8 @@ function ViewersPanel() {
               <div key={i} style={{ height: "14px", width: `${60 + i * 10}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
             ))}
           </div>
-          <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "14px", width: "100%", boxSizing: "border-box" }}>
-            {t("dashboard.upgradeSeeWho")}
+          <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+            {t("dashboard.upgradeSeeWho")} {"→"}
           </Link>
         </>
       ) : (
@@ -343,24 +358,20 @@ function ViewersPanel() {
 }
 
 /**
- * 30 hairline bars, one per day, oldest left. Pure presentation: no axis, no
- * numbers -- the count above it is the number; this is its shape. Flat-zero
- * histories render nothing rather than an empty ruler.
+ * The 30-day shape under a strip figure: the house sparkline, normalised.
+ * Pure presentation: no axis, no numbers -- the count above it is the number;
+ * this is its shape. Flat-zero histories render nothing rather than an empty
+ * ruler.
  */
 function ViewsSparkline({ series }: { series: number[] }) {
   const max = Math.max(...series);
   if (max === 0) return null;
-  const W = 120, H = 22, bw = W / series.length;
+  // marginTop auto pins the shape to the strip's baseline, so every cell's
+  // sparkline sits on the same line regardless of figure height above it.
   return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden style={{ display: "block", marginTop: "8px" }}>
-      {series.map((v, i) => {
-        const h = v === 0 ? 1 : Math.max(2, (v / max) * H);
-        return (
-          <rect key={i} x={i * bw + 0.5} y={H - h} width={bw - 1} height={h}
-            fill={v === 0 ? "var(--cr-paper-4)" : "var(--cr-copper)"} opacity={v === 0 ? 0.6 : 0.75} rx={0.5} />
-        );
-      })}
-    </svg>
+    <div style={{ marginTop: "auto", paddingTop: "12px" }}>
+      <Sparkline points={series.map((v) => v / max)} width={96} height={20} />
+    </div>
   );
 }
 
@@ -376,11 +387,11 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
   const pctC = Math.min(100, (committed / target) * 100);
   const pctS = Math.min(100 - pctC, (softCircled / target) * 100);
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.raiseProgress")}</h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-          {formatCurrency(committed + softCircled, true)} <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}>/ {formatCurrency(target, true)}</span>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.raiseProgress")}</h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
+          {formatCurrency(committed + softCircled, true)} <span style={{ fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-4)" }}>/ {formatCurrency(target, true)}</span>
         </span>
       </div>
       <div style={{ height: "8px", background: "var(--cr-paper-4)", borderRadius: "4px", overflow: "hidden", display: "flex" }}>
@@ -426,16 +437,16 @@ function RoundControls({ startup }: { startup: Startup }) {
   }
   if (startup.status !== "active") return null;
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "10px" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.roundStatusTitle")}</h3>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.roundStatusTitle")}</h3>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("dashboard.roundStatusHint")}</span>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
         {STATES.map(([v, label]) => (
           <button key={v} disabled={busy} onClick={() => v !== state && save({ roundState: v })} aria-pressed={v === state}
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", borderRadius: "999px", cursor: "pointer",
-              background: v === state ? "var(--cr-copper)" : "var(--cr-paper-3)", color: v === state ? "#fff" : "var(--cr-ink-3)", border: `1px solid ${v === state ? "var(--cr-copper)" : "var(--cr-rule-dark)"}` }}>
+              background: v === state ? "var(--cr-copper)" : "transparent", color: v === state ? "var(--cr-band-ink)" : "var(--cr-ink-3)", border: `1px solid ${v === state ? "var(--cr-copper)" : "var(--cr-paper-4)"}` }}>
             {label}
           </button>
         ))}
@@ -461,8 +472,8 @@ function RaiseFunnel({ views, saves, deals, termSheets, closed }: { views: numbe
   const max = Math.max(1, ...steps.map(([, v]) => v));
   if (views === 0 && deals === 0) return null;
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
-      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("dashboard.funnelTitle")}</h3>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.funnelTitle")}</h3>
       <div style={{ display: "grid", gap: "8px" }}>
         {steps.map(([label, v], i) => {
           const prev = i > 0 ? steps[i - 1][1] : null;
@@ -483,7 +494,7 @@ function RaiseFunnel({ views, saves, deals, termSheets, closed }: { views: numbe
   );
 }
 
-/** B20: the founder's question queue — unanswered first, asker named. */
+/** B20: the founder's question queue -- unanswered first, asker named. */
 function QuestionQueue() {
   const { t } = useTranslation();
   type Q = { id: string; question: string; answer: string | null; answered_at: string | null; is_private: boolean; created_at: string; investor: { slug: string; display_name: string | null; firm_name: string | null } | null };
@@ -505,17 +516,17 @@ function QuestionQueue() {
     } else { notify.error(t("errors.generic")); setDrafts((p) => ({ ...p, [id]: { ...d, busy: false } })); }
   }
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "12px" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.qaQueueTitle")}</h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: open.length ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t("dashboard.qaOpenCount", { count: open.length })}</span>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.qaQueueTitle")}</h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: open.length ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t("dashboard.qaOpenCount", { count: open.length })}</span>
       </div>
-      <div style={{ display: "grid", gap: "10px" }}>
+      <div style={{ display: "grid" }}>
         {open.map((q) => {
           const d = drafts[q.id] ?? { a: "", priv: false };
           const who = q.investor?.display_name || q.investor?.firm_name || t("deals.investorFallback");
           return (
-            <div key={q.id} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
+            <div key={q.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "14px 0" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}><span style={{ color: "var(--cr-copper)", fontWeight: 700 }}>Q&nbsp;</span>{q.question}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
                 {t("startupDetail.askedBy")}{" "}
@@ -526,7 +537,7 @@ function QuestionQueue() {
                 <textarea value={d.a} onChange={(e) => setDrafts((p) => ({ ...p, [q.id]: { ...d, a: e.target.value } }))} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
                   style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 11px", outline: "none", resize: "vertical" }} />
                 <button disabled={!!d.busy || !d.a.trim()} onClick={() => answer(q.id)}
-                  style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+                  style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 16px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
                   {d.busy ? "…" : t("startupDetail.answerSend")}
                 </button>
               </div>
@@ -540,10 +551,11 @@ function QuestionQueue() {
         {answered.length > 0 && (
           <details>
             <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.qaAnsweredCount", { count: answered.length })}</summary>
-            <div style={{ display: "grid", gap: "6px", marginTop: "8px" }}>
+            <div style={{ display: "grid", marginTop: "8px" }}>
+              {/* Answered rows split by rules, not boxes-in-boxes. */}
               {answered.map((q) => (
-                <div key={q.id} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 10px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px" }}>
-                  <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{q.question}</span> — {q.answer}
+                <div key={q.id} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 0", borderTop: "1px solid var(--cr-rule)" }}>
+                  <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{q.question}</span> · {q.answer}
                   {q.is_private && <span style={{ marginLeft: 6, fontSize: "10px", color: "var(--cr-ink-4)" }}>({t("startupDetail.privateAnswer")})</span>}
                 </div>
               ))}
@@ -555,7 +567,7 @@ function QuestionQueue() {
   );
 }
 
-/** B24: NDA & signature roster — who signed what, when. */
+/** B24: NDA & signature roster -- who signed what, when. */
 function NdaRoster() {
   const { t } = useTranslation();
   type Row = { id: string; signedAt: string | null; method: string; version: string | null; ip: string; investor: { slug: string; name: string | null } | null };
@@ -574,12 +586,12 @@ function NdaRoster() {
   }
   const cell: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: "7px 8px", borderBottom: "1px solid var(--cr-rule)", whiteSpace: "nowrap" };
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "10px" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.rosterTitle")}</h3>
-        <button onClick={exportCsv} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>{t("dashboard.exportCsv")}</button>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "12px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.rosterTitle")}</h3>
+        <button onClick={exportCsv} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 12px", cursor: "pointer" }}>{t("dashboard.exportCsv")}</button>
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginBottom: "10px" }}>{t("dashboard.rosterHint")}</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>{t("dashboard.rosterHint")}</p>
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead><tr>{[t("dashboard.rosterType"), t("dashboard.rosterParty"), t("dashboard.rosterWhen"), t("dashboard.rosterMethod"), "IP"].map((h) => <th key={h} style={{ ...cell, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", textAlign: "left" }}>{h}</th>)}</tr></thead>
@@ -630,7 +642,7 @@ function TargetsPanel() {
   const STATUS_STYLE: Record<string, { label: string; color: string }> = {
     to_contact: { label: "dashboard.tsToContact", color: "var(--cr-ink-4)"  },
     contacted:  { label: "dashboard.tsContacted", color: "var(--cr-copper)" },
-    replied:    { label: "dashboard.tsReplied",   color: "var(--cr-up)"     },
+    replied:    { label: "dashboard.tsReplied",   color: "var(--verdigris)" },
     passed:     { label: "dashboard.tsPassed",    color: "var(--cr-down)"   },
   };
 
@@ -644,13 +656,12 @@ function TargetsPanel() {
   if (!targets || targets.length === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-        <Crosshair style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">
           {t("dashboard.yourTargets")}
         </h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{targets.length}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{targets.length}</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {targets.map((tg) => (
@@ -729,7 +740,7 @@ function UpdateComposer() {
     const j = await res?.json().catch(() => ({}));
     setDrafting(false);
     if (!res?.ok) { notify.error(j?.error || t("errors.generic")); return; }
-    // A draft never overwrites typing — it fills the empty seat only.
+    // A draft never overwrites typing -- it fills the empty seat only.
     if (!body.trim()) setBody(j.draft);
     else setBody(b => b + "\n\n" + j.draft);
     if (!title.trim()) setTitle(t("dashboard.updDraftTitle"));
@@ -769,15 +780,12 @@ function UpdateComposer() {
   const AUD_KEY: Record<string, string> = { watchers: "dashboard.audWatchers", deals: "dashboard.audDeals", all: "dashboard.audAll" };
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Zap style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.postUpdate")}</h3>
-        </div>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.postUpdate")}</h3>
         {!open && (
           <button onClick={() => setOpen(true)}
-            style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 14px", cursor: "pointer" }}>
+            style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 16px", cursor: "pointer" }}>
             {t("dashboard.postUpdate")}
           </button>
         )}
@@ -797,18 +805,18 @@ function UpdateComposer() {
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginRight: 4 }}>{t("dashboard.audienceLabel")}</span>
             {(["all", "watchers", "deals"] as const).map((a) => (
               <button key={a} type="button" onClick={() => setAudience(a)} aria-pressed={audience === a}
-                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 10px", borderRadius: "999px", cursor: "pointer", background: audience === a ? "var(--cr-copper)" : "var(--cr-paper-3)", color: audience === a ? "#fff" : "var(--cr-ink-3)", border: `1px solid ${audience === a ? "var(--cr-copper)" : "var(--cr-rule-dark)"}` }}>
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 12px", borderRadius: "999px", cursor: "pointer", background: audience === a ? "var(--cr-copper)" : "transparent", color: audience === a ? "var(--cr-band-ink)" : "var(--cr-ink-3)", border: `1px solid ${audience === a ? "var(--cr-copper)" : "var(--cr-paper-4)"}` }}>
                 {t(AUD_KEY[a])}
               </button>
             ))}
           </div>
           <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
             <button onClick={() => setOpen(false)}
-              style={{ border: "1px solid var(--cr-rule-dark)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", padding: "8px 14px", cursor: "pointer" }}>
+              style={{ border: "1px solid var(--cr-paper-4)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 16px", cursor: "pointer" }}>
               {t("common.cancel")}
             </button>
             <button onClick={publish} disabled={busy || !title.trim() || !body.trim()}
-              style={{ border: "none", background: "var(--cr-copper)", color: "#fff", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "8px 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
+              style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "8px 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
               {busy ? t("common.saving") : t("dashboard.updPost")}
             </button>
           </div>
@@ -817,9 +825,10 @@ function UpdateComposer() {
       {history.length > 0 && (
         <details style={{ marginTop: "14px" }}>
           <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.updHistory", { count: history.length })}</summary>
-          <div style={{ display: "grid", gap: "8px", marginTop: "10px" }}>
+          {/* History rows split by rules -- no boxes-in-boxes inside a card. */}
+          <div style={{ display: "grid", marginTop: "8px" }}>
             {history.map((u) => (
-              <div key={u.id} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px 12px" }}>
+              <div key={u.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "12px 0" }}>
                 {editing?.id === u.id ? (
                   <div style={{ display: "grid", gap: "6px" }}>
                     <input value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} maxLength={150}
@@ -827,8 +836,8 @@ function UpdateComposer() {
                     <textarea value={editing.body} onChange={(e) => setEditing({ ...editing, body: e.target.value })} maxLength={5000} rows={3}
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
                     <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                      <button onClick={() => setEditing(null)} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>{t("common.cancel")}</button>
-                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "#fff", padding: "5px 12px", cursor: "pointer" }}>{t("common.save")}</button>
+                      <button onClick={() => setEditing(null)} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 12px", cursor: "pointer" }}>{t("common.cancel")}</button>
+                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", padding: "5px 14px", cursor: "pointer" }}>{t("common.save")}</button>
                     </div>
                   </div>
                 ) : (
@@ -866,11 +875,8 @@ function DocAnalyticsPanel() {
   if (!data || data.docs.length === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-        <FileText style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.docAnalytics")}</h3>
-      </div>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+      <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.docAnalytics")}</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {data.docs.map((d) => (
           <div key={d.id}>
@@ -903,7 +909,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
 
-  // Arrival notices from onboarding/checkout. Read once from the URL —
+  // Arrival notices from onboarding/checkout. Read once from the URL --
   // welcome=1 greets, billing=soon explains why a paid pick landed on Free
   // (the alternative was bouncing founders to /pricing, where re-pressing
   // "select plan" once duplicated their listing on every press).
@@ -973,12 +979,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   // ── No startup yet ──
   if (!startup) {
     return (
-      <main style={{ background: "var(--cr-paper)", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "60px 24px" }}>
-        <div style={{ width: 56, height: 56, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
-          <LayoutGrid style={{ width: 24, height: 24, color: "var(--cr-ink-4)" }} />
-        </div>
+      <main style={{ background: "var(--cr-paper)", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "64px 24px" }}>
+        {/* One diamond, one sentence, one action -- the house empty state. */}
+        <span aria-hidden style={{ fontSize: "20px", color: "var(--cr-copper)", marginBottom: "24px" }}>{"✦"}</span>
         <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "28px", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>{t("dashboard.setUpProfile")}</h2>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "400px", marginBottom: "28px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "400px", marginBottom: "24px" }}>
           {t("dashboard.setUpProfileSub")}
         </p>
         <Link href="/onboarding/startup" style={primaryBtn}>{t("dashboard.createYourProfile")}</Link>
@@ -1014,54 +1019,58 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
       )}
 
       {/* ── Header ── */}
-      <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+      <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", position: "relative", overflow: "hidden" }}>
+        {/* Banknote texture, barely there -- the header says "capital" once. */}
+        <div aria-hidden style={{ position: "absolute", top: "-140px", right: "-100px", width: "460px", height: "460px", color: "var(--cr-ink)", pointerEvents: "none" }}>
+          <Guilloche opacity={0.05} />
+        </div>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", position: "relative" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.startupDashboard")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(26px, 4vw, 34px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "10px" }}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.startupDashboard")}</div>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>
               {startup.name}
             </h1>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
               <StatusBadge status={startup.status} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>
                 {t("dashboard.tier", { tier })}
               </span>
             </div>
           </div>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
             <Link href={`/startups/${startup.slug}`} target="_blank" style={outlineBtn}>
-              <ExternalLink style={{ width: 12, height: 12 }} /> {t("dashboard.viewListing")}
-            </Link>
-            {/* The unlocked owner view above lies by omission: it never shows
-                what a real investor meets. This one does — tier zeroed,
-                documents locked, upgrade prompts visible. */}
-            <Link href={`/startups/${startup.slug}?preview=investor`} target="_blank" style={outlineBtn}>
-              <Eye style={{ width: 12, height: 12 }} /> {t("preview.open")}
-            </Link>
-            <Link href={`/startups/${startup.slug}/one-pager`} target="_blank" style={outlineBtn}>
-              <FileText style={{ width: 12, height: 12 }} /> {t("onePager.open")}
+              {t("dashboard.viewListing")}
             </Link>
             <Link href="/dashboard/startup/edit" style={outlineBtn}>
-              <Settings style={{ width: 12, height: 12 }} /> {t("dashboard.editProfile")}
+              {t("dashboard.editProfile")}
+            </Link>
+            {/* The unlocked owner view above lies by omission: it never shows
+                what a real investor meets. This one does -- tier zeroed,
+                documents locked, upgrade prompts visible. */}
+            <Link href={`/startups/${startup.slug}?preview=investor`} target="_blank" style={tertiaryBtn}>
+              {t("preview.open")} <span aria-hidden>{"→"}</span>
+            </Link>
+            <Link href={`/startups/${startup.slug}/one-pager`} target="_blank" style={tertiaryBtn}>
+              {t("onePager.open")} <span aria-hidden>{"→"}</span>
             </Link>
           </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 40px 64px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "32px 32px 64px" }}>
 
-        {/* Listing status banner — one for every state, always at the top. */}
+        {/* Listing status banner -- one for every state, always at the top. */}
         {startup.status === "pending_review" && (
-          <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(180,83,9,0.2)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
-            <AlertCircle style={{ width: 16, height: 16, color: "#B45309", flexShrink: 0 }} />
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
             <div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "#B45309" }}>{t("dashboard.profileUnderReview")}</p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "#92400E" }}>{t("dashboard.reviewNote")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.profileUnderReview")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.reviewNote")}</p>
             </div>
           </div>
         )}
         {startup.status === "draft" && rejectionReason && (
-          <div style={{ background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.25)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+          <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0, marginTop: 2 }} />
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusRejectedTitle")}</p>
@@ -1071,24 +1080,26 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           </div>
         )}
         {startup.status === "draft" && !rejectionReason && (
-          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 200 }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.statusDraftTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusDraftBody")}</p>
             </div>
-            <Link href="/dashboard/startup/edit" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", background: "var(--cr-copper)", padding: "8px 14px", borderRadius: "4px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
+            <Link href="/dashboard/startup/edit" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", background: "var(--cr-copper)", padding: "8px 16px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
           </div>
         )}
         {startup.status === "active" && (
-          <div style={{ background: "var(--cr-up-bg)", border: "1px solid rgba(45,106,79,0.25)", borderRadius: "4px", padding: "12px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-            <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cr-up)", boxShadow: "0 0 0 4px rgba(45,106,79,0.15)", flexShrink: 0 }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-up)", flex: 1, minWidth: 160 }}>{t("dashboard.statusLiveTitle")}</p>
-            <Link href={`/startups/${startup.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-up)", textDecoration: "none" }}>{t("dashboard.viewPublicListing")} →</Link>
+          /* Live = a matured state, so the accent is verdigris -- green keeps
+             meaning money direction and nothing else. */
+          <div style={{ background: "color-mix(in srgb, var(--verdigris) 7%, transparent)", border: "1px solid color-mix(in srgb, var(--verdigris) 25%, transparent)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--verdigris)", boxShadow: "0 0 0 4px color-mix(in srgb, var(--verdigris) 15%, transparent)", flexShrink: 0 }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--verdigris)", flex: 1, minWidth: 160 }}>{t("dashboard.statusLiveTitle")}</p>
+            <Link href={`/startups/${startup.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--verdigris)", textDecoration: "none" }}>{t("dashboard.viewPublicListing")} →</Link>
           </div>
         )}
         {startup.status === "suspended" && (
-          <div style={{ background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.25)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0 }} />
             <div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusSuspendedTitle")}</p>
@@ -1097,52 +1108,62 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           </div>
         )}
 
-        {/* Stats strip */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
-          {[
-            { label: t("dashboard.profileViews"), val: analytics.views,                Icon: Eye,           series: analytics.viewSeries },
-            { label: t("dashboard.investorSaves"), val: analytics.saves,               Icon: Bookmark,      series: analytics.saveSeries },
-            { label: t("dashboard.activeDeals"),   val: analytics.deals,               Icon: Handshake,     series: analytics.dealSeries, href: "/deals" },
-            { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", Icon: TrendingUp, info: "glossary.aiScore" },
-          ].map(({ label, val, Icon, series, href, info }: { label: string; val: number | string; Icon: typeof Eye; series?: number[]; href?: string; info?: string }) => (
-            <div key={label} onClick={href ? () => router.push(href) : undefined}
-              role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
-              onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
-              style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px", cursor: href ? "pointer" : "default" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+        {/* Instrument strip: one hairline-divided row instead of four boxed
+            cards. Views is the founder's headline figure; the rest sit a size
+            down, sparklines carry each number's 30-day shape, and the AI
+            score reads as an instrument, not another integer. */}
+        <div style={{ borderTop: "1px solid var(--cr-rule-dark)", borderBottom: "1px solid var(--cr-rule-dark)", overflow: "hidden", marginBottom: "48px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", marginLeft: "-1px" }}>
+            {[
+              { label: t("dashboard.profileViews"),  val: analytics.views,                series: analytics.viewSeries, headline: true  },
+              { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries, headline: false },
+              { label: t("dashboard.activeDeals"),   val: analytics.deals,                series: analytics.dealSeries, headline: false, href: "/deals" },
+              { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", headline: false, info: "glossary.aiScore", dial: true },
+            ].map(({ label, val, series, href, info, headline, dial }: { label: string; val: number | string; series?: number[]; href?: string; info?: string; headline: boolean; dial?: boolean }) => (
+              <div key={label} onClick={href ? () => router.push(href) : undefined}
+                role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
+                onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
+                style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", cursor: href ? "pointer" : "default", display: "flex", flexDirection: "column" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
                   {label}
                   {/* The founder is being shown a number about their own
                       company that a model produced. They deserve to know what
                       it measures without leaving the page. */}
                   {info && <InfoTip termKey={info} />}
+                  {href && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "6px" }}>→</span>}
                 </p>
-                <Icon style={{ width: 13, height: 13, color: "var(--cr-paper-4)" }} />
+                {dial && typeof val === "number" ? (
+                  <ScoreDial score={val} size={48} />
+                ) : (
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: headline ? 700 : 500, fontSize: headline ? "48px" : "22px", lineHeight: 1, color: headline ? "var(--cr-ink)" : "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums", letterSpacing: headline ? "-0.02em" : undefined }}>{val}</p>
+                )}
+                {series && <ViewsSparkline series={series} />}
               </div>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{val}</p>
-              {series && <ViewsSparkline series={series} />}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* F10: the numbers above say what you have; this says whether it is
             good. Percentiles among same-stage listings that DISCLOSED each
-            metric — never a ranking, so nobody can reverse-engineer who is
+            metric -- never a ranking, so nobody can reverse-engineer who is
             one place above them. */}
         <CapTableCard />
         {benchmarks && benchmarks.entries.length > 0 && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px", marginBottom: "32px", marginTop: "-20px" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+          /* A quiet hairline band, not another card: labels and mono
+             percentiles. Copper marks a strong percentile -- green stays
+             reserved for money direction. */
+          <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "0 0 24px", marginBottom: "48px" }}>
+            <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
               {t("bench.title", { n: benchmarks.cohortSize })}
               <InfoTip termKey="bench.explain" />
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "18px" }}>
+            </h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
               {benchmarks.entries.map(e => (
                 <div key={e.key} style={{ minWidth: "120px" }}>
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", color: e.percentile >= 60 ? "var(--cr-up)" : e.percentile <= 30 ? "var(--cr-ink-3)" : "var(--cr-ink)" }}>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", fontVariantNumeric: "tabular-nums", color: e.percentile >= 60 ? "var(--cr-copper)" : e.percentile <= 30 ? "var(--cr-ink-3)" : "var(--cr-ink)" }}>
                     p{e.percentile}
                   </p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10.5px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
                     {t(`bench.metric.${e.key}`)} · {t("bench.ofPeers", { n: e.peers })}
                   </p>
                 </div>
@@ -1152,7 +1173,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
         )}
 
         {/* Tab bar */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", overflowX: "auto" }}>
+        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "32px", display: "flex", overflowX: "auto" }}>
           {TABS.filter(tab => tab.value !== "ai" || canGrowth).map(({ value, label }) => (
             <button key={value} onClick={() => setActiveTab(value)}
               style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === value ? 600 : 300, fontSize: "13px", color: activeTab === value ? "var(--cr-ink)" : "var(--cr-ink-4)", padding: "10px 18px 9px", whiteSpace: "nowrap", borderBottom: activeTab === value ? "2px solid var(--cr-copper)" : "2px solid transparent", transition: "color 100ms, border-color 100ms" }}>
@@ -1163,20 +1184,22 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* ── Overview ── */}
         {activeTab === "overview" && (
-          <div className="grid-third-stack">
+          /* 24px gap inline: the shared class carries 20px, which is off the
+             4/8/12/16/24 scale -- this surface keeps the rhythm honest. */
+          <div className="grid-third-stack" style={{ gap: "24px" }}>
             {/* Profile completion */}
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "16px" }}>{t("dashboard.profileCompletion")}</h3>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "10px" }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", color: "var(--cr-copper)", lineHeight: 1 }}>{score}</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "18px", color: "var(--cr-ink-4)" }}>%</span>
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+              <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.profileCompletion")}</h3>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "12px" }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{score}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-4)" }}>%</span>
               </div>
               {/* Progress track */}
               <div style={{ height: "3px", background: "var(--cr-paper-4)", borderRadius: "2px", marginBottom: "16px" }}>
                 <div style={{ height: "3px", background: "var(--cr-copper)", borderRadius: "2px", width: `${score}%`, transition: "width 600ms ease" }} />
               </div>
               {missing.length === 0 ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-up)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--verdigris)" }}>
                   <CheckCircle2 style={{ width: 14, height: 14 }} /> {t("dashboard.profileComplete")}
                 </div>
               ) : (
@@ -1184,7 +1207,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   {/* One instruction, not a list of eleven. The heaviest miss
                       is the one worth doing, and it says what it is worth. */}
                   {nextAction && (
-                    <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "10px 12px", marginBottom: "12px" }}>
+                    /* A left rule, not a box-in-box: the copper bar is the
+                       ruled-label motif carrying emphasis inside the card. */
+                    <div style={{ borderLeft: "2px solid var(--cr-copper)", paddingLeft: "12px", marginBottom: "16px" }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "3px" }}>
                         {t("completeness.nextBest")}
                       </p>
@@ -1199,7 +1224,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
                     {missing.slice(0, 5).map((m) => (
                       <div key={m.key} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <Circle style={{ width: 10, height: 10, color: "var(--cr-paper-4)", flexShrink: 0 }} />
+                        <span aria-hidden style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--cr-paper-4)", flexShrink: 0 }} />
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t(m.labelKey)}</span>
                       </div>
                     ))}
@@ -1211,37 +1236,39 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   </div>
                 </>
               )}
-              <Link href="/dashboard/startup/edit" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "36px", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", textDecoration: "none", marginTop: "8px" }}>
+              <Link href="/dashboard/startup/edit" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "40px", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)", textDecoration: "none", marginTop: "8px" }}>
                 {t("dashboard.completeProfile")}
               </Link>
             </div>
 
             {/* Right col */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {/* Quick actions */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "14px" }}>{t("dashboard.quickActions")}</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              {/* Quick actions -- rules divide the grid, not boxes-in-boxes,
+                  and the labels stand without a row of repeated icons. */}
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+                <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.quickActions")}</h3>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--cr-rule)" }}>
                   {[
-                    { href: "/deals",                    Icon: Handshake,     label: t("dashboard.dealPipeline") },
-                    { href: "/dashboard/messages",       Icon: MessageSquare, label: t("dashboard.messages")    },
-                    { href: "/dashboard/startup/edit",   Icon: Settings,      label: t("dashboard.editProfile") },
-                    { href: "/dashboard/team",           Icon: Users,         label: t("team.navLabel")        },
-                    { href: "/pricing",                  Icon: TrendingUp,    label: t("dashboard.upgradePlan") },
-                    { href: `/startups/${startup.slug}`, Icon: ExternalLink,  label: t("dashboard.publicView"), ext: true },
-                  ].map(({ href, Icon, label, ext }) => (
+                    { href: "/deals",                    label: t("dashboard.dealPipeline") },
+                    { href: "/dashboard/messages",       label: t("dashboard.messages")    },
+                    { href: "/dashboard/startup/edit",   label: t("dashboard.editProfile") },
+                    { href: "/dashboard/team",           label: t("team.navLabel")        },
+                    { href: "/pricing",                  label: t("dashboard.upgradePlan") },
+                    { href: `/startups/${startup.slug}`, label: t("dashboard.publicView"), ext: true },
+                  ].map(({ href, label, ext }) => (
                     <Link key={label} href={href} {...(ext ? { target: "_blank" } : {})}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", textDecoration: "none" }}
+                      style={{ display: "flex", alignItems: "center", minHeight: "40px", background: "var(--cr-paper-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", textDecoration: "none" }}
                       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
                       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}>
-                      <Icon style={{ width: 12, height: 12 }} /> {label}
+                      {label}
                     </Link>
                   ))}
                 </div>
               </div>
 
-              {/* Subscription */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+              {/* Subscription -- quiet: the one primary in this column is the
+                  visibility unlock below. */}
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
                 <div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
@@ -1249,23 +1276,25 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   </p>
                 </div>
                 {tier === "free"
-                  ? <Link href="/pricing" style={primaryBtn}>{t("common.upgrade")}</Link>
-                  : viewingAs ? null : <button onClick={openBillingPortal} style={outlineBtn}><CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manage")}</button>}
+                  ? <Link href="/pricing" style={outlineBtn}>{t("common.upgrade")}</Link>
+                  : viewingAs ? null : <button onClick={openBillingPortal} style={outlineBtn}>{t("dashboard.manage")}</button>}
               </div>
 
               {/* Profile visibility */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <Zap style={{ width: 13, height: 13, color: "var(--cr-copper)" }} /> {t("dashboard.profileVisibility")}
-                </h3>
+              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+                <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.profileVisibility")}</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {VIS_ROWS.map((row) => {
                     const unlocked = "always" in row ? true : ("key" in row && row.key === "docs" ? canDocs : canGrowth);
                     return (
                       <div key={row.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          {/* Locked earns its lock; unlocked needs no medal.
+                              A quiet verdigris point in the same 13px slot
+                              keeps the column aligned without a stack of
+                              repeated check icons. */}
                           {unlocked
-                            ? <CheckCircle2 style={{ width: 13, height: 13, color: "var(--cr-up)", flexShrink: 0 }} />
+                            ? <span aria-hidden style={{ width: 13, display: "inline-flex", justifyContent: "center", alignItems: "center", flexShrink: 0 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--verdigris)" }} /></span>
                             : <Lock style={{ width: 13, height: 13, color: "var(--cr-ink-4)", flexShrink: 0 }} />}
                           <span data-tip={t(row.tipKey)} tabIndex={0} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(row.labelKey)}</span>
                         </div>
@@ -1313,27 +1342,25 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* ── Documents ── */}
         {activeTab === "documents" && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>{t("dashboard.uploadedDocuments")}</h3>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+              <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.uploadedDocuments")}</h3>
               <Link href="/dashboard/startup/documents" style={primaryBtn}>
-                <FileText style={{ width: 12, height: 12 }} /> {t("dashboard.manage")}
+                {t("dashboard.manage")}
               </Link>
             </div>
             {startup.documents && startup.documents.length > 0 ? (
               <div>
+                {/* Rows split by rules; no icon tile repeated down the list. */}
                 {startup.documents.map((doc, i) => (
-                  <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 0", borderBottom: i < startup.documents!.length - 1 ? "1px solid var(--cr-rule)" : "none" }}>
+                  <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: i < startup.documents!.length - 1 ? "1px solid var(--cr-rule)" : "none" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <div style={{ width: 34, height: 34, borderRadius: "3px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <FileText style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
-                      </div>
                       <div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{doc.label}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{doc.type.replace(/_/g, " ")}</p>
                       </div>
                       {doc.requires_nda && (
-                        <span style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(180,83,9,0.2)", color: "#B45309", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                           {t("dashboard.ndaRequired")}
                         </span>
                       )}
@@ -1353,15 +1380,12 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           </div>
         )}
 
-        {/* ── AI Feedback — Growth only ── */}
+        {/* ── AI Feedback -- Growth only ── */}
         {activeTab === "ai" && canGrowth && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-              <Brain style={{ width: 20, height: 20, color: "var(--cr-copper)" }} />
-              <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)" }}>{t("dashboard.aiPitchFeedback")}</h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.aiPitchFeedbackSub")}</p>
-              </div>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+            <div style={{ marginBottom: "24px" }}>
+              <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "8px" }}>{t("dashboard.aiPitchFeedback")}</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.aiPitchFeedbackSub")}</p>
             </div>
             {!aiFeedback ? (
               viewingAs ? null : (
@@ -1375,14 +1399,15 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", color: "var(--cr-copper)", lineHeight: 1 }}>{aiFeedback.overall_score}</span>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "18px", color: "var(--cr-ink-4)" }}>/100</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+                {/* Blocks split by rules, not boxes inside the card. */}
+                <div style={{ display: "flex", flexDirection: "column", marginBottom: "24px" }}>
                   {[
                     { key: "clarity",                 label: t("dashboard.fbClarity")     },
                     { key: "market_sizing",           label: t("dashboard.fbMarket")      },
                     { key: "competitive_positioning", label: t("dashboard.fbCompetitive") },
                     { key: "missing_information",     label: t("dashboard.fbMissing")     },
                   ].map(({ key, label }) => (
-                    <div key={key} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px" }}>
+                    <div key={key} style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>{label}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{aiFeedback[key]}</p>
                     </div>
@@ -1396,16 +1421,18 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* ── Billing ── */}
         {activeTab === "billing" && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "20px" }}>{t("dashboard.subscriptionBilling")}</h3>
-            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+            <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "24px" }}>{t("dashboard.subscriptionBilling")}</h3>
+            {/* A rule-divided row, not a colored slab -- copper stays for
+                emphasis, structure is a hairline. */}
+            <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "16px 0", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
               <div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{profile.subscription_status || t("dashboard.statusActive")}</p>
               </div>
               {viewingAs ? null : (
                 <button onClick={openBillingPortal} style={outlineBtn}>
-                  <CreditCard style={{ width: 12, height: 12 }} /> {t("dashboard.manageBilling")}
+                  {t("dashboard.manageBilling")}
                 </button>
               )}
             </div>
@@ -1416,10 +1443,10 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
         )}
 
         {/* F: a founder's best introduction is the investor who passed on
-            them politely. Hidden when an admin is viewing as this founder —
+            them politely. Hidden when an admin is viewing as this founder --
             an invite is theirs to send, not ours. */}
         {!viewingAs && (
-          <div style={{ marginTop: "24px" }}>
+          <div style={{ marginTop: "48px" }}>
             {/* Sharing the round, and finding out whether anybody opened it. */}
             <ShareLinks />
             <InvitePanel defaultRole="investor" />

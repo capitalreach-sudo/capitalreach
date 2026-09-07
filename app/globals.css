@@ -1801,3 +1801,12 @@ body::before {
   body { background: #fff !important; }
   .cert-sheet { width: 100% !important; border: none !important; box-shadow: none !important; }
 }
+
+
+/* The cursor-follow sheen reads green when the business register maps the
+   accent to emerald (Jack: no green hue on the mouse). Business gets a
+   neutral ink sheen instead; editorial keeps its copper. */
+[data-style="business"] .hero-glow {
+  background:
+    radial-gradient(ellipse 60% 45% at var(--glow-x, 50%) var(--glow-y, 38%), color-mix(in srgb, var(--cr-ink) 5%, transparent), transparent 70%);
+}

@@ -29,7 +29,7 @@ const CHIP_ON: React.CSSProperties = {
   ...CHIP, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)",
 };
 
-export function MarketMatcher() {
+export function MarketMatcher({ viewerRole = null }: { viewerRole?: string | null }) {
   const { t } = useTranslation();
   const [stage, setStage] = useState("seed");
   const [industry, setIndustry] = useState("B2B SaaS");
@@ -78,10 +78,11 @@ export function MarketMatcher() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginTop: "12px" }}>
             {t("match.result", { total: result.total })}
           </p>
-          <Link href="/auth/signup?role=startup"
+          <Link
+            href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : viewerRole === "admin" ? "/admin" : "/auth/signup?role=startup"}
             className="btn-copper-shimmer"
             style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "12px 28px", borderRadius: "999px", marginTop: "20px" }}>
-            {t("cta.listStartup")}
+            {viewerRole ? t("hero.ctaDashboard") : t("cta.listStartup")}
           </Link>
         </div>
       </div>

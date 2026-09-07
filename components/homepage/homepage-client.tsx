@@ -267,31 +267,22 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
         </div>
       </section>
 
-      {/* ── 2. INSTRUMENT PANEL ─────────────────────────────── */}
-      {/* The proof strip, machined: guilloche under glass, each figure a
-          gauge with its needle at rest. Bank-note texture, never louder
-          than the numbers. */}
+      {/* ── 2. PROOF STRIP ──────────────────────────────────── */}
       <section
         aria-label={t("hero.proofAria")}
         style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", position: "relative", overflow: "hidden" }}
       >
-        <div aria-hidden style={{ position: "absolute", inset: "-40%", color: "var(--cr-copper)", pointerEvents: "none" }}>
-          <Guilloche className="w-full h-full" seed={3} lines={18} opacity={0.05} />
-        </div>
+        <div className="hero-noise" aria-hidden />
         <div className="max-w-[1200px] mx-auto px-6 md:px-10" style={{ position: "relative" }}>
           <div className="grid grid-cols-3">
-            {proof.map(([value, label, gauge], i) => (
+            {proof.map(([value, label], i) => (
               <div
                 key={label}
                 className="flex flex-col items-center justify-center text-center py-7 md:py-9"
                 style={{ borderLeft: i > 0 ? "1px solid var(--cr-copper-br)" : undefined }}
               >
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
                   {value}
-                </div>
-                {/* The needle: a hairline dial under each figure. */}
-                <div aria-hidden style={{ position: "relative", width: "56px", height: "1px", background: "color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", marginTop: "10px" }}>
-                  <span style={{ position: "absolute", left: `calc(${gauge}% - 1px)`, top: "-3px", width: "2px", height: "7px", background: "var(--cr-copper)" }} />
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>
                   {label}
@@ -373,7 +364,7 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       </section>
 
       {/* ── 3b. WHO'S WAITING ───────────────────────────────── */}
-      <MarketMatcher />
+      <MarketMatcher viewerRole={viewerRole} />
 
       {/* ── 4. TOP LISTINGS (only when there is something to show) ── */}
       {listings.length > 0 && (

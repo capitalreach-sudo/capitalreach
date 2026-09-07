@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StartupCard } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
-import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Eye, Lock, MessageSquare, Search, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { Bookmark, Brain, CheckCircle2, CreditCard, Download, Eye, Lock, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { buildAccessContext, investorCan } from "@/lib/access";
@@ -15,6 +15,9 @@ import { allocationSummary } from "@/lib/round-math";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
+import { Guilloche } from "@/components/ui/Guilloche";
+import { Sparkline } from "@/components/ui/sparkline";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { WatchlistChanges } from "@/components/investor/watchlist-changes";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
@@ -46,19 +49,22 @@ type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
 
 // ── Shared button styles ──────────────────────────────────────────────────────
 
+// Secondary: hairline outline pill, ink text. Primary: the one copper fill
+// per view. --cr-band-ink resolves to the light paper tone in both themes,
+// which is what "white on copper" means without a hex literal.
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
-  border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)",
-  borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
-  fontSize: "13px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer",
+  display: "inline-flex", alignItems: "center", gap: "8px",
+  border: "1px solid var(--cr-paper-4)", background: "transparent",
+  borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+  fontSize: "13px", color: "var(--cr-ink-2)", padding: "8px 16px", cursor: "pointer",
   textDecoration: "none",
 };
 
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "6px",
+  display: "inline-flex", alignItems: "center", gap: "8px",
   background: "var(--cr-copper)", border: "none",
-  borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "13px", color: "#fff", padding: "8px 18px", cursor: "pointer",
+  borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+  fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 16px", cursor: "pointer",
   textDecoration: "none",
 };
 
@@ -90,7 +96,7 @@ const FEATURE_ROWS = [
  * someone to press Save on a one-line thought is how the field goes unused.
  */
 /**
- * D43: allocation for the period — what you meant to deploy, what is spoken
+ * D43: allocation for the period -- what you meant to deploy, what is spoken
  * for, and what is left. The target is yours to set; the rest is computed
  * from your deals so it cannot drift out of date.
  */
@@ -118,7 +124,7 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
   if (summary.target === null && !editing) {
     if (readOnly) return null;
     return (
-      <div style={{ background: "var(--cr-paper-2)", border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px", marginBottom: "16px" }}>
+      <div style={{ background: "var(--cr-paper-2)", border: "1px dashed var(--cr-rule-dark)", borderRadius: "var(--radius)", padding: "12px 16px", marginBottom: "24px" }}>
         <button onClick={() => setEditing(true)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}>
           + {t("allocation.set")}
         </button>
@@ -128,9 +134,9 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
   }
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("allocation.title")}<InfoTip termKey="glossary.allocation" /></h3>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px", marginBottom: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+        <div className="ruled-label">{t("allocation.title")}<InfoTip termKey="glossary.allocation" /></div>
         {editing ? (
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} inputMode="decimal" placeholder={t("allocation.targetPh")} autoFocus
@@ -141,19 +147,30 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
           </div>
         ) : (
           <button onClick={() => { setDraft(String(target ?? "")); setEditing(true); }} disabled={readOnly}
-            style={{ background: "none", border: "none", padding: 0, cursor: readOnly ? "default" : "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "var(--cr-ink-3)" }}>
+            style={{ background: "none", border: "none", padding: 0, cursor: readOnly ? "default" : "pointer", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 14, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
             {formatMoney(summary.target ?? 0, cur, { compact: true })}{period ? ` · ${period}` : ""}
           </button>
         )}
       </div>
-      <div style={{ display: "flex", height: 10, borderRadius: 5, overflow: "hidden", background: "var(--cr-paper-4)" }}>
-        <div style={{ width: `${summary.target ? Math.min(100, (deployed / summary.target) * 100) : 0}%`, background: "var(--cr-up)" }} />
-        <div style={{ width: `${summary.target ? Math.min(100, (committed / summary.target) * 100) : 0}%`, background: "var(--cr-copper)" }} />
+      {/* Deployed is the solid copper, committed the lighter tint of the same
+          hue -- one scale of certainty, not two competing colors. Green stays
+          reserved for money direction elsewhere on the page. */}
+      <div style={{ display: "flex", height: 6, borderRadius: 3, overflow: "hidden", background: "var(--cr-paper-3)" }}>
+        <div style={{ width: `${summary.target ? Math.min(100, (deployed / summary.target) * 100) : 0}%`, background: "var(--cr-copper)" }} />
+        <div style={{ width: `${summary.target ? Math.min(100, (committed / summary.target) * 100) : 0}%`, background: "color-mix(in srgb, var(--cr-copper) 40%, transparent)" }} />
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", marginTop: 8, fontFamily: "'DM Sans', sans-serif", fontSize: 11.5 }}>
-        <span style={{ color: "var(--cr-up)" }}>● {t("allocation.deployed")} {formatMoney(deployed, cur, { compact: true })}</span>
-        <span style={{ color: "var(--cr-copper)" }}>● {t("allocation.committed")} {formatMoney(committed, cur, { compact: true })}</span>
-        <span style={{ color: "var(--cr-ink-4)" }}>● {t("allocation.remaining")} {summary.remaining === null ? "—" : formatMoney(summary.remaining, cur, { compact: true })}</span>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: 8, alignItems: "baseline" }}>
+        {([
+          [t("allocation.deployed"), formatMoney(deployed, cur, { compact: true }), "var(--cr-copper)"],
+          [t("allocation.committed"), formatMoney(committed, cur, { compact: true }), "color-mix(in srgb, var(--cr-copper) 40%, transparent)"],
+          [t("allocation.remaining"), summary.remaining === null ? "—" : formatMoney(summary.remaining, cur, { compact: true }), "var(--cr-paper-3)"],
+        ] as const).map(([label, val, swatch]) => (
+          <span key={label} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px" }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: swatch, alignSelf: "center", flexShrink: 0 }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{label}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{val}</span>
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -183,24 +200,34 @@ function WhoViewedYou() {
 
   if (!data || (data.views === 0 && data.interest === 0 && data.conversations === 0)) return null;
 
+  // The daily view series arrives with the counts; normalised for the kit
+  // sparkline, which draws itself in beside the headline figure. Guarded,
+  // since nothing rendered this field before now.
+  const series = Array.isArray(data.series) ? data.series : [];
+  const seriesMax = Math.max(1, ...series);
+
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-          {t("engagement.whoViewedYou")}
-        </h3>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "16px" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px", marginBottom: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
+        <div className="ruled-label">{t("engagement.whoViewedYou")}</div>
+        {/* One headline figure (views, copper); the rest support in ink. */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: "24px" }}>
+          {series.length > 3 && (
+            <span aria-hidden style={{ alignSelf: "center" }}>
+              <Sparkline points={series.map((v) => v / seriesMax)} width={96} height={20} />
+            </span>
+          )}
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>{data.views}</span>{" "}{t("engagement.views30d")}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "24px", color: "var(--cr-copper)", fontVariantNumeric: "tabular-nums" }}>{data.views}</span>{" "}{t("engagement.views30d")}
           </span>
           {data.interest > 0 && (
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>{data.interest}</span>{" "}{t("engagement.interestedInYou")}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{data.interest}</span>{" "}{t("engagement.interestedInYou")}
             </span>
           )}
           {data.conversations > 0 && (
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>{data.conversations}</span>{" "}{t("engagement.conversations30d")}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{data.conversations}</span>{" "}{t("engagement.conversations30d")}
             </span>
           )}
         </div>
@@ -220,7 +247,7 @@ function WhoViewedYou() {
       ) : data.viewers.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column" }}>
           {data.viewers.slice(0, 8).map((v, i) => (
-            <div key={`${v.slug}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", padding: "7px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+            <div key={`${v.slug}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "8px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
               {v.slug ? (
                 <Link href={v.kind === "investor" ? `/investors/${v.slug}` : `/startups/${v.slug}`}
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", textDecoration: "none" }}>
@@ -249,13 +276,15 @@ function SharedWithYou() {
   }, []);
   if (received.length === 0) return null;
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
-      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("coInvestors.sharedTitle", { count: received.length })}</h3>
-      <div style={{ display: "grid", gap: "8px" }}>
-        {received.map((sh) => (
-          <div key={sh.id} style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px 12px" }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px", marginBottom: "24px" }}>
+      <div className="ruled-label" style={{ marginBottom: "4px" }}>{t("coInvestors.sharedTitle", { count: received.length })}</div>
+      {/* Inside a card, structure is rules: shares separate with hairlines,
+          not boxes-in-boxes. */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {received.map((sh, i) => (
+          <div key={sh.id} style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-              <Link href={`/startups/${sh.startup?.slug ?? ""}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
+              <Link href={`/startups/${sh.startup?.slug ?? ""}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "14px", color: "var(--cr-ink)", textDecoration: "none" }}>
                 {sh.startup?.name ?? "—"}
               </Link>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{formatDate(sh.created_at)}</span>
@@ -287,9 +316,12 @@ const WL_KEY: Record<WlStatus, string> = {
   watching: "watchlist.stWatching", reviewing: "watchlist.stReviewing",
   contacted: "watchlist.stContacted", passed: "watchlist.stPassed",
 };
+// Green/red are reserved for money direction, so triage states speak in the
+// house accents instead: copper = in motion, verdigris = success/contacted,
+// ink shades for the resting states (a passed card also dims to 0.6).
 const WL_COLOR: Record<WlStatus, string> = {
   watching: "var(--cr-ink-4)", reviewing: "var(--cr-copper)",
-  contacted: "var(--cr-up)", passed: "var(--cr-down)",
+  contacted: "var(--verdigris)", passed: "var(--cr-ink-3)",
 };
 
 function WatchlistTriage({ startupId, status, priority, onChange }: { startupId: string; status: WlStatus; priority: number; onChange: (patch: { status?: WlStatus; priority?: number }) => void }) {
@@ -315,7 +347,7 @@ function WatchlistTriage({ startupId, status, priority, onChange }: { startupId:
         {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
       </select>
       {/* Priority: three dots, click to set, click the current one to clear. */}
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "8px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
       <div style={{ display: "inline-flex", gap: "3px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
         {[1, 2, 3].map((n) => (
           <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
@@ -426,14 +458,12 @@ function RecentlyViewedStrip() {
   if (rows.length === 0) return null;
 
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-        <Eye style={{ width: 11, height: 11 }} /> {t("dashboard.jumpBackIn")}
-      </p>
+    <div style={{ marginBottom: "24px" }}>
+      <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.jumpBackIn")}</div>
       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
         {rows.map((r) => (
           <Link key={r.slug} href={`/startups/${r.slug}`}
-            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "6px 12px", textDecoration: "none" }}>
+            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "8px 12px", textDecoration: "none" }}>
             {r.name}
           </Link>
         ))}
@@ -485,15 +515,14 @@ function SavedSearchManager() {
   }
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "20px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-        <Search style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.savedSearches")}</h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink-4)" }}>{rows.length}</span>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px", marginBottom: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "4px" }}>
+        <div className="ruled-label">{t("dashboard.savedSearches")}</div>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>{rows.length}</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {rows.map((r) => (
-          <div key={r.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {rows.map((r, i) => (
+          <div key={r.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "8px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
             <div style={{ minWidth: 0 }}>
               <Link href={`/startups?${toQuery(r.filters)}`}
                 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
@@ -652,36 +681,38 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
       )}
 
       {/* ── Header ── */}
-      <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+      <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", position: "relative", overflow: "hidden" }}>
+        {/* Banknote texture, barely there -- same touch as the founder header,
+            so both sides of the marketplace open on the same note. */}
+        <div aria-hidden style={{ position: "absolute", top: "-140px", right: "-100px", width: "460px", height: "460px", color: "var(--cr-ink)", pointerEvents: "none" }}>
+          <Guilloche opacity={0.05} />
+        </div>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", position: "relative" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("dashboard.investorDashboard")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "6px" }}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.investorDashboard")}</div>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>
               {profile.full_name || t("dashboard.yourPortfolio")}
             </h1>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
+            {/* One diamond -- the house glyph -- marks the membership line,
+                the same rhythm as the founder header's badge row. */}
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "11px" }}>✦</span>
               {t("dashboard.membership", { tier: tierLabel })}
             </p>
           </div>
           {/* Hidden in view-as: these navigate the ADMIN's own surfaces and
               silently leave the impersonation -- the banner owns the exit. */}
           {!viewingAs && <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <Link href="/dashboard/messages" style={outlineBtn}>
-              <MessageSquare style={{ width: 13, height: 13 }} /> {t("dashboard.messages")}
-            </Link>
-            <Link href="/dashboard/team" style={outlineBtn}>
-              <Users style={{ width: 13, height: 13 }} /> {t("team.navLabel")}
-            </Link>
-            <Link href="/dashboard/investor/settings" style={outlineBtn}>
-              <Settings style={{ width: 13, height: 13 }} /> {t("dashboard.settings")}
-            </Link>
+            <Link href="/dashboard/messages" style={outlineBtn}>{t("dashboard.messages")}</Link>
+            <Link href="/dashboard/team" style={outlineBtn}>{t("team.navLabel")}</Link>
+            <Link href="/dashboard/investor/settings" style={outlineBtn}>{t("dashboard.settings")}</Link>
           </div>}
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 40px 64px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "32px 32px 64px" }}>
 
-        {/* Thesis completeness — the fields that drive matching. Shown only
+        {/* Thesis completeness -- the fields that drive matching. Shown only
             while something is missing; each gap links straight to Settings. */}
         {(() => {
           const gaps: string[] = [];
@@ -693,19 +724,22 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           const total = 5, done = total - gaps.length, pct = Math.round((done / total) * 100);
           if (gaps.length === 0) return null;
           return (
-            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "20px" }}>
+            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "var(--radius)", padding: "16px 24px", marginBottom: "24px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
                 <div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.thesisBannerTitle")}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "2px" }}>{t("dashboard.thesisBannerBody")}</p>
                 </div>
-                <Link href="/dashboard/investor/settings" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "#fff", background: "var(--cr-copper)", padding: "8px 14px", borderRadius: "4px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.completeProfile")} →</Link>
+                {/* Tertiary, not a second copper pill: the tinted banner
+                    already carries the emphasis, and the one primary action
+                    per view lives further down the page. */}
+                <Link href="/dashboard/investor/settings" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.completeProfile")} →</Link>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px" }}>
-                <div style={{ flex: 1, height: "5px", background: "var(--cr-copper-bg)", borderRadius: "3px", overflow: "hidden" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "12px" }}>
+                <div style={{ flex: 1, height: "4px", background: "color-mix(in srgb, var(--cr-copper) 15%, transparent)", borderRadius: "2px", overflow: "hidden" }}>
                   <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-copper)" }} />
                 </div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-copper)", fontWeight: 600 }}>{pct}%</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-copper)", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
               </div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)", marginTop: "8px" }}>
                 {t("dashboard.thesisMissing")}: {gaps.join(" · ")}
@@ -714,36 +748,41 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           );
         })()}
 
-        {/* Stats strip */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
+        {/* Instrument strip: one hairline-divided row instead of four boxed
+            cards. The watchlist count is the headline figure; the rest sit a
+            size down; closed deals take verdigris once anything has matured. */}
+        <div style={{ borderTop: "1px solid var(--cr-rule-dark)", borderBottom: "1px solid var(--cr-rule-dark)", overflow: "hidden", marginBottom: "48px" }}>
           {/* The deal counts were plain divs, so the two most important numbers
               on an investor's home screen -- how many deals are live, how many
               closed -- led nowhere, and the Deal Portal was reachable only
               through the top nav. They link now; the other two stay inert
               because their content is on this page already. */}
-          {[
-            { label: t("dashboard.watchlist"),   val: watchlist.length,  Icon: Bookmark,    href: null },
-            { label: t("dashboard.activeDeals"), val: activeDeals,       Icon: TrendingUp,  href: "/deals" },
-            { label: t("dashboard.closedDeals"), val: closedDeals,       Icon: CheckCircle2, href: "/deals" },
-            { label: t("dashboard.aiReports"),   val: reports.length,    Icon: Brain,       href: null },
-          ].map(({ label, val, Icon, href }) => {
-            const card = (
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px", height: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
-                  <Icon style={{ width: 14, height: 14, color: "var(--cr-paper-4)" }} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", marginLeft: "-1px" }}>
+            {[
+              { label: t("dashboard.watchlist"),   val: watchlist.length,  href: null,     headline: true,  color: "var(--cr-ink)" },
+              { label: t("dashboard.activeDeals"), val: activeDeals,       href: "/deals", headline: false, color: "var(--cr-ink-2)" },
+              { label: t("dashboard.closedDeals"), val: closedDeals,       href: "/deals", headline: false, color: closedDeals > 0 ? "var(--verdigris)" : "var(--cr-ink-2)" },
+              { label: t("dashboard.aiReports"),   val: reports.length,    href: null,     headline: false, color: "var(--cr-ink-2)" },
+            ].map(({ label, val, href, headline, color }) => {
+              const cell = (
+                <div style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", height: "100%" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
+                    {label}{href && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "6px" }}>→</span>}
+                  </p>
+                  {/* Same scale as the founder strip: 40px headline, the rest
+                      a size down at 500 -- one obvious number per strip. */}
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: headline ? 700 : 500, fontSize: headline ? "40px" : "22px", lineHeight: 1.05, color, fontVariantNumeric: "tabular-nums" }}>{val}</p>
                 </div>
-                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{val}</p>
-              </div>
-            );
-            return href
-              ? <Link key={label} href={href} style={{ textDecoration: "none", display: "block" }}>{card}</Link>
-              : <div key={label}>{card}</div>;
-          })}
+              );
+              return href
+                ? <Link key={label} href={href} style={{ textDecoration: "none", display: "block" }}>{cell}</Link>
+                : <div key={label}>{cell}</div>;
+            })}
+          </div>
         </div>
 
         {/* Tab bar */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", gap: 0, overflowX: "auto" }}>
+        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "32px", display: "flex", gap: 0, overflowX: "auto" }}>
           {TABS.map(({ value, label }) => (
             <button key={value} onClick={() => setActiveTab(value)}
               style={{
@@ -772,17 +811,22 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             {allocation && caps.allocationTracking && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
             <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-                {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}
-              </p>
+            {/* The saved list is its own section, so it opens the house way:
+                ruled label, quiet count beside it, the one control at right. */}
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "32px 0 16px", flexWrap: "wrap", gap: "12px" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                <div className="ruled-label">{t("dashboard.watchlist")}</div>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+                  {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}
+                </span>
+              </div>
               {canExport && watchlist.length > 0 && (
                 <button onClick={exportWatchlist} style={outlineBtn}>
                   <Download style={{ width: 12, height: 12 }} /> {t("dashboard.exportCsv")}
                 </button>
               )}
             </div>
-            {/* Triage filter — counts come from live local state. */}
+            {/* Triage filter -- counts come from live local state. */}
             {watchlist.length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "16px" }}>
                 {(["all", ...WL_STATUSES] as const).map((f) => {
@@ -790,26 +834,24 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                   const active = wlFilter === f;
                   return (
                     <button key={f} onClick={() => setWlFilter(f)} aria-pressed={active}
-                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "5px 11px", borderRadius: "999px", cursor: "pointer",
-                        background: active ? "var(--cr-copper)" : "var(--cr-paper-2)", color: active ? "#fff" : "var(--cr-ink-3)",
-                        border: `1px solid ${active ? "var(--cr-copper)" : "var(--cr-rule-dark)"}` }}>
-                      {f === "all" ? t("dashboard.filterAll") : t(WL_KEY[f])} {n}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "5px 12px", borderRadius: "999px", cursor: "pointer",
+                        background: active ? "var(--cr-copper-bg)" : "transparent", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                        border: `1px solid ${active ? "var(--cr-copper-br)" : "var(--cr-paper-4)"}` }}>
+                      {f === "all" ? t("dashboard.filterAll") : t(WL_KEY[f])}{" "}
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", fontVariantNumeric: "tabular-nums" }}>{n}</span>
                     </button>
                   );
                 })}
               </div>
             )}
             {watchlist.length === 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
-                <Bookmark style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noSavedYet")}</h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
-                  {t("dashboard.noSavedYetSub")}
-                </p>
-                <Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>
-              </div>
+              <EmptyState
+                title={t("dashboard.noSavedYet")}
+                body={t("dashboard.noSavedYetSub")}
+                action={<Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>}
+              />
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
                 {watchlist
                   .filter((w) => wlFilter === "all" || (wlState[w.id]?.status ?? "watching") === wlFilter)
                   .map((w) => w.startup && (
@@ -831,10 +873,10 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {/* ── AI Reports ── */}
         {activeTab === "portfolio" && !caps.portfolio && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center", gap: "12px" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", maxWidth: "44ch" }}>{t("dashboard.portfolioUpgrade")}</p>
-            <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewPlans")} →</Link>
-          </div>
+          <EmptyState
+            title={t("dashboard.portfolioUpgrade")}
+            action={<Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewPlans")} →</Link>}
+          />
         )}
         {activeTab === "portfolio" && caps.portfolio && (() => {
           const positions = portfolio;
@@ -847,66 +889,71 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               : null;
 
           return positions.length === 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
-              <TrendingUp style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noPortfolio")}</h3>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.noPortfolioSub")}</p>
-            </div>
+            <EmptyState
+              title={t("dashboard.noPortfolio")}
+              body={t("dashboard.noPortfolioSub")}
+            />
           ) : (
             <div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)" }}>{formatMoney(total, cur)}</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  {t("dashboard.totalDeployed")} · {positions.length}
-                </span>
+              {/* Section opener + the one headline figure of this tab. */}
+              <div style={{ marginBottom: "32px" }}>
+                <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.totalDeployed")}</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "36px", lineHeight: 1.05, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatMoney(total, cur)}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>· {positions.length}</span>
+                </div>
               </div>
 
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div style={{ display: "grid", gap: "16px" }}>
                 {positions.map((p) => {
                   const mu = markUp(p);
                   const series = p.mrrSeries;
                   const max = Math.max(1, ...series);
                   return (
-                    <div key={p.dealId} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
+                    <div key={p.dealId} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px" }}>
                       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
                         <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
                           <Link href={`/startups/${p.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", textDecoration: "none" }}>
                             {p.name}
                           </Link>
                           {/* D41: a company that archived its listing is still
-                              yours — say so instead of letting it disappear. */}
+                              yours -- say so instead of letting it disappear. */}
                           {p.status !== "active" && (
                             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 6px" }}>
                               {t("portfolio.notListed")}
                             </span>
                           )}
                         </div>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-up)" }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
                           {p.amount != null ? formatMoney(p.amount, p.currency) : "—"}
                         </span>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))", gap: "10px", marginTop: "12px" }}>
-                        {[
-                          [t("portfolio.ownership"), p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : "—"],
-                          [t("portfolio.atClose"), p.valuationAtClose ? formatMoney(p.valuationAtClose, p.currency, { compact: true }) : "—"],
-                          [t("portfolio.nowValued"), p.currentValuation ? formatMoney(p.currentValuation, p.currency, { compact: true }) : "—"],
-                          [t("portfolio.markChange"), mu == null ? "—" : `${mu > 0 ? "+" : ""}${mu.toFixed(0)}%`],
-                          [t("startupDetail.mrr"), p.mrr != null ? formatMoney(p.mrr, p.currency, { compact: true }) : "—"],
-                        ].map(([label, value]) => (
-                          <div key={label}>
-                            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: label === t("portfolio.markChange") && mu != null ? (mu >= 0 ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)" }}>{value}</div>
-                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "2px" }}>{label}</div>
-                          </div>
-                        ))}
+                      {/* Hairline-divided metric strip; only the mark change
+                          keeps money-direction color. */}
+                      <div style={{ overflow: "hidden", marginTop: "16px" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))", marginLeft: "-1px" }}>
+                          {[
+                            [t("portfolio.ownership"), p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : "—"],
+                            [t("portfolio.atClose"), p.valuationAtClose ? formatMoney(p.valuationAtClose, p.currency, { compact: true }) : "—"],
+                            [t("portfolio.nowValued"), p.currentValuation ? formatMoney(p.currentValuation, p.currency, { compact: true }) : "—"],
+                            [t("portfolio.markChange"), mu == null ? "—" : `${mu > 0 ? "+" : ""}${mu.toFixed(0)}%`],
+                            [t("startupDetail.mrr"), p.mrr != null ? formatMoney(p.mrr, p.currency, { compact: true }) : "—"],
+                          ].map(([label, value]) => (
+                            <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "4px 12px" }}>
+                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", fontVariantNumeric: "tabular-nums", color: label === t("portfolio.markChange") && mu != null ? (mu >= 0 ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)" }}>{value}</div>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "2px" }}>{label}</div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
-                      {/* Metric curve — the reason a position is worth watching. */}
-                      {series.length > 1 && (
-                        <div style={{ display: "flex", alignItems: "flex-end", gap: "2px", height: "28px", marginTop: "12px" }} aria-hidden>
-                          {series.map((v, i) => (
-                            <div key={i} style={{ flex: 1, height: `${Math.max(4, (v / max) * 100)}%`, background: "var(--cr-copper)", opacity: 0.25 + (0.75 * (i + 1)) / series.length, borderRadius: "1px" }} />
-                          ))}
+                      {/* Metric curve -- the reason a position is worth watching.
+                          The kit sparkline draws itself in; fixed pixel box, no
+                          %-height against a flex parent. */}
+                      {series.length > 3 && (
+                        <div style={{ marginTop: "12px" }}>
+                          <Sparkline points={series.map((v) => v / max)} width={140} height={24} />
                         </div>
                       )}
 
@@ -931,38 +978,34 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {activeTab === "reports" && (
           reports.length === 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
-              <Brain style={{ width: 36, height: 36, color: "var(--cr-ink-4)", marginBottom: "16px" }} />
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("dashboard.noAiReportsTitle")}</h3>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
-                {canAi
-                  ? t("dashboard.aiReportsHintPro")
-                  : t("dashboard.aiReportsHintUpgrade")}
-              </p>
-              {!canAi && <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewPlans")}</Link>}
-            </div>
+            <EmptyState
+              title={t("dashboard.noAiReportsTitle")}
+              body={canAi
+                ? t("dashboard.aiReportsHintPro")
+                : t("dashboard.aiReportsHintUpgrade")}
+              action={!canAi ? <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewPlans")}</Link> : undefined}
+            />
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {reports.map((report) => (
-                <div key={report.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "18px 20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <Brain style={{ width: 15, height: 15, color: "var(--cr-copper)" }} />
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+                <div key={report.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                      <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
                         {report.startup?.name}
                       </span>
                       <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         {report.type.replace(/_/g, " ")}
                       </span>
                     </div>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>
                       {formatDate(report.created_at)}
                     </span>
                   </div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {report.content}
                   </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "12px", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
                     <Link href={`/startups/${report.startup?.slug}`}
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
                       {t("dashboard.viewStartup")} →
@@ -977,8 +1020,10 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                       style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>
                       {t("dashboard.reportExport")}
                     </button>
+                    {/* Quiet destructive action: red stays reserved for money
+                        direction; the confirm dialog carries the weight. */}
                     <button onClick={() => deleteReport(report.id)}
-                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-down)" }}>
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-4)" }}>
                       {t("common.delete")}
                     </button>
                   </div>
@@ -991,11 +1036,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* ── Billing ── */}
         {activeTab === "billing" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "20px" }}>{t("dashboard.membershipBilling")}</h3>
+            {/* No card around cards: the plan slab is the one tinted moment,
+                everything after it hangs off hairlines. */}
+            <div>
+              <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("dashboard.membershipBilling")}</div>
 
               {/* Current plan row */}
-              <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 18px", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+              <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "var(--radius)", padding: "16px 24px", marginBottom: "32px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
                 <div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.tier", { tier: tierLabel })}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
@@ -1013,17 +1060,18 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
               {/* Feature list */}
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <Zap style={{ width: 12, height: 12, color: "var(--cr-copper)" }} /> {t("dashboard.accessLevel")}
-                </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {FEATURE_ROWS.map((item) => {
+                <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("dashboard.accessLevel")}</div>
+                {/* Ledger lines: one hairline per capability row. */}
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {FEATURE_ROWS.map((item, i) => {
                     const unlocked = "unlocked" in item ? item.unlocked : isUnlocked(item.key);
                     return (
-                      <div key={item.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div key={item.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          {/* Verdigris is the success accent; green stays for
+                              money direction. */}
                           {unlocked
-                            ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0 }} />
+                            ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--verdigris)", flexShrink: 0 }} />
                             : <Lock style={{ width: 14, height: 14, color: "var(--cr-ink-4)", flexShrink: 0 }} />}
                           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>
                             {t(item.labelKey)}
@@ -1039,15 +1087,18 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                   })}
                 </div>
 
+                {/* The pitch rides a hairline, not a second tinted box; the
+                    plan slab above already holds this view's primary pill,
+                    so the way to the full grid is a tertiary link. */}
                 {investor.subscription_tier === "free" && (
-                  <div style={{ marginTop: "24px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "18px 20px" }}>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)", marginBottom: "6px" }}>
+                  <div style={{ marginTop: "32px", borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "24px" }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>
                       {t("dashboard.upgradeAngel")}
                     </p>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
                       {t("dashboard.upgradeAngelSub")}
                     </p>
-                    <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewAllPlans")}</Link>
+                    <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewAllPlans")} →</Link>
                   </div>
                 )}
               </div>
@@ -1055,7 +1106,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           </div>
         )}
         {!viewingAs && (
-          <div style={{ marginTop: "24px" }}>
+          <div style={{ marginTop: "32px" }}>
             <InvitePanel defaultRole="startup" />
           </div>
         )}
