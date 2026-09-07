@@ -103,6 +103,11 @@ export const SIGNAL_WEIGHTS: Record<string, number> = {
   adverse_media:           25,
   // Conduct on the platform
   circumvention_reported:  30,
+  // Contact details pushed into a first message: the actual circumvention
+  // vector, and often the opening move of an advance-fee approach. A signal
+  // for a human, never a block -- founders legitimately swap calendars.
+  offplatform_contact:     20,
+  nda_bulk_download:       25,
   complaint_upheld:        35,
 };
 

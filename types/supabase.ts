@@ -1155,6 +1155,57 @@ export type Database = {
         }
         Relationships: []
       }
+      introductions: {
+        Row: {
+          ack_id: string | null
+          channel: string
+          created_at: string
+          first_contact_at: string
+          id: string
+          investor_id: string
+          startup_id: string
+          tail_ends_at: string
+          terms_version: string | null
+        }
+        Insert: {
+          ack_id?: string | null
+          channel: string
+          created_at?: string
+          first_contact_at?: string
+          id?: string
+          investor_id: string
+          startup_id: string
+          tail_ends_at: string
+          terms_version?: string | null
+        }
+        Update: {
+          ack_id?: string | null
+          channel?: string
+          created_at?: string
+          first_contact_at?: string
+          id?: string
+          investor_id?: string
+          startup_id?: string
+          tail_ends_at?: string
+          terms_version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "introductions_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "introductions_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investor_checklist_templates: {
         Row: {
           created_at: string
@@ -1643,39 +1694,109 @@ export type Database = {
           },
         ]
       }
+      nda_disclosures: {
+        Row: {
+          id: string
+          investor_id: string
+          ip: string | null
+          item_id: string | null
+          item_label: string | null
+          item_type: string
+          nda_record_id: string | null
+          occurred_at: string
+          startup_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          investor_id: string
+          ip?: string | null
+          item_id?: string | null
+          item_label?: string | null
+          item_type: string
+          nda_record_id?: string | null
+          occurred_at?: string
+          startup_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          investor_id?: string
+          ip?: string | null
+          item_id?: string | null
+          item_label?: string | null
+          item_type?: string
+          nda_record_id?: string | null
+          occurred_at?: string
+          startup_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nda_disclosures_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nda_disclosures_nda_record_id_fkey"
+            columns: ["nda_record_id"]
+            isOneToOne: false
+            referencedRelation: "nda_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nda_disclosures_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nda_records: {
         Row: {
+          counterparty: Json | null
           docusign_envelope_id: string | null
           id: string
           investor_id: string
           method: string | null
           nda_version: string | null
+          obligations_end_at: string | null
           signed_at: string | null
           signed_ip: string | null
           signed_ua: string | null
           startup_id: string
+          text_sha256: string | null
         }
         Insert: {
+          counterparty?: Json | null
           docusign_envelope_id?: string | null
           id?: string
           investor_id: string
           method?: string | null
           nda_version?: string | null
+          obligations_end_at?: string | null
           signed_at?: string | null
           signed_ip?: string | null
           signed_ua?: string | null
           startup_id: string
+          text_sha256?: string | null
         }
         Update: {
+          counterparty?: Json | null
           docusign_envelope_id?: string | null
           id?: string
           investor_id?: string
           method?: string | null
           nda_version?: string | null
+          obligations_end_at?: string | null
           signed_at?: string | null
           signed_ip?: string | null
           signed_ua?: string | null
           startup_id?: string
+          text_sha256?: string | null
         }
         Relationships: [
           {
