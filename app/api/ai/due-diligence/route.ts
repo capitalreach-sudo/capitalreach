@@ -56,7 +56,9 @@ export async function POST(req: NextRequest) {
 
   const [profileRes, startupRes, { isLaunch }] = await Promise.all([
     supabase.from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", user.id).single(),
-    supabase
+    // Service role: column grants (109) hide financials from user clients,
+    // and the caller's entitlement is enforced below, not by this read.
+    createAdminClient()
       .from("startups")
       .select("*, founders:startup_founders(*), documents:startup_documents(*)")
       .eq("id", startupId)
