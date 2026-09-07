@@ -1810,3 +1810,9 @@ body::before {
   background:
     radial-gradient(ellipse 60% 45% at var(--glow-x, 50%) var(--glow-y, 38%), color-mix(in srgb, var(--cr-ink) 5%, transparent), transparent 70%);
 }
+
+
+/* The charter's wax seal is an editorial-register gesture; the business
+   register files the clean sheet (Jack: the teal blob and green threads
+   fought the professional look). */
+[data-style="business"] .charter-seal { display: none; }
