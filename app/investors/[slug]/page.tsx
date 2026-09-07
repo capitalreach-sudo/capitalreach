@@ -70,6 +70,11 @@ const STAT_CELL =
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
+  // The page body login-gates, but metadata renders first -- without the
+  // same check the investor's NAME leaks through the <title> of the
+  // redirect shell (audit finding). Signed-out visitors get a generic tag.
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { title: "Investor profile", robots: { index: false } };
   const { data } = await supabase
     .from("investors")
     .select("slug, type, bio, display_name, firm_name, is_demo")
