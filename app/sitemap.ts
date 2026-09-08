@@ -1,4 +1,12 @@
 import { MetadataRoute } from "next";
+
+// Read at request time, not at build. This file's contents depend on a
+// platform_config row, and Next prerenders it by default -- so a config read
+// that fails during the build (no service key in that environment, a cold
+// database) gets baked in and served for the life of the deployment. That is
+// exactly what happened: the catalogue was gated but robots kept advertising
+// it, because the build-time read failed open.
+export const dynamic = "force-dynamic";
 import { SECTOR_SLUGS } from "@/lib/industry-slugs";
 import { BLOG_POSTS } from "@/lib/blog-posts";
 import { createAdminClient } from "@/lib/supabase-server";
