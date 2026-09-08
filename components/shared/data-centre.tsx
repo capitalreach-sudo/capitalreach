@@ -11,7 +11,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { LiveClock } from "@/components/ui/LiveClock";
 import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Guilloche } from "@/components/ui/Guilloche";
 import { safeFormatCurrency } from "@/lib/format";
 import { LineChart } from "@/components/charts/line-chart";
 import { DonutChart } from "@/components/charts/donut-chart";
@@ -467,9 +466,6 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     curves' square envelope otherwise prints a hard edge
                     across the band, worst at phone widths where the
                     medallion spans most of the slab. */}
-                <div aria-hidden style={{ position: "absolute", top: "50%", right: "-140px", transform: "translateY(-50%)", width: "420px", height: "420px", color: "var(--cr-band-ink)", pointerEvents: "none", WebkitMaskImage: "radial-gradient(closest-side, var(--cr-ink) 40%, transparent 75%)", maskImage: "radial-gradient(closest-side, var(--cr-ink) 40%, transparent 75%)" }}>
-                  <Guilloche className="w-full h-full" seed={3} lines={16} opacity={0.06} />
-                </div>
                 <div style={{ position: "relative" }}>
                   <div className="ruled-label" style={{ marginBottom: "48px", color: "var(--cr-band-ink-dim)" }}>
                     <span aria-hidden style={chapterNum}>{chapterMark()}</span>

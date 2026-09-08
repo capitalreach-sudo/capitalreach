@@ -2107,6 +2107,65 @@ export type Database = {
         }
         Relationships: []
       }
+      round_closures: {
+        Row: {
+          amount_raised: number | null
+          attestation_version: string
+          currency: string | null
+          declared_at: string
+          declared_by: string
+          declared_external: string | null
+          declared_investor_ids: string[]
+          id: string
+          introduced_in_tail: string[]
+          ip: string | null
+          outcome: string
+          startup_id: string
+          undeclared_introduced: string[]
+          user_agent: string | null
+        }
+        Insert: {
+          amount_raised?: number | null
+          attestation_version: string
+          currency?: string | null
+          declared_at?: string
+          declared_by: string
+          declared_external?: string | null
+          declared_investor_ids?: string[]
+          id?: string
+          introduced_in_tail?: string[]
+          ip?: string | null
+          outcome: string
+          startup_id: string
+          undeclared_introduced?: string[]
+          user_agent?: string | null
+        }
+        Update: {
+          amount_raised?: number | null
+          attestation_version?: string
+          currency?: string | null
+          declared_at?: string
+          declared_by?: string
+          declared_external?: string | null
+          declared_investor_ids?: string[]
+          id?: string
+          introduced_in_tail?: string[]
+          ip?: string | null
+          outcome?: string
+          startup_id?: string
+          undeclared_introduced?: string[]
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_closures_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       round_shares: {
         Row: {
           created_at: string

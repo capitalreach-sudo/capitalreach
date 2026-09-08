@@ -15,7 +15,6 @@ import { allocationSummary } from "@/lib/round-math";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InvitePanel } from "@/components/shared/invite-panel";
-import { Guilloche } from "@/components/ui/Guilloche";
 import { Sparkline } from "@/components/ui/sparkline";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { WatchlistChanges } from "@/components/investor/watchlist-changes";
@@ -684,9 +683,6 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", position: "relative", overflow: "hidden" }}>
         {/* Banknote texture, barely there -- same touch as the founder header,
             so both sides of the marketplace open on the same note. */}
-        <div aria-hidden style={{ position: "absolute", top: "-140px", right: "-100px", width: "460px", height: "460px", color: "var(--cr-ink)", pointerEvents: "none" }}>
-          <Guilloche opacity={0.05} />
-        </div>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", position: "relative" }}>
           <div>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.investorDashboard")}</div>

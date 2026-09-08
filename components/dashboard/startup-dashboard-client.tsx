@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, Eye, Lock, X } from "lucide-react";
-import { Guilloche } from "@/components/ui/Guilloche";
 import { ScoreDial } from "@/components/ui/score-dial";
 import { Sparkline } from "@/components/ui/sparkline";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -1021,9 +1020,6 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", position: "relative", overflow: "hidden" }}>
         {/* Banknote texture, barely there -- the header says "capital" once. */}
-        <div aria-hidden style={{ position: "absolute", top: "-140px", right: "-100px", width: "460px", height: "460px", color: "var(--cr-ink)", pointerEvents: "none" }}>
-          <Guilloche opacity={0.05} />
-        </div>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", position: "relative" }}>
           <div>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.startupDashboard")}</div>

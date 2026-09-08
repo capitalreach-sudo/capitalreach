@@ -109,7 +109,19 @@ export function founderCan(ctx: AccessContext): FounderCapabilities {
 // ── Investor capabilities ─────────────────────────────────────────────────────
 
 export interface InvestorCapabilities {
+  /** See the browse index: names, sectors, stages, raise. The shopfront. */
   browse:          boolean;
+  /**
+   * Open a company's full profile.
+   *
+   * The browse index is a catalogue; the detail page is the pitch -- problem,
+   * solution, market, competitive advantage, use of funds. That is the idea
+   * itself, and Jack's call is that reading it is what a plan buys. Free
+   * accounts get the overview and an upgrade path, not the thesis.
+   */
+  viewListingDetail: boolean;
+  /** The deal room. A free account cannot message, so it cannot transact. */
+  dealRoom:        boolean;
   viewFinancials:  boolean;
   viewDocuments:   boolean;
   viewTeam:        boolean;
@@ -131,7 +143,8 @@ export interface InvestorCapabilities {
 }
 
 const INVESTOR_SUSPENDED: InvestorCapabilities = {
-  browse: false, viewFinancials: false, viewDocuments: false, viewTeam: false,
+  browse: false, viewListingDetail: false, dealRoom: false,
+  viewFinancials: false, viewDocuments: false, viewTeam: false,
   ndaRequest: false, message: false, messageLimit: 0, watchlistLimit: 0,
   aiScore: false, aiDiligence: "no", aiMatching: false, dataExport: false,
   savedSearches: false, advancedFilters: false,
@@ -148,7 +161,11 @@ export function investorCan(ctx: AccessContext): InvestorCapabilities {
   const paid = tier === "angel" || tier === "pro" || tier === "institution";
 
   return {
-    browse:          f.browseStartups,
+    // A visitor with no account sees the homepage, the pricing page and the
+    // data centre. The catalogue itself is for members.
+    browse:          f.browseStartups && !!ctx.userId,
+    viewListingDetail: paid,
+    dealRoom:        paid,
     viewFinancials:  f.viewFinancials,
     // Documents and team sit behind the same paywall as financials.
     viewDocuments:   f.viewFinancials,
