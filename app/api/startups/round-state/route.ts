@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { resolveEntity } from "@/lib/membership";
+import { closureSince, introducedInTail } from "@/lib/closure";
 
 const STATES = ["open", "paused", "oversubscribed", "closed"] as const;
 type RoundState = typeof STATES[number];
 
 /**
- * POST { roundState?, showMomentum? } — the founder's own levers on a live
+ * POST { roundState?, showMomentum? } -- the founder's own levers on a live
  * listing (B16 lifecycle, B19 public momentum). Owner or team member only.
  *   open          → listed, interest accepted
  *   oversubscribed→ listed with a badge, interest still accepted (waitlist)
@@ -39,13 +40,13 @@ export async function POST(req: NextRequest) {
   // Read the prior state first: watchers are told about a CHANGE, and a
   // founder re-saving the same state must not re-notify five hundred people.
   const { data: before } = await admin.from("startups")
-    .select("round_state, name, slug, status").eq("id", mine.entityId).maybeSingle();
+    .select("round_state, round_state_changed_at, name, slug, status").eq("id", mine.entityId).maybeSingle();
 
   const { data, error } = await admin.from("startups").update(updates).eq("id", mine.entityId).select("id, round_state, show_momentum").single();
   if (error || !data) return NextResponse.json({ error: "Failed to update" }, { status: 500 });
 
   // The bell, for the people who saved this company. This is the one event a
-  // watchlist exists for — "closing" and "oversubscribed" are exactly the
+  // watchlist exists for -- "closing" and "oversubscribed" are exactly the
   // moments before it is too late to act. Awaited (serverless), best-effort,
   // and only on a real transition of a live listing.
   if (
@@ -115,5 +116,63 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ success: true, roundState: data.round_state, showMomentum: data.show_momentum });
+  return NextResponse.json({
+    success: true,
+    roundState: data.round_state,
+    showMomentum: data.show_momentum,
+    // Only on the act of closing. A founder toggling momentum on a listing
+    // that happens to be closed is not making a statement about the round, and
+    // opening a declaration form at them there would train them to dismiss it.
+    ...(roundState === "closed"
+      ? { closureDeclaration: await closureAsk(mine.entityId, before?.round_state_changed_at ?? updates.round_state_changed_at ?? null) }
+      : {}),
+  });
+}
+
+interface ClosureAsk {
+  /** Open the declaration form. Never a precondition of the state change. */
+  required: boolean;
+  /** How many introduced investors are still inside their tail -- what the
+   *  form has to put on screen. */
+  introducedInTail: number;
+  /** When this round was already declared, so the UI can say so instead of asking. */
+  declaredAt: string | null;
+}
+
+/**
+ * Whether closing this round leaves a declaration owed.
+ *
+ * The state change itself is never blocked. A founder may always say the round
+ * is over -- refusing to let them would only teach them to leave a dead listing
+ * open, which loses the platform the record AND the listing. What closing does
+ * is create an obligation: they said it ended, so they are asked how, against
+ * the names we introduced them to.
+ *
+ * "Already declared" is measured from the moment the round LAST changed state,
+ * not from all time. A company that closed in January, declared, reopened in
+ * March and closed again in September is closing a different round, and the
+ * January statement says nothing about it. The prior timestamp is used rather
+ * than the one just written, so an idempotent re-save of "closed" does not
+ * reset the boundary and ask a second time for the same round.
+ *
+ * When the prior timestamp could not be read, the caller passes the one just
+ * written instead of null. Null would mean "any declaration ever filed counts",
+ * which silently drops the question on the strength of a statement about a
+ * round that ended years ago. Asking twice is a nuisance; not asking is the
+ * failure this whole layer exists to prevent, so a failed read falls that way.
+ */
+async function closureAsk(startupId: string, priorChangedAt: string | null): Promise<ClosureAsk> {
+  const [existing, introduced] = await Promise.all([
+    closureSince(startupId, priorChangedAt),
+    introducedInTail(startupId),
+  ]);
+  return {
+    // Asked of every closing round, including one with no introductions: "we
+    // raised from nobody you introduced" is only worth something as a statement
+    // somebody actually made, and a founder with a clean round deserves the
+    // dated record that says so as much as the platform does.
+    required: !existing,
+    introducedInTail: introduced.length,
+    declaredAt: existing?.declaredAt ?? null,
+  };
 }

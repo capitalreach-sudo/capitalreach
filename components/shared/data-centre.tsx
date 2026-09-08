@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { STAGE_LABELS } from "@/lib/utils";
-import {
-  TrendingUp, Users, DollarSign, Building2,
-  RefreshCw, AlertTriangle, Download,
-} from "lucide-react";
+import { RefreshCw, AlertTriangle, Download, Building2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { LiveClock } from "@/components/ui/LiveClock";
@@ -47,37 +44,58 @@ interface PlatformData {
   lastUpdated: string;
 }
 
-const cellTd: React.CSSProperties = {
-  padding: "6px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11.5px",
-  fontVariantNumeric: "tabular-nums", color: "var(--cr-ink-2)", borderTop: "1px solid var(--cr-rule)",
-};
+// ── The rhythm ─────────────────────────────────────────────────────────────────
 
-// Ledger alignment: text columns sit left, figures sit right, the way any
-// statistical yearbook sets a table.
-const cellTdNum: React.CSSProperties = { ...cellTd, textAlign: "right" };
+// One vertical rhythm for the whole surface, taken from the 4/8/12/16/24/32/
+// 48/64/96 scale. The page used to mix 6/8/12/16/22/24/25/56, which reads as
+// arbitrary even when nothing else is wrong. Four steps, each visibly larger
+// than the one below it:
+//   SECTION  64 (48 on phones)  between chapters
+//   BLOCK    32                 between blocks inside a chapter
+//   ROW      16                 inside a block
+//   LABEL     8                 from a label to the figure it names
+const SECTION_GAP = "clamp(48px, 6vw, 64px)";
+const BLOCK_GAP = "32px";
+const ROW_GAP = "16px";
+const LABEL_GAP = "8px";
 
-// The chapter number that opens each section: the numbered-rail motif applied
-// to the chapters themselves, so the page reads as a report with a sequence,
-// not a stack of interchangeable panels.
-const chapterNum: React.CSSProperties = {
-  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px",
-  color: "var(--cr-copper)",
-};
+// ── The voices ─────────────────────────────────────────────────────────────────
 
-// The three voices this page speaks in, defined once so every figure and
-// every label on the surface is set identically.
+// Exactly one figure on this page is allowed to be the loudest, and it is the
+// total raised. Every other number on the surface -- supporting totals, funnel
+// counts, medians -- speaks at FIG_2, a full step down, so the eye is told
+// where to land instead of being shouted at from five directions.
+const FIG_LEAD = "clamp(40px, 5vw + 16px, 64px)";
+const FIG_2 = "clamp(20px, 1.4vw + 12px, 28px)";
+
 const capsLabel: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
   textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
 };
 
-// A chart plate: charts need solid paper under them (gridlines over the
-// page's graph-paper texture read as noise), so they are the only content
-// that still sits in a framed box. Everything else is rules and whitespace.
-const plate: React.CSSProperties = {
-  background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px", padding: "clamp(16px, 3vw, 24px)",
+const monoFigure: React.CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+  fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
+  color: "var(--cr-ink)", lineHeight: 1,
 };
+
+// Tables: a header row in Label type over a heavy rule, rows split by
+// hairlines. Cells get 12px of air rather than the old 6px -- the fix for a
+// dense table is room, not fewer columns.
+const cellTh: React.CSSProperties = {
+  ...capsLabel, textAlign: "left", padding: "0 12px 12px",
+  borderBottom: "1px solid var(--cr-rule-dark)",
+};
+const cellThNum: React.CSSProperties = { ...cellTh, textAlign: "right" };
+
+// Ledger alignment: text columns sit left, figures sit right, the way any
+// statistical yearbook sets a table.
+const cellTd: React.CSSProperties = {
+  padding: "12px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
+  fontVariantNumeric: "tabular-nums", color: "var(--cr-ink-2)",
+  borderTop: "1px solid var(--cr-rule)",
+};
+const cellTdNum: React.CSSProperties = { ...cellTd, textAlign: "right" };
 
 /** Axis money: "$100M", never "100000000". */
 function compactMoney(n: number): string {
@@ -85,6 +103,11 @@ function compactMoney(n: number): string {
   if (n >= 1_000_000) return `$${Math.round(n / 1_000_000)}M`;
   if (n >= 1_000) return `$${Math.round(n / 1_000)}k`;
   return `$${Math.round(n)}`;
+}
+
+/** Round targets read at a glance: "$1.2M", "$450k". */
+function medianMoney(n: number): string {
+  return "$" + (n >= 1_000_000 ? (n / 1_000_000).toFixed(1) + "M" : Math.round(n / 1000) + "k");
 }
 
 /** "2026-08" → "Aug". The year only where it changes, so twelve labels stay short. */
@@ -110,10 +133,15 @@ function exportPlatformCsv(d: PlatformData) {
     ["headline", "Total raised", d.totalRaised],
     ["headline", "Deals closed", d.dealsCount],
     ["headline", "Active deals", d.activeDeals],
-    ["headline", "Close rate", d.closeRate == null ? "" : `${Math.round(d.closeRate * 100)}%`],
+    // lib/platform-data already rounds this to whole percent; multiplying by
+    // 100 again exported a 42% close rate as "4200%".
+    ["headline", "Close rate", d.closeRate == null ? "" : `${d.closeRate}%`],
     ...Object.entries(d.byDealStage).map(([k, v]) => ["deal_stage", k, v] as [string, string, number]),
     ...Object.entries(d.byIndustry).map(([k, v]) => ["industry", k, v] as [string, string, number]),
     ...Object.entries(d.byStage).map(([k, v]) => ["startup_stage", k, v] as [string, string, number]),
+    // The medians land in the export too, so the table on screen can be
+    // checked against the file rather than retyped out of it.
+    ...Object.entries(d.report?.medianByStage ?? {}).map(([k, v]) => ["median_target", k, v] as [string, string, number]),
     // The time series lands in the export too, so the shape on the chart can
     // be checked against the numbers rather than taken on trust.
     ...(d.monthly ?? []).flatMap(m => ([
@@ -133,12 +161,15 @@ function exportPlatformCsv(d: PlatformData) {
 }
 
 // Order matters: this is the funnel, left to right, ending in the two terminal
-// outcomes. Colours match the Deal Portal's own columns so the public view and
-// the signed-in board read as the same object.
+// outcomes. The three in-flight stages are one ink ramp that darkens toward
+// the close -- they used to be three different hues, which put four accent
+// colours in a single eyeful and made the sequence look like five unrelated
+// categories. Colour is now spent only where it means something: green on
+// capital that moved, red on the round that died.
 const DEAL_STAGES = [
-  { key: "intro",         color: "var(--cr-ink-3)" },
-  { key: "due_diligence", color: "var(--cr-neutral)" },
-  { key: "term_sheet",    color: "var(--cr-copper)" },
+  { key: "intro",         color: "var(--cr-ink-4)" },
+  { key: "due_diligence", color: "var(--cr-ink-3)" },
+  { key: "term_sheet",    color: "var(--cr-ink-2)" },
   { key: "closed",        color: "var(--cr-up)" },
   { key: "passed",        color: "var(--cr-down)" },
 ] as const;
@@ -148,9 +179,9 @@ const DEAL_STAGES = [
 // stage breakdown and recent listings showed raw enum values for half the
 // stages.
 
-// Both go through the shared safety net: implausible values render "—".
+// Goes through the shared safety net, which renders an absence dash for
+// implausible values rather than a wrong number.
 function fmtRaising(n: number | null | undefined) { return safeFormatCurrency(n); }
-function fmtMoney(n: number | null | undefined)   { return safeFormatCurrency(n); }
 
 function timeAgo(iso: string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -184,39 +215,28 @@ function useCountUp(target: number, duration = 900) {
   return { value, done };
 }
 
-// ── Stat card ─────────────────────────────────────────────────────────────────
+// ── Stat ──────────────────────────────────────────────────────────────────────
 
 // The boxed tile is gone: an annual report rules a figure, it does not
 // frame it. Each stat is an overline hairline, a small-caps label and a
-// confident mono figure sitting directly on the paper. `lead` promotes one
-// figure per section to the commanding size under a heavier ink rule;
-// Icon/color stay in the signature so call sites are untouched, but a
-// figure this large needs no pictogram beside it.
-function StatCard({
-  label, value, prefix = "", Icon: _Icon, color: _color, lead = false,
-}: {
+// confident mono figure sitting directly on the paper. `lead` promotes the
+// one commanding figure on the page, under a heavier ink rule.
+function StatCard({ label, value, prefix = "", lead = false }: {
   label: string;
   value: number;
   prefix?: string;
-  Icon: React.ElementType;
-  color: string;
   lead?: boolean;
 }) {
   const { value: displayed, done } = useCountUp(value);
   return (
     <div style={{
       borderTop: lead ? "2px solid var(--cr-ink)" : "1px solid var(--cr-rule-dark)",
-      paddingTop: lead ? "16px" : "12px",
+      paddingTop: lead ? ROW_GAP : "12px",
     }}>
-      <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: lead ? "12px" : "8px" }}>{label}</p>
+      <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: LABEL_GAP }}>{label}</p>
       <p
         className={done ? "count-glow-done" : ""}
-        style={{
-          fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-          fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
-          fontSize: lead ? "clamp(40px, 5vw + 20px, 72px)" : "clamp(20px, 1.4vw + 12px, 28px)",
-          color: "var(--cr-ink)", lineHeight: 1, overflowWrap: "anywhere",
-        }}
+        style={{ ...monoFigure, fontSize: lead ? FIG_LEAD : FIG_2, overflowWrap: "anywhere" }}
       >
         {prefix}{displayed.toLocaleString()}
       </p>
@@ -224,8 +244,16 @@ function StatCard({
   );
 }
 
-// ── Animated bar chart row ────────────────────────────────────────────────────
-
+// A label over its figure, the same pair the stats use, for the places that
+// are not a counted total.
+function Figure({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>{label}</p>
+      <p style={{ ...monoFigure, fontSize: FIG_2 }}>{children}</p>
+    </div>
+  );
+}
 
 // ── Score pill ────────────────────────────────────────────────────────────────
 
@@ -237,10 +265,76 @@ function ScorePill({ score }: { score: number | null }) {
     <span style={{
       fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px",
       color, background: `color-mix(in srgb, ${color} 8%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 25%, transparent)`,
-      borderRadius: "3px", padding: "2px 7px",
+      borderRadius: "3px", padding: "2px 8px",
     }}>
       {score}
     </span>
+  );
+}
+
+// ── Tab strip ─────────────────────────────────────────────────────────────────
+
+interface TabDef<K extends string> { key: K; label: string }
+
+/**
+ * The page's one disclosure device.
+ *
+ * Eight chapters used to arrive at once, each with its own chart or ledger,
+ * so nothing on the surface was quiet enough to be read first. The deeper
+ * material now sits behind these strips: every figure, chart and table that
+ * was on the page is still on the page and still one click away, but only one
+ * of them speaks at a time.
+ *
+ * A ruled strip rather than a pill row: the underline is the same hairline
+ * language the rest of the surface is built from, and it needs no filled box.
+ */
+function TabStrip<K extends string>({ tabs, active, onSelect, idBase, label }: {
+  tabs: ReadonlyArray<TabDef<K>>;
+  active: K;
+  onSelect: (key: K) => void;
+  idBase: string;
+  label: string;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label={label}
+      style={{
+        display: "flex", flexWrap: "wrap", gap: "0 24px",
+        borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: BLOCK_GAP,
+      }}
+    >
+      {tabs.map((tab) => {
+        const on = tab.key === active;
+        return (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            id={`${idBase}-tab-${tab.key}`}
+            aria-selected={on}
+            aria-controls={`${idBase}-panel-${tab.key}`}
+            onClick={() => onSelect(tab.key)}
+            style={{
+              ...capsLabel,
+              fontSize: "11px",
+              display: "inline-flex", alignItems: "center",
+              // 40px keeps the target thumb-sized on a phone without adding
+              // padding that would break the rhythm.
+              minHeight: "40px", padding: 0,
+              background: "none", cursor: "pointer",
+              color: on ? "var(--cr-ink)" : "var(--cr-ink-4)",
+              border: "none",
+              // The active mark sits ON the strip's own hairline, not under it.
+              borderBottom: on ? "2px solid var(--cr-copper)" : "2px solid transparent",
+              marginBottom: "-1px",
+            }}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -248,13 +342,31 @@ function ScorePill({ score }: { score: number | null }) {
 
 export function DataCentre({ initialData }: { initialData?: PlatformData | null } = {}) {
   const { t } = useTranslation();
+  // t() echoes the key back when no dictionary has it. The handful of keys
+  // this layout adds are new, so they carry their English wording until the
+  // dictionaries catch up -- a raw "data.viewActivity" must never reach a
+  // screen.
+  const tf = useCallback((key: string, fallback: string) => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  }, [t]);
+
   // Server-rendered aggregate (lib/platform-data) means the first paint is
   // the finished dashboard; the fetch below only runs for refresh/retry.
   const [data, setData] = useState<PlatformData | null>(initialData ?? null);
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState(false);
-  // Every chart has a table behind it, for anyone the colours fail.
-  const [showTable, setShowTable] = useState(false);
+
+  // Three disclosures, one device. Growth opens on the activity chart (the
+  // page's single primary chart); the numbers behind it are the third tab, so
+  // every chart still has a table for anyone the colours fail.
+  const [growthView, setGrowthView] = useState<"activity" | "capital" | "numbers">("activity");
+  const [breakdown, setBreakdown] = useState<"deals" | "industry" | "stage" | "medians">("deals");
+  const [ledger, setLedger] = useState<"scores" | "recent">("scores");
+
+  const growthId = useId();
+  const breakdownId = useId();
+  const ledgerId = useId();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -279,7 +391,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   }, [fetchData]);
 
   // The numbers keep themselves current: a quiet refresh every 60s while the
-  // tab is visible (no spinner — setLoading stays untouched on refreshes so
+  // tab is visible (no spinner -- setLoading stays untouched on refreshes so
   // the page never flickers), and one immediately when the tab regains focus.
   useEffect(() => {
     const refresh = async () => {
@@ -296,7 +408,6 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     return () => { window.clearInterval(id); document.removeEventListener("visibilitychange", refresh); };
   }, []);
 
-
   const monthly = data?.monthly ?? [];
   const industryEntries = data
     ? Object.entries(data.byIndustry).sort((a, b) => b[1] - a[1]).slice(0, 6)
@@ -304,45 +415,64 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   const stageEntries = data
     ? Object.entries(data.byStage).sort((a, b) => b[1] - a[1])
     : [];
+  const medianEntries = data
+    ? Object.entries(data.report?.medianByStage ?? {}).sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
+    : [];
 
-  // Chapters number themselves in render order, so the conditional chapters
-  // (the band, the time series, deal flow) never leave a gap in the sequence.
-  // The counter resets every render; JSX evaluates top to bottom, so the
-  // numbering is always 01..N down the page.
-  let chapterCount = 0;
-  const chapterMark = () => String(++chapterCount).padStart(2, "0");
+  // The strip only offers a tab it can fill, and the selected tab falls back
+  // to the first available one -- a platform with no deals must not open on
+  // an empty funnel.
+  const breakdownTabs = [
+    ...(data?.byDealStage ? [{ key: "deals" as const, label: t("data.dealFlow") }] : []),
+    { key: "industry" as const, label: tf("data.tabIndustry", "Industry") },
+    { key: "stage" as const, label: t("listings.stage") },
+    ...(medianEntries.length > 0 ? [{ key: "medians" as const, label: tf("data.tabMedians", "Medians") }] : []),
+  ];
+  const activeBreakdown = breakdownTabs.some(b => b.key === breakdown)
+    ? breakdown
+    : (breakdownTabs[0]?.key ?? "industry");
+
+  const growthTabs = [
+    { key: "activity" as const, label: tf("data.viewActivity", "Activity") },
+    { key: "capital" as const, label: t("data.capitalSought") },
+    { key: "numbers" as const, label: tf("data.viewNumbers", "Numbers") },
+  ];
+
+  const ledgerTabs = [
+    { key: "scores" as const, label: t("data.topAiScores") },
+    { key: "recent" as const, label: t("data.recentListings") },
+  ];
 
   return (
-    <div className="data-page-bg" style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
 
       {/* Header strip */}
-      <div style={{ position: "relative",  background: "var(--cr-band-bg)", borderBottom: "1px solid var(--cr-copper-br)" }}>
-        {/* Side gutters relax on small screens: a fixed 40px left 295px of
+      <div style={{ position: "relative", background: "var(--cr-band-bg)", borderBottom: "1px solid var(--cr-copper-br)" }}>
+        {/* Side gutters relax on small screens: a fixed 32px left 311px of
             content at 375px, which forced every grid into a squeeze. */}
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "56px clamp(24px, 5vw, 40px) 48px" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px clamp(24px, 5vw, 32px) 48px" }}>
           {/* The masthead opens like every chapter below it: the ruled label,
               not an icon -- the pictogram repeated what the words say. */}
-          <div className="ruled-label" style={{ marginBottom: "16px", color: "var(--cr-band-ink-dim)" }}>{t("data.eyebrow")}</div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(32px,5vw,52px)", color: "var(--cr-band-ink)", letterSpacing: "-0.03em", marginBottom: "12px" }}>
+          <div className="ruled-label" style={{ marginBottom: ROW_GAP, color: "var(--cr-band-ink-dim)" }}>{t("data.eyebrow")}</div>
+          {/* The title steps down from 52px: the loudest thing on this page
+              is the total raised, and a masthead competing with it left the
+              reader with two headlines and no hierarchy. */}
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px, 4.5vw, 44px)", color: "var(--cr-band-ink)", letterSpacing: "-0.03em", marginBottom: ROW_GAP }}>
             {t("data.title")}
           </h1>
-          {/* The pulse of the market, drawn once every five seconds. */}
-          <svg className="cr-pulse" aria-hidden viewBox="0 0 480 40" style={{ position: "absolute", left: 0, right: 0, top: 8, width: "min(480px, 90%)", height: 40, pointerEvents: "none" }}>
-            <path d="M0 20 H140 L155 20 165 6 178 34 190 14 200 20 H300 L315 20 325 10 338 30 350 20 H480" />
-          </svg>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", maxWidth: "480px", lineHeight: 1.6 }}>
             {t("data.subtitle")}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-band-ink-dim)", marginTop: 6 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-band-ink-dim)", marginTop: LABEL_GAP }}>
             {t("data.sampleNote")}
           </p>
           {/* The meta row set as a colophon: one hairline above, then the
               live mark, the clock, the freshness stamp and the two quiet
               utilities on a single line. The live dot is copper -- active
               state -- because green means money direction, nothing else. */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px 24px", marginTop: "32px", paddingTop: "16px", borderTop: "1px solid color-mix(in srgb, var(--cr-band-ink) 18%, transparent)", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span aria-hidden style={{ width: 6, height: 6, borderRadius: "999px", background: "var(--cr-copper)", flexShrink: 0 }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px 24px", marginTop: BLOCK_GAP, paddingTop: ROW_GAP, borderTop: "1px solid color-mix(in srgb, var(--cr-band-ink) 18%, transparent)", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: LABEL_GAP }}>
+              <span aria-hidden style={{ width: 8, height: 8, borderRadius: "999px", background: "var(--cr-copper)", flexShrink: 0 }} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>{t("data.live")}</span>
             </div>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>
@@ -356,25 +486,25 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             {data && (
               <button
                 onClick={() => exportPlatformCsv(data)}
-                style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: "pointer", color: "var(--cr-band-ink-dim)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", padding: 0 }}
+                style={{ display: "flex", alignItems: "center", gap: LABEL_GAP, background: "none", border: "none", cursor: "pointer", color: "var(--cr-band-ink-dim)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", padding: 0 }}
               >
-                <Download style={{ width: 11, height: 11 }} />
+                <Download style={{ width: 12, height: 12 }} />
                 {t("data.exportCsv")}
               </button>
             )}
             <button
               onClick={fetchData}
               disabled={loading}
-              style={{ display: "flex", alignItems: "center", gap: "5px", background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", opacity: loading ? 0.5 : 1, padding: 0 }}
+              style={{ display: "flex", alignItems: "center", gap: LABEL_GAP, background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", opacity: loading ? 0.5 : 1, padding: 0 }}
             >
-              <RefreshCw style={{ width: 11, height: 11, animation: loading ? "spin 1s linear infinite" : "none" }} />
+              <RefreshCw style={{ width: 12, height: 12, animation: loading ? "spin 1s linear infinite" : "none" }} />
               {t("data.refresh")}
             </button>
           </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px clamp(24px, 5vw, 40px) 96px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px clamp(24px, 5vw, 32px) 96px" }}>
 
         {/* Loading: the ledger being written, not a soup of gray bars. */}
         {loading && (
@@ -385,22 +515,22 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
 
         {/* Error state */}
         {!loading && error && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center" }}>
-            <AlertTriangle style={{ width: 32, height: 32, color: "var(--cr-copper)", marginBottom: "16px" }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("data.errorTitle")}</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", textAlign: "center" }}>
+            <AlertTriangle style={{ width: 32, height: 32, color: "var(--cr-copper)", marginBottom: ROW_GAP }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: LABEL_GAP }}>{t("data.errorTitle")}</p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.errorSub")}</p>
             <button
               onClick={fetchData}
-              style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: "999px", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", gap: LABEL_GAP, background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none", borderRadius: "999px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
             >
-              <RefreshCw style={{ width: 13, height: 13 }} /> {t("data.retry")}
+              <RefreshCw style={{ width: 12, height: 12 }} /> {t("data.retry")}
             </button>
           </div>
         )}
 
         {/* Empty platform state: the shared drawer-tag block, one quiet way out. */}
         {!loading && !error && data && data.startupCount === 0 && (
-          <div style={{ padding: "32px 0" }}>
+          <div style={{ padding: `${BLOCK_GAP} 0` }}>
             <EmptyState
               Icon={Building2}
               title={t("data.noData")}
@@ -417,423 +547,405 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         {/* Data loaded */}
         {!loading && !error && data && data.startupCount > 0 && (
           <>
-            {/* ── Chapter: the platform in four numbers ─────────────────────
-                Every chapter on this page opens with the ruled-label, the same
-                section marker as every other surface -- the page used to be a
-                wall of equal tiles with nothing saying where one topic ended
-                and the next began. The opener reuses the header eyebrow key:
-                same fact, now anchoring the totals it describes. */}
-            <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
-              <div className="ruled-label" style={{ marginBottom: "32px" }}>
-                <span aria-hidden style={chapterNum}>{chapterMark()}</span>
-                {t("data.eyebrow")}
-              </div>
-              {/* One commanding figure leads the page -- total capital raised,
-                  under a heavier ink rule -- and the other three totals stand
-                  quieter beneath it as a hairline-ruled strip. Four identical
-                  tiles said four equal facts; a report has a headline. */}
-              <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$" Icon={DollarSign} color="var(--cr-up)" />
+            {/* ── The platform in four numbers ──────────────────────────────
+                The page opens on figures and nothing else: no chart, no
+                table, no second heading competing for the same glance. One
+                commanding total under a heavy ink rule, three supporting
+                totals a full size down beneath it. */}
+            <section style={{ marginBottom: SECTION_GAP }}>
+              <div className="ruled-label" style={{ marginBottom: BLOCK_GAP }}>{t("data.eyebrow")}</div>
+              <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$" />
               {/* The three supporting totals as one hairline-divided strip:
                   vertical rules between the figures, not a grid of tiles.
-                  The 25px crop trick (overflow hidden + negative left
-                  margin) hides the first divider in every wrap state, so
-                  the strip is flush left on desktop and each stat stacks
-                  clean at phone widths. */}
-              <div style={{ overflow: "hidden", marginTop: "32px" }}>
-                <div style={{ display: "flex", flexWrap: "wrap", rowGap: "24px", marginLeft: "-25px" }}>
+                  The crop trick (overflow hidden + a negative margin equal to
+                  the cell's own inset) hides the first divider in every wrap
+                  state, so the strip is flush left on desktop and each stat
+                  stacks clean at phone widths. */}
+              <div style={{ overflow: "hidden", marginTop: BLOCK_GAP }}>
+                <div style={{ display: "flex", flexWrap: "wrap", rowGap: "24px", marginLeft: "-24px" }}>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.startups")}  value={data.startupCount}  Icon={Building2}  color="var(--cr-copper)" />
+                    <StatCard label={t("data.startups")} value={data.startupCount} />
                   </div>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.investors")} value={data.investorCount} Icon={Users}      color="var(--cr-neutral)" />
+                    <StatCard label={t("data.investors")} value={data.investorCount} />
                   </div>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.deals")}     value={data.dealsCount}    Icon={TrendingUp} color="var(--cr-copper)" />
+                    <StatCard label={t("data.deals")} value={data.dealsCount} />
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* ── Chapter: state of the market ──────────────────────────────
-                The report band -- the page's one slab moment. Medians, not
-                means: one mega-round must not move what the market calls a
-                typical raise. Top three stages by listing count. */}
-            {Object.keys(data.report?.medianByStage ?? {}).length > 0 && (
-              <section style={{ position: "relative", overflow: "hidden", marginBottom: "clamp(64px, 9vw, 96px)", background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px)" }}>
-                {/* The page's one signature texture: a guilloche medallion
-                    half-cropped at the band's edge, banknote-fashion. The
-                    radial mask fades the pattern out toward its rim -- the
-                    curves' square envelope otherwise prints a hard edge
-                    across the band, worst at phone widths where the
-                    medallion spans most of the slab. */}
-                <div style={{ position: "relative" }}>
-                  <div className="ruled-label" style={{ marginBottom: "48px", color: "var(--cr-band-ink-dim)" }}>
-                    <span aria-hidden style={chapterNum}>{chapterMark()}</span>
-                    {t("report.title")}
-                  </div>
-                  {/* The centerpiece figures as one hairline-divided strip,
-                      the same language as the totals above: vertical rules in
-                      band ink between the medians, the 25px crop trick hiding
-                      the first divider in every wrap state. Cards-on-a-band
-                      read as tiles; a strip reads as a table of record. */}
-                  <div style={{ overflow: "hidden" }}>
-                    <div style={{ display: "flex", flexWrap: "wrap", rowGap: "48px", marginLeft: "-25px" }}>
-                      {Object.entries(data.report!.medianByStage)
-                        .sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
-                        .slice(0, 3)
-                        .map(([stage, median]) => (
-                          <div key={stage} style={{ flex: "1 1 190px", minWidth: 0, borderLeft: "1px solid color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", padding: "0 24px" }}>
-                            {/* Label above the figure, as everywhere else on
-                                the page: rule, name, number, top to bottom. */}
-                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px" }}>
-                              {t("report.medianTarget")} {"\u00B7"} {(STAGE_LABELS[stage] ?? stage).replace(/_/g, " ")}
-                            </div>
-                            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(32px, 3vw + 18px, 52px)", color: "var(--cr-copper)", lineHeight: 1, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>
-                              {"$" + (median >= 1_000_000 ? (median / 1_000_000).toFixed(1) + "M" : Math.round(median / 1000) + "k")}
-                            </div>
-                          </div>
-                        ))}
-                      {data.report!.newThisMonth > 0 && (
-                        <div style={{ flex: "1 1 190px", minWidth: 0, borderLeft: "1px solid color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", padding: "0 24px" }}>
-                          <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px" }}>
-                            {t("report.newThisMonth")}
-                          </div>
-                          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "clamp(32px, 3vw + 18px, 52px)", color: "var(--cr-band-ink)", lineHeight: 1, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>
-                            {data.report!.newThisMonth}
-                          </div>
-                        </div>
+            {/* ── The one primary chart ─────────────────────────────────────
+                Totals say how big the platform is and nothing about whether
+                it is growing, so growth is the single chart the page shows on
+                arrival. Twelve months, empty months included: dropping them
+                draws a straight line across the gap, which reads as steady
+                activity and is the opposite of what happened. Capital sits on
+                its own tab rather than its own frame -- two units in one
+                eyeful was two charts where the reader needed one -- and the
+                numbers behind both are the third tab. */}
+            {monthly.length > 0 && (
+              <section style={{ marginBottom: SECTION_GAP }}>
+                <div className="ruled-label" style={{ marginBottom: ROW_GAP }}>{t("data.overTime")}</div>
+                <TabStrip
+                  tabs={growthTabs}
+                  active={growthView}
+                  onSelect={setGrowthView}
+                  idBase={growthId}
+                  label={t("data.overTime")}
+                />
+                <div
+                  role="tabpanel"
+                  id={`${growthId}-panel-${growthView}`}
+                  aria-labelledby={`${growthId}-tab-${growthView}`}
+                >
+                  {growthView === "numbers" ? (
+                    /* Every chart has a table behind it: some of these fills
+                       sit below 3:1 against paper, and a reader who cannot
+                       separate them still needs the numbers. */
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+                        <thead>
+                          <tr>
+                            {/* Ledger alignment: the month reads left, every
+                                figure right, so magnitudes line up down each
+                                column the way a yearbook sets them. */}
+                            {[t("data.month"), t("data.newListings"), t("data.dealsClosed"), t("data.capitalSought")].map((h, i) => (
+                              <th key={h} style={i === 0 ? cellTh : cellThNum}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {monthly.map(m => (
+                            <tr key={m.month}>
+                              <td style={cellTd}>{m.month}</td>
+                              <td style={cellTdNum}>{m.listings}</td>
+                              <td style={cellTdNum}>{m.closed}</td>
+                              <td style={cellTdNum}>{safeFormatCurrency(m.sought)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : growthView === "capital" ? (
+                    <>
+                      {/* Capital is a different unit, so it gets its own
+                          frame. Two scales on one axis can be made to cross
+                          wherever you like, which is the commonest way a
+                          chart lies. */}
+                      <p style={{ ...capsLabel, letterSpacing: "0.1em", margin: `0 0 ${ROW_GAP}` }}>
+                        {t("data.capitalSought")}
+                        <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: LABEL_GAP, color: "var(--cr-ink-4)" }}>$/mo</span>
+                      </p>
+                      <LineChart
+                        height={200}
+                        labels={monthly.map(m => monthLabel(m.month))}
+                        formatTick={(n) => (n === 0 ? "0" : compactMoney(n))}
+                        series={[{ key: "sought", label: t("data.capitalSought"), values: monthly.map(m => m.sought), format: (n) => safeFormatCurrency(n) ?? "—" }]}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      {/* The caption names both series in the frame; the mono
+                          "/mo" says what one point on the line IS -- a count
+                          for that month, not a running total. */}
+                      <p style={{ ...capsLabel, letterSpacing: "0.1em", margin: `0 0 ${ROW_GAP}` }}>
+                        {t("data.newListings")} · {t("data.dealsClosed")}
+                        <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: LABEL_GAP, color: "var(--cr-ink-4)" }}>/mo</span>
+                      </p>
+                      <LineChart
+                        height={200}
+                        labels={monthly.map(m => monthLabel(m.month))}
+                        series={[
+                          { key: "listings", label: t("data.newListings"), values: monthly.map(m => m.listings) },
+                          { key: "closed", label: t("data.dealsClosed"), values: monthly.map(m => m.closed) },
+                        ]}
+                      />
+                    </>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* ── The breakdowns ────────────────────────────────────────────
+                Four cuts of the same platform, one visible at a time. The
+                funnel, the industry ring, the stage bars and the medians
+                table all used to land at once, each with its own heading and
+                its own accent, which is what made the page shout. Nothing has
+                been dropped: every one of them is a single click away, and
+                the medians tab now lists every stage rather than the top
+                three the old band had room for. */}
+            <section style={{ marginBottom: SECTION_GAP }}>
+              <div className="ruled-label" style={{ marginBottom: ROW_GAP }}>{tf("data.breakdowns", "Breakdowns")}</div>
+              <TabStrip
+                tabs={breakdownTabs}
+                active={activeBreakdown}
+                onSelect={setBreakdown}
+                idBase={breakdownId}
+                label={tf("data.breakdowns", "Breakdowns")}
+              />
+              <div
+                role="tabpanel"
+                id={`${breakdownId}-panel-${activeBreakdown}`}
+                aria-labelledby={`${breakdownId}-tab-${activeBreakdown}`}
+              >
+                {/* Deal flow. Aggregate counts only -- the API deliberately
+                    sends no startup, investor or per-deal amount, because
+                    deals are private between their two participants. */}
+                {activeBreakdown === "deals" && data.byDealStage && (
+                  <>
+                    {/* The two headline figures answer "how many deals, how
+                        many close" before the funnel is read. Close rate is
+                        set in ink, not green: green on this surface means
+                        capital moved, and a ratio is not a direction. */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: `${ROW_GAP} 32px`, marginBottom: BLOCK_GAP }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                        {t("data.liveDeals")}{" "}
+                        <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>{data.activeDeals}</strong>
+                      </span>
+                      {data.closeRate != null && (
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                          {t("data.closeRate")}{" "}
+                          <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>{data.closeRate}%</strong>
+                        </span>
                       )}
                     </div>
-                  </div>
-                </div>
-              </section>
-            )}
 
-            {/* ── Chapter: growth over time ─────────────────────────────────
-                Totals say how big the platform is and nothing about whether
-                it is growing. Twelve months, empty months included: dropping
-                them draws a straight line across the gap, which reads as
-                steady activity and is the opposite of what happened. The old
-                panel title is promoted to the chapter opener; each chart
-                frame inside carries its own caption plus an explicit unit
-                marker, so a visitor knows what each line counts before
-                reading a single value. */}
-            {monthly.length > 0 && (
-              <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
-                  <div className="ruled-label">
-                    <span aria-hidden style={chapterNum}>{chapterMark()}</span>
-                    {t("data.overTime")}
-                  </div>
-                  <button onClick={() => setShowTable(v => !v)}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)" }}>
-                    {showTable ? t("data.showChart") : t("data.showTable")}
-                  </button>
-                </div>
-                <div style={plate}>
+                    {/* The funnel as an open strip, not a boxed grid: five
+                        columns split by vertical hairlines, each opened by
+                        its own overline rule, sitting directly on the paper.
+                        The crop trick handles every wrap state -- five across
+                        on desktop, a stacked funnel at phone widths --
+                        without a media query. */}
+                    <div style={{ overflow: "hidden" }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
+                        {DEAL_STAGES.map(({ key, color }, idx) => {
+                          const n = data.byDealStage[key] ?? 0;
+                          const max = Math.max(...Object.values(data.byDealStage), 1);
+                          return (
+                            <div key={key} style={{ flex: "1 1 150px", minWidth: 0, display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule-dark)", borderLeft: "1px solid var(--cr-rule)", padding: "12px 24px 0" }}>
+                              {/* Numbered rail: the 01-05 says these are one
+                                  sequence, read left to right, ending in the
+                                  two outcomes. It is the only numbered rail
+                                  left on the page, so the device now means
+                                  "this is ordered" and nothing else. */}
+                              <p style={{ ...capsLabel, fontSize: "9px", letterSpacing: "0.1em", marginBottom: "12px" }}>
+                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", marginRight: LABEL_GAP }}>{`0${idx + 1}`}</span>
+                                {t(`data.stage_${key}`)}
+                              </p>
+                              {/* Same figure size as every other second-rank
+                                  number on the page. The meter pins to the
+                                  bottom so the five bars align even when a
+                                  stage name wraps. */}
+                              <p style={{ ...monoFigure, fontSize: FIG_2, marginBottom: "12px" }}>{n}</p>
+                              {/* The track is capped at a fixed width: when
+                                  the strip wraps, cells differ in width, and
+                                  a percentage of the cell would give the same
+                                  count a longer bar on a wider row. */}
+                              <div style={{ height: "2px", maxWidth: "120px", background: "var(--cr-rule)", overflow: "hidden", marginTop: "auto" }}>
+                                <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
 
-                {showTable ? (
-                  /* Every chart has a table behind it: some of these fills sit
-                     below 3:1 against paper, and a reader who cannot separate
-                     them still needs the numbers. */
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "420px" }}>
-                      <thead>
-                        <tr>
-                          {/* Ledger alignment: the month reads left, every
-                              figure right, so magnitudes line up down each
-                              column the way a yearbook sets them. */}
-                          {[t("data.month"), t("data.newListings"), t("data.dealsClosed"), t("data.capitalSought")].map((h, i) => (
-                            <th key={h} style={{ textAlign: i === 0 ? "left" : "right", padding: "6px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", borderBottom: "1px solid var(--cr-rule-dark)" }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {monthly.map(m => (
-                          <tr key={m.month}>
-                            <td style={cellTd}>{m.month}</td>
-                            <td style={cellTdNum}>{m.listings}</td>
-                            <td style={cellTdNum}>{m.closed}</td>
-                            <td style={cellTdNum}>{safeFormatCurrency(m.sought)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <>
-                    {/* The caption names both series in the frame; the mono
-                        "/mo" says what one point on the line IS -- a count
-                        for that month, not a running total. */}
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", margin: "0 0 6px" }}>
-                      {t("data.newListings")} · {t("data.dealsClosed")}
-                      <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: "8px", color: "var(--cr-ink-4)" }}>/mo</span>
-                    </p>
-                    <LineChart
-                      labels={monthly.map(m => monthLabel(m.month))}
-                      series={[
-                        { key: "listings", label: t("data.newListings"), values: monthly.map(m => m.listings) },
-                        { key: "closed", label: t("data.dealsClosed"), values: monthly.map(m => m.closed) },
-                      ]}
-                    />
-                    {/* Capital is a different unit, so it gets its own frame.
-                        Two scales on one axis can be made to cross wherever
-                        you like, which is the commonest way a chart lies. */}
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", margin: "22px 0 6px" }}>
-                      {t("data.capitalSought")}
-                      <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: "8px", color: "var(--cr-ink-4)" }}>$/mo</span>
-                    </p>
-                    <LineChart
-                      height={140}
-                      labels={monthly.map(m => monthLabel(m.month))}
-                      formatTick={(n) => (n === 0 ? "0" : compactMoney(n))}
-                      series={[{ key: "sought", label: t("data.capitalSought"), values: monthly.map(m => m.sought), format: (n) => safeFormatCurrency(n) ?? "—" }]}
-                    />
+                    {data.closedCurrencies?.length > 1 && (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP }}>
+                        {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
+                      </p>
+                    )}
                   </>
                 )}
-                </div>
-              </section>
-            )}
 
-            {/* ── Chapter: deal flow ────────────────────────────────────────
-                The pipeline is the part of this product that isn't a
-                directory, and until now it was invisible to anyone who hadn't
-                signed in. Aggregate counts only -- the API deliberately sends
-                no startup, investor or per-deal amount, because deals are
-                private between their two participants. The two headline
-                figures sit in the opener line itself, so the chapter answers
-                "how many deals, how many close" before the funnel is read. */}
-            {data.byDealStage && (
-              <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
-                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
-                  <div className="ruled-label">
-                    <span aria-hidden style={chapterNum}>{chapterMark()}</span>
-                    {t("data.dealFlow")}
-                  </div>
-                  <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
-                      {t("data.liveDeals")}{" "}
-                      <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>{data.activeDeals}</strong>
-                    </span>
-                    {data.closeRate != null && (
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
-                        {t("data.closeRate")}{" "}
-                        <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-up)" }}>{data.closeRate}%</strong>
-                      </span>
+                {/* Industry: share of the whole -- the one question a ring
+                    answers better than bars. The FULL breakdown, not the top
+                    six: the ring has to close, and a ring with a gap in it
+                    reads as a rendering bug rather than as "the rest". The
+                    component folds the tail into a grey "other" itself, and
+                    every slice carries its percentage so nothing rests on
+                    telling two colours apart. */}
+                {activeBreakdown === "industry" && (
+                  industryEntries.length === 0 ? (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>{t("data.noDataYet")}</p>
+                  ) : (
+                    <DonutChart
+                      slices={Object.entries(data.byIndustry).map(([label, count]) => ({ key: label, label, value: count }))}
+                      otherLabel={t("data.otherIndustries")}
+                      hrefFor={(industry) => `/startups?industries=${encodeURIComponent(industry)}`}
+                    />
+                  )
+                )}
+
+                {/* Stage breakdown */}
+                {activeBreakdown === "stage" && (
+                  stageEntries.length === 0 ? (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>{t("data.noDataYet")}</p>
+                  ) : (
+                    <BarChart
+                      bars={stageEntries.map(([label, count]) => ({
+                        key: label, label: STAGE_LABELS[label] ?? label, value: count,
+                      }))}
+                      hrefFor={(stage) => `/startups?stages=${encodeURIComponent(stage)}`}
+                    />
+                  )
+                )}
+
+                {/* Medians, not means: one mega-round must not move what the
+                    market calls a typical raise. This was a slab of 52px
+                    copper figures competing with the page's lead total; as a
+                    ruled table it holds every stage instead of three, and the
+                    figures sit in ink where they belong. */}
+                {activeBreakdown === "medians" && data.report && (
+                  <>
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+                        <thead>
+                          <tr>
+                            <th style={cellTh}>{t("listings.stage")}</th>
+                            <th style={cellThNum}>{t("report.medianTarget")}</th>
+                            <th style={cellThNum}>{tf("data.listingsCount", "Listings")}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {medianEntries.map(([stage, median]) => (
+                            <tr key={stage}>
+                              <td style={{ ...cellTd, fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}>
+                                {(STAGE_LABELS[stage] ?? stage).replace(/_/g, " ")}
+                              </td>
+                              <td style={{ ...cellTdNum, color: "var(--cr-ink)", fontWeight: 600 }}>{medianMoney(median)}</td>
+                              <td style={cellTdNum}>{data.byStage[stage] ?? 0}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {data.report.newThisMonth > 0 && (
+                      <div style={{ marginTop: BLOCK_GAP, borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "12px" }}>
+                        <Figure label={t("report.newThisMonth")}>{data.report.newThisMonth}</Figure>
+                      </div>
                     )}
-                  </div>
-                </div>
-
-                {/* The funnel as an open strip, not a boxed grid: five
-                    columns split by vertical hairlines, each opened by its
-                    own overline rule, sitting directly on the paper. The
-                    25px crop trick handles every wrap state -- five across
-                    on desktop, a stacked funnel at phone widths -- without
-                    a media query. */}
-                <div style={{ overflow: "hidden" }}>
-                  <div style={{ display: "flex", flexWrap: "wrap", rowGap: "32px", marginLeft: "-25px" }}>
-                    {DEAL_STAGES.map(({ key, color }, idx) => {
-                      const n = data.byDealStage[key] ?? 0;
-                      const max = Math.max(...Object.values(data.byDealStage), 1);
-                      return (
-                        <div key={key} style={{ flex: "1 1 150px", minWidth: 0, display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule-dark)", borderLeft: "1px solid var(--cr-rule)", padding: "12px 24px 0" }}>
-                          {/* Numbered rail: the 01-05 says these are one
-                              sequence, read left to right, ending in the two
-                              outcomes. */}
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", marginRight: "6px" }}>{`0${idx + 1}`}</span>
-                            {t(`data.stage_${key}`)}
-                          </p>
-                          {/* Same figure size as the supporting totals above:
-                              one voice for every second-rank number. The
-                              meter pins to the bottom so the five bars align
-                              even when a stage name wraps. */}
-                          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontVariantNumeric: "tabular-nums", fontSize: "clamp(20px, 1.4vw + 12px, 28px)", lineHeight: 1, color: "var(--cr-ink)", marginBottom: "12px" }}>{n}</p>
-                          {/* The track is capped at a fixed width: when the
-                              strip wraps, cells differ in width, and a
-                              percentage of the cell would give the same count
-                              a longer bar on a wider row. */}
-                          <div style={{ height: "2px", maxWidth: "120px", background: "var(--cr-rule)", overflow: "hidden", marginTop: "auto" }}>
-                            <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {data.closedCurrencies?.length > 1 && (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "12px" }}>
-                    {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
-                  </p>
+                  </>
                 )}
-              </section>
-            )}
-
-            {/* ── Chapter: the startup population, cut two ways ─────────────
-                Both charts slice the same thing -- the active startups the
-                first stat card counts -- by industry and by stage. The opener
-                reuses that stat's key, which also names the unit behind every
-                figure in this chapter: each count is a number of startups. */}
-            <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
-              <div className="ruled-label" style={{ marginBottom: "24px" }}>
-                <span aria-hidden style={chapterNum}>{chapterMark()}</span>
-                {t("data.startups")}
-              </div>
-              <div className="grid-half-stack" style={{ gap: "24px" }}>
-
-              {/* Industry breakdown. The panel titles drop their pictograms:
-                  a small-caps label over a hairline is the house column
-                  header, and four different icons in copper said nothing the
-                  words did not. */}
-              <div style={plate}>
-                <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)", paddingBottom: "8px", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>{t("data.industryBreakdown")}</h3>
-                {industryEntries.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
-                ) : (
-                  /* Share of the whole — the one question a ring answers
-                     better than bars. The tail folds into a grey "other"
-                     rather than adding unreadable slivers, and every slice
-                     carries its percentage so nothing rests on telling two
-                     colours apart. */
-                  /* The FULL breakdown, not the top six: the ring has to
-                     close, and a ring with a gap in it reads as a rendering
-                     bug rather than as "the rest". The component folds the
-                     tail into a grey "other" itself. */
-                  <DonutChart
-                    slices={Object.entries(data.byIndustry).map(([label, count]) => ({ key: label, label, value: count }))}
-                    otherLabel={t("data.otherIndustries")}
-                    hrefFor={(industry) => `/startups?industries=${encodeURIComponent(industry)}`}
-                  />
-                )}
-              </div>
-
-              {/* Stage breakdown */}
-              <div style={plate}>
-                <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)", paddingBottom: "8px", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>{t("data.stageBreakdown")}</h3>
-                {stageEntries.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 0", textAlign: "center" }}>{t("data.noDataYet")}</p>
-                ) : (
-                  <BarChart
-                    bars={stageEntries.map(([label, count]) => ({
-                      key: label, label: STAGE_LABELS[label] ?? label, value: count,
-                    }))}
-                    hrefFor={(stage) => `/startups?stages=${encodeURIComponent(stage)}`}
-                  />
-                )}
-              </div>
               </div>
             </section>
 
-            {/* ── Chapter: the rounds themselves ────────────────────────────
-                After three chapters of aggregates, the individual listings.
-                The opener reuses the homepage's label for the same content,
-                so the two surfaces speak one vocabulary. */}
-            <section style={{ marginBottom: "clamp(64px, 9vw, 96px)" }}>
-              <div className="ruled-label" style={{ marginBottom: "24px" }}>
-                <span aria-hidden style={chapterNum}>{chapterMark()}</span>
-                {t("listings.sectionLabel")}
+            {/* ── The rounds themselves ─────────────────────────────────────
+                After the aggregates, the individual listings. Two ledgers
+                that used to sit side by side, each with its own heading and
+                its own "view all", now share one opener and one link: the
+                ranking and the newest rounds are a tap apart, and a phone
+                gets one ledger at a time instead of twelve stacked rows. */}
+            <section style={{ marginBottom: SECTION_GAP }}>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: ROW_GAP }}>
+                <div className="ruled-label">{t("listings.sectionLabel")}</div>
+                <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("common.viewAll")} →</Link>
               </div>
-              {/* Two open ledgers, not two boxed cards: the rows and their
-                  hairlines ARE the structure, sitting directly on the paper
-                  the way a report sets its tables. */}
-              <div className="grid-half-stack" style={{ gap: "32px 48px" }}>
-
-              {/* Top AI scores */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
-                  <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)" }}>{t("data.topAiScores")}</h3>
-                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("common.viewAll")} →</Link>
-                </div>
-                {/* One plain-language line saying what the ranking is. The
-                    key sat unused in the dictionary; "Top AI Scores" alone
-                    told a first-time visitor nothing about what is scored. */}
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", margin: "0 0 16px" }}>
-                  {t("data.topPerforming")}
-                </p>
-                {data.topStartups.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noScoresYet")}</p>
+              <TabStrip
+                tabs={ledgerTabs}
+                active={ledger}
+                onSelect={setLedger}
+                idBase={ledgerId}
+                label={t("listings.sectionLabel")}
+              />
+              <div
+                role="tabpanel"
+                id={`${ledgerId}-panel-${ledger}`}
+                aria-labelledby={`${ledgerId}-tab-${ledger}`}
+                style={{ minWidth: 0 }}
+              >
+                {ledger === "scores" ? (
+                  <>
+                    {/* One plain-language line saying what the ranking is.
+                        "Top AI Scores" alone told a first-time visitor
+                        nothing about what is scored. */}
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", margin: `0 0 ${ROW_GAP}` }}>
+                      {t("data.topPerforming")}
+                    </p>
+                    {data.topStartups.length === 0 ? (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>{t("data.noScoresYet")}</p>
+                    ) : (
+                      <>
+                        {/* A header line names the columns, so the right-hand
+                            pill is identified as the AI score before the
+                            first row. The 2px ink rule over it is the classic
+                            yearbook table head: heavy rule, column names,
+                            light rule, then the rows. */}
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: LABEL_GAP, paddingBottom: LABEL_GAP, borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                          <span style={capsLabel}>{t("listings.company")}</span>
+                          <span style={capsLabel}>{t("listings.aiScore")}</span>
+                        </div>
+                        {/* Ledger rows: the 01-style mono rail replaces the
+                            monogram tile -- a rank is a number, not a
+                            picture -- and .listing-row gives the house hover
+                            (paper-3 wash, copper edge) shared with the
+                            startups directory. */}
+                        {data.topStartups.map((s, i) => (
+                          <Link key={s.slug} href={`/startups/${s.slug}`} className="listing-row" style={{ display: "flex", alignItems: "center", gap: ROW_GAP, padding: `${ROW_GAP} 0`, borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
+                            <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
+                              {/* Per-startup MRR left this public surface
+                                  with the entitlement lockdown (109) -- the
+                                  row would have labelled every company
+                                  "Pre-rev". Industry and stage, like the
+                                  recent-listings ledger. */}
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
+                            </div>
+                            <ScorePill score={s.ai_score} />
+                          </Link>
+                        ))}
+                      </>
+                    )}
+                  </>
                 ) : (
                   <>
-                  {/* A header line names the columns, so the right-hand pill
-                      is identified as the AI score before the first row. The
-                      2px ink rule over it is the classic yearbook table head:
-                      heavy rule, column names, light rule, then the rows. */}
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: "8px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.company")}</span>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.aiScore")}</span>
-                  </div>
-                  {/* Ledger rows: the 01-style mono rail replaces the
-                      monogram tile -- a rank is a number, not a picture --
-                      and .listing-row gives the house hover (paper-3 wash,
-                      copper edge) shared with the startups directory. */}
-                  {data.topStartups.map((s, i) => (
-                    <Link key={s.slug} href={`/startups/${s.slug}`} className="listing-row" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
-                      <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                        {/* Per-startup MRR left this public surface with the
-                            entitlement lockdown (109) -- the row would have
-                            labelled every company "Pre-rev". Industry and
-                            stage, like the recent-listings ledger. */}
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
-                      </div>
-                      <ScorePill score={s.ai_score} />
-                    </Link>
-                  ))}
+                    {data.recentStartups.length === 0 ? (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>{t("data.noListingsYet")}</p>
+                    ) : (
+                      <>
+                        {/* The right-hand mono figure is the round being
+                            raised; without a column name it read as any
+                            number at all. Same double-rule table head as the
+                            ranking beside it. */}
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: LABEL_GAP, paddingBottom: LABEL_GAP, borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                          <span style={capsLabel}>{t("listings.company")}</span>
+                          <span style={capsLabel}>{t("listings.raising")}</span>
+                        </div>
+                        {data.recentStartups.map((s, i) => (
+                          <Link key={s.slug} href={`/startups/${s.slug}`} className="listing-row" style={{ display: "flex", alignItems: "center", gap: ROW_GAP, padding: `${ROW_GAP} 0`, borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
+                            <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
+                            </div>
+                            <div style={{ textAlign: "right", flexShrink: 0 }}>
+                              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)" }}>{fmtRaising(s.funding_target)}</p>
+                              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{timeAgo(s.created_at)}</p>
+                            </div>
+                          </Link>
+                        ))}
+                      </>
+                    )}
                   </>
                 )}
-              </div>
-
-              {/* Recent listings */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "24px" }}>
-                  <h3 style={{ ...capsLabel, color: "var(--cr-ink-3)" }}>{t("data.recentListings")}</h3>
-                  <Link href="/startups" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("common.viewAll")} →</Link>
-                </div>
-
-                {data.recentStartups.length === 0 ? (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", textAlign: "center", padding: "24px 0" }}>{t("data.noListingsYet")}</p>
-                ) : (
-                  <>
-                  {/* The right-hand mono figure is the round being raised;
-                      without a column name it read as any number at all. Same
-                      double-rule table head as the ranking beside it. */}
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: "8px", paddingBottom: "6px", borderBottom: "1px solid var(--cr-rule-dark)" }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.company")}</span>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>{t("listings.raising")}</span>
-                  </div>
-                  {/* Same ledger voice as the ranking beside it: numbered
-                      rail, name, figures -- the initial-letter tile said
-                      nothing the name does not. */}
-                  {data.recentStartups.map((s, i) => (
-                    <Link key={s.slug} href={`/startups/${s.slug}`} className="listing-row" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
-                      <span className="listing-row-num" style={{ fontWeight: 700, minWidth: "24px", textAlign: "left" }}>{String(i + 1).padStart(2, "0")}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.industry} · {STAGE_LABELS[s.stage] ?? s.stage}</p>
-                      </div>
-                      <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)" }}>{fmtRaising(s.funding_target)}</p>
-                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)" }}>{timeAgo(s.created_at)}</p>
-                      </div>
-                    </Link>
-                  ))}
-                  </>
-                )}
-              </div>
               </div>
             </section>
 
             {/* CTA: a closing band, not a card -- hairlines top and bottom,
-                no radius, the diamond as the single ornament. */}
-            <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 5vw, 40px)", textAlign: "center" }}>
-              <div aria-hidden style={{ fontSize: "14px", color: "var(--cr-copper)", marginBottom: "16px", lineHeight: 1 }}>{"✦"}</div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "8px" }}>{t("data.featuredHere")}</h2>
+                no radius, the diamond as the single ornament. It is now the
+                page's only slab: the medians band that used to sit above it
+                became a table, so one moment on the surface is a band and it
+                is the one asking for something. */}
+            <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 5vw, 32px)", textAlign: "center" }}>
+              <div aria-hidden style={{ fontSize: "14px", color: "var(--cr-copper)", marginBottom: ROW_GAP, lineHeight: 1 }}>{"✦"}</div>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "12px" }}>{t("data.featuredHere")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
                 {t("data.featuredHereSub")}
               </p>
-              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
+              <Link href="/auth/signup?role=startup" style={{ display: "inline-flex", alignItems: "center", gap: LABEL_GAP, background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", textDecoration: "none" }}>
                 {t("data.listFree")} →
               </Link>
             </div>

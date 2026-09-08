@@ -1,4 +1,7 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { browseIndexPublic } from "@/lib/listing-visibility";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupsSearch } from "@/components/startup/startups-search";
@@ -18,6 +21,15 @@ export const metadata: Metadata = {
 };
 
 export default async function StartupsPage() {
+  // Signed out, the product is the home page, the pricing page and the data
+  // centre. The catalogue names real companies that are raising, and a
+  // private marketplace does not put that in front of the street.
+  if (!(await browseIndexPublic())) {
+    const gate = await createServerSupabaseClient();
+    const { data: { user } } = await gate.auth.getUser();
+    if (!user) redirect("/auth/login?redirect=/startups");
+  }
+
   // Rows are fetched on the server so the page ships with its listings in
   // the HTML: no "Loading" first paint, crawlable, and instant on a cold
   // client. A failed load hands `undefined` down and the client fetches.

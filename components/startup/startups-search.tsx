@@ -72,6 +72,29 @@ const SORT_OPTIONS = [
 
 const PAGE_SIZE = 24;
 
+/**
+ * The vertical rhythm of this surface, in one place so every block obeys it:
+ * 48 between major sections (bar to results, grid to pager), 24 between blocks
+ * (grid gutters, card internals, sheet sections), 12-16 inside a block, 8
+ * between a label and its value, 4 between a value and its unit.
+ *
+ * WHY one constant: the bar, the cards and the sheet each used to carry their
+ * own ad-hoc numbers (7, 9, 10, 14, 18, 20, 22), so nothing lined up and the
+ * density read as clutter. Every gap on this page now comes from here.
+ */
+const RHYTHM = { section: "48px", block: "24px", inner: "16px", pair: "8px" } as const;
+
+/**
+ * A row-level tool (copy link, export, show hidden). Same size as the count it
+ * sits beside, one step down in ink and with no underline: these act on the
+ * result set, they are not the result set.
+ */
+const QUIET_ACTION: React.CSSProperties = {
+  background: "none", border: "none", padding: 0, cursor: "pointer",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px",
+  color: "var(--cr-ink-3)", textDecoration: "none", textAlign: "left",
+};
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Startup {
@@ -96,6 +119,26 @@ const DEFAULT_FILTERS: Filters = {
   mrrMin: 0, aiScoreMin: 0, sort: "score", country: "", newOnly: false,
   raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
 };
+
+/**
+ * How many of the traction filters are on. Drives the count on the Traction
+ * group and, with region and business model, the count on "More filters".
+ */
+function tractionActive(f: Filters) {
+  return (f.mrrMin > 0 ? 1 : 0) + (f.aiScoreMin > 0 ? 1 : 0) + (f.newOnly ? 1 : 0)
+    + (f.raisingMin ? 1 : 0) + (f.runwayMin ? 1 : 0) + (f.growthMin ? 1 : 0)
+    + (f.closingSoon ? 1 : 0) + (f.hasDemo ? 1 : 0);
+}
+
+/**
+ * The filters that sit behind the "More filters" disclosure: traction
+ * thresholds, region, business model. Industry and stage stay on the bar
+ * because they are how a deal-flow list is read first; nothing else is on
+ * screen by default, and nothing is more than one click away.
+ */
+function advancedActive(f: Filters) {
+  return tractionActive(f) + (f.country ? 1 : 0) + (f.businessModel ? 1 : 0);
+}
 
 // ── Saved searches ────────────────────────────────────────────────────────────
 
@@ -176,20 +219,20 @@ function SavedSearches({ filters, onApply, isDefault }: {
 
   return (
     <div style={{ background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule)" }}>
-      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "8px", paddingBottom: "8px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>
           {t("startups.savedSearches")}
         </span>
 
         {searches.map((s) => (
-          <span key={s.id} style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "3px 4px 3px 11px" }}>
+          <span key={s.id} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "4px 8px 4px 12px" }}>
             <button onClick={() => onApply(s.filters)}
               style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: 0 }}>
               {s.name}
             </button>
             <button onClick={() => remove(s.id)} aria-label={t("startups.savedSearchDelete", { name: s.name })}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: "2px" }}>
-              <X style={{ width: 11, height: 11 }} />
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: "4px" }}>
+              <X style={{ width: 12, height: 12 }} />
             </button>
           </span>
         ))}
@@ -205,7 +248,7 @@ function SavedSearches({ filters, onApply, isDefault }: {
             }}
             maxLength={80}
             placeholder={t("startups.savedSearchNamePlaceholder")}
-            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-copper)", borderRadius: "999px", padding: "4px 11px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none", width: "180px" }}
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-copper)", borderRadius: "999px", padding: "4px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none", width: "180px" }}
           />
         ) : (
           // Saving the default, empty filter set would just create an entry
@@ -250,9 +293,9 @@ function FilterGroup({ label, count, open, onToggle, children }: {
     <div style={{ position: "relative", flexShrink: 0 }}>
       <button onClick={onToggle}
         style={{
-          display: "inline-flex", alignItems: "center", gap: "6px",
+          display: "inline-flex", alignItems: "center", gap: "8px",
           fontFamily: "'DM Sans', sans-serif", fontWeight: count > 0 ? 500 : 400, fontSize: "13px",
-          padding: "6px 12px", borderRadius: "3px",
+          padding: "8px 12px", borderRadius: "3px",
           border: count > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
           background: count > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
           color: count > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -263,7 +306,7 @@ function FilterGroup({ label, count, open, onToggle, children }: {
       </button>
       {/* Desktop: a panel anchored under its chip. */}
       {open && (
-        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: "12px", flexWrap: "wrap", gap: "6px", zIndex: 50 }}>
+        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
           {children}
         </div>
       )}
@@ -297,18 +340,20 @@ function FilterGroup({ label, count, open, onToggle, children }: {
               display: "flex", flexDirection: "column",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 16px 10px", borderBottom: "1px solid var(--cr-rule)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: RHYTHM.inner, borderBottom: "1px solid var(--cr-rule)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
                 {label}
               </span>
               <button
                 onClick={onToggle}
-                style={{ minHeight: "36px", paddingInline: "14px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)", cursor: "pointer" }}
+                // 48 rather than the 40 minimum: a touch target still has to
+                // sit on the spacing scale, and 48 is the first step that does.
+                style={{ minHeight: "48px", paddingInline: RHYTHM.inner, border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)", cursor: "pointer" }}
               >
                 {doneLabel}
               </button>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", padding: "14px 16px", overflowY: "auto", paddingBottom: "calc(14px + env(safe-area-inset-bottom, 0px))" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: RHYTHM.pair, padding: RHYTHM.inner, overflowY: "auto", paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
               {children}
             </div>
           </div>
@@ -318,14 +363,20 @@ function FilterGroup({ label, count, open, onToggle, children }: {
   );
 }
 
-/** One applied filter in the summary row: label + its own remove control. */
+/**
+ * One applied filter in the summary row: label + its own remove control.
+ *
+ * Quiet on purpose. Eight copper chips under a bar of copper group buttons was
+ * the same accent shouting twice; the buttons above carry the active state, so
+ * this row is the ledger of what is on, not another alarm.
+ */
 function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "3px 6px 3px 10px" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-2)", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "4px 8px 4px 12px" }}>
       {label}
       <button onClick={onRemove} aria-label={`remove ${label}`}
         style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
-        <X style={{ width: 11, height: 11 }} />
+        <X style={{ width: 12, height: 12 }} />
       </button>
     </span>
   );
@@ -339,7 +390,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
         fontFamily:    "'DM Sans', sans-serif",
         fontWeight:    active ? 500 : 400,
         fontSize:      "13px",
-        padding:       "6px 14px",
+        padding:       "8px 16px",
         borderRadius:  "3px",
         border:        active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
         background:    active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
@@ -354,27 +405,38 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
   );
 }
 
+/**
+ * The loading card is the REAL card with its values suppressed, not a stack of
+ * rounded gray bars: same 24 padding, same 16 between blocks, same hairline
+ * metric strip. A number's absence is a dash, so the grid does not reflow when
+ * the data lands and the wait reads as a quiet ledger instead of a shimmer.
+ */
 function SkeletonCard() {
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "20px" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px" }}>
-        <div className="skeleton" style={{ width: 40, height: 40, borderRadius: "4px" }} />
-        <div style={{ flex: 1 }}>
-          <div className="skeleton" style={{ height: 14, width: "50%", borderRadius: "2px", marginBottom: "8px" }} />
-          <div className="skeleton" style={{ height: 11, width: "75%", borderRadius: "2px" }} />
+    <div aria-hidden style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: RHYTHM.block, opacity: 0.55 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: RHYTHM.inner }}>
+        <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink-4)" }}>—</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>—</p>
         </div>
       </div>
-      <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
-        <div className="skeleton" style={{ height: 20, width: 80, borderRadius: "3px" }} />
-        <div className="skeleton" style={{ height: 20, width: 56, borderRadius: "3px" }} />
+      <div style={{ display: "flex", gap: RHYTHM.pair, marginBottom: RHYTHM.inner, flexWrap: "wrap" }}>
+        {[0, 1].map((i) => (
+          <span key={i} style={{ border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px" }}>—</span>
+        ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
-        {[0, 1, 2].map(i => <div key={i} className="skeleton" style={{ height: 52, borderRadius: "3px" }} />)}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: RHYTHM.inner }}>
+        {[0, 1, 2].map((i) => (
+          <div key={i} style={{ padding: "8px 12px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>—</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-4)" }}>—</div>
+          </div>
+        ))}
       </div>
-      <div style={{ height: 1, background: "var(--cr-rule)", marginBottom: "12px" }} />
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div className="skeleton" style={{ height: 18, width: 60, borderRadius: "2px" }} />
-        <div className="skeleton" style={{ height: 14, width: 80, borderRadius: "2px" }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink-4)" }}>—</div>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>—</div>
       </div>
     </div>
   );
@@ -395,7 +457,7 @@ function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: 
           <button onClick={onReset} style={{
             background: "transparent", color: "var(--cr-ink-3)",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
-            minHeight: "40px", padding: "8px 20px", borderRadius: "4px",
+            minHeight: "48px", padding: "8px 24px", borderRadius: "4px",
             border: "1px solid var(--cr-rule-dark)", cursor: "pointer",
           }}>
             {t("filters.clearAll")}
@@ -428,7 +490,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
         style={{
           position: "relative", display: "flex", flexDirection: "column",
           background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "4px", padding: "20px",
+          borderRadius: "4px", padding: RHYTHM.block,
           transition: "background 120ms ease, border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease", cursor: "pointer",
         }}
         onMouseEnter={e => {
@@ -444,78 +506,99 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
       >
         {/* The catalogue number: stable per company, derived from the id.
             A card is a specimen in a drawer, and specimens are numbered. */}
-        <span aria-hidden style={{ position: "absolute", bottom: "10px", right: "14px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "8.5px", letterSpacing: "0.14em", color: "var(--cr-ink-4)", opacity: 0.65 }}>
+        {/* Right edge aligned to the card's own 24 gutter, so it sits in the
+            same column as the runway line above it instead of 8px adrift. */}
+        <span aria-hidden style={{ position: "absolute", bottom: "12px", right: "24px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.14em", color: "var(--cr-ink-4)", opacity: 0.65 }}>
           {"CR–" + String(parseInt(s.id.replace(/-/g, "").slice(0, 6), 16) % 10000).padStart(4, "0")}
         </span>
-        {/* Bookmark */}
-        <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSave(s.id); }}
-          style={{ position: "absolute", top: "14px", right: "14px", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
-          aria-label={saved ? "Remove" : "Save"}
-        >
-          <Bookmark style={{ width: 15, height: 15, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
-        </button>
-        {onHide && (
+        {/* Save / hide / compare, stacked in ONE rail rather than three loose
+            absolute offsets (14 / 38 / 60). One anchor, one 4px beat, and
+            8px touch padding on each -- all three controls stay, they simply
+            stop being three separate decisions about where the eye goes. */}
+        <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", zIndex: 1 }}>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHide(s.id); }}
-            style={{ position: "absolute", top: "38px", right: "14px", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
-            aria-label={hidden ? t("startups.unhide") : t("startups.hide")}
-            title={hidden ? t("startups.unhide") : t("startups.hide")}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSave(s.id); }}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
+            aria-label={saved ? "Remove" : "Save"}
           >
-            <EyeOff style={{ width: 14, height: 14, color: hidden ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
+            <Bookmark style={{ width: 16, height: 16, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
           </button>
-        )}
-        {onCompare && (
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCompare(s.id); }}
-            style={{ position: "absolute", top: "60px", right: "14px", background: "none", border: "none", cursor: "pointer", padding: "2px", display: "flex" }}
-            aria-label={t("startups.compare")}
-            title={t("startups.compare")}
-          >
-            <GitCompareArrows style={{ width: 14, height: 14, color: comparing ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
-          </button>
-        )}
+          {onHide && (
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHide(s.id); }}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
+              aria-label={hidden ? t("startups.unhide") : t("startups.hide")}
+              title={hidden ? t("startups.unhide") : t("startups.hide")}
+            >
+              <EyeOff style={{ width: 16, height: 16, color: hidden ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
+            </button>
+          )}
+          {onCompare && (
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCompare(s.id); }}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
+              aria-label={t("startups.compare")}
+              title={t("startups.compare")}
+            >
+              <GitCompareArrows style={{ width: 16, height: 16, color: comparing ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
+            </button>
+          )}
+        </div>
 
         {/* Logo + Name */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px", paddingRight: "24px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: RHYTHM.inner, paddingRight: "32px" }}>
           <EntityLogo name={s.name} logoUrl={(s as { logo_url?: string | null }).logo_url} logoColor={(s as { logo_color?: string | null }).logo_color} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</span>
               {(s as { is_demo?: boolean }).is_demo && <DemoBadge />}
             </p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {s.tagline}
             </p>
           </div>
           <ScoreBadge score={score} size="md" />
         </div>
 
-        {/* Badges */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "14px", flexWrap: "wrap", alignItems: "center" }}>
+        {/* Badges. This row used to carry three copper things at once -- a
+            filled match pill, a copper "new" outline and a filled "trending"
+            pill -- while the raise figure below was ALSO copper, so nothing on
+            the card was actually emphasised. Every badge is kept; the accent
+            budget is now spent once, on the raise. Match keeps a copper
+            hairline because it is the one figure personal to this viewer;
+            new and trending step down to the neutral badge family and carry
+            their meaning in the word and the glyph instead of in colour.
+
+            Match joined them: ScoreBadge renders the readiness figure in
+            copper and the raise below is copper too, which is the house card's
+            established pair (components/startup/startup-card.tsx does the
+            same). A third copper thing on the same card is the count the brief
+            asks us to cut, so match keeps its weight and its figure and gives
+            up the hue. */}
+        <div style={{ display: "flex", gap: RHYTHM.pair, marginBottom: RHYTHM.inner, flexWrap: "wrap", alignItems: "center", paddingRight: "32px" }}>
           {viewed && (
             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
-              <Eye style={{ width: 11, height: 11 }} /> {t("startups.viewed")}
+              <Eye style={{ width: 12, height: 12 }} /> {t("startups.viewed")}
             </span>
           )}
           {match !== undefined && match >= 40 && (
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-band-ink)", background: "var(--cr-copper)", borderRadius: "3px", padding: "2px 8px", letterSpacing: "0.03em" }}>
+            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", letterSpacing: "0.03em" }}>
               {t("filters.matchPct", { pct: match })}
             </span>
           )}
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             {s.industry}
           </span>
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
             {STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ")}
           </span>
           {isNew && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {t("startup.new")}
             </span>
           )}
           {(s as { trending?: boolean }).trending && (
-            <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               ▲ {t("startups.trending")}
             </span>
           )}
@@ -538,13 +621,19 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
           });
           if (!metrics.length) return null;
           return (
-            <div style={{ display: "flex", alignItems: "stretch", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", marginBottom: "14px", overflow: "hidden" }}>
+            // Rules, not a box: a bordered tinted panel inside a bordered card
+            // is a card inside a card, which the house forbids and which is
+            // what made these three numbers shout. Same figures, same order,
+            // carried on two hairlines instead.
+            <div style={{ display: "flex", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: RHYTHM.inner }}>
               {metrics.map((m, i) => (
-                <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "8px 10px 7px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
+                <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "8px 12px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{m.label}</div>
                   <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: m.color ?? "var(--cr-ink)", display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.val}</span>
-                    {m.withSpark && spark && <Sparkline points={spark} width={40} height={14} />}
+                    {/* Fixed pixel box: a %-height sparkline in this flex row
+                        would collapse to nothing. */}
+                    {m.withSpark && spark && <Sparkline points={spark} width={40} height={16} />}
                   </div>
                 </div>
               ))}
@@ -552,10 +641,10 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
           );
         })()}
 
-        {/* Raise strip */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+        {/* Raise strip: the one loud thing on the card, and the only copper. */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
           <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("listings.raising")}</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{t("listings.raising")}</div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
               {safeFormatCurrencyAmount(s.funding_target)}
             </div>
@@ -736,6 +825,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     });
   }
   const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction" | "region" | "bmodel">(null);
+  // The advanced row opens itself when the URL already carries one of its
+  // filters -- a shared link must never hide the state it is describing.
+  const [moreOpen, setMoreOpen] = useState(() => advancedActive(initialFilters) > 0);
   const suggestions = filters.query.trim().length >= 2
     ? allStartups
         .filter(s => s.name.toLowerCase().includes(filters.query.trim().toLowerCase()))
@@ -907,6 +999,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
     filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0, filters.hasDemo ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
+  // What the "More filters" badge reports: everything behind the disclosure.
+  const advancedCount = advancedActive(filters);
 
   // Filtering rewrites the whole grid without a navigation, which is silent to
   // a screen reader: focus never moves and no page loads, so the only way to
@@ -1018,8 +1112,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
             <div>
-              <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.dealFlow")}</div>
-              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "10px" }}>
+              {/* Opener 16 above the headline, headline 8 above its own
+                  subtitle: the label belongs to the section, the count belongs
+                  to the title. Same two steps as the investor dashboard header,
+                  so the two surfaces open on one rhythm. */}
+              <div className="ruled-label" style={{ marginBottom: RHYTHM.inner }}>{t("dashboard.dealFlow")}</div>
+              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: RHYTHM.pair }}>
                 {t("startups.pageTitle")}
               </h1>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>
@@ -1029,15 +1127,24 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </p>
             </div>
 
-            {/* Desktop: sort + view toggle */}
-            <div className="hidden lg:flex" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* Sort + view toggle, at every width.
+                This carried `hidden lg:flex` AND an inline display:flex, so the
+                class never won and the cluster always rendered -- which is just
+                as well, because the sort dropdown is anchored inside this
+                relative box: hiding the cluster below lg would leave the
+                narrow-screen sort button opening a panel inside a display:none
+                subtree. The class is gone rather than the inline rule, so what
+                the code says is what the page does, and the duplicate sort
+                button that used to sit down in the results row is gone with it
+                (same control, same state, rendered twice). */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
               {/* Sort dropdown */}
               <div style={{ position: "relative" }}>
                 <button
                   onClick={() => setSortOpen((o) => !o)}
-                  style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}
+                  style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer" }}
                 >
-                  {sortLabel} <ChevronDown style={{ width: 13, height: 13 }} />
+                  {sortLabel} <ChevronDown style={{ width: 12, height: 12 }} />
                 </button>
                 {sortOpen && (
                   <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
@@ -1058,8 +1165,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
                 {(["grid", "list"] as const).map((v) => (
                   <button key={v} onClick={() => chooseView(v)} aria-label={v} aria-pressed={viewMode === v}
-                    style={{ padding: "7px 10px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
-                    {v === "grid" ? <LayoutGrid style={{ width: 15, height: 15 }} /> : <List style={{ width: 15, height: 15 }} />}
+                    style={{ padding: "8px 12px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
+                    {v === "grid" ? <LayoutGrid style={{ width: 16, height: 16 }} /> : <List style={{ width: 16, height: 16 }} />}
                   </button>
                 ))}
               </div>
@@ -1076,13 +1183,20 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       />
 
       {/* ── Sticky filter bar ── */}
+      {/* At rest this is ONE row: search, industry, stage, and a "More filters"
+          disclosure carrying the count of everything behind it. Every filter
+          that existed still exists and is one click away -- traction, region,
+          business model and the one-click presets simply stop competing with
+          the results for attention. The disclosure opens itself when the URL
+          already sets one of those filters, so a shared link never hides the
+          state it describes. No overflowX here: it clipped the open panels. */}
+      {/* top is the navbar's own height (components/shared/navbar: h-[56px]),
+          not a rhythm value -- the bar has to come to rest exactly under it. */}
       <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        {/* No overflowX here: it clipped the open filter-group panels. The three
-            groups fit every viewport; anything past them wraps instead. */}
-        <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "10px", paddingBottom: "10px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+        <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
           {/* Search */}
           <div style={{ position: "relative", flexShrink: 0 }}>
-            <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
+            <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "var(--cr-ink-4)" }} />
             <input
               ref={searchRef}
               type="text"
@@ -1106,18 +1220,18 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
                 borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
                 fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "32px", paddingRight: "12px",
-                paddingTop: "7px", paddingBottom: "7px", width: "200px", outline: "none",
+                paddingTop: "8px", paddingBottom: "8px", width: "200px", outline: "none",
               }}
               onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; setSuggestOpen(true); }}
               onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
             />
             {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "10px 12px 6px" }}>
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
                   {t("startups.recentSearches")}
                 </p>
                 {recent.slice(0, 5).map((term) => (
-                  <div key={term} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "7px 12px" }}>
+                  <div key={term} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "8px 12px" }}>
                     <button onMouseDown={(e) => { e.preventDefault(); patch({ query: term }); }}
                       style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", padding: 0, textAlign: "left", flex: 1 }}>
                       <Clock style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} /> {term}
@@ -1129,10 +1243,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
             )}
             {suggestOpen && suggestions.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 {suggestions.map((s, si) => (
                   <Link key={s.id} href={`/startups/${s.slug}`} onClick={() => rememberQuery(filters.query)}
-                    style={{ display: "flex", flexDirection: "column", gap: "1px", padding: "9px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
+                    style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "8px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
                     onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                     onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
                     <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)" }}>{s.name}</span>
@@ -1143,9 +1257,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             )}
           </div>
 
-          <div style={{ width: 1, height: 20, background: "var(--cr-rule-dark)", flexShrink: 0 }} />
+          <div style={{ width: 1, height: 24, background: "var(--cr-rule-dark)", flexShrink: 0 }} />
 
-          {/* Grouped filters: three labelled dropdowns instead of fifteen
+          {/* Grouped filters: labelled dropdowns instead of fifteen
               always-visible chips. Full industry list too -- the strip only
               ever had room for the first six. */}
           <FilterGroup label={t("startups.industry")} count={filters.industries.length}
@@ -1168,108 +1282,140 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </FilterChip>
             ))}
           </FilterGroup>
-          <FilterGroup label={t("startups.traction")}
-            count={(filters.mrrMin > 0 ? 1 : 0) + (filters.aiScoreMin > 0 ? 1 : 0) + (filters.newOnly ? 1 : 0) + (filters.raisingMin ? 1 : 0) + (filters.runwayMin ? 1 : 0) + (filters.growthMin ? 1 : 0) + (filters.closingSoon ? 1 : 0) + (filters.hasDemo ? 1 : 0)}
-            open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
-            {MRR_PRESETS.map((m) => (
-              <FilterChip key={m.value}
-                active={filters.mrrMin === m.value}
-                onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
-                {m.label}
-              </FilterChip>
-            ))}
-            {SCORE_PRESETS.map((sc) => (
-              <FilterChip key={sc.value}
-                active={filters.aiScoreMin === sc.value}
-                onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
-                {sc.label}
-              </FilterChip>
-            ))}
-            <FilterChip active={!!filters.newOnly}
-              onClick={() => patch({ newOnly: !filters.newOnly })}>
-              {t("startups.newThisWeek")}
-            </FilterChip>
-            {RAISING_PRESETS.map((r) => (
-              <FilterChip key={r.value}
-                active={filters.raisingMin === r.value}
-                onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>
-                {r.label}
-              </FilterChip>
-            ))}
-            <FilterChip active={(filters.runwayMin ?? 0) > 0}
-              onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
-              {t("startups.runway12")}
-            </FilterChip>
-            <FilterChip active={(filters.growthMin ?? 0) > 0}
-              onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
-              {t("startups.growth20")}
-            </FilterChip>
-            <FilterChip active={!!filters.closingSoon}
-              onClick={() => patch({ closingSoon: !filters.closingSoon })}>
-              {t("startups.closingSoon")}
-            </FilterChip>
-            <FilterChip active={!!filters.hasDemo}
-              onClick={() => patch({ hasDemo: !filters.hasDemo })}>
-              {t("startups.hasDemo")}
-            </FilterChip>
-          </FilterGroup>
-          <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}
-            open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
-            {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
-              <FilterChip key={c}
-                active={filters.country === c}
-                onClick={() => patch({ country: filters.country === c ? "" : c })}>
-                {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
-              </FilterChip>
-            ))}
-          </FilterGroup>
-          {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).length > 0 && (
-            <FilterGroup label={t("startups.businessModelGroup")} count={filters.businessModel ? 1 : 0}
-              open={openGroup === "bmodel"} onToggle={() => setOpenGroup(openGroup === "bmodel" ? null : "bmodel")}>
-              {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).sort().map((m) => (
-                <FilterChip key={m}
-                  active={filters.businessModel === m}
-                  onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>
-                  {m}
-                </FilterChip>
-              ))}
-            </FilterGroup>
-          )}
+          {/* The disclosure. Its badge counts everything behind it, so the bar
+              never hides an active filter without saying so. */}
+          <button
+            onClick={() => { setMoreOpen((o) => !o); setOpenGroup(null); }}
+            aria-expanded={moreOpen}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "8px", flexShrink: 0,
+              fontFamily: "'DM Sans', sans-serif", fontWeight: advancedCount > 0 ? 500 : 400, fontSize: "13px",
+              padding: "8px 12px", borderRadius: "3px",
+              border: advancedCount > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+              background: advancedCount > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+              color: advancedCount > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
+              cursor: "pointer", whiteSpace: "nowrap",
+            }}>
+            {t("filters.more")}{advancedCount > 0 ? ` · ${advancedCount}` : ""}
+            <ChevronDown style={{ width: 12, height: 12, transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
+          </button>
 
-          {/* Mobile filter btn */}
+          {/* The full-list bottom sheet, below lg only. It also carried an
+              inline display:flex that outranked `lg:hidden`, so a desktop bar
+              that already offers industry, stage and (behind More filters)
+              traction, region and business model showed a sixth button opening
+              the same set again. `flex lg:hidden` is two classes, so the
+              media-query one wins at lg and the row still lays out below it. */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden"
-            style={{ display: "flex", alignItems: "center", gap: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer", flexShrink: 0 }}
+            className="flex lg:hidden"
+            style={{ alignItems: "center", gap: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 12px", cursor: "pointer", flexShrink: 0 }}
           >
-            <SlidersHorizontal style={{ width: 13, height: 13 }} />
+            <SlidersHorizontal style={{ width: 12, height: 12 }} />
             {t("startups.filters")}{activeCount > 0 ? ` · ${activeCount}` : ""}
           </button>
 
           {/* Clear */}
           {(activeCount > 0 || filters.query) && (
             <button onClick={resetFilters}
-              style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "6px 10px", cursor: "pointer", flexShrink: 0 }}>
-              <X style={{ width: 11, height: 11 }} /> {t("filters.clearAll")}
+              style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 12px", cursor: "pointer", flexShrink: 0 }}>
+              <X style={{ width: 12, height: 12 }} /> {t("filters.clearAll")}
             </button>
           )}
         </div>
 
-        {/* One-click shortcuts. Above the applied chips so the relationship
-            reads top-down: pick a preset, see what it applied. */}
-        <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "10px" }}>
-          <FilterPresets
-            presets={STARTUP_PRESETS}
-            filters={filters as unknown as Record<string, unknown>}
-            defaults={DEFAULT_FILTERS as unknown as Record<string, unknown>}
-            onApply={(p) => patch(p as Partial<Filters>)}
-          />
-        </div>
+        {/* The disclosed row: every filter that used to crowd the bar, plus
+            the one-click presets, on the same 8/12 beat as the row above. It
+            renders at every width, so the presets stay reachable on mobile
+            (the full-list sheet behind "Filters" does not carry them). */}
+        {moreOpen && (
+          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
+            <FilterGroup label={t("startups.traction")}
+              count={tractionActive(filters)}
+              open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
+              {MRR_PRESETS.map((m) => (
+                <FilterChip key={m.value}
+                  active={filters.mrrMin === m.value}
+                  onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
+                  {m.label}
+                </FilterChip>
+              ))}
+              {SCORE_PRESETS.map((sc) => (
+                <FilterChip key={sc.value}
+                  active={filters.aiScoreMin === sc.value}
+                  onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
+                  {sc.label}
+                </FilterChip>
+              ))}
+              <FilterChip active={!!filters.newOnly}
+                onClick={() => patch({ newOnly: !filters.newOnly })}>
+                {t("startups.newThisWeek")}
+              </FilterChip>
+              {RAISING_PRESETS.map((r) => (
+                <FilterChip key={r.value}
+                  active={filters.raisingMin === r.value}
+                  onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>
+                  {r.label}
+                </FilterChip>
+              ))}
+              <FilterChip active={(filters.runwayMin ?? 0) > 0}
+                onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
+                {t("startups.runway12")}
+              </FilterChip>
+              <FilterChip active={(filters.growthMin ?? 0) > 0}
+                onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
+                {t("startups.growth20")}
+              </FilterChip>
+              <FilterChip active={!!filters.closingSoon}
+                onClick={() => patch({ closingSoon: !filters.closingSoon })}>
+                {t("startups.closingSoon")}
+              </FilterChip>
+              <FilterChip active={!!filters.hasDemo}
+                onClick={() => patch({ hasDemo: !filters.hasDemo })}>
+                {t("startups.hasDemo")}
+              </FilterChip>
+            </FilterGroup>
+            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}
+              open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
+              {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
+                <FilterChip key={c}
+                  active={filters.country === c}
+                  onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                  {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
+                </FilterChip>
+              ))}
+            </FilterGroup>
+            {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).length > 0 && (
+              <FilterGroup label={t("startups.businessModelGroup")} count={filters.businessModel ? 1 : 0}
+                open={openGroup === "bmodel"} onToggle={() => setOpenGroup(openGroup === "bmodel" ? null : "bmodel")}>
+                {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).sort().map((m) => (
+                  <FilterChip key={m}
+                    active={filters.businessModel === m}
+                    onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>
+                    {m}
+                  </FilterChip>
+                ))}
+              </FilterGroup>
+            )}
+            </div>
+            {/* Shortcuts sit under the groups they are shorthand for, so the
+                relationship reads top-down: pick a preset, see what it set. */}
+            <div style={{ marginTop: "12px" }}>
+              <FilterPresets
+                presets={STARTUP_PRESETS}
+                filters={filters as unknown as Record<string, unknown>}
+                defaults={DEFAULT_FILTERS as unknown as Record<string, unknown>}
+                onApply={(p) => patch(p as Partial<Filters>)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Applied filters, each individually removable. Rendered only when
             something is applied, so the bar stays one quiet row by default. */}
         {activeCount > 0 && (
-          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "10px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px", display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
             {filters.industries.map((ind) => (
               <AppliedChip key={`i-${ind}`} label={ind}
                 onRemove={() => patch({ industries: filters.industries.filter(i => i !== ind) })} />
@@ -1322,71 +1468,78 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       )}
 
       {/* ── Content ── */}
-      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "32px", paddingBottom: "64px" }}>
-        {/* Count + mobile sort */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
+      {/* The bar and the results are two sections, so they sit a section apart
+          (48). Inside here the beat drops to 24 between blocks. */}
+      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: RHYTHM.section, paddingBottom: "64px" }}>
+        {/* The count is this section's headline. The tools that act on it --
+            copy link, export, undo, show hidden, the snooze length -- used to
+            sit inside that same sentence as four copper underlines, which is
+            why the results row shouted louder than the results. Every one of
+            them is still here and still one click away; they step down to
+            quiet ink on their own line, and copper is spent only on the undo,
+            which expires in eight seconds and has to be seen. */}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: RHYTHM.inner, flexWrap: "wrap", marginBottom: RHYTHM.block }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
             {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
             {!loading && filtered.length > 0 && (
-              <span style={{ marginLeft: "10px", color: "var(--cr-ink-4)" }}>
+              <span style={{ marginLeft: "8px", color: "var(--cr-ink-4)" }}>
                 · {t("startups.sumRaising", { count: filtered.length, sum: formatCurrency(filtered.reduce((a, s) => a + (isValidFundingTarget(s.funding_target) ? s.funding_target : 0), 0), true) })}
               </span>
+            )}
+          </p>
+
+          <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.inner, flexWrap: "wrap" }}>
+            {lastHidden && (
+              <button
+                onClick={() => { toggleHide(lastHidden.id); }}
+                style={{ ...QUIET_ACTION, color: "var(--cr-copper)", fontWeight: 500 }}>
+                {lastHidden.name}: {t("startups.hiddenUndo")}
+              </button>
             )}
             {activeCount > 0 && (
               <button
                 onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("startups.linkCopied2")); }}
-                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
+                style={QUIET_ACTION}>
                 {t("startups.copyLink")}
               </button>
             )}
             {!loading && filtered.length > 0 && (
-              <button
-                onClick={exportStartupsCsv}
-                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
+              <button onClick={exportStartupsCsv} style={QUIET_ACTION}>
                 {t("startups.exportCsv")}
               </button>
             )}
-            {lastHidden && (
-              <button
-                onClick={() => { toggleHide(lastHidden.id); }}
-                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
-                {lastHidden.name}: {t("startups.hiddenUndo")}
+            {dismissedIds.size > 0 && (
+              <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
+                style={{ ...QUIET_ACTION, color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>
+                {showHidden ? t("startups.hidden") : t("startups.showHidden", { count: dismissedIds.size })}
               </button>
             )}
             {/* C35: how long the next "not for me" lasts. */}
             <select value={snoozeChoice ?? ""} onChange={(e) => setSnoozeChoice(e.target.value ? Number(e.target.value) : null)}
               aria-label={t("startups.snoozeLabel")} title={t("startups.snoozeLabel")}
-              style={{ marginLeft: "10px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "2px 4px", cursor: "pointer" }}>
+              style={{ background: "transparent", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "4px 8px", cursor: "pointer" }}>
               <option value="">{t("startups.snoozeForever")}</option>
               <option value="30">{t("startups.snooze30")}</option>
               <option value="90">{t("startups.snooze90")}</option>
               <option value="180">{t("startups.snooze180")}</option>
             </select>
-            {dismissedIds.size > 0 && (
-              <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
-                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "10px", padding: 0 }}>
-                {showHidden ? t("startups.hidden") : t("startups.showHidden", { count: dismissedIds.size })}
-              </button>
-            )}
-          </p>
-          <button
-            className="lg:hidden"
-            onClick={() => setSortOpen((o) => !o)}
-            style={{ display: "flex", alignItems: "center", gap: "5px", background: "transparent", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "6px 12px", cursor: "pointer" }}>
-            {sortLabel} <ChevronDown style={{ width: 12, height: 12 }} />
-          </button>
+            {/* Sort used to be repeated here as a second button. It is the one
+                in the page header at every width now, and the filter sheet
+                still carries a full sort section on narrow screens, so the
+                option set is unchanged -- one control instead of two. */}
+          </div>
         </div>
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : loadError ? (
-          <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "8px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
+          <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
             <button onClick={() => window.location.reload()}
-              style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "7px 18px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
+              style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
               {t("errorPage.retry")}
             </button>
           </div>
@@ -1395,7 +1548,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             <NoResults query={filters.query} hasFilters={activeCount > 0 || !!filters.query} onReset={resetFilters} />
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: "16px" }}>
+          // Same 24 gutter as the skeleton grid above, so the layout does not
+          // tighten by 8px the moment the real rows land -- and cards this
+          // dense need the room between them more than they need the density.
+          <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
             {visible.map((s) => (
               <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
             ))}
@@ -1406,10 +1562,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             but the server holds more of the market, the SAME button fetches
             the next thousand and keeps going. One control, whole market. */}
         {(hasMore || allStartups.length < serverTotal) && !loading && (
-          <div style={{ marginTop: "40px", display: "flex", justifyContent: "center" }}>
+          <div style={{ marginTop: RHYTHM.section, display: "flex", justifyContent: "center" }}>
             <button disabled={loadingMore}
               onClick={() => { if (hasMore) setPage((p) => p + 1); else void loadMoreRows(); }}
-              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "10px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1 }}>
+              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "12px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1 }}>
               {loadingMore
                 ? t("common.loading")
                 : t("startups.loadMore", { count: hasMore ? Math.min(PAGE_SIZE, filtered.length - visible.length) : Math.min(1000, serverTotal - allStartups.length) })}
@@ -1417,7 +1573,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           </div>
         )}
         {!hasMore && allStartups.length >= serverTotal && !loading && filtered.length > 0 && (
-          <p style={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "40px" }}>
+          <p style={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: RHYTHM.section }}>
             {t("startups.allLoaded", { count: filtered.length })}
           </p>
         )}
@@ -1427,12 +1583,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       {/* The tray clears the mobile tab bar via --cr-tabbar-h, which is 0
           wherever no tab bar is on screen (desktop, or signed out). */}
       {compareIds.length > 0 && (
-        <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+        <div style={{ position: "fixed", bottom: "calc(16px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "4px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
             {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
           </span>
           <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
-            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "7px 14px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
+            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "8px 16px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
             {t("startups.compare")} ({compareIds.length})
           </button>
           <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
@@ -1473,10 +1629,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         return (
           <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
             <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: RHYTHM.block }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: RHYTHM.block }}>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <button onClick={() => {
                   const url = `${window.location.origin}/startups?compare=1&cmp=${compareIds.join(",")}`;
                   navigator.clipboard.writeText(url).then(
@@ -1484,11 +1640,11 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                     () => notify.error(t("share.copyFailed")),
                   );
                 }}
-                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 12px", cursor: "pointer" }}>
                   {t("common.share")}
                 </button>
                 <button onClick={exportCompareCsv}
-                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 12px", cursor: "pointer" }}>
                   {t("dashboard.exportCsv")}
                 </button>
                 <button onClick={() => setShowCompare(false)} aria-label={t("nav.closeMenu")}
@@ -1514,11 +1670,11 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                   <tbody>
                     {METRICS.map(m => (
                       <tr key={m.label}>
-                        <td style={{ padding: "9px 12px 9px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
+                        <td style={{ padding: "12px 12px 12px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
                         {rows.map(s => {
                           const isText = m.label === t("scorecard.yourNote");
                           return (
-                            <td key={s.id} style={{ padding: "9px 12px", fontFamily: isText ? "'DM Sans', sans-serif" : "'JetBrains Mono', monospace", fontWeight: isText ? 300 : 500, fontSize: isText ? "12px" : "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)", minWidth: isText ? 160 : undefined }}>{m.get(s)}</td>
+                            <td key={s.id} style={{ padding: "12px", fontFamily: isText ? "'DM Sans', sans-serif" : "'JetBrains Mono', monospace", fontWeight: isText ? 300 : 500, fontSize: isText ? "12px" : "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)", minWidth: isText ? 160 : undefined }}>{m.get(s)}</td>
                           );
                         })}
                       </tr>
@@ -1533,24 +1689,24 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
 
       {/* ── Mobile filter bottom sheet ── */}
       {sidebarOpen && (() => {
-        const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" };
-        const ROW: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: "6px" };
+        const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" };
+        const ROW: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: RHYTHM.pair };
         const countries = Array.from(new Set(allStartups.map(x => x.country).filter((c): c is string => !!c))).sort();
         const bmodels = Array.from(new Set(allStartups.map(x => x.business_model).filter((m): m is string => !!m))).sort();
         return (
         <div role="dialog" aria-modal="true" aria-label={t("filters.title")} style={{ position: "fixed", inset: 0, zIndex: 50 }}>
           <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setSidebarOpen(false)} />
           {/* Full-height bottom sheet: header pinned, sections scroll, footer pinned. */}
-          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
-            <div style={{ padding: "10px 20px 12px", borderBottom: "1px solid var(--cr-rule)", flexShrink: 0 }}>
-              <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 12px" }} />
+          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "12px 12px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
+            <div style={{ padding: "12px 24px", borderBottom: "1px solid var(--cr-rule)", flexShrink: 0 }}>
+              <div style={{ width: 32, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 12px" }} />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("filters.title")}{activeCount > 0 ? ` · ${activeCount}` : ""}</p>
                 <button onClick={() => setSidebarOpen(false)} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: 4 }}><X style={{ width: 18, height: 18 }} /></button>
               </div>
             </div>
 
-            <div style={{ overflowY: "auto", flex: 1, padding: "16px 20px 8px", display: "grid", gap: "22px" }}>
+            <div style={{ overflowY: "auto", flex: 1, padding: "24px 24px 8px", display: "grid", gap: RHYTHM.block }}>
               <div>
                 <p style={SECTION}>{t("filters.industry")}</p>
                 <div style={ROW}>
@@ -1631,14 +1787,14 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
             </div>
 
-            <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 20px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "10px" }}>
+            <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 24px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "12px" }}>
               <button onClick={resetFilters}
-                style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+                style={{ flex: 1, height: "48px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                 {t("filters.reset")}
               </button>
               <button onClick={() => setSidebarOpen(false)}
                 className="btn-copper-shimmer"
-                style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer" }}>
+                style={{ flex: 1.4, height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer" }}>
                 {t("filters.applyCount", { count: filtered.length })}
               </button>
             </div>

@@ -2,6 +2,7 @@ import { MetadataRoute } from "next";
 import { SECTOR_SLUGS } from "@/lib/industry-slugs";
 import { BLOG_POSTS } from "@/lib/blog-posts";
 import { createAdminClient } from "@/lib/supabase-server";
+import { listingDetailPublic, browseIndexPublic } from "@/lib/listing-visibility";
 import { brand } from "@/lib/brand";
 
 export const revalidate = 3600; // Regenerate every hour
@@ -84,7 +85,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   const staticRoutes: MetadataRoute.Sitemap = routes.map(r => ({ ...r, lastModified: staticLastMod }));
 
-  const startupRoutes: MetadataRoute.Sitemap = (startups || []).map(s => ({
+  // Individual listings are submitted only while their detail pages are
+  // readable without an account. Under "members" every one of these URLs
+  // answers an anonymous crawler with a 307 to /auth/login, and a sitemap full
+  // of redirects both burns crawl budget and gets sign-in pages indexed under
+  // company names -- the same reason the investor profiles came out above.
+  //
+  // /startups and the sector pages STAY: the browse index is public either
+  // way, and it is the page that ranks. Kept as a condition rather than
+  // deleted so flipping the config back to "open" restores the entries with no
+  // deploy.
+  const detailPublic = await listingDetailPublic();
+  const startupRoutes: MetadataRoute.Sitemap = !detailPublic ? [] : (startups || []).map(s => ({
     url: `${baseUrl}/startups/${s.slug}`,
     lastModified: new Date(s.updated_at),
     changeFrequency: "daily" as const,
@@ -100,5 +112,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...startupRoutes, ...investorRoutes];
+  // A sitemap entry that answers with a redirect to a sign-in page is worse
+  // than no entry: it teaches a crawler that the URL is not content.
+  const catalogueOpen = await browseIndexPublic();
+  const publicStatic = catalogueOpen
+    ? staticRoutes
+    : staticRoutes.filter((r) => !r.url.includes("/startups"));
+
+  return [...publicStatic, ...startupRoutes, ...investorRoutes];
 }

@@ -41,7 +41,10 @@ interface Props {
   benchmarks?: BenchmarkResult | null;
 }
 
-type StartupTab = "overview" | "documents" | "ai" | "billing";
+// Six tabs, not four. Everything that used to stack vertically under
+// "overview" now lives behind one of these -- the panels are all still here,
+// they just no longer compete for the same eyeful on arrival.
+type StartupTab = "overview" | "raise" | "investors" | "documents" | "ai" | "billing";
 
 
 
@@ -63,7 +66,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const s = styles[status] || styles.draft;
   return (
-    <span style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+    <span style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
       {labelKeys[status] ? t(labelKeys[status]) : status.replace(/_/g, " ")}
     </span>
   );
@@ -75,30 +78,54 @@ function StatusBadge({ status }: { status: string }) {
 // per view. --cr-band-ink resolves to the light paper tone in both themes,
 // which is what "white on copper" means without a hex literal.
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "8px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   border: "1px solid var(--cr-paper-4)", background: "transparent",
   borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "13px", color: "var(--cr-ink-2)", padding: "7px 16px", cursor: "pointer",
-  textDecoration: "none",
+  fontSize: "13px", color: "var(--cr-ink-2)", padding: "0 16px", minHeight: "40px",
+  cursor: "pointer", textDecoration: "none",
 };
 
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "8px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   background: "var(--cr-copper)", border: "none",
   borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 16px", cursor: "pointer",
-  textDecoration: "none",
+  fontSize: "13px", color: "var(--cr-band-ink)", padding: "0 16px", minHeight: "40px",
+  cursor: "pointer", textDecoration: "none",
 };
 
 // Tertiary: quiet text + arrow. For actions that matter but must not compete
 // with the pills -- four identical pills in a row is noise, not hierarchy.
 const tertiaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "5px",
+  display: "inline-flex", alignItems: "center", gap: "4px",
   background: "transparent", border: "none",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "12px", color: "var(--cr-copper)", padding: "7px 4px",
+  fontSize: "12px", color: "var(--cr-copper)", padding: "0 4px",
   minHeight: "40px", cursor: "pointer", textDecoration: "none",
 };
+
+// Every panel on this surface is the same object: paper, hairline, 4px, 24
+// internals. Naming it once stops the twelfth panel from inventing a
+// thirteenth padding.
+const panel: React.CSSProperties = {
+  background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)",
+  borderRadius: "4px", padding: "24px",
+};
+
+// One rhythm per surface: 64 between major sections, 24 between the blocks
+// inside one, 16 inside a block, 8 from a label to its value.
+const stack24: React.CSSProperties = { display: "flex", flexDirection: "column", gap: "24px" };
+
+/**
+ * Cancels the outer margin an imported panel carries from the surface it was
+ * first written for (CapTableCard's mb-6, MetricsRecorder's marginTop). Those
+ * margins land on top of this page's 24px gap and turn it into 40 or 48, and
+ * the components are shared with pages this pass must not touch. Flex items
+ * do not collapse margins, so the correction holds whether the child renders
+ * or returns null.
+ */
+function Flush({ top = 0, bottom = 0, children }: { top?: number; bottom?: number; children: React.ReactNode }) {
+  return <div style={{ marginTop: top ? `-${top}px` : undefined, marginBottom: bottom ? `-${bottom}px` : undefined }}>{children}</div>;
+}
 
 // ── Visibility feature rows ───────────────────────────────────────────────────
 
@@ -153,14 +180,17 @@ function MatchRadar() {
   const types = Object.entries(data.byType).sort((a, b) => b[1] - a[1]).slice(0, 4);
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "12px" }}>
+          <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
             {t("radar.title")}
           </h3>
+          {/* Stepped down from 32px: this is the loudest figure on the
+              investor tab, but it is still a supporting figure next to the
+              profile-views headline that sits above every tab. */}
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-copper)", marginRight: "10px", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-copper)", marginRight: "8px", fontVariantNumeric: "tabular-nums" }}>{data.count}</span>
             {t("radar.ofTotal", { total: data.total })}
           </p>
         </div>
@@ -169,9 +199,9 @@ function MatchRadar() {
         </Link>
       </div>
       {types.length > 1 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
           {types.map(([type, n]) => (
-            <span key={type} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px", border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "3px 8px" }}>
+            <span key={type} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "4px 8px" }}>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink-2)" }}>{n}</span>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{type.replace(/_/g, " ")}</span>
             </span>
@@ -211,16 +241,16 @@ function EngagementPanel() {
   if (!rows.length) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+    <div style={panel}>
       <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
         {t("engagement.title")}
       </h3>
       {/* An instrument strip in miniature: each figure stands on its own
           hairline tick, no grid of boxed tiles. */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", rowGap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(152px, 1fr))", rowGap: "24px" }}>
         {rows.map(([label, value]) => (
-          <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "2px 16px" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{value}</div>
+          <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "0 16px" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "22px", color: "var(--cr-ink-2)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{value}</div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "8px" }}>{label}</div>
           </div>
         ))}
@@ -248,8 +278,8 @@ function SaversPanel() {
   if (!data || data.count === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
         <h3 className="ruled-label" data-cr-visible="1">
           {t("dashboard.whoSaved")}
         </h3>
@@ -262,18 +292,18 @@ function SaversPanel() {
               are what the plan buys. */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
             {Array.from({ length: Math.min(data.count, 3) }).map((_, i) => (
-              <div key={i} style={{ height: "14px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+              <div key={i} style={{ height: "12px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
             ))}
           </div>
-          <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+          <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "16px", minHeight: "40px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
             {t("dashboard.upgradeSeeWho")} {"→"}
           </Link>
         </>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {data.savers.map((s) => (
             <Link key={s.slug} href={`/investors/${s.slug}`}
-              style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", textDecoration: "none" }}>
+              style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", textDecoration: "none" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
                 {s.name}
                 {s.firm && s.firm !== s.name && (
@@ -315,8 +345,8 @@ function ViewersPanel() {
   if (!data || data.count === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
         <h3 className="ruled-label" data-cr-visible="1">
           {t("dashboard.whoViewed")}
         </h3>
@@ -327,18 +357,18 @@ function ViewersPanel() {
         <>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
             {Array.from({ length: Math.min(data.count, 3) }).map((_, i) => (
-              <div key={i} style={{ height: "14px", width: `${60 + i * 10}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+              <div key={i} style={{ height: "12px", width: `${60 + i * 10}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
             ))}
           </div>
-          <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+          <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "16px", minHeight: "40px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
             {t("dashboard.upgradeSeeWho")} {"→"}
           </Link>
         </>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {data.viewers.map((v) => (
             <Link key={v.slug} href={`/investors/${v.slug}`}
-              style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", textDecoration: "none" }}>
+              style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", textDecoration: "none" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
                 {v.name}
                 {v.firm && v.firm !== v.name && (
@@ -362,14 +392,16 @@ function ViewersPanel() {
  * this is its shape. Flat-zero histories render nothing rather than an empty
  * ruler.
  */
-function ViewsSparkline({ series }: { series: number[] }) {
+function ViewsSparkline({ series, width = 96, height = 20 }: { series: number[]; width?: number; height?: number }) {
   const max = Math.max(...series);
   if (max === 0) return null;
   // marginTop auto pins the shape to the strip's baseline, so every cell's
   // sparkline sits on the same line regardless of figure height above it.
+  // Fixed pixel dimensions, never a percentage height -- the strip cell is an
+  // auto-height flex column and a percentage would collapse to nothing.
   return (
-    <div style={{ marginTop: "auto", paddingTop: "12px" }}>
-      <Sparkline points={series.map((v) => v / max)} width={96} height={20} />
+    <div style={{ marginTop: "auto", paddingTop: "16px", maxWidth: "100%", overflow: "hidden" }}>
+      <Sparkline points={series.map((v) => v / max)} width={width} height={height} />
     </div>
   );
 }
@@ -386,7 +418,7 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
   const pctC = Math.min(100, (committed / target) * 100);
   const pctS = Math.min(100 - pctC, (softCircled / target) * 100);
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+    <div style={panel}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
         <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.raiseProgress")}</h3>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
@@ -397,13 +429,13 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
         <div style={{ width: `${pctC}%`, background: "var(--cr-up)" }} />
         <div style={{ width: `${pctS}%`, background: "var(--cr-copper)", opacity: 0.75 }} />
       </div>
-      <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "12px" }}>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)" }}>
-          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "var(--cr-up)", marginRight: 5 }} />
+          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "var(--cr-up)", marginRight: 4 }} />
           {t("dashboard.committed")}: {formatCurrency(committed, true)}
         </span>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)" }}>
-          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "var(--cr-copper)", opacity: 0.75, marginRight: 5 }} />
+          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "var(--cr-copper)", opacity: 0.75, marginRight: 4 }} />
           {t("dashboard.softCircled")}: {formatCurrency(softCircled, true)}
         </span>
       </div>
@@ -436,28 +468,28 @@ function RoundControls({ startup }: { startup: Startup }) {
   }
   if (startup.status !== "active") return null;
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+    <div style={panel}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "16px" }}>
         <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.roundStatusTitle")}</h3>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("dashboard.roundStatusHint")}</span>
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
         {STATES.map(([v, label]) => (
           <button key={v} disabled={busy} onClick={() => v !== state && save({ roundState: v })} aria-pressed={v === state}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", borderRadius: "999px", cursor: "pointer",
+            style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", minHeight: "40px", padding: "0 16px", borderRadius: "999px", cursor: "pointer",
               background: v === state ? "var(--cr-copper)" : "transparent", color: v === state ? "var(--cr-band-ink)" : "var(--cr-ink-3)", border: `1px solid ${v === state ? "var(--cr-copper)" : "var(--cr-paper-4)"}` }}>
             {label}
           </button>
         ))}
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "12px", lineHeight: 1.5 }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "16px", lineHeight: 1.5 }}>
         {t(`dashboard.roundHelp_${state}`)}
       </p>
-      <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
-        <input type="checkbox" checked={momentum} disabled={busy} onChange={(e) => save({ showMomentum: e.target.checked })} style={{ marginTop: 3, accentColor: "var(--cr-copper)" }} />
+      <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", cursor: "pointer", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
+        <input type="checkbox" checked={momentum} disabled={busy} onChange={(e) => save({ showMomentum: e.target.checked })} style={{ marginTop: 4, accentColor: "var(--cr-copper)" }} />
         <span>
           <span style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.momentumToggle")}</span>
-          <span style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: 2 }}>{t("dashboard.momentumHint")}</span>
+          <span style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("dashboard.momentumHint")}</span>
         </span>
       </label>
     </div>
@@ -471,17 +503,19 @@ function RaiseFunnel({ views, saves, deals, termSheets, closed }: { views: numbe
   const max = Math.max(1, ...steps.map(([, v]) => v));
   if (views === 0 && deals === 0) return null;
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+    <div style={panel}>
       <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.funnelTitle")}</h3>
-      <div style={{ display: "grid", gap: "8px" }}>
+      <div style={{ display: "grid", gap: "12px" }}>
         {steps.map(([label, v], i) => {
           const prev = i > 0 ? steps[i - 1][1] : null;
           const conv = prev && prev > 0 ? Math.round((v / prev) * 100) : null;
           return (
-            <div key={label} style={{ display: "grid", gridTemplateColumns: "110px 1fr 56px 44px", alignItems: "center", gap: "10px" }}>
+            <div key={label} style={{ display: "grid", gridTemplateColumns: "minmax(0, 96px) 1fr 56px 48px", alignItems: "center", gap: "12px" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>{label}</span>
-              <div style={{ height: "10px", background: "var(--cr-paper-4)", borderRadius: "5px", overflow: "hidden" }}>
-                <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${(v / max) * 100}%`, width: `${(v / max) * 100}%`, height: "100%", background: i >= 3 ? "var(--cr-up)" : "var(--cr-copper)" }} />
+              {/* Only the last step is green: money that actually landed.
+                  Two accent colours across five bars was three too many. */}
+              <div style={{ height: "8px", background: "var(--cr-paper-4)", borderRadius: "4px", overflow: "hidden" }}>
+                <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${(v / max) * 100}%`, width: `${(v / max) * 100}%`, height: "100%", background: i === steps.length - 1 ? "var(--cr-up)" : "var(--cr-copper)", opacity: i === steps.length - 1 ? 1 : 0.75 }} />
               </div>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", textAlign: "right" }}>{v.toLocaleString()}</span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "right" }}>{conv !== null ? `${conv}%` : ""}</span>
@@ -515,7 +549,7 @@ function QuestionQueue() {
     } else { notify.error(t("errors.generic")); setDrafts((p) => ({ ...p, [id]: { ...d, busy: false } })); }
   }
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+    <div style={panel}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "16px" }}>
         <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.qaQueueTitle")}</h3>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: open.length ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{t("dashboard.qaOpenCount", { count: open.length })}</span>
@@ -525,22 +559,22 @@ function QuestionQueue() {
           const d = drafts[q.id] ?? { a: "", priv: false };
           const who = q.investor?.display_name || q.investor?.firm_name || t("deals.investorFallback");
           return (
-            <div key={q.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "14px 0" }}>
+            <div key={q.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}><span style={{ color: "var(--cr-copper)", fontWeight: 700 }}>Q&nbsp;</span>{q.question}</p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
                 {t("startupDetail.askedBy")}{" "}
                 {q.investor ? <Link href={`/investors/${q.investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none", fontWeight: 500 }}>{who}</Link> : who}
                 {" · "}{formatDate(q.created_at)}
               </p>
               <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
                 <textarea value={d.a} onChange={(e) => setDrafts((p) => ({ ...p, [q.id]: { ...d, a: e.target.value } }))} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
-                  style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 11px", outline: "none", resize: "vertical" }} />
+                  style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
                 <button disabled={!!d.busy || !d.a.trim()} onClick={() => answer(q.id)}
-                  style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 16px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+                  style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
                   {d.busy ? "…" : t("startupDetail.answerSend")}
                 </button>
               </div>
-              <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-3)" }}>
+              <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginTop: "8px", minHeight: "40px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)" }}>
                 <input type="checkbox" checked={d.priv} onChange={(e) => setDrafts((p) => ({ ...p, [q.id]: { ...d, priv: e.target.checked } }))} style={{ accentColor: "var(--cr-copper)" }} />
                 {t("startupDetail.answerPrivately")}
               </label>
@@ -548,14 +582,14 @@ function QuestionQueue() {
           );
         })}
         {answered.length > 0 && (
-          <details>
+          <details style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
             <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.qaAnsweredCount", { count: answered.length })}</summary>
-            <div style={{ display: "grid", marginTop: "8px" }}>
+            <div style={{ display: "grid", marginTop: "12px" }}>
               {/* Answered rows split by rules, not boxes-in-boxes. */}
               {answered.map((q) => (
-                <div key={q.id} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 0", borderTop: "1px solid var(--cr-rule)" }}>
+                <div key={q.id} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", padding: "12px 0", borderTop: "1px solid var(--cr-rule)" }}>
                   <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{q.question}</span> · {q.answer}
-                  {q.is_private && <span style={{ marginLeft: 6, fontSize: "10px", color: "var(--cr-ink-4)" }}>({t("startupDetail.privateAnswer")})</span>}
+                  {q.is_private && <span style={{ marginLeft: 8, fontSize: "10px", color: "var(--cr-ink-4)" }}>({t("startupDetail.privateAnswer")})</span>}
                 </div>
               ))}
             </div>
@@ -583,17 +617,19 @@ function NdaRoster() {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
     const a = document.createElement("a"); a.href = url; a.download = "capitalreach-signature-roster.csv"; a.click(); URL.revokeObjectURL(url);
   }
-  const cell: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: "7px 8px", borderBottom: "1px solid var(--cr-rule)", whiteSpace: "nowrap" };
+  // Dense rows get air, never fewer columns: 12px top and bottom is the row
+  // rhythm inside a table block on this surface.
+  const cell: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: "12px 16px 12px 0", borderBottom: "1px solid var(--cr-rule)", whiteSpace: "nowrap" };
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "12px" }}>
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: "8px" }}>
         <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.rosterTitle")}</h3>
-        <button onClick={exportCsv} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 12px", cursor: "pointer" }}>{t("dashboard.exportCsv")}</button>
+        <button onClick={exportCsv} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>{t("dashboard.exportCsv")}</button>
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>{t("dashboard.rosterHint")}</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "16px" }}>{t("dashboard.rosterHint")}</p>
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead><tr>{[t("dashboard.rosterType"), t("dashboard.rosterParty"), t("dashboard.rosterWhen"), t("dashboard.rosterMethod"), "IP"].map((h) => <th key={h} style={{ ...cell, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", textAlign: "left" }}>{h}</th>)}</tr></thead>
+          <thead><tr>{[t("dashboard.rosterType"), t("dashboard.rosterParty"), t("dashboard.rosterWhen"), t("dashboard.rosterMethod"), "IP"].map((h) => <th key={h} style={{ ...cell, padding: "0 16px 8px 0", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", textAlign: "left" }}>{h}</th>)}</tr></thead>
           <tbody>
             {data.nda.map((r) => (
               <tr key={r.id}>
@@ -655,18 +691,20 @@ function TargetsPanel() {
   if (!targets || targets.length === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
         <h3 className="ruled-label" data-cr-visible="1">
           {t("dashboard.yourTargets")}
         </h3>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{targets.length}</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      {/* Rows split by hairlines with 12px of air, not glued together: the
+          list is long and each row carries three controls. */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
         {targets.map((tg) => (
-          <div key={tg.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "10px" }}>
+          <div key={tg.id} style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", padding: "12px 0", borderTop: "1px solid var(--cr-rule)" }}>
             <Link href={`/investors/${tg.slug}`}
-              style={{ display: "flex", flexDirection: "column", gap: "2px", textDecoration: "none", minWidth: 0 }}>
+              style={{ display: "flex", flexDirection: "column", gap: "4px", textDecoration: "none", minWidth: 0 }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
                 {tg.name}
                 {tg.firm && tg.firm !== tg.name && (
@@ -677,7 +715,7 @@ function TargetsPanel() {
             {/* B22: inline note + next-contact date + remove. */}
             <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1, minWidth: 0 }}>
               {editingNote === tg.id ? (
-                <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ display: "flex", gap: 8 }}>
                   <input value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} maxLength={1000} placeholder={t("dashboard.tgNotePh")} autoFocus
                     onKeyDown={async (e) => { if (e.key === "Enter") { if (await patchTarget(tg, { note: noteDraft })) setEditingNote(null); } if (e.key === "Escape") setEditingNote(null); }}
                     style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
@@ -691,7 +729,7 @@ function TargetsPanel() {
               )}
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <input type="date" value={tg.nextContactAt ?? ""} onChange={(e) => patchTarget(tg, { nextContactAt: e.target.value || null })} title={t("dashboard.tgNextContact")}
-                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: tg.nextContactAt && new Date(tg.nextContactAt) < new Date() ? "var(--cr-down)" : "var(--cr-ink-3)", padding: "2px 6px", outline: "none" }} />
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: tg.nextContactAt && new Date(tg.nextContactAt) < new Date() ? "var(--cr-down)" : "var(--cr-ink-3)", padding: "4px 8px", outline: "none" }} />
                 <button onClick={() => removeTarget(tg)} title={t("common.delete")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: 0 }}><X style={{ width: 12, height: 12 }} /></button>
               </div>
             </div>
@@ -709,7 +747,7 @@ function TargetsPanel() {
                 }
               }}
               title={t("dashboard.tsCycle")}
-              style={{ background: "transparent", border: `1px solid ${STATUS_STYLE[tg.status]?.color ?? "var(--cr-rule-dark)"}`, color: STATUS_STYLE[tg.status]?.color ?? "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", cursor: "pointer", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>
+              style={{ background: "transparent", border: `1px solid ${STATUS_STYLE[tg.status]?.color ?? "var(--cr-rule-dark)"}`, color: STATUS_STYLE[tg.status]?.color ?? "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", cursor: "pointer", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>
               {t(STATUS_STYLE[tg.status]?.label ?? "dashboard.tsToContact")}
             </button>
           </div>
@@ -779,64 +817,66 @@ function UpdateComposer() {
   const AUD_KEY: Record<string, string> = { watchers: "dashboard.audWatchers", deals: "dashboard.audDeals", all: "dashboard.audAll" };
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
         <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.postUpdate")}</h3>
         {!open && (
           <button onClick={() => setOpen(true)}
-            style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 16px", cursor: "pointer" }}>
+            style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>
             {t("dashboard.postUpdate")}
           </button>
         )}
       </div>
       {open && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "16px" }}>
           <input value={title} onChange={e => setTitle(e.target.value)} maxLength={150} placeholder={t("dashboard.updTitle")}
-            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none" }} />
+            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", padding: "12px", outline: "none" }} />
           <button onClick={draftWithAi} disabled={drafting}
-            style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 5, background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, padding: "5px 10px", cursor: drafting ? "wait" : "pointer" }}>
+            style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 4, background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, minHeight: "40px", padding: "0 12px", cursor: drafting ? "wait" : "pointer" }}>
             ✦ {drafting ? t("common.loading") : t("dashboard.updDraftAi")}
           </button>
           <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={5000} rows={4} placeholder={t("dashboard.updBody")}
-            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px", outline: "none", resize: "vertical" }} />
           {/* Audience: savers, deal investors (closed included), or both. */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginRight: 4 }}>{t("dashboard.audienceLabel")}</span>
             {(["all", "watchers", "deals"] as const).map((a) => (
               <button key={a} type="button" onClick={() => setAudience(a)} aria-pressed={audience === a}
-                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 12px", borderRadius: "999px", cursor: "pointer", background: audience === a ? "var(--cr-copper)" : "transparent", color: audience === a ? "var(--cr-band-ink)" : "var(--cr-ink-3)", border: `1px solid ${audience === a ? "var(--cr-copper)" : "var(--cr-paper-4)"}` }}>
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", minHeight: "40px", padding: "0 16px", borderRadius: "999px", cursor: "pointer", background: audience === a ? "var(--cr-copper)" : "transparent", color: audience === a ? "var(--cr-band-ink)" : "var(--cr-ink-3)", border: `1px solid ${audience === a ? "var(--cr-copper)" : "var(--cr-paper-4)"}` }}>
                 {t(AUD_KEY[a])}
               </button>
             ))}
           </div>
           <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
             <button onClick={() => setOpen(false)}
-              style={{ border: "1px solid var(--cr-paper-4)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 16px", cursor: "pointer" }}>
+              style={{ border: "1px solid var(--cr-paper-4)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>
               {t("common.cancel")}
             </button>
             <button onClick={publish} disabled={busy || !title.trim() || !body.trim()}
-              style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "8px 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
+              style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
               {busy ? t("common.saving") : t("dashboard.updPost")}
             </button>
           </div>
         </div>
       )}
       {history.length > 0 && (
-        <details style={{ marginTop: "14px" }}>
+        /* Every past update stays reachable, one click behind the summary --
+           the composer is the job, the archive is reference. */
+        <details style={{ marginTop: "24px", borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
           <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.updHistory", { count: history.length })}</summary>
           {/* History rows split by rules -- no boxes-in-boxes inside a card. */}
-          <div style={{ display: "grid", marginTop: "8px" }}>
+          <div style={{ display: "grid", marginTop: "12px" }}>
             {history.map((u) => (
-              <div key={u.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "12px 0" }}>
+              <div key={u.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
                 {editing?.id === u.id ? (
-                  <div style={{ display: "grid", gap: "6px" }}>
+                  <div style={{ display: "grid", gap: "8px" }}>
                     <input value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} maxLength={150}
-                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none" }} />
                     <textarea value={editing.body} onChange={(e) => setEditing({ ...editing, body: e.target.value })} maxLength={5000} rows={3}
-                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
-                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                      <button onClick={() => setEditing(null)} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 12px", cursor: "pointer" }}>{t("common.cancel")}</button>
-                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", padding: "5px 14px", cursor: "pointer" }}>{t("common.save")}</button>
+                      style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
+                    <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                      <button onClick={() => setEditing(null)} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>{t("common.cancel")}</button>
+                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>{t("common.save")}</button>
                     </div>
                   </div>
                 ) : (
@@ -845,8 +885,8 @@ function UpdateComposer() {
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{u.title}</p>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{formatDate(u.created_at)}{u.updated_at ? ` · ${t("dashboard.updEditedTag")}` : ""}</span>
                     </div>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: 3, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{u.body}</p>
-                    <div style={{ display: "flex", gap: 10, marginTop: 6, alignItems: "center" }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: 4, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{u.body}</p>
+                    <div style={{ display: "flex", gap: 12, marginTop: 8, alignItems: "center" }}>
                       <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t(AUD_KEY[u.audience] ?? "dashboard.audWatchers")}</span>
                       <button onClick={() => setEditing({ id: u.id, title: u.title, body: u.body })} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", padding: 0 }}>{t("common.edit")}</button>
                       <button onClick={() => remove(u.id)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", padding: 0 }}>{t("common.delete")}</button>
@@ -874,19 +914,19 @@ function DocAnalyticsPanel() {
   if (!data || data.docs.length === 0) return null;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+    <div style={panel}>
       <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.docAnalytics")}</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {data.docs.map((d) => (
-          <div key={d.id}>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px" }}>
+          <div key={d.id} style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{d.label}</span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {t("dashboard.docOpens", { opens: d.opens, viewers: d.distinctViewers })}
               </span>
             </div>
             {!data.locked && d.viewers.length > 0 && (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                 {d.viewers.map((v, i) => (
                   <Link key={v.slug} href={`/investors/${v.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>
                     {v.name}{i < d.viewers.length - 1 ? ", " : ""}
@@ -923,11 +963,16 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // The overview used to carry seventeen panels in one column. They are all
+  // still here; they are sorted by the question the founder is asking rather
+  // than stacked in the order they were built.
   const TABS: { value: StartupTab; label: string }[] = [
-    { value: "overview",  label: t("dashboard.overview")    },
-    { value: "documents", label: t("dashboard.documents")   },
-    { value: "ai",        label: t("dashboard.aiFeedback")  },
-    { value: "billing",   label: t("dashboard.billing")     },
+    { value: "overview",  label: t("dashboard.overview")           },
+    { value: "raise",     label: t("sections.raiseProgress")       },
+    { value: "investors", label: t("sections.investorInterest")    },
+    { value: "documents", label: t("dashboard.documents")          },
+    { value: "ai",        label: t("dashboard.aiFeedback")         },
+    { value: "billing",   label: t("dashboard.billing")            },
   ];
 
   // Weighted, so the number reflects how finished the listing looks to an
@@ -980,7 +1025,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
     return (
       <main style={{ background: "var(--cr-paper)", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "64px 24px" }}>
         {/* One diamond, one sentence, one action -- the house empty state. */}
-        <span aria-hidden style={{ fontSize: "20px", color: "var(--cr-copper)", marginBottom: "24px" }}>{"✦"}</span>
+        <span aria-hidden style={{ fontSize: "22px", color: "var(--cr-copper)", marginBottom: "24px" }}>{"✦"}</span>
         <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "28px", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>{t("dashboard.setUpProfile")}</h2>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "400px", marginBottom: "24px" }}>
           {t("dashboard.setUpProfileSub")}
@@ -1002,11 +1047,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           style={{
             background: "var(--cr-ink)", color: "var(--cr-paper)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            gap: "12px", flexWrap: "wrap", padding: "10px 20px",
+            gap: "12px", flexWrap: "wrap", padding: "12px 24px",
             fontFamily: "'DM Sans', sans-serif", fontSize: "13px",
           }}
         >
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
             <Eye style={{ width: 14, height: 14, color: "var(--cr-copper-l)" }} />
             {t("viewAs.banner", { name: viewingAs })}
           </span>
@@ -1019,10 +1064,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
       {/* ── Header ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", position: "relative", overflow: "hidden" }}>
-        {/* Banknote texture, barely there -- the header says "capital" once. */}
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", position: "relative" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "24px", position: "relative" }}>
           <div>
-            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("dashboard.startupDashboard")}</div>
+            <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("dashboard.startupDashboard")}</div>
             <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "12px" }}>
               {startup.name}
             </h1>
@@ -1033,12 +1077,15 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </span>
             </div>
           </div>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-            <Link href={`/startups/${startup.slug}`} target="_blank" style={outlineBtn}>
-              {t("dashboard.viewListing")}
-            </Link>
+          {/* One outlined pill, three quiet links. Four identical pills read as
+              four equally urgent decisions; editing the listing is the only
+              one of these that changes anything. */}
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
             <Link href="/dashboard/startup/edit" style={outlineBtn}>
               {t("dashboard.editProfile")}
+            </Link>
+            <Link href={`/startups/${startup.slug}`} target="_blank" style={tertiaryBtn}>
+              {t("dashboard.viewListing")} <span aria-hidden>{"→"}</span>
             </Link>
             {/* The unlocked owner view above lies by omission: it never shows
                 what a real investor meets. This one does -- tier zeroed,
@@ -1053,11 +1100,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "32px 32px 64px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 32px 96px" }}>
 
         {/* Listing status banner -- one for every state, always at the top. */}
         {startup.status === "pending_review" && (
-          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
             <div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.profileUnderReview")}</p>
@@ -1066,36 +1113,38 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           </div>
         )}
         {startup.status === "draft" && rejectionReason && (
-          <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
-            <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0, marginTop: 2 }} />
+          <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+            <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0, marginTop: 4 }} />
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusRejectedTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", marginTop: "4px", lineHeight: 1.5 }}>“{rejectionReason}”</p>
-              <Link href="/dashboard/startup/edit" style={{ display: "inline-block", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.editAndResubmit")} →</Link>
+              <Link href="/dashboard/startup/edit" style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.editAndResubmit")} →</Link>
             </div>
           </div>
         )}
         {startup.status === "draft" && !rejectionReason && (
-          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 200 }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.statusDraftTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusDraftBody")}</p>
             </div>
-            <Link href="/dashboard/startup/edit" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", background: "var(--cr-copper)", padding: "8px 16px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
+            <Link href="/dashboard/startup/edit" style={{ ...primaryBtn, fontSize: "12px", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
           </div>
         )}
         {startup.status === "active" && (
-          /* Live = a matured state, so the accent is verdigris -- green keeps
-             meaning money direction and nothing else. */
-          <div style={{ background: "color-mix(in srgb, var(--verdigris) 7%, transparent)", border: "1px solid color-mix(in srgb, var(--verdigris) 25%, transparent)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          /* Live is the everyday state, so it gets a hairline and a dot, not a
+             tinted slab: a founder should not meet a coloured banner every
+             morning for the news that nothing is wrong. Verdigris means
+             settled -- green keeps meaning money direction and nothing else. */
+          <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "0 0 16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--verdigris)", boxShadow: "0 0 0 4px color-mix(in srgb, var(--verdigris) 15%, transparent)", flexShrink: 0 }} />
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--verdigris)", flex: 1, minWidth: 160 }}>{t("dashboard.statusLiveTitle")}</p>
-            <Link href={`/startups/${startup.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--verdigris)", textDecoration: "none" }}>{t("dashboard.viewPublicListing")} →</Link>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)", flex: 1, minWidth: 160 }}>{t("dashboard.statusLiveTitle")}</p>
+            <Link href={`/startups/${startup.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-4)", textDecoration: "none" }}>{t("dashboard.viewPublicListing")} →</Link>
           </div>
         )}
         {startup.status === "suspended" && (
-          <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "12px 16px", marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0 }} />
             <div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusSuspendedTitle")}</p>
@@ -1104,98 +1153,89 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           </div>
         )}
 
-        {/* Instrument strip: one hairline-divided row instead of four boxed
-            cards. Views is the founder's headline figure; the rest sit a size
-            down, sparklines carry each number's 30-day shape, and the AI
-            score reads as an instrument, not another integer. */}
-        <div style={{ borderTop: "1px solid var(--cr-rule-dark)", borderBottom: "1px solid var(--cr-rule-dark)", overflow: "hidden", marginBottom: "48px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", marginLeft: "-1px" }}>
-            {[
-              { label: t("dashboard.profileViews"),  val: analytics.views,                series: analytics.viewSeries, headline: true  },
-              { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries, headline: false },
-              { label: t("dashboard.activeDeals"),   val: analytics.deals,                series: analytics.dealSeries, headline: false, href: "/deals" },
-              { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", headline: false, info: "glossary.aiScore", dial: true },
-            ].map(({ label, val, series, href, info, headline, dial }: { label: string; val: number | string; series?: number[]; href?: string; info?: string; headline: boolean; dial?: boolean }) => (
-              <div key={label} onClick={href ? () => router.push(href) : undefined}
-                role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
-                onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
-                style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", cursor: href ? "pointer" : "default", display: "flex", flexDirection: "column" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
-                  {label}
-                  {/* The founder is being shown a number about their own
-                      company that a model produced. They deserve to know what
-                      it measures without leaving the page. */}
-                  {info && <InfoTip termKey={info} />}
-                  {href && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "6px" }}>→</span>}
-                </p>
-                {dial && typeof val === "number" ? (
-                  <ScoreDial score={val} size={48} />
-                ) : (
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: headline ? 700 : 500, fontSize: headline ? "48px" : "22px", lineHeight: 1, color: headline ? "var(--cr-ink)" : "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums", letterSpacing: headline ? "-0.02em" : undefined }}>{val}</p>
-                )}
-                {series && <ViewsSparkline series={series} />}
-              </div>
-            ))}
+        {/* The instrument strip, re-ranked. Four cells of equal size is four
+            headlines, which is none: profile views now takes the whole top
+            row at 48px with its 30-day shape under it, and saves, deals and
+            the AI score sit a full size down on a hairline row beneath. Every
+            figure, sparkline, link and tooltip that was here is still here. */}
+        <div style={{ borderTop: "1px solid var(--cr-rule-dark)", borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "64px" }}>
+          <div style={{ padding: "32px 24px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
+              {t("dashboard.profileViews")}
+            </p>
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "48px", lineHeight: 1, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+              {analytics.views}
+            </p>
+            {/* Pixel dimensions, never a percentage height: this cell is an
+                auto-height block and a percentage would collapse to zero. */}
+            {analytics.viewSeries && <ViewsSparkline series={analytics.viewSeries} width={240} height={40} />}
           </div>
-        </div>
-
-        {/* F10: the numbers above say what you have; this says whether it is
-            good. Percentiles among same-stage listings that DISCLOSED each
-            metric -- never a ranking, so nobody can reverse-engineer who is
-            one place above them. */}
-        <CapTableCard />
-        {benchmarks && benchmarks.entries.length > 0 && (
-          /* A quiet hairline band, not another card: labels and mono
-             percentiles. Copper marks a strong percentile -- green stays
-             reserved for money direction. */
-          <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "0 0 24px", marginBottom: "48px" }}>
-            <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
-              {t("bench.title", { n: benchmarks.cohortSize })}
-              <InfoTip termKey="bench.explain" />
-            </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
-              {benchmarks.entries.map(e => (
-                <div key={e.key} style={{ minWidth: "120px" }}>
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", fontVariantNumeric: "tabular-nums", color: e.percentile >= 60 ? "var(--cr-copper)" : e.percentile <= 30 ? "var(--cr-ink-3)" : "var(--cr-ink)" }}>
-                    p{e.percentile}
+          <div style={{ borderTop: "1px solid var(--cr-rule)", overflow: "hidden" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(176px, 1fr))", marginLeft: "-1px" }}>
+              {[
+                { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries },
+                { label: t("dashboard.activeDeals"),   val: analytics.deals,                series: analytics.dealSeries, href: "/deals" },
+                { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", info: "glossary.aiScore", dial: true },
+              ].map(({ label, val, series, href, info, dial }: { label: string; val: number | string; series?: number[]; href?: string; info?: string; dial?: boolean }) => (
+                <div key={label} onClick={href ? () => router.push(href) : undefined}
+                  role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
+                  onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
+                  style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", cursor: href ? "pointer" : "default", display: "flex", flexDirection: "column" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
+                    {label}
+                    {/* The founder is being shown a number about their own
+                        company that a model produced. They deserve to know what
+                        it measures without leaving the page. */}
+                    {info && <InfoTip termKey={info} />}
+                    {href && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
                   </p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
-                    {t(`bench.metric.${e.key}`)} · {t("bench.ofPeers", { n: e.peers })}
-                  </p>
+                  {dial && typeof val === "number" ? (
+                    /* Stepped down from 48: the dial is the loudest object in
+                       this row otherwise, and the row is not the headline. */
+                    <ScoreDial score={val} size={40} />
+                  ) : (
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{val}</p>
+                  )}
+                  {series && <ViewsSparkline series={series} />}
                 </div>
               ))}
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Tab bar */}
+        {/* Tab bar. The cap table and the F10 benchmark band used to sit
+            between the strip and this bar, so arrival meant three sections
+            before the first tab -- both now live under "raise progress". */}
         <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "32px", display: "flex", overflowX: "auto" }}>
           {TABS.filter(tab => tab.value !== "ai" || canGrowth).map(({ value, label }) => (
-            <button key={value} onClick={() => setActiveTab(value)}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === value ? 600 : 300, fontSize: "13px", color: activeTab === value ? "var(--cr-ink)" : "var(--cr-ink-4)", padding: "10px 18px 9px", whiteSpace: "nowrap", borderBottom: activeTab === value ? "2px solid var(--cr-copper)" : "2px solid transparent", transition: "color 100ms, border-color 100ms" }}>
+            <button key={value} aria-pressed={activeTab === value} onClick={() => setActiveTab(value)}
+              style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === value ? 600 : 300, fontSize: "13px", color: activeTab === value ? "var(--cr-ink)" : "var(--cr-ink-4)", minHeight: "40px", padding: "0 16px", whiteSpace: "nowrap", borderBottom: activeTab === value ? "2px solid var(--cr-copper)" : "2px solid transparent", transition: "color 100ms, border-color 100ms" }}>
               {label}
             </button>
           ))}
         </div>
 
-        {/* ── Overview ── */}
+        {/* ── Overview: the state of the listing itself ── */}
         {activeTab === "overview" && (
           /* 24px gap inline: the shared class carries 20px, which is off the
              4/8/12/16/24 scale -- this surface keeps the rhythm honest. */
-          <div className="grid-third-stack" style={{ gap: "24px" }}>
+          <div className="grid-third-stack" style={{ gap: "24px", alignItems: "start" }}>
             {/* Profile completion */}
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+            <div style={panel}>
               <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.profileCompletion")}</h3>
+              {/* 22px ink, not 32px copper. The headline on this page is
+                  profile views; a second big copper number beside it is a
+                  second headline, and two headlines is none. */}
               <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "12px" }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{score}</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-4)" }}>%</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{score}</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>%</span>
               </div>
               {/* Progress track */}
               <div style={{ height: "3px", background: "var(--cr-paper-4)", borderRadius: "2px", marginBottom: "16px" }}>
                 <div style={{ height: "3px", background: "var(--cr-copper)", borderRadius: "2px", width: `${score}%`, transition: "width 600ms ease" }} />
               </div>
               {missing.length === 0 ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--verdigris)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--verdigris)" }}>
                   <CheckCircle2 style={{ width: 14, height: 14 }} /> {t("dashboard.profileComplete")}
                 </div>
               ) : (
@@ -1205,31 +1245,34 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   {nextAction && (
                     /* A left rule, not a box-in-box: the copper bar is the
                        ruled-label motif carrying emphasis inside the card. */
-                    <div style={{ borderLeft: "2px solid var(--cr-copper)", paddingLeft: "12px", marginBottom: "16px" }}>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "3px" }}>
+                    <div style={{ borderLeft: "2px solid var(--cr-copper)", paddingLeft: "12px", marginBottom: "24px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
                         {t("completeness.nextBest")}
                       </p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.4 }}>
                         {t(nextAction.labelKey)}
                       </p>
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginTop: "3px" }}>
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginTop: "4px" }}>
                         {t("completeness.worth", { points: nextAction.weight })}
                       </p>
                     </div>
                   )}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
-                    {missing.slice(0, 5).map((m) => (
-                      <div key={m.key} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span aria-hidden style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--cr-paper-4)", flexShrink: 0 }} />
-                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t(m.labelKey)}</span>
-                      </div>
-                    ))}
-                    {missing.length > 5 && (
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
-                        {t("completeness.andMore", { count: missing.length - 5 })}
-                      </span>
-                    )}
-                  </div>
+                  {/* The full list of gaps, one click down. The next-best
+                      action above is the instruction; this is the audit. */}
+                  <details style={{ marginBottom: "16px" }}>
+                    <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                      {t("common.viewAll")}{" "}
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{missing.length}</span>
+                    </summary>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
+                      {missing.map((m) => (
+                        <div key={m.key} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span aria-hidden style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--cr-paper-4)", flexShrink: 0 }} />
+                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t(m.labelKey)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
                 </>
               )}
               <Link href="/dashboard/startup/edit" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "40px", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)", textDecoration: "none", marginTop: "8px" }}>
@@ -1238,10 +1281,10 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             </div>
 
             {/* Right col */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div style={stack24}>
               {/* Quick actions -- rules divide the grid, not boxes-in-boxes,
                   and the labels stand without a row of repeated icons. */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+              <div style={panel}>
                 <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.quickActions")}</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--cr-rule)" }}>
                   {[
@@ -1253,7 +1296,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     { href: `/startups/${startup.slug}`, label: t("dashboard.publicView"), ext: true },
                   ].map(({ href, label, ext }) => (
                     <Link key={label} href={href} {...(ext ? { target: "_blank" } : {})}
-                      style={{ display: "flex", alignItems: "center", minHeight: "40px", background: "var(--cr-paper-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 12px", textDecoration: "none" }}
+                      style={{ display: "flex", alignItems: "center", minHeight: "48px", background: "var(--cr-paper-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "0 12px", textDecoration: "none" }}
                       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
                       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}>
                       {label}
@@ -1264,10 +1307,10 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
               {/* Subscription -- quiet: the one primary in this column is the
                   visibility unlock below. */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+              <div style={{ ...panel, padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
                 <div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                     {tier === "free" ? t("dashboard.upgradeTierNote") : t("dashboard.activeSubscription")}
                   </p>
                 </div>
@@ -1277,9 +1320,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </div>
 
               {/* Profile visibility */}
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+              <div style={panel}>
                 <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.profileVisibility")}</h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {VIS_ROWS.map((row) => {
                     const unlocked = "always" in row ? true : ("key" in row && row.key === "docs" ? canDocs : canGrowth);
                     return (
@@ -1295,7 +1338,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                           <span data-tip={t(row.tipKey)} tabIndex={0} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(row.labelKey)}</span>
                         </div>
                         {!unlocked && "tier" in row && (
-                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px" }}>
+                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px" }}>
                             {row.tier}+
                           </span>
                         )}
@@ -1304,84 +1347,146 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   })}
                 </div>
                 {tier === "free" && (
-                  <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "16px", width: "100%", boxSizing: "border-box" }}>
+                  /* The one copper fill on the overview. Everything else in
+                     this column is a hairline outline or a quiet link. */
+                  <Link href="/pricing" style={{ ...primaryBtn, display: "flex", justifyContent: "center", marginTop: "24px", width: "100%", boxSizing: "border-box" }}>
                     {t("dashboard.unlockProfileInfo")}
                   </Link>
                 )}
               </div>
             </div>
 
-            {startup && startup.status === "active" && <ErrorBoundary labelKey="sections.updateComposer"><UpdateComposer /></ErrorBoundary>}
+            {/* The listing's own to-do list belongs with the listing. Spanning
+                both columns because this grid is 1fr/2fr: panels dropped in
+                loose used to auto-place into alternating column widths, which
+                is most of why the overview looked like a pile. */}
+            <div style={{ gridColumn: "1 / -1" }}>
+              <Flush top={16}>
+                <ErrorBoundary labelKey="sections.fundraiseChecklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
+              </Flush>
+            </div>
+          </div>
+        )}
+
+        {/* ── Raise progress: the round, its shape and its history ── */}
+        {activeTab === "raise" && (
+          <div style={stack24}>
+            {startup && analytics.raise && (
+              <ErrorBoundary labelKey="sections.raiseProgress">
+                <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
+              </ErrorBoundary>
+            )}
             {startup && <ErrorBoundary labelKey="sections.raiseProgress"><RoundControls startup={startup} /></ErrorBoundary>}
             {startup && analytics.funnel && (
               <ErrorBoundary labelKey="sections.raiseProgress">
                 <RaiseFunnel views={analytics.views} saves={analytics.saves} deals={analytics.deals} termSheets={analytics.funnel.termSheets} closed={analytics.funnel.closed} />
               </ErrorBoundary>
             )}
-            {startup && <ErrorBoundary labelKey="sections.investorInterest"><QuestionQueue /></ErrorBoundary>}
-            {startup && <ErrorBoundary labelKey="sections.documentAnalytics"><NdaRoster /></ErrorBoundary>}
-            {startup && analytics.raise && (
-              <ErrorBoundary labelKey="sections.raiseProgress">
-                <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
-              </ErrorBoundary>
+            {benchmarks && benchmarks.entries.length > 0 && (
+              /* F10: the strip says what you have; this says whether it is
+                 good. Percentiles among same-stage listings that DISCLOSED
+                 each metric -- never a ranking, so nobody can reverse-engineer
+                 who is one place above them. A hairline band, not another
+                 card: copper marks a strong percentile, green stays reserved
+                 for money direction. */
+              <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "24px 0" }}>
+                <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
+                  {t("bench.title", { n: benchmarks.cohortSize })}
+                  <InfoTip termKey="bench.explain" />
+                </h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "32px" }}>
+                  {benchmarks.entries.map(e => (
+                    <div key={e.key} style={{ minWidth: "120px" }}>
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", fontVariantNumeric: "tabular-nums", color: e.percentile >= 60 ? "var(--cr-copper)" : e.percentile <= 30 ? "var(--cr-ink-3)" : "var(--cr-ink)" }}>
+                        p{e.percentile}
+                      </p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                        {t(`bench.metric.${e.key}`)} · {t("bench.ofPeers", { n: e.peers })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
-            <ErrorBoundary labelKey="sections.fundraiseChecklist"><FundraiseChecklist startup={startup} completeness={score} /></ErrorBoundary>
-            <ErrorBoundary labelKey="sections.tractionHistory"><MetricsRecorder /></ErrorBoundary>
+            <Flush top={16}><ErrorBoundary labelKey="sections.tractionHistory"><MetricsRecorder /></ErrorBoundary></Flush>
+            {/* CapTableCard carries its own 24px bottom margin from the pages
+                that use it standalone; Flush hands this stack its rhythm back. */}
+            <Flush bottom={24}><CapTableCard /></Flush>
+          </div>
+        )}
+
+        {/* ── Investor interest: who is looking, and who you are chasing ── */}
+        {activeTab === "investors" && (
+          <div style={stack24}>
+            {/* The opener names what this tab holds, so nothing that moved off
+                the overview is lost, and it is what a founder with no activity
+                yet reads instead of a blank panel. */}
+            <div>
+              <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "8px" }}>{t("sections.investorInterest")}</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.65, maxWidth: "60ch" }}>
+                {t("dashboard.investorTabNote")}
+              </p>
+            </div>
+            {startup && startup.status === "active" && <ErrorBoundary labelKey="sections.updateComposer"><UpdateComposer /></ErrorBoundary>}
+            {startup && <ErrorBoundary labelKey="sections.investorInterest"><QuestionQueue /></ErrorBoundary>}
             <ErrorBoundary labelKey="sections.targetInvestors"><MatchRadar /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.investorInterest"><EngagementPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.investorInterest"><SaversPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.profileViewers"><ViewersPanel /></ErrorBoundary>
             <ErrorBoundary labelKey="sections.targetInvestors"><TargetsPanel /></ErrorBoundary>
-            <ErrorBoundary labelKey="sections.documentAnalytics"><DocAnalyticsPanel /></ErrorBoundary>
           </div>
         )}
 
-        {/* ── Documents ── */}
+        {/* ── Documents: the files, who opened them, and who signed ── */}
         {activeTab === "documents" && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
-              <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.uploadedDocuments")}</h3>
-              <Link href="/dashboard/startup/documents" style={primaryBtn}>
-                {t("dashboard.manage")}
-              </Link>
-            </div>
-            {startup.documents && startup.documents.length > 0 ? (
-              <div>
-                {/* Rows split by rules; no icon tile repeated down the list. */}
-                {startup.documents.map((doc, i) => (
-                  <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: i < startup.documents!.length - 1 ? "1px solid var(--cr-rule)" : "none" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{doc.label}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{doc.type.replace(/_/g, " ")}</p>
-                      </div>
-                      {doc.requires_nda && (
-                        <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                          {t("dashboard.ndaRequired")}
-                        </span>
-                      )}
-                    </div>
-                    <a href={`/api/documents/open?id=${doc.id}`} target="_blank" rel="noopener noreferrer"
-                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
-                      {t("dashboard.view")}
-                    </a>
-                  </div>
-                ))}
+          <div style={stack24}>
+            <div style={panel}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap", marginBottom: "24px" }}>
+                <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.uploadedDocuments")}</h3>
+                <Link href="/dashboard/startup/documents" style={primaryBtn}>
+                  {t("dashboard.manage")}
+                </Link>
               </div>
-            ) : (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-                {t("dashboard.noDocuments")}
-              </p>
-            )}
+              {startup.documents && startup.documents.length > 0 ? (
+                <div>
+                  {/* Rows split by rules; no icon tile repeated down the list. */}
+                  {startup.documents.map((doc, i) => (
+                    <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", padding: "16px 0", borderBottom: i < startup.documents!.length - 1 ? "1px solid var(--cr-rule)" : "none" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", minWidth: 0 }}>
+                        <div>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{doc.label}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize", marginTop: "4px" }}>{doc.type.replace(/_/g, " ")}</p>
+                        </div>
+                        {doc.requires_nda && (
+                          <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                            {t("dashboard.ndaRequired")}
+                          </span>
+                        )}
+                      </div>
+                      <a href={`/api/documents/open?id=${doc.id}`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>
+                        {t("dashboard.view")}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
+                  {t("dashboard.noDocuments")}
+                </p>
+              )}
+            </div>
+            <ErrorBoundary labelKey="sections.documentAnalytics"><DocAnalyticsPanel /></ErrorBoundary>
+            {startup && <ErrorBoundary labelKey="sections.documentAnalytics"><NdaRoster /></ErrorBoundary>}
           </div>
         )}
 
         {/* ── AI Feedback -- Growth only ── */}
         {activeTab === "ai" && canGrowth && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+          <div style={panel}>
             <div style={{ marginBottom: "24px" }}>
               <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "8px" }}>{t("dashboard.aiPitchFeedback")}</h3>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.aiPitchFeedbackSub")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.65, maxWidth: "60ch" }}>{t("dashboard.aiPitchFeedbackSub")}</p>
             </div>
             {!aiFeedback ? (
               viewingAs ? null : (
@@ -1391,9 +1496,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               )
             ) : (
               <div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "20px" }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", color: "var(--cr-copper)", lineHeight: 1 }}>{aiFeedback.overall_score}</span>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "18px", color: "var(--cr-ink-4)" }}>/100</span>
+                {/* The one loud thing on this view -- nothing else here is
+                    bigger than 13px, so the score can hold 40. */}
+                <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "24px" }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{aiFeedback.overall_score}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-4)" }}>/100</span>
                 </div>
                 {/* Blocks split by rules, not boxes inside the card. */}
                 <div style={{ display: "flex", flexDirection: "column", marginBottom: "24px" }}>
@@ -1403,9 +1510,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     { key: "competitive_positioning", label: t("dashboard.fbCompetitive") },
                     { key: "missing_information",     label: t("dashboard.fbMissing")     },
                   ].map(({ key, label }) => (
-                    <div key={key} style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
+                    <div key={key} style={{ borderTop: "1px solid var(--cr-rule)", padding: "24px 0" }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>{label}</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{aiFeedback[key]}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7, whiteSpace: "pre-wrap", maxWidth: "70ch" }}>{aiFeedback[key]}</p>
                     </div>
                   ))}
                 </div>
@@ -1417,14 +1524,14 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* ── Billing ── */}
         {activeTab === "billing" && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "24px" }}>
+          <div style={panel}>
             <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "24px" }}>{t("dashboard.subscriptionBilling")}</h3>
             {/* A rule-divided row, not a colored slab -- copper stays for
                 emphasis, structure is a hairline. */}
-            <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "16px 0", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "24px 0", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
               <div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{profile.subscription_status || t("dashboard.statusActive")}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{profile.subscription_status || t("dashboard.statusActive")}</p>
               </div>
               {viewingAs ? null : (
                 <button onClick={openBillingPortal} style={outlineBtn}>
@@ -1432,7 +1539,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 </button>
               )}
             </div>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", lineHeight: 1.7, maxWidth: "70ch" }}>
               {t("dashboard.billingNote")}
             </p>
           </div>
@@ -1440,11 +1547,14 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* F: a founder's best introduction is the investor who passed on
             them politely. Hidden when an admin is viewing as this founder --
-            an invite is theirs to send, not ours. */}
+            an invite is theirs to send, not ours. 64px marks the seam between
+            the tabbed working surface and this standing footer. */}
         {!viewingAs && (
-          <div style={{ marginTop: "48px" }}>
-            {/* Sharing the round, and finding out whether anybody opened it. */}
-            <ShareLinks />
+          <div style={{ marginTop: "64px", ...stack24 }}>
+            {/* Sharing the round, and finding out whether anybody opened it.
+                ShareLinks brings its own 24px top margin from the surfaces it
+                is shared with; Flush keeps this seam at exactly 64. */}
+            <Flush top={24}><ShareLinks /></Flush>
             <InvitePanel defaultRole="investor" />
           </div>
         )}

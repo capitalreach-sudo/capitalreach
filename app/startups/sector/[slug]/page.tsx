@@ -1,4 +1,7 @@
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { browseIndexPublic } from "@/lib/listing-visibility";
 import { stripCardFinancials } from "@/lib/browse-data";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -43,6 +46,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // (generateStaticParams); reading the locale cookie would force them dynamic.
 // Same policy as /blog.
 export default async function SectorPage({ params }: Props) {
+  // Same rule as the index: a sector page is the catalogue, filtered.
+  if (!(await browseIndexPublic())) {
+    const gate = await createServerSupabaseClient();
+    const { data: { user } } = await gate.auth.getUser();
+    if (!user) redirect(`/auth/login?redirect=/startups/sector/${params.slug}`);
+  }
   const industry = industryFromSlug(params.slug);
   if (!industry) notFound();
 

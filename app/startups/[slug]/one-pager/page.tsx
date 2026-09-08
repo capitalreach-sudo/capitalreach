@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -7,6 +7,7 @@ import { safeFormatCurrencyAmount, safeFormatMRR } from "@/lib/validators";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { roundCloseState } from "@/lib/round-close";
 import { protectFounders } from "@/lib/identity";
+import { listingDetailPublic } from "@/lib/listing-visibility";
 import { viewerCanSeeFinancials } from "@/lib/browse-data";
 
 /**
@@ -26,14 +27,42 @@ import { viewerCanSeeFinancials } from "@/lib/browse-data";
  */
 interface Props {
   params: { slug: string };
+  searchParams?: { share?: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `One-pager — ${params.slug}`, robots: { index: false } };
 }
 
-export default async function OnePagerPage({ params }: Props) {
+export default async function OnePagerPage({ params, searchParams }: Props) {
   const supabase = await createServerSupabaseClient();
+
+  // The printable sheet carries the whole pitch -- problem, solution, market,
+  // competitive advantage, use of funds. That is the same idea the detail
+  // page now withholds from anonymous readers, and this URL is derivable
+  // from any slug on the public index, so gating one without the other left
+  // the front door locked and the side door open. Same rule, same exemption
+  // for a founder's own share link.
+  const { data: { user: gateUser } } = await supabase.auth.getUser();
+  if (!gateUser && !(await listingDetailPublic())) {
+    const gateToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
+    let sharedWithGuest = false;
+    if (gateToken) {
+      const { data: gateShare } = await createAdminClient()
+        .from("round_shares")
+        .select("startup_id, expires_at, revoked_at, startup:startups!inner(slug)")
+        .eq("token", gateToken)
+        .maybeSingle();
+      const shareSlug = Array.isArray(gateShare?.startup)
+        ? (gateShare?.startup as Array<{ slug: string }>)[0]?.slug
+        : (gateShare?.startup as { slug: string } | null | undefined)?.slug;
+      sharedWithGuest = !!gateShare
+        && shareSlug === params.slug
+        && !gateShare.revoked_at
+        && (!gateShare.expires_at || new Date(gateShare.expires_at) > new Date());
+    }
+    if (!sharedWithGuest) redirect(`/auth/login?redirect=/startups/${params.slug}/one-pager`);
+  }
 
   // Service-role read; the entitlement strip below governs what renders.
   const { data: startup } = await createAdminClient()

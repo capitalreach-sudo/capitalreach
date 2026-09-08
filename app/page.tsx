@@ -7,6 +7,7 @@ import { getLaunchStatus }   from "@/lib/launchMode";
 import { Navbar }            from "@/components/shared/navbar";
 import { Footer }            from "@/components/shared/footer";
 import { HomepageClient }    from "@/components/homepage/homepage-client";
+import { buildAccessContext, investorCan } from "@/lib/access";
 import type { Metadata }     from "next";
 
 export const dynamic = "force-dynamic";
@@ -85,12 +86,27 @@ export default async function HomePage() {
   // anonymous majority getUser resolves locally from absent cookies without
   // a network hop, so this costs signed-in visitors only.
   let viewerRole: string | null = null;
+  // Whether this visitor may be shown the market itself. The live ticker and
+  // the top-listings table name real companies that are raising, and a
+  // private marketplace does not advertise its members to the street
+  // (Jack's call). Signed in AND on a plan -- which, during the founding
+  // stage, every member is.
+  let canSeeMarket = false;
   try {
     const sb = await createServerSupabaseClient();
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
-      const { data: prof } = await createAdminClient().from("profiles").select("role").eq("id", user.id).maybeSingle();
+      const { data: prof } = await createAdminClient()
+        .from("profiles").select("role, subscription_tier, suspended, account_status").eq("id", user.id).maybeSingle();
       viewerRole = prof?.role ?? null;
+      if (prof) {
+        const ctx = buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], launch.isLaunch);
+        // Founders see the market too: they are members, and a founder
+        // sizing up the field is not the leak this guards against.
+        canSeeMarket = prof.role === "admin" || prof.role === "startup"
+          ? true
+          : investorCan(ctx).viewListingDetail;
+      }
     }
   } catch { /* anonymous render is the safe default */ }
 
@@ -100,7 +116,7 @@ export default async function HomePage() {
       <Navbar />
       <JsonLdScript data={organizationJsonLd()} />
       <JsonLdScript data={webSiteJsonLd()} />
-      <HomepageClient stats={stats} listings={listings} tickerListings={tickerListings} launch={launch} viewerRole={viewerRole} />
+      <HomepageClient stats={stats} listings={listings} tickerListings={tickerListings} launch={launch} viewerRole={viewerRole} canSeeMarket={canSeeMarket} />
       <Footer />
     </>
   );

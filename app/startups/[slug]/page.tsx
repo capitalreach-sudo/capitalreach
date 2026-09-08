@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { stripCardFinancials } from "@/lib/browse-data";
+import { listingDetailPublic } from "@/lib/listing-visibility";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
@@ -11,6 +12,7 @@ import { stripLockedUrl } from "@/lib/document-access";
 import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { protectFounders } from "@/lib/identity";
+import { ListingLocked } from "@/components/startup/listing-locked";
 import { getLocale } from "@/lib/locale-server";
 import { detectLanguage } from "@/lib/detect-language";
 import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
@@ -34,6 +36,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single();
 
   if (!startup) return {};
+
+  // Metadata is rendered BEFORE the page body, so the body's redirect cannot
+  // protect it -- this codebase has already been bitten by exactly that, when
+  // an investor's name leaked through the <title> of a redirect shell. When
+  // the detail page is members-only and the caller is signed out, the tags
+  // carry the company NAME and its TAGLINE and nothing else: a shared link
+  // still previews as something rather than a bare URL, while the problem,
+  // solution, market and every financial figure stay behind the gate.
+  //
+  // Marked noindex because this URL answers an anonymous crawler with a
+  // redirect to sign-in; indexing it would put a login screen in the results
+  // under the company's name. The browse index and the sector pages carry the
+  // public SEO instead.
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user && !(await listingDetailPublic())) {
+    return {
+      robots: { index: false, follow: false },
+      title: `${startup.name}: ${startup.tagline}`,
+      description: startup.tagline,
+      openGraph: {
+        title: `${startup.name} | CapitalReach`,
+        description: startup.tagline,
+        type: "website",
+        url: `/startups/${params.slug}`,
+      },
+      alternates: { canonical: `/startups/${params.slug}` },
+    };
+  }
 
   return {
     // A fictional sample company must never appear in a search result.
@@ -85,11 +115,43 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
 
   if (!startup || startup.status !== "active") notFound();
 
-  // Track pageview (server-side increment)
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // MEMBERS-ONLY DETAIL (platform_config.public_listing_detail). The browse
+  // index stays public -- name, sector, stage, raise, score -- but this page is
+  // where the idea lives, and an anonymous reader does not get it. This gate
+  // sits in FRONT of every entitlement gate below: nothing about the viewer is
+  // resolved and no pageview is recorded until it passes.
+  //
+  // The one anonymous door that stays open is a share link the founder minted
+  // themselves. The token is re-checked against THIS startup here rather than
+  // trusted as a query parameter, exactly as the document grant re-checks it
+  // further down -- ?share=anything would otherwise be a universal key. That
+  // later check is the stricter one (it also requires grants_documents); this
+  // one only decides whether the room is open.
+  if (!user && !(await listingDetailPublic())) {
+    const gateToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
+    let sharedWithGuest = false;
+    if (gateToken) {
+      const { data: gateShare } = await createAdminClient()
+        .from("round_shares")
+        .select("startup_id, expires_at, revoked_at")
+        .eq("token", gateToken)
+        .maybeSingle();
+      sharedWithGuest = !!gateShare
+        && gateShare.startup_id === startup.id
+        && !gateShare.revoked_at
+        && (!gateShare.expires_at || new Date(gateShare.expires_at) > new Date());
+    }
+    if (!sharedWithGuest) redirect(`/auth/login?redirect=/startups/${params.slug}`);
+  }
+
+  // Track pageview (server-side increment). After the gate: a visitor who was
+  // bounced to sign-in never saw the listing, and this counter is what the
+  // trending badge on the browse index is computed from.
   try { await supabase.rpc("increment_pageview", { startup_id: startup.id }); } catch { /* ok */ }
 
   // Get current user tier
-  const { data: { user } } = await supabase.auth.getUser();
   const { isLaunch } = await getLaunchStatus();
   let investorTier: SubscriptionTier | null = null;
   let investorId: string | null = null;
@@ -253,6 +315,29 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     isLaunchMode: isLaunch,
     suspended: previewing ? false : viewerSuspended,
   });
+
+  // The tier wall, distinct from the anonymous wall above. A signed-in free
+  // member is already past the login gate, so bouncing them there again would
+  // be nonsense -- they get the overview they saw on the card plus a plain
+  // upgrade path. Owners, admins and anyone previewing their own listing are
+  // never walled out of it. Returned EARLY so the gated prose is never
+  // serialised into a payload at all.
+  if (!isOwner && !viewerIsAdmin && !previewing && user && !viewerCaps.viewListingDetail) {
+    return (
+      <>
+        <Navbar />
+        <ListingLocked startup={{
+          name: startup.name,
+          tagline: startup.tagline,
+          industry: startup.industry,
+          stage: startup.stage,
+          funding_target: startup.funding_target,
+          country: startup.country,
+        }} />
+        <Footer />
+      </>
+    );
+  }
 
   // C33: who else is looking -- only investors who explicitly opted in, and
   // only shown to other investors. Never to the public, never amounts.
