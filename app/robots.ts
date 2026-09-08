@@ -7,7 +7,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/startups/", "/investors/", "/pricing"],
+        // /investors is login-gated now: inviting crawlers into a redirect
+        // wastes crawl budget and indexes a sign-in page under a directory name.
+        allow: ["/", "/startups/", "/pricing"],
         disallow: ["/dashboard/", "/admin/", "/api/", "/auth/", "/onboarding/"],
       },
     ],

@@ -33,14 +33,20 @@ function founderTier(ctx: AccessContext): FounderPlanId | "suspended" {
   // a suspended admin is a deliberately locked account, and the lock should
   // hold for them too.
   if (ctx.role === "admin") return "growth";
-  if (ctx.isLaunchMode) return "growth";
+  // Same rule as the investor side: no account, no promotion.
+  if (ctx.isLaunchMode && ctx.userId) return "growth";
   return getFounderPlan(ctx.tier).id;
 }
 
 function investorTier(ctx: AccessContext): InvestorPlanId | "suspended" {
   if (ctx.suspended) return "suspended";
   if (ctx.role === "admin") return "institution";
-  if (ctx.isLaunchMode) return "pro";
+  // Launch mode is a promotion for MEMBERS, and a visitor with no account is
+  // not a member. Granting the top tier on isLaunchMode alone handed every
+  // anonymous reader the financials of every listing -- buildAccessContext
+  // returns a null-user context that still carried isLaunchMode, so the
+  // listing page's strip never fired for the public.
+  if (ctx.isLaunchMode && ctx.userId) return "pro";
   return getInvestorPlan(ctx.tier).id;
 }
 
