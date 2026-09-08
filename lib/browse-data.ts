@@ -117,13 +117,23 @@ export async function loadActiveStartups(opts: { offset?: number; limit?: number
  * growth_rate and runway_months are deliberately NOT gated (the card shows them
  * to everyone), so they are left intact.
  */
+/**
+ * The one definition of "a company financial", used by every surface that
+ * renders a card. It exists because the listing page kept its own inline
+ * version that nulled only mrr and arr, so related-company cards went on
+ * leaking growth_rate and runway_months to anonymous readers after the
+ * browse grid had been fixed. Two strips drift; one cannot.
+ *
+ * The AI score is deliberately NOT here: it is CapitalReach's own rating
+ * rather than the company's confidential data, and it is the browse hook.
+ */
+export function stripCardFinancials<T extends Record<string, unknown>>(row: T): T {
+  return { ...row, mrr: null, arr: null, growth_rate: null, runway_months: null };
+}
+
 export function stripBrowseFinancials(rows: BrowseStartup[], canSeeFinancials: boolean): BrowseStartup[] {
   if (canSeeFinancials) return rows;
-  // growth_rate and runway_months joined the strip in the entitlement audit:
-  // they are company financials like mrr/arr. The AI score deliberately
-  // stays public everywhere -- it is CapitalReach's own rating, not the
-  // company's confidential data, and it is the browse page's hook.
-  return rows.map(r => ({ ...r, mrr: null, arr: null, growth_rate: null, runway_months: null }));
+  return rows.map((r) => stripCardFinancials(r));
 }
 
 /**

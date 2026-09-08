@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { stripCardFinancials } from "@/lib/browse-data";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
@@ -384,7 +385,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         investorId={previewing ? null : investorId}
         viewerDeal={previewing ? null : viewerDeal}
         ndaSigned={previewing ? false : ndaSigned}
-        relatedStartups={(related ?? []).map((r) => (viewerCaps.viewFinancials && !previewing ? r : { ...r, mrr: null, arr: null }))}
+        relatedStartups={(related ?? []).map((r) => (viewerCaps.viewFinancials && !previewing ? r : stripCardFinancials(r)))}
         updates={isOwner || viewerIsAdmin || !!investorId || previewing ? (updates ?? []) : []}
         isOwner={previewing ? false : isOwner}
         viewerStartupId={previewing ? null : viewerStartupId}

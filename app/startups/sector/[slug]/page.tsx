@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { stripCardFinancials } from "@/lib/browse-data";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase-server";
@@ -56,9 +57,11 @@ export default async function SectorPage({ params }: Props) {
     .returns<StartupCardData[]>();
 
   // This page is statically generated for anonymous crawlers and always passes
-  // investorTier={null} to the card, so gated MRR/ARR are never displayed here.
-  // Null them so the figures are not shipped in the prerendered payload either.
-  const list = (startups ?? []).map((s) => ({ ...s, mrr: null, arr: null }));
+  // investorTier={null} to the card, so gated figures are never displayed
+  // here. Null them so they are not shipped in the prerendered payload
+  // either -- through the shared strip, because this page's own version
+  // covered mrr and arr only and kept publishing growth and runway.
+  const list = (startups ?? []).map((s) => stripCardFinancials(s));
 
   return (
     <>
