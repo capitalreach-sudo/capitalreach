@@ -37,6 +37,10 @@ export function LaunchBanner() {
         style={{
           fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px",
           color: "#fff", textDecoration: "underline", whiteSpace: "nowrap",
+          // 40px is the smallest thing a thumb hits reliably. The link looks
+          // identical; only its hit area grows.
+          minHeight: "40px", display: "inline-flex", alignItems: "center",
+          padding: "0 4px",
         }}
       >
         {t("banner.cta")} →

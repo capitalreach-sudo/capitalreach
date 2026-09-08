@@ -94,7 +94,15 @@ export function GlobalSearch() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={t("search.aria")}
-        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", padding: 0, display: "flex", transition: "color 150ms ease" }}
+        style={{
+          background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)",
+          // The icon stays 16px; the button around it reaches 40, which is the
+          // smallest target a thumb hits reliably. Negative margin keeps the
+          // navbar's optical spacing unchanged while the hit area grows.
+          minWidth: "40px", minHeight: "40px", margin: "-12px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "color 150ms ease",
+        }}
         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
       >

@@ -6,7 +6,11 @@ export interface LaunchStatus {
   target:      number;
 }
 
-const LAUNCH_TARGET = 100;
+// The founding cohort's size lives in platform_config (migration 110) so it
+// can move without a deploy. This constant is only the floor used when that
+// row cannot be read -- it was the whole truth once, which is why the launch
+// banner went on promising "3/100" after the target became 150.
+const LAUNCH_TARGET_FALLBACK = 150;
 
 export async function getLaunchStatus(): Promise<LaunchStatus> {
   try {
@@ -15,7 +19,7 @@ export async function getLaunchStatus(): Promise<LaunchStatus> {
     const { data } = await admin
       .from("platform_config")
       .select("key, value")
-      .in("key", ["launch_mode", "member_count"]);
+      .in("key", ["launch_mode", "member_count", "founding_target"]);
 
     const map: Record<string, string> = {};
     for (const row of data ?? []) map[row.key] = row.value;
@@ -23,10 +27,11 @@ export async function getLaunchStatus(): Promise<LaunchStatus> {
     const isLaunch    = map["launch_mode"] === "true";
     const memberCount = parseInt(map["member_count"] ?? "0", 10);
 
-    return { isLaunch, memberCount, target: LAUNCH_TARGET };
+    const target = parseInt(map["founding_target"] ?? "", 10) || LAUNCH_TARGET_FALLBACK;
+    return { isLaunch, memberCount, target };
   } catch {
     // Fail closed: if DB is unreachable treat launch mode as off
-    return { isLaunch: false, memberCount: 0, target: LAUNCH_TARGET };
+    return { isLaunch: false, memberCount: 0, target: LAUNCH_TARGET_FALLBACK };
   }
 }
 
@@ -59,7 +64,10 @@ export async function incrementMemberCount(): Promise<void> {
       .select("key");
     if (!claimed?.length) continue; // another signup won the race; re-read
 
-    if (next >= LAUNCH_TARGET) {
+    const { data: targetRow } = await admin
+      .from("platform_config").select("value").eq("key", "founding_target").maybeSingle();
+    const closeAt = parseInt(targetRow?.value ?? "", 10) || LAUNCH_TARGET_FALLBACK;
+    if (next >= closeAt) {
       await admin
         .from("platform_config")
         .update({ value: "false" })
