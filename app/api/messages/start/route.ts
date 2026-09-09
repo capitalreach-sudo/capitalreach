@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety, type SafetyConfig } from "@/lib/message-safety";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
+import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
 import { recordSignal } from "@/lib/trust-signals";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -211,6 +212,17 @@ export async function POST(req: NextRequest) {
       const { data: st } = await admin.from("startups")
         .select("id, owner_id, name, status").eq("id", targetStartupId).maybeSingle();
       if (!st || st.status !== "active") return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+      // Offer before contact. Opening the thread IS the contact -- open:true
+      // opens one and records the introduction without a word being typed --
+      // so this sits above the thread lookup, before any row exists and
+      // before recordIntroduction fires. Only this branch is gated: the
+      // investor to investor branch above is not contact with a company, and
+      // the two founder branches below are never gated at all.
+      if (senderProfile?.role !== "admin") {
+        const contact = await mayInvestorContact({ startupId: st.id, investorId: me.id });
+        if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
+      }
 
       const { data: existing } = await admin.from("threads").select("id")
         .match({ startup_id: st.id, investor_id: me.id }).maybeSingle();

@@ -323,7 +323,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       body: JSON.stringify({ threadId: selectedThread.id, body }),
     });
     const json = await res.json().catch(() => ({}));
-    if (res.status === 409 && json.error === "deal_registration_required") {
+    if (res.status === 403 && json.error === "offer_required") {
+      // Contact costs an accepted offer now. Say which state they are in --
+      // "your offer is waiting" is a different message from "make an offer",
+      // and telling somebody to do a thing they already did is worse than
+      // saying nothing.
+      notify.info(json.openProposalId ? t("offer.awaitingReply") : t("offer.required"));
+    } else if (res.status === 409 && json.error === "deal_registration_required") {
       // Not a failure -- the conversation has become a negotiation and the
       // deal has to be on the record before it goes further. The draft is
       // kept: making somebody retype what they wrote to satisfy our

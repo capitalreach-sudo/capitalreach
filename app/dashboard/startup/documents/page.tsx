@@ -233,6 +233,12 @@ export default function DocumentsPage() {
             {/* The other half of a data room: who opened what, under which
                 NDA. Sits here because this is where a founder thinks about
                 who can see their documents. */}
+            <Link href="/dashboard/startup/offers" style={{ display: "inline-flex", alignItems: "center", gap: "6px", minHeight: "40px", ...BODY, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+              {t("offerInbox.link")} {"\u2192"}
+            </Link>
+            <Link href="/dashboard/startup/fees" style={{ display: "inline-flex", alignItems: "center", gap: "6px", minHeight: "40px", ...BODY, fontSize: "13px", color: "var(--cr-ink-3)", textDecoration: "none" }}>
+              {t("feePortal.link")} {"\u2192"}
+            </Link>
             <Link href="/dashboard/startup/nda" style={{ display: "inline-flex", alignItems: "center", gap: "6px", minHeight: "40px", ...BODY, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
               {t("ndaLog.linkFromDocuments")} {"\u2192"}
             </Link>

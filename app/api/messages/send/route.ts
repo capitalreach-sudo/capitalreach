@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
+import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
 import { recordSignal } from "@/lib/trust-signals";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -93,6 +94,18 @@ export async function POST(req: NextRequest) {
     .from("startups").select("status").eq("id", startupId).single();
   if (!targetStartup || targetStartup.status !== "active") {
     return NextResponse.json({ error: "Startup not available" }, { status: 404 });
+  }
+
+  // Offer before contact. This route is the investor to founder direction by
+  // construction (the investor row's owner is verified above), so the sender
+  // is exactly the party the rule addresses: they may speak once an offer of
+  // theirs is accepted, or a deal already exists. Placed before the thread is
+  // looked up or created so a refusal leaves no empty conversation behind and
+  // spends none of the monthly new-thread allowance. Admins pass, as they do
+  // on the trust gate above.
+  if (senderStatus?.role !== "admin") {
+    const contact = await mayInvestorContact({ startupId, investorId });
+    if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
   }
 
   // Check if thread already exists (no need to count existing thread)

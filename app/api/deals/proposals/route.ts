@@ -4,24 +4,39 @@ import { isAccountSuspended } from "@/lib/suspension-guard";
 import { resolveEntity } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
+import { isCurrencyCode, DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
+import { mayInvestorContact } from "@/lib/contact-policy";
+import { restrictionsFor } from "@/lib/fee-enforcement";
 
 /**
- * Deal proposals: the consent step in front of every deal (migration 091).
+ * Deal proposals: the consent step in front of every deal (migration 091),
+ * and since migration 118 the OFFER an investor opens with.
  *
- * GET   — my proposals, incoming and outgoing.
- * PATCH { id, action: "accept" | "decline" | "withdraw" }
+ * GET                                  -- my proposals, incoming and outgoing.
+ * GET  ?startupId=<uuid>               -- one listing's state, for the offer button.
+ * POST { startupId, amount, terms }    -- an investor's offer.
+ * PATCH { id, action: "accept" | "decline" | "withdraw" | "counter" }
  *
- * Two rules do the work here:
- *  - Only the RECIPIENT side may accept or decline, and only the PROPOSER may
- *    withdraw. Which side the caller is on is resolved from ownership, never
- *    trusted from the request.
+ * The rules that do the work here:
+ *  - Only the RECIPIENT side may accept, decline or counter, and only the
+ *    PROPOSER may withdraw. Which side the caller is on is resolved from
+ *    ownership, never trusted from the request.
  *  - Accepting re-checks the world before creating anything: the round may
  *    have closed and a deal may have appeared through another path since the
  *    proposal was sent. A stale yes must not create a deal the checks at
  *    proposal time would have refused.
+ *  - An offer carries a NUMBER. The whole point of putting the offer before
+ *    the conversation is that a founder's inbox stops filling with "love what
+ *    you're building, quick call?" and starts carrying terms, so an offer
+ *    without an amount is refused rather than quietly stored as null.
+ *  - The terms an investor offers may differ from the listing's ask. That is
+ *    not an error state; it is the negotiation. Nothing here compares the two.
  */
 
 type Sides = { startupSide: boolean; investorSide: boolean; startupId: string | null; investorId: string | null };
+
+type Admin = ReturnType<typeof createAdminClient>;
 
 async function mySides(userId: string): Promise<Sides> {
   const [st, inv] = await Promise.all([
@@ -34,13 +49,86 @@ async function mySides(userId: string): Promise<Sides> {
   };
 }
 
-export async function GET() {
+// ── Terms ───────────────────────────────────────────────────────────────────
+
+/** The plausibility ceiling: lib/format.ts renders anything above it as an
+ *  absence, so storing past it only guarantees a figure nobody can read back. */
+const MAX_MONEY = 9_999_999_999;
+
+interface Terms {
+  amount: number | null;
+  currency: string;
+  equity_pct: number | null;
+  valuation: number | null;
+  instrument: string | null;
+  conditions: string | null;
+  note: string | null;
+}
+
+/** A positive figure, or null. Strings are accepted because a money input is a
+ *  text field everywhere in this product ("1,500,000" is what people type). */
+function positive(v: unknown, max: number, decimals = 0): number | null {
+  const raw = typeof v === "number" ? v
+    : typeof v === "string" ? Number(v.replace(/[^0-9.]/g, ""))
+    : NaN;
+  if (!Number.isFinite(raw) || raw <= 0 || raw > max) return null;
+  const f = 10 ** decimals;
+  return Math.round(raw * f) / f;
+}
+
+function text(v: unknown, max: number): string | null {
+  return typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
+}
+
+/** Instrument is free-form on purpose (see migration 118): a real term sheet is
+ *  not an enum, and forcing one only pushes the substance into the note. */
+function readTerms(body: Record<string, unknown>): Terms {
+  return {
+    amount: positive(body.amount, MAX_MONEY),
+    currency: isCurrencyCode(body.currency) ? body.currency : DEFAULT_CURRENCY,
+    equity_pct: positive(body.equityPct, 100, 2),
+    valuation: positive(body.valuation, MAX_MONEY),
+    instrument: text(body.instrument, 40),
+    conditions: text(body.conditions, 2000),
+    note: text(body.note, 2000),
+  };
+}
+
+/** One line of the agreed terms for the deal timeline. Only what has a value:
+ *  an absent term is absent, not "null". */
+function describeTerms(p: {
+  amount: number | null; currency: string | null; equity_pct: number | null;
+  valuation: number | null; instrument: string | null; conditions: string | null;
+}): string | null {
+  const parts: string[] = [];
+  if (p.amount != null) parts.push(formatMoney(p.amount, p.currency));
+  if (p.equity_pct != null) parts.push(`${p.equity_pct}% equity`);
+  if (p.valuation != null) parts.push(`at ${formatMoney(p.valuation, p.currency)}`);
+  if (p.instrument) parts.push(p.instrument.replace(/_/g, " "));
+  if (parts.length === 0 && !p.conditions) return null;
+  const head = parts.length ? `Offer accepted: ${parts.join(" · ")}` : "Offer accepted";
+  return p.conditions ? `${head}\nConditions: ${p.conditions}` : head;
+}
+
+// ── GET ─────────────────────────────────────────────────────────────────────
+
+export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const admin = createAdminClient();
   const sides = await mySides(user.id);
+
+  // Scoped read: what should the offer button on THIS listing say? The verdict
+  // comes from lib/contact-policy so the button and the routes that refuse a
+  // message can never drift apart.
+  const scopedTo = req.nextUrl.searchParams.get("startupId");
+  if (scopedTo !== null) {
+    if (!isUuid(scopedTo)) return NextResponse.json({ error: "startupId must be a uuid" }, { status: 400 });
+    return listingState(admin, scopedTo, sides.investorId);
+  }
+
   if (!sides.startupId && !sides.investorId) return NextResponse.json({ incoming: [], outgoing: [] });
 
   const filters: string[] = [];
@@ -49,7 +137,7 @@ export async function GET() {
 
   const { data } = await admin
     .from("deal_proposals")
-    .select("id, startup_id, investor_id, from_side, status, amount, currency, opening_status, note, created_at, startup:startups(name, slug, logo_url, logo_color), investor:investors(display_name, firm_name, slug, logo_url, logo_color)")
+    .select("id, startup_id, investor_id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, counters_id, opening_status, note, created_at, startup:startups(name, slug, logo_url, logo_color), investor:investors(display_name, firm_name, slug, logo_url, logo_color)")
     .or(filters.join(","))
     .eq("status", "pending")
     .order("created_at", { ascending: false })
@@ -67,6 +155,14 @@ export async function GET() {
       status: p.status,
       amount: p.amount,
       currency: p.currency,
+      // The terms (118). Additive: an inbox that ignores them still renders.
+      equityPct: p.equity_pct,
+      valuation: p.valuation,
+      instrument: p.instrument,
+      conditions: p.conditions,
+      /** Set when this proposal answers an earlier one, so a negotiation reads
+       *  as a chain rather than a pile of unrelated offers. */
+      countersId: p.counters_id,
       openingStatus: p.opening_status,
       note: p.note,
       createdAt: p.created_at,
@@ -84,18 +180,198 @@ export async function GET() {
   });
 }
 
+/**
+ * One listing, one investor: may they talk yet, and what is already on the
+ * table? Everything read here belongs to the caller's own pair -- their
+ * proposal, their deal, their thread -- so there is nothing to leak.
+ */
+async function listingState(admin: Admin, startupId: string, investorId: string | null) {
+  // A founder reading someone else's listing has no offer to make. Saying so
+  // plainly beats an empty proposal object the client has to interpret.
+  if (!investorId) {
+    return NextResponse.json({ scope: "listing", role: "none", contactOpen: false, proposal: null, dealId: null, threadId: null });
+  }
+
+  const verdict = await mayInvestorContact({ startupId, investorId });
+
+  const [{ data: proposal }, { data: deal }, { data: thread }] = await Promise.all([
+    admin
+      .from("deal_proposals")
+      .select("id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, note, created_at")
+      .match({ startup_id: startupId, investor_id: investorId })
+      .order("created_at", { ascending: false })
+      .limit(1).maybeSingle(),
+    admin
+      .from("deals").select("id, status")
+      .match({ startup_id: startupId, investor_id: investorId })
+      .order("created_at", { ascending: false })
+      .limit(1).maybeSingle(),
+    admin
+      .from("threads").select("id")
+      .match({ startup_id: startupId, investor_id: investorId })
+      .limit(1).maybeSingle(),
+  ]);
+
+  return NextResponse.json({
+    scope: "listing",
+    role: "investor",
+    contactOpen: verdict.allowed,
+    reason: verdict.reason,
+    proposal: proposal
+      ? {
+          id: proposal.id,
+          fromSide: proposal.from_side,
+          status: proposal.status,
+          amount: proposal.amount,
+          currency: proposal.currency,
+          equityPct: proposal.equity_pct,
+          valuation: proposal.valuation,
+          instrument: proposal.instrument,
+          conditions: proposal.conditions,
+          note: proposal.note,
+          createdAt: proposal.created_at,
+        }
+      : null,
+    dealId: deal?.id ?? null,
+    dealStatus: deal?.status ?? null,
+    threadId: thread?.id ?? null,
+  });
+}
+
+// ── POST: an investor's offer ───────────────────────────────────────────────
+
+export async function POST(req: NextRequest) {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+
+  const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+  const startupId = typeof body.startupId === "string" ? body.startupId : "";
+  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+
+  const sides = await mySides(user.id);
+  // Founders are never gated, and they are also never the ones making an offer
+  // here: their route into a pipeline is /api/deals/create, which raises the
+  // startup-side proposal. This endpoint is the investor's opening position.
+  if (!sides.investorId) {
+    return NextResponse.json({ error: "Only investors make offers." }, { status: 403 });
+  }
+
+  const terms = readTerms(body);
+  if (terms.amount === null) {
+    return NextResponse.json({ error: "An offer needs a number." }, { status: 400 });
+  }
+
+  // Counted after validation so a malformed body cannot burn the day's budget,
+  // and before any write, because each of these lands in a founder's inbox.
+  { const rl = await dbRateLimit(user.id, "deal_offer", ...Object.values(RATE.perDay(25)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "You've made a lot of offers today. Try again tomorrow." }, { status: 429 }); }
+
+  const admin = createAdminClient();
+
+  // Browsing is open to everyone; putting money on the table is not.
+  const { data: attest } = await admin
+    .from("profiles").select("accreditation_certified").eq("id", user.id).maybeSingle();
+  if (!attest?.accreditation_certified) {
+    return NextResponse.json(
+      { error: "Confirm your accredited-investor status in Settings before making an offer." },
+      { status: 403 },
+    );
+  }
+
+  const { data: st } = await admin
+    .from("startups").select("id, status, round_state, owner_id").eq("id", startupId).maybeSingle();
+  if (!st) return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+  if (st.owner_id === user.id) return NextResponse.json({ error: "That is your own listing." }, { status: 403 });
+  if (st.status !== "active") return NextResponse.json({ error: "That startup is not currently listed" }, { status: 409 });
+  if (st.round_state === "closed" || st.round_state === "paused") {
+    return NextResponse.json(
+      { error: st.round_state === "closed" ? "This round is closed to new investors." : "This round is paused by the founder." },
+      { status: 409 },
+    );
+  }
+
+  // The non-circumvention acknowledgment is the spine of the whole record, so
+  // it is enforced here and not only in the UI. 428 = show the modal and retry.
+  const { data: ack } = await admin
+    .from("circumvention_acks").select("id")
+    .match({ investor_id: user.id, startup_id: st.id })
+    .maybeSingle();
+  if (!ack) {
+    return NextResponse.json(
+      { error: "Please acknowledge the non-circumvention terms first.", code: "ACK_REQUIRED", startupId: st.id },
+      { status: 428 },
+    );
+  }
+
+  // A deal already on the record means the conversation is already open; an
+  // offer would be answering a question nobody is asking.
+  const { data: existingDeal } = await admin
+    .from("deals").select("id")
+    .match({ startup_id: st.id, investor_id: sides.investorId })
+    .not("status", "in", "(closed,passed)")
+    .limit(1).maybeSingle();
+  if (existingDeal) {
+    return NextResponse.json(
+      { error: "You already have an open deal with this company.", dealId: existingDeal.id },
+      { status: 409 },
+    );
+  }
+
+  const { data: proposal, error } = await admin
+    .from("deal_proposals")
+    .insert({
+      startup_id: st.id,
+      investor_id: sides.investorId,
+      proposed_by: user.id,
+      from_side: "investor",
+      amount: terms.amount,
+      currency: terms.currency,
+      equity_pct: terms.equity_pct,
+      valuation: terms.valuation,
+      instrument: terms.instrument,
+      conditions: terms.conditions,
+      note: terms.note,
+      // A process has one entrance: every deal begins at "Talking", whatever
+      // stage the two parties feel they are at.
+      opening_status: "intro",
+      circumvention_ack_id: ack.id,
+    })
+    .select("id")
+    .single();
+
+  if (error || !proposal) {
+    // Migration 091's partial unique index: one live proposal per pair.
+    if (error?.code === "23505") {
+      return NextResponse.json({ error: "You already have an offer waiting with this company." }, { status: 409 });
+    }
+    return NextResponse.json({ error: "Failed to send the offer" }, { status: 500 });
+  }
+
+  await notifyOffer(admin, {
+    startupId: st.id, investorId: sides.investorId, fromSide: "investor",
+    actorId: user.id, amount: terms.amount, currency: terms.currency, isCounter: false,
+  });
+
+  return NextResponse.json({ success: true, proposal: { id: proposal.id, status: "pending" } });
+}
+
+// ── PATCH: answer one ───────────────────────────────────────────────────────
+
 export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (await isAccountSuspended(user.id)) return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
 
-  const { id, action } = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+  const { id, action } = body as { id?: string; action?: string };
   if (!isUuid(id ?? "")) return NextResponse.json({ error: "id required" }, { status: 400 });
-  if (!["accept", "decline", "withdraw"].includes(action)) return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+  if (!["accept", "decline", "withdraw", "counter"].includes(action ?? "")) return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 
   const admin = createAdminClient();
-  const { data: p } = await admin.from("deal_proposals").select("*").eq("id", id).maybeSingle();
+  const { data: p } = await admin.from("deal_proposals").select("*").eq("id", id!).maybeSingle();
   if (!p) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (p.status !== "pending") return NextResponse.json({ error: "This request was already answered." }, { status: 409 });
 
@@ -108,18 +384,97 @@ export async function PATCH(req: NextRequest) {
 
   if (action === "withdraw") {
     if (!iAmProposerSide) return NextResponse.json({ error: "Only the sender can withdraw a request." }, { status: 403 });
-    await admin.from("deal_proposals").update({ status: "withdrawn", resolved_at: new Date().toISOString() }).eq("id", id);
+    await admin.from("deal_proposals").update({ status: "withdrawn", resolved_at: new Date().toISOString() }).eq("id", id!);
     return NextResponse.json({ success: true, status: "withdrawn" });
   }
 
-  // accept / decline: recipient only. The proposer answering their own
-  // request is the unilateral deal this table exists to prevent.
+  // accept / decline / counter: recipient only. The proposer answering their
+  // own request is the unilateral deal this table exists to prevent.
   if (iAmProposerSide) return NextResponse.json({ error: "The other side has to answer this one." }, { status: 403 });
 
   if (action === "decline") {
-    await admin.from("deal_proposals").update({ status: "declined", resolved_at: new Date().toISOString() }).eq("id", id);
+    await admin.from("deal_proposals").update({ status: "declined", resolved_at: new Date().toISOString() }).eq("id", id!);
     await notifyResolution(admin, p, user.id, false);
     return NextResponse.json({ success: true, status: "declined" });
+  }
+
+  // ── Counter ─────────────────────────────────────────────────────────────
+  // The third answer this table always needed. A counter is a NEW proposal
+  // pointing at the one it answers, from the other side, so the negotiation
+  // reads end to end: who asked what, what came back, where it landed.
+  if (action === "counter") {
+    const terms = readTerms(body);
+    if (terms.amount === null) {
+      return NextResponse.json({ error: "A counter needs a number." }, { status: 400 });
+    }
+
+    { const rl = await dbRateLimit(user.id, "deal_counter", ...Object.values(RATE.perDay(50)) as [number, number]);
+      if (!rl.ok) return NextResponse.json({ error: "That is a lot of counters for one day. Try again tomorrow." }, { status: 429 }); }
+
+    const { data: existingDeal } = await admin
+      .from("deals").select("id")
+      .match({ startup_id: p.startup_id, investor_id: p.investor_id })
+      .not("status", "in", "(closed,passed)")
+      .limit(1).maybeSingle();
+    if (existingDeal) {
+      return NextResponse.json({ error: "A deal with this partner already exists." }, { status: 409 });
+    }
+
+    // Migration 091 allows ONE pending proposal per pair, so the offer being
+    // answered has to leave 'pending' before its answer can exist.
+    if (!(await closeAsCountered(admin, id!))) {
+      return NextResponse.json({ error: "This request was already answered." }, { status: 409 });
+    }
+
+    const { data: next, error: insErr } = await admin
+      .from("deal_proposals")
+      .insert({
+        startup_id: p.startup_id,
+        investor_id: p.investor_id,
+        proposed_by: user.id,
+        // The answer comes from the other side of the table, by definition.
+        from_side: p.from_side === "investor" ? "startup" : "investor",
+        counters_id: p.id,
+        amount: terms.amount,
+        currency: terms.currency,
+        equity_pct: terms.equity_pct,
+        valuation: terms.valuation,
+        instrument: terms.instrument,
+        conditions: terms.conditions,
+        note: terms.note,
+        opening_status: p.opening_status,
+        // The acknowledgment that governs this pair did not change because the
+        // number did. Carrying it means accepting a counter still lands a deal
+        // with its ack attached.
+        circumvention_ack_id: p.circumvention_ack_id,
+      })
+      .select("id")
+      .single();
+
+    if (insErr || !next) {
+      // Put the original back. A negotiation must never end because a write
+      // failed halfway: nothing in this route may be one-way.
+      await admin.from("deal_proposals")
+        .update({ status: "pending", resolved_at: null })
+        .eq("id", id!)
+        .then(undefined, () => {});
+      if (insErr?.code === "23505") {
+        return NextResponse.json({ error: "Another offer with this partner is already waiting." }, { status: 409 });
+      }
+      return NextResponse.json({ error: "Failed to send the counter" }, { status: 500 });
+    }
+
+    await notifyOffer(admin, {
+      startupId: p.startup_id, investorId: p.investor_id,
+      fromSide: p.from_side === "investor" ? "startup" : "investor",
+      actorId: user.id, amount: terms.amount, currency: terms.currency, isCounter: true,
+    });
+
+    return NextResponse.json({
+      success: true,
+      status: "countered",
+      proposal: { id: next.id, status: "pending" },
+    });
   }
 
   // ── Accept ──────────────────────────────────────────────────────────────
@@ -134,13 +489,27 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "The round is no longer open to new investors." }, { status: 409 });
   }
 
+  // An unpaid success fee freezes what a company may NEWLY take from the
+  // platform, and a new deal is exactly that. Nothing they already have is
+  // touched, and paying the invoice lifts this within the hour. The investor
+  // is told that the company cannot open deals, not why: another company's
+  // arrears are not their business.
+  const restriction = await restrictionsFor(p.startup_id);
+  if (restriction.accountRestricted) {
+    return NextResponse.json({
+      error: iAmStartupParty
+        ? "An unpaid platform invoice is holding new deals. Settle it and this opens again."
+        : "This company cannot open new deals right now.",
+    }, { status: 409 });
+  }
+
   const { data: existing } = await admin
     .from("deals").select("id")
     .eq("startup_id", p.startup_id).eq("investor_id", p.investor_id)
     .not("status", "in", "(closed,passed)")
     .limit(1).maybeSingle();
   if (existing) {
-    await admin.from("deal_proposals").update({ status: "accepted", resolved_at: new Date().toISOString() }).eq("id", id);
+    await admin.from("deal_proposals").update({ status: "accepted", resolved_at: new Date().toISOString() }).eq("id", id!);
     return NextResponse.json({ error: "A deal with this partner already exists." }, { status: 409 });
   }
 
@@ -162,14 +531,24 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create the deal" }, { status: 500 });
   }
 
-  await admin.from("deal_proposals").update({ status: "accepted", resolved_at: new Date().toISOString() }).eq("id", id);
+  await admin.from("deal_proposals").update({ status: "accepted", resolved_at: new Date().toISOString() }).eq("id", id!);
 
   // Seed the timeline the way a direct create would have: the proposer's
-  // opening note (their words, attributed to them), then the acceptance.
+  // opening note (their words, attributed to them), then the terms that were
+  // accepted, then the acceptance itself. The terms line matters because
+  // equity, valuation and conditions live on the proposal -- without it the
+  // deal would carry an amount and nothing else about what was agreed.
   if (p.note) {
     await admin.from("deal_activity").insert({
       deal_id: deal.id, startup_id: p.startup_id, investor_id: p.investor_id,
       actor_id: p.proposed_by, type: "note", body: p.note,
+    }).then(undefined, () => {});
+  }
+  const agreed = describeTerms(p);
+  if (agreed) {
+    await admin.from("deal_activity").insert({
+      deal_id: deal.id, startup_id: p.startup_id, investor_id: p.investor_id,
+      actor_id: user.id, type: "note", body: agreed,
     }).then(undefined, () => {});
   }
   await admin.from("deal_activity").insert({
@@ -182,9 +561,73 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ success: true, status: "accepted", deal });
 }
 
+/**
+ * Take the answered proposal out of 'pending'.
+ *
+ * `.eq("status", "pending")` makes this a compare-and-set: if the other side
+ * accepted a second ago, it matches nothing and the caller says so instead of
+ * quietly forking the negotiation in two.
+ *
+ * 'countered' is the honest state and the one lib/contact-policy reads, but
+ * migration 091's CHECK constraint predates it and 118 did not widen it. Until
+ * a migration adds the value, a rejected check falls back to 'declined' --
+ * true as far as it goes (this offer was not taken) and counters_id still
+ * carries the real story. See the note at the bottom of this file.
+ */
+async function closeAsCountered(admin: Admin, id: string): Promise<boolean> {
+  const now = new Date().toISOString();
+  const first = await admin
+    .from("deal_proposals")
+    .update({ status: "countered", resolved_at: now })
+    .eq("id", id).eq("status", "pending")
+    .select("id").maybeSingle();
+  if (!first.error) return !!first.data;
+
+  const fallback = await admin
+    .from("deal_proposals")
+    .update({ status: "declined", resolved_at: now })
+    .eq("id", id).eq("status", "pending")
+    .select("id").maybeSingle();
+  return !fallback.error && !!fallback.data;
+}
+
+/** Tells the side an offer or a counter has just landed on. */
+async function notifyOffer(
+  admin: Admin,
+  o: {
+    startupId: string; investorId: string; fromSide: "startup" | "investor";
+    actorId: string; amount: number | null; currency: string; isCounter: boolean;
+  },
+) {
+  try {
+    const [{ data: st }, { data: inv }] = await Promise.all([
+      admin.from("startups").select("name, owner_id").eq("id", o.startupId).maybeSingle(),
+      admin.from("investors").select("display_name, firm_name, owner_id").eq("id", o.investorId).maybeSingle(),
+    ]);
+    const recipient = o.fromSide === "investor" ? st?.owner_id : inv?.owner_id;
+    if (!recipient || recipient === o.actorId) return;
+    const senderName = o.fromSide === "investor"
+      ? (inv?.firm_name || inv?.display_name || "An investor")
+      : (st?.name || "A startup");
+    const money = o.amount != null ? formatMoney(o.amount, o.currency) : "";
+    await notifyUser({
+      userId: recipient,
+      type: "deal_opened",
+      title: o.isCounter ? `${senderName} countered: ${money}` : `${senderName} made an offer: ${money}`,
+      body: o.isCounter
+        ? "Accept it, decline it, or answer with another number."
+        : "Accepting opens the conversation. You can also counter.",
+      titleKey: o.isCounter ? "notif.offerCounterTitle" : "notif.offerTitle",
+      bodyKey: o.isCounter ? "notif.offerCounterBody" : "notif.offerBody",
+      params: { name: senderName, amount: money },
+      href: "/deals",
+    });
+  } catch { /* a lost notification must not fail the action */ }
+}
+
 /** Tells the proposer how it went. A request that vanishes teaches people not to send the next one. */
 async function notifyResolution(
-  admin: ReturnType<typeof createAdminClient>,
+  admin: Admin,
   p: { startup_id: string; investor_id: string; from_side: string; proposed_by: string },
   actorId: string,
   accepted: boolean,
@@ -208,3 +651,16 @@ async function notifyResolution(
     });
   } catch { /* a lost notification must not fail the action */ }
 }
+
+/*
+ * OPEN ITEM for whoever owns migrations: deal_proposals.status still carries
+ * 091's CHECK (pending, accepted, declined, withdrawn). lib/contact-policy
+ * queries for 'countered' and this route writes it, so the constraint needs
+ *
+ *   alter table public.deal_proposals drop constraint deal_proposals_status_check;
+ *   alter table public.deal_proposals add constraint deal_proposals_status_check
+ *     check (status in ('pending','accepted','declined','withdrawn','countered'));
+ *
+ * Until then closeAsCountered() degrades to 'declined' rather than failing the
+ * counter outright, which is why counters work today and read slightly wrong.
+ */

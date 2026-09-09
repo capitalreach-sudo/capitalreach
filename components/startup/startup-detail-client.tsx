@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { OfferButton } from "@/components/startup/offer-button";
 import { countryLabel } from "@/lib/country-label";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -884,6 +885,24 @@ export function StartupDetailClient({
                     style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
                     <Globe style={{ width: 13, height: 13 }} /> {t("startupDetail.website")}
                   </a>
+                )}
+                {/* Contact costs an accepted offer, so this is the primary
+                    action on the page for an investor -- ahead of the
+                    secondary chips it used to sit behind. */}
+                {!isOwner && !!investorId && (
+                  <OfferButton
+                    startupId={startup.id}
+                    companyName={startup.name}
+                    ask={{
+                      amount: startup.funding_target ?? null,
+                      currency: "USD",
+                      equityPct: startup.equity_offered ?? null,
+                      valuation: startup.valuation ?? null,
+                      instrument: startup.instrument ?? null,
+                    }}
+                    acked={circumventionAcked}
+                    onNeedsAck={() => setNdaModalOpen(false)}
+                  />
                 )}
                 {startup.product_hunt_url && (
                   <a href={startup.product_hunt_url} target="_blank" rel="noopener noreferrer"

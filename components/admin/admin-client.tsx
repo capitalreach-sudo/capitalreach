@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VerificationQueue from "@/components/admin/verification-queue";
+import CircumventionQueue from "@/components/admin/circumvention-queue";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { notify } from "@/components/ui/toast-notify";
@@ -361,6 +362,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             )}
           </TabsTrigger>
           <TabsTrigger value="verification">{t("reviewQueue.title")}</TabsTrigger>
+          <TabsTrigger value="circumvention">{t("caseFile.title")}</TabsTrigger>
           <TabsTrigger value="startups">{t("admin.tabAllStartups")}</TabsTrigger>
           <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
           <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
@@ -560,6 +562,12 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           </div>
             )}
           </AdminList>
+        </TabsContent>
+
+        {/* The circumvention case file. Built, and until now unreachable --
+            a review surface nobody can open is not a review surface. */}
+        <TabsContent value="circumvention">
+          <CircumventionQueue myLevel={adminLevel} />
         </TabsContent>
 
         {/* The verification bench: cases waiting on a human. */}
