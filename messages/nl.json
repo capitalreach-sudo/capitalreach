@@ -4202,5 +4202,14 @@
     "body": "U kunt elke onderneming op CapitalReach zien en wat zij ophaalt. Het lezen van de pitch van een onderneming - het probleem, de markt, de bestemming van het geld - en het openen van haar dataroom is wat een abonnement toevoegt, omdat oprichters die delen in de veronderstelling dat wie ze leest een betalende, geverifieerde investeerder is.",
     "cta": "Abonnementen bekijken",
     "back": "Terug naar ondernemingen"
+  },
+  "dealReg": {
+    "blocked": "Leg deze deal vast om verder te praten.",
+    "title": "Leg dit gesprek vast",
+    "bodyVolume": "U en deze investeerder zijn al enige tijd in gesprek. Leg vast dat u in een deal zit voordat het gesprek verdergaat. Het kost een klik, verplicht geen van beide partijen tot iets, en het is datgene waaraan de voorwaarden, de afronding en de vergoeding worden gekoppeld.",
+    "bodyDataRoom": "Er is een NDA getekend en de data room is geopend, dus dit is due diligence en geen eerste gesprek. Leg de deal vast voordat het gesprek verdergaat: een klik, zonder verplichting.",
+    "cta": "Deal vastleggen",
+    "why": "Waarom dit wordt gevraagd",
+    "whyBody": "CapitalReach ontvangt 2% wanneer een ronde wordt afgerond, en alleen dan. Dat werkt alleen als er een deal is waaraan die vergoeding kan worden gekoppeld. Een gesprek dat duidelijk een onderhandeling is geworden, moet daarom zijn vastgelegd voordat het verdergaat."
   }
 }

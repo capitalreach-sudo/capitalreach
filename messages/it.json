@@ -4202,5 +4202,14 @@
     "body": "Puoi vedere ogni società su CapitalReach e ciò che sta raccogliendo. Leggere il pitch di una società (il problema, il mercato, il piano di impiego dei fondi) e accedere alla sua data room è ciò che aggiunge un piano, perché i fondatori condividono questi contenuti nel presupposto che chi li legge sia un investitore verificato e abbonato.",
     "cta": "Vedi i piani",
     "back": "Torna alle società"
+  },
+  "dealReg": {
+    "blocked": "Registri la trattativa per proseguire la conversazione.",
+    "title": "Registra questa conversazione",
+    "bodyVolume": "Lei e questo investitore state dialogando da diverso tempo. Prima di proseguire, registri che è in corso una trattativa. Basta un clic, non comporta alcun impegno per nessuna delle due parti ed è il riferimento a cui si collegano i termini, il closing e la commissione.",
+    "bodyDataRoom": "L'NDA è firmato e la data room è aperta: si tratta quindi di due diligence e non di un primo contatto. Registri la trattativa prima di proseguire; basta un clic e non comporta alcun impegno.",
+    "cta": "Registra la trattativa",
+    "why": "Perché viene richiesto",
+    "whyBody": "CapitalReach percepisce il 2% al closing di un round, e solo in quel caso. Questo è possibile soltanto se esiste una trattativa registrata a cui collegare la commissione: per questo una conversazione che è chiaramente diventata una negoziazione deve risultare agli atti prima di proseguire."
   }
 }

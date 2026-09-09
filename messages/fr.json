@@ -4202,5 +4202,14 @@
     "body": "Vous pouvez voir chaque société sur CapitalReach et ce qu'elle cherche à lever. Lire la présentation d'une société - le problème, le marché, l'emploi des fonds - et ouvrir sa data room, voilà ce qu'apporte un abonnement, car les fondateurs les partagent en considérant que leur lecteur est un investisseur vérifié et abonné.",
     "cta": "Voir les abonnements",
     "back": "Retour aux sociétés"
+  },
+  "dealReg": {
+    "blocked": "Enregistrez cette opération pour poursuivre la conversation.",
+    "title": "Enregistrer cette conversation",
+    "bodyVolume": "Vous échangez avec cet investisseur depuis un certain temps. Avant d'aller plus loin, veuillez enregistrer qu'une opération est en cours. Cela prend un clic, n'engage aucune des deux parties, et c'est à cet enregistrement que se rattachent les conditions, la clôture et la commission.",
+    "bodyDataRoom": "Un NDA est signé et la data room est ouverte : il ne s'agit donc plus d'une première prise de contact, mais d'une phase de due diligence. Veuillez enregistrer l'opération avant d'aller plus loin : un clic, sans engagement.",
+    "cta": "Enregistrer l'opération",
+    "why": "Pourquoi cette demande",
+    "whyBody": "CapitalReach perçoit une commission de 2% à la clôture d'un tour de financement, et uniquement dans ce cas. Cela suppose qu'une opération existe à laquelle rattacher cette commission. Une conversation devenue une véritable négociation doit donc être enregistrée avant de se poursuivre."
   }
 }

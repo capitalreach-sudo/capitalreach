@@ -4202,5 +4202,14 @@
     "body": "Puede ver todas las compañías de CapitalReach y qué están captando. Leer la presentación de una compañía (el problema, el mercado, el destino de los fondos) y acceder a su sala de datos es lo que añade un plan, porque los fundadores comparten esa información en el entendimiento de que quien la lee es un inversor verificado y de pago.",
     "cta": "Ver planes",
     "back": "Volver a compañías"
+  },
+  "dealReg": {
+    "blocked": "Registre esta operación para continuar la conversación.",
+    "title": "Registre esta conversación",
+    "bodyVolume": "Usted y este inversor llevan un tiempo conversando. Antes de seguir adelante, deje constancia de que existe una operación en curso. Es un solo clic, no compromete a ninguna de las partes y es aquello a lo que se vinculan los términos, el cierre y la comisión.",
+    "bodyDataRoom": "Se ha firmado un NDA y el data room está abierto, de modo que esto ya es un proceso de diligencia y no una primera conversación. Registre la operación antes de seguir adelante: un solo clic, sin compromiso.",
+    "cta": "Registrar la operación",
+    "why": "Por qué se solicita",
+    "whyBody": "CapitalReach percibe un 2% cuando se cierra una ronda, y únicamente en ese caso. Eso solo es posible si existe una operación a la que vincular la comisión, por lo que una conversación que se ha convertido claramente en una negociación debe quedar registrada antes de continuar."
   }
 }

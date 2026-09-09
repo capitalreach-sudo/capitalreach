@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
@@ -67,6 +68,22 @@ export async function POST(req: NextRequest) {
   if (!isParty) {
     const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
     if (prof?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Past the point where this is plainly a negotiation, the deal goes on the
+  // record before the next message. Only the INVESTOR side is asked: the fee
+  // is the company's to pay, and holding a founder's replies hostage would
+  // punish the wrong party for the same conversation. Co-investor threads are
+  // exempt -- two investors talking about a company are not transacting with
+  // it. Checked before the insert so a refusal leaves no half-sent message.
+  if (!coInvestorThread && user.id === investorOwner && thread.startup_id && thread.investor_id) {
+    const reg = await dealRegistrationRequired({
+      startupId: thread.startup_id,
+      investorId: thread.investor_id,
+    });
+    if (reg.required) {
+      return NextResponse.json(registrationRequired(reg), { status: 409 });
+    }
   }
 
   const { data: message, error } = await admin

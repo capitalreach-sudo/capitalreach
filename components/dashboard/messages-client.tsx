@@ -73,6 +73,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [messages, setMessages]             = useState<Message[]>([]);
   const [newMessage, setNewMessage]         = useState("");
   const [sending, setSending]               = useState(false);
+  // The interruption when a conversation has become a negotiation, and the
+  // in-flight state of the one click that clears it.
+  const [registrationPrompt, setRegistrationPrompt] = useState<null | "volume" | "dataroom">(null);
+  const [registering, setRegistering]       = useState(false);
   const [search, setSearch]                 = useState("");
   const [showNewModal, setShowNewModal]     = useState(false);
   useEscapeKey(showNewModal, () => setShowNewModal(false));
@@ -311,7 +315,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       body: JSON.stringify({ threadId: selectedThread.id, body }),
     });
     const json = await res.json().catch(() => ({}));
-    if (!res.ok || !json.message) {
+    if (res.status === 409 && json.error === "deal_registration_required") {
+      // Not a failure -- the conversation has become a negotiation and the
+      // deal has to be on the record before it goes further. The draft is
+      // kept: making somebody retype what they wrote to satisfy our
+      // paperwork would be its own small insult.
+      setRegistrationPrompt(json.reason === "nda_signed" || json.reason === "data_room" ? "dataroom" : "volume");
+    } else if (!res.ok || !json.message) {
       notify.error(json.error || t("dashboard.errSendMessageFailed"));
     } else {
       const sent = json.message as Message;
@@ -319,6 +329,29 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       setNewMessage("");
     }
     setSending(false);
+  }
+
+  /**
+   * Register the deal, then send the message the investor already wrote. The
+   * whole point of the interruption is that it is one click, so it cannot end
+   * with "now try again".
+   */
+  async function registerDealAndSend() {
+    if (!selectedThread?.startup_id) return;
+    setRegistering(true);
+    const res = await fetch("/api/deals/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId: selectedThread.startup_id }),
+    });
+    setRegistering(false);
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      notify.error(j.error || t("errors.generic"));
+      return;
+    }
+    setRegistrationPrompt(null);
+    await sendMessage({ preventDefault() {} });
   }
 
   async function updateStatus(status: ThreadStatus) {
@@ -624,6 +657,33 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               </div>
 
               {/* Compose */}
+              {/* The conversation has become a negotiation. Sits directly
+                  above the composer, where the message the investor already
+                  wrote is still waiting -- explaining itself rather than
+                  simply refusing. */}
+              {registrationPrompt && (
+                <div style={{ padding: "16px", borderTop: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", flexShrink: 0 }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span aria-hidden style={{ color: "var(--cr-copper)" }}>{"\u2726"}</span>
+                    {t("dealReg.title")}
+                  </p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "16px", maxWidth: "62ch" }}>
+                    {registrationPrompt === "dataroom" ? t("dealReg.bodyDataRoom") : t("dealReg.bodyVolume")}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={registerDealAndSend}
+                    disabled={registering}
+                    style={{
+                      minHeight: "40px", padding: "0 24px", borderRadius: "999px", border: "none",
+                      background: "var(--cr-copper)", color: "var(--cr-band-ink)", cursor: registering ? "wait" : "pointer",
+                      fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+                    }}
+                  >
+                    {registering ? t("verify.saving") : t("dealReg.cta")}
+                  </button>
+                </div>
+              )}
               <form onSubmit={sendMessage} style={{ padding: "12px 16px", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", display: "flex", gap: "8px", alignItems: "flex-end", flexShrink: 0 }}>
                 {/* Canned openers: three good first messages, one click each.
                     Inserted, not sent -- the sender still edits and owns it. */}

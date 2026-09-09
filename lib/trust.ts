@@ -108,6 +108,10 @@ export const SIGNAL_WEIGHTS: Record<string, number> = {
   // for a human, never a block -- founders legitimately swap calendars.
   offplatform_contact:     20,
   nda_bulk_download:       25,
+  // A close both parties agreed, an order of magnitude below what they were
+  // discussing and below the round itself. Ordinary often enough that it only
+  // ever routes a case to a human.
+  amount_understated:      20,
   complaint_upheld:        35,
 };
 

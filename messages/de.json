@@ -4202,5 +4202,14 @@
     "body": "Sie sehen jedes Unternehmen auf CapitalReach und wofür es Kapital sucht. Den Pitch eines Unternehmens zu lesen - das Problem, den Markt, die Verwendung der Mittel - und seinen Datenraum zu öffnen, ist das, was ein Tarif hinzufügt, denn Gründer geben dies in der Erwartung frei, dass die Leserschaft zahlende, verifizierte Investoren sind.",
     "cta": "Tarife ansehen",
     "back": "Zurück zu den Unternehmen"
+  },
+  "dealReg": {
+    "blocked": "Bitte halten Sie diese Verhandlung fest, um das Gespräch fortzusetzen.",
+    "title": "Dieses Gespräch erfassen",
+    "bodyVolume": "Sie und dieser Investor stehen bereits seit einiger Zeit im Austausch. Bevor es weitergeht, halten Sie bitte fest, dass Sie sich in einer Verhandlung befinden. Das ist ein Klick, verpflichtet beide Seiten zu nichts und bildet die Grundlage, auf die sich die Konditionen, der Abschluss und die Gebühr beziehen.",
+    "bodyDataRoom": "Ein NDA ist unterzeichnet und der Datenraum ist geöffnet, es handelt sich also um eine Prüfungsphase und nicht mehr um ein erstes Gespräch. Bitte erfassen Sie die Verhandlung, bevor es weitergeht: ein Klick, ohne Verpflichtung.",
+    "cta": "Verhandlung erfassen",
+    "why": "Warum wir danach fragen",
+    "whyBody": "CapitalReach erhält 2% beim Abschluss einer Finanzierungsrunde, und nur dann. Das funktioniert nur, wenn eine erfasste Verhandlung vorliegt, der diese Gebühr zugeordnet werden kann. Deshalb muss ein Gespräch, das erkennbar zu einer Verhandlung geworden ist, festgehalten werden, bevor es fortgesetzt wird."
   }
 }

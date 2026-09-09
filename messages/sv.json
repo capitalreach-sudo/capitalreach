@@ -4202,5 +4202,14 @@
     "body": "Du kan se alla bolag på CapitalReach och vad de söker för kapital. Att läsa ett bolags pitch - problemet, marknaden, planen för pengarna - och att öppna dess datarum är vad ett abonnemang tillför, eftersom grundare delar detta under förutsättningen att den som läser är en betalande, verifierad investerare.",
     "cta": "Se abonnemang",
     "back": "Tillbaka till bolagen"
+  },
+  "dealReg": {
+    "blocked": "Registrera affärsdialogen för att kunna fortsätta samtalet.",
+    "title": "Registrera det här samtalet",
+    "bodyVolume": "Du och investeraren har fört ett samtal under en tid. Innan det går vidare behöver ni registrera att en affärsdialog pågår. Det tar ett klick, binder ingen av er till något, och det är detta som villkoren, slutförandet och avgiften knyts till.",
+    "bodyDataRoom": "Ett NDA är undertecknat och datarummet är öppnat, så det här är en due diligence snarare än ett första samtal. Registrera affärsdialogen innan den går vidare - ett klick, utan bindande åtagande.",
+    "cta": "Registrera affärsdialogen",
+    "why": "Varför detta efterfrågas",
+    "whyBody": "CapitalReach erhåller 2% när en runda slutförs, och först då. Det fungerar bara om det finns en registrerad affärsdialog att knyta avgiften till, och därför behöver ett samtal som tydligt har övergått i en förhandling registreras innan det fortsätter."
   }
 }

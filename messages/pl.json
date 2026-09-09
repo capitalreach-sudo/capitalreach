@@ -4202,5 +4202,14 @@
     "body": "Możesz zobaczyć każdą spółkę na CapitalReach i to, ile pozyskuje. Lektura prezentacji spółki - problemu, rynku, planu wykorzystania środków - oraz dostęp do jej data roomu to właśnie to, co daje plan, ponieważ założyciele udostępniają te materiały w przekonaniu, że czyta je płacący, zweryfikowany inwestor.",
     "cta": "Zobacz plany",
     "back": "Powrót do spółek"
+  },
+  "dealReg": {
+    "blocked": "Aby kontynuować rozmowę, zarejestruj tę transakcję.",
+    "title": "Zarejestruj tę rozmowę",
+    "bodyVolume": "Rozmawiacie z tym inwestorem już od dłuższego czasu. Zanim pójdziecie dalej, zarejestrujcie, że prowadzicie negocjacje. Wymaga to jednego kliknięcia, do niczego żadnej ze stron nie zobowiązuje, a to właśnie do zarejestrowanej transakcji przypisywane są warunki, zamknięcie rundy oraz prowizja.",
+    "bodyDataRoom": "NDA jest podpisane, a data room otwarty, więc jest to już due diligence, a nie pierwsza rozmowa. Zarejestruj transakcję, zanim rozmowa pójdzie dalej: jedno kliknięcie, bez zobowiązań.",
+    "cta": "Zarejestruj transakcję",
+    "why": "Dlaczego o to prosimy",
+    "whyBody": "CapitalReach otrzymuje wynagrodzenie w wysokości 2% w momencie zamknięcia rundy i wyłącznie wtedy. Jest to możliwe tylko wtedy, gdy istnieje zarejestrowana transakcja, do której można przypisać prowizję. Dlatego rozmowa, która wyraźnie przeszła w negocjacje, musi zostać zarejestrowana, zanim będzie kontynuowana."
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
 import { recordSignal } from "@/lib/trust-signals";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -141,6 +142,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to create conversation" }, { status: 500 });
     }
     threadId = newThread.id;
+  }
+
+  // Past the point where this is plainly a negotiation, the deal goes on the
+  // record before the next message. Checked here, after the thread is
+  // resolved and before anything is written, so a refusal leaves no trace of
+  // a message that was never sent. Founders are not gated: the fee is the
+  // company's to pay, and holding their replies hostage would punish the
+  // wrong party for the same conversation.
+  {
+    const reg = await dealRegistrationRequired({ startupId, investorId });
+    if (reg.required) {
+      return NextResponse.json(registrationRequired(reg), { status: 409 });
+    }
   }
 
   // Insert message

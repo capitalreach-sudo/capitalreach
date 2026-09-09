@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordSignal } from "@/lib/trust-signals";
+import { amountsMentioned, amountLooksUnderstated } from "@/lib/deal-registration";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isTeamMemberOfEither } from "@/lib/membership";
 import { createSuccessFeeInvoice, minorUnitsFactor } from "@/lib/stripe";
@@ -258,6 +260,35 @@ export async function POST(req: NextRequest) {
     type: "status_change",
     body: null,
   });
+
+  // Does the confirmed figure bear any relation to what these two were
+  // discussing? Both sides had to agree the amount, so this is not about
+  // catching one party -- it is about catching a pair who agreed a small
+  // number between them. A lead for a human, never a block and never an
+  // adjustment: an investor taking a slice of a larger round writes big
+  // figures in chat and closes a small one, which is entirely ordinary.
+  try {
+    const { data: thread } = await adminClient
+      .from("threads").select("id")
+      .match({ startup_id: deal.startup_id, investor_id: deal.investor_id })
+      .limit(1).maybeSingle();
+    if (thread) {
+      const { data: msgs } = await adminClient
+        .from("messages").select("body").eq("thread_id", thread.id).limit(400);
+      const mentioned = (msgs ?? []).flatMap((m) => amountsMentioned(m.body ?? ""));
+      const st = deal.startup as unknown as { funding_target?: number | null } | null;
+      const flag = amountLooksUnderstated({
+        closedAmount: finalAmount ?? null,
+        fundingTarget: st?.funding_target ?? null,
+        largestMentioned: mentioned.length ? mentioned[0] : null,
+      });
+      if (flag) {
+        await recordSignal("startup", deal.startup_id, "amount_understated", "medium", {
+          ...flag.detail, dealId, currency: finalCurrency,
+        });
+      }
+    }
+  } catch { /* a lead that fails to record must never fail a close */ }
 
   let invoiceUrl = "";
   // A fee is due but cannot be billed if the founder never set up Stripe.

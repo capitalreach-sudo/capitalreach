@@ -4202,5 +4202,14 @@
     "body": "You can see every company on CapitalReach and what they are raising. Reading a company's pitch -- the problem, the market, the plan for the money -- and opening its data room is what a plan adds, because founders share those on the understanding that whoever reads them is a paying, verified investor.",
     "cta": "See plans",
     "back": "Back to companies"
+  },
+  "dealReg": {
+    "blocked": "Put this deal on the record to keep talking.",
+    "title": "Register this conversation",
+    "bodyVolume": "You and this investor have been talking for a while. Before it goes further, record that you are in a deal. It takes one click, commits neither of you to anything, and it is what the terms, the close and the fee all attach to.",
+    "bodyDataRoom": "An NDA is signed and the data room is open, so this is diligence rather than a first conversation. Record the deal before it goes further -- one click, no commitment.",
+    "cta": "Register the deal",
+    "why": "Why this is asked",
+    "whyBody": "CapitalReach is paid 2% when a round closes, and only then. That only works if a deal exists to attach the fee to, so a conversation that has clearly become a negotiation has to be on the record before it continues."
   }
 }

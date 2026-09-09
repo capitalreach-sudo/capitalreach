@@ -4202,5 +4202,14 @@
     "body": "Pode ver todas as empresas na CapitalReach e o que estão a captar. Ler a apresentação de uma empresa (o problema, o mercado, o destino do capital) e aceder à sua data room é o que um plano acrescenta, porque os fundadores partilham esses elementos no pressuposto de que quem os lê é um investidor verificado e pagante.",
     "cta": "Ver planos",
     "back": "Voltar às empresas"
+  },
+  "dealReg": {
+    "blocked": "Registe esta negociação para continuar a conversa.",
+    "title": "Registar esta conversa",
+    "bodyVolume": "Já trocaram várias mensagens com este investidor. Antes de avançar, registe que existe uma negociação em curso. É um clique, não vincula nenhuma das partes e é a este registo que ficam associados os termos, o fecho da ronda e a comissão.",
+    "bodyDataRoom": "O NDA está assinado e a data room está aberta, pelo que se trata de due diligence e não de um primeiro contacto. Registe a negociação antes de avançar: um clique, sem qualquer compromisso.",
+    "cta": "Registar negociação",
+    "why": "Porque é que isto é pedido",
+    "whyBody": "A CapitalReach recebe 2% quando uma ronda fecha, e apenas nesse caso. Isso só é possível se existir uma negociação registada à qual associar a comissão, pelo que uma conversa que passou claramente a negociação tem de ficar registada antes de prosseguir."
   }
 }
