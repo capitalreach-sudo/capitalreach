@@ -134,6 +134,16 @@ export interface Message {
   /** Storage path + human filename when the message carries a file (046). */
   attachment_path?: string | null;
   attachment_name?: string | null;
+  /**
+   * What the safety pass found (117). Kinds only, never the values it
+   * withheld -- this reaches the browser, and carrying the contact details
+   * here would defeat the mask that put it there.
+   */
+  safety_flags?: {
+    masked?: Array<"email" | "phone" | "messaging_app" | "external_link">;
+    scam?: Array<"advance_fee" | "payment_request" | "off_platform_payment" | "urgency">;
+    scamSeverity?: "low" | "medium" | "high";
+  } | null;
 }
 
 // Based on the generated Row so the field list and nullability can never

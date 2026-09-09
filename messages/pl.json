@@ -4211,5 +4211,14 @@
     "cta": "Zarejestruj transakcję",
     "why": "Dlaczego o to prosimy",
     "whyBody": "CapitalReach otrzymuje wynagrodzenie w wysokości 2% w momencie zamknięcia rundy i wyłącznie wtedy. Jest to możliwe tylko wtedy, gdy istnieje zarejestrowana transakcja, do której można przypisać prowizję. Dlatego rozmowa, która wyraźnie przeszła w negocjacje, musi zostać zarejestrowana, zanim będzie kontynuowana."
+  },
+  "msgSafety": {
+    "withheld": "Dane kontaktowe zostają ukryte do czasu zarejestrowania tej transakcji. Pozostała część wiadomości została wysłana.",
+    "withheldWhy": "Gdy transakcja zostanie formalnie zarejestrowana, mogą Państwo wymieniać się dowolnymi informacjami. Prowizja platformy jest wówczas zabezpieczona, więc dane kontaktowe pozostają wyłącznie Państwa sprawą.",
+    "scamTitle": "Prosimy uważnie przeczytać tę wiadomość",
+    "scamAdvanceFee": "Ta wiadomość zawiera prośbę o zapłatę, zanim otrzymają Państwo jakiekolwiek środki. Rzeczywisty inwestor nigdy nie pobiera od założyciela opłaty, honorarium ani depozytu za uruchomienie finansowania. Jest to najstarszy schemat oszustwa w branży inwestycyjnej.",
+    "scamPayment": "Ta wiadomość zawiera dane płatnicze lub dane portfela. CapitalReach nigdy nie prosi o nie na czacie i nie powinien tego robić nikt, kto oferuje Państwu inwestycję.",
+    "scamUrgency": "Ta wiadomość nakłania do szybkiej płatności. Presja czasu jest metodą wywierania nacisku; rzetelna oferta inwestycyjna nie wygasa jeszcze tego samego popołudnia.",
+    "report": "Zgłoś wiadomość"
   }
 }

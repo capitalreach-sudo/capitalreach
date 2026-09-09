@@ -1651,9 +1651,11 @@ export type Database = {
           attachment_name: string | null
           attachment_path: string | null
           body: string
+          body_original: string | null
           created_at: string
           id: string
           read_at: string | null
+          safety_flags: Json | null
           sender_id: string
           thread_id: string
         }
@@ -1661,9 +1663,11 @@ export type Database = {
           attachment_name?: string | null
           attachment_path?: string | null
           body: string
+          body_original?: string | null
           created_at?: string
           id?: string
           read_at?: string | null
+          safety_flags?: Json | null
           sender_id: string
           thread_id: string
         }
@@ -1671,9 +1675,11 @@ export type Database = {
           attachment_name?: string | null
           attachment_path?: string | null
           body?: string
+          body_original?: string | null
           created_at?: string
           id?: string
           read_at?: string | null
+          safety_flags?: Json | null
           sender_id?: string
           thread_id?: string
         }

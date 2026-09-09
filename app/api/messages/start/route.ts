@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSafetyConfig, applyMessageSafety, type SafetyConfig } from "@/lib/message-safety";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
 import { recordSignal } from "@/lib/trust-signals";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
@@ -67,6 +68,20 @@ async function newThreadLimitResponse(ctx: AccessContext, investorEntityId: stri
  * monthly allowance (newThreadLimitResponse below). Founder senders stay
  * ungated -- founder outbound has never had a paywall.
  */
+/**
+ * Opening a conversation is always first contact, so no deal exists yet and
+ * contact details are withheld until the pair registers one. Shared by every
+ * insert site in this route so the four cannot drift apart.
+ */
+function safeBody(body: string, config: SafetyConfig) {
+  const safe = applyMessageSafety({ body, dealRegistered: false, config });
+  return {
+    body: safe.body,
+    body_original: safe.bodyOriginal,
+    safety_flags: safe.flags ? JSON.parse(JSON.stringify(safe.flags)) : null,
+  };
+}
+
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -84,6 +99,7 @@ export async function POST(req: NextRequest) {
   // open:true = "make an intro": create or find the thread and hand back its
   // id for a redirect into Messages — the first words are typed THERE, in
   // the real composer, not in a cramped profile-page box.
+  const SAFETY = await getSafetyConfig();
   const openOnly = payload.open === true;
   if (!isUuid(investorId) && !isUuid(targetStartupId)) return NextResponse.json({ error: "investorId or startupId required" }, { status: 400 });
   if (!body && !openOnly) return NextResponse.json({ error: "Message is empty" }, { status: 400 });
@@ -161,7 +177,7 @@ export async function POST(req: NextRequest) {
         }
       }
       if (openOnly) return NextResponse.json({ success: true, threadId });
-      const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
+      const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
       if (other.owner_id && other.owner_id !== user.id) {
@@ -195,7 +211,7 @@ export async function POST(req: NextRequest) {
       // thread IS the contact -- so it is recorded before the openOnly return.
       await recordIntroduction({ startupId: st.id, investorId: me.id, channel: "message" });
       if (openOnly) return NextResponse.json({ success: true, threadId });
-      const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
+      const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
       // Contact details in a first approach are the circumvention vector, and
@@ -242,7 +258,7 @@ export async function POST(req: NextRequest) {
       threadId = created.id;
     }
     if (openOnly) return NextResponse.json({ success: true, threadId });
-    const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
+    const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
     if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
     await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
 
@@ -269,7 +285,7 @@ export async function POST(req: NextRequest) {
     threadId = created.id;
   }
   if (openOnly) return NextResponse.json({ success: true, threadId, startupId: st.id, investorId: inv.id });
-  const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body }).select().single();
+  const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
   if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
 

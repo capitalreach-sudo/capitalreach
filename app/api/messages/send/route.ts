@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
 import { recordSignal } from "@/lib/trust-signals";
@@ -158,10 +159,20 @@ export async function POST(req: NextRequest) {
   }
 
   // Insert message
+  // First contact: no deal exists yet by definition, so contact details are
+  // withheld here and released once the pair registers.
+  const safetyCfg = await getSafetyConfig();
+  const safe = applyMessageSafety({
+    body: messageBody.trim(),
+    dealRegistered: false,
+    config: safetyCfg,
+  });
   const { error: messageError } = await adminClient.from("messages").insert({
     thread_id: threadId,
     sender_id: user.id,
-    body: messageBody.trim(),
+    body: safe.body,
+    body_original: safe.bodyOriginal,
+    safety_flags: safe.flags ? JSON.parse(JSON.stringify(safe.flags)) : null,
   });
   if (messageError) {
     return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
@@ -212,5 +223,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ success: true, threadId });
+  return NextResponse.json({
+    success: true,
+    threadId,
+    ...(safe.maskedAnything ? { contactsWithheld: safe.flags?.masked ?? [] } : {}),
+  });
 }

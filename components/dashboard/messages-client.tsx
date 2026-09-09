@@ -327,6 +327,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       const sent = json.message as Message;
       setMessages(prev => prev.some(m => m.id === sent.id) ? prev : [...prev, sent]);
       setNewMessage("");
+      // Nothing gets rewritten silently. If details were withheld, the person
+      // who wrote them hears it immediately rather than wondering later why
+      // nobody called.
+      if (json.contactsWithheld?.length) notify.info(t("msgSafety.withheld"));
     }
     setSending(false);
   }
@@ -637,6 +641,25 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           {(!msg.attachment_path || (msg.body && msg.body !== msg.attachment_name)) && (
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{msg.body}</p>
                           )}
+                          {!isOwn && msg.safety_flags?.scam?.length ? (
+                            <div style={{
+                              marginTop: "8px", padding: "12px",
+                              border: "1px solid var(--cr-down)",
+                              background: "color-mix(in srgb, var(--cr-down) 8%, transparent)",
+                              borderRadius: "4px",
+                            }}>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-down)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                                {t("msgSafety.scamTitle")}
+                              </p>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", lineHeight: 1.6, color: "var(--cr-ink-2)" }}>
+                                {msg.safety_flags.scam.includes("advance_fee")
+                                  ? t("msgSafety.scamAdvanceFee")
+                                  : msg.safety_flags.scam.includes("off_platform_payment")
+                                    ? t("msgSafety.scamPayment")
+                                    : t("msgSafety.scamUrgency")}
+                              </p>
+                            </div>
+                          ) : null}
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", marginTop: "4px" }}>
                             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>
                               {new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}

@@ -4211,5 +4211,14 @@
     "cta": "Enregistrer l'opération",
     "why": "Pourquoi cette demande",
     "whyBody": "CapitalReach perçoit une commission de 2% à la clôture d'un tour de financement, et uniquement dans ce cas. Cela suppose qu'une opération existe à laquelle rattacher cette commission. Une conversation devenue une véritable négociation doit donc être enregistrée avant de se poursuivre."
+  },
+  "msgSafety": {
+    "withheld": "Les coordonnées sont retenues tant que l'opération n'est pas enregistrée. Le reste de votre message a bien été envoyé.",
+    "withheldWhy": "Une fois l'opération enregistrée, vous pourrez échanger ce que vous souhaitez : la commission de la plateforme est alors garantie, et vos coordonnées ne regardent que vous.",
+    "scamTitle": "À lire attentivement",
+    "scamAdvanceFee": "Ce message vous demande de payer une somme avant que des fonds ne vous soient versés. Un investisseur sérieux ne demande jamais à un fondateur des frais, des honoraires ni un dépôt pour débloquer un financement. C'est la fraude la plus ancienne du capital-investissement.",
+    "scamPayment": "Ce message contient des coordonnées bancaires ou de portefeuille. CapitalReach ne les demande jamais dans la messagerie, et une personne qui propose d'investir chez vous ne devrait pas le faire non plus.",
+    "scamUrgency": "Ce message incite à payer rapidement. L'urgence est un moyen de pression : un investissement sérieux n'expire pas dans l'après-midi.",
+    "report": "Signaler ce message"
   }
 }

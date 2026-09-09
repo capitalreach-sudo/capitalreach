@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -86,9 +87,26 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Contact details are withheld until the pair is on the record, and freely
+  // exchanged after; scam patterns are marked either way. The browser reads
+  // this table directly, so this has to happen on write -- there is no server
+  // hop later where a mask could be applied.
+  const safetyCfg = await getSafetyConfig();
+  const alreadyRegistered = !coInvestorThread && thread.startup_id && thread.investor_id
+    ? !(await dealRegistrationRequired({ startupId: thread.startup_id, investorId: thread.investor_id })).required
+    : true;
+  const safe = applyMessageSafety({ body, dealRegistered: alreadyRegistered, config: safetyCfg });
+
   const { data: message, error } = await admin
     .from("messages")
-    .insert({ thread_id: threadId, sender_id: user.id, body })
+    .insert({
+      thread_id: threadId,
+      sender_id: user.id,
+      body: safe.body,
+      body_original: safe.bodyOriginal,
+      // Serialised through JSON so the typed jsonb column accepts it.
+      safety_flags: safe.flags ? JSON.parse(JSON.stringify(safe.flags)) : null,
+    })
     .select()
     .single();
   if (error || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
@@ -124,5 +142,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ success: true, message });
+  return NextResponse.json({
+    success: true,
+    message,
+    // Never rewrite somebody's words without telling them.
+    ...(safe.maskedAnything ? { contactsWithheld: safe.flags?.masked ?? [] } : {}),
+  });
 }

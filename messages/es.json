@@ -4211,5 +4211,14 @@
     "cta": "Registrar la operación",
     "why": "Por qué se solicita",
     "whyBody": "CapitalReach percibe un 2% cuando se cierra una ronda, y únicamente en ese caso. Eso solo es posible si existe una operación a la que vincular la comisión, por lo que una conversación que se ha convertido claramente en una negociación debe quedar registrada antes de continuar."
+  },
+  "msgSafety": {
+    "withheld": "Los datos de contacto se retienen hasta que la operación quede registrada. El resto de su mensaje se ha enviado.",
+    "withheldWhy": "Una vez registrada la operación, podrán intercambiar la información que deseen: para entonces la comisión de la plataforma ya está protegida, así que sus datos son asunto suyo.",
+    "scamTitle": "Conviene leer este mensaje con atención",
+    "scamAdvanceFee": "Este mensaje le pide pagar algo antes de recibir dinero. Un inversor real nunca cobra a un fundador una comisión, un anticipo ni un depósito para liberar fondos. Es el fraude más antiguo del capital riesgo.",
+    "scamPayment": "Este mensaje contiene datos de pago o de una cartera digital. CapitalReach nunca los solicita por chat, y tampoco debería hacerlo quien se ofrece a invertir en usted.",
+    "scamUrgency": "Este mensaje presiona para que pague con rapidez. La urgencia es una táctica de presión; una inversión genuina no caduca esta misma tarde.",
+    "report": "Denunciar mensaje"
   }
 }

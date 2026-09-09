@@ -4211,5 +4211,14 @@
     "cta": "Register the deal",
     "why": "Why this is asked",
     "whyBody": "CapitalReach is paid 2% when a round closes, and only then. That only works if a deal exists to attach the fee to, so a conversation that has clearly become a negotiation has to be on the record before it continues."
+  },
+  "msgSafety": {
+    "withheld": "Contact details are withheld until this deal is registered. The rest of your message was sent.",
+    "withheldWhy": "Once the deal is on the record you can exchange whatever you like -- the platform's fee is protected by then, so your details are your business.",
+    "scamTitle": "Read this one carefully",
+    "scamAdvanceFee": "This message asks you to pay something before money reaches you. A real investor never charges a founder a fee, a retainer, or a deposit to release funds. That is the oldest fraud in venture.",
+    "scamPayment": "This message contains payment or wallet details. CapitalReach never asks for these in chat, and neither should anyone offering to invest in you.",
+    "scamUrgency": "This message pushes for a fast payment. Urgency is a pressure tactic; a genuine investment does not expire this afternoon.",
+    "report": "Report this message"
   }
 }

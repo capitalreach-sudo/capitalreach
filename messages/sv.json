@@ -4211,5 +4211,14 @@
     "cta": "Registrera affärsdialogen",
     "why": "Varför detta efterfrågas",
     "whyBody": "CapitalReach erhåller 2% när en runda slutförs, och först då. Det fungerar bara om det finns en registrerad affärsdialog att knyta avgiften till, och därför behöver ett samtal som tydligt har övergått i en förhandling registreras innan det fortsätter."
+  },
+  "msgSafety": {
+    "withheld": "Kontaktuppgifter undanhålls tills affären har registrerats. Resten av ditt meddelande har skickats.",
+    "withheldWhy": "När affären är registrerad kan ni utbyta vilka uppgifter ni vill. Plattformens avgift är säkrad då, och era uppgifter är er egen sak.",
+    "scamTitle": "Läs det här meddelandet noggrant",
+    "scamAdvanceFee": "Meddelandet ber dig att betala något innan pengar når dig. En seriös investerare tar aldrig ut en avgift, ett arvode eller en deposition av en grundare för att frigöra kapital. Det är ett av de äldsta bedrägeriupplägg som finns i branschen.",
+    "scamPayment": "Meddelandet innehåller betalnings- eller plånboksuppgifter. CapitalReach efterfrågar aldrig sådana uppgifter i chatten, och det bör inte heller någon som erbjuder sig att investera i dig.",
+    "scamUrgency": "Meddelandet driver på för en snabb betalning. Tidspress är en påtryckningsmetod. En seriös investering upphör inte att gälla samma eftermiddag.",
+    "report": "Anmäl meddelandet"
   }
 }

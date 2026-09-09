@@ -4211,5 +4211,14 @@
     "cta": "Registar negociação",
     "why": "Porque é que isto é pedido",
     "whyBody": "A CapitalReach recebe 2% quando uma ronda fecha, e apenas nesse caso. Isso só é possível se existir uma negociação registada à qual associar a comissão, pelo que uma conversa que passou claramente a negociação tem de ficar registada antes de prosseguir."
+  },
+  "msgSafety": {
+    "withheld": "Os dados de contacto ficam retidos até o negócio ser registado. O restante da sua mensagem foi enviado.",
+    "withheldWhy": "Depois de o negócio ficar registado, pode trocar o que entender: a comissão da plataforma já está assegurada nessa altura, pelo que os seus dados são assunto seu.",
+    "scamTitle": "Leia esta mensagem com atenção",
+    "scamAdvanceFee": "Esta mensagem pede-lhe que pague algo antes de receber qualquer valor. Um investidor legítimo nunca cobra a um fundador uma taxa, uma avença ou um depósito para libertar fundos. É a fraude mais antiga do capital de risco.",
+    "scamPayment": "Esta mensagem contém dados de pagamento ou de carteira digital. A CapitalReach nunca solicita estes dados no chat, e quem se propõe investir consigo também não o deveria fazer.",
+    "scamUrgency": "Esta mensagem insiste num pagamento rápido. A urgência é uma forma de pressão; um investimento genuíno não expira esta tarde.",
+    "report": "Denunciar mensagem"
   }
 }

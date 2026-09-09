@@ -4211,5 +4211,14 @@
     "cta": "Verhandlung erfassen",
     "why": "Warum wir danach fragen",
     "whyBody": "CapitalReach erhält 2% beim Abschluss einer Finanzierungsrunde, und nur dann. Das funktioniert nur, wenn eine erfasste Verhandlung vorliegt, der diese Gebühr zugeordnet werden kann. Deshalb muss ein Gespräch, das erkennbar zu einer Verhandlung geworden ist, festgehalten werden, bevor es fortgesetzt wird."
+  },
+  "msgSafety": {
+    "withheld": "Kontaktdaten werden zurückgehalten, bis dieses Geschäft registriert ist. Ihre Nachricht wurde im Übrigen zugestellt.",
+    "withheldWhy": "Sobald das Geschäft erfasst ist, können Sie beliebige Angaben austauschen. Die Gebühr der Plattform ist dann abgesichert, und Ihre Daten bleiben Ihre Sache.",
+    "scamTitle": "Bitte lesen Sie diese Nachricht aufmerksam",
+    "scamAdvanceFee": "In dieser Nachricht werden Sie aufgefordert, etwas zu zahlen, bevor Geld bei Ihnen eingeht. Seriöse Investoren verlangen von Gründerinnen und Gründern keine Gebühr, kein Honorar und keine Anzahlung, um Mittel freizugeben. Dieses Muster ist eine der ältesten Betrugsmaschen im Beteiligungsgeschäft.",
+    "scamPayment": "Diese Nachricht enthält Zahlungs- oder Wallet-Daten. CapitalReach fragt solche Daten niemals im Chat ab, und wer Ihnen eine Investition anbietet, sollte das ebenfalls nicht tun.",
+    "scamUrgency": "Diese Nachricht drängt auf eine schnelle Zahlung. Zeitdruck ist ein Druckmittel; eine seriöse Investition verfällt nicht noch am selben Nachmittag.",
+    "report": "Nachricht melden"
   }
 }

@@ -4211,5 +4211,14 @@
     "cta": "Deal vastleggen",
     "why": "Waarom dit wordt gevraagd",
     "whyBody": "CapitalReach ontvangt 2% wanneer een ronde wordt afgerond, en alleen dan. Dat werkt alleen als er een deal is waaraan die vergoeding kan worden gekoppeld. Een gesprek dat duidelijk een onderhandeling is geworden, moet daarom zijn vastgelegd voordat het verdergaat."
+  },
+  "msgSafety": {
+    "withheld": "Contactgegevens worden achtergehouden totdat deze deal is geregistreerd. De rest van uw bericht is verzonden.",
+    "withheldWhy": "Zodra de deal is vastgelegd, kunt u alles uitwisselen wat u wilt. De vergoeding van het platform is dan gewaarborgd, dus uw gegevens zijn uw eigen zaak.",
+    "scamTitle": "Leest u dit bericht aandachtig",
+    "scamAdvanceFee": "In dit bericht wordt u gevraagd iets te betalen voordat er geld naar u toe komt. Een echte investeerder brengt een oprichter nooit kosten, een voorschot of een borgsom in rekening om middelen vrij te geven. Dat is een van de bekendste vormen van fraude in de investeringswereld.",
+    "scamPayment": "Dit bericht bevat betaal- of walletgegevens. CapitalReach vraagt hier nooit om in de chat, en dat zou ook niemand moeten doen die aanbiedt in u te investeren.",
+    "scamUrgency": "In dit bericht wordt aangedrongen op een snelle betaling. Tijdsdruk is een drukmiddel; een serieuze investering verloopt niet nog vanmiddag.",
+    "report": "Bericht melden"
   }
 }
