@@ -491,6 +491,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
           };
         })}
         isLaunchMode={isLaunch}
+        viewerUserId={previewing ? null : (user?.id ?? null)}
         viewerSuspended={previewing ? false : viewerSuspended}
         previewing={previewing}
         metricHistory={metricHistory}

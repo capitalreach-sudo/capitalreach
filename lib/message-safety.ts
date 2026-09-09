@@ -73,7 +73,15 @@ export function maskContactDetails(text: string): MaskResult {
 
   // Phone numbers: at least nine digits once separators are ignored, so
   // "we raised 2 000 000" and years never qualify.
+  //
+  // Dates and times are the trap here. "can we do 2026-09-15 14:00" carries
+  // twelve digits and was being withheld as a phone number, which breaks the
+  // single most common sentence these two people will ever exchange. A
+  // colon, or an ISO date, means a calendar rather than a number to ring.
   out = out.replace(/(?:\+?\d[\d\s().-]{8,}\d)/g, (m) => {
+    if (m.includes(":")) return m;
+    if (/\d{4}-\d{2}-\d{2}/.test(m)) return m;
+    if (/\d{1,2}[/.]\d{1,2}[/.]\d{2,4}/.test(m)) return m;
     const digits = m.replace(/\D/g, "");
     if (digits.length < 9 || digits.length > 15) return m;
     masked.add("phone");
@@ -84,10 +92,6 @@ export function maskContactDetails(text: string): MaskResult {
   out = out.replace(/\b(?:telegram|whatsapp|signal|skype|wechat|discord)\b[^\n]{0,24}?(?:@[\w.]{3,}|\+?\d[\d\s().-]{6,}\d|\bt\.me\/[\w.]+)/gi,
     () => { masked.add("messaging_app"); return PLACEHOLDER; });
   out = out.replace(/\bt\.me\/[\w.]+/gi, () => { masked.add("messaging_app"); return PLACEHOLDER; });
-  out = out.replace(/(?:^|\s)@[A-Za-z][\w.]{3,}\b/g, (m) => {
-    masked.add("messaging_app");
-    return m.slice(0, m.length - m.trim().length) + PLACEHOLDER;
-  });
 
   // Links that leave the platform, minus the ordinary references above.
   out = out.replace(/https?:\/\/[^\s<>"']+/gi, (m) => {

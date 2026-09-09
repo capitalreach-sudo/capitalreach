@@ -35,6 +35,20 @@ describe("maskContactDetails", () => {
     expect(maskContactDetails("MRR is 45000 and growing").masked).toEqual([]);
   });
 
+  it("does not eat a date or a time -- the most common sentence these two will exchange", () => {
+    // "can we do 2026-09-15 14:00" carries twelve digits and was being
+    // withheld as a phone number, which broke scheduling entirely.
+    expect(maskContactDetails("can we do 2026-09-15 14:00").masked).toEqual([]);
+    expect(maskContactDetails("Tuesday 14:00 or 15/09/2026?").masked).toEqual([]);
+  });
+
+  it("does not treat addressing somebody as a handle", () => {
+    // A bare @name is how people talk. The messaging-app rule still catches
+    // "telegram @janedoe", which is the case that routes somebody off here.
+    expect(maskContactDetails("@sarah what do you think?").masked).toEqual([]);
+    expect(maskContactDetails("ping me on telegram @janedoe").masked).toContain("messaging_app");
+  });
+
   it("leaves ordinary conversation untouched", () => {
     const t = "Thanks for the deck. Happy to talk Thursday about the Series A.";
     expect(maskContactDetails(t)).toEqual({ text: t, masked: [] });

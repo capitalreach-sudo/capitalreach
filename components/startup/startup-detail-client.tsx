@@ -59,6 +59,9 @@ interface Props {
   viewerStartupId?: string | null;
   questions?: Array<{ id: string; question: string; answer: string | null; answered_at: string | null; created_at: string; is_private?: boolean; asker?: { slug: string; name: string | null } | null }>;
   isLaunchMode:   boolean;
+  /** The signed-in user, if any. What launch mode keys its promotion on -- a
+   *  founder has no investor row and must not read as anonymous. */
+  viewerUserId?:  string | null;
   /** Owner is looking at their own listing as a free investor would see it. */
   previewing?:    boolean;
   /** Admins bypass every viewer gate (never while previewing). */
@@ -448,7 +451,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
 }
 
 export function StartupDetailClient({
-  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [], verificationCaseOpen = false, sourceLocale = null, initialTranslation = null, translationAvailable = true,
+  startup, investorTier, investorId, viewerDeal, ndaSigned, relatedStartups, updates = [], questions = [], isOwner = false, viewerStartupId = null, isLaunchMode, viewerUserId = null, viewerSuspended = false, previewing = false, viewerIsAdmin = false, metricHistory = [], identityRevealed = false, circumventionAcked = false, momentum = null, coInvestors = [], verificationCaseOpen = false, sourceLocale = null, initialTranslation = null, translationAvailable = true,
 }: Props) {
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
@@ -488,15 +491,20 @@ export function StartupDetailClient({
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
 
-  const accessCtx = { userId: investorId, role: viewerIsAdmin ? "admin" as const : investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
+  // userId is what launch mode keys the promotion on, and it must mean "there
+  // is a signed-in member here" -- not "this member happens to own an
+  // investor row". Passing investorId made every founder look anonymous, so a
+  // founder viewing their OWN listing was told to upgrade to Angel to see
+  // their own revenue.
+  const accessCtx = { userId: viewerUserId ?? investorId, role: viewerIsAdmin ? "admin" as const : investorId ? "investor" as const : null, tier: investorTier, isLaunchMode, suspended: viewerSuspended };
   const caps          = investorCan(accessCtx);
   // NDA barrier (beyond the data room): a listing that demands an NDA keeps
   // its NUMBERS behind it too — revenue history is exactly what an NDA is
   // for. Tier still applies; the NDA stacks on top. Owner and admin exempt.
   const ndaBlocksFinancials = !!startup.require_nda && !ndaSigned && !isOwner && !viewerIsAdmin;
-  const canFinancials = caps.viewFinancials && !ndaBlocksFinancials;
+  const canFinancials = (caps.viewFinancials || isOwner || viewerIsAdmin) && !ndaBlocksFinancials;
   const canAi         = caps.aiDiligence === "included";
-  const canTeam       = caps.viewTeam;
+  const canTeam       = caps.viewTeam || isOwner || viewerIsAdmin;
 
   // Live viewer presence
   useEffect(() => {

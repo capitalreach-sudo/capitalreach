@@ -17,6 +17,22 @@ import { createAdminClient } from "@/lib/supabase-server";
  *
  * What this deliberately does NOT do: gate a first message. A marketplace
  * where saying hello requires paperwork has no conversations to protect.
+ *
+ * STATUS: superseded and switched OFF (deal_registration=off).
+ * lib/contact-policy.ts now requires an accepted OFFER before an investor may
+ * talk to a startup at all, which solves the same problem structurally rather
+ * than by interruption -- there is no conversation that is not already on the
+ * record, so there is nothing to retro-fit a deal onto.
+ *
+ * It is off rather than deleted for two reasons. Its recovery path was broken
+ * in three separate places at once (the button sent the wrong parameter, the
+ * route it called created a proposal rather than a deal, and a paused or
+ * closed round refused registration outright), so a gated investor was
+ * permanently stuck with no way forward -- exactly the dead end this comment
+ * now exists to warn about. And the detectors below (amountsMentioned,
+ * amountLooksUnderstated) are still used at close and must keep working.
+ *
+ * Do not switch it back on without fixing that recovery path first.
  */
 
 export interface RegistrationConfig {
