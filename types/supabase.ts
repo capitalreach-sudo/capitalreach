@@ -624,10 +624,14 @@ export type Database = {
         Row: {
           amount: number | null
           circumvention_ack_id: string | null
+          conditions: string | null
+          counters_id: string | null
           created_at: string
           currency: string | null
+          equity_pct: number | null
           from_side: string
           id: string
+          instrument: string | null
           investor_id: string
           next_follow_up: string | null
           note: string | null
@@ -636,14 +640,19 @@ export type Database = {
           resolved_at: string | null
           startup_id: string
           status: string
+          valuation: number | null
         }
         Insert: {
           amount?: number | null
           circumvention_ack_id?: string | null
+          conditions?: string | null
+          counters_id?: string | null
           created_at?: string
           currency?: string | null
+          equity_pct?: number | null
           from_side: string
           id?: string
+          instrument?: string | null
           investor_id: string
           next_follow_up?: string | null
           note?: string | null
@@ -652,14 +661,19 @@ export type Database = {
           resolved_at?: string | null
           startup_id: string
           status?: string
+          valuation?: number | null
         }
         Update: {
           amount?: number | null
           circumvention_ack_id?: string | null
+          conditions?: string | null
+          counters_id?: string | null
           created_at?: string
           currency?: string | null
+          equity_pct?: number | null
           from_side?: string
           id?: string
+          instrument?: string | null
           investor_id?: string
           next_follow_up?: string | null
           note?: string | null
@@ -668,8 +682,16 @@ export type Database = {
           resolved_at?: string | null
           startup_id?: string
           status?: string
+          valuation?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "deal_proposals_counters_id_fkey"
+            columns: ["counters_id"]
+            isOneToOne: false
+            referencedRelation: "deal_proposals"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "deal_proposals_investor_id_fkey"
             columns: ["investor_id"]
@@ -764,6 +786,9 @@ export type Database = {
           fee_dispute_resolution: string | null
           fee_dispute_resolved_at: string | null
           fee_disputed_at: string | null
+          fee_enforced_at: string | null
+          fee_enforcement: string | null
+          fee_paused_round_state: string | null
           fee_plan_months: number | null
           fee_plan_started_at: string | null
           fee_refund_amount: number | null
@@ -820,6 +845,9 @@ export type Database = {
           fee_dispute_resolution?: string | null
           fee_dispute_resolved_at?: string | null
           fee_disputed_at?: string | null
+          fee_enforced_at?: string | null
+          fee_enforcement?: string | null
+          fee_paused_round_state?: string | null
           fee_plan_months?: number | null
           fee_plan_started_at?: string | null
           fee_refund_amount?: number | null
@@ -876,6 +904,9 @@ export type Database = {
           fee_dispute_resolution?: string | null
           fee_dispute_resolved_at?: string | null
           fee_disputed_at?: string | null
+          fee_enforced_at?: string | null
+          fee_enforcement?: string | null
+          fee_paused_round_state?: string | null
           fee_plan_months?: number | null
           fee_plan_started_at?: string | null
           fee_refund_amount?: number | null
