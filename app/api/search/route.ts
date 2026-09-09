@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCatalogueAccess } from "@/lib/catalogue-guard";
 import { createAdminClient } from "@/lib/supabase-server";
 import { searchRatelimit } from "@/lib/redis";
 
@@ -13,6 +14,9 @@ export const revalidate = 0;
  * The ilike queries ride the trigram indexes from migration 013.
  */
 export async function GET(req: NextRequest) {
+  // The page redirects anonymous visitors; the data behind it must too.
+  const gate = await requireCatalogueAccess();
+  if (gate) return gate;
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim().slice(0, 80);
   if (q.length < 2) return NextResponse.json({ startups: [], investors: [] });
 

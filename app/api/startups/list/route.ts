@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCatalogueAccess } from "@/lib/catalogue-guard";
 import { loadActiveStartups, stripBrowseFinancials, viewerCanSeeFinancials } from "@/lib/browse-data";
 
 // Same query as the server-rendered /startups page (lib/browse-data), so a
@@ -12,6 +13,9 @@ import { loadActiveStartups, stripBrowseFinancials, viewerCanSeeFinancials } fro
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  // The page redirects anonymous visitors; the data behind it must too.
+  const gate = await requireCatalogueAccess();
+  if (gate) return gate;
   const sp = req.nextUrl.searchParams;
   const offset = Number(sp.get("offset")) || 0;
   const q = sp.get("q") ?? undefined;

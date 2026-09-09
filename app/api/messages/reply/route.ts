@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
       admin.from("profiles").select("id, email").in("id", recipients),
     ]);
     const senderName = sender?.full_name || thread.investor?.display_name || "Someone";
-    const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+    const preview = safe.body.slice(0, 60) + (body.length > 60 ? "…" : "");
     for (const r of recipients) {
       await notifyUser({
         userId: r,

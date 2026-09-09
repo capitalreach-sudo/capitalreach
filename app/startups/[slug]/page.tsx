@@ -158,6 +158,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   let ndaSigned = false;
   let viewerSuspended = false;
   let viewerIsAdmin = false;
+  let viewerRole: string | null = null;
 
   if (user) {
     const { data: profile } = await supabase
@@ -172,6 +173,7 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
       || profile?.account_status === "suspended"
       || profile?.account_status === "banned";
     viewerIsAdmin = profile?.role === "admin";
+    viewerRole = profile?.role ?? null;
 
     if (profile?.role === "investor" || profile?.role === "admin") {
       // Admins may own an investor profile of their own (the operator who
@@ -309,7 +311,10 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   // Under preview the context is computed exactly as for a free investor --
   // including URL stripping, so the preview is honest rather than cosmetic.
   const viewerCaps = investorCan({
-    userId: previewing ? null : investorId,
+    // The signed-in USER, not their investor entity. A founder has no
+    // investor row, and passing null here made them look anonymous to
+    // launch mode -- which locked every founder out of every listing.
+    userId: previewing ? null : (user?.id ?? null),
     role: previewing ? ("investor" as const) : viewerIsAdmin ? ("admin" as const) : investorId ? ("investor" as const) : null,
     tier: previewing ? null : investorTier,
     isLaunchMode: isLaunch,
@@ -322,7 +327,9 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   // upgrade path. Owners, admins and anyone previewing their own listing are
   // never walled out of it. Returned EARLY so the gated prose is never
   // serialised into a payload at all.
-  if (!isOwner && !viewerIsAdmin && !previewing && user && !viewerCaps.viewListingDetail) {
+  if (!isOwner && !viewerIsAdmin && !previewing && user
+      && viewerRole !== "startup"
+      && !viewerCaps.viewListingDetail) {
     return (
       <>
         <Navbar />

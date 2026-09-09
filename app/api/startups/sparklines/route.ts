@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireCatalogueAccess } from "@/lib/catalogue-guard";
 import { createAdminClient } from "@/lib/supabase-server";
 
 export const revalidate = 300;
@@ -11,6 +12,9 @@ export const revalidate = 300;
  * server means no absolute value ever leaves it on this route.
  */
 export async function GET() {
+  // The page redirects anonymous visitors; the data behind it must too.
+  const gate = await requireCatalogueAccess();
+  if (gate) return gate;
   const admin = createAdminClient();
   const { data: rows } = await admin
     .from("startup_metrics")

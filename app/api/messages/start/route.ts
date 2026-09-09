@@ -73,8 +73,25 @@ async function newThreadLimitResponse(ctx: AccessContext, investorEntityId: stri
  * contact details are withheld until the pair registers one. Shared by every
  * insert site in this route so the four cannot drift apart.
  */
+/**
+ * The preview that reaches a bell or an inbox.
+ *
+ * Masking the stored message and then mailing the raw text to the very person
+ * it was withheld from defeats the entire feature -- the notification is how
+ * they would have got the number anyway. Same masking, same config.
+ */
+// What the last safeBody() call withheld, so the response can say so. The
+// route has four insert sites and threading a return value through all of
+// them would be worse than one module-local note read immediately after.
+let lastMasked: string[] = [];
+
+function maskedPreview(body: string, config: SafetyConfig) {
+  return applyMessageSafety({ body, dealRegistered: false, config }).body;
+}
+
 function safeBody(body: string, config: SafetyConfig) {
   const safe = applyMessageSafety({ body, dealRegistered: false, config });
+  lastMasked = safe.flags?.masked ?? [];
   return {
     body: safe.body,
     body_original: safe.bodyOriginal,
@@ -176,17 +193,17 @@ export async function POST(req: NextRequest) {
           threadId = created.id;
         }
       }
-      if (openOnly) return NextResponse.json({ success: true, threadId });
+      if (openOnly) return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
       if (other.owner_id && other.owner_id !== user.id) {
-        const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+        const preview = maskedPreview(body, SAFETY).slice(0, 60) + (body.length > 60 ? "…" : "");
         await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${myName}`, body: preview, titleKey: "notif.messageTitle", params: { name: myName }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
         const { data: p } = await admin.from("profiles").select("email").eq("id", other.owner_id).maybeSingle();
         if (p?.email) await sendNewMessageEmail(p.email, myName, myName, preview).catch(() => {});
       }
-      return NextResponse.json({ success: true, threadId });
+      return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
     }
 
     // investor → startup: the classic pair, opened from the investor side.
@@ -210,7 +227,7 @@ export async function POST(req: NextRequest) {
       // and the non-circumvention tail both date from here, and opening the
       // thread IS the contact -- so it is recorded before the openOnly return.
       await recordIntroduction({ startupId: st.id, investorId: me.id, channel: "message" });
-      if (openOnly) return NextResponse.json({ success: true, threadId });
+      if (openOnly) return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
       await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
@@ -225,12 +242,12 @@ export async function POST(req: NextRequest) {
         }
       }
       if (st.owner_id && st.owner_id !== user.id) {
-        const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+        const preview = maskedPreview(body, SAFETY).slice(0, 60) + (body.length > 60 ? "…" : "");
         await notifyUser({ userId: st.owner_id, type: "message", title: `New message from ${myName}`, body: preview, titleKey: "notif.messageTitle", params: { name: myName }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
         const { data: p } = await admin.from("profiles").select("email").eq("id", st.owner_id).maybeSingle();
         if (p?.email) await sendNewMessageEmail(p.email, myName, myName, preview).catch(() => {});
       }
-      return NextResponse.json({ success: true, threadId });
+      return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
     }
     return NextResponse.json({ error: "investorId or startupId required" }, { status: 400 });
   }
@@ -257,18 +274,18 @@ export async function POST(req: NextRequest) {
       if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
       threadId = created.id;
     }
-    if (openOnly) return NextResponse.json({ success: true, threadId });
+    if (openOnly) return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
     const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
     if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
     await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
 
     if (other.owner_id && other.owner_id !== user.id) {
-      const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+      const preview = maskedPreview(body, SAFETY).slice(0, 60) + (body.length > 60 ? "…" : "");
       await notifyUser({ userId: other.owner_id, type: "message", title: `New message from ${me.name}`, body: preview, titleKey: "notif.messageTitle", params: { name: me.name }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
       const { data: p } = await admin.from("profiles").select("email").eq("id", other.owner_id).maybeSingle();
       if (p?.email) await sendNewMessageEmail(p.email, me.name, me.name, preview).catch(() => {});
     }
-    return NextResponse.json({ success: true, threadId, startupId: me.id });
+    return NextResponse.json({ success: true, threadId, startupId: me.id , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
   }
 
   const [{ data: inv }, { data: st }] = await Promise.all([
@@ -284,16 +301,16 @@ export async function POST(req: NextRequest) {
     if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
     threadId = created.id;
   }
-  if (openOnly) return NextResponse.json({ success: true, threadId, startupId: st.id, investorId: inv.id });
+  if (openOnly) return NextResponse.json({ success: true, threadId, startupId: st.id, investorId: inv.id , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
   const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
   if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
 
   if (inv.owner_id && inv.owner_id !== user.id) {
-    const preview = body.slice(0, 60) + (body.length > 60 ? "…" : "");
+    const preview = maskedPreview(body, SAFETY).slice(0, 60) + (body.length > 60 ? "…" : "");
     await notifyUser({ userId: inv.owner_id, type: "message", title: `New message from ${st.name}`, body: preview, titleKey: "notif.messageTitle", params: { name: st.name }, href: `/dashboard/messages?thread=${threadId}` }).catch(() => {});
     const { data: p } = await admin.from("profiles").select("email").eq("id", inv.owner_id).maybeSingle();
     if (p?.email) await sendNewMessageEmail(p.email, st.name, st.name, preview).catch(() => {});
   }
-  return NextResponse.json({ success: true, threadId, startupId: st.id, investorId: inv.id });
+  return NextResponse.json({ success: true, threadId, startupId: st.id, investorId: inv.id , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
 }

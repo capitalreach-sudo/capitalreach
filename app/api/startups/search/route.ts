@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCatalogueAccess } from "@/lib/catalogue-guard";
 import { createAdminClient } from "@/lib/supabase-server";
 
 export async function GET(req: NextRequest) {
+  // The page redirects anonymous visitors; the data behind it must too.
+  const gate = await requireCatalogueAccess();
+  if (gate) return gate;
   const q = (req.nextUrl.searchParams.get("q")?.trim() ?? "").slice(0, 100);
   const limit = Math.min(Number(req.nextUrl.searchParams.get("limit") ?? "6"), 20);
 

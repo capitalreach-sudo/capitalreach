@@ -8,6 +8,8 @@ import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { roundCloseState } from "@/lib/round-close";
 import { protectFounders } from "@/lib/identity";
 import { listingDetailPublic } from "@/lib/listing-visibility";
+import { buildAccessContext, investorCan } from "@/lib/access";
+import { getLaunchStatus } from "@/lib/launchMode";
 import { viewerCanSeeFinancials } from "@/lib/browse-data";
 
 /**
@@ -111,6 +113,19 @@ export default async function OnePagerPage({ params, searchParams }: Props) {
     startup.runway_months = null; startup.paying_customers = null; startup.user_count = null;
   }
   const founders = gatedOk ? protectFounders(startup.founders ?? [], reveal) : [];
+
+  // The detail page walls the PITCH off from a signed-in free member, and this
+  // sheet carries the same prose -- problem, solution, market, use of funds.
+  // Gating one and not the other left the wall with a door beside it.
+  if (gateUser && !reveal) {
+    const { data: prof } = await createAdminClient()
+      .from("profiles").select("role, subscription_tier, suspended").eq("id", gateUser.id).maybeSingle();
+    if (prof && prof.role !== "admin" && prof.role !== "startup") {
+      const { isLaunch } = await getLaunchStatus();
+      const caps = investorCan(buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], isLaunch));
+      if (!caps.viewListingDetail) redirect(`/startups/${params.slug}`);
+    }
+  }
 
   const closing = roundCloseState(startup.round_close_date);
   const metrics: Array<[string, string]> = [];

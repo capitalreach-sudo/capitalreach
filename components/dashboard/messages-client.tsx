@@ -108,10 +108,18 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ threadId: selectedThread.id }),
     }).catch(() => {});
-    supabase.from("messages").select("*").eq("thread_id", selectedThread.id)
+    // NOT select("*"): migration 117 revoked table-wide SELECT and re-granted
+    // a named column list, so a star expands to include body_original and the
+    // whole request is refused (42501) -- which rendered every conversation
+    // as empty. The list must match the grant.
+    supabase.from("messages")
+      .select("id, thread_id, sender_id, body, created_at, read_at, attachment_path, attachment_name, safety_flags")
+      .eq("thread_id", selectedThread.id)
       .order("created_at", { ascending: true })
       .then(({ data, error }) => {
-        if (error) notify.error(t("dashboard.errLoadMessagesFailed"));
+        // A failed load must not be rendered as "no messages yet" -- that is
+        // indistinguishable from an empty thread and hides the failure.
+        if (error) { notify.error(t("dashboard.errLoadMessagesFailed")); return; }
         setMessages((data as Message[]) || []);
       });
 

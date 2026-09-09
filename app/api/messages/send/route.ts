@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
       userId: startup.owner_id,
       type:   "message",
       title:  `New message from ${senderProfile?.full_name || "an investor"}`,
-      body:   messageBody.slice(0, 140),
+      body:   safe.body.slice(0, 140),
       href:   "/dashboard/messages",
     });
   }
@@ -210,7 +210,7 @@ export async function POST(req: NextRequest) {
       startupOwnerEmail,
       senderProfile?.full_name || "An investor",
       startup?.name || "your startup",
-      messageBody
+      safe.body
     ).catch(() => {});
   }
 
