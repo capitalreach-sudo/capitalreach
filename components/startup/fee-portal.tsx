@@ -56,7 +56,7 @@ const BTN_PRIMARY: CSSProperties = {
   minHeight: "40px", padding: "0 18px", borderRadius: "999px",
   background: "var(--cr-copper)", border: "1px solid var(--cr-copper)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-  color: "#FFFFFF", textDecoration: "none", whiteSpace: "nowrap", cursor: "pointer",
+  color: "var(--cr-band-ink)", textDecoration: "none", whiteSpace: "nowrap", cursor: "pointer",
 };
 
 const BTN_OUTLINE: CSSProperties = {

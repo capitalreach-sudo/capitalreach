@@ -1,5 +1,6 @@
 "use client";
 
+import { BROKER_BENCHMARK_PERCENT } from "@/lib/circumvention-text";
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
@@ -623,7 +624,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
             <div className="grid-plans-3" style={{ marginBottom: "48px" }}>
               {[
                 {
-                  label: t("pricing.colTraditional"), fee: "5–7%",
+                  label: t("pricing.colTraditional"), fee: `${BROKER_BENCHMARK_PERCENT}%`,
                   border: "color-mix(in srgb, var(--cr-down) 20%, transparent)", bg: "var(--cr-down-bg)", feeClr: "var(--cr-down)", badge: false, isUs: false,
                   items: [t("pricing.tradItem1"), t("pricing.tradItem2"), t("pricing.tradItem3"), t("pricing.tradItem4"), t("pricing.tradItem5")],
                 },

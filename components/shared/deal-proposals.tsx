@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeftRight, Check, Handshake, X } from "lucide-react";
+import { ArrowLeftRight, Check, Handshake } from "lucide-react";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { OfferComposer, type OfferAsk } from "@/components/deals/offer-composer";
 import { notify } from "@/components/ui/toast-notify";

@@ -1,4 +1,5 @@
 "use client";
+import { BROKER_BENCHMARK_PERCENT } from "@/lib/circumvention-text";
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -18,7 +19,7 @@ const STEPS = [100_000, 250_000, 500_000, 750_000, 1_000_000, 1_500_000, 2_000_0
 const LAST = STEPS.length - 1;
 
 const OUR_PCT = 2;
-const BROKER_PCT = 6;
+const BROKER_PCT = BROKER_BENCHMARK_PERCENT;
 const SAVED_PCT = BROKER_PCT - OUR_PCT;
 /** Our fee drawn on a track whose full width is the broker's, so the two bars
  *  are comparable by length alone. */

@@ -29,6 +29,21 @@
 export const CIRCUMVENTION_TERMS_VERSION = "2026-09-07";
 
 export const SUCCESS_FEE_PERCENT = 2;
+
+/**
+ * The placement fee the comparison is drawn against.
+ *
+ * It lives here, beside our own number, because it used to live in three
+ * places and disagree with itself: the pricing page's comparison column said
+ * "5-7%" while the fee calculator a scroll above it computed 6%, on a page
+ * whose own hero copy says every number is real. Two different benchmarks
+ * quoted to the same reader costs more credibility than the comparison buys.
+ *
+ * It is a typical figure, not a surveyed one, and the copy that renders it
+ * says so. If a sourced number is ever obtained, this is the one line to
+ * change.
+ */
+export const BROKER_BENCHMARK_PERCENT = 6;
 export const NON_CIRCUMVENTION_MONTHS = 24;
 
 /**

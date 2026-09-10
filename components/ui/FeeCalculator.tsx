@@ -1,11 +1,12 @@
 "use client";
+import { BROKER_BENCHMARK_PERCENT } from "@/lib/circumvention-text";
 
 import { useMemo, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { formatMoney, DEFAULT_CURRENCY } from "@/lib/currency";
 import { SUCCESS_FEE_PERCENT } from "@/lib/circumvention-text";
 
-const BROKER_PERCENT = 6;
+const BROKER_PERCENT = BROKER_BENCHMARK_PERCENT;
 
 interface Props {
   /** Starting amount in the input (raise amount or check size). */

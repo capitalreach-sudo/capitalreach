@@ -1440,10 +1440,10 @@ export function StartupDetailClient({
               onCta={() => setNdaModalOpen(true)}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-                <MetricCell label={t("startupDetail.mrr")} value="$42,000" />
-                <MetricCell label={t("startupDetail.arr")} value="$504,000" />
-                <MetricCell label={t("startupDetail.totalUsers")} value="3,200" />
-                <MetricCell label={t("startupDetail.growth")} value="14%" />
+                <MetricCell label={t("startupDetail.mrr")} value={null} />
+                <MetricCell label={t("startupDetail.arr")} value={null} />
+                <MetricCell label={t("startupDetail.totalUsers")} value={null} />
+                <MetricCell label={t("startupDetail.growth")} value={null} />
               </div>
             </GateBlur>
           ) : canFinancials ? (
@@ -1460,10 +1460,10 @@ export function StartupDetailClient({
               ctaLabel={t("dashboard.viewPlans")}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-                <MetricCell label={t("startupDetail.mrr")} value="$42,000" />
-                <MetricCell label={t("startupDetail.arr")} value="$504,000" />
-                <MetricCell label={t("startupDetail.totalUsers")} value="3,200" />
-                <MetricCell label={t("startupDetail.growth")} value="14%" />
+                <MetricCell label={t("startupDetail.mrr")} value={null} />
+                <MetricCell label={t("startupDetail.arr")} value={null} />
+                <MetricCell label={t("startupDetail.totalUsers")} value={null} />
+                <MetricCell label={t("startupDetail.growth")} value={null} />
               </div>
             </GateBlur>
           )
@@ -1583,10 +1583,10 @@ export function StartupDetailClient({
               ctaLabel={t("dashboard.viewPlans")}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
-                <MetricCell label={t("startupDetail.monthlyRevenue")} value="$42,000" copper />
-                <MetricCell label={t("startupDetail.annualRevenue")} value="$504,000" />
-                <MetricCell label={t("startupDetail.totalUsers")} value="3,200" />
-                <MetricCell label={t("startupDetail.momGrowth")} value="14%" />
+                <MetricCell label={t("startupDetail.monthlyRevenue")} value={null} copper />
+                <MetricCell label={t("startupDetail.annualRevenue")} value={null} />
+                <MetricCell label={t("startupDetail.totalUsers")} value={null} />
+                <MetricCell label={t("startupDetail.momGrowth")} value={null} />
               </div>
             </GateBlur>
           )

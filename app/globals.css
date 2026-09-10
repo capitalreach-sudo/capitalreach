@@ -1347,148 +1347,19 @@ a:hover > .cr-diamond-live {
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
-  /* Theme flip as a circular reveal from the toggle button (View
-   Transitions API; browsers without it keep the body crossfade). The old
-   frame holds still while the new theme sweeps over it. */
-::view-transition-old(root) { animation: none; }
-::view-transition-new(root) {
-  animation: cr-theme-reveal 480ms ease-out both;
-}
-@keyframes cr-theme-reveal {
-  from { clip-path: circle(0px at var(--vt-x, 50%) var(--vt-y, 0%)); }
-  to   { clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%)); }
 }
 
-/* Cursor spotlight: a soft copper highlight that follows the pointer
-   across a card. The card sets --mx/--my from its own mousemove; the
-   overlay never intercepts events and vanishes when the pointer leaves. */
-.cr-spot { position: relative; }
-.cr-spot::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
-  pointer-events: none; opacity: 0; transition: opacity 260ms ease;
-  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--cr-copper) 10%, transparent), transparent 65%);
-}
-.cr-spot:hover::after { opacity: 1; }
-@media (hover: none) { .cr-spot::after { display: none; } }
+/* The query above used to run on to line 1498 because this brace was never
+   written. Everything between here and the second reduced-motion block --
+   the theme view-transition, .cr-spot, .cr-tilt, .cr-lift, .cr-ticker, the
+   scrollbar rules and thirty-odd more -- was therefore trapped inside it,
+   and applied ONLY to people who had asked for less motion. All 37 were
+   byte-for-byte duplicates of their real definitions further up, so the
+   visible effect was nil and the file carried 140 dead lines. The copies
+   are gone; the originals above are the ones that were always doing the
+   work. */
 
-/* The live rounds ticker: one slow, seamless lane of active raises.
-   Content is duplicated once; -50% loops without a seam. Pauses on hover
-   (someone is reading), gone entirely under reduced motion. */
-.cr-ticker { overflow: hidden; position: relative; }
-.cr-ticker-lane {
-  display: inline-flex; gap: 0; white-space: nowrap; width: max-content;
-  /* Duration rides the lane length (set inline as --ticker-secs): a
-     150-round tape at a fixed 60s sprints past unreadably. */
-  animation: cr-ticker-roll var(--ticker-secs, 60s) linear infinite;
-}
-.cr-ticker:hover .cr-ticker-lane { animation-play-state: paused; }
-@keyframes cr-ticker-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .cr-ticker { display: none; } }
-
-/* Scrollbars finished to match: thin, quiet, copper on grip. */
-* { scrollbar-width: thin; scrollbar-color: var(--cr-paper-4) transparent; }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--cr-paper-4); border-radius: 5px;
-  border: 2px solid var(--cr-paper); background-clip: padding-box;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--cr-copper); border: 2px solid var(--cr-paper); background-clip: padding-box; }
-
-/* 3D tilt: the card leans toward the cursor like paper under a thumb.
-   Driven by --rx/--ry from the card's own mousemove; only on devices with
-   a real hover, never under reduced motion. Pairs with .cr-spot. */
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .cr-tilt {
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-    transition: transform 160ms ease, box-shadow 180ms ease, border-color 120ms ease;
-    will-change: transform;
-  }
-  .cr-tilt:hover {
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-2px);
-  }
-}
-
-/* The ink stamp: a finalised deal is STAMPED, the way a ledger entry is.
-   Double rule, tilted, slightly worn (mask), deliberately imperfect. */
-.cr-stamp {
-  position: absolute; top: 10px; right: 10px; pointer-events: none;
-  transform: rotate(-12deg);
-  border: 2px double var(--cr-up); border-radius: 3px;
-  color: var(--cr-up); background: transparent;
-  font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 10px;
-  letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px;
-  opacity: 0.75;
-  -webkit-mask-image: radial-gradient(120% 100% at 30% 40%, #000 55%, rgba(0,0,0,0.55) 100%);
-  mask-image: radial-gradient(120% 100% at 30% 40%, #000 55%, rgba(0,0,0,0.55) 100%);
-}
-.cr-stamp-in { animation: cr-stamp-in 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both; }
-@keyframes cr-stamp-in {
-  from { transform: rotate(-12deg) scale(2.4); opacity: 0; }
-  60%  { opacity: 0.9; }
-  to   { transform: rotate(-12deg) scale(1); opacity: 0.75; }
-}
-@media (prefers-reduced-motion: reduce) { .cr-stamp-in { animation: none; } }
-
-/* Foil sweep: a light passes across the verified badge on hover — the
-   badge is foil, and foil catches light. */
-.cr-foil-badge { position: relative; overflow: hidden; }
-.cr-foil-badge::before {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
-  transform: translateX(-110%);
-}
-.cr-foil-badge:hover::before { transition: transform 600ms ease; transform: translateX(110%); }
-@media (prefers-reduced-motion: reduce) { .cr-foil-badge::before { display: none; } }
-
-/* The market pulse: one slow heartbeat drawn behind the Data Centre title.
-   Dash-animated stroke; ink-alpha so both themes read it as their own. */
-.cr-pulse path {
-  fill: none; stroke: var(--cr-copper); stroke-width: 1.5; opacity: 0.35;
-  stroke-dasharray: 480; stroke-dashoffset: 480;
-  animation: cr-pulse-draw 5s ease-in-out infinite;
-}
-@keyframes cr-pulse-draw {
-  0% { stroke-dashoffset: 480; opacity: 0; }
-  25% { opacity: 0.35; }
-  60% { stroke-dashoffset: 0; opacity: 0.35; }
-  100% { stroke-dashoffset: -480; opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) { .cr-pulse { display: none; } }
-
-/* The living diamond: the brand mark glints when greeted. */
-.cr-diamond-live { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 400ms ease; }
-a:hover > .cr-diamond-live {
-  transform: rotate(90deg) scale(1.12);
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cr-copper) 50%, transparent));
-}
-@media (prefers-reduced-motion: reduce) { .cr-diamond-live, a:hover > .cr-diamond-live { transition: none; transform: none; } }
-
-/* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
-   nothing shifts that didn't ask to. */
-.cr-lift {
-  box-shadow: var(--cr-card-shadow), var(--cr-card-edge);
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-.cr-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--cr-card-shadow-hover), var(--cr-card-edge);
-}
 @media (prefers-reduced-motion: reduce) {
-  .cr-lift, .cr-lift:hover { transform: none; }
-}
-
-/* A quiet copper aura behind the hero headline. Color-scheme-agnostic:
-   pure copper at low alpha reads as candlelight on dark and as warmth on
-   paper — the same value serves both registers. */
-.hero-glow {
-  position: absolute; inset: 0; pointer-events: none;
-  transition: background-position 0s; /* position vars animate via the gradient below */
-  background:
-    radial-gradient(ellipse 60% 45% at var(--glow-x, 50%) var(--glow-y, 38%), color-mix(in srgb, var(--cr-copper) 10%, transparent), transparent 70%);
-}
-
 .hero-noise { animation: none; }
   .copper-foil { animation: none; }
   .ruled-label::before { height: 16px; opacity: 1; animation: none; }
@@ -1995,3 +1866,36 @@ input:disabled:active {
   .cr-dialog-scrim, .cr-dialog-panel { animation: none; }
   .cr-deal-focus { transition: none; }
 }
+
+
+/* ── Focus, restored ──────────────────────────────────────────────────────
+   79 controls across the app set `outline: "none"` in an inline style prop to
+   drop the browser's default ring, and almost none of them put anything back.
+   For a keyboard user that is not a style choice, it is the loss of the only
+   signal telling them where they are on the page.
+
+   :focus-visible, not :focus, so a mouse click does not draw a ring the
+   pointer user did not ask for. !important for the same reason the touch
+   floor needs it: the suppression is inline, and an inline declaration beats
+   any ordinary rule. Drawn with box-shadow rather than outline so it follows
+   the border radius on every control. */
+:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--cr-paper), 0 0 0 4px var(--cr-copper) !important;
+  border-radius: inherit;
+}
+
+/* Controls that draw their own ring already, and would otherwise get two. */
+.cr-range:focus-visible,
+[data-focus-self]:focus-visible {
+  box-shadow: none !important;
+}
+
+/* ── The last line of defence against sideways scroll ─────────────────────
+   Roughly twenty containers carry their own overflowX: auto, which is the
+   right pattern and does the real work. This catches the component that
+   forgets one. `clip` rather than `hidden`: hidden silently makes the element
+   a scroll container, which breaks position: sticky in descendants, and the
+   sticky filter bar on the browse page depends on it. */
+html, body { overflow-x: clip; }

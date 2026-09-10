@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -100,6 +101,19 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [registrationPrompt, setRegistrationPrompt] = useState<null | "volume" | "dataroom">(null);
   const [registering, setRegistering]       = useState(false);
   const [promptSettled, setPromptSettled]   = useState(false);
+  // Why a send was refused, held on screen until it is dismissed. A toast
+  // says it once and then the composer simply refuses again with nothing on
+  // the page admitting why, which is the shape of every dead end here.
+  // `awaiting` is empty when the notice was derived from the deal rather than
+  // from a refusal, and the wording steps back to the neutral one.
+  const [gateNotice, setGateNotice] = useState<null | {
+    threadId: string;
+    kind: "seal" | "offer";
+    dealId: string | null;
+    awaiting: string[];
+    offerPending: boolean;
+  }>(null);
+  const [gateDismissed, setGateDismissed]   = useState<string | null>(null);
   const [search, setSearch]                 = useState("");
   const [showNewModal, setShowNewModal]     = useState(false);
   useEscapeKey(showNewModal, () => setShowNewModal(false));
@@ -377,6 +391,41 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       .catch(() => {});
   }, []);
 
+  // Which pairs have a deal neither side has finished countersigning, keyed
+  // startup:investor. Read straight from `deals`, which RLS already limits to
+  // deals this account is a party to, so a row can say "not signed" before a
+  // send is refused instead of after. An empty map claims nothing, which is
+  // the right way for this to fail.
+  const [unsealedDeals, setUnsealedDeals] = useState<Map<string, string>>(new Map());
+  useEffect(() => {
+    supabase.from("deals").select("id, startup_id, investor_id")
+      .is("sealed_at", null).limit(500)
+      .then(({ data }) => {
+        const rows = (data ?? []) as Array<{ id: string; startup_id: string; investor_id: string }>;
+        if (!rows.length) return;
+        setUnsealedDeals(new Map(rows.map(d => [`${d.startup_id}:${d.investor_id}`, d.id])));
+      });
+  }, []);
+
+  /** The unsigned deal for a founder↔investor pair, if there is one. */
+  function pendingSealDealId(th: Thread): string | null {
+    const t2 = th as unknown as { recipient_investor_id?: string | null };
+    if (th.recipient_startup_id || t2.recipient_investor_id) return null;
+    if (!th.startup_id || !th.investor_id) return null;
+    return unsealedDeals.get(`${th.startup_id}:${th.investor_id}`) ?? null;
+  }
+
+  /**
+   * Which side of the table the reader is on, by entity ownership rather than
+   * profile.role: the seal route breaks the same tie the same way, and a
+   * founder who also holds an investor profile is the company here.
+   */
+  function mySideOf(th: Thread): "startup" | "investor" | null {
+    if (myStartupId && th.startup_id === myStartupId) return "startup";
+    if (myInvestorId && th.investor_id === myInvestorId) return "investor";
+    return null;
+  }
+
   // Starring floats a conversation to the top of the list, which is the one
   // place a row changes position under the reader. Measured before the sort
   // and animated back from where it was, so the row is seen travelling
@@ -465,6 +514,43 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     setNewMessage(cur => (cur.trim() ? cur : body));
   }
 
+  /**
+   * The two refusals that are rules rather than faults, put on the page where
+   * the sender is instead of into a toast that has faded by the time they go
+   * looking for the remedy. Returns whether it took the message over, so the
+   * caller does not also raise the route's raw error string at somebody.
+   *
+   * It does NOT navigate. The draft has just been handed back to the composer
+   * and a redirect would take it with it; the panel carries the link instead,
+   * which is the same one click.
+   */
+  function showGateRefusal(th: Thread, json: { error?: string; dealId?: string; awaiting?: unknown; openProposalId?: string | null }): boolean {
+    if (json.error !== "seal_required" && json.error !== "offer_required") return false;
+    const awaiting = Array.isArray(json.awaiting) ? (json.awaiting as string[]) : [];
+    const side = mySideOf(th);
+    setRegistrationPrompt(null);
+    setGateDismissed(null);
+    setGateNotice({
+      threadId: th.id,
+      kind: json.error === "seal_required" ? "seal" : "offer",
+      dealId: typeof json.dealId === "string" ? json.dealId : null,
+      awaiting,
+      offerPending: !!json.openProposalId,
+    });
+    if (json.error === "seal_required") {
+      notify.info(side && awaiting.length
+        ? t(awaiting.includes(side) ? "gate.sealYoursTitle" : "gate.sealTheirsTitle")
+        : t("seal.required"));
+    } else {
+      // A founder cannot make an offer at all, so the investor-voiced line
+      // would be an instruction they cannot follow.
+      notify.info(side === "startup"
+        ? t("gate.offerFounderTitle")
+        : json.openProposalId ? t("offer.awaitingReply") : t("offer.required"));
+    }
+    return true;
+  }
+
   async function sendMessage(e: { preventDefault(): void }) {
     e.preventDefault();
     if ((!newMessage.trim() && !attachedFile) || !selectedThread) return;
@@ -481,7 +567,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       const res = await fetch("/api/messages/attach", { method: "POST", body: fd });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        notify.error(json.error || t("dashboard.errSendMessageFailed"));
+        // An attachment meets the same two gates a reply does, and this used
+        // to print their machine names -- "seal_required" -- at the sender.
+        if (!(res.status === 403 && showGateRefusal(selectedThread, json))) {
+          notify.error(json.error || t("dashboard.errSendMessageFailed"));
+        }
       } else {
         const sent = json.message as Message;
         setMessages(prev => prev.some(m => m.id === sent.id) ? prev : [...prev, sent]);
@@ -527,21 +617,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     }).catch(() => null);
     if (!res) { undoOptimisticSend(clientId, body); notify.error(t("dashboard.errSendMessageFailed")); return; }
     const json = await res.json().catch(() => ({}));
-    if (res.status === 403 && json.error === "seal_required") {
-      // The deal exists but nobody has countersigned it yet. Send them to the
-      // record with a link rather than a sentence: a refusal whose remedy is
-      // one click away is a step, and the same refusal with no link is the
-      // dead end this codebase keeps rediscovering.
+    if (res.status === 403 && (json.error === "seal_required" || json.error === "offer_required")) {
+      // Both of these are the platform's own rules, and both are refused with
+      // the state and the remedy: which signature is missing, or which of
+      // "make an offer" and "your offer is waiting" they are actually in.
+      // Telling somebody to do a thing they already did is worse than silence.
       undoOptimisticSend(clientId, body);
-      notify.info(t("seal.required"));
-      if (json.dealId) router.push(`/deals?deal=${json.dealId}`);
-    } else if (res.status === 403 && json.error === "offer_required") {
-      // Contact costs an accepted offer now. Say which state they are in --
-      // "your offer is waiting" is a different message from "make an offer",
-      // and telling somebody to do a thing they already did is worse than
-      // saying nothing.
-      undoOptimisticSend(clientId, body);
-      notify.info(json.openProposalId ? t("offer.awaitingReply") : t("offer.required"));
+      showGateRefusal(selectedThread, json);
     } else if (res.status === 409 && json.error === "deal_registration_required") {
       // Not a failure -- the conversation has become a negotiation and the
       // deal has to be on the record before it goes further. The draft is
@@ -623,7 +705,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        setSendNewError(err.error || t("dashboard.errStartConvo"));
+        // The gates answer with a key rather than a sentence, and without this
+        // the box printed "offer_required" at whoever tried to open a thread.
+        setSendNewError(err.messageKey ? t(err.messageKey) : (err.error || t("dashboard.errStartConvo")));
         setSendingNew(false);
         return;
       }
@@ -716,9 +800,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               ) : filteredThreads.map(thread => {
                 const isSelected = selectedThread?.id === thread.id;
                 const st = thread.status || "active";
+                const unsignedDealId = pendingSealDealId(thread);
                 return (
-                  <button key={thread.id} data-thread-row={thread.id} onClick={() => selectThread(thread)}
-                    style={{ width: "100%", textAlign: "left", padding: "16px", borderBottom: "1px solid var(--cr-rule)", background: isSelected ? "var(--cr-paper-3)" : "transparent", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent", cursor: "pointer" }}>
+                  // The row is this wrapper rather than the button: an unsigned
+                  // pair carries a link to the record it is waiting on, and a
+                  // link cannot live inside a button. The star FLIP measures
+                  // whatever holds data-thread-row, so the strip travels with
+                  // the row it belongs to.
+                  <div key={thread.id} data-thread-row={thread.id} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
+                  <button onClick={() => selectThread(thread)}
+                    style={{ width: "100%", textAlign: "left", padding: "16px", background: isSelected ? "var(--cr-paper-3)" : "transparent", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent", cursor: "pointer" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
                       <div style={{ width: 36, height: 36, borderRadius: "4px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)" }}>
                         {getInitials(getLabel(thread))}
@@ -745,6 +836,20 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       </div>
                     </div>
                   </button>
+                  {/* Pending, not broken. Without this the first sign that a
+                      conversation is held is a refused message. */}
+                  {unsignedDealId && (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", padding: "8px 16px 10px", background: "var(--cr-copper-bg)", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent" }}>
+                      <span style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        {t("gate.rowUnsigned")}
+                      </span>
+                      <Link href={`/deals?deal=${unsignedDealId}`}
+                        style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+                        {t("gate.rowSign")} →
+                      </Link>
+                    </div>
+                  )}
+                  </div>
                 );
               })}
             </div>
@@ -962,6 +1067,75 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   });
                 })()}
               </div>
+
+              {/* Why this conversation is held, above the composer that is
+                  refusing. Shown from the refusal when there has been one and
+                  from the unsigned deal when there has not, so the reason
+                  arrives before the disappointment rather than after it. */}
+              {(() => {
+                if (gateDismissed === selectedThread.id) return null;
+                const fromRefusal = gateNotice?.threadId === selectedThread.id ? gateNotice : null;
+                const localDealId = pendingSealDealId(selectedThread);
+                const notice = fromRefusal ?? (localDealId
+                  ? { threadId: selectedThread.id, kind: "seal" as const, dealId: localDealId, awaiting: [] as string[], offerPending: false }
+                  : null);
+                if (!notice) return null;
+
+                const side = mySideOf(selectedThread);
+                let titleKey = "gate.sealPendingTitle";
+                let bodyKey  = "gate.sealPendingBody";
+                let ctaKey   = "gate.sealPendingCta";
+                let href     = notice.dealId ? `/deals?deal=${notice.dealId}` : "/deals";
+                if (notice.kind === "seal") {
+                  // Whose signature is missing changes the sentence entirely,
+                  // and it is only known when the refusal said so.
+                  if (side && notice.awaiting.length) {
+                    const mine = notice.awaiting.includes(side);
+                    titleKey = mine ? "gate.sealYoursTitle" : "gate.sealTheirsTitle";
+                    bodyKey  = mine ? "gate.sealYoursBody"  : "gate.sealTheirsBody";
+                    ctaKey   = mine ? "gate.sealYoursCta"   : "gate.sealTheirsCta";
+                  }
+                } else if (side === "startup") {
+                  // A founder cannot make an offer, so the remedy is the
+                  // offers they have been sent, not the listing.
+                  titleKey = "gate.offerFounderTitle";
+                  bodyKey  = "gate.offerFounderBody";
+                  ctaKey   = "gate.offerFounderCta";
+                  href     = "/dashboard/startup/offers";
+                } else if (notice.offerPending) {
+                  titleKey = "gate.offerSentTitle";
+                  bodyKey  = "gate.offerSentBody";
+                  ctaKey   = "gate.offerSentCta";
+                  href     = "/deals";
+                } else {
+                  titleKey = "gate.offerTitle";
+                  bodyKey  = "gate.offerBody";
+                  ctaKey   = "gate.offerCta";
+                  href     = selectedThread.startup?.slug ? `/startups/${selectedThread.startup.slug}` : "/deals";
+                }
+
+                return (
+                  <div style={{ padding: "16px", borderTop: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", flexShrink: 0 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span aria-hidden style={{ color: "var(--cr-copper)" }}>{"✦"}</span>
+                        {t(titleKey)}
+                      </p>
+                      <button type="button" onClick={() => setGateDismissed(selectedThread.id)} aria-label={t("common.close")}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0, margin: "-8px -8px 0 0" }}>
+                        <X style={{ width: 15, height: 15 }} />
+                      </button>
+                    </div>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, margin: "8px 0 16px", maxWidth: "62ch" }}>
+                      {t(bodyKey)}
+                    </p>
+                    <Link href={href}
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 24px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
+                      {t(ctaKey)}
+                    </Link>
+                  </div>
+                );
+              })()}
 
               {/* Compose */}
               {/* The conversation has become a negotiation. Sits directly

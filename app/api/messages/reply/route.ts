@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
-import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
+import { mayPairContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
@@ -74,10 +74,10 @@ export async function POST(req: NextRequest) {
     if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Offer before contact: on a startup/investor thread the INVESTOR side may
-  // only continue once an offer of theirs was accepted or a deal exists. The
-  // founder side is never gated -- answering is the behaviour the rule exists
-  // to produce, and holding a founder's reply would punish the wrong party.
+  // Seal before contact, both ways: on a startup/investor thread neither side
+  // continues until the pair's deal is signed by both of them. One
+  // conversation cannot have two answers to "may these two talk", and a thread
+  // one party may write in and the other may not is not a conversation.
   // Co-investor threads are not contact with a company at all. Checked before
   // the insert so a refusal leaves no half-sent message.
   const pairStartupId = thread.startup_id;
@@ -86,8 +86,10 @@ export async function POST(req: NextRequest) {
     // Ownership answers "which side is this" for almost everyone; the roster
     // lookup only runs for an associate acting on an entity's behalf, since
     // an associate at a fund is the investor side just as much as its owner.
-    // A STARTUP seat deliberately wins a tie, so nobody on the founder side
-    // can be gated by an incidental seat on an investor's roster.
+    // A STARTUP seat deliberately wins a tie. The side no longer decides
+    // whether the rule applies -- it decides which way out of it the refusal
+    // offers, and a founder must never be handed the investor's (they cannot
+    // make an offer; the proposals route refuses them).
     let investorSide = user.id === investorOwner;
     if (!investorSide && user.id !== startupOwner && user.id !== recipientStartupOwner) {
       const { data: seats } = await admin
@@ -97,15 +99,17 @@ export async function POST(req: NextRequest) {
       const kinds = new Set((seats ?? []).map((s) => s.entity_type));
       investorSide = !kinds.has("startup") && kinds.has("investor");
     }
-    if (investorSide) {
+    const contact = await mayPairContact({
+      startupId: pairStartupId,
+      investorId: pairInvestorId,
+      side: investorSide ? "investor" : "startup",
+    });
+    if (!contact.allowed) {
       // Admins moderate rather than transact, so they are never held to the
-      // offer rule. Read only here: the block is unreachable for the one
-      // caller whose role was already resolved above (a non-party admin).
+      // rule. Read only on the refusal path: the block is unreachable for the
+      // one caller whose role was already resolved above (a non-party admin).
       const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
-      if (prof?.role !== "admin") {
-        const contact = await mayInvestorContact({ startupId: pairStartupId, investorId: pairInvestorId });
-        if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
-      }
+      if (prof?.role !== "admin") return NextResponse.json(contactRefusal(contact), { status: 403 });
     }
   }
 

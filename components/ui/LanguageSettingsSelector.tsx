@@ -56,23 +56,23 @@ export function LanguageSettingsSelector({ initialLocale = "en", translations }:
               className={`flex items-center gap-3 p-3.5 rounded-[6px] border
                           text-left transition-all duration-150 w-full
                           ${active
-                            ? "border-[#B5651D] bg-[var(--cr-copper-bg)]"
-                            : "border-[#D8D0C4] bg-[#F5F0E8] hover:bg-[#E4DDD2] hover:border-[#9C8E82]"
+                            ? "border-[var(--cr-copper)] bg-[var(--cr-copper-bg)]"
+                            : "border-[var(--cr-rule-dark)] bg-[var(--cr-paper-2)] hover:bg-[var(--cr-paper-3)] hover:border-[var(--cr-ink-4)]"
                           }`}
             >
               <span className="text-[22px] flex-shrink-0 leading-none">{meta.flag}</span>
               <div className="flex-1 min-w-0">
-                <div className={`text-[13px] font-medium leading-tight ${active ? "text-[#1A1612]" : "text-[#3D3630]"}`}>
+                <div className={`text-[13px] font-medium leading-tight ${active ? "text-[var(--cr-ink)]" : "text-[var(--cr-ink-2)]"}`}>
                   {meta.native}
                 </div>
-                <div className="text-[11px] text-[#9C8E82] mt-0.5">{meta.name}</div>
+                <div className="text-[11px] text-[var(--cr-ink-4)] mt-0.5">{meta.name}</div>
               </div>
               {meta.rtl && (
-                <span className="text-[9px] text-[#9C8E82] uppercase tracking-[0.06em] flex-shrink-0">
+                <span className="text-[9px] text-[var(--cr-ink-4)] uppercase tracking-[0.06em] flex-shrink-0">
                   {t("locale.rtl")}
                 </span>
               )}
-              {active && <Check className="w-4 h-4 text-[#B5651D] flex-shrink-0" />}
+              {active && <Check className="w-4 h-4 text-[var(--cr-copper)] flex-shrink-0" />}
             </button>
           );
         })}
@@ -82,16 +82,16 @@ export function LanguageSettingsSelector({ initialLocale = "en", translations }:
         <button
           onClick={save}
           disabled={isPending}
-          className="px-6 py-2.5 bg-[#B5651D] text-white text-[13px]
+          className="px-6 py-2.5 bg-[var(--cr-copper)] text-white text-[13px]
                      font-semibold rounded-[4px] btn-copper-shimmer
-                     hover:bg-[#D4842A] active:scale-[0.99]
+                     hover:bg-[var(--cr-copper-l)] active:scale-[0.99]
                      disabled:opacity-40 disabled:cursor-not-allowed
                      transition-all duration-150"
         >
           {isPending ? savingLabel : saveLabel}
         </button>
         {saved && (
-          <span className="text-[13px] text-[#2D6A4F] flex items-center gap-1.5">
+          <span className="text-[13px] text-[var(--cr-up)] flex items-center gap-1.5">
             <Check className="w-3.5 h-3.5" />
             {savedLabel}
           </span>

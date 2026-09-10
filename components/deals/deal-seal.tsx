@@ -250,6 +250,14 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
           pointerEvents: sealing ? "none" : undefined,
           transition: `opacity ${SEAL_EXIT_MS}ms var(--ease-out), transform ${SEAL_EXIT_MS}ms var(--ease-out)`,
         }}>
+          {/* The consequence, next to the asking. Someone reaching this panel
+              from a refused message needs the two halves in one place: what
+              the signature buys, and that nothing else they can do here is
+              being held. */}
+          <p style={{ ...BODY, fontSize: "13px", margin: "0 0 24px", maxWidth: "62ch", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+            <span aria-hidden style={{ color: "var(--cr-copper)", flexShrink: 0 }}>{"✦"}</span>
+            <span>{t("seal.opensMessaging")}</span>
+          </p>
           <label style={{ display: "block" }}>
             <span style={LABEL}>{t("seal.yourName")}</span>
             <input

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety, type SafetyConfig } from "@/lib/message-safety";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
-import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
+import { mayInvestorContact, mayPairContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
 import { recordSignal } from "@/lib/trust-signals";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -66,8 +66,9 @@ async function newThreadLimitResponse(ctx: AccessContext, investorEntityId: stri
  *
  * Investor senders carry the same tier gate as /api/messages/send: the plan
  * must include messaging at all, and every NEW thread spends from the same
- * monthly allowance (newThreadLimitResponse below). Founder senders stay
- * ungated -- founder outbound has never had a paywall.
+ * monthly allowance (newThreadLimitResponse below). Founder senders have no
+ * paywall, and still do not: what a founder now needs to reach an investor is
+ * a signed deal, not a plan.
  */
 /**
  * Opening a conversation is always first contact, so no deal exists yet and
@@ -225,9 +226,9 @@ export async function POST(req: NextRequest) {
       // Offer before contact. Opening the thread IS the contact -- open:true
       // opens one and records the introduction without a word being typed --
       // so this sits above the thread lookup, before any row exists and
-      // before recordIntroduction fires. Only this branch is gated: the
-      // investor to investor branch above is not contact with a company, and
-      // the two founder branches below are never gated at all.
+      // before recordIntroduction fires. The founder to investor branch below
+      // is gated on the same verdict from the other end; investor to investor
+      // and founder to founder are not contact with a company at all.
       if (senderProfile?.role !== "admin") {
         const contact = await mayInvestorContact({ startupId: st.id, investorId: me.id });
         if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
@@ -328,6 +329,21 @@ export async function POST(req: NextRequest) {
     admin.from("startups").select("id, name").eq("id", mine.entityId).maybeSingle(),
   ]);
   if (!inv || !st) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // Founder → investor: the same pair, the same rule, asked from the other
+  // end. Above the thread lookup for the same reason it is above the one in
+  // the investor branch -- open:true creates the thread with nothing typed,
+  // and a thread is the contact. The refusal names the founder's way in
+  // (opening a deal, or the offer already in their inbox), which is the whole
+  // reason the verdict knows which side asked.
+  const founderContact = await mayPairContact({ startupId: st.id, investorId: inv.id, side: "startup" });
+  if (!founderContact.allowed) {
+    // Read only on the refusal path: an admin messaging from their own
+    // startup is rare, and the ungated majority should not pay a query for it.
+    const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    if (prof?.role !== "admin") return NextResponse.json(contactRefusal(founderContact), { status: 403 });
+  }
+  contactsOpen = await contactsUnlocked({ startupId: st.id, investorId: inv.id });
 
   const { data: existing } = await admin.from("threads").select("id").match({ startup_id: st.id, investor_id: inv.id }).maybeSingle();
   let threadId = existing?.id;
