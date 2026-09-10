@@ -1906,7 +1906,31 @@ input[type="button"],
 .btn-copper,
 .btn-copper-shimmer,
 .btn-ghost {
-  transition: scale 140ms var(--ease-out);
+  /* The property list, and the !important, both exist for one reason: almost
+     every control here declares `transition` in an inline style prop, and an
+     inline shorthand RESETS transition-property to whatever it names. On
+     /pricing that left twelve of twenty-one pressables snapping instead of
+     easing, because their inline `transition: color 150ms` had already
+     excluded scale.
+
+     So the rule restates the properties buttons in this codebase actually
+     animate (counted, not guessed: border-color, colour, background, opacity,
+     transform, box-shadow) and adds scale to them. `all` would be the lazy
+     way to write this and is exactly what the craft rules forbid: it asks the
+     browser to watch every property, including ones that trigger layout.
+
+     Known cost, accepted: a button animating a property outside this list
+     loses that transition. The only one in the codebase is `width`, and it is
+     not on a pressable. */
+  transition:
+    scale 140ms var(--ease-out),
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease,
+    background 150ms ease,
+    opacity 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms var(--ease-out) !important;
 }
 
 button:active,
