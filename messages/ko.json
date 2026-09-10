@@ -4534,5 +4534,72 @@
     "offersCta": "오퍼 보기",
     "openDealCta": "딜 개시하기",
     "proposalPending": "귀하의 딜 요청이 이 투자자에게 전달되었습니다. 상대가 수락하고 양측이 기록에 서명하면 여기에서 대화할 수 있습니다."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId는 uuid여야 합니다",
+      "badSubjectType": "subjectType은 startup 또는 investor여야 합니다",
+      "badThreadId": "threadId는 uuid여야 합니다",
+      "messagesFailed": "이 메시지를 불러오지 못했습니다",
+      "noMember": "해당 회원이 없습니다",
+      "noSubject": "회원의 대화 목록(subjectType과 subjectId) 또는 단일 대화(threadId)를 지정하십시오.",
+      "noThread": "해당 대화가 없습니다",
+      "notRecorded": "이 열람을 기록할 수 없어 열람을 수행하지 않았습니다.",
+      "threadFailed": "이 대화를 불러오지 못했습니다",
+      "threadsFailed": "이 대화들을 불러오지 못했습니다"
+    }
+  },
+  "memberMessages": {
+    "attachment": "첨부: {name}",
+    "auditNotice": "여기서 여는 모든 대화는 본문이 표시되기 전에 감사 로그에 기록됩니다. 열람한 본인, 해당 회원, 그리고 그 대화가 함께 남습니다.",
+    "back": "전체 대화",
+    "deliveredLabel": "전달본",
+    "empty": "이 회원에게는 대화가 없습니다.",
+    "flaggedKinds": "위험 신호: {kinds}",
+    "fromCounterparty": "상대방",
+    "fromMember": "이 회원",
+    "kind": {
+      "email": "이메일 주소",
+      "external_link": "플랫폼 외부 링크",
+      "messaging_app": "메신저 아이디",
+      "phone": "전화번호"
+    },
+    "loadFailed": "대화를 불러오지 못했습니다. 열람된 내용은 없습니다.",
+    "loadOlder": "더 불러오기",
+    "loadingThread": "대화를 여는 중",
+    "loadingThreads": "기록을 읽는 중",
+    "messageCount": "메시지 {count}건",
+    "messageCount_one": "메시지 {count}건",
+    "originalLabel": "원문",
+    "originalNote": "표시된 부분은 수신자에게 전달되지 않고 가려졌습니다. 수신자는 이 내용을 보지 못했습니다.",
+    "originalPlainNote": "이 메시지는 마스킹을 거쳐 다시 쓰였습니다. 수신자가 읽은 것은 위의 전달본이며, 아래는 작성자가 실제로 입력한 내용입니다.",
+    "partialTranscript": "전체 메시지 {total}건 중 {loaded}건을 표시하고 있습니다. 나머지는 아직 불러오지 않았습니다.",
+    "readOnly": "읽기 전용",
+    "readOnlyNote": "이 화면에서는 메시지를 보내거나 수정하거나 삭제할 수 없습니다.",
+    "retry": "다시 시도",
+    "scam": {
+      "advance_fee": "선지급 수수료",
+      "off_platform_payment": "플랫폼 외부 결제",
+      "payment_request": "결제 요구",
+      "urgency": "긴박감 조성"
+    },
+    "selectPrompt": "대화를 열면 내용을 읽을 수 있습니다.",
+    "status": {
+      "active": "진행 중",
+      "archived": "보관됨",
+      "blocked": "차단됨",
+      "closed": "종료됨"
+    },
+    "subtitle": "{name}님이 플랫폼에서 나눈 대화를 기록 형태로 읽습니다. 이것은 타인의 서신이며, 귀하의 메일함이 아닙니다.",
+    "threadEmpty": "이 대화에는 메시지가 없습니다.",
+    "threadFailed": "이 대화를 불러오지 못했습니다. 열람된 내용은 없습니다.",
+    "threadsLabel": "대화",
+    "title": "서신 기록",
+    "transcriptLabel": "대화 기록",
+    "unnamed": "성명 미기재 상대방",
+    "withheldCount": "가려짐 {count}건",
+    "withheldCount_one": "가려짐 {count}건",
+    "withheldInline": "가려짐",
+    "withheldKinds": "가려진 항목: {kinds}"
   }
 }

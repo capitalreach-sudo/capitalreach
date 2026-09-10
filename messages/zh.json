@@ -4534,5 +4534,72 @@
     "offersCta": "查看该报价",
     "openDealCta": "发起交易",
     "proposalPending": "您的交易请求已送达这位投资方。对方接受、并且双方签署交易记录后，即可在此对话。"
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId 必须是 uuid",
+      "badSubjectType": "subjectType 必须是 startup 或 investor",
+      "badThreadId": "threadId 必须是 uuid",
+      "messagesFailed": "无法加载这些消息",
+      "noMember": "没有该成员",
+      "noSubject": "请指定某位成员的会话（subjectType 与 subjectId），或指定单个会话（threadId）。",
+      "noThread": "没有该对话",
+      "notRecorded": "本次查阅无法记入审计日志，因此未予执行。",
+      "threadFailed": "无法加载此对话",
+      "threadsFailed": "无法加载这些对话"
+    }
+  },
+  "memberMessages": {
+    "attachment": "附件：{name}",
+    "auditNotice": "你在此打开的每一个对话都会先写入审计日志，记录你本人、该成员以及对应会话，之后其内容才会呈现给你。",
+    "back": "全部对话",
+    "deliveredLabel": "送达版本",
+    "empty": "该成员没有任何对话。",
+    "flaggedKinds": "已标记：{kinds}",
+    "fromCounterparty": "对手方",
+    "fromMember": "该成员",
+    "kind": {
+      "email": "邮箱地址",
+      "external_link": "平台外链接",
+      "messaging_app": "即时通讯账号",
+      "phone": "电话号码"
+    },
+    "loadFailed": "对话未能加载。没有读取任何内容。",
+    "loadOlder": "加载更多",
+    "loadingThread": "正在打开会话",
+    "loadingThreads": "正在读取记录",
+    "messageCount": "{count} 条消息",
+    "messageCount_one": "{count} 条消息",
+    "originalLabel": "原始版本",
+    "originalNote": "标记的文字已向收件人隐去，对方从未看到。",
+    "originalPlainNote": "隐去机制改写了这条消息。收件人读到的是上方的送达版本，这里是实际输入的内容。",
+    "partialTranscript": "仅显示 {total} 条消息中的 {loaded} 条，这不是完整记录。",
+    "readOnly": "只读",
+    "readOnlyNote": "此页面无法发送、编辑或删除任何消息。",
+    "retry": "重试",
+    "scam": {
+      "advance_fee": "预付费用",
+      "off_platform_payment": "平台外付款",
+      "payment_request": "索要付款",
+      "urgency": "制造紧迫感"
+    },
+    "selectPrompt": "打开一个对话即可查阅。",
+    "status": {
+      "active": "进行中",
+      "archived": "已归档",
+      "blocked": "已屏蔽",
+      "closed": "已关闭"
+    },
+    "subtitle": "{name} 在平台上的全部对话，以往来记录的形式呈现。这是他人的通信内容，不是你自己的收件箱。",
+    "threadEmpty": "此对话中没有消息。",
+    "threadFailed": "此对话未能加载。没有读取任何内容。",
+    "threadsLabel": "对话",
+    "title": "往来通信",
+    "transcriptLabel": "往来记录",
+    "unnamed": "未命名对手方",
+    "withheldCount": "已隐去 {count} 处",
+    "withheldCount_one": "已隐去 {count} 处",
+    "withheldInline": "已隐去",
+    "withheldKinds": "已隐去：{kinds}"
   }
 }

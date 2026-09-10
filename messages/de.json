@@ -4534,5 +4534,72 @@
     "offersCta": "Angebot ansehen",
     "openDealCta": "Deal eröffnen",
     "proposalPending": "Ihre Deal-Anfrage liegt bei diesem Investor. Sobald er sie annimmt und Sie beide die Urkunde unterzeichnen, können Sie hier sprechen."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId muss eine UUID sein",
+      "badSubjectType": "subjectType muss startup oder investor sein",
+      "badThreadId": "threadId muss eine UUID sein",
+      "messagesFailed": "Diese Nachrichten konnten nicht geladen werden",
+      "noMember": "Mitglied nicht gefunden",
+      "noSubject": "Fragen Sie die Gespräche eines Mitglieds ab (subjectType und subjectId) oder ein einzelnes Gespräch (threadId).",
+      "noThread": "Gespräch nicht gefunden",
+      "notRecorded": "Dieser Lesezugriff konnte nicht protokolliert werden und wurde deshalb nicht ausgeführt.",
+      "threadFailed": "Dieses Gespräch konnte nicht geladen werden",
+      "threadsFailed": "Diese Gespräche konnten nicht geladen werden"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Anhang: {name}",
+    "auditNotice": "Jedes Gespräch, das Sie hier öffnen, wird im Prüfprotokoll festgehalten, mit Ihrem Konto, diesem Mitglied und dem Gespräch, bevor sein Text bei Ihnen ankommt.",
+    "back": "Alle Gespräche",
+    "deliveredLabel": "Wie zugestellt",
+    "empty": "Dieses Mitglied hat keine Gespräche.",
+    "flaggedKinds": "Markiert: {kinds}",
+    "fromCounterparty": "Gegenpartei",
+    "fromMember": "Dieses Mitglied",
+    "kind": {
+      "email": "E-Mail-Adresse",
+      "external_link": "Link außerhalb der Plattform",
+      "messaging_app": "Messenger-Kontakt",
+      "phone": "Telefonnummer"
+    },
+    "loadFailed": "Die Gespräche konnten nicht geladen werden. Es wurde nichts gelesen.",
+    "loadOlder": "Mehr laden",
+    "loadingThread": "Das Gespräch wird geöffnet",
+    "loadingThreads": "Die Aufzeichnungen werden gelesen",
+    "messageCount": "{count} Nachrichten",
+    "messageCount_one": "{count} Nachricht",
+    "originalLabel": "Wie verfasst",
+    "originalNote": "Der markierte Text wurde gegenüber dem Empfänger zurückgehalten, er hat ihn nie gesehen.",
+    "originalPlainNote": "Die Maske hat diese Nachricht umgeschrieben. Der Empfänger hat die oben zugestellte Fassung gelesen, dies hier ist der eingegebene Wortlaut.",
+    "partialTranscript": "Angezeigt werden {loaded} von {total} Nachrichten, die Mitschrift ist also unvollständig.",
+    "readOnly": "Nur Lesezugriff",
+    "readOnlyNote": "Auf dieser Oberfläche lässt sich keine Nachricht senden, bearbeiten oder löschen.",
+    "retry": "Erneut versuchen",
+    "scam": {
+      "advance_fee": "Vorschussgebühr",
+      "off_platform_payment": "Zahlung außerhalb der Plattform",
+      "payment_request": "Zahlungsaufforderung",
+      "urgency": "Zeitdruck"
+    },
+    "selectPrompt": "Öffnen Sie ein Gespräch, um es zu lesen.",
+    "status": {
+      "active": "Offen",
+      "archived": "Archiviert",
+      "blocked": "Blockiert",
+      "closed": "Geschlossen"
+    },
+    "subtitle": "Die Gespräche, die {name} auf der Plattform geführt hat, als Mitschrift gelesen. Dies ist die Korrespondenz einer anderen Person, nicht Ihr eigenes Postfach.",
+    "threadEmpty": "Dieses Gespräch enthält keine Nachrichten.",
+    "threadFailed": "Dieses Gespräch konnte nicht geladen werden. Es wurde nichts gelesen.",
+    "threadsLabel": "Gespräche",
+    "title": "Korrespondenz",
+    "transcriptLabel": "Mitschrift",
+    "unnamed": "Unbenannte Gegenpartei",
+    "withheldCount": "{count} zurückgehalten",
+    "withheldCount_one": "{count} zurückgehalten",
+    "withheldInline": "zurückgehalten",
+    "withheldKinds": "Zurückgehalten: {kinds}"
   }
 }

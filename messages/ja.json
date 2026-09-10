@@ -4534,5 +4534,72 @@
     "offersCta": "オファーを表示",
     "openDealCta": "ディールを開始",
     "proposalPending": "ディールのリクエストは、この投資家が確認中です。承諾され、双方がディール記録に署名すると、ここで会話ができます。"
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId は uuid である必要があります",
+      "badSubjectType": "subjectType は startup または investor である必要があります",
+      "badThreadId": "threadId は uuid である必要があります",
+      "messagesFailed": "これらのメッセージを読み込めませんでした",
+      "noMember": "該当するメンバーはいません",
+      "noSubject": "メンバーの会話一覧（subjectType と subjectId）、または個別の会話（threadId）を指定してください。",
+      "noThread": "該当する会話はありません",
+      "notRecorded": "この閲覧を記録できなかったため、閲覧は実行されませんでした。",
+      "threadFailed": "この会話を読み込めませんでした",
+      "threadsFailed": "これらの会話を読み込めませんでした"
+    }
+  },
+  "memberMessages": {
+    "attachment": "添付ファイル: {name}",
+    "auditNotice": "ここで開いた会話はすべて、本文が表示される前に監査ログへ記録されます。記録されるのは、閲覧したあなた、対象のメンバー、開いた会話です。",
+    "back": "すべての会話",
+    "deliveredLabel": "送信された文面",
+    "empty": "このメンバーに会話はありません。",
+    "flaggedKinds": "検知: {kinds}",
+    "fromCounterparty": "相手方",
+    "fromMember": "このメンバー",
+    "kind": {
+      "email": "メールアドレス",
+      "external_link": "プラットフォーム外のリンク",
+      "messaging_app": "メッセージアプリの ID",
+      "phone": "電話番号"
+    },
+    "loadFailed": "会話を読み込めませんでした。閲覧は行われていません。",
+    "loadOlder": "さらに読み込む",
+    "loadingThread": "会話を開いています",
+    "loadingThreads": "記録を読み込んでいます",
+    "messageCount": "{count} 件のメッセージ",
+    "messageCount_one": "{count} 件のメッセージ",
+    "originalLabel": "入力された文面",
+    "originalNote": "印の付いた部分は受信者には伏せられており、相手が目にすることはありませんでした。",
+    "originalPlainNote": "連絡先マスクがこのメッセージを書き換えました。受信者が読んだのは上の送信版で、こちらが実際に入力された文面です。",
+    "partialTranscript": "全 {total} 件のメッセージのうち {loaded} 件のみを表示しています。会話の全体ではありません。",
+    "readOnly": "閲覧のみ",
+    "readOnlyNote": "この画面からメッセージを送信、編集、削除することはできません。",
+    "retry": "もう一度試す",
+    "scam": {
+      "advance_fee": "前払い手数料",
+      "off_platform_payment": "プラットフォーム外での支払い",
+      "payment_request": "支払いの要求",
+      "urgency": "緊急性の強調"
+    },
+    "selectPrompt": "会話を開くと内容を表示します。",
+    "status": {
+      "active": "継続中",
+      "archived": "アーカイブ済み",
+      "blocked": "ブロック済み",
+      "closed": "終了"
+    },
+    "subtitle": "{name} がプラットフォーム上で行った会話を、記録として読む画面です。これは他人のやり取りであり、あなたの受信箱ではありません。",
+    "threadEmpty": "この会話にメッセージはありません。",
+    "threadFailed": "この会話を読み込めませんでした。閲覧は行われていません。",
+    "threadsLabel": "会話",
+    "title": "やり取りの記録",
+    "transcriptLabel": "会話記録",
+    "unnamed": "氏名未確認の相手方",
+    "withheldCount": "伏せた箇所 {count} 件",
+    "withheldCount_one": "伏せた箇所 {count} 件",
+    "withheldInline": "伏せた箇所",
+    "withheldKinds": "伏せた情報: {kinds}"
   }
 }

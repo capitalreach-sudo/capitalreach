@@ -4534,5 +4534,72 @@
     "offersCta": "Bekijk het bod",
     "openDealCta": "Een deal openen",
     "proposalPending": "Uw dealverzoek ligt bij deze investeerder. Zodra het is aanvaard en u allebei de vastlegging hebt ondertekend, kunt u hier met elkaar spreken."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId moet een uuid zijn",
+      "badSubjectType": "subjectType moet startup of investor zijn",
+      "badThreadId": "threadId moet een uuid zijn",
+      "messagesFailed": "Deze berichten konden niet worden geladen",
+      "noMember": "Dit lid bestaat niet",
+      "noSubject": "Vraag de gesprekken van een lid op (subjectType en subjectId), of één gesprek (threadId).",
+      "noThread": "Dit gesprek bestaat niet",
+      "notRecorded": "Deze inzage kon niet worden vastgelegd en is daarom niet uitgevoerd.",
+      "threadFailed": "Dit gesprek kon niet worden geladen",
+      "threadsFailed": "Deze gesprekken konden niet worden geladen"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Bijlage: {name}",
+    "auditNotice": "Elk gesprek dat u hier opent, wordt vastgelegd in het auditlogboek -- u, dit lid en het gesprek zelf -- voordat de tekst ervan bij u komt.",
+    "back": "Alle gesprekken",
+    "deliveredLabel": "Zoals bezorgd",
+    "empty": "Dit lid heeft geen gesprekken.",
+    "flaggedKinds": "Gemarkeerd: {kinds}",
+    "fromCounterparty": "Tegenpartij",
+    "fromMember": "Dit lid",
+    "kind": {
+      "email": "e-mailadres",
+      "external_link": "link buiten het platform",
+      "messaging_app": "messaging-account",
+      "phone": "telefoonnummer"
+    },
+    "loadFailed": "De gesprekken konden niet worden geladen. Er is niets ingezien.",
+    "loadOlder": "Meer laden",
+    "loadingThread": "Het gesprek wordt geopend",
+    "loadingThreads": "De vastlegging wordt gelezen",
+    "messageCount": "{count} berichten",
+    "messageCount_one": "{count} bericht",
+    "originalLabel": "Zoals geschreven",
+    "originalNote": "De gemarkeerde tekst is achtergehouden voor de ontvanger, die deze nooit heeft gezien.",
+    "originalPlainNote": "De maskering heeft dit bericht herschreven. De ontvanger las de bezorgde versie hierboven; dit is wat er is getypt.",
+    "partialTranscript": "Dit transcript is onvolledig: {loaded} van {total} berichten worden getoond.",
+    "readOnly": "Alleen-lezen",
+    "readOnlyNote": "Op dit scherm kan geen bericht worden verzonden, bewerkt of verwijderd.",
+    "retry": "Opnieuw proberen",
+    "scam": {
+      "advance_fee": "voorschotbetaling",
+      "off_platform_payment": "betaling buiten het platform",
+      "payment_request": "betaalverzoek",
+      "urgency": "tijdsdruk"
+    },
+    "selectPrompt": "Open een gesprek om het te lezen.",
+    "status": {
+      "active": "Open",
+      "archived": "Gearchiveerd",
+      "blocked": "Geblokkeerd",
+      "closed": "Gesloten"
+    },
+    "subtitle": "De gesprekken die {name} op het platform heeft gevoerd, gelezen als transcript. Dit is de correspondentie van iemand anders, geen mailbox van u.",
+    "threadEmpty": "Dit gesprek bevat geen berichten.",
+    "threadFailed": "Dit gesprek kon niet worden geladen. Er is niets ingezien.",
+    "threadsLabel": "Gesprekken",
+    "title": "Correspondentie",
+    "transcriptLabel": "Transcript",
+    "unnamed": "Naamloze tegenpartij",
+    "withheldCount": "{count} achtergehouden",
+    "withheldCount_one": "{count} achtergehouden",
+    "withheldInline": "achtergehouden",
+    "withheldKinds": "Achtergehouden: {kinds}"
   }
 }

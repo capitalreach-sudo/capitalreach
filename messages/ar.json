@@ -4534,5 +4534,72 @@
     "offersCta": "الاطّلاع على العرض",
     "openDealCta": "افتح صفقة",
     "proposalPending": "طلب الصفقة الذي أرسلته لدى هذا المستثمر. بمجرد أن يقبله وتوقّعا المحضر معًا، يمكنكما التحدث هنا."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "يجب أن تكون قيمة subjectId من نوع uuid",
+      "badSubjectType": "يجب أن تكون قيمة subjectType إما startup أو investor",
+      "badThreadId": "يجب أن تكون قيمة threadId من نوع uuid",
+      "messagesFailed": "تعذّر تحميل هذه الرسائل",
+      "noMember": "لا يوجد عضو بهذه البيانات",
+      "noSubject": "اطلب محادثات عضو (subjectType و subjectId) أو محادثة واحدة (threadId).",
+      "noThread": "لا توجد محادثة بهذا المعرّف",
+      "notRecorded": "تعذّر قيد هذا الاطلاع في السجل، لذلك لم يُنفَّذ.",
+      "threadFailed": "تعذّر تحميل هذه المحادثة",
+      "threadsFailed": "تعذّر تحميل هذه المحادثات"
+    }
+  },
+  "memberMessages": {
+    "attachment": "مرفق: {name}",
+    "auditNotice": "كل محادثة تفتحها هنا تُقيَّد في سجل التدقيق، باسمك واسم هذا العضو ومعرّف السلسلة، قبل أن يصلك نصّها.",
+    "back": "كل المحادثات",
+    "deliveredLabel": "كما سُلّمت",
+    "empty": "لا توجد محادثات لهذا العضو.",
+    "flaggedKinds": "مؤشرات: {kinds}",
+    "fromCounterparty": "الطرف المقابل",
+    "fromMember": "هذا العضو",
+    "kind": {
+      "email": "عنوان بريد إلكتروني",
+      "external_link": "رابط خارج المنصة",
+      "messaging_app": "معرّف مراسلة",
+      "phone": "رقم هاتف"
+    },
+    "loadFailed": "تعذّر تحميل المحادثات. ولم يُطّلع على أي شيء.",
+    "loadOlder": "تحميل المزيد",
+    "loadingThread": "جارٍ فتح المحادثة",
+    "loadingThreads": "جارٍ قراءة السجل",
+    "messageCount": "{count} رسائل",
+    "messageCount_one": "{count} رسالة",
+    "originalLabel": "كما كُتبت",
+    "originalNote": "النص المعلَّم حُجب عن المستلم، فلم يره قط.",
+    "originalPlainNote": "أعاد نظام الحجب صياغة هذه الرسالة. قرأ المستلم النسخة المُسلَّمة أعلاه، وهذا هو النص كما كُتب.",
+    "partialTranscript": "النص غير كامل: معروض {loaded} من {total} رسالة.",
+    "readOnly": "للقراءة فقط",
+    "readOnlyNote": "لا شيء في هذه الواجهة يمكنه إرسال رسالة أو تعديلها أو حذفها.",
+    "retry": "أعد المحاولة",
+    "scam": {
+      "advance_fee": "رسوم مقدّمة",
+      "off_platform_payment": "دفع خارج المنصة",
+      "payment_request": "طلب دفع",
+      "urgency": "استعجال"
+    },
+    "selectPrompt": "افتح محادثة لقراءتها.",
+    "status": {
+      "active": "مفتوحة",
+      "archived": "مؤرشفة",
+      "blocked": "محجوبة",
+      "closed": "مغلقة"
+    },
+    "subtitle": "محادثات {name} على هذه المنصة، معروضة كنصّ متصل. هذه مراسلات شخص آخر، وليست صندوق بريد يخصّك.",
+    "threadEmpty": "لا تتضمن هذه المحادثة أي رسائل.",
+    "threadFailed": "تعذّر تحميل هذه المحادثة. ولم يُطّلع على أي شيء.",
+    "threadsLabel": "المحادثات",
+    "title": "المراسلات",
+    "transcriptLabel": "نص المحادثة",
+    "unnamed": "طرف مقابل غير مُسمّى",
+    "withheldCount": "{count} مواضع محجوبة",
+    "withheldCount_one": "{count} موضع محجوب",
+    "withheldInline": "محجوب",
+    "withheldKinds": "المحجوب: {kinds}"
   }
 }

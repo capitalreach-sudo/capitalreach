@@ -4534,5 +4534,72 @@
     "offersCta": "ऑफ़र देखें",
     "openDealCta": "डील खोलें",
     "proposalPending": "आपका डील प्रस्ताव इस निवेशक के पास है। उनके स्वीकार करते ही और आप दोनों के अभिलेख पर हस्ताक्षर होते ही आप यहाँ बात कर सकेंगे।"
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId एक uuid होना चाहिए",
+      "badSubjectType": "subjectType या तो startup होना चाहिए या investor",
+      "badThreadId": "threadId एक uuid होना चाहिए",
+      "messagesFailed": "ये संदेश लोड नहीं हो सके",
+      "noMember": "ऐसा कोई सदस्य नहीं",
+      "noSubject": "किसी सदस्य के थ्रेड माँगें (subjectType और subjectId), या कोई एक थ्रेड (threadId)।",
+      "noThread": "ऐसी कोई बातचीत नहीं",
+      "notRecorded": "इस पठन को अभिलेख में दर्ज नहीं किया जा सका, इसलिए इसे किया नहीं गया।",
+      "threadFailed": "यह बातचीत लोड नहीं हो सकी",
+      "threadsFailed": "ये बातचीतें लोड नहीं हो सकीं"
+    }
+  },
+  "memberMessages": {
+    "attachment": "संलग्नक: {name}",
+    "auditNotice": "यहाँ आप जो भी बातचीत खोलते हैं, उसका पाठ आप तक पहुँचने से पहले ऑडिट लॉग में दर्ज हो जाता है -- आप, यह सदस्य और वह थ्रेड।",
+    "back": "सभी बातचीतें",
+    "deliveredLabel": "जैसा पहुँचाया गया",
+    "empty": "इस सदस्य की कोई बातचीत नहीं है।",
+    "flaggedKinds": "चिह्नित: {kinds}",
+    "fromCounterparty": "प्रतिपक्ष",
+    "fromMember": "यह सदस्य",
+    "kind": {
+      "email": "ईमेल पता",
+      "external_link": "प्लेटफ़ॉर्म से बाहर का लिंक",
+      "messaging_app": "मैसेजिंग हैंडल",
+      "phone": "फ़ोन नंबर"
+    },
+    "loadFailed": "बातचीतें लोड नहीं हो सकीं। कुछ भी पढ़ा नहीं गया।",
+    "loadOlder": "और लोड करें",
+    "loadingThread": "थ्रेड खोला जा रहा है",
+    "loadingThreads": "अभिलेख पढ़ा जा रहा है",
+    "messageCount": "{count} संदेश",
+    "messageCount_one": "{count} संदेश",
+    "originalLabel": "जैसा लिखा गया",
+    "originalNote": "चिह्नित पाठ प्राप्तकर्ता से रोक लिया गया था, उसने उसे कभी नहीं देखा।",
+    "originalPlainNote": "मास्क ने इस संदेश को दोबारा लिखा था। प्राप्तकर्ता ने ऊपर वाला, पहुँचाया गया रूप पढ़ा; यह वह पाठ है जो असल में टाइप किया गया था।",
+    "partialTranscript": "कुल {total} संदेशों में से {loaded} दिखाए जा रहे हैं। यह प्रतिलेख अधूरा है।",
+    "readOnly": "केवल पढ़ने के लिए",
+    "readOnlyNote": "इस पटल से कोई संदेश भेजा, संपादित या हटाया नहीं जा सकता।",
+    "retry": "फिर से प्रयास करें",
+    "scam": {
+      "advance_fee": "अग्रिम शुल्क",
+      "off_platform_payment": "प्लेटफ़ॉर्म से बाहर भुगतान",
+      "payment_request": "भुगतान का अनुरोध",
+      "urgency": "शीघ्रता का दबाव"
+    },
+    "selectPrompt": "पढ़ने के लिए कोई बातचीत खोलें।",
+    "status": {
+      "active": "खुली",
+      "archived": "संग्रहीत",
+      "blocked": "अवरुद्ध",
+      "closed": "बंद"
+    },
+    "subtitle": "{name} ने इस प्लेटफ़ॉर्म पर जो बातचीतें की हैं, प्रतिलेख के रूप में पढ़ी जा रही हैं। यह किसी और का पत्राचार है, आपका अपना मेलबॉक्स नहीं।",
+    "threadEmpty": "इस बातचीत में कोई संदेश नहीं है।",
+    "threadFailed": "यह बातचीत लोड नहीं हो सकी। कुछ भी पढ़ा नहीं गया।",
+    "threadsLabel": "बातचीतें",
+    "title": "पत्राचार",
+    "transcriptLabel": "प्रतिलेख",
+    "unnamed": "अनाम प्रतिपक्ष",
+    "withheldCount": "{count} रोके गए",
+    "withheldCount_one": "{count} रोका गया",
+    "withheldInline": "रोका गया",
+    "withheldKinds": "रोके गए: {kinds}"
   }
 }

@@ -4534,5 +4534,72 @@
     "offersCta": "Vedi l'offerta",
     "openDealCta": "Apri un deal",
     "proposalPending": "La tua proposta di deal è al vaglio di questo investitore. Quando l'avrà accettata e avrete firmato entrambi l'atto, potrete parlare qui."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId deve essere un uuid",
+      "badSubjectType": "subjectType deve essere startup o investor",
+      "badThreadId": "threadId deve essere un uuid",
+      "messagesFailed": "Impossibile caricare questi messaggi",
+      "noMember": "Membro inesistente",
+      "noSubject": "Richiedi le conversazioni di un membro (subjectType e subjectId) oppure una singola conversazione (threadId).",
+      "noThread": "Conversazione inesistente",
+      "notRecorded": "Non è stato possibile registrare questa lettura, quindi non è stata eseguita.",
+      "threadFailed": "Impossibile caricare questa conversazione",
+      "threadsFailed": "Impossibile caricare queste conversazioni"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Allegato: {name}",
+    "auditNotice": "Ogni conversazione che apri qui viene scritta nel registro di controllo -- te, questo membro e la conversazione -- prima che il suo testo ti raggiunga.",
+    "back": "Tutte le conversazioni",
+    "deliveredLabel": "Come recapitato",
+    "empty": "Questo membro non ha conversazioni.",
+    "flaggedKinds": "Segnalazioni: {kinds}",
+    "fromCounterparty": "Controparte",
+    "fromMember": "Questo membro",
+    "kind": {
+      "email": "indirizzo email",
+      "external_link": "link fuori piattaforma",
+      "messaging_app": "contatto di messaggistica",
+      "phone": "numero di telefono"
+    },
+    "loadFailed": "Non è stato possibile caricare le conversazioni. Non è stato letto nulla.",
+    "loadOlder": "Carica altri messaggi",
+    "loadingThread": "Apertura della conversazione",
+    "loadingThreads": "Lettura del registro",
+    "messageCount": "{count} messaggi",
+    "messageCount_one": "{count} messaggio",
+    "originalLabel": "Come scritto",
+    "originalNote": "Il testo contrassegnato è stato omesso dal messaggio recapitato: il destinatario non l'ha mai visto.",
+    "originalPlainNote": "La maschera ha riscritto questo messaggio. Il destinatario ha letto la versione recapitata qui sopra; questo è ciò che era stato digitato.",
+    "partialTranscript": "Visualizzati {loaded} di {total} messaggi: la trascrizione è incompleta.",
+    "readOnly": "Sola lettura",
+    "readOnlyNote": "Da questa schermata non è possibile inviare, modificare o eliminare un messaggio.",
+    "retry": "Riprova",
+    "scam": {
+      "advance_fee": "commissione anticipata",
+      "off_platform_payment": "pagamento fuori piattaforma",
+      "payment_request": "richiesta di pagamento",
+      "urgency": "urgenza"
+    },
+    "selectPrompt": "Apri una conversazione per leggerla.",
+    "status": {
+      "active": "Aperta",
+      "archived": "Archiviata",
+      "blocked": "Bloccata",
+      "closed": "Chiusa"
+    },
+    "subtitle": "Le conversazioni che {name} ha avuto sulla piattaforma, lette come una trascrizione. Questa è la corrispondenza di un'altra persona, non una tua casella di posta.",
+    "threadEmpty": "Questa conversazione non contiene messaggi.",
+    "threadFailed": "Non è stato possibile caricare questa conversazione. Non è stato letto nulla.",
+    "threadsLabel": "Conversazioni",
+    "title": "Corrispondenza",
+    "transcriptLabel": "Trascrizione",
+    "unnamed": "Controparte non identificata",
+    "withheldCount": "{count} omessi",
+    "withheldCount_one": "{count} omesso",
+    "withheldInline": "omesso",
+    "withheldKinds": "Omessi: {kinds}"
   }
 }

@@ -4,6 +4,7 @@ import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboa
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { AdminNotes } from "@/components/admin/admin-notes";
+import { MemberMessages } from "@/components/admin/member-messages";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -76,6 +77,13 @@ export default async function AdminViewInvestorPage({
         viewingAs={owner?.full_name || owner?.email || investor.slug}
       />
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
+        {/* Outside the dashboard, and so outside ReadOnlyProvider: this panel
+            has no write path to disable in the first place. */}
+        <MemberMessages
+          memberType="investor"
+          memberId={investor.id}
+          memberName={owner?.full_name || owner?.email || investor.slug}
+        />
         <AdminNotes targetType="investor" targetId={investor.id} />
       </div>
     </>

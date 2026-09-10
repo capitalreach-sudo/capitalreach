@@ -4534,5 +4534,72 @@
     "openDealCta": "Open a deal",
     "offersCta": "See the offer",
     "dealsCta": "Go to the deal"
+  },
+  "adminMessages": {
+    "error": {
+      "notRecorded": "This read could not be recorded, so it was not performed.",
+      "noMember": "No such member",
+      "noThread": "No such conversation",
+      "threadsFailed": "Could not load these conversations",
+      "threadFailed": "Could not load this conversation",
+      "messagesFailed": "Could not load these messages",
+      "badThreadId": "threadId must be a uuid",
+      "badSubjectType": "subjectType must be startup or investor",
+      "badSubjectId": "subjectId must be a uuid",
+      "noSubject": "Ask for a member's threads (subjectType and subjectId) or one thread (threadId)."
+    }
+  },
+  "memberMessages": {
+    "partialTranscript": "Showing {loaded} of {total} messages.",
+    "loadOlder": "Load more",
+    "title": "Correspondence",
+    "subtitle": "The conversations {name} has had on the platform, read as a transcript. This is somebody else's correspondence, not a mailbox of yours.",
+    "auditNotice": "Every conversation you open here is written to the audit log -- you, this member and the thread -- before its text reaches you.",
+    "readOnly": "Read only",
+    "readOnlyNote": "Nothing on this surface can send, edit or delete a message.",
+    "threadsLabel": "Conversations",
+    "transcriptLabel": "Transcript",
+    "loadingThreads": "Reading the record",
+    "loadingThread": "Opening the thread",
+    "empty": "This member has no conversations.",
+    "loadFailed": "The conversations could not be loaded. Nothing was read.",
+    "threadFailed": "This conversation could not be loaded. Nothing was read.",
+    "threadEmpty": "This conversation carries no messages.",
+    "retry": "Try again",
+    "selectPrompt": "Open a conversation to read it.",
+    "back": "All conversations",
+    "unnamed": "Unnamed counterparty",
+    "messageCount": "{count} messages",
+    "messageCount_one": "{count} message",
+    "withheldCount": "{count} withheld",
+    "withheldCount_one": "{count} withheld",
+    "fromMember": "This member",
+    "fromCounterparty": "Counterparty",
+    "deliveredLabel": "As delivered",
+    "originalLabel": "As written",
+    "originalNote": "The marked text was withheld from the recipient, who never saw it.",
+    "originalPlainNote": "The mask rewrote this message. The recipient read the delivered version above; this is what was typed.",
+    "withheldInline": "withheld",
+    "withheldKinds": "Withheld: {kinds}",
+    "flaggedKinds": "Flagged: {kinds}",
+    "attachment": "Attachment: {name}",
+    "kind": {
+      "email": "email address",
+      "phone": "phone number",
+      "messaging_app": "messaging handle",
+      "external_link": "off-platform link"
+    },
+    "scam": {
+      "advance_fee": "advance fee",
+      "payment_request": "payment request",
+      "off_platform_payment": "off-platform payment",
+      "urgency": "urgency"
+    },
+    "status": {
+      "active": "Open",
+      "archived": "Archived",
+      "blocked": "Blocked",
+      "closed": "Closed"
+    }
   }
 }

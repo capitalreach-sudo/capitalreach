@@ -4,6 +4,7 @@ import type { Profile, Startup } from "@/types";
 import { StartupDashboardClient } from "@/components/dashboard/startup-dashboard-client";
 import { Navbar } from "@/components/shared/navbar";
 import { AdminNotes } from "@/components/admin/admin-notes";
+import { MemberMessages } from "@/components/admin/member-messages";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { isUuid } from "@/lib/utils";
 
@@ -122,6 +123,13 @@ export default async function AdminViewStartupPage({
       {/* E53: the operator's notebook on this listing, below the dashboard
           they are impersonating. */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
+        {/* Outside the dashboard, and so outside ReadOnlyProvider: this panel
+            has no write path to disable in the first place. */}
+        <MemberMessages
+          memberType="startup"
+          memberId={startup.id}
+          memberName={owner?.full_name || owner?.email || startup.name}
+        />
         <AdminNotes targetType="startup" targetId={startup.id} />
       </div>
     </>

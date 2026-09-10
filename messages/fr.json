@@ -4534,5 +4534,72 @@
     "offersCta": "Voir l'offre",
     "openDealCta": "Ouvrir une opération",
     "proposalPending": "Votre demande d'opération est entre les mains de cet investisseur. Dès qu'il l'accepte et que vous avez tous les deux signé le relevé, vous pourrez échanger ici."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId doit être un uuid",
+      "badSubjectType": "subjectType doit être startup ou investor",
+      "badThreadId": "threadId doit être un uuid",
+      "messagesFailed": "Impossible de charger ces messages",
+      "noMember": "Membre introuvable",
+      "noSubject": "Demandez les fils d'un membre (subjectType et subjectId) ou un fil précis (threadId).",
+      "noThread": "Conversation introuvable",
+      "notRecorded": "Cette consultation n'a pas pu être consignée, elle n'a donc pas eu lieu.",
+      "threadFailed": "Impossible de charger cette conversation",
+      "threadsFailed": "Impossible de charger ces conversations"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Pièce jointe : {name}",
+    "auditNotice": "Chaque conversation que vous ouvrez ici est inscrite au journal d'audit -- vous, ce membre et le fil -- avant que son texte ne vous parvienne.",
+    "back": "Toutes les conversations",
+    "deliveredLabel": "Tel que remis",
+    "empty": "Ce membre n'a aucune conversation.",
+    "flaggedKinds": "Signalé : {kinds}",
+    "fromCounterparty": "Contrepartie",
+    "fromMember": "Ce membre",
+    "kind": {
+      "email": "adresse e-mail",
+      "external_link": "lien hors plateforme",
+      "messaging_app": "identifiant de messagerie",
+      "phone": "numéro de téléphone"
+    },
+    "loadFailed": "Les conversations n'ont pas pu être chargées. Rien n'a été consulté.",
+    "loadOlder": "Charger la suite",
+    "loadingThread": "Ouverture du fil",
+    "loadingThreads": "Lecture du relevé",
+    "messageCount": "{count} messages",
+    "messageCount_one": "{count} message",
+    "originalLabel": "Tel qu'écrit",
+    "originalNote": "Le texte marqué a été retenu : le destinataire ne l'a jamais vu.",
+    "originalPlainNote": "Le masquage a réécrit ce message. Le destinataire a lu la version remise ci-dessus ; voici ce qui avait été saisi.",
+    "partialTranscript": "Transcription partielle : {loaded} messages affichés sur {total}.",
+    "readOnly": "Lecture seule",
+    "readOnlyNote": "Rien sur cet écran ne permet d'envoyer, de modifier ou de supprimer un message.",
+    "retry": "Réessayer",
+    "scam": {
+      "advance_fee": "avance de frais",
+      "off_platform_payment": "paiement hors plateforme",
+      "payment_request": "demande de paiement",
+      "urgency": "urgence"
+    },
+    "selectPrompt": "Ouvrez une conversation pour la lire.",
+    "status": {
+      "active": "Ouverte",
+      "archived": "Archivée",
+      "blocked": "Bloquée",
+      "closed": "Fermée"
+    },
+    "subtitle": "Les conversations que {name} a eues sur la plateforme, présentées comme une transcription. Il s'agit de la correspondance d'une autre personne, pas de votre boîte de réception.",
+    "threadEmpty": "Cette conversation ne contient aucun message.",
+    "threadFailed": "Cette conversation n'a pas pu être chargée. Rien n'a été consulté.",
+    "threadsLabel": "Conversations",
+    "title": "Correspondance",
+    "transcriptLabel": "Transcription",
+    "unnamed": "Contrepartie sans nom",
+    "withheldCount": "{count} passages retenus",
+    "withheldCount_one": "{count} passage retenu",
+    "withheldInline": "retenu",
+    "withheldKinds": "Retenu : {kinds}"
   }
 }

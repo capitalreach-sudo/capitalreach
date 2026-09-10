@@ -4534,5 +4534,72 @@
     "offersCta": "Zobacz ofertę",
     "openDealCta": "Otwórz transakcję",
     "proposalPending": "Twoja propozycja transakcji jest u tego inwestora. Gdy ją przyjmie i obie strony podpiszą zapis transakcji, będziecie mogli tu rozmawiać."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId musi być identyfikatorem uuid",
+      "badSubjectType": "subjectType musi mieć wartość startup lub investor",
+      "badThreadId": "threadId musi być identyfikatorem uuid",
+      "messagesFailed": "Nie udało się wczytać tych wiadomości",
+      "noMember": "Nie ma takiego członka",
+      "noSubject": "Wskaż wątki członka (subjectType i subjectId) albo jeden wątek (threadId).",
+      "noThread": "Nie ma takiej rozmowy",
+      "notRecorded": "Nie udało się odnotować tego odczytu, więc nie został on wykonany.",
+      "threadFailed": "Nie udało się wczytać tej rozmowy",
+      "threadsFailed": "Nie udało się wczytać tych rozmów"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Załącznik: {name}",
+    "auditNotice": "Każda rozmowa, którą tu otworzysz, zostaje zapisana w dzienniku audytu, wraz z tobą, tym członkiem i wątkiem, jeszcze zanim jej treść do ciebie dotrze.",
+    "back": "Wszystkie rozmowy",
+    "deliveredLabel": "Wersja dostarczona",
+    "empty": "Ten członek nie ma żadnych rozmów.",
+    "flaggedKinds": "Oznaczone: {kinds}",
+    "fromCounterparty": "Kontrahent",
+    "fromMember": "Ten członek",
+    "kind": {
+      "email": "adres e-mail",
+      "external_link": "link poza platformę",
+      "messaging_app": "identyfikator w komunikatorze",
+      "phone": "numer telefonu"
+    },
+    "loadFailed": "Nie udało się wczytać rozmów. Nic nie zostało odczytane.",
+    "loadOlder": "Wczytaj więcej",
+    "loadingThread": "Otwieranie wątku",
+    "loadingThreads": "Odczytywanie zapisu",
+    "messageCount": "Wiadomości: {count}",
+    "messageCount_one": "Wiadomość: {count}",
+    "originalLabel": "Wersja pierwotna",
+    "originalNote": "Zaznaczony tekst został wstrzymany i nie dotarł do odbiorcy, który nigdy go nie zobaczył.",
+    "originalPlainNote": "Maska przepisała tę wiadomość. Odbiorca przeczytał wersję dostarczoną powyżej. To jest tekst, który został wpisany.",
+    "partialTranscript": "To niepełny zapis rozmowy. Widoczne: {loaded} z {total} wiadomości.",
+    "readOnly": "Tylko do odczytu",
+    "readOnlyNote": "Z tego widoku nie można wysłać, edytować ani usunąć żadnej wiadomości.",
+    "retry": "Spróbuj ponownie",
+    "scam": {
+      "advance_fee": "opłata z góry",
+      "off_platform_payment": "płatność poza platformą",
+      "payment_request": "prośba o płatność",
+      "urgency": "presja czasu"
+    },
+    "selectPrompt": "Otwórz rozmowę, aby ją przeczytać.",
+    "status": {
+      "active": "Otwarta",
+      "archived": "Zarchiwizowana",
+      "blocked": "Zablokowana",
+      "closed": "Zamknięta"
+    },
+    "subtitle": "Rozmowy prowadzone przez {name} na platformie, przedstawione jako zapis. To cudza korespondencja, nie twoja skrzynka.",
+    "threadEmpty": "Ta rozmowa nie zawiera żadnych wiadomości.",
+    "threadFailed": "Nie udało się wczytać tej rozmowy. Nic nie zostało odczytane.",
+    "threadsLabel": "Rozmowy",
+    "title": "Korespondencja",
+    "transcriptLabel": "Zapis rozmowy",
+    "unnamed": "Kontrahent bez nazwy",
+    "withheldCount": "Wstrzymane fragmenty: {count}",
+    "withheldCount_one": "Wstrzymany fragment: {count}",
+    "withheldInline": "wstrzymane",
+    "withheldKinds": "Wstrzymane: {kinds}"
   }
 }

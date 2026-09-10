@@ -4534,5 +4534,72 @@
     "offersCta": "Se budet",
     "openDealCta": "Öppna en affär",
     "proposalPending": "Din affärsförfrågan ligger hos den här investeraren. När de har accepterat den och ni båda har undertecknat dokumentet kan ni tala här."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId måste vara ett uuid",
+      "badSubjectType": "subjectType måste vara startup eller investor",
+      "badThreadId": "threadId måste vara ett uuid",
+      "messagesFailed": "Det gick inte att läsa in de här meddelandena",
+      "noMember": "Medlemmen finns inte",
+      "noSubject": "Begär en medlems trådar (subjectType och subjectId) eller en enskild tråd (threadId).",
+      "noThread": "Konversationen finns inte",
+      "notRecorded": "Läsningen kunde inte registreras och genomfördes därför inte.",
+      "threadFailed": "Det gick inte att läsa in den här konversationen",
+      "threadsFailed": "Det gick inte att läsa in de här konversationerna"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Bilaga: {name}",
+    "auditNotice": "Varje konversation du öppnar här skrivs in i granskningsloggen med dig, den här medlemmen och tråden, innan texten når dig.",
+    "back": "Alla konversationer",
+    "deliveredLabel": "Som levererat",
+    "empty": "Den här medlemmen har inga konversationer.",
+    "flaggedKinds": "Flaggat: {kinds}",
+    "fromCounterparty": "Motpart",
+    "fromMember": "Medlemmen",
+    "kind": {
+      "email": "e-postadress",
+      "external_link": "länk utanför plattformen",
+      "messaging_app": "användarnamn i meddelandeapp",
+      "phone": "telefonnummer"
+    },
+    "loadFailed": "Konversationerna kunde inte läsas in. Ingenting har lästs.",
+    "loadOlder": "Visa fler",
+    "loadingThread": "Öppnar tråden",
+    "loadingThreads": "Läser registret",
+    "messageCount": "{count} meddelanden",
+    "messageCount_one": "{count} meddelande",
+    "originalLabel": "Som skrivet",
+    "originalNote": "Den markerade texten undanhölls mottagaren, som aldrig såg den.",
+    "originalPlainNote": "Maskeringen skrev om det här meddelandet. Mottagaren läste den levererade versionen ovan, det här är vad som skrevs.",
+    "partialTranscript": "Visar {loaded} av {total} meddelanden. Avskriften är ofullständig.",
+    "readOnly": "Skrivskyddat",
+    "readOnlyNote": "Ingenting i den här vyn kan skicka, ändra eller radera ett meddelande.",
+    "retry": "Försök igen",
+    "scam": {
+      "advance_fee": "förskottsavgift",
+      "off_platform_payment": "betalning utanför plattformen",
+      "payment_request": "betalningsbegäran",
+      "urgency": "tidspress"
+    },
+    "selectPrompt": "Öppna en konversation för att läsa den.",
+    "status": {
+      "active": "Öppen",
+      "archived": "Arkiverad",
+      "blocked": "Blockerad",
+      "closed": "Stängd"
+    },
+    "subtitle": "Konversationerna som {name} har haft på plattformen, återgivna som en avskrift. Det här är någon annans korrespondens, inte en inkorg som tillhör dig.",
+    "threadEmpty": "Den här konversationen innehåller inga meddelanden.",
+    "threadFailed": "Den här konversationen kunde inte läsas in. Ingenting har lästs.",
+    "threadsLabel": "Konversationer",
+    "title": "Korrespondens",
+    "transcriptLabel": "Avskrift",
+    "unnamed": "Namnlös motpart",
+    "withheldCount": "{count} undanhållna uppgifter",
+    "withheldCount_one": "{count} undanhållen uppgift",
+    "withheldInline": "undanhållet",
+    "withheldKinds": "Undanhållet: {kinds}"
   }
 }

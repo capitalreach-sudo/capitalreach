@@ -4534,5 +4534,72 @@
     "offersCta": "Ver la oferta",
     "openDealCta": "Abrir una operación",
     "proposalPending": "Su solicitud de operación está en manos de este inversor. Cuando la acepte y ambas partes firmen el acta, podrán hablar aquí."
+  },
+  "adminMessages": {
+    "error": {
+      "badSubjectId": "subjectId debe ser un uuid",
+      "badSubjectType": "subjectType debe ser startup o investor",
+      "badThreadId": "threadId debe ser un uuid",
+      "messagesFailed": "No se pudieron cargar estos mensajes",
+      "noMember": "No existe ese miembro",
+      "noSubject": "Solicite los hilos de un miembro (subjectType y subjectId) o un único hilo (threadId).",
+      "noThread": "No existe esa conversación",
+      "notRecorded": "Esta consulta no se pudo registrar, así que no se ha realizado.",
+      "threadFailed": "No se pudo cargar esta conversación",
+      "threadsFailed": "No se pudieron cargar estas conversaciones"
+    }
+  },
+  "memberMessages": {
+    "attachment": "Adjunto: {name}",
+    "auditNotice": "Cada conversación que abre aquí queda inscrita en el registro de auditoría, con su nombre, el de este miembro y el hilo, antes de que el texto llegue a usted.",
+    "back": "Todas las conversaciones",
+    "deliveredLabel": "Tal como se entregó",
+    "empty": "Este miembro no tiene conversaciones.",
+    "flaggedKinds": "Señalado: {kinds}",
+    "fromCounterparty": "Contraparte",
+    "fromMember": "Este miembro",
+    "kind": {
+      "email": "dirección de correo",
+      "external_link": "enlace fuera de la plataforma",
+      "messaging_app": "identificador de mensajería",
+      "phone": "número de teléfono"
+    },
+    "loadFailed": "No se han podido cargar las conversaciones. No se ha leído nada.",
+    "loadOlder": "Cargar más",
+    "loadingThread": "Abriendo el hilo",
+    "loadingThreads": "Consultando el registro",
+    "messageCount": "{count} mensajes",
+    "messageCount_one": "{count} mensaje",
+    "originalLabel": "Tal como se escribió",
+    "originalNote": "El texto marcado se retuvo y no se entregó al destinatario, que nunca llegó a verlo.",
+    "originalPlainNote": "La máscara reescribió este mensaje. El destinatario leyó la versión entregada que aparece arriba; esto es lo que se escribió.",
+    "partialTranscript": "Se muestran {loaded} de {total} mensajes: esta transcripción está incompleta.",
+    "readOnly": "Solo lectura",
+    "readOnlyNote": "Desde esta pantalla no se puede enviar, editar ni borrar ningún mensaje.",
+    "retry": "Reintentar",
+    "scam": {
+      "advance_fee": "comisión por adelantado",
+      "off_platform_payment": "pago fuera de la plataforma",
+      "payment_request": "solicitud de pago",
+      "urgency": "urgencia"
+    },
+    "selectPrompt": "Abra una conversación para leerla.",
+    "status": {
+      "active": "Abierta",
+      "archived": "Archivada",
+      "blocked": "Bloqueada",
+      "closed": "Cerrada"
+    },
+    "subtitle": "Las conversaciones que {name} ha mantenido en la plataforma, leídas como una transcripción. Esto es correspondencia ajena, no un buzón suyo.",
+    "threadEmpty": "Esta conversación no contiene ningún mensaje.",
+    "threadFailed": "No se ha podido cargar esta conversación. No se ha leído nada.",
+    "threadsLabel": "Conversaciones",
+    "title": "Correspondencia",
+    "transcriptLabel": "Transcripción",
+    "unnamed": "Contraparte sin identificar",
+    "withheldCount": "{count} retenidos",
+    "withheldCount_one": "{count} retenido",
+    "withheldInline": "retenido",
+    "withheldKinds": "Retenido: {kinds}"
   }
 }
