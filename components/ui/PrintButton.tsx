@@ -25,7 +25,7 @@ export function PrintButton({ label }: Props) {
         fontSize:     "13px",
         color:        "var(--cr-ink-3)",
         cursor:       "pointer",
-        transition:   "all 150ms ease",
+        transition:   "color 150ms ease, border-color 150ms ease",
         lineHeight:   1,
       }}
       onMouseEnter={e => {

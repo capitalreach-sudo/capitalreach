@@ -397,7 +397,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
         color:         active ? "var(--cr-copper)" : "var(--cr-ink-3)",
         cursor:        "pointer",
         whiteSpace:    "nowrap",
-        transition:    "all 100ms ease",
+        transition:    "background-color 100ms ease, color 100ms ease",
       }}
     >
       {children}

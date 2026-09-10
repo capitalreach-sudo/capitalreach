@@ -292,7 +292,7 @@ function SelectChip({ value, active, onClick }: { value: string; active: boolean
         border: active ? "1px solid var(--cr-copper)" : "1px solid var(--cr-rule-dark)",
         background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
         color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
-        cursor: "pointer", transition: "all 120ms ease",
+        cursor: "pointer", transition: "background-color 120ms ease, border-color 120ms ease, color 120ms ease",
       }}>
       {value}
     </button>
@@ -308,7 +308,7 @@ function StageChip({ value, active, onClick }: { value: string; active: boolean;
         border: active ? "2px solid var(--cr-copper)" : "2px solid var(--cr-rule-dark)",
         background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
         color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
-        cursor: "pointer", transition: "all 120ms ease", textAlign: "left", width: "100%",
+        cursor: "pointer", transition: "background-color 120ms ease, border-color 120ms ease, color 120ms ease", textAlign: "left", width: "100%",
       }}>
       {value}
     </button>

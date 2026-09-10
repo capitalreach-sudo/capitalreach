@@ -67,6 +67,14 @@
        veil used to carry the light palette as a literal, with no dark
        counterpart, so in dark mode a cream card sat on a black page. A colour
        whose only definition is a literal cannot follow the theme. */
+    /* Motion curves. The built-in CSS easings are too weak to read as
+       intentional, so the app names its own once here rather than inlining a
+       different cubic-bezier at each call site. ease-out for anything a user
+       just triggered, ease-in-out for movement on screen. Never ease-in: it
+       delays the first frame, which is the frame being watched hardest. */
+    --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
     --cr-card-veil:        rgba(245,240,232,0.70);
     --cr-card-veil-strong: rgba(245,240,232,0.85);
     --cr-card-veil-br:     rgba(216,208,196,0.80);
@@ -1870,4 +1878,68 @@ body::before {
   [data-tap-exempt] button {
     min-height: 0 !important;
   }
+}
+
+
+/* ── Pressables ───────────────────────────────────────────────────────────
+   Every button in the app answers a press.
+
+   Before this there were two :active rules in the whole codebase against 453
+   buttons, so a tap produced a navigation and nothing in between: no moment
+   where the interface said it had heard you. That gap is the single most
+   noticeable difference between software that feels responsive and software
+   that feels like a web page.
+
+   The mechanism is the `scale` property, not `transform`. They are separate
+   properties in modern CSS and they compose, so the 28 controls here that
+   already carry an inline transform (a hover lift, an icon rotation) keep it
+   and gain a press on top. Writing this as `transform: scale()` would have
+   silently deleted those.
+
+   Scoped to elements that are shaped like buttons. A link inside a paragraph
+   is pressable too, but scaling a run of text mid-sentence looks like a
+   glitch rather than feedback. */
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+.btn-copper,
+.btn-copper-shimmer,
+.btn-ghost {
+  transition: scale 140ms var(--ease-out);
+}
+
+button:active,
+[role="button"]:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+.btn-copper:active,
+.btn-copper-shimmer:active,
+.btn-ghost:active {
+  scale: 0.97;
+}
+
+/* Disabled controls are not listening, so they should not appear to. */
+button:disabled:active,
+[role="button"][aria-disabled="true"]:active,
+input:disabled:active {
+  scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button, [role="button"], input[type="submit"], input[type="button"],
+  .btn-copper, .btn-copper-shimmer, .btn-ghost {
+    transition: none;
+  }
+  button:active, [role="button"]:active, input[type="submit"]:active,
+  input[type="button"]:active, .btn-copper:active,
+  .btn-copper-shimmer:active, .btn-ghost:active {
+    scale: 1;
+  }
+}
+
+/* The range thumb had a focus ring on WebKit only, so keyboard users on
+   Firefox got no indication at all after .cr-range cleared the UA outline. */
+.cr-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--cr-copper) 22%, transparent);
 }

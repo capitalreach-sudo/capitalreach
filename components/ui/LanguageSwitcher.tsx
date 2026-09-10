@@ -76,7 +76,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
           padding: "6px 10px", borderRadius: "4px",
           border: "1px solid transparent",
           background: "transparent", cursor: loading ? "not-allowed" : "pointer",
-          transition: "all 150ms", opacity: loading ? 0.55 : 1,
+          transition: "background-color 150ms ease, border-color 150ms ease, opacity 150ms ease", opacity: loading ? 0.55 : 1,
           color: "var(--cr-ink-3)",
         }}
         onMouseEnter={e => {

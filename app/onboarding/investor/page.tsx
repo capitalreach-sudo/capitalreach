@@ -384,7 +384,7 @@ export default function InvestorOnboardingPage() {
                               display: "flex", alignItems: "center", gap: "8px", padding: "11px 10px", minHeight: "40px",
                               borderRadius: "3px", border: industries.includes(ind) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
                               background: industries.includes(ind) ? "var(--cr-copper-bg)" : "transparent",
-                              cursor: "pointer", transition: "all 120ms ease",
+                              cursor: "pointer", transition: "background-color 120ms ease, border-color 120ms ease",
                             }}>
                             <input type="checkbox" readOnly checked={industries.includes(ind)}
                               style={{ accentColor: "var(--cr-copper)", width: 13, height: 13, flexShrink: 0, cursor: "pointer" }} />
@@ -405,7 +405,7 @@ export default function InvestorOnboardingPage() {
                               background: stages.includes(s.value) ? "var(--cr-copper-bg)" : "transparent",
                               fontFamily: "'DM Sans', sans-serif", fontWeight: stages.includes(s.value) ? 600 : 400,
                               fontSize: "13px", color: stages.includes(s.value) ? "var(--cr-copper)" : "var(--cr-ink-3)",
-                              cursor: "pointer", transition: "all 120ms",
+                              cursor: "pointer", transition: "background-color 120ms ease, border-color 120ms ease, color 120ms ease",
                             }}>
                             {s.label}
                           </button>
