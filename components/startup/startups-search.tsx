@@ -374,7 +374,7 @@ function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void 
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-2)", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "4px 8px 4px 12px" }}>
       {label}
-      <button onClick={onRemove} aria-label={`remove ${label}`}
+      <button onClick={onRemove} aria-label={`remove ${label}`} data-tap-exempt=""
         style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
         <X style={{ width: 12, height: 12 }} />
       </button>

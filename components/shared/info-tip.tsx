@@ -66,6 +66,9 @@ export function InfoTip({ termKey, label }: {
     <span ref={ref} style={{ position: "relative", display: "inline-flex", verticalAlign: "middle" }}>
       <button
         type="button"
+        // Sits inline beside a label, so the mobile 40px floor would push the
+        // label's line box open around it.
+        data-tap-exempt=""
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(o => !o); }}
         aria-label={label ?? t("glossary.whatIsThis")}
         aria-expanded={open}

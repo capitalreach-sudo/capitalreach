@@ -1831,3 +1831,36 @@ body::before {
    register files the clean sheet (Jack: the teal blob and green threads
    fought the professional look). */
 [data-style="business"] .charter-seal { display: none; }
+
+
+/* ── Touch targets ────────────────────────────────────────────────────────
+   Every control on a phone gets at least 40px of height. The audit found the
+   app sitting just under it almost everywhere: filter chips at 36, view
+   toggles at 32, and a set of text-styled actions ("Export CSV", "Refresh",
+   "View all") at 17 to 20.
+
+   Two properties make a blanket rule safe here rather than reckless.
+   min-height only ever RAISES a box, so a control already at 44 is untouched.
+   And min-height does not apply to non-replaced inline elements at all, which
+   means a link inside a paragraph ignores this rule for free and only links
+   that were already laid out as blocks or flex items grow. That is exactly
+   the set worth growing.
+
+   Scoped to a coarse pointer as well as a narrow viewport: a 375px browser
+   window on a desktop is being driven by a mouse, and does not need it. */
+@media (max-width: 767px) and (pointer: coarse) {
+  button,
+  select,
+  a[href],
+  [role="button"] {
+    min-height: 40px;
+  }
+
+  /* Opt-out for the few places where a 40px box would deform its container
+     rather than sit in it: a remove cross inside a chip, and the inline
+     "what is this?" markers next to a label. */
+  [data-tap-exempt],
+  [data-tap-exempt] button {
+    min-height: 0;
+  }
+}
