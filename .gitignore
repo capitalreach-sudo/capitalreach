@@ -43,3 +43,7 @@ yarn-error.log*
 
 # agent working files, never shipped
 scratchpad/
+
+# installed skills: reproducible from skills-lock.json, like node_modules
+.agents/
+.claude/skills/

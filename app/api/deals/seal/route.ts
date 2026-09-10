@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not record the signature" }, { status: 500 });
   }
 
-  const state = await sealState(dealId);
+  let state = await sealState(dealId);
 
   if (state.startup && state.investor) {
     // Both hashes must match, or the two signed different documents. Storing
@@ -175,6 +175,10 @@ export async function POST(req: NextRequest) {
       seal_sha256: agreedHash,
       seal_version: DEAL_SEAL_VERSION,
     }).eq("id", dealId);
+
+    // Re-read so the caller is told the sealed_at it will see on reload,
+    // rather than the null this request started with.
+    state = await sealState(dealId);
 
     await admin.from("deal_activity").insert({
       deal_id: dealId,
