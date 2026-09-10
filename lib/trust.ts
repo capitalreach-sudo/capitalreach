@@ -68,6 +68,84 @@ export function evidenceChecklist(level: TrustLevel, subject: SubjectType): Evid
   return out;
 }
 
+/** A row of evidence as far as the ladder is concerned. */
+export interface EvidenceRecord {
+  kind: string;
+  status: string;
+}
+
+/**
+ * Received, or confirmed. A failed attempt is not evidence of anything.
+ *
+ * The submit gate in /api/verification/case counts a kind as held on exactly
+ * this rule, so a surface that reads it differently either blocks a case the
+ * server would take or offers one it will refuse.
+ */
+export function evidenceSupplied(status: string | null | undefined): boolean {
+  return status === "passed" || status === "pending";
+}
+
+/**
+ * One row per kind, for surfaces that show a line per kind.
+ *
+ * A kind can carry more than one row: the domain proof stores an attempt per
+ * domain tried, so an applicant who proves one domain and then mistypes a
+ * second ends up with a passing row and a failing one. The case stands on the
+ * passing row, so that is the row a checklist has to show, whichever arrived
+ * last.
+ */
+export function evidenceByKind<T extends EvidenceRecord>(rows: readonly T[]): Map<string, T> {
+  const map = new Map<string, T>();
+  for (const row of rows) {
+    const prev = map.get(row.kind);
+    if (!prev || evidenceSupplied(row.status) || !evidenceSupplied(prev.status)) {
+      map.set(row.kind, row);
+    }
+  }
+  return map;
+}
+
+/** A row of evidence being considered for a later case, and its date. */
+export interface CarriedRecord extends EvidenceRecord {
+  /** When the check happened, falling back to when the row was written. */
+  checkedAt: string | null;
+}
+
+/**
+ * What a fresh application inherits from the subject's last approved one.
+ *
+ * Evidence hangs off a case, so a member standing on level 2 opens a level 3
+ * application against an empty checklist and is asked to prove their domain a
+ * second time -- for a check their badge already rests on. So it travels, under
+ * four limits, because the alternative is a badge that renews itself:
+ *
+ * Only rows that PASSED. A pending upload is a document nobody has read, and a
+ * reserved vendor check is a check that has not happened.
+ *
+ * Only the kinds the granted level stands on. A revenue proof that arrived on a
+ * level 4 application which came back granted at 2 was never accepted for level
+ * 4, and must not reach it by inheritance.
+ *
+ * Only while the grant is live, and only while the check itself is. A copy
+ * keeps its original date, so the grant test alone would let one proof ride
+ * from case to case for as long as the member keeps applying: each approval
+ * would renew the badge on a check nobody has repeated. Twelve months from the
+ * check, it is asked for again.
+ */
+export function carriedEvidence<T extends CarriedRecord>(
+  rows: readonly T[],
+  grant: { levelGranted: number | null | undefined; expiresAt: string | null | undefined },
+  subject: SubjectType,
+): T[] {
+  const level = grant.levelGranted ?? 0;
+  if (!Number.isInteger(level) || level < 1 || level > 4) return [];
+  if (isExpired(grant.expiresAt)) return [];
+  const carries = new Set<string>(evidenceChecklist(level as TrustLevel, subject));
+  return rows.filter(
+    (row) => row.status === "passed" && carries.has(row.kind) && checkStillValid(row.checkedAt),
+  );
+}
+
 // ── Risk scoring ────────────────────────────────────────────────────────────
 
 /**
@@ -149,6 +227,18 @@ export function expiryFrom(grantedAt: Date): Date {
 
 export function isExpired(expiresAt: string | null | undefined): boolean {
   return !!expiresAt && new Date(expiresAt).getTime() < Date.now();
+}
+
+/**
+ * A check is worth what its date says. Same twelve months as a grant, counted
+ * from when the check ran rather than from when someone acted on it. An
+ * undated check is not one anybody can stand behind.
+ */
+export function checkStillValid(checkedAt: string | null | undefined): boolean {
+  if (!checkedAt) return false;
+  const at = new Date(checkedAt);
+  if (Number.isNaN(at.getTime())) return false;
+  return expiryFrom(at).getTime() > Date.now();
 }
 
 /**

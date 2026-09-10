@@ -4086,7 +4086,9 @@
       "withdrawn": "Retirada"
     },
     "pastTitle": "Declaraciones anteriores",
-    "footnote": "Presentar esta declaración no genera una factura. Cualquier comisión la emite una persona, a partir de esta declaración y del registro de presentaciones, y usted podrá verla y discutirla antes de que se cobre nada."
+    "footnote": "Presentar esta declaración no genera una factura. Cualquier comisión la emite una persona, a partir de esta declaración y del registro de presentaciones, y usted podrá verla y discutirla antes de que se cobre nada.",
+    "leadLive": "Su ronda sigue abierta en la plataforma. Este es el registro de cómo terminó y de quiénes participaron en ella. Presentarlo no modifica su anuncio, así que marque la ronda como cerrada en su panel cuando haya concluido. Lleva fecha, se conserva junto con su cuenta y es la base sobre la que se apoyará cualquier comisión, o cualquier decisión de no cobrarla.",
+    "leadPaused": "Su ronda está pausada, no cerrada. Este es el registro de cómo terminó y de quiénes participaron en ella. Presentarlo no modifica su anuncio, así que marque la ronda como cerrada en su panel cuando haya concluido. Lleva fecha, se conserva junto con su cuenta y es la base sobre la que se apoyará cualquier comisión, o cualquier decisión de no cobrarla."
   },
   "caseFile": {
     "title": "Expedientes",
@@ -4249,7 +4251,9 @@
     "countered": "Han contraofertado",
     "counteredNote": "Le toca responder.",
     "conversation": "Abrir conversación",
-    "pipeline": "Ver en el pipeline"
+    "pipeline": "Ver en el pipeline",
+    "certify": "Confirmar su condición de inversor",
+    "certifyNote": "Una oferta es un compromiso de capital, así que le pedimos que certifique su condición una sola vez. Es cuestión de un momento y sirve para todos los anuncios."
   },
   "offerComposer": {
     "eyebrow": "Oferta",
@@ -4298,7 +4302,9 @@
     "sent": "Oferta enviada. Le toca responder al fundador.",
     "counterSent": "Contraoferta enviada.",
     "failed": "La oferta no se ha enviado.",
-    "equityRange": "La participación debe situarse entre 0 y 100 por ciento."
+    "equityRange": "La participación debe situarse entre 0 y 100 por ciento.",
+    "notAccredited": "Confirme su condición de inversor acreditado en Configuración antes de presentar una oferta.",
+    "notAccreditedCta": "Ir a Configuración"
   },
   "offerInbox": {
     "title": "Ofertas",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Cada paso se revierte al abonar la factura. En ningún paso se elimina nada: su anuncio, su data room, sus documentos, sus mensajes y todas las operaciones en curso permanecen exactamente igual. Una comisión reclamada no avanza mientras está en revisión.",
     "disputeNote": "Las reclamaciones de pago se detienen y nada escala mientras esto se revisa.",
     "loadFailed": "No se han podido cargar sus comisiones.",
-    "link": "Comisiones de éxito"
+    "link": "Comisiones de éxito",
+    "loadFailedNote": "Esto no dice nada sobre lo que usted debe. Sus facturas, cualquier plan de pago y cualquier retención sobre su anuncio siguen igual."
+  },
+  "listingSafety": {
+    "withheld": "Se han retenido los datos de contacto de lo que acaba de guardar. Una página publicada la lee cualquiera, así que en ella no van una dirección de correo, un número de teléfono ni un identificador de mensajería. Un inversor llega hasta usted mediante una oferta y, a partir de ahí, sus datos son asunto suyo. Los enlaces quedan intactos, su web incluida, y el resto se ha guardado exactamente como lo escribió."
+  },
+  "msgStart": {
+    "listingNotLive": "Su anuncio tiene que estar publicado para poder escribir a otras empresas. Lo tenemos en revisión."
   }
 }

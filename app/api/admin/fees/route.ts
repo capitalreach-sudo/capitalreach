@@ -60,7 +60,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   }
 
-  const { data: deal } = await admin.from("deals").select(LEDGER_COLUMNS).eq("id", dealId).maybeSingle();
+  const { data: deal, error: dealError } = await admin.from("deals").select(LEDGER_COLUMNS).eq("id", dealId).maybeSingle();
+  // "Deal not found" is a fact about the ledger, so a failed read must not
+  // borrow it -- an operator acts on that answer by going looking elsewhere.
+  if (dealError) return NextResponse.json({ error: "Could not read the deal" }, { status: 500 });
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
   const state = feeState(deal as unknown as FeeDeal);
   if (state === "none") return NextResponse.json({ error: "This deal has no fee." }, { status: 400 });
@@ -118,7 +121,8 @@ export async function POST(req: NextRequest) {
   if (state !== "unbillable") return NextResponse.json({ error: "Only an unbilled fee can be retried." }, { status: 409 });
   if (!startup?.owner_id) return NextResponse.json({ error: "This listing has no owner." }, { status: 409 });
 
-  const { data: profile } = await admin.from("profiles").select("stripe_customer_id").eq("id", startup.owner_id).maybeSingle();
+  const { data: profile, error: profileError } = await admin.from("profiles").select("stripe_customer_id").eq("id", startup.owner_id).maybeSingle();
+  if (profileError) return NextResponse.json({ error: "Could not read the founder's billing account. Try again." }, { status: 500 });
   if (!profile?.stripe_customer_id) {
     return NextResponse.json({ error: "The founder still has no payment method on file. Nothing to retry against." }, { status: 409 });
   }

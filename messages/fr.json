@@ -4086,7 +4086,9 @@
       "withdrawn": "Retiré"
     },
     "pastTitle": "Déclarations antérieures",
-    "footnote": "Ce dépôt ne génère pas de facture. Toute commission est établie par une personne, à partir de cette déclaration et du relevé des mises en relation ; vous en aurez connaissance et pourrez la contester avant tout prélèvement."
+    "footnote": "Ce dépôt ne génère pas de facture. Toute commission est établie par une personne, à partir de cette déclaration et du relevé des mises en relation ; vous en aurez connaissance et pourrez la contester avant tout prélèvement.",
+    "leadLive": "Votre tour est toujours en ligne sur la plateforme. Voici le relevé de la manière dont il s'est achevé et des personnes qui y ont pris part. Le déposer ne change rien à votre annonce : une fois le tour terminé, indiquez qu'il est clôturé depuis votre tableau de bord. Il est daté, conservé avec votre compte, et c'est sur lui que reposera toute commission, ou toute décision de n'en percevoir aucune.",
+    "leadPaused": "Votre tour est en pause, pas clôturé. Voici le relevé de la manière dont il s'est achevé et des personnes qui y ont pris part. Le déposer ne change rien à votre annonce : une fois le tour terminé, indiquez qu'il est clôturé depuis votre tableau de bord. Il est daté, conservé avec votre compte, et c'est sur lui que reposera toute commission, ou toute décision de n'en percevoir aucune."
   },
   "caseFile": {
     "title": "Dossiers",
@@ -4249,7 +4251,9 @@
     "countered": "Contre-offre reçue",
     "counteredNote": "À vous de répondre.",
     "conversation": "Ouvrir la conversation",
-    "pipeline": "Voir dans le pipeline"
+    "pipeline": "Voir dans le pipeline",
+    "certify": "Confirmer votre statut d'investisseur",
+    "certifyNote": "Une offre engage des capitaux, nous vous demandons donc de certifier votre statut une seule fois. C'est l'affaire d'un instant, et cela vaut pour toutes les annonces."
   },
   "offerComposer": {
     "eyebrow": "Offre",
@@ -4298,7 +4302,9 @@
     "sent": "Offre envoyée. Le fondateur répond ensuite.",
     "counterSent": "Contre-offre envoyée.",
     "failed": "Cette offre n'a pas pu être envoyée.",
-    "equityRange": "La participation doit être comprise entre 0 et 100 pour cent."
+    "equityRange": "La participation doit être comprise entre 0 et 100 pour cent.",
+    "notAccredited": "Confirmez votre statut d'investisseur dans les Paramètres avant de faire une offre.",
+    "notAccreditedCta": "Ouvrir les Paramètres"
   },
   "offerInbox": {
     "title": "Offres",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Chaque étape est levée dès le règlement de la facture. Rien n'est supprimé à aucune étape : votre annonce, votre data room, vos documents, vos messages et chaque opération en cours restent exactement en l'état. Une commission contestée reste inchangée pendant son examen.",
     "disputeNote": "Les relances s'arrêtent et rien ne s'aggrave pendant l'examen.",
     "loadFailed": "Impossible de charger vos commissions.",
-    "link": "Commissions de succès"
+    "link": "Commissions de succès",
+    "loadFailedNote": "Cela ne dit rien de ce que vous devez. Vos factures, votre éventuel échéancier et toute mesure appliquée à votre annonce sont inchangés."
+  },
+  "listingSafety": {
+    "withheld": "Les coordonnées ont été masquées dans ce que vous venez d'enregistrer. Une page publiée est lue par tout le monde : une adresse e-mail, un numéro de téléphone ou un identifiant de messagerie n'y a pas sa place. Un investisseur vous joint par une offre, et ensuite vos coordonnées ne regardent que vous. Les liens sont intacts, votre site web compris, et le reste a été enregistré exactement tel que vous l'avez écrit."
+  },
+  "msgStart": {
+    "listingNotLive": "Votre annonce doit être en ligne avant de pouvoir envoyer des messages à d'autres entreprises. Elle est en cours d'examen de notre côté."
   }
 }

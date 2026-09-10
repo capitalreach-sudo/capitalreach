@@ -69,6 +69,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Query failed" }, { status: 500 });
   }
 
+  // A read that failed is not a pass that found nothing to do. Each one is
+  // recorded here so a half-swept run cannot be logged as a clean one: the
+  // counts below would all read zero either way, and a sweep that quietly did
+  // nothing every night is the exact failure system_events exists to catch.
+  // A set rather than a list, because five hundred instalment rows failing the
+  // same read is one broken thing.
+  const failedReads = new Set<string>();
+
   let rescued = 0, rescueFailed = 0, reminded = 0;
   // Deals reminded on this run, so the enforcement pass below does not send a
   // second notification about the same fee on the same day.
@@ -147,13 +155,14 @@ export async function GET(req: NextRequest) {
   // to the whole.
   let instalmentsBilled = 0, instalmentsFailed = 0;
   const today = now.toISOString().slice(0, 10);
-  const { data: dueInstalments } = await admin
+  const { data: dueInstalments, error: dueError } = await admin
     .from("fee_instalments")
     .select("id, deal_id, seq, amount, due_date, deal:deals(id, status, currency, success_fee_paid_at, fee_waived_at, fee_refunded_at, fee_chargeback_at, startup:startups(id, name, owner_id))")
     .is("paid_at", null)
     .is("stripe_invoice_id", null)
     .lte("due_date", today)
     .limit(500);
+  if (dueError) failedReads.add("due instalments");
 
   for (const inst of dueInstalments ?? []) {
     const deal = inst.deal as unknown as { status?: string | null; currency: string | null; success_fee_paid_at?: string | null; fee_waived_at?: string | null; fee_refunded_at?: string | null; fee_chargeback_at?: string | null; startup: { name: string; owner_id: string } | null } | null;
@@ -167,7 +176,14 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    const { data: profile } = await admin.from("profiles").select("stripe_customer_id").eq("id", owner).maybeSingle();
+    const { data: profile, error: profileError } = await admin.from("profiles").select("stripe_customer_id").eq("id", owner).maybeSingle();
+    // billing_error is shown to the founder, so it may only carry a reason that
+    // was actually established. A read that failed has established nothing.
+    if (profileError) {
+      failedReads.add("instalment billing accounts");
+      instalmentsFailed++;
+      continue;
+    }
     if (!profile?.stripe_customer_id) {
       // No card on file: this is the ledger's 'no_customer' case, one
       // instalment at a time. Recorded, not silently skipped forever.
@@ -226,13 +242,17 @@ export async function GET(req: NextRequest) {
     const plannedIds = (deals ?? []).filter(d => d.fee_plan_months).map(d => d.id);
     const missedSince = new Map<string, string>();
     if (plannedIds.length) {
-      const { data: missed } = await admin
+      const { data: missed, error: missedError } = await admin
         .from("fee_instalments")
         .select("deal_id, due_date")
         .in("deal_id", plannedIds)
         .is("paid_at", null)
         .lte("due_date", today)
         .order("due_date");
+      // Unread, every planned fee looks like one with nothing overdue, so this
+      // run escalates none of them. That is the right direction to fail in --
+      // it is being silent about it that has to stop.
+      if (missedError) failedReads.add("missed instalments");
       for (const r of missed ?? []) {
         if (!missedSince.has(r.deal_id)) missedSince.set(r.deal_id, r.due_date);
       }
@@ -374,11 +394,15 @@ export async function GET(req: NextRequest) {
   // off. Restoring never invents a state; it puts back the one that was
   // recorded on the way in.
   let lifted = 0, roundsRestored = 0;
-  const { data: enforced } = await admin
+  const { data: enforced, error: enforcedError } = await admin
     .from("deals")
     .select("id, startup_id, currency, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_waived_at, fee_refunded_at, fee_chargeback_at, fee_chargeback_resolved_at, fee_disputed_at, fee_dispute_resolved_at, fee_enforcement, fee_paused_round_state, startup:startups(id, name, owner_id, round_state)")
     .in("fee_enforcement", ACTIVE_STEPS)
     .limit(1000);
+  // The one pass that gives something back. Read nothing here and every
+  // founder who paid today stays paused, with a summary that says the sweep
+  // found nobody to release -- which is why this failure has to be loud.
+  if (enforcedError) failedReads.add("enforced deals");
 
   const isSettled = (d: unknown) => {
     const s = feeState(d as FeeDeal);
@@ -452,7 +476,15 @@ export async function GET(req: NextRequest) {
     rescued, rescueFailed, reminded, instalmentsBilled, instalmentsFailed,
     stepped, listingsPaused, accountsRestricted, lifted, roundsRestored,
     considered: (deals ?? []).length,
+    failedReads: Array.from(failedReads),
   };
+  if (failedReads.size) {
+    // Everything above is already committed and is reported as done; the run
+    // is still a failure, and a non-200 is what the schedule watches. Every
+    // pass is idempotent, so the next run picks up what this one missed.
+    await logSystemEvent("cron/fee-dunning", "error", "Fee sweep incomplete", summary);
+    return NextResponse.json({ success: false, ...summary }, { status: 500 });
+  }
   await logSystemEvent("cron/fee-dunning", "info", "Fee ledger swept", summary);
   return NextResponse.json({ success: true, ...summary });
 }

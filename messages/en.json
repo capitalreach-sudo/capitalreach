@@ -1027,7 +1027,7 @@
     "updDraftTitle": "Monthly update",
     "portfolioUpgrade": "Portfolio tracking is part of the Angel plan and above — see positions, ownership and mark-ups in one place.",
     "investorTabNote": "Who saved the listing, who opened it, what they clicked, the questions they asked, and the investors you are chasing. Panels appear here as the activity arrives.",
-    "errAttachContactsWithheld": "Contact details in your caption were withheld until the deal is registered."
+    "errAttachContactsWithheld": "Contact details in your caption were withheld. They can be exchanged once a deal is open."
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -4086,7 +4086,9 @@
       "withdrawn": "Withdrawn"
     },
     "pastTitle": "Earlier declarations",
-    "footnote": "Filing this does not raise an invoice. A fee is raised by a person, from this declaration and the introduction record, and you will see it and be able to dispute it before anything is charged."
+    "footnote": "Filing this does not raise an invoice. A fee is raised by a person, from this declaration and the introduction record, and you will see it and be able to dispute it before anything is charged.",
+    "leadLive": "Your round is still live on the platform. This is the record of how it ended and who took part in it -- filing it does not change your listing, so set the round to closed on your dashboard once it is over. It is dated, stored with your account, and it is what any fee, or any decision not to charge one, will rest on.",
+    "leadPaused": "Your round is paused, not closed. This is the record of how it ended and who took part in it -- filing it does not change your listing, so set the round to closed on your dashboard once it is over. It is dated, stored with your account, and it is what any fee, or any decision not to charge one, will rest on."
   },
   "caseFile": {
     "title": "Case files",
@@ -4229,7 +4231,7 @@
     "whyBody": "CapitalReach is paid 2% when a round closes, and only then. That only works if a deal exists to attach the fee to, so a conversation that has clearly become a negotiation has to be on the record before it continues."
   },
   "msgSafety": {
-    "withheld": "Contact details are withheld until this deal is registered. The rest of your message was sent.",
+    "withheld": "Contact details are withheld until a deal is open. The rest of your message was sent.",
     "withheldWhy": "Once the deal is on the record you can exchange whatever you like -- the platform's fee is protected by then, so your details are your business.",
     "scamTitle": "Read this one carefully",
     "scamAdvanceFee": "This message asks you to pay something before money reaches you. A real investor never charges a founder a fee, a retainer, or a deposit to release funds. That is the oldest fraud in venture.",
@@ -4249,7 +4251,9 @@
     "countered": "They countered",
     "counteredNote": "Your answer is next.",
     "conversation": "Open conversation",
-    "pipeline": "View in pipeline"
+    "pipeline": "View in pipeline",
+    "certify": "Confirm your investor status",
+    "certifyNote": "An offer is a commitment of capital, so we ask you to certify your status once. It takes a moment, and it applies to every listing."
   },
   "offerComposer": {
     "eyebrow": "Offer",
@@ -4298,7 +4302,9 @@
     "sent": "Offer sent. The founder answers next.",
     "counterSent": "Counter sent.",
     "failed": "That offer did not send.",
-    "equityRange": "Equity has to be between 0 and 100 percent."
+    "equityRange": "Equity has to be between 0 and 100 percent.",
+    "notAccredited": "Confirm your investor status in Settings before making an offer.",
+    "notAccreditedCta": "Go to Settings"
   },
   "offerInbox": {
     "title": "Offers",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Every step reverses when the invoice is paid. Nothing is deleted at any step: your listing, data room, documents, messages and every deal in progress stay exactly as they are. A disputed fee does not move while it is being reviewed.",
     "disputeNote": "Chasing stops and nothing escalates while this is reviewed.",
     "loadFailed": "Could not load your fees.",
-    "link": "Success fees"
+    "link": "Success fees",
+    "loadFailedNote": "This says nothing about what you owe. Your invoices, any payment plan and any hold on your listing are unchanged."
+  },
+  "listingSafety": {
+    "withheld": "Contact details were withheld from what you just saved. A published page is read by everyone, so an email address, a phone number or a messaging handle does not go on one -- an investor reaches you through an offer, and after that your details are your own business. Links are untouched, your website included, and the rest was saved exactly as you wrote it."
+  },
+  "msgStart": {
+    "listingNotLive": "Your listing has to be live before you can message other companies. It is with us for review."
   }
 }

@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { INDUSTRIES, STAGES } from "@/types";
 import { INVESTOR_PLANS } from "@/lib/plans";
-import { slugify } from "@/lib/utils";
 import {
   TrendingUp, ChevronRight, ChevronLeft, CheckCircle2,
   Users, Settings, User, ShieldCheck, CreditCard,
@@ -206,13 +205,6 @@ export default function InvestorOnboardingPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
 
-    // Same duplicate trap as the founder flow: checkout can bounce back here
-    // and each press of a plan button ran another insert. One profile per
-    // account — an existing row is updated, never joined by a twin.
-    const { data: existing } = await supabase.from("investors")
-      .select("id").eq("owner_id", user.id)
-      .order("created_at", { ascending: true }).limit(1).maybeSingle();
-
     const fields = {
       type: investorType,
       bio: bio || null, linkedin_url: linkedin || null,
@@ -230,25 +222,22 @@ export default function InvestorOnboardingPage() {
       avg_hold_period: avgHoldPeriod || null,
     };
 
-    let investor: { id: string } | null = null;
-    let error: { message?: string } | null = null;
-    if (existing) {
-      const res = await supabase.from("investors").update(fields).eq("id", existing.id).select("id").single();
-      investor = res.data; error = res.error;
-    } else {
-      const base   = slugify(displayName || firmName || "investor");
-      const suffix = Math.random().toString(36).slice(2, 6);
-      const res = await supabase.from("investors").insert({
-        owner_id: user.id, slug: `${base}-${suffix}`, subscription_tier: "free",
-        ...fields,
-      }).select("id").single();
-      investor = res.data; error = res.error;
-    }
+    // The route owns the write: a bio and a thesis are read by every founder
+    // who opens the profile, so contact details in either are masked on the
+    // way in. It also owns the duplicate trap the founder flow has: checkout
+    // can bounce back here and each press of a plan button ran another
+    // insert, so one profile per account, updated rather than twinned.
+    const res = await fetch("/api/investors/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields, create: true }),
+    }).catch(() => null);
+    const saved = res ? await res.json().catch(() => ({})) : {};
 
-    if (error || !investor) {
-      notify.error(t("onboarding.inv.errorCreating") + " " + (error?.message || ""));
+    if (!res || !res.ok || !saved?.id) {
+      notify.error(t("onboarding.inv.errorCreating") + " " + (saved?.error || ""));
       setLoading(false); return;
     }
+    if (saved.contactsWithheld?.length) notify.info(t("listingSafety.withheld"));
     await supabase.from("profiles").update({
       accreditation_certified: accredited && accreditedDeclaration,
       // Timestamped record of what was actually asserted, so the Terms §1/§6

@@ -12,6 +12,7 @@ import {
   STAGE_LABELS, getInitials,
 } from "@/lib/utils";
 import { investorCan } from "@/lib/access";
+import { getInvestorPlan } from "@/lib/plans";
 import { AiReportDisclaimer } from "@/components/shared/legal-disclaimer";
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
@@ -506,6 +507,18 @@ export function StartupDetailClient({
   const canFinancials = (caps.viewFinancials || isOwner || viewerIsAdmin) && !ndaBlocksFinancials;
   const canAi         = caps.aiDiligence === "included";
   const canTeam       = caps.viewTeam || isOwner || viewerIsAdmin;
+  // A related card reads its lock off a tier value, so it gets the one this
+  // page resolved rather than a flat null. caps.viewFinancials is the same
+  // test the server applied when it chose whether to strip those rows, so the
+  // padlock lands exactly where the numbers were nulled, never over an empty
+  // field: below the gate the tier is dropped rather than forwarded, since a
+  // suspended account keeps its paid tier but is sent stripped rows. Admin
+  // and launch-mode access names no tier, so it takes the one that reads what
+  // was sent. The NDA stays out of this: it covers this company's numbers,
+  // not another company's.
+  const relatedTier: SubscriptionTier | null = !caps.viewFinancials
+    ? null
+    : getInvestorPlan(investorTier).features.viewFinancials ? investorTier : "pro_investor";
 
   // Live viewer presence
   useEffect(() => {
@@ -1598,7 +1611,7 @@ export function StartupDetailClient({
             <div className="ruled-label" style={{ marginBottom: "20px" }}>{t("startupDetail.similarStartups")}</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "14px" }}>
               {relatedStartups.map((s) => (
-                <StartupCard key={s.id} startup={s} investorTier={null} />
+                <StartupCard key={s.id} startup={s} investorTier={relatedTier} />
               ))}
             </div>
           </section>

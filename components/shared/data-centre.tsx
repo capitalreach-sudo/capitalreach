@@ -9,6 +9,7 @@ import { LiveClock } from "@/components/ui/LiveClock";
 import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { safeFormatCurrency } from "@/lib/format";
+import { safeFormatTotal } from "@/lib/validators";
 import { LineChart } from "@/components/charts/line-chart";
 import { DonutChart } from "@/components/charts/donut-chart";
 import { BarChart } from "@/components/charts/bar-chart";
@@ -97,8 +98,10 @@ const cellTd: React.CSSProperties = {
 };
 const cellTdNum: React.CSSProperties = { ...cellTd, textAlign: "right" };
 
-/** Axis money: "$100M", never "100000000". */
+/** Axis money: "$100M", never "100000000". Tiers to $T, as the totals in the
+ *  table do -- an axis stopping at "$2000B" would not read as the same ladder. */
 function compactMoney(n: number): string {
+  if (n >= 1_000_000_000_000) return `$${Math.round(n / 1_000_000_000_000)}T`;
   if (n >= 1_000_000_000) return `$${Math.round(n / 1_000_000_000)}B`;
   if (n >= 1_000_000) return `$${Math.round(n / 1_000_000)}M`;
   if (n >= 1_000) return `$${Math.round(n / 1_000)}k`;
@@ -622,7 +625,10 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                               <td style={cellTd}>{m.month}</td>
                               <td style={cellTdNum}>{m.listings}</td>
                               <td style={cellTdNum}>{m.closed}</td>
-                              <td style={cellTdNum}>{safeFormatCurrency(m.sought)}</td>
+                              {/* A total, not one listing's figure: the
+                                  per-listing bound prints a legitimate month
+                                  as an absence while the chart plots it. */}
+                              <td style={cellTdNum}>{safeFormatTotal(m.sought)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -642,7 +648,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         height={200}
                         labels={monthly.map(m => monthLabel(m.month))}
                         formatTick={(n) => (n === 0 ? "0" : compactMoney(n))}
-                        series={[{ key: "sought", label: t("data.capitalSought"), values: monthly.map(m => m.sought), format: (n) => safeFormatCurrency(n) ?? "—" }]}
+                        series={[{ key: "sought", label: t("data.capitalSought"), values: monthly.map(m => m.sought), format: safeFormatTotal }]}
                       />
                     </>
                   ) : (

@@ -293,7 +293,10 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                   {/* 375px keeps the three things a reviewer triages on --
                       level asked for, risk, lane -- on one line under the
                       name; the date and the column grid go. */}
-                  <span className="md:hidden" style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "8px" }}>
+                  {/* `display` stays in the class, not the inline style: an
+                      inline display beats md:hidden and the row would then
+                      show its mobile summary on the desktop grid too. */}
+                  <span className="md:hidden flex" style={{ alignItems: "center", gap: "10px", marginTop: "8px" }}>
                     <span style={{ ...figure, fontSize: "12px" }}>L{c.levelRequested}</span>
                     <span style={{ ...figure, fontSize: "12px", color: "var(--cr-ink-3)" }}>{c.riskScore}</span>
                     <span style={laneChip(c.lane)}>{t(`reviewQueue.lane.${c.lane}`)}</span>

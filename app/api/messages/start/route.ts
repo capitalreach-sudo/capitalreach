@@ -269,10 +269,23 @@ export async function POST(req: NextRequest) {
   if (isUuid(targetStartupId)) {
     const [{ data: other }, { data: me }] = await Promise.all([
       admin.from("startups").select("id, owner_id, name, status").eq("id", targetStartupId).maybeSingle(),
-      admin.from("startups").select("id, name").eq("id", mine.entityId).maybeSingle(),
+      admin.from("startups").select("id, name, status").eq("id", mine.entityId).maybeSingle(),
     ]);
     if (!other || !me || other.status !== "active") return NextResponse.json({ error: "Not found" }, { status: 404 });
     if (other.id === me.id) return NextResponse.json({ error: "That is your own listing" }, { status: 400 });
+
+    // The SENDER'S listing must be live too, and this is load-bearing rather
+    // than tidy. Owning a startup row is what routes a sender down here at
+    // all, and this branch is not gated on an accepted offer -- so without
+    // this check, anyone who wants to reach founders ungated fills in the
+    // onboarding form, never gets approved, and messages the whole market
+    // from a listing no investor can see. Approval is the cost of admission.
+    if (me.status !== "active") {
+      return NextResponse.json(
+        { error: "founder_listing_inactive", messageKey: "msgStart.listingNotLive" },
+        { status: 403 },
+      );
+    }
 
     // One thread per ordered pair is enough — either founder's earlier thread
     // (in either direction) is reused rather than split.

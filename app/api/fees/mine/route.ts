@@ -40,9 +40,12 @@ async function myStartup(userId: string) {
   const admin = createAdminClient();
   // Service role: migration 109 revoked the financial columns of `startups`
   // from client keys, and ownership is proven by the owner_id filter itself.
-  const { data } = await admin
+  const { data, error } = await admin
     .from("startups").select("id, name, round_state").eq("owner_id", userId).maybeSingle();
-  return { admin, startup: data };
+  // maybeSingle() reports "no row" as data null with no error, so a null here
+  // alongside an error is a failed read rather than a founder with no listing.
+  // The two must not answer the same, one being a fact and the other a guess.
+  return { admin, startup: data, failed: !!error };
 }
 
 /**
@@ -122,10 +125,14 @@ async function liftSettledEnforcement(
     if (!error) { roundState = prior; restoredTo = prior; }
   }
 
-  await admin.from("deals")
+  const { error: cleared } = await admin.from("deals")
     .update({ fee_enforcement: "resolved", fee_enforced_at: new Date().toISOString() })
-    .in("id", settled.map(d => d.id))
-    .then(undefined, () => {});
+    .in("id", settled.map(d => d.id));
+  // A lift that did not persist must not be announced. The page reads a
+  // non-zero count as "every hold from this fee is lifted" and shows it instead
+  // of the standing hold, so claiming it here would tell a founder their round
+  // is back while the ladder still has it.
+  if (cleared) return { lifted: 0, roundState, restoredTo };
   for (const d of settled) d.fee_enforcement = "resolved";
 
   return { lifted: settled.length, roundState, restoredTo };
@@ -166,16 +173,24 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { admin, startup } = await myStartup(user.id);
+  const { admin, startup, failed } = await myStartup(user.id);
+  if (failed) return NextResponse.json({ error: "Could not read your listing" }, { status: 500 });
   if (!startup) return NextResponse.json({ fees: [], enforcement: null });
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("deals")
     .select(COLUMNS)
     .eq("startup_id", startup.id)
     .not("success_fee_amount", "is", null)
     .order("closed_at", { ascending: false })
     .limit(100);
+
+  // An unread ledger is not an empty one. Returning [] here is the sentence
+  // "no success fee has been raised on your listing", which is a claim about
+  // money -- and an unpaid fee now pauses the listing at 14 days, so the
+  // reassuring version of this failure is the expensive one. No fees at all is
+  // still a 200 with an empty list below: that one is a fact.
+  if (error) return NextResponse.json({ error: "Could not read your fees" }, { status: 500 });
 
   const rows = data ?? [];
   const repair = await liftSettledEnforcement(admin, startup, rows as unknown as DealRow[]);
@@ -190,13 +205,16 @@ export async function GET() {
   const overdue = new Map<string, { seq: number; due: string }>();
   if (plannedIds.length) {
     const today = new Date().toISOString().slice(0, 10);
-    const { data: inst } = await admin
+    const { data: inst, error: instError } = await admin
       .from("fee_instalments")
       .select("deal_id, seq, due_date")
       .in("deal_id", plannedIds)
       .is("paid_at", null)
       .lte("due_date", today)
       .order("due_date");
+    // An unread schedule is indistinguishable from one with nothing overdue,
+    // and the portal says that out loud as "you are up to date on your plan".
+    if (instError) return NextResponse.json({ error: "Could not read your payment plan" }, { status: 500 });
     for (const r of inst ?? []) {
       if (!overdue.has(r.deal_id)) overdue.set(r.deal_id, { seq: r.seq, due: r.due_date });
     }
@@ -278,10 +296,14 @@ export async function POST(req: NextRequest) {
   const why = typeof reason === "string" && reason.trim() ? reason.trim().slice(0, 1000) : null;
   if (!why) return NextResponse.json({ error: "Tell us what is wrong with the amount." }, { status: 400 });
 
-  const { admin, startup } = await myStartup(user.id);
+  const { admin, startup, failed } = await myStartup(user.id);
+  if (failed) return NextResponse.json({ error: "Could not read your listing" }, { status: 500 });
   if (!startup) return NextResponse.json({ error: "You have no listing." }, { status: 403 });
 
-  const { data: deal } = await admin.from("deals").select("startup_id, investor_id, id, amount, currency, closed_at, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_waived_at, fee_disputed_at, fee_dispute_resolved_at, fee_enforcement").eq("id", dealId).maybeSingle();
+  const { data: deal, error: dealError } = await admin.from("deals").select("startup_id, investor_id, id, amount, currency, closed_at, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, fee_waived_at, fee_disputed_at, fee_dispute_resolved_at, fee_enforcement").eq("id", dealId).maybeSingle();
+  // Telling a founder their fee does not exist is the one answer a failed read
+  // must never give: the dispute is their way of contesting the amount.
+  if (dealError) return NextResponse.json({ error: "Could not read the fee" }, { status: 500 });
   // Scoped to the caller's own listing: the fee belongs to the startup that
   // received the investment, so nobody else can open a dispute on it.
   if (!deal || deal.startup_id !== startup.id) return NextResponse.json({ error: "Deal not found" }, { status: 404 });

@@ -323,10 +323,6 @@ export default function EditStartupPage() {
       instrument: st.instrument || null,
       safe_cap: parseFloat(st.safe_cap) || null,
       safe_discount: parseFloat(st.safe_discount) || null,
-      // A live listing STAYS live when edited. It used to flip back to
-      // pending_review — a founder fixing a typo vanished from the market
-      // until re-approved. Instead the edit is stamped for admin re-check.
-      ...(st.status === "active" ? { edited_since_review_at: new Date().toISOString() } : {}),
     };
   }
 
@@ -344,20 +340,34 @@ export default function EditStartupPage() {
     const sig = JSON.stringify(payload);
     if (sig === lastSaved.current) { setSaveState("saved"); return true; }
     setSaveState("saving");
-    const { error } = await supabase.from("startups").update(payload).eq("id", st.id);
-    if (error) {
+    // Through the route, not the table: the pitch fields are masked for
+    // contact details on the way in, and a live listing's edit is stamped for
+    // admin re-check there rather than here.
+    const res = await fetch("/api/startups/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields: payload }),
+    }).catch(() => null);
+    if (!res || !res.ok) {
       if (!opts.retry) return persist(st, { retry: true });
       setSaveState("error");
       return false;
     }
+    const saved = await res.json().catch(() => ({}));
     lastSaved.current = sig;
     dirty.current = false;
+    if (saved?.contactsWithheld?.length) {
+      // The masked text goes back into the form. Without it the next autosave
+      // re-sends the original and the founder is warned again every second,
+      // while the box on screen shows something the listing does not.
+      setStartup((s: any) => ({ ...s, ...saved.maskedFields }));
+      notify.info(t("listingSafety.withheld"));
+    }
     try { if (backupKey) localStorage.removeItem(backupKey); } catch { /* ignore */ }
     setSaveState("saved");
     setTimeout(() => setSaveState((v) => (v === "saved" ? "idle" : v)), 2000);
     return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supabase, backupKey]);
+  }, [backupKey, t]);
 
   useEffect(() => {
     if (!startup || loading || !dirty.current) return;

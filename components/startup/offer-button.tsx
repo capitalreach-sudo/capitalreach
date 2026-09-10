@@ -23,6 +23,13 @@ import { OfferComposer, type OfferAsk } from "@/components/deals/offer-composer"
  * rather than inviting a second offer that the one-open-proposal rule would
  * refuse anyway.
  *
+ * And a fifth, which only became load-bearing when contact started requiring
+ * an offer: an investor who has not certified their status is refused by the
+ * POST, so before this state existed they filled in amount, equity, valuation,
+ * instrument and conditions and THEN learned they were ineligible, with no
+ * link to the page that fixes it. The requirement belongs in front of the
+ * composer, not behind it.
+ *
  * The state comes from the API rather than from props, because the verdict is
  * lib/contact-policy's to give: a button that decided for itself would be one
  * deploy away from disagreeing with the route that refuses the message.
@@ -62,6 +69,8 @@ interface ListingState {
   } | null;
   dealId: string | null;
   threadId: string | null;
+  /** POST refuses an offer without this, and an offer is the only way in. */
+  accredited?: boolean;
 }
 
 interface Props {
@@ -138,6 +147,15 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
       <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px" }}>
         <Link href="/deals" style={QUIET}>{t("offerButton.sent")}</Link>
         {caption(t("offerButton.waiting"))}
+      </span>
+    );
+  } else if (state.accredited === false) {
+    control = (
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px" }}>
+        <Link href="/dashboard/investor/settings#accreditation" style={QUIET}>
+          {t("offerButton.certify")}
+        </Link>
+        {caption(t("offerButton.certifyNote"))}
       </span>
     );
   } else {

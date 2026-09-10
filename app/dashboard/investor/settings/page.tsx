@@ -220,9 +220,11 @@ export default function InvestorSettingsPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase
-      .from("investors")
-      .update({
+    // Through the route: a bio and a thesis are published to every founder
+    // who opens the profile, so contact details in them are masked on write.
+    const res = await fetch("/api/investors/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields: {
         // Basic profile
         display_name: investor.display_name || null,
         firm_name: investor.firm_name || null,
@@ -247,11 +249,13 @@ export default function InvestorSettingsPage() {
         min_check: investor.min_check ? parseInt(investor.min_check) : null,
         max_check: investor.max_check ? parseInt(investor.max_check) : null,
         geography: investor.geography,
-      })
-      .eq("id", investor.id);
+      } }),
+    }).catch(() => null);
+    const saved = res ? await res.json().catch(() => ({})) : {};
+    const ok = !!res && res.ok && !!saved?.id;
 
     // Save new profile fields to profiles table
-    if (!error) {
+    if (ok) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("profiles").update({
@@ -266,8 +270,13 @@ export default function InvestorSettingsPage() {
       }
     }
 
-    if (error) {
-      toast({ title: t("dashboard.saveFailed"), description: error.message, variant: "destructive" });
+    if (!ok) {
+      toast({ title: t("dashboard.saveFailed"), description: saved?.error || "", variant: "destructive" });
+    } else if (saved.contactsWithheld?.length) {
+      // The form still holds what was typed; put back what was stored, so the
+      // box on screen is the profile people will read.
+      setInvestor((i: any) => ({ ...i, ...saved.maskedFields }));
+      toast({ title: t("dashboard.profileUpdated"), description: t("listingSafety.withheld") });
     } else {
       toast({ title: t("dashboard.profileUpdated"), description: t("dashboard.allChangesSaved") });
     }
@@ -315,7 +324,9 @@ export default function InvestorSettingsPage() {
         <form onSubmit={handleSave} className="space-y-6">
 
           {/* ── Accreditation ─────────────────────────────────────────────── */}
-          <div className="p-4 sm:p-6" style={CARD}>
+          {/* Linked to from the listing's offer button, which is where an
+              investor discovers they need this. */}
+          <div id="accreditation" className="scroll-mt-24 p-4 sm:p-6" style={CARD}>
             <h2 className="ruled-label" style={{ marginBottom: "8px" }}>{t("settings.accTitle")}</h2>
             <p className="mb-4 text-sm leading-relaxed text-cr-i3">{t("settings.accBody")}</p>
             <label className="flex cursor-pointer items-start gap-3 py-1">

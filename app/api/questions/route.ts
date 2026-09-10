@@ -3,6 +3,7 @@ import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { resolveEntity } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
+import { maskFreeText } from "@/lib/message-safety";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -31,9 +32,20 @@ export async function POST(req: NextRequest) {
   if (!inv) return NextResponse.json({ error: "Investors only" }, { status: 403 });
   if (!startup || startup.status !== "active") return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  // An answered question is published on the listing, so this is the one
+  // free-text surface where an unmasked contact detail is public rather than
+  // merely delivered. Masked before the insert for that reason.
+  const safe = await maskFreeText({
+    text: question.trim(),
+    surface: "listing_question",
+    subjectType: "investor",
+    subjectId: inv.id,
+    counterpartyId: startupId,
+  });
+
   const { data: q, error } = await admin
     .from("listing_questions")
-    .insert({ startup_id: startupId, investor_id: inv.id, question: question.trim() })
+    .insert({ startup_id: startupId, investor_id: inv.id, question: safe.text })
     .select()
     .single();
   if (error || !q) return NextResponse.json({ error: "Could not ask" }, { status: 500 });
@@ -44,10 +56,10 @@ export async function POST(req: NextRequest) {
     title: `${inv.display_name ?? inv.firm_name ?? "An investor"} asked a question on ${startup.name}`,
     titleKey: "notif.questionAskedTitle",
     params: { name: inv.display_name ?? inv.firm_name ?? "An investor", startup: startup.name },
-    body: question.trim().slice(0, 140),
+    body: safe.text.slice(0, 140),
     href: `/startups/${startup.slug}`,
   });
-  return NextResponse.json({ question: q });
+  return NextResponse.json({ question: q, ...(safe.masked.length ? { contactsWithheld: safe.masked } : {}) });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -64,12 +76,21 @@ export async function PATCH(req: NextRequest) {
   const membership = await resolveEntity(user.id, "startup");
   if (!membership) return NextResponse.json({ error: "Founders only" }, { status: 403 });
 
+  // A founder answering in public is the likelier leak of the two: "just email
+  // me at ..." is the natural thing to write, and it lands on the listing.
+  const safe = await maskFreeText({
+    text: answer.trim(),
+    surface: "question_answer",
+    subjectType: "startup",
+    subjectId: membership.entityId,
+  });
+
   const admin = createAdminClient();
   const { data: q, error } = await admin
     .from("listing_questions")
     // B20: a private answer is visible to the asker and the founder only
     // (RLS 066); public otherwise. Records who answered.
-    .update({ answer: answer.trim(), answered_at: new Date().toISOString(), is_private: isPrivate === true, answered_by: user.id })
+    .update({ answer: safe.text, answered_at: new Date().toISOString(), is_private: isPrivate === true, answered_by: user.id })
     .eq("id", id)
     .eq("startup_id", membership.entityId)
     .select("id, investor_id, startup:startups(name, slug)")
@@ -86,11 +107,11 @@ export async function PATCH(req: NextRequest) {
       title: `${st?.name ?? "A founder"} answered your question`,
       titleKey: "notif.questionAnsweredTitle",
       params: { name: st?.name ?? "A founder" },
-      body: answer.trim().slice(0, 140),
+      body: safe.text.slice(0, 140),
       href: st?.slug ? `/startups/${st.slug}` : null,
     });
   }
-  return NextResponse.json({ answered: true });
+  return NextResponse.json({ answered: true, ...(safe.masked.length ? { contactsWithheld: safe.masked } : {}) });
 }
 
 /**

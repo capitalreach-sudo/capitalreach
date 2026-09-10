@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
+import { maskFreeText } from "@/lib/message-safety";
 import { isUuid } from "@/lib/utils";
 import { investorGate, planRequired } from "@/lib/plan-gate";
 import { DOC_TYPES } from "@/lib/upload-validation";
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
   const { startupId, docType, message, dealId } = await req.json().catch(() => ({}));
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
   if (!(DOC_TYPES as readonly string[]).includes(docType)) return NextResponse.json({ error: "invalid docType" }, { status: 400 });
-  const msg = typeof message === "string" && message.trim() ? message.trim().slice(0, 500) : null;
+  const rawMsg = typeof message === "string" && message.trim() ? message.trim().slice(0, 500) : null;
 
   const admin = createAdminClient();
   const [{ data: inv }, { data: startup }] = await Promise.all([
@@ -45,6 +46,18 @@ export async function POST(req: NextRequest) {
   ]);
   if (!inv) return NextResponse.json({ error: "Investors only" }, { status: 403 });
   if (!startup || startup.status !== "active") return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // The note rides to the founder as a notification and an email. It is the
+  // same channel as a message and gets the same treatment.
+  const msg = rawMsg
+    ? (await maskFreeText({
+        text: rawMsg,
+        surface: "document_request",
+        subjectType: "investor",
+        subjectId: inv.id,
+        counterpartyId: startupId,
+      })).text
+    : null;
 
   // One open request per (investor, startup, type): a repeat bumps the
   // founder again rather than creating a duplicate row.

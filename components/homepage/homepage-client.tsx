@@ -12,6 +12,7 @@ import { ActivityPulse } from "@/components/homepage/activity-pulse";
 import { WaxSeal } from "@/components/ui/WaxSeal";
 import { MarketMatcher } from "@/components/homepage/market-matcher";
 import { safeFormatCurrency } from "@/lib/format";
+import { safeFormatTotal, sumFundingTargets } from "@/lib/validators";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
 import type { ListingSnippet, TickerSnippet } from "@/app/page";
@@ -271,7 +272,7 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
               {/* Money and outcomes only -- the account counts came out
                   (Jack's call): capital sought, capital raised, deals done. */}
               {([
-                [safeFormatCurrency(laneAll.reduce((a, l) => a + (l.funding_target ?? 0), 0)), t("listings.raising")],
+                [safeFormatTotal(sumFundingTargets(laneAll.map(l => l.funding_target))), t("listings.raising")],
                 [safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")],
                 [String(stats.dealsClosedCount), t("stats.dealsClosed")],
               ] as Array<[string, string]>).map(([v, label]) => (

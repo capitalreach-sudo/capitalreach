@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
@@ -178,6 +179,7 @@ export function OfferComposer({
   const [conditions, setConditions] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [needsAccreditation, setNeedsAccreditation] = useState(false);
 
   const amountNum = num(amount);
   const equityNum = num(equity);
@@ -251,6 +253,13 @@ export function OfferComposer({
       // The listing page owns the non-circumvention modal; it re-opens, and
       // the offer stays in the form so nothing typed is lost.
       if (res.status === 428) { onAckRequired?.(); notify.info(t("offerComposer.needsAck")); return; }
+      // Certification is refused here as well as hidden behind the button,
+      // because the button reads state once and this is the authority.
+      if (res.status === 403 && j.messageKey === "offerComposer.notAccredited") {
+        notify.error(t("offerComposer.notAccredited"));
+        setNeedsAccreditation(true);
+        return;
+      }
       if (!res.ok) { notify.error(j.error || t("offerComposer.failed")); return; }
       notify.success(counter ? t("offerComposer.counterSent") : t("offerComposer.sent"));
       onSent?.(j.proposal?.id ?? null);
@@ -420,7 +429,15 @@ export function OfferComposer({
         display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px",
       }}>
         <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", flex: "1 1 260px", margin: 0 }}>
-          {t("offerComposer.footnote")}
+          {needsAccreditation ? (
+            <>
+              {t("offerComposer.notAccredited")}{" "}
+              <Link href="/dashboard/investor/settings#accreditation"
+                style={{ color: "var(--cr-copper)", textDecoration: "underline" }}>
+                {t("offerComposer.notAccreditedCta")}
+              </Link>
+            </>
+          ) : t("offerComposer.footnote")}
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           {onCancel && (

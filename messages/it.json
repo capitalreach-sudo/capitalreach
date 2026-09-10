@@ -4086,7 +4086,9 @@
       "withdrawn": "Ritirato"
     },
     "pastTitle": "Dichiarazioni precedenti",
-    "footnote": "Il deposito non genera alcuna fattura. L'eventuale commissione è disposta da una persona, sulla base della presente dichiarazione e del registro delle presentazioni, e potrai prenderne visione e contestarla prima che venga addebitato alcunché."
+    "footnote": "Il deposito non genera alcuna fattura. L'eventuale commissione è disposta da una persona, sulla base della presente dichiarazione e del registro delle presentazioni, e potrai prenderne visione e contestarla prima che venga addebitato alcunché.",
+    "leadLive": "Il tuo round risulta ancora online sulla piattaforma. Questa è la registrazione di come si è concluso e di chi vi ha partecipato: inviarla non modifica il tuo annuncio, quindi imposta il round come chiuso dalla dashboard quando sarà terminato. Reca una data, è conservata insieme al tuo account ed è il fondamento di qualsiasi commissione, o della decisione di non applicarne alcuna.",
+    "leadPaused": "Il tuo round è in pausa, non chiuso. Questa è la registrazione di come si è concluso e di chi vi ha partecipato: inviarla non modifica il tuo annuncio, quindi imposta il round come chiuso dalla dashboard quando sarà terminato. Reca una data, è conservata insieme al tuo account ed è il fondamento di qualsiasi commissione, o della decisione di non applicarne alcuna."
   },
   "caseFile": {
     "title": "Fascicoli",
@@ -4249,7 +4251,9 @@
     "countered": "Controfferta ricevuta",
     "counteredNote": "Tocca a te rispondere.",
     "conversation": "Apri conversazione",
-    "pipeline": "Vedi in pipeline"
+    "pipeline": "Vedi in pipeline",
+    "certify": "Conferma il tuo status di investitore",
+    "certifyNote": "Un'offerta impegna del capitale, quindi ti chiediamo di certificare il tuo status una volta sola. Richiede un attimo e vale per tutti gli annunci."
   },
   "offerComposer": {
     "eyebrow": "Offerta",
@@ -4298,7 +4302,9 @@
     "sent": "Offerta inviata. La risposta spetta al fondatore.",
     "counterSent": "Controfferta inviata.",
     "failed": "L'offerta non è stata inviata.",
-    "equityRange": "La quota deve essere compresa tra 0 e 100 per cento."
+    "equityRange": "La quota deve essere compresa tra 0 e 100 per cento.",
+    "notAccredited": "Conferma il tuo status di investitore nelle Impostazioni prima di presentare un'offerta.",
+    "notAccreditedCta": "Vai alle Impostazioni"
   },
   "offerInbox": {
     "title": "Offerte",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Ogni passaggio si annulla con il pagamento della fattura. In nessun passaggio viene cancellato alcunché: annuncio, data room, documenti, messaggi e ogni operazione in corso restano esattamente come sono. Una fee contestata resta ferma per tutta la durata dell'esame.",
     "disputeNote": "I solleciti si interrompono e nulla procede oltre finché è in corso l'esame.",
     "loadFailed": "Non è stato possibile caricare le tue fee.",
-    "link": "Success fee"
+    "link": "Success fee",
+    "loadFailedNote": "Questo non dice nulla su quanto devi. Le tue fatture, l'eventuale piano di pagamento e l'eventuale blocco sul tuo annuncio restano invariati."
+  },
+  "listingSafety": {
+    "withheld": "Dal contenuto appena salvato sono stati omessi i recapiti. Una pagina pubblicata la legge chiunque, quindi un indirizzo email, un numero di telefono o un contatto di messaggistica non ci vanno: un investitore ti raggiunge con un'offerta, e da lì in poi i tuoi recapiti riguardano solo te. I link non sono stati toccati, sito web compreso, e il resto è stato salvato esattamente come lo hai scritto."
+  },
+  "msgStart": {
+    "listingNotLive": "Per scrivere ad altre aziende il tuo annuncio deve essere online. È da noi, in revisione."
   }
 }

@@ -4086,7 +4086,9 @@
       "withdrawn": "Tillbakadragen"
     },
     "pastTitle": "Tidigare deklarationer",
-    "footnote": "Inlämningen ger inte i sig upphov till någon faktura. En avgift fastställs av en person, utifrån denna deklaration och introduktionsnoteringen, och du får se den och möjlighet att bestrida den innan något debiteras."
+    "footnote": "Inlämningen ger inte i sig upphov till någon faktura. En avgift fastställs av en person, utifrån denna deklaration och introduktionsnoteringen, och du får se den och möjlighet att bestrida den innan något debiteras.",
+    "leadLive": "Din runda är fortfarande aktiv på plattformen. Detta är noteringen om hur den avslutades och vilka som deltog. Att lämna in den ändrar inte din annons, så sätt rundan till stängd i din instrumentpanel när den är över. Den dateras, sparas tillsammans med ditt konto och utgör grunden för varje avgift, eller för varje beslut att inte ta ut någon.",
+    "leadPaused": "Din runda är pausad, inte stängd. Detta är noteringen om hur den avslutades och vilka som deltog. Att lämna in den ändrar inte din annons, så sätt rundan till stängd i din instrumentpanel när den är över. Den dateras, sparas tillsammans med ditt konto och utgör grunden för varje avgift, eller för varje beslut att inte ta ut någon."
   },
   "caseFile": {
     "title": "Ärendeakter",
@@ -4249,7 +4251,9 @@
     "countered": "Motbud lämnat",
     "counteredNote": "Nu är det din tur att svara.",
     "conversation": "Öppna konversation",
-    "pipeline": "Visa i pipeline"
+    "pipeline": "Visa i pipeline",
+    "certify": "Bekräfta din investerarstatus",
+    "certifyNote": "Ett bud är ett åtagande att satsa kapital, därför ber vi dig att intyga din status en gång. Det går snabbt, och det gäller sedan för alla annonser."
   },
   "offerComposer": {
     "eyebrow": "Bud",
@@ -4298,7 +4302,9 @@
     "sent": "Bud skickat. Grundaren svarar härnäst.",
     "counterSent": "Motbud skickat.",
     "failed": "Budet kunde inte skickas.",
-    "equityRange": "Ägarandelen måste vara mellan 0 och 100 procent."
+    "equityRange": "Ägarandelen måste vara mellan 0 och 100 procent.",
+    "notAccredited": "Bekräfta din investerarstatus under Inställningar innan du lämnar ett bud.",
+    "notAccreditedCta": "Gå till Inställningar"
   },
   "offerInbox": {
     "title": "Bud",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Varje steg hävs när fakturan betalas. Ingenting raderas i något steg: din annons, ditt datarum, dina dokument, meddelanden och varje pågående affär förblir precis som de är. En bestridd avgift ligger stilla medan den prövas.",
     "disputeNote": "Påminnelser upphör och ingenting eskalerar medan detta prövas.",
     "loadFailed": "Dina avgifter kunde inte hämtas.",
-    "link": "Framgångsavgifter"
+    "link": "Framgångsavgifter",
+    "loadFailedNote": "Det här säger ingenting om vad du är skyldig. Dina fakturor, en eventuell betalningsplan och en eventuell paus av din annons är oförändrade."
+  },
+  "listingSafety": {
+    "withheld": "Kontaktuppgifter har utelämnats från det du just sparade. En publicerad sida läses av alla, så en e-postadress, ett telefonnummer eller ett användarnamn i en meddelandetjänst hör inte hemma där. En investerare når dig genom ett bud, och därefter är dina uppgifter din ensak. Länkar är orörda, din webbplats inräknad, och resten sparades precis som du skrev den."
+  },
+  "msgStart": {
+    "listingNotLive": "Din annons måste vara publicerad innan du kan skicka meddelanden till andra företag. Den ligger hos oss för granskning."
   }
 }

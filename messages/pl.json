@@ -4086,7 +4086,9 @@
       "withdrawn": "Wycofana"
     },
     "pastTitle": "Wcześniejsze oświadczenia",
-    "footnote": "Złożenie tego oświadczenia nie powoduje wystawienia faktury. Wynagrodzenie nalicza człowiek, na podstawie tego oświadczenia i rejestru przedstawień, a Ty zobaczysz je i będziesz mógł je zakwestionować, zanim cokolwiek zostanie obciążone."
+    "footnote": "Złożenie tego oświadczenia nie powoduje wystawienia faktury. Wynagrodzenie nalicza człowiek, na podstawie tego oświadczenia i rejestru przedstawień, a Ty zobaczysz je i będziesz mógł je zakwestionować, zanim cokolwiek zostanie obciążone.",
+    "leadLive": "Twoja runda jest nadal aktywna na platformie. To jest zapis tego, jak się zakończyła i kto wziął w niej udział. Złożenie tego oświadczenia nie zmienia Twojej oferty, więc gdy runda dobiegnie końca, oznacz ją w panelu jako zamkniętą. Zapis zostaje opatrzony datą, przypisany do Twojego konta i stanowi podstawę każdego wynagrodzenia albo decyzji o jego nienaliczeniu.",
+    "leadPaused": "Twoja runda jest wstrzymana, a nie zamknięta. To jest zapis tego, jak się zakończyła i kto wziął w niej udział. Złożenie tego oświadczenia nie zmienia Twojej oferty, więc gdy runda dobiegnie końca, oznacz ją w panelu jako zamkniętą. Zapis zostaje opatrzony datą, przypisany do Twojego konta i stanowi podstawę każdego wynagrodzenia albo decyzji o jego nienaliczeniu."
   },
   "caseFile": {
     "title": "Akta spraw",
@@ -4249,7 +4251,9 @@
     "countered": "Kontroferta",
     "counteredNote": "Teraz Twoja odpowiedź.",
     "conversation": "Otwórz rozmowę",
-    "pipeline": "Pokaż w pipeline"
+    "pipeline": "Pokaż w pipeline",
+    "certify": "Potwierdź swój status inwestora",
+    "certifyNote": "Oferta jest deklaracją zaangażowania kapitału, dlatego prosimy o jednorazowe potwierdzenie statusu. Zajmuje to chwilę i obowiązuje potem dla każdej spółki na platformie."
   },
   "offerComposer": {
     "eyebrow": "Oferta",
@@ -4298,7 +4302,9 @@
     "sent": "Oferta wysłana. Teraz odpowiada założyciel.",
     "counterSent": "Kontroferta wysłana.",
     "failed": "Nie udało się wysłać tej oferty.",
-    "equityRange": "Udziały muszą mieścić się w przedziale od 0 do 100 procent."
+    "equityRange": "Udziały muszą mieścić się w przedziale od 0 do 100 procent.",
+    "notAccredited": "Zanim złożysz ofertę, potwierdź swój status inwestora w Ustawieniach.",
+    "notAccreditedCta": "Przejdź do Ustawień"
   },
   "offerInbox": {
     "title": "Oferty",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Każdy krok cofa się po opłaceniu faktury. Na żadnym etapie nic nie jest usuwane: Twoja oferta, data room, dokumenty, wiadomości i wszystkie trwające transakcje pozostają dokładnie takie, jakie są. Zakwestionowana prowizja pozostaje bez zmian przez czas rozpatrywania.",
     "disputeNote": "Na czas rozpatrywania wstrzymujemy monity i nic nie przechodzi do kolejnego kroku.",
     "loadFailed": "Nie udało się wczytać Twoich prowizji.",
-    "link": "Prowizje od sukcesu"
+    "link": "Prowizje od sukcesu",
+    "loadFailedNote": "Nie mówi to nic o tym, ile masz do zapłaty. Twoje faktury, ewentualny plan spłat i wszelkie wstrzymania Twojej oferty pozostają bez zmian."
+  },
+  "listingSafety": {
+    "withheld": "Dane kontaktowe zostały pominięte przy zapisie. Opublikowaną stronę czyta każdy, więc nie trafiają na nią ani adres e-mail, ani numer telefonu, ani identyfikator komunikatora. Inwestor dotrze do Ciebie przez ofertę, a od tego momentu Twoje dane są wyłącznie Twoją sprawą. Linki pozostają nietknięte, łącznie z adresem Twojej strony, a reszta tekstu została zapisana co do słowa."
+  },
+  "msgStart": {
+    "listingNotLive": "Zanim napiszesz do innych spółek, Twoja oferta musi być opublikowana. Jest teraz u nas do weryfikacji."
   }
 }

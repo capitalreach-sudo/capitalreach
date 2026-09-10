@@ -7,6 +7,7 @@ import { isUuid } from "@/lib/utils";
 import { isCurrencyCode, DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { mayInvestorContact } from "@/lib/contact-policy";
+import { getSafetyConfig, maskFreeText } from "@/lib/message-safety";
 import { restrictionsFor } from "@/lib/fee-enforcement";
 
 /**
@@ -94,6 +95,30 @@ function readTerms(body: Record<string, unknown>): Terms {
   };
 }
 
+/**
+ * The prose half of an offer, masked.
+ *
+ * An offer is now the FIRST thing an investor sends a founder and, until it is
+ * accepted, the only thing. That makes `note` the highest-value place on the
+ * platform to write "reach me at ..." -- it reaches the founder's inbox and
+ * their email whether or not they ever accept. `conditions` is the same field
+ * wearing a term-sheet hat. Both go through the same masking as a message.
+ */
+async function maskTerms(terms: Terms, subject: { type: "investor" | "startup"; id: string }): Promise<Terms> {
+  const config = await getSafetyConfig();
+  const pass = async (value: string | null, surface: "offer_note" | "offer_conditions") =>
+    value
+      ? (await maskFreeText({
+          text: value, surface, subjectType: subject.type, subjectId: subject.id, config,
+        })).text
+      : null;
+  return {
+    ...terms,
+    note: await pass(terms.note, "offer_note"),
+    conditions: await pass(terms.conditions, "offer_conditions"),
+  };
+}
+
 /** One line of the agreed terms for the deal timeline. Only what has a value:
  *  an absent term is absent, not "null". */
 function describeTerms(p: {
@@ -126,7 +151,7 @@ export async function GET(req: NextRequest) {
   const scopedTo = req.nextUrl.searchParams.get("startupId");
   if (scopedTo !== null) {
     if (!isUuid(scopedTo)) return NextResponse.json({ error: "startupId must be a uuid" }, { status: 400 });
-    return listingState(admin, scopedTo, sides.investorId);
+    return listingState(admin, scopedTo, sides.investorId, user.id);
   }
 
   if (!sides.startupId && !sides.investorId) return NextResponse.json({ incoming: [], outgoing: [] });
@@ -185,7 +210,7 @@ export async function GET(req: NextRequest) {
  * table? Everything read here belongs to the caller's own pair -- their
  * proposal, their deal, their thread -- so there is nothing to leak.
  */
-async function listingState(admin: Admin, startupId: string, investorId: string | null) {
+async function listingState(admin: Admin, startupId: string, investorId: string | null, userId: string) {
   // A founder reading someone else's listing has no offer to make. Saying so
   // plainly beats an empty proposal object the client has to interpret.
   if (!investorId) {
@@ -194,7 +219,7 @@ async function listingState(admin: Admin, startupId: string, investorId: string 
 
   const verdict = await mayInvestorContact({ startupId, investorId });
 
-  const [{ data: proposal }, { data: deal }, { data: thread }] = await Promise.all([
+  const [{ data: proposal }, { data: deal }, { data: thread }, { data: attest }] = await Promise.all([
     admin
       .from("deal_proposals")
       .select("id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, note, created_at")
@@ -210,6 +235,12 @@ async function listingState(admin: Admin, startupId: string, investorId: string 
       .from("threads").select("id")
       .match({ startup_id: startupId, investor_id: investorId })
       .limit(1).maybeSingle(),
+    // POST refuses an offer from an investor who has not certified their
+    // status. Since an offer is now the only way to reach a founder, that
+    // refusal is the difference between a marketplace and a wall, and the
+    // button has to say so BEFORE the composer takes a page of terms.
+    admin
+      .from("profiles").select("accreditation_certified").eq("id", userId).maybeSingle(),
   ]);
 
   return NextResponse.json({
@@ -217,6 +248,7 @@ async function listingState(admin: Admin, startupId: string, investorId: string 
     role: "investor",
     contactOpen: verdict.allowed,
     reason: verdict.reason,
+    accredited: !!attest?.accreditation_certified,
     proposal: proposal
       ? {
           id: proposal.id,
@@ -258,10 +290,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Only investors make offers." }, { status: 403 });
   }
 
-  const terms = readTerms(body);
-  if (terms.amount === null) {
+  const rawTerms = readTerms(body);
+  if (rawTerms.amount === null) {
     return NextResponse.json({ error: "An offer needs a number." }, { status: 400 });
   }
+  const terms = await maskTerms(rawTerms, { type: "investor", id: sides.investorId });
 
   // Counted after validation so a malformed body cannot burn the day's budget,
   // and before any write, because each of these lands in a founder's inbox.
@@ -275,7 +308,8 @@ export async function POST(req: NextRequest) {
     .from("profiles").select("accreditation_certified").eq("id", user.id).maybeSingle();
   if (!attest?.accreditation_certified) {
     return NextResponse.json(
-      { error: "Confirm your accredited-investor status in Settings before making an offer." },
+      { error: "Confirm your accredited-investor status in Settings before making an offer.",
+        messageKey: "offerComposer.notAccredited" },
       { status: 403 },
     );
   }
@@ -403,10 +437,16 @@ export async function PATCH(req: NextRequest) {
   // pointing at the one it answers, from the other side, so the negotiation
   // reads end to end: who asked what, what came back, where it landed.
   if (action === "counter") {
-    const terms = readTerms(body);
-    if (terms.amount === null) {
+    const rawTerms = readTerms(body);
+    if (rawTerms.amount === null) {
       return NextResponse.json({ error: "A counter needs a number." }, { status: 400 });
     }
+    // A counter comes from whichever side is answering, and a founder writing
+    // "just call me" into one is the same leak as an investor doing it.
+    const counterSide = sides.startupId === p.startup_id
+      ? { type: "startup" as const, id: sides.startupId }
+      : { type: "investor" as const, id: p.investor_id };
+    const terms = await maskTerms(rawTerms, counterSide);
 
     { const rl = await dbRateLimit(user.id, "deal_counter", ...Object.values(RATE.perDay(50)) as [number, number]);
       if (!rl.ok) return NextResponse.json({ error: "That is a lot of counters for one day. Try again tomorrow." }, { status: 429 }); }

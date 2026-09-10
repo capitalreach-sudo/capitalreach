@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
+import { maskFreeText } from "@/lib/message-safety";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -9,8 +10,9 @@ import { isUuid } from "@/lib/utils";
  * existed afterwards for either side.
  *
  * A share is now a record (startup_shares) AND it opens an investor↔
- * investor thread about that company, so "let's look at this together"
- * has somewhere to continue. The note becomes the first message.
+ * investor thread with the recipient, so "let's look at this together"
+ * has somewhere to continue. The note becomes the first message; which
+ * company it was about is the share record's job, not the thread's.
  *
  * POST { startupId, toInvestorId, note? }
  * GET  → shares sent to me and by me
@@ -24,7 +26,7 @@ export async function POST(req: NextRequest) {
   if (!isUuid(startupId) || !isUuid(toInvestorId)) {
     return NextResponse.json({ error: "startupId and toInvestorId required" }, { status: 400 });
   }
-  const message = typeof note === "string" && note.trim() ? note.trim().slice(0, 2000) : null;
+  const rawNote = typeof note === "string" && note.trim() ? note.trim().slice(0, 2000) : null;
 
   const admin = createAdminClient();
   const [{ data: me }, { data: to }, { data: startup }] = await Promise.all([
@@ -38,25 +40,56 @@ export async function POST(req: NextRequest) {
   }
   if (to.owner_id === user.id) return NextResponse.json({ error: "That's you" }, { status: 400 });
 
-  // The thread the two of them can keep talking in (C32). One per pair per
-  // company, in either direction.
-  const { data: existingThread } = await admin
-    .from("threads")
-    .select("id")
-    .eq("startup_id", startup.id)
-    .not("recipient_investor_id", "is", null)
-    .or(`and(investor_id.eq.${me.id},recipient_investor_id.eq.${to.id}),and(investor_id.eq.${to.id},recipient_investor_id.eq.${me.id})`)
-    .maybeSingle();
-  let threadId = existingThread?.id ?? null;
+  // Investor to investor is deliberately not gated on an offer, but the note
+  // still becomes a message and an email, so it is masked like one.
+  const message = rawNote
+    ? (await maskFreeText({
+        text: rawNote,
+        surface: "deal_share",
+        subjectType: "investor",
+        subjectId: me.id,
+        counterpartyId: to.id,
+      })).text
+    : null;
+
+  // The thread the two of them can keep talking in (C32): the pair's direct
+  // thread, one per pair in either direction (unique index from 106).
+  //
+  // It carries NO startup anchor, and that is load bearing. A thread holding
+  // (startup_id, investor_id) is indistinguishable from the founder/investor
+  // thread for that pair, and (startup_id, investor_id) is how every lookup on
+  // the platform finds a conversation -- /api/messages/send and start, deal
+  // registration's message count, the close route's amount check. Anchoring
+  // this one fed a founder's message into a co-investor thread, where
+  // /api/messages/reply refuses the founder (two investors are its only
+  // parties) and the other investor reads what was meant for the company.
+  // Which listing was shared is recorded on startup_shares below.
+  const pair = `and(investor_id.eq.${me.id},recipient_investor_id.eq.${to.id}),and(investor_id.eq.${to.id},recipient_investor_id.eq.${me.id})`;
+  const findPairThread = async () => {
+    const { data } = await admin
+      .from("threads").select("id")
+      .is("startup_id", null).or(pair)
+      .limit(1).maybeSingle();
+    return data?.id ?? null;
+  };
+  let threadId = await findPairThread();
   if (!threadId) {
     const { data: created } = await admin
       .from("threads")
-      .insert({ startup_id: startup.id, investor_id: me.id, recipient_investor_id: to.id, status: "active" })
+      .insert({ investor_id: me.id, recipient_investor_id: to.id, status: "active" })
       .select("id").single();
-    threadId = created?.id ?? null;
+    // 23505: a concurrent share, or the other investor pressing "message" on
+    // this one's profile, opened the pair's thread between the two calls -- so
+    // an empty `created` is recoverable exactly when the lookup now finds
+    // theirs. Any other insert failure leaves nothing to attach the note to,
+    // and answering shared:true there tells the sender their message went
+    // somewhere it never went.
+    threadId = created?.id ?? await findPairThread();
+    if (!threadId) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
   }
-  if (threadId && message) {
-    await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body: message }).then(undefined, () => {});
+  if (message) {
+    const { error: msgError } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, body: message });
+    if (msgError) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
     await admin.from("threads").update({ updated_at: new Date().toISOString() }).eq("id", threadId).then(undefined, () => {});
   }
 

@@ -4086,7 +4086,9 @@
       "withdrawn": "Zurückgezogen"
     },
     "pastTitle": "Frühere Erklärungen",
-    "footnote": "Mit der Einreichung entsteht keine Rechnung. Eine Gebühr wird von einer Person festgesetzt, auf Grundlage dieser Erklärung und des Vermittlungsnachweises; Sie sehen sie und können ihr widersprechen, bevor etwas berechnet wird."
+    "footnote": "Mit der Einreichung entsteht keine Rechnung. Eine Gebühr wird von einer Person festgesetzt, auf Grundlage dieser Erklärung und des Vermittlungsnachweises; Sie sehen sie und können ihr widersprechen, bevor etwas berechnet wird.",
+    "leadLive": "Ihre Runde läuft auf der Plattform noch. Dies ist der Nachweis darüber, wie sie endete und wer daran beteiligt war. An Ihrem Listing ändert die Einreichung nichts. Kennzeichnen Sie die Runde daher in Ihrem Dashboard als abgeschlossen, sobald sie vorbei ist. Er wird datiert, zu Ihrem Konto gespeichert und bildet die Grundlage für jede Gebühr oder für die Entscheidung, keine zu erheben.",
+    "leadPaused": "Ihre Runde ist pausiert, nicht abgeschlossen. Dies ist der Nachweis darüber, wie sie endete und wer daran beteiligt war. An Ihrem Listing ändert die Einreichung nichts. Kennzeichnen Sie die Runde daher in Ihrem Dashboard als abgeschlossen, sobald sie vorbei ist. Er wird datiert, zu Ihrem Konto gespeichert und bildet die Grundlage für jede Gebühr oder für die Entscheidung, keine zu erheben."
   },
   "caseFile": {
     "title": "Fallakten",
@@ -4249,7 +4251,9 @@
     "countered": "Gegenangebot erhalten",
     "counteredNote": "Sie sind am Zug.",
     "conversation": "Gespräch öffnen",
-    "pipeline": "In der Pipeline ansehen"
+    "pipeline": "In der Pipeline ansehen",
+    "certify": "Investorenstatus bestätigen",
+    "certifyNote": "Mit einem Angebot sagen Sie Kapital zu, deshalb bitten wir Sie, Ihren Status einmalig zu bestätigen. Das dauert einen Moment und gilt danach für jedes Listing."
   },
   "offerComposer": {
     "eyebrow": "Angebot",
@@ -4298,7 +4302,9 @@
     "sent": "Angebot gesendet. Der Gründer antwortet als Nächstes.",
     "counterSent": "Gegenangebot gesendet.",
     "failed": "Dieses Angebot wurde nicht gesendet.",
-    "equityRange": "Der Anteil muss zwischen 0 und 100 Prozent liegen."
+    "equityRange": "Der Anteil muss zwischen 0 und 100 Prozent liegen.",
+    "notAccredited": "Bestätigen Sie Ihren Investorenstatus in den Einstellungen, bevor Sie ein Angebot machen.",
+    "notAccreditedCta": "Zu den Einstellungen"
   },
   "offerInbox": {
     "title": "Angebote",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Jeder Schritt wird mit Zahlung der Rechnung aufgehoben. In keinem Schritt wird etwas gelöscht: Profil, Datenraum, Dokumente, Nachrichten und alle laufenden Deals bleiben genau so bestehen. Eine beanstandete Provision bleibt während der Prüfung unverändert.",
     "disputeNote": "Während der Prüfung entfallen Zahlungserinnerungen, und es folgen keine weiteren Schritte.",
     "loadFailed": "Ihre Provisionen konnten nicht geladen werden.",
-    "link": "Erfolgsprovisionen"
+    "link": "Erfolgsprovisionen",
+    "loadFailedNote": "Das sagt nichts darüber aus, was Sie schulden. Ihre Rechnungen, eine laufende Ratenzahlung und alle Einschränkungen für Ihr Profil bleiben unverändert."
+  },
+  "listingSafety": {
+    "withheld": "Aus dem, was Sie gerade gespeichert haben, wurden Kontaktdaten herausgenommen. Eine veröffentlichte Seite liest jeder, deshalb gehören E-Mail-Adresse, Telefonnummer oder Messenger-Kontakt nicht darauf. Ein Investor erreicht Sie über ein Angebot, und danach sind Ihre Daten Ihre Sache. Links bleiben unangetastet, Ihre Website eingeschlossen, und alles Übrige wurde genau so gespeichert, wie Sie es geschrieben haben."
+  },
+  "msgStart": {
+    "listingNotLive": "Ihr Listing muss live sein, bevor Sie andere Unternehmen anschreiben können. Es liegt bei uns zur Prüfung."
   }
 }

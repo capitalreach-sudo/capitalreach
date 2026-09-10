@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { isAccountSuspended } from "@/lib/suspension-guard";
-import { evidenceChecklist, scoreRisk, type RiskFlag, type SubjectType, type TrustLevel } from "@/lib/trust";
+import { carriedEvidence, evidenceChecklist, scoreRisk, type RiskFlag, type SubjectType, type TrustLevel } from "@/lib/trust";
 import {
   DOMAIN_VERIFY_PREFIX,
   computeRiskFlags,
@@ -147,6 +147,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── What the last approval already proved ────────────────────────────────
+  // Only while the case is still the applicant's: what a reviewer is reading
+  // must not gain rows under them.
+  if (EDITABLE_STATUSES.includes(row.status)) {
+    await carryForwardEvidence(admin, row.id, subjectType, subjectId, user.id);
+  }
+
   // ── A check nobody has to perform ────────────────────────────────────────
   // The account's confirmed address already sits at the company domain, which
   // the server knows without asking. It is supporting evidence, not proof of
@@ -233,6 +240,90 @@ export async function POST(req: NextRequest) {
       value: domainVerifyRecord(row.id),
     },
   });
+}
+
+/**
+ * Bring forward what the subject's last approval already stands on.
+ *
+ * Evidence is stored per case, so a new application starts empty and a member
+ * who holds level 2 is asked to prove their domain again to reach level 3.
+ * `carriedEvidence` decides what may travel; this writes COPIES, because the
+ * approved case has to stay whole -- it is the record its own decision was made
+ * from, and the sweep still reads it to detect drift.
+ *
+ * Idempotent per kind, so a draft opened before any of this existed picks up
+ * its evidence on the next call, and a domain proof the applicant has since
+ * re-run and failed is never resurrected by a second copy landing beside it.
+ *
+ * Best effort, like the email-domain check below: a copy that fails leaves the
+ * applicant supplying the evidence themselves, which beats an application that
+ * will not open.
+ */
+async function carryForwardEvidence(
+  admin: ReturnType<typeof createAdminClient>,
+  caseId: string,
+  subjectType: SubjectType,
+  subjectId: string,
+  ownerId: string,
+): Promise<void> {
+  try {
+    // Scoped to the owner as well as the subject: a listing that changed hands
+    // must not hand its new owner the previous owner's identity evidence.
+    const { data: grant } = await admin
+      .from("verification_cases")
+      .select("id, level_granted, expires_at")
+      .eq("owner_id", ownerId)
+      .eq("subject_type", subjectType)
+      .eq("subject_id", subjectId)
+      .eq("status", "approved")
+      .order("reviewed_at", { ascending: false, nullsFirst: false })
+      .limit(1)
+      .maybeSingle();
+    if (!grant) return;
+
+    const [{ data: source }, { data: already }] = await Promise.all([
+      admin
+        .from("verification_evidence")
+        .select("kind, method, status, vendor_ref, detail, checked_at, created_at")
+        .eq("case_id", grant.id),
+      admin.from("verification_evidence").select("kind").eq("case_id", caseId),
+    ]);
+
+    const present = new Set((already ?? []).map((e) => e.kind));
+    const carried = carriedEvidence(
+      // An automated check stamps checked_at; anything that never carried one
+      // is dated by the row, which is the reading the trust sweep takes too.
+      (source ?? []).map((e) => ({ ...e, checkedAt: e.checked_at ?? e.created_at })),
+      { levelGranted: grant.level_granted, expiresAt: grant.expires_at },
+      subjectType,
+    ).filter((e) => !present.has(e.kind));
+    if (!carried.length) return;
+
+    const { error } = await admin.from("verification_evidence").insert(
+      carried.map((e) => {
+        const detail = e.detail && typeof e.detail === "object" && !Array.isArray(e.detail) ? e.detail : {};
+        return {
+          case_id: caseId,
+          kind: e.kind,
+          method: e.method,
+          status: e.status,
+          vendor_ref: e.vendor_ref,
+          // storage_path stays behind. Two rows pointing at one object means a
+          // replacement uploaded here deletes the file the decided case is the
+          // record of; `carried_from` names the case that still holds it.
+          detail: { ...detail, carried_from: grant.id },
+          // The check happened when it happened, and the copy says so even
+          // where it has to borrow the source row's own date. Restamping it
+          // would put a year-old proof at today, and the next case after this
+          // one would inherit that lie rather than ask for the check again.
+          checked_at: e.checkedAt,
+        };
+      }),
+    );
+    if (error) console.warn("[verification] evidence carry-forward failed:", error);
+  } catch (err) {
+    console.warn("[verification] evidence carry-forward skipped:", err);
+  }
 }
 
 /**

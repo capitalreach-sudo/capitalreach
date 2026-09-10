@@ -307,7 +307,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
         setNewMessage("");
         setAttachedFile(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
-        await supabase.from("threads").update({ updated_at: sent.created_at }).eq("id", selectedThread.id);
+        // Same promise as a plain reply, and here it can be the filename that
+        // was rewritten rather than anything the sender typed -- all the more
+        // reason they hear it now. The route bumps the thread itself.
+        if (json.contactsWithheld?.length) notify.info(t("msgSafety.withheld"));
       }
       setSending(false);
       return;
@@ -445,7 +448,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
         <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", height: "620px" }}>
 
           {/* ── Sidebar ── */}
-          <div className="w-full md:w-[300px]" style={{ flexShrink: 0, display: mobileShowChat ? "none" : "flex", flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
+          {/* `display` stays in the class, never the inline style: an inline
+              display beats md:flex, which collapsed both panes to one column
+              at every width. mobileShowChat only governs the narrow layout;
+              from md up both panes are shown regardless. */}
+          <div className={`w-full md:w-[300px] md:flex ${mobileShowChat ? "hidden" : "flex"}`}
+            style={{ flexShrink: 0, flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
             {/* Search */}
             <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
               {/* The archive toggle must live OUTSIDE the relative wrapper:
@@ -524,11 +532,15 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
           {/* ── Chat pane ── */}
           {selectedThread ? (
-            <div style={{ flex: 1, display: (!mobileShowChat) ? "none" : "flex", flexDirection: "column", minWidth: 0 }} className="md:flex">
+            <div className={`md:flex ${mobileShowChat ? "flex" : "hidden"}`}
+              style={{ flex: 1, flexDirection: "column", minWidth: 0 }}>
               {/* Chat header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", flexShrink: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                  <button onClick={() => setMobileShowChat(false)} aria-label={t("common.back")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0 }}>
+                  {/* Back to the list is a narrow-layout affordance only: from
+                      md up the list never left, so the arrow would do nothing. */}
+                  <button onClick={() => setMobileShowChat(false)} aria-label={t("common.back")} className="flex md:hidden"
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0 }}>
                     <ArrowLeft style={{ width: 16, height: 16 }} />
                   </button>
                   <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)" }}>
@@ -772,7 +784,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               </p>
             </div>
           ) : (
-            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-paper)" }}>
+            <div className="hidden md:flex" style={{ flex: 1, alignItems: "center", justifyContent: "center", background: "var(--cr-paper)" }}>
               <div style={{ textAlign: "center" }}>
                 <div style={{ marginBottom: "12px" }}><EmptyDiamond /></div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>

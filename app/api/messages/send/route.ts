@@ -108,11 +108,18 @@ export async function POST(req: NextRequest) {
     if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
   }
 
-  // Check if thread already exists (no need to count existing thread)
+  // Check if thread already exists (no need to count existing thread).
+  // A co-investor thread must never answer this lookup. It can carry the same
+  // (startup_id, investor_id) pair while its two parties are both investors,
+  // so a founder-directed message landing there is refused for the founder by
+  // /api/messages/reply and read by the other investor instead. 119 cleared
+  // the anchor off those rows; the filter keeps the reroute impossible rather
+  // than merely absent from the data.
   const { data: existingThread } = await adminClient
     .from("threads")
     .select("id")
     .match({ startup_id: startupId, investor_id: investorId })
+    .is("recipient_investor_id", null)
     .single();
 
   // Rate limit new threads against the plan's monthly message limit (null =

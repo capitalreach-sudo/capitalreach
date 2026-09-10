@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
+import { sanitiseAttachmentName, type SanitisedAttachmentName } from "@/lib/attachment-name";
 import { dealRegistrationRequired } from "@/lib/deal-registration";
 import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
+import { notifyUser } from "@/lib/notify-user";
+import { sendNewMessageEmail } from "@/lib/resend";
 import { uploadRatelimit } from "@/lib/redis";
 import { myThreadIds } from "@/lib/threads";
 
@@ -78,7 +81,7 @@ export async function POST(req: NextRequest) {
   // in what they wrote get withheld. Both need the thread's two sides.
   const { data: thread } = await admin
     .from("threads")
-    .select("id, status, startup_id, investor_id, recipient_investor_id")
+    .select("id, status, startup_id, investor_id, recipient_startup_id, recipient_investor_id, startup:startups!threads_startup_id_fkey(name, owner_id), investor:investors!threads_investor_id_fkey(owner_id, display_name), recipient_investor:investors!threads_recipient_investor_id_fkey(owner_id, display_name)")
     .eq("id", threadId)
     .maybeSingle();
   if (!thread) return NextResponse.json({ error: "Thread not found" }, { status: 404 });
@@ -149,10 +152,22 @@ export async function POST(req: NextRequest) {
     // Nothing to withhold between two investors, or on a thread with no
     // startup/investor pair to register a deal against.
     : true;
+  // The displayed filename is masked on the same terms as the body: a file
+  // called "call-me-+49-170-1234567.pdf" was a phone number in plain sight,
+  // rendered as a link label and handed back as the download name. Only the
+  // display name changes -- `path` above is a UUID, so the object stays where
+  // it is and stays downloadable.
+  const display: SanitisedAttachmentName = safetyCfg.maskContacts && !dealRegistered
+    ? sanitiseAttachmentName(safeName)
+    : { name: safeName, masked: [] };
   // A caption if one was written, else the filename -- the thread list's
-  // preview stays meaningful either way, and the filename goes through the
-  // same mask because a caption smuggled into a filename is still a caption.
-  const safe = applyMessageSafety({ body: note || safeName, dealRegistered, config: safetyCfg });
+  // preview stays meaningful either way, and the filename is the sanitised
+  // one, so a file-only message reads as its own attachment rather than
+  // saying the same thing twice.
+  const safe = applyMessageSafety({ body: note || display.name, dealRegistered, config: safetyCfg });
+
+  const maskedKinds = Array.from(new Set([...(safe.flags?.masked ?? []), ...display.masked]));
+  const flags = { ...(safe.flags ?? {}), ...(maskedKinds.length ? { masked: maskedKinds } : {}) };
 
   const { data: message, error: insertError } = await admin
     .from("messages")
@@ -160,11 +175,14 @@ export async function POST(req: NextRequest) {
       thread_id: threadId,
       sender_id: user.id,
       body: safe.body,
-      body_original: safe.bodyOriginal,
+      // Evidence, per migration 117, and never readable by a client key. With
+      // no caption the filename IS the message, so the name as sent is what
+      // belongs here.
+      body_original: safe.bodyOriginal ?? (!note && display.masked.length ? safeName : null),
       // Serialised through JSON so the typed jsonb column accepts it.
-      safety_flags: safe.flags ? JSON.parse(JSON.stringify(safe.flags)) : null,
+      safety_flags: Object.keys(flags).length ? JSON.parse(JSON.stringify(flags)) : null,
       attachment_path: path,
-      attachment_name: safeName,
+      attachment_name: display.name,
     })
     .select()
     .single();
@@ -175,13 +193,56 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not send the attachment." }, { status: 500 });
   }
 
-  // The row carries the MASKED body straight from the insert, so the only
-  // preview this route hands back is the same text the recipient will read.
-  // It sends no email and raises no notification, so there is no second copy
-  // of the caption anywhere that could still be the raw text.
+  await admin.from("threads").update({ updated_at: message.created_at }).eq("id", threadId).then(undefined, () => {});
+
+  // Tell everyone on the thread who isn't the sender, exactly as a reply does.
+  // Without this an attachment arrived in silence -- no bell, no email -- and
+  // waited for the recipient to happen to open the thread. Awaited: on Vercel
+  // an un-awaited promise after the response is simply never run.
+  //
+  // Everything that leaves this route -- preview and email alike -- is built
+  // from the MASKED body and the sanitised name. The notification path sits
+  // outside the table the mask protects, so a raw copy here would hand over
+  // exactly what the mask withheld.
+  let recipientStartupOwner: string | null = null;
+  if (thread.recipient_startup_id) {
+    const { data: rs } = await admin.from("startups").select("owner_id").eq("id", thread.recipient_startup_id).maybeSingle();
+    recipientStartupOwner = rs?.owner_id ?? null;
+  }
+  const recipientInvestorOwner = (thread.recipient_investor as unknown as { owner_id: string } | null)?.owner_id ?? null;
+  const recipients = Array.from(new Set(
+    (coInvestorThread
+      ? [thread.investor?.owner_id, recipientInvestorOwner]
+      : [thread.startup?.owner_id, thread.investor?.owner_id, recipientStartupOwner])
+      .filter((id): id is string => !!id && id !== user.id),
+  ));
+  if (recipients.length) {
+    const [{ data: sender }, { data: profiles }] = await Promise.all([
+      admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+      admin.from("profiles").select("id, email").in("id", recipients),
+    ]);
+    const senderName = sender?.full_name || thread.investor?.display_name || "Someone";
+    const preview = safe.body.slice(0, 60) + (safe.body.length > 60 ? "…" : "");
+    for (const r of recipients) {
+      await notifyUser({
+        userId: r,
+        type: "message",
+        title: `New message from ${senderName}`,
+        body: preview,
+        href: `/dashboard/messages?thread=${threadId}`,
+      }).catch(() => {});
+    }
+    // Email carries a 60-char preview only, the full text lives on the
+    // platform (part of the deal record), which is also where replies happen.
+    for (const p of profiles ?? []) {
+      if (p.email) await sendNewMessageEmail(p.email, senderName, thread.startup?.name || "your conversation", preview).catch(() => {});
+    }
+  }
+
   return NextResponse.json({
     message,
-    // Never rewrite somebody's words without telling them.
-    ...(safe.maskedAnything ? { contactsWithheld: safe.flags?.masked ?? [] } : {}),
+    // Never rewrite somebody's words without telling them -- including when
+    // what was rewritten is the filename rather than the caption.
+    ...(maskedKinds.length ? { contactsWithheld: maskedKinds } : {}),
   });
 }

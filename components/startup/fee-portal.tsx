@@ -129,28 +129,33 @@ export function FeePortal() {
   const [enforcement, setEnforcement] = useState<Enforcement | null>(null);
   const [failed, setFailed] = useState(false);
 
+  // A failed load must never leave `fees` as [], and must never be read as one:
+  // an empty array here is the sentence "no fee is outstanding", which is a
+  // claim about money that an unread ledger cannot make. So failure keeps the
+  // last known ledger (or null) and is answered by its own branch below, and
+  // only a body that actually carries a list of fees counts as an answer.
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/fees/mine");
-      if (!res.ok) { setFailed(true); setFees([]); return; }
+      if (!res.ok) { setFailed(true); return; }
       const json = await res.json();
-      setFees(json.fees ?? []);
+      if (!Array.isArray(json.fees)) { setFailed(true); return; }
+      setFees(json.fees);
       setEnforcement(json.enforcement ?? null);
+      setFailed(false);
     } catch {
-      setFailed(true); setFees([]);
+      setFailed(true);
     }
   }, []);
   useEffect(() => { void load(); }, [load]);
+
+  if (failed) return <LoadFailed onRetry={load} />;
 
   if (fees === null) {
     // Real layout with suppressed values, not a skeleton: absence is "—".
     return (
       <p style={{ ...MONO, fontSize: "11px", color: "var(--cr-ink-4)" }}>—</p>
     );
-  }
-
-  if (failed) {
-    return <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("feePortal.loadFailed")}</p>;
   }
 
   const open = fees.filter(f => f.state === "outstanding" || f.state === "unbillable" || f.state === "disputed");
@@ -223,6 +228,39 @@ export function FeePortal() {
 
       {enforcement?.enabled && <Ladder e={enforcement} />}
     </>
+  );
+}
+
+/**
+ * The ledger could not be read.
+ *
+ * Says only that, and offers the read again. It states nothing about the
+ * balance in either direction: a founder whose fees fail to load is not owed
+ * the reassurance that they owe nothing, and a listing now pauses on an unpaid
+ * fee, so the silent version of this screen is the expensive one.
+ */
+function LoadFailed({ onRetry }: { onRetry: () => Promise<void> }) {
+  const { t } = useTranslation();
+  const [busy, setBusy] = useState(false);
+
+  async function retry() {
+    if (busy) return;
+    setBusy(true);
+    try { await onRetry(); } finally { setBusy(false); }
+  }
+
+  return (
+    <div style={{ ...CARD, padding: "20px" }}>
+      <p style={{ ...BODY, fontSize: "14px", color: "var(--cr-ink)", margin: 0 }}>
+        {t("feePortal.loadFailed")}
+      </p>
+      <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "8px", maxWidth: "60ch" }}>
+        {t("feePortal.loadFailedNote")}
+      </p>
+      <button onClick={retry} disabled={busy} style={{ ...BTN_OUTLINE, marginTop: "12px", opacity: busy ? 0.6 : 1 }}>
+        {t("errorPage.tryAgain")}
+      </button>
+    </div>
   );
 }
 

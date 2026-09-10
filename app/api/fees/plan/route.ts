@@ -35,14 +35,18 @@ export async function GET(req: NextRequest) {
   if (!isUuid(dealId)) return NextResponse.json({ error: "dealId required" }, { status: 400 });
 
   const admin = createAdminClient();
-  const deal = await ownFeeDeal(admin, user.id, dealId);
+  const { deal, failed } = await ownFeeDeal(admin, user.id, dealId);
+  if (failed) return NextResponse.json({ error: "Could not read the fee" }, { status: 500 });
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
-  const { data: rows } = await admin
+  const { data: rows, error } = await admin
     .from("fee_instalments")
     .select("seq, amount, due_date, paid_at, billing_error")
     .eq("deal_id", dealId)
     .order("seq");
+  // An unread schedule is not an absent one: [] here hides instalments the
+  // founder is being billed for and re-offers a plan on a fee that has one.
+  if (error) return NextResponse.json({ error: "Could not read the schedule" }, { status: 500 });
 
   const instalments = rows ?? [];
   return NextResponse.json({
@@ -68,7 +72,8 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
-  const deal = await ownFeeDeal(admin, user.id, dealId);
+  const { deal, failed } = await ownFeeDeal(admin, user.id, dealId);
+  if (failed) return NextResponse.json({ error: "Could not read the fee" }, { status: 500 });
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const state = feeState(deal as unknown as FeeDeal);
@@ -83,8 +88,11 @@ export async function POST(req: NextRequest) {
   // One plan per deal. Re-planning a fee already part-paid would mean
   // recomputing around money that has moved, and a payer who can reschedule
   // their own overdue payments does not have a schedule.
-  const { count: existing } = await admin
+  const { count: existing, error: countError } = await admin
     .from("fee_instalments").select("id", { count: "exact", head: true }).eq("deal_id", dealId);
+  // A count that could not be read reads as zero, and zero is the branch that
+  // voids the live invoice and writes a second schedule against the same fee.
+  if (countError) return NextResponse.json({ error: "Could not check for an existing plan. Try again." }, { status: 500 });
   if ((existing ?? 0) > 0) return NextResponse.json({ error: "This fee already has a payment plan." }, { status: 409 });
 
   // The fee is invoiced on close day, so it is almost always 'outstanding' when
@@ -137,16 +145,21 @@ export async function POST(req: NextRequest) {
  * something you set on your own debt.
  */
 async function ownFeeDeal(admin: ReturnType<typeof createAdminClient>, userId: string, dealId: string) {
-  const { data: startup } = await admin.from("startups").select("id, name").eq("owner_id", userId).maybeSingle();
-  if (!startup) return null;
+  const { data: startup, error: startupError } = await admin.from("startups").select("id, name").eq("owner_id", userId).maybeSingle();
+  // `failed` rides alongside the deal so the handlers can tell a broken read
+  // from a fee that is genuinely not this founder's. Answering both with "Deal
+  // not found" makes a statement about their debt out of a database being down.
+  if (startupError) return { deal: null, failed: true as const };
+  if (!startup) return { deal: null, failed: false as const };
 
-  const { data: deal } = await admin
+  const { data: deal, error: dealError } = await admin
     .from("deals")
     .select("id, startup_id, success_fee_amount, success_fee_invoiced, success_fee_paid_at, stripe_invoice_id, fee_billing_status, fee_waived_at, fee_disputed_at, fee_dispute_resolved_at, fee_refunded_at, fee_chargeback_at, fee_chargeback_resolved_at, currency, startup:startups(id, name)")
     .eq("id", dealId)
     .maybeSingle();
+  if (dealError) return { deal: null, failed: true as const };
 
-  if (!deal || deal.startup_id !== startup.id) return null;
-  if (deal.success_fee_amount == null) return null;
-  return deal;
+  if (!deal || deal.startup_id !== startup.id) return { deal: null, failed: false as const };
+  if (deal.success_fee_amount == null) return { deal: null, failed: false as const };
+  return { deal, failed: false as const };
 }

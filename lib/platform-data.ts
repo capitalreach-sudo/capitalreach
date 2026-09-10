@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase-server";
+import { MAX_PLAUSIBLE_AMOUNT } from "@/lib/format";
 
 export interface PlatformTopStartup {
   name: string; slug: string; industry: string; stage: string;
@@ -48,6 +49,61 @@ export const EMPTY_PLATFORM_DATA: PlatformData = {
   report: { medianByStage: {}, newThisMonth: 0 },
   lastUpdated: new Date(0).toISOString(),
 };
+
+/**
+ * A funding target that can be reported, or null.
+ *
+ * Zero is the column default for a founder who never stated one -- not a
+ * round of nothing. The upper bound is the display layer's (lib/format):
+ * production has carried targets of 10^17, and one of those inside a monthly
+ * total sets the capital chart's y-scale to it and flattens the other eleven
+ * months onto the axis, while the table beside the chart prints an absence
+ * dash for that same figure.
+ */
+function statedTarget(n: number | null | undefined): number | null {
+  if (typeof n !== "number" || !Number.isFinite(n)) return null;
+  return n > 0 && n <= MAX_PLAUSIBLE_AMOUNT ? n : null;
+}
+
+/**
+ * Twelve months of history, oldest first.
+ *
+ * Empty months are kept rather than dropped: a line that skips them draws a
+ * straight segment across the gap and reads as steady activity, which is the
+ * opposite of what happened. The window is built from the calendar rather
+ * than from the data, so a quiet platform looks quiet.
+ *
+ * Takes `now` instead of reading the clock so the window can be pinned.
+ */
+export function buildMonthlySeries(
+  now: Date,
+  listings: Array<{ created_at: string | null; funding_target: number | null }>,
+  closedDeals: Array<{ closed_at: string | null }>,
+): PlatformMonth[] {
+  const MONTHS = 12;
+  const monthKeys: string[] = [];
+  for (let i = MONTHS - 1; i >= 0; i--) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+    monthKeys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`);
+  }
+  const monthOf = (iso: string | null | undefined) => (iso ? iso.slice(0, 7) : null);
+  const monthly: PlatformMonth[] = monthKeys.map((month) => ({ month, listings: 0, closed: 0, sought: 0 }));
+  const indexOfMonth = new Map(monthKeys.map((m, i) => [m, i]));
+
+  for (const s of listings) {
+    const i = indexOfMonth.get(monthOf(s.created_at) ?? "");
+    if (i === undefined) continue;
+    monthly[i].listings += 1;
+    const target = statedTarget(s.funding_target);
+    if (target !== null) monthly[i].sought += target;
+  }
+  for (const d of closedDeals) {
+    const i = indexOfMonth.get(monthOf(d.closed_at) ?? "");
+    if (i === undefined) continue;
+    monthly[i].closed += 1;
+  }
+  return monthly;
+}
 
 /**
  * Public aggregate statistics for the Data Centre. Used by the server page
@@ -109,34 +165,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       new Set(closedDeals.map((d) => d.currency).filter(Boolean))
     );
 
-    // Twelve months of history, oldest first.
-    //
-    // Empty months are kept rather than dropped: a line that skips them draws
-    // a straight segment across the gap and reads as steady activity, which is
-    // the opposite of what happened. The window is built from the calendar
-    // rather than from the data, so a quiet platform looks quiet.
-    const MONTHS = 12;
-    const now = new Date();
-    const monthKeys: string[] = [];
-    for (let i = MONTHS - 1; i >= 0; i--) {
-      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
-      monthKeys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`);
-    }
-    const monthOf = (iso: string | null | undefined) => (iso ? iso.slice(0, 7) : null);
-    const monthly: PlatformMonth[] = monthKeys.map((month) => ({ month, listings: 0, closed: 0, sought: 0 }));
-    const indexOfMonth = new Map(monthKeys.map((m, i) => [m, i]));
-
-    for (const s of startupData) {
-      const i = indexOfMonth.get(monthOf(s.created_at) ?? "");
-      if (i === undefined) continue;
-      monthly[i].listings += 1;
-      monthly[i].sought += s.funding_target ?? 0;
-    }
-    for (const d of closedDeals) {
-      const i = indexOfMonth.get(monthOf(d.closed_at) ?? "");
-      if (i === undefined) continue;
-      monthly[i].closed += 1;
-    }
+    const monthly = buildMonthlySeries(new Date(), startupData, closedDeals);
 
     // Industry breakdown
     const byIndustry: Record<string, number> = {};
@@ -187,8 +216,9 @@ export async function computePlatformData(): Promise<PlatformData | null> {
     // "typical" number the report claims.
     const targetsByStage: Record<string, number[]> = {};
     for (const st of startupData) {
-      if (st.stage && st.funding_target) {
-        (targetsByStage[st.stage] ??= []).push(st.funding_target);
+      const target = statedTarget(st.funding_target);
+      if (st.stage && target !== null) {
+        (targetsByStage[st.stage] ??= []).push(target);
       }
     }
     const medianByStage: Record<string, number> = {};

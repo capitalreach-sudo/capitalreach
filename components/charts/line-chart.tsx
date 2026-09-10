@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { SERIES, GRID, AXIS_TEXT } from "./palette";
+import { plotCeiling } from "@/lib/validators";
 
 export interface LineSeries {
   key: string;
@@ -41,11 +42,8 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
   const plotW = W - PAD.left - PAD.right;
   const plotH = H - PAD.top - PAD.bottom;
 
-  const all = series.flatMap(s => s.values);
-  const rawMax = Math.max(1, ...all);
-  // A round ceiling, so the gridline labels are numbers a person would say.
-  const step = Math.pow(10, Math.floor(Math.log10(rawMax)));
-  const max = Math.ceil(rawMax / step) * step || 1;
+  // Every series shares one scale, so one bad value is everyone's problem.
+  const max = plotCeiling(series.flatMap(s => s.values));
 
   const n = Math.max(labels.length, 1);
   const x = (i: number) => PAD.left + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
@@ -81,16 +79,31 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
 
         {series.map((s, si) => {
           const colour = SERIES[si % SERIES.length];
-          const d = s.values.map((v, i) => `${i === 0 ? "M" : "L"}${x(i)},${y(v)}`).join(" ");
+          // One NaN coordinate voids the whole path element, so a point that
+          // isn't a number becomes a break in the line instead of an erased
+          // series. Adjacent points join; a gap stays a gap, because a segment
+          // drawn across it reads as data that was never measured.
+          const pts = s.values.flatMap((v, i) => (Number.isFinite(v) ? [{ i, v }] : []));
+          const d = pts.map((p, k) =>
+            `${k > 0 && pts[k - 1].i === p.i - 1 ? "L" : "M"}${x(p.i)},${y(p.v)}`).join(" ");
+          const last = pts[pts.length - 1];
           return (
             <g key={s.key}>
               <path d={d} fill="none" stroke={colour} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
               {/* The last point is labelled directly, so the line is
                   identifiable without travelling to the legend. */}
-              {s.values.length > 0 && (
-                <circle cx={x(s.values.length - 1)} cy={y(s.values[s.values.length - 1])} r={4}
+              {last && (
+                <circle cx={x(last.i)} cy={y(last.v)} r={4}
                   fill={colour} stroke="var(--cr-paper)" strokeWidth={2} />
               )}
+              {/* A point with a gap on both sides has no segment to appear in,
+                  and a measurement that renders as nothing is the failure this
+                  guard exists to prevent. */}
+              {pts.map((p, k) => (
+                (k === 0 || pts[k - 1].i !== p.i - 1) && (k === pts.length - 1 || pts[k + 1].i !== p.i + 1) ? (
+                  <circle key={p.i} cx={x(p.i)} cy={y(p.v)} r={2.5} fill={colour} />
+                ) : null
+              ))}
             </g>
           );
         })}
@@ -106,8 +119,10 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
           <g pointerEvents="none">
             <line x1={x(hover)} x2={x(hover)} y1={PAD.top} y2={PAD.top + plotH} stroke={AXIS_TEXT} strokeWidth={1} strokeDasharray="3 3" />
             {series.map((s, si) => (
-              <circle key={s.key} cx={x(hover)} cy={y(s.values[hover] ?? 0)} r={4.5}
-                fill={SERIES[si % SERIES.length]} stroke="var(--cr-paper)" strokeWidth={2} />
+              Number.isFinite(s.values[hover]) ? (
+                <circle key={s.key} cx={x(hover)} cy={y(s.values[hover])} r={4.5}
+                  fill={SERIES[si % SERIES.length]} stroke="var(--cr-paper)" strokeWidth={2} />
+              ) : null
             ))}
           </g>
         )}
@@ -124,14 +139,18 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 10.5, color: "var(--cr-ink)", marginBottom: 3 }}>
             {labels[hover]}
           </p>
+          {/* A series with nothing at this point gets no row, matching the
+              break in its line. Reading it as zero would invent a measurement. */}
           {series.map((s, si) => (
-            <p key={s.key} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: 5 }}>
-              <span style={{ width: 7, height: 7, borderRadius: 2, background: SERIES[si % SERIES.length], display: "inline-block" }} />
-              {s.label}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink)" }}>
-                {s.format ? s.format(s.values[hover] ?? 0) : String(s.values[hover] ?? 0)}
-              </span>
-            </p>
+            Number.isFinite(s.values[hover]) ? (
+              <p key={s.key} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ width: 7, height: 7, borderRadius: 2, background: SERIES[si % SERIES.length], display: "inline-block" }} />
+                {s.label}
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink)" }}>
+                  {s.format ? s.format(s.values[hover]) : String(s.values[hover])}
+                </span>
+              </p>
+            ) : null
           ))}
         </div>
       )}

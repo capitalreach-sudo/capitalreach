@@ -369,6 +369,20 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
   const amountNumber = amount ? Number(amount) : NaN;
   const canFile = !!choice && attested && !busy;
 
+  /** Filing moves nothing on the listing: round_state is the founder's own
+   *  lever on the dashboard, and this address answers at any of the four
+   *  states. So the lead has to name the state the listing is actually in --
+   *  telling a founder whose round is still live that they marked it closed
+   *  states something the record does not, on the one page whose entire worth
+   *  is that what it says can be relied on. Oversubscribed reads as live: the
+   *  listing is still taking interest. */
+  const leadKey =
+    data.startup.roundState === "closed"
+      ? "closureDecl.lead"
+      : data.startup.roundState === "paused"
+        ? "closureDecl.leadPaused"
+        : "closureDecl.leadLive";
+
   return (
     <div>
       <Opener n="✦">{t("closureDecl.eyebrow")}</Opener>
@@ -378,7 +392,7 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
       }}>
         {t("closureDecl.title", { company: data.startup.name })}
       </h2>
-      <p style={{ ...BODY, maxWidth: "62ch", marginBottom: "24px" }}>{t("closureDecl.lead")}</p>
+      <p style={{ ...BODY, maxWidth: "62ch", marginBottom: "24px" }}>{t(leadKey)}</p>
 
       {/* The three figures that decide what this document means, in mono,
           before any prose asks the reader to take them on trust. */}

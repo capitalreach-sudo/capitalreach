@@ -4086,7 +4086,9 @@
       "withdrawn": "Ingetrokken"
     },
     "pastTitle": "Eerdere verklaringen",
-    "footnote": "Met deze indiening wordt geen factuur opgemaakt. Een vergoeding wordt door een medewerker vastgesteld, op basis van deze verklaring en de vastlegging van de introductie, en u krijgt haar te zien en kunt haar betwisten voordat er iets in rekening wordt gebracht."
+    "footnote": "Met deze indiening wordt geen factuur opgemaakt. Een vergoeding wordt door een medewerker vastgesteld, op basis van deze verklaring en de vastlegging van de introductie, en u krijgt haar te zien en kunt haar betwisten voordat er iets in rekening wordt gebracht.",
+    "leadLive": "Uw ronde staat nog live op het platform. Dit is de vastlegging van hoe de ronde is geëindigd en wie eraan heeft deelgenomen. Het indienen ervan verandert niets aan uw listing, dus zet de ronde op afgesloten in uw dashboard zodra zij voorbij is. Zij wordt gedateerd, bij uw account bewaard en vormt de grondslag voor elke vergoeding, of voor het besluit er geen in rekening te brengen.",
+    "leadPaused": "Uw ronde is gepauzeerd, niet afgesloten. Dit is de vastlegging van hoe de ronde is geëindigd en wie eraan heeft deelgenomen. Het indienen ervan verandert niets aan uw listing, dus zet de ronde op afgesloten in uw dashboard zodra zij voorbij is. Zij wordt gedateerd, bij uw account bewaard en vormt de grondslag voor elke vergoeding, of voor het besluit er geen in rekening te brengen."
   },
   "caseFile": {
     "title": "Dossiers",
@@ -4249,7 +4251,9 @@
     "countered": "Tegenbod ontvangen",
     "counteredNote": "Uw antwoord volgt.",
     "conversation": "Gesprek openen",
-    "pipeline": "In pijplijn bekijken"
+    "pipeline": "In pijplijn bekijken",
+    "certify": "Investeerdersstatus bevestigen",
+    "certifyNote": "Een bod is een toezegging van kapitaal, dus vragen wij u uw status eenmalig te certificeren. Het kost u een moment en het geldt voor elke listing."
   },
   "offerComposer": {
     "eyebrow": "Bod",
@@ -4298,7 +4302,9 @@
     "sent": "Bod verstuurd. De oprichter antwoordt nu.",
     "counterSent": "Tegenbod verstuurd.",
     "failed": "Dat bod is niet verstuurd.",
-    "equityRange": "Het aandelenbelang moet tussen 0 en 100 procent liggen."
+    "equityRange": "Het aandelenbelang moet tussen 0 en 100 procent liggen.",
+    "notAccredited": "Bevestig uw investeerdersstatus in Instellingen voordat u een bod uitbrengt.",
+    "notAccreditedCta": "Naar Instellingen"
   },
   "offerInbox": {
     "title": "Biedingen",
@@ -4430,6 +4436,13 @@
     "ladderNote": "Elke stap wordt teruggedraaid zodra de factuur is betaald. Bij geen enkele stap wordt iets verwijderd: uw listing, dataroom, documenten, berichten en elke lopende deal blijven precies zoals ze zijn. Een betwiste vergoeding blijft ongewijzigd zolang de beoordeling loopt.",
     "disputeNote": "Het aanmanen stopt en er escaleert niets zolang dit wordt beoordeeld.",
     "loadFailed": "Uw vergoedingen konden niet worden geladen.",
-    "link": "Succesvergoedingen"
+    "link": "Succesvergoedingen",
+    "loadFailedNote": "Dit zegt niets over wat u verschuldigd bent. Uw facturen, een eventuele betalingsregeling en eventuele maatregelen op uw listing blijven ongewijzigd."
+  },
+  "listingSafety": {
+    "withheld": "Uit wat u zojuist hebt opgeslagen zijn contactgegevens achtergehouden. Een gepubliceerde pagina wordt door iedereen gelezen, dus een e-mailadres, telefoonnummer of messaging-account hoort daar niet op. Een investeerder bereikt u via een bod, en daarna zijn uw gegevens uw eigen zaak. Links zijn ongemoeid gelaten, uw website inbegrepen, en de rest is precies zo opgeslagen als u het hebt geschreven."
+  },
+  "msgStart": {
+    "listingNotLive": "Uw listing moet live staan voordat u andere bedrijven een bericht kunt sturen. Hij ligt bij ons ter beoordeling."
   }
 }

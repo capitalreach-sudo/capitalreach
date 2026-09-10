@@ -7,7 +7,6 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { INDUSTRIES, STAGES } from "@/types";
 import { FOUNDER_PLANS } from "@/lib/plans";
-import { slugify } from "@/lib/utils";
 import {
   TrendingUp, ChevronRight, ChevronLeft, Plus, Trash2, Upload,
   CheckCircle2, Globe, Twitter, Link2, Linkedin, Lock,
@@ -218,15 +217,6 @@ export default function StartupOnboardingPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return false; }
 
-    // ONE listing per founder from this flow. The plan buttons call this on
-    // every press, and checkout can bounce the founder back here — a plain
-    // insert turned each retry into another pending-review listing (a real
-    // account reached FIVE), and every ".single()" lookup on "their startup"
-    // then failed, locking them out entirely. Reuse the existing row.
-    const { data: existing } = await supabase.from("startups")
-      .select("id, status").eq("owner_id", user.id)
-      .order("created_at", { ascending: true }).limit(1).maybeSingle();
-
     const fields = {
       name,
       website: website || null, tagline,
@@ -253,32 +243,32 @@ export default function StartupOnboardingPage() {
       competitors_json: competitors.filter(c => c.name),
     };
 
-    let startup: { id: string } | null = null;
-    let error: { message?: string } | null = null;
-    const isNew = !existing;
-    if (existing) {
-      // Approved already? Don't silently knock a live listing back to
-      // pending — just take them to their dashboard.
-      const res = await supabase.from("startups").update(fields).eq("id", existing.id).select("id").single();
-      startup = res.data; error = res.error;
-    } else {
-      const slug = slugify(name) + "-" + Math.random().toString(36).slice(2, 6);
-      const res = await supabase.from("startups").insert({
-        owner_id: user.id, slug,
-        status: "pending_review", subscription_tier: "free",
-        ...fields,
-      }).select("id").single();
-      startup = res.data; error = res.error;
-    }
+    // The route owns the write: the pitch fields are masked for contact
+    // details on the way in, because a description is read by every investor
+    // who opens the page and there is no redacting that afterwards. It also
+    // owns the ONE-listing-per-founder rule. The plan buttons call this on
+    // every press and checkout can bounce the founder back here, and a plain
+    // insert turned each retry into another pending-review listing (a real
+    // account reached FIVE), after which every ".single()" lookup on "their
+    // startup" failed and locked them out.
+    const res = await fetch("/api/startups/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields, create: true }),
+    }).catch(() => null);
+    const saved = res ? await res.json().catch(() => ({})) : {};
 
-    if (error || !startup) {
+    if (!res || !res.ok || !saved?.id) {
       // Postgres messages are for logs, not founders.
-      const friendly = /numeric field overflow/i.test(error?.message || "")
+      const friendly = /numeric field overflow/i.test(saved?.error || "")
         ? t("onboarding.su.numberTooLarge")
-        : error?.message || "";
+        : saved?.error || "";
       notify.error(t("onboarding.su.errorSaving") + " " + friendly);
       setLoading(false); return false;
     }
+    if (saved.contactsWithheld?.length) notify.info(t("listingSafety.withheld"));
+
+    const startup: { id: string } = { id: saved.id };
+    const isNew = saved.created === true;
 
     // The listing itself is saved by here; these are secondary. If either
     // fails, don't lose the founder's work silently — warn so they can re-add

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
-  TRUST_LADDER, evidenceChecklist, requiredEvidence,
+  TRUST_LADDER, evidenceByKind, evidenceChecklist, requiredEvidence,
   type EvidenceKind, type SubjectType, type TrustLevel,
 } from "@/lib/trust";
 import { EvidenceItem, isSatisfied, type EvidenceView } from "@/components/verify/evidence-item";
@@ -92,11 +92,11 @@ export function VerifyFlow({
   const editable = !caseRow || EDITABLE.includes(caseRow.status);
   const checklist = useMemo(() => evidenceChecklist(level, subjectType), [level, subjectType]);
 
-  const byKind = useMemo(() => {
-    const map = new Map<string, EvidenceView>();
-    for (const row of initialEvidence) map.set(row.kind, row);
-    return map;
-  }, [initialEvidence]);
+  // The domain proof keeps one row per domain tried, so taking the last row of
+  // a kind lets a mistyped second domain hide the one that passed -- and the
+  // submit route, which counts any supplied row, would then accept a case this
+  // page still shows as outstanding.
+  const byKind = useMemo(() => evidenceByKind(initialEvidence), [initialEvidence]);
 
   const outstanding = checklist.filter((kind) => !isSatisfied(byKind.get(kind)));
   const extras = initialEvidence.filter((row) => !checklist.includes(row.kind as EvidenceKind));
