@@ -106,14 +106,22 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 // ── Metric cell ───────────────────────────────────────────────────────────────
 
+/**
+ * One column of the header's metrics strip. The cell carries only its right
+ * and bottom hairlines; the strip container supplies the top and left, so the
+ * four cells close into a single ruled block at any column count the
+ * breakpoint chooses -- 2 up on a phone, 4 across on a desk. A tinted,
+ * rounded, bordered tile per number would be four boxes inside the page's
+ * own frame, which the house reads as card-in-card.
+ */
 function MetricCell({ label, value, copper, termKey }: { label: string; value: string | null; copper?: boolean; termKey?: string }) {
   return (
-    <div style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "12px 14px 10px" }}>
+    <div style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0 }}>
       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "6px" }}>
         {label}
         {termKey && <InfoTip termKey={termKey} />}
       </div>
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "20px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "20px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {value ?? "—"}
       </div>
     </div>
@@ -1002,7 +1010,7 @@ export function StartupDetailClient({
             })()}
 
             {/* Key metrics strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "10px" }}>
+            <div className="grid grid-cols-2 md:grid-cols-4" style={{ borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)" }}>
               <MetricCell label={t("startupDetail.raising")}  value={safeFormatCurrencyAmount(startup.funding_target)} copper />
               <MetricCell label={t("startupDetail.equity")}   value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
               <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />

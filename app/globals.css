@@ -1059,16 +1059,24 @@ a:hover > .cr-diamond-live {
   animation: ruleExtend 400ms cubic-bezier(.16,1,.3,1) forwards;
 }
 
-/* ── FEATURE 15: Frosted glass pricing cards ─────────────── */
+/* ── Plan cards ───────────────────────────────────────────────
+   These were frosted glass, which docs/DESIGN-SPEC.md bans by name in the
+   same line as gradient blobs and floating 3D shapes. A translucent panel
+   blurring whatever happens to sit behind it is decoration standing in for
+   hierarchy: the card is either a distinct surface or it is not, and a real
+   surface says so with its own value.
+
+   Solid tokens now, one step up from the page, which is also what makes the
+   featured card legible as a step above the others rather than as more blur.
+   The veil tokens stay for the paywall gate, where obscuring the content
+   behind is the actual job rather than an effect. */
 .plan-card {
-  background: var(--cr-card-veil);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--cr-card-veil-br);
+  background: var(--cr-paper-2);
+  border: 1px solid var(--cr-rule-dark);
   box-shadow: var(--cr-card-edge), var(--cr-card-shadow);
 }
 .plan-card.featured {
-  background: var(--cr-card-veil-strong);
+  background: var(--cr-paper-3);
   border: 1px solid color-mix(in srgb, var(--cr-copper) 30%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--cr-copper) 15%, transparent),

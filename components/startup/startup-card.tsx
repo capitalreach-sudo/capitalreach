@@ -215,14 +215,18 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
         </div>
 
         {/* Row 3 — Metrics */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "14px" }}>
+        {/* Rules, not boxes. Three bordered tiles inside a bordered card is a
+            card inside a card, and the house forbids it: inside a card,
+            structure is hairlines. Same strip the browse result card uses, so
+            a specimen reads the same in the drawer and in the grid. */}
+        <div style={{ display: "flex", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: "14px" }}>
           {[
             { key: "mrr",    label: t("startupDetail.mrr"),    value: startup.mrr         ? safeFormatMRR(startup.mrr)                                              : null, gated: true  },
             { key: "arr",    label: t("startupDetail.arr"),    value: startup.arr         ? safeFormatMRR(startup.arr)                                              : null, gated: true  },
             { key: "growth", label: t("startupDetail.growth"), value: startup.growth_rate != null ? `${startup.growth_rate >= 0 ? "+" : ""}${startup.growth_rate}%`        : null, gated: false },
-          ].map(({ key, label, value, gated }) => (
-            <div key={key} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "10px 10px 8px" }}>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "5px" }}>
+          ].map(({ key, label, value, gated }, i) => (
+            <div key={key} style={{ flex: 1, minWidth: 0, padding: "8px 12px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>
                 {label}
               </div>
               {gated && !canSeeFinancials ? (
@@ -238,6 +242,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
                   color:      startup.growth_rate != null && key === "growth"
                     ? startup.growth_rate >= 0 ? "var(--cr-up)" : "var(--cr-down)"
                     : "var(--cr-ink)",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>
                   {value}
                 </div>
