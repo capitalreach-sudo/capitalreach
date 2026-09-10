@@ -3396,7 +3396,28 @@
     "accepted": "Negócio aberto — já está nos dois quadros",
     "sent": "Pedido enviado — a outra parte tem de aceitar primeiro",
     "sentToFounder": "Pedido enviado — o fundador decide se abre o negócio",
-    "emptyColumn": "Os novos pedidos chegam aqui"
+    "emptyColumn": "Os novos pedidos chegam aqui",
+    "acceptOpens": "Aceitar estas condições abre o negócio e a conversa. Contrapropor mantém a negociação aberta com um número seu.",
+    "amount": "Montante",
+    "changed": "Alterado",
+    "conditions": "Condições",
+    "counter": "Contrapropor",
+    "counterAria": "Contrapropor à oferta de {name}",
+    "counterOffer": "Contraproposta",
+    "equity": "Capital",
+    "historyHide": "Ocultar as rondas anteriores",
+    "historyShow": "Ver todas as {count} rondas",
+    "instrument": "Instrumento",
+    "notStated": "Não indicado",
+    "openingOffer": "Oferta inicial",
+    "roundN": "Ronda {n}",
+    "sideThem": "Eles",
+    "sideYou": "Você",
+    "theirNote": "A nota deles",
+    "valuation": "Avaliação",
+    "wasBefore": "Era {value}",
+    "wasUnset": "Não indicado na ronda anterior",
+    "yourNote": "A sua nota"
   },
   "waitlist": {
     "joinIfSpace": "Entrar na lista de espera",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "O seu anúncio é publicado assim que forem verificadas a sua empresa e a sua qualidade para a representar.",
     "messageBlocked": "Verifique a sua identidade para iniciar conversas. Os fundadores só recebem contactos de pessoas identificadas.",
-    "dataroomBlocked": "Verifique a sua identidade para aceder a data rooms. Um NDA só é oponível a uma contraparte identificada."
+    "dataroomBlocked": "Verifique a sua identidade para aceder a data rooms. Um NDA só é oponível a uma contraparte identificada.",
+    "offerBody": "Aqui a conversa começa pelas condições: montante, capital, avaliação, instrumento. Assim o fundador tem algo concreto para aceitar, recusar ou contrapropor.",
+    "offerCta": "Apresentar oferta",
+    "offerFounderBody": "É a oferta de um investidor, aceite por si, que coloca os dois no registo e abre a conversa. Tudo o que aguarda resposta está nas suas ofertas.",
+    "offerFounderCta": "Abrir as suas ofertas",
+    "offerFounderTitle": "Esta conversa abre com uma oferta aceite",
+    "offerSentBody": "O fundador pode aceitá-la, recusá-la ou contrapropor com condições próprias. A conversa abre assim que uma oferta for aceite e ambos tiverem assinado o registo.",
+    "offerSentCta": "Ver a sua oferta",
+    "offerSentTitle": "A sua oferta está com o fundador",
+    "offerTitle": "É uma oferta que abre esta conversa",
+    "rowSign": "Assine para abrir a conversa",
+    "rowUnsigned": "Registo por assinar",
+    "sealPendingBody": "Ambas as partes assinam o registo do negócio, e é a segunda assinatura que abre a conversa entre vocês. Entretanto, ofertas, contrapropostas, perguntas e pedidos de documentos continuam a funcionar.",
+    "sealPendingCta": "Abrir o registo do negócio",
+    "sealPendingTitle": "Este negócio ainda não está assinado",
+    "sealTheirsBody": "A sua assinatura está no registo do negócio, a da outra parte não. A conversa abre no momento em que ela chegar, e a outra parte já foi informada de que falta assinar.",
+    "sealTheirsCta": "Ver o registo",
+    "sealTheirsTitle": "À espera da assinatura da outra parte",
+    "sealYoursBody": "A outra parte já assinou o registo do negócio. A conversa abre assim que assinar também, e assinar não o vincula às condições nem à ronda.",
+    "sealYoursCta": "Assinar o registo",
+    "sealYoursTitle": "Falta apenas a sua assinatura"
   },
   "nda": {
     "parties": "Partes",
@@ -4483,6 +4524,15 @@
     "unsigned": "Ainda não assinado",
     "version": "Versão {version}",
     "waitingOnThem": "A sua assinatura ficou registada. A conversa abre assim que a outra parte assinar.",
-    "yourName": "O seu nome completo"
+    "yourName": "O seu nome completo",
+    "opensMessaging": "A conversa entre os dois abre no momento em que as duas assinaturas estiverem neste registo, e a plataforma deixa de reservar os vossos dados de contacto. Até lá, ofertas, contrapropostas, perguntas e pedidos de documentos continuam a funcionar."
+  },
+  "founderContact": {
+    "dealRequired": "Pode escrever a um investidor assim que tiver um negócio com ele. Abra um a partir do perfil dele: ele aceita, ambos assinam o registo e esta conversa abre.",
+    "dealsCta": "Ir para o negócio",
+    "offerWaiting": "Este investidor tem uma oferta à espera da sua resposta. Aceite-a, assinem ambos o registo e a conversa abre.",
+    "offersCta": "Ver a oferta",
+    "openDealCta": "Abrir um negócio",
+    "proposalPending": "O seu pedido de negócio está com este investidor. Assim que ele o aceitar e ambos assinarem o registo, podem falar aqui."
   }
 }

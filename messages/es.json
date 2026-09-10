@@ -3396,7 +3396,28 @@
     "accepted": "Operación abierta: ya está en ambos tableros",
     "sent": "Solicitud enviada: la otra parte debe aceptar primero",
     "sentToFounder": "Solicitud enviada: el fundador decide si abre la operación",
-    "emptyColumn": "Las nuevas solicitudes llegan aquí"
+    "emptyColumn": "Las nuevas solicitudes llegan aquí",
+    "acceptOpens": "Aceptar estas condiciones abre la operación y la conversación. Contraofertar mantiene la negociación abierta con su propio importe.",
+    "amount": "Importe",
+    "changed": "Modificado",
+    "conditions": "Condiciones",
+    "counter": "Contraofertar",
+    "counterAria": "Contraofertar la oferta de {name}",
+    "counterOffer": "Contraoferta",
+    "equity": "Participación",
+    "historyHide": "Ocultar las rondas anteriores",
+    "historyShow": "Ver las {count} rondas",
+    "instrument": "Instrumento",
+    "notStated": "Sin indicar",
+    "openingOffer": "Oferta inicial",
+    "roundN": "Ronda {n}",
+    "sideThem": "Ellos",
+    "sideYou": "Usted",
+    "theirNote": "Su nota",
+    "valuation": "Valoración",
+    "wasBefore": "Antes {value}",
+    "wasUnset": "Sin indicar en la ronda anterior",
+    "yourNote": "Nota de usted"
   },
   "waitlist": {
     "joinIfSpace": "Unirme a la lista de espera",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Su anuncio se publicará una vez verificadas su empresa y su facultad para actuar en nombre de esta.",
     "messageBlocked": "Verifique su identidad para iniciar conversaciones. Los fundadores solo reciben mensajes de personas identificadas.",
-    "dataroomBlocked": "Verifique su identidad para acceder a las salas de datos. Un acuerdo de confidencialidad solo es exigible frente a una contraparte identificada."
+    "dataroomBlocked": "Verifique su identidad para acceder a las salas de datos. Un acuerdo de confidencialidad solo es exigible frente a una contraparte identificada.",
+    "offerBody": "Aquí la conversación empieza con unas condiciones: importe, participación, valoración e instrumento. Así el fundador tiene algo concreto que aceptar, rechazar o contraofertar.",
+    "offerCta": "Presentar oferta",
+    "offerFounderBody": "Una oferta de un inversor, aceptada por usted, es lo que hace constar a ambas partes en el acta y abre la mensajería. Todo lo que está pendiente de respuesta se encuentra en sus ofertas.",
+    "offerFounderCta": "Ver sus ofertas",
+    "offerFounderTitle": "Esta conversación se abre con una oferta aceptada",
+    "offerSentBody": "El fundador puede aceptarla, rechazarla o contraofertar con sus propias condiciones. La mensajería se abre cuando una oferta se acepta y ambas partes han firmado el acta.",
+    "offerSentCta": "Ver su oferta",
+    "offerSentTitle": "Su oferta está en manos del fundador",
+    "offerTitle": "Una oferta abre esta conversación",
+    "rowSign": "Firmar para abrir la mensajería",
+    "rowUnsigned": "Acta sin firmar",
+    "sealPendingBody": "Ambas partes ponen su nombre en el acta del acuerdo, y es la segunda firma la que abre la mensajería entre ustedes. Mientras tanto, las ofertas, las contraofertas, las preguntas y las solicitudes de documentos siguen funcionando.",
+    "sealPendingCta": "Abrir el acta del acuerdo",
+    "sealPendingTitle": "Este acuerdo aún no está firmado",
+    "sealTheirsBody": "Su firma está en el acta del acuerdo y la de la otra parte no. La mensajería se abrirá en cuanto llegue, y ya se ha avisado a la otra parte de que está pendiente.",
+    "sealTheirsCta": "Ver el acta",
+    "sealTheirsTitle": "Pendiente de que firme la otra parte",
+    "sealYoursBody": "La otra parte ha firmado el acta del acuerdo. La mensajería se abrirá entre ustedes en cuanto usted también la firme, y firmar no le compromete ni con las condiciones ni con la ronda.",
+    "sealYoursCta": "Firmar el acta",
+    "sealYoursTitle": "Su firma es la que falta"
   },
   "nda": {
     "parties": "Partes",
@@ -4483,6 +4524,15 @@
     "unsigned": "Aún sin firmar",
     "version": "Versión {version}",
     "waitingOnThem": "Su firma queda registrada. La conversación se abrirá en cuanto firme la otra parte.",
-    "yourName": "Su nombre completo"
+    "yourName": "Su nombre completo",
+    "opensMessaging": "La mensajería entre ustedes se abre en el momento en que ambas firmas constan en esta acta, y la plataforma deja de ocultarles mutuamente sus datos de contacto. Hasta entonces, las ofertas, las contraofertas, las preguntas y las solicitudes de documentos siguen funcionando."
+  },
+  "founderContact": {
+    "dealRequired": "Puede escribir a un inversor cuando tenga una operación con él. Ábrala desde su perfil: el inversor la acepta, ambas partes firman el acta y esta conversación se abre.",
+    "dealsCta": "Ir a la operación",
+    "offerWaiting": "Este inversor tiene una oferta pendiente de su respuesta. Acéptela y, después, ambas partes firman el acta y la conversación se abre.",
+    "offersCta": "Ver la oferta",
+    "openDealCta": "Abrir una operación",
+    "proposalPending": "Su solicitud de operación está en manos de este inversor. Cuando la acepte y ambas partes firmen el acta, podrán hablar aquí."
   }
 }

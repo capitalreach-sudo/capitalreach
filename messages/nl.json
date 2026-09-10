@@ -3396,7 +3396,28 @@
     "accepted": "Deal geopend — hij staat nu op beide borden",
     "sent": "Verzoek verzonden — de andere kant moet eerst akkoord gaan",
     "sentToFounder": "Verzoek verzonden — de oprichter beslist of de deal opent",
-    "emptyColumn": "Nieuwe verzoeken komen hier binnen"
+    "emptyColumn": "Nieuwe verzoeken komen hier binnen",
+    "acceptOpens": "Aanvaardt u deze voorwaarden, dan gaan de deal en het gesprek open. Met een tegenbod houdt u het open met uw eigen bedrag.",
+    "amount": "Bedrag",
+    "changed": "Gewijzigd",
+    "conditions": "Voorwaarden",
+    "counter": "Tegenbod",
+    "counterAria": "Een tegenbod doen op het bod van {name}",
+    "counterOffer": "Tegenbod",
+    "equity": "Aandelen",
+    "historyHide": "Eerdere rondes verbergen",
+    "historyShow": "Alle {count} rondes tonen",
+    "instrument": "Instrument",
+    "notStated": "Niet vermeld",
+    "openingOffer": "Openingsbod",
+    "roundN": "Ronde {n}",
+    "sideThem": "Zij",
+    "sideYou": "U",
+    "theirNote": "Hun toelichting",
+    "valuation": "Waardering",
+    "wasBefore": "Was {value}",
+    "wasUnset": "Vorige ronde niet vermeld",
+    "yourNote": "Uw toelichting"
   },
   "waitlist": {
     "joinIfSpace": "Op de wachtlijst",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Uw aanbieding gaat live zodra uw onderneming en uw bevoegdheid om namens haar te handelen zijn geverifieerd.",
     "messageBlocked": "Verifieer uw identiteit om gesprekken te beginnen. Oprichters horen uitsluitend van personen die bij naam bekend zijn.",
-    "dataroomBlocked": "Verifieer uw identiteit om datarooms te openen. Een NDA is alleen afdwingbaar tegen een bij naam bekende wederpartij."
+    "dataroomBlocked": "Verifieer uw identiteit om datarooms te openen. Een NDA is alleen afdwingbaar tegen een bij naam bekende wederpartij.",
+    "offerBody": "Een gesprek begint hier met voorwaarden -- bedrag, aandelen, waardering, instrument -- zodat de oprichter iets concreets heeft om op te reageren: aanvaarden, afwijzen of een tegenbod doen.",
+    "offerCta": "Bod uitbrengen",
+    "offerFounderBody": "Een bod van een investeerder dat u aanvaardt, legt de deal tussen u beiden vast en opent het gesprek. Alles wat nog op een antwoord wacht, vindt u bij uw biedingen.",
+    "offerFounderCta": "Uw biedingen openen",
+    "offerFounderTitle": "Dit gesprek gaat open bij een aanvaard bod",
+    "offerSentBody": "De oprichter kan het aanvaarden, afwijzen of beantwoorden met een eigen tegenbod. Het gesprek gaat open zodra een bod is aanvaard en u allebei de vastlegging hebt ondertekend.",
+    "offerSentCta": "Bekijk uw bod",
+    "offerSentTitle": "Uw bod ligt bij de oprichter",
+    "offerTitle": "Een bod opent dit gesprek",
+    "rowSign": "Onderteken om het gesprek te openen",
+    "rowUnsigned": "Vastlegging niet ondertekend",
+    "sealPendingBody": "Beide partijen zetten hun naam onder de vastlegging van de deal, en de tweede handtekening opent het gesprek tussen u. Biedingen, tegenboden, vragen en documentverzoeken werken ondertussen gewoon.",
+    "sealPendingCta": "De vastlegging openen",
+    "sealPendingTitle": "Deze deal is nog niet ondertekend",
+    "sealTheirsBody": "Uw handtekening staat onder de vastlegging van de deal, die van de andere partij nog niet. Het gesprek gaat open zodra die binnenkomt, en de andere partij weet dat er nog op wordt gewacht.",
+    "sealTheirsCta": "Vastlegging bekijken",
+    "sealTheirsTitle": "Wachten op de handtekening van de andere partij",
+    "sealYoursBody": "De andere partij heeft de vastlegging van de deal ondertekend. Het gesprek gaat open zodra u ook ondertekent, en met ondertekenen verplicht u zich noch tot de voorwaarden, noch tot de ronde.",
+    "sealYoursCta": "De vastlegging ondertekenen",
+    "sealYoursTitle": "Alleen uw handtekening ontbreekt nog"
   },
   "nda": {
     "parties": "Partijen",
@@ -4483,6 +4524,15 @@
     "unsigned": "Nog niet ondertekend",
     "version": "Versie {version}",
     "waitingOnThem": "Uw handtekening is vastgelegd. Het gesprek gaat open zodra de andere partij ondertekent.",
-    "yourName": "Uw volledige naam"
+    "yourName": "Uw volledige naam",
+    "opensMessaging": "Het gesprek tussen u beiden gaat open zodra beide handtekeningen onder deze vastlegging staan, en het platform schermt uw contactgegevens dan niet langer onderling af. Tot die tijd werken biedingen, tegenboden, vragen en documentverzoeken gewoon."
+  },
+  "founderContact": {
+    "dealRequired": "U kunt een investeerder een bericht sturen zodra u samen een deal hebt. Open er een vanaf het profiel: de investeerder aanvaardt, u ondertekent allebei de vastlegging en dit gesprek gaat open.",
+    "dealsCta": "Naar de deal",
+    "offerWaiting": "Deze investeerder heeft een bod uitgebracht dat op uw antwoord wacht. Aanvaard het, onderteken vervolgens allebei de vastlegging en het gesprek gaat open.",
+    "offersCta": "Bekijk het bod",
+    "openDealCta": "Een deal openen",
+    "proposalPending": "Uw dealverzoek ligt bij deze investeerder. Zodra het is aanvaard en u allebei de vastlegging hebt ondertekend, kunt u hier met elkaar spreken."
   }
 }

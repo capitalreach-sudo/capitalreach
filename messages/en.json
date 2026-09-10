@@ -3396,7 +3396,28 @@
     "accepted": "Deal opened — it is on both boards now",
     "sent": "Request sent — the other side has to accept first",
     "sentToFounder": "Request sent — the founder decides whether to open the deal",
-    "emptyColumn": "New requests land here"
+    "emptyColumn": "New requests land here",
+    "counter": "Counter",
+    "amount": "Amount",
+    "equity": "Equity",
+    "valuation": "Valuation",
+    "instrument": "Instrument",
+    "conditions": "Conditions",
+    "theirNote": "Their note",
+    "yourNote": "Your note",
+    "notStated": "Not stated",
+    "wasBefore": "Was {value}",
+    "wasUnset": "Not stated last round",
+    "changed": "Changed",
+    "openingOffer": "Opening offer",
+    "counterOffer": "Counter-offer",
+    "roundN": "Round {n}",
+    "sideYou": "You",
+    "sideThem": "Them",
+    "historyShow": "Show all {count} rounds",
+    "historyHide": "Hide the earlier rounds",
+    "acceptOpens": "Accepting these terms opens the deal and the conversation. Countering keeps it open with your own number.",
+    "counterAria": "Counter the offer from {name}"
   },
   "waitlist": {
     "joinIfSpace": "Join the waitlist",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Your listing goes live once your company and your authority to act for it are verified.",
     "messageBlocked": "Verify your identity to start conversations. Founders only hear from named people.",
-    "dataroomBlocked": "Verify your identity to open data rooms. An NDA is only enforceable against a named counterparty."
+    "dataroomBlocked": "Verify your identity to open data rooms. An NDA is only enforceable against a named counterparty.",
+    "sealPendingTitle": "This deal is not signed yet",
+    "sealPendingBody": "Both sides put their name to the deal record, and the second signature is what opens messaging between you. Offers, counters, questions and document requests all work in the meantime.",
+    "sealPendingCta": "Open the deal record",
+    "sealYoursTitle": "Your signature is the one outstanding",
+    "sealYoursBody": "The other side has signed the deal record. Messaging opens between you as soon as you sign it too, and signing commits you to neither the terms nor the round.",
+    "sealYoursCta": "Sign the record",
+    "sealTheirsTitle": "Waiting on the other side to sign",
+    "sealTheirsBody": "Your signature is on the deal record and theirs is not. Messaging opens the moment it lands, and they have been told it is outstanding.",
+    "sealTheirsCta": "View the record",
+    "offerTitle": "An offer opens this conversation",
+    "offerBody": "Messaging here starts with terms -- amount, equity, valuation, instrument -- so the founder has something concrete to accept, decline or counter.",
+    "offerCta": "Make an offer",
+    "offerSentTitle": "Your offer is with the founder",
+    "offerSentBody": "They can accept it, decline it, or counter with terms of their own. Messaging opens once an offer is accepted and both of you have signed the record.",
+    "offerSentCta": "See your offer",
+    "offerFounderTitle": "This conversation opens on an accepted offer",
+    "offerFounderBody": "An investor's offer, accepted by you, is what puts the two of you on the record and opens messaging. Anything waiting on an answer is in your offers.",
+    "offerFounderCta": "Open your offers",
+    "rowUnsigned": "Record unsigned",
+    "rowSign": "Sign to open messaging"
   },
   "nda": {
     "parties": "Parties",
@@ -4483,6 +4524,15 @@
     "nameRequired": "Type your full name to sign.",
     "mustAgree": "Tick the box to confirm you have read the record.",
     "required": "You can message each other once the deal record is signed by both sides.",
-    "cardSealed": "Sealed {date}"
+    "cardSealed": "Sealed {date}",
+    "opensMessaging": "Messaging between the two of you opens the moment both signatures are on this record, and the platform stops withholding your contact details from each other. Until then, offers, counters, questions and document requests all still work."
+  },
+  "founderContact": {
+    "dealRequired": "You can message an investor once you have a deal with them. Open one from their profile: they accept it, you both sign the record, and this conversation opens.",
+    "offerWaiting": "This investor has an offer waiting for your answer. Accept it, then both of you sign the record and the conversation opens.",
+    "proposalPending": "Your deal proposal is with this investor. Once they accept it and you both sign the record, you can talk here.",
+    "openDealCta": "Open a deal",
+    "offersCta": "See the offer",
+    "dealsCta": "Go to the deal"
   }
 }

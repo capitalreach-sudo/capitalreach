@@ -3396,7 +3396,28 @@
     "accepted": "Affären öppnad — den ligger nu på båda tavlorna",
     "sent": "Förfrågan skickad — motparten måste först acceptera",
     "sentToFounder": "Förfrågan skickad — grundaren avgör om affären öppnas",
-    "emptyColumn": "Nya förfrågningar hamnar här"
+    "emptyColumn": "Nya förfrågningar hamnar här",
+    "acceptOpens": "Att acceptera de här villkoren öppnar affären och konversationen. Ett motbud håller den öppen med din egen siffra.",
+    "amount": "Belopp",
+    "changed": "Ändrat",
+    "conditions": "Villkor",
+    "counter": "Motbjud",
+    "counterAria": "Motbjud budet från {name}",
+    "counterOffer": "Motbud",
+    "equity": "Ägarandel",
+    "historyHide": "Dölj tidigare rundor",
+    "historyShow": "Visa alla {count} rundor",
+    "instrument": "Instrument",
+    "notStated": "Ej angivet",
+    "openingOffer": "Öppningsbud",
+    "roundN": "Runda {n}",
+    "sideThem": "De",
+    "sideYou": "Du",
+    "theirNote": "Deras meddelande",
+    "valuation": "Värdering",
+    "wasBefore": "Var {value}",
+    "wasUnset": "Ej angivet förra rundan",
+    "yourNote": "Ditt meddelande"
   },
   "waitlist": {
     "joinIfSpace": "Ställ mig på väntelistan",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Din annons publiceras när ditt bolag och din behörighet att företräda det har verifierats.",
     "messageBlocked": "Verifiera din identitet för att inleda samtal. Grundare hör bara från namngivna personer.",
-    "dataroomBlocked": "Verifiera din identitet för att öppna datarum. Ett sekretessavtal kan endast göras gällande mot en namngiven motpart."
+    "dataroomBlocked": "Verifiera din identitet för att öppna datarum. Ett sekretessavtal kan endast göras gällande mot en namngiven motpart.",
+    "offerBody": "Kontakten här inleds med villkor: belopp, ägarandel, värdering, instrument, så att grundaren får något konkret att acceptera, avböja eller motbjuda.",
+    "offerCta": "Lämna bud",
+    "offerFounderBody": "Ett bud från en investerare som du accepterar är det som för in er båda i affärsdokumentet och öppnar konversationen. Allt som väntar på svar finns bland dina bud.",
+    "offerFounderCta": "Öppna dina bud",
+    "offerFounderTitle": "Den här konversationen öppnas med ett accepterat bud",
+    "offerSentBody": "De kan acceptera det, avböja det eller motbjuda med egna villkor. Konversationen öppnas när ett bud har accepterats och ni båda har undertecknat dokumentet.",
+    "offerSentCta": "Se ditt bud",
+    "offerSentTitle": "Ditt bud ligger hos grundaren",
+    "offerTitle": "Ett bud öppnar den här konversationen",
+    "rowSign": "Underteckna för att öppna konversationen",
+    "rowUnsigned": "Dokumentet ej undertecknat",
+    "sealPendingBody": "Båda parter sätter sitt namn på affärsdokumentet, och det är den andra underskriften som öppnar konversationen mellan er. Bud, motbud, frågor och dokumentförfrågningar fungerar under tiden.",
+    "sealPendingCta": "Öppna affärsdokumentet",
+    "sealPendingTitle": "Den här affären är inte undertecknad än",
+    "sealTheirsBody": "Din underskrift finns på affärsdokumentet, men inte motpartens. Konversationen öppnas i samma stund den kommer in, och motparten har underrättats om att den saknas.",
+    "sealTheirsCta": "Visa dokumentet",
+    "sealTheirsTitle": "Väntar på att motparten undertecknar",
+    "sealYoursBody": "Motparten har undertecknat affärsdokumentet. Konversationen öppnas mellan er så snart du också undertecknar, och att underteckna förbinder dig varken till villkoren eller till rundan.",
+    "sealYoursCta": "Underteckna dokumentet",
+    "sealYoursTitle": "Det är din underskrift som saknas"
   },
   "nda": {
     "parties": "Parter",
@@ -4483,6 +4524,15 @@
     "unsigned": "Väntar på underskrift",
     "version": "Version {version}",
     "waitingOnThem": "Din underskrift är registrerad. Konversationen öppnas så snart motparten undertecknar.",
-    "yourName": "Ditt fullständiga namn"
+    "yourName": "Ditt fullständiga namn",
+    "opensMessaging": "Konversationen mellan er öppnas i samma stund som båda underskrifterna finns på det här dokumentet, och plattformen slutar då dölja era kontaktuppgifter för varandra. Fram till dess fungerar bud, motbud, frågor och dokumentförfrågningar som vanligt."
+  },
+  "founderContact": {
+    "dealRequired": "Du kan skicka meddelanden till en investerare när ni har en affär tillsammans. Öppna en från investerarens profil: de accepterar den, ni undertecknar båda dokumentet, och den här konversationen öppnas.",
+    "dealsCta": "Gå till affären",
+    "offerWaiting": "Den här investeraren har ett bud som väntar på ditt svar. Acceptera det, underteckna sedan dokumentet båda två, så öppnas konversationen.",
+    "offersCta": "Se budet",
+    "openDealCta": "Öppna en affär",
+    "proposalPending": "Din affärsförfrågan ligger hos den här investeraren. När de har accepterat den och ni båda har undertecknat dokumentet kan ni tala här."
   }
 }

@@ -4,7 +4,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { sanitiseAttachmentName, type SanitisedAttachmentName } from "@/lib/attachment-name";
 import { dealRegistrationRequired } from "@/lib/deal-registration";
-import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
+import { mayInvestorContact, contactRefusal, contactsUnlocked, mayPairContact } from "@/lib/contact-policy";
 import { notifyUser } from "@/lib/notify-user";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { uploadRatelimit } from "@/lib/redis";
@@ -120,10 +120,19 @@ export async function POST(req: NextRequest) {
       const kinds = new Set((seats ?? []).map((s) => s.entity_type));
       investorSide = !kinds.has("startup") && kinds.has("investor");
     }
-    if (investorSide) {
+    // Asked of the PAIR, from whichever end is posting. Gating only the
+    // investor side left the file upload as a way through the wall: a founder
+    // on an unsealed pair could attach a document with a caption and land a
+    // message in a thread the reply route would have refused. The side now
+    // decides only which way out of the refusal is offered.
+    {
       const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
       if (prof?.role !== "admin") {
-        const contact = await mayInvestorContact({ startupId: pairStartupId, investorId: pairInvestorId });
+        const contact = await mayPairContact({
+          startupId: pairStartupId,
+          investorId: pairInvestorId,
+          side: investorSide ? "investor" : "startup",
+        });
         if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
       }
     }

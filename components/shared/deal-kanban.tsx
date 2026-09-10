@@ -1763,6 +1763,17 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   // Only the FIRST open pays for their fetches, which is what the collapse
   // was for; a second look is then free.
   const [detailMounted, setDetailMounted] = useState(false);
+
+  // Arriving from ?deal=<id>. The signing panel lives inside this collapse, so
+  // every "sign the record" link in the product landed on a highlighted card
+  // with the thing it was pointing at still folded away. One click short is
+  // the same failure as no link.
+  const deepLinked = useSearchParams().get("deal") === deal.id;
+  useEffect(() => {
+    if (!deepLinked) return;
+    setDetailMounted(true);
+    setExpanded(true);
+  }, [deepLinked]);
   // What this card was told, held until the record catches up. Both fall back
   // to the server row, so a refusal puts the old value back by itself.
   const [commitDraft, setCommitDraft] = useState<CommitmentType | null>(null);

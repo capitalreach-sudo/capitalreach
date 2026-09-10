@@ -160,16 +160,44 @@ export async function GET(req: NextRequest) {
   if (sides.startupId) filters.push(`startup_id.eq.${sides.startupId}`);
   if (sides.investorId) filters.push(`investor_id.eq.${sides.investorId}`);
 
+  const COLS = "id, startup_id, investor_id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, counters_id, opening_status, note, created_at, startup:startups(name, slug, logo_url, logo_color, funding_target, equity_offered, min_check, stage), investor:investors(display_name, firm_name, slug, logo_url, logo_color)";
+
   const { data } = await admin
     .from("deal_proposals")
-    .select("id, startup_id, investor_id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, counters_id, opening_status, note, created_at, startup:startups(name, slug, logo_url, logo_color), investor:investors(display_name, firm_name, slug, logo_url, logo_color)")
+    .select(COLS)
     .or(filters.join(","))
     .eq("status", "pending")
     .order("created_at", { ascending: false })
     .limit(50);
 
-  const rows = (data ?? []).map(p => {
-    const st = p.startup as unknown as { name: string; slug: string; logo_url: string | null; logo_color: string | null } | null;
+  // The rounds a live proposal ANSWERS. Migration 091 permits one pending
+  // proposal per pair, so every earlier round has already been closed and the
+  // status filter above excludes all of them -- which meant a three-round
+  // negotiation arrived as one card with no history, and the client's chain
+  // rendering could never fire. Walked by counters_id rather than by pair, so
+  // only the rounds actually in the chain are read.
+  const ancestors: typeof data = [] as never;
+  {
+    let frontier = (data ?? []).map((p) => p.counters_id).filter(Boolean) as string[];
+    const seen = new Set<string>(frontier);
+    for (let depth = 0; depth < 12 && frontier.length; depth++) {
+      const { data: prev } = await admin
+        .from("deal_proposals").select(COLS).in("id", frontier).limit(50);
+      if (!prev?.length) break;
+      (ancestors as unknown[]).push(...prev);
+      frontier = prev
+        .map((p) => p.counters_id)
+        .filter((id): id is string => !!id && !seen.has(id));
+      frontier.forEach((id) => seen.add(id));
+    }
+  }
+
+  const rows = [...(data ?? []), ...(ancestors ?? [])].map(p => {
+    const st = p.startup as unknown as {
+      name: string; slug: string; logo_url: string | null; logo_color: string | null;
+      funding_target: number | null; equity_offered: number | null;
+      min_check: number | null; stage: string | null;
+    } | null;
     const inv = p.investor as unknown as { display_name: string | null; firm_name: string | null; slug: string; logo_url: string | null; logo_color: string | null } | null;
     // Incoming = the OTHER side proposed it to an entity I own.
     const mine = p.from_side === "startup" ? p.startup_id === sides.startupId : p.investor_id === sides.investorId;
@@ -191,6 +219,16 @@ export async function GET(req: NextRequest) {
       openingStatus: p.opening_status,
       note: p.note,
       createdAt: p.created_at,
+      startupId: p.startup_id,
+      /** What the company advertised, so a counter is written against the ask
+       *  rather than only against the previous round. Read here because 109
+       *  revoked these columns from client keys. */
+      ask: st ? {
+        fundingTarget: st.funding_target ?? null,
+        equityOffered: st.equity_offered ?? null,
+        minCheck: st.min_check ?? null,
+        stage: st.stage ?? null,
+      } : null,
       counterpart: p.from_side === "startup"
         ? (mine ? { kind: "investor", name: inv?.firm_name || inv?.display_name || "Investor", logoUrl: inv?.logo_url ?? null, logoColor: inv?.logo_color ?? null }
                 : { kind: "startup", name: st?.name ?? "Startup", slug: st?.slug, logoUrl: st?.logo_url ?? null, logoColor: st?.logo_color ?? null })

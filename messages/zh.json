@@ -3396,7 +3396,28 @@
     "accepted": "交易已开启 —— 现已出现在双方的看板上",
     "sent": "请求已发送 —— 需对方先接受",
     "sentToFounder": "请求已发送 —— 由创始人决定是否开启交易",
-    "emptyColumn": "新请求会出现在这里"
+    "emptyColumn": "新请求会出现在这里",
+    "acceptOpens": "接受这些条款即开启交易与对话。还价则以您自己的数字继续商谈。",
+    "amount": "金额",
+    "changed": "有变动",
+    "conditions": "条件",
+    "counter": "还价",
+    "counterAria": "对 {name} 的报价还价",
+    "counterOffer": "还价",
+    "equity": "股权比例",
+    "historyHide": "收起此前各轮",
+    "historyShow": "查看全部 {count} 轮",
+    "instrument": "投资工具",
+    "notStated": "未注明",
+    "openingOffer": "首次报价",
+    "roundN": "第 {n} 轮",
+    "sideThem": "对方",
+    "sideYou": "您",
+    "theirNote": "对方留言",
+    "valuation": "估值",
+    "wasBefore": "原为 {value}",
+    "wasUnset": "上一轮未注明",
+    "yourNote": "您的留言"
   },
   "waitlist": {
     "joinIfSpace": "加入候补名单",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "完成公司主体及您代表该公司行事之授权的核验后，您的项目即会正式发布。",
     "messageBlocked": "请先完成身份核验，方可发起对话。创始人仅接收具名人士的来信。",
-    "dataroomBlocked": "请先完成身份核验，方可查阅资料室。保密协议仅可对具名相对方主张。"
+    "dataroomBlocked": "请先完成身份核验，方可查阅资料室。保密协议仅可对具名相对方主张。",
+    "offerBody": "这里的对话从条款开始：金额、股权、估值、投资工具。这样创始人才有具体内容可以接受、拒绝或还价。",
+    "offerCta": "提交报价",
+    "offerFounderBody": "投资方提交报价、由您接受，双方才会一同记录在案，对话也随之开启。任何等待答复的报价都在您收到的报价里。",
+    "offerFounderCta": "查看收到的报价",
+    "offerFounderTitle": "接受报价后，本对话即会开启",
+    "offerSentBody": "对方可以接受、拒绝，或按自己的条款还价。报价获接受、且双方均已签署交易记录后，对话即会开启。",
+    "offerSentCta": "查看您的报价",
+    "offerSentTitle": "您的报价已送达创始人",
+    "offerTitle": "本对话从一份报价开始",
+    "rowSign": "签署以开启对话",
+    "rowUnsigned": "交易记录尚未签署",
+    "sealPendingBody": "双方都要在交易记录上署名，第二个签名落定，双方之间的对话才会开启。在此之前，报价、还价、提问和文件索取都可以照常进行。",
+    "sealPendingCta": "打开交易记录",
+    "sealPendingTitle": "本次交易尚未签署",
+    "sealTheirsBody": "交易记录上已有您的签名，尚缺对方的签名。对方签署的那一刻，对话即会开启；我们已告知对方仍需签署。",
+    "sealTheirsCta": "查看交易记录",
+    "sealTheirsTitle": "等待对方签署",
+    "sealYoursBody": "对方已签署交易记录。您也签署之后，双方之间的对话即会开启；签署并不意味着您承诺接受这些条款，也不意味着您承诺参与本轮融资。",
+    "sealYoursCta": "签署交易记录",
+    "sealYoursTitle": "只差您的签名"
   },
   "nda": {
     "parties": "协议双方",
@@ -4483,6 +4524,15 @@
     "unsigned": "尚未签署",
     "version": "版本 {version}",
     "waitingOnThem": "您的签名已记录。对方签署后，对话即会开启。",
-    "yourName": "您的全名"
+    "yourName": "您的全名",
+    "opensMessaging": "两个签名同时出现在这份记录上的那一刻，双方之间的对话即会开启，平台也不再向彼此隐去联系方式。在此之前，报价、还价、提问和文件索取都可以照常进行。"
+  },
+  "founderContact": {
+    "dealRequired": "与投资方建立交易之后，您才能给对方发消息。可在对方主页发起一笔交易：对方接受，双方签署交易记录，本对话即会开启。",
+    "dealsCta": "前往该交易",
+    "offerWaiting": "这位投资方有一份报价正在等您答复。接受之后，双方签署交易记录，对话即会开启。",
+    "offersCta": "查看该报价",
+    "openDealCta": "发起交易",
+    "proposalPending": "您的交易请求已送达这位投资方。对方接受、并且双方签署交易记录后，即可在此对话。"
   }
 }

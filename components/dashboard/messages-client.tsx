@@ -108,10 +108,15 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   // from a refusal, and the wording steps back to the neutral one.
   const [gateNotice, setGateNotice] = useState<null | {
     threadId: string;
-    kind: "seal" | "offer";
+    kind: "seal" | "offer" | "deal";
     dealId: string | null;
     awaiting: string[];
     offerPending: boolean;
+    /** A founder refusal names its own way out, so the panel uses that rather
+     *  than a branch here guessing at one. */
+    sentence?: string | null;
+    href?: string | null;
+    ctaKey?: string | null;
   }>(null);
   const [gateDismissed, setGateDismissed]   = useState<string | null>(null);
   const [search, setSearch]                 = useState("");
@@ -524,20 +529,35 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
    * and a redirect would take it with it; the panel carries the link instead,
    * which is the same one click.
    */
-  function showGateRefusal(th: Thread, json: { error?: string; dealId?: string; awaiting?: unknown; openProposalId?: string | null }): boolean {
-    if (json.error !== "seal_required" && json.error !== "offer_required") return false;
+  function showGateRefusal(th: Thread, json: {
+    error?: string; errorCode?: string; dealId?: string; awaiting?: unknown;
+    openProposalId?: string | null; href?: string; ctaKey?: string;
+  }): boolean {
+    // A founder refusal puts the SENTENCE in `error` and the machine-readable
+    // code in `errorCode`, so a filter that only looked at `error` matched
+    // nothing and dropped the refusal's own href and cta on the floor. That
+    // left the founder's principal blocked state with no panel and no link.
+    const code = json.errorCode ?? json.error;
+    if (code !== "seal_required" && code !== "offer_required" && code !== "deal_required") return false;
     const awaiting = Array.isArray(json.awaiting) ? (json.awaiting as string[]) : [];
     const side = mySideOf(th);
     setRegistrationPrompt(null);
     setGateDismissed(null);
     setGateNotice({
       threadId: th.id,
-      kind: json.error === "seal_required" ? "seal" : "offer",
+      kind: code === "seal_required" ? "seal" : code === "deal_required" ? "deal" : "offer",
       dealId: typeof json.dealId === "string" ? json.dealId : null,
       awaiting,
       offerPending: !!json.openProposalId,
+      sentence: code === "deal_required" ? (json.error ?? null) : null,
+      href: typeof json.href === "string" ? json.href : null,
+      ctaKey: typeof json.ctaKey === "string" ? json.ctaKey : null,
     });
-    if (json.error === "seal_required") {
+    if (code === "deal_required") {
+      notify.info(json.error || t("founderContact.dealRequired"));
+      return true;
+    }
+    if (code === "seal_required") {
       notify.info(side && awaiting.length
         ? t(awaiting.includes(side) ? "gate.sealYoursTitle" : "gate.sealTheirsTitle")
         : t("seal.required"));
@@ -1086,7 +1106,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 let bodyKey  = "gate.sealPendingBody";
                 let ctaKey   = "gate.sealPendingCta";
                 let href     = notice.dealId ? `/deals?deal=${notice.dealId}` : "/deals";
-                if (notice.kind === "seal") {
+                // A refusal that named its own remedy wins: the server knows
+                // which of the three founder cases this is, and the client
+                // would only be guessing.
+                if (notice.href) href = notice.href;
+                if (notice.ctaKey) ctaKey = notice.ctaKey;
+                if (notice.kind === "deal") {
+                  titleKey = "founderContact.dealRequired";
+                  bodyKey  = "";
+                  if (!notice.ctaKey) ctaKey = "founderContact.openDealCta";
+                } else if (notice.kind === "seal") {
                   // Whose signature is missing changes the sentence entirely,
                   // and it is only known when the refusal said so.
                   if (side && notice.awaiting.length) {
@@ -1127,7 +1156,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       </button>
                     </div>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, margin: "8px 0 16px", maxWidth: "62ch" }}>
-                      {t(bodyKey)}
+                      {/* The founder refusal ships a full sentence written for
+                          its exact case; a key would be a worse copy of it. */}
+                      {notice.sentence || (bodyKey ? t(bodyKey) : "")}
                     </p>
                     <Link href={href}
                       style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 24px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>

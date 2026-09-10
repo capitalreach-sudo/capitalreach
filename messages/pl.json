@@ -3396,7 +3396,28 @@
     "accepted": "Transakcja otwarta — jest już na obu tablicach",
     "sent": "Prośba wysłana — druga strona musi najpierw zaakceptować",
     "sentToFounder": "Prośba wysłana — założyciel decyduje, czy otworzyć transakcję",
-    "emptyColumn": "Nowe prośby trafiają tutaj"
+    "emptyColumn": "Nowe prośby trafiają tutaj",
+    "acceptOpens": "Przyjęcie tych warunków otwiera transakcję i rozmowę. Kontroferta podtrzymuje negocjacje przy Twojej kwocie.",
+    "amount": "Kwota",
+    "changed": "Zmienione",
+    "conditions": "Warunki",
+    "counter": "Kontroferta",
+    "counterAria": "Odpowiedz kontrofertą na ofertę od {name}",
+    "counterOffer": "Kontroferta",
+    "equity": "Udziały",
+    "historyHide": "Ukryj wcześniejsze rundy",
+    "historyShow": "Pokaż wszystkie rundy ({count})",
+    "instrument": "Instrument",
+    "notStated": "Nie podano",
+    "openingOffer": "Oferta otwierająca",
+    "roundN": "Runda {n}",
+    "sideThem": "Oni",
+    "sideYou": "Ty",
+    "theirNote": "Ich wiadomość",
+    "valuation": "Wycena",
+    "wasBefore": "Wcześniej {value}",
+    "wasUnset": "Nie podano w poprzedniej rundzie",
+    "yourNote": "Twoja wiadomość"
   },
   "waitlist": {
     "joinIfSpace": "Dołącz do listy oczekujących",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Twoja oferta zostanie opublikowana po zweryfikowaniu spółki oraz Twojego umocowania do działania w jej imieniu.",
     "messageBlocked": "Zweryfikuj swoją tożsamość, aby rozpocząć rozmowy. Założyciele otrzymują wiadomości wyłącznie od osób wskazanych z imienia i nazwiska.",
-    "dataroomBlocked": "Zweryfikuj swoją tożsamość, aby otworzyć data roomy. Umowa NDA jest egzekwowalna wyłącznie wobec oznaczonego kontrahenta."
+    "dataroomBlocked": "Zweryfikuj swoją tożsamość, aby otworzyć data roomy. Umowa NDA jest egzekwowalna wyłącznie wobec oznaczonego kontrahenta.",
+    "offerBody": "Rozmowa zaczyna się tutaj od warunków: kwota, udziały, wycena, instrument. Dzięki temu założyciel ma coś konkretnego i może to przyjąć, odrzucić albo złożyć kontrofertę.",
+    "offerCta": "Złóż ofertę",
+    "offerFounderBody": "Dopiero oferta inwestora, przyjęta przez Ciebie, wpisuje Was oboje do zapisu transakcji i otwiera rozmowę. Wszystko, co czeka na odpowiedź, znajdziesz w swoich ofertach.",
+    "offerFounderCta": "Otwórz swoje oferty",
+    "offerFounderTitle": "Tę rozmowę otwiera przyjęta oferta",
+    "offerSentBody": "Założyciel może ją przyjąć, odrzucić albo odpowiedzieć własnymi warunkami. Rozmowa otwiera się, gdy oferta zostanie przyjęta, a obie strony podpiszą zapis transakcji.",
+    "offerSentCta": "Zobacz swoją ofertę",
+    "offerSentTitle": "Twoja oferta jest u założyciela",
+    "offerTitle": "Tę rozmowę otwiera oferta",
+    "rowSign": "Podpisz, aby otworzyć rozmowę",
+    "rowUnsigned": "Zapis bez podpisu",
+    "sealPendingBody": "Obie strony podpisują zapis transakcji, a rozmowę między Wami otwiera dopiero drugi podpis. Do tego czasu działają oferty, kontroferty, pytania i prośby o dokumenty.",
+    "sealPendingCta": "Otwórz zapis transakcji",
+    "sealPendingTitle": "Ta transakcja nie jest jeszcze podpisana",
+    "sealTheirsBody": "Twój podpis jest pod zapisem transakcji, podpisu drugiej strony jeszcze nie ma. Rozmowa otworzy się w chwili, gdy się pojawi, a druga strona wie, że go brakuje.",
+    "sealTheirsCta": "Zobacz zapis",
+    "sealTheirsTitle": "Czeka na podpis drugiej strony",
+    "sealYoursBody": "Druga strona podpisała zapis transakcji. Rozmowa otworzy się, gdy tylko podpiszesz go również Ty, a podpis nie zobowiązuje Cię ani do tych warunków, ani do udziału w rundzie.",
+    "sealYoursCta": "Podpisz zapis",
+    "sealYoursTitle": "Brakuje już tylko Twojego podpisu"
   },
   "nda": {
     "parties": "Strony",
@@ -4483,6 +4524,15 @@
     "unsigned": "Jeszcze bez podpisu",
     "version": "Wersja {version}",
     "waitingOnThem": "Twój podpis został zapisany. Rozmowa otworzy się, gdy tylko podpisze druga strona.",
-    "yourName": "Twoje pełne imię i nazwisko"
+    "yourName": "Twoje pełne imię i nazwisko",
+    "opensMessaging": "Rozmowa między Wami otwiera się w chwili, gdy pod tym zapisem znajdą się oba podpisy, a platforma przestaje ukrywać między Wami dane kontaktowe. Do tego czasu nadal działają oferty, kontroferty, pytania i prośby o dokumenty."
+  },
+  "founderContact": {
+    "dealRequired": "Do inwestora możesz napisać, gdy łączy Was transakcja. Otwórz ją z jego profilu: inwestor ją przyjmuje, obie strony podpisują zapis transakcji i ta rozmowa się otwiera.",
+    "dealsCta": "Przejdź do transakcji",
+    "offerWaiting": "Ten inwestor złożył ofertę, która czeka na Twoją odpowiedź. Przyjmij ją, potem obie strony podpisują zapis transakcji i rozmowa się otwiera.",
+    "offersCta": "Zobacz ofertę",
+    "openDealCta": "Otwórz transakcję",
+    "proposalPending": "Twoja propozycja transakcji jest u tego inwestora. Gdy ją przyjmie i obie strony podpiszą zapis transakcji, będziecie mogli tu rozmawiać."
   }
 }

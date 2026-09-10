@@ -3396,7 +3396,28 @@
     "accepted": "딜이 열렸습니다 — 이제 양쪽 보드에 표시됩니다",
     "sent": "요청을 보냈습니다 — 상대가 먼저 수락해야 합니다",
     "sentToFounder": "요청을 보냈습니다 — 딜 개시 여부는 창업자가 결정합니다",
-    "emptyColumn": "새 요청이 여기에 표시됩니다"
+    "emptyColumn": "새 요청이 여기에 표시됩니다",
+    "acceptOpens": "이 조건을 수락하면 딜과 대화가 함께 열립니다. 카운터하면 귀하의 금액으로 협의가 이어집니다.",
+    "amount": "금액",
+    "changed": "변경됨",
+    "conditions": "조건",
+    "counter": "카운터",
+    "counterAria": "{name}님의 오퍼에 카운터하기",
+    "counterOffer": "카운터오퍼",
+    "equity": "지분",
+    "historyHide": "이전 라운드 숨기기",
+    "historyShow": "전체 {count}개 라운드 보기",
+    "instrument": "투자 방식",
+    "notStated": "미기재",
+    "openingOffer": "최초 오퍼",
+    "roundN": "{n}라운드",
+    "sideThem": "상대방",
+    "sideYou": "본인",
+    "theirNote": "상대방 메모",
+    "valuation": "기업가치",
+    "wasBefore": "이전 {value}",
+    "wasUnset": "지난 라운드 미기재",
+    "yourNote": "내 메모"
   },
   "waitlist": {
     "joinIfSpace": "대기 명단 참여",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "귀하의 회사와 회사를 대리할 권한이 확인되면 등록 정보가 공개됩니다.",
     "messageBlocked": "대화를 시작하려면 본인 확인을 완료하십시오. 창업자는 신원이 확인된 사람에게서만 연락을 받습니다.",
-    "dataroomBlocked": "데이터룸을 열려면 본인 확인을 완료하십시오. 비밀유지계약은 신원이 특정된 상대방에 대해서만 집행할 수 있습니다."
+    "dataroomBlocked": "데이터룸을 열려면 본인 확인을 완료하십시오. 비밀유지계약은 신원이 특정된 상대방에 대해서만 집행할 수 있습니다.",
+    "offerBody": "여기서 대화는 조건 제시로 시작합니다. 금액, 지분, 기업가치, 투자 방식을 담아야 창업자가 수락하거나 거절하거나 카운터할 구체적인 내용이 생깁니다.",
+    "offerCta": "오퍼 제출",
+    "offerFounderBody": "투자자의 오퍼를 귀하가 수락해야 양측이 기록에 오르고 대화가 열립니다. 회신을 기다리는 건은 받은 오퍼에 있습니다.",
+    "offerFounderCta": "받은 오퍼 열기",
+    "offerFounderTitle": "수락된 오퍼가 있어야 대화가 열립니다",
+    "offerSentBody": "상대방은 수락하거나 거절하거나 자체 조건으로 카운터할 수 있습니다. 오퍼가 수락되고 양측이 기록에 서명하면 대화가 열립니다.",
+    "offerSentCta": "내 오퍼 보기",
+    "offerSentTitle": "오퍼가 창업자에게 전달되었습니다",
+    "offerTitle": "이 대화는 오퍼로 열립니다",
+    "rowSign": "서명하고 대화 열기",
+    "rowUnsigned": "기록 미서명",
+    "sealPendingBody": "딜 기록에는 양측이 각자 이름을 올립니다. 두 번째 서명이 들어오는 순간 대화가 열립니다. 그전에도 오퍼, 카운터, 질문, 자료 요청은 모두 가능합니다.",
+    "sealPendingCta": "딜 기록 열기",
+    "sealPendingTitle": "이 딜은 아직 서명되지 않았습니다",
+    "sealTheirsBody": "딜 기록에 귀하의 서명은 있고 상대방의 서명은 아직 없습니다. 상대방 서명이 들어오는 즉시 대화가 열리며, 서명이 남아 있다는 사실은 상대방에게 통보되었습니다.",
+    "sealTheirsCta": "기록 보기",
+    "sealTheirsTitle": "상대방 서명 대기 중",
+    "sealYoursBody": "상대방이 딜 기록에 서명했습니다. 귀하도 서명하면 곧바로 대화가 열립니다. 서명한다고 해서 조건이나 라운드에 구속되지는 않습니다.",
+    "sealYoursCta": "기록에 서명",
+    "sealYoursTitle": "귀하의 서명만 남았습니다"
   },
   "nda": {
     "parties": "당사자",
@@ -4483,6 +4524,15 @@
     "unsigned": "아직 서명하지 않음",
     "version": "버전 {version}",
     "waitingOnThem": "귀하의 서명이 기록되었습니다. 상대측이 서명하는 즉시 대화가 열립니다.",
-    "yourName": "전체 이름"
+    "yourName": "전체 이름",
+    "opensMessaging": "이 기록에 양측 서명이 모두 올라가는 순간 대화가 열리고, 서로의 연락처도 더 이상 가려지지 않습니다. 그전에도 오퍼, 카운터, 질문, 자료 요청은 모두 가능합니다."
+  },
+  "founderContact": {
+    "dealRequired": "투자자와 딜이 성립된 뒤에 메시지를 보낼 수 있습니다. 상대방 프로필에서 딜을 개시하십시오. 상대가 수락하고 양측이 기록에 서명하면 이 대화가 열립니다.",
+    "dealsCta": "딜로 이동",
+    "offerWaiting": "이 투자자의 오퍼가 회신을 기다리고 있습니다. 오퍼를 수락한 뒤 양측이 기록에 서명하면 대화가 열립니다.",
+    "offersCta": "오퍼 보기",
+    "openDealCta": "딜 개시하기",
+    "proposalPending": "귀하의 딜 요청이 이 투자자에게 전달되었습니다. 상대가 수락하고 양측이 기록에 서명하면 여기에서 대화할 수 있습니다."
   }
 }

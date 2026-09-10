@@ -799,13 +799,20 @@ function CounterComposer({ head, ask, investorName, onDone, onCancel }: {
   async function send() {
     if (!canSend) return;
     setBusy(true);
+    // PATCH, not POST. POST is the investor's OPENING position: it refuses a
+    // caller with no investor entity ("Only investors make offers") and it
+    // never reads countersId, so a founder countering from this page was
+    // refused outright -- and a founder who also holds an investor profile got
+    // something worse, a brand new investor-side offer instead of a counter.
+    // action "counter" is the path that flips from_side and links counters_id.
     const res = await fetch("/api/deals/proposals", {
-      method: "POST",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         // The route derives startup, investor and side from the proposal being
         // answered and from the caller. Identity is never sent from a browser.
-        countersId: head.id,
+        id: head.id,
+        action: "counter",
         amount: amountNumber,
         currency,
         valuation: valuation ? parseInt(valuation, 10) : null,

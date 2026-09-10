@@ -3396,7 +3396,28 @@
     "accepted": "Opération ouverte — elle figure sur les deux tableaux",
     "sent": "Demande envoyée — l'autre partie doit d'abord accepter",
     "sentToFounder": "Demande envoyée — le fondateur décide d'ouvrir ou non l'opération",
-    "emptyColumn": "Les nouvelles demandes arrivent ici"
+    "emptyColumn": "Les nouvelles demandes arrivent ici",
+    "acceptOpens": "Accepter ces conditions ouvre l'opération et la conversation. Faire une contre-offre poursuit la négociation avec votre propre chiffre.",
+    "amount": "Montant",
+    "changed": "Modifié",
+    "conditions": "Conditions",
+    "counter": "Contre-offre",
+    "counterAria": "Répondre à l'offre de {name} par une contre-offre",
+    "counterOffer": "Contre-offre",
+    "equity": "Participation",
+    "historyHide": "Masquer les tours précédents",
+    "historyShow": "Afficher les {count} tours",
+    "instrument": "Instrument",
+    "notStated": "Non précisé",
+    "openingOffer": "Offre initiale",
+    "roundN": "Tour {n}",
+    "sideThem": "Eux",
+    "sideYou": "Vous",
+    "theirNote": "Leur note",
+    "valuation": "Valorisation",
+    "wasBefore": "Avant : {value}",
+    "wasUnset": "Non précisé au tour précédent",
+    "yourNote": "Votre note"
   },
   "waitlist": {
     "joinIfSpace": "Rejoindre la liste d'attente",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Votre annonce sera mise en ligne dès que votre société et votre pouvoir d'agir en son nom auront été vérifiés.",
     "messageBlocked": "Vérifiez votre identité pour engager des conversations. Les fondateurs n'échangent qu'avec des personnes identifiées.",
-    "dataroomBlocked": "Vérifiez votre identité pour accéder aux data rooms. Un accord de confidentialité n'est opposable qu'à une contrepartie identifiée."
+    "dataroomBlocked": "Vérifiez votre identité pour accéder aux data rooms. Un accord de confidentialité n'est opposable qu'à une contrepartie identifiée.",
+    "offerBody": "Ici, la conversation commence par des conditions -- montant, participation, valorisation, instrument -- pour que le fondateur ait quelque chose de concret à accepter, à refuser ou à contrer.",
+    "offerCta": "Faire une offre",
+    "offerFounderBody": "C'est l'offre d'un investisseur, acceptée par vous, qui vous inscrit tous les deux sur le relevé et ouvre la messagerie. Tout ce qui attend une réponse se trouve dans vos offres.",
+    "offerFounderCta": "Ouvrir vos offres",
+    "offerFounderTitle": "Cette conversation s'ouvre sur une offre acceptée",
+    "offerSentBody": "Il peut l'accepter, la refuser ou répondre par une contre-offre. La messagerie s'ouvre dès qu'une offre est acceptée et que vous avez tous les deux signé le relevé.",
+    "offerSentCta": "Voir votre offre",
+    "offerSentTitle": "Votre offre est entre les mains du fondateur",
+    "offerTitle": "Une offre ouvre cette conversation",
+    "rowSign": "Signer pour ouvrir la messagerie",
+    "rowUnsigned": "Relevé non signé",
+    "sealPendingBody": "Les deux parties apposent leur nom sur le relevé de l'opération, et c'est la seconde signature qui ouvre la messagerie entre vous. En attendant, les offres, les contre-offres, les questions et les demandes de documents restent possibles.",
+    "sealPendingCta": "Ouvrir le relevé de l'opération",
+    "sealPendingTitle": "Cette opération n'est pas encore signée",
+    "sealTheirsBody": "Votre signature figure sur le relevé de l'opération, pas celle de l'autre partie. La messagerie s'ouvrira dès que la seconde signature arrivera, et l'autre partie a été prévenue qu'elle est attendue.",
+    "sealTheirsCta": "Voir le relevé",
+    "sealTheirsTitle": "En attente de la signature de l'autre partie",
+    "sealYoursBody": "L'autre partie a signé le relevé de l'opération. La messagerie s'ouvrira entre vous dès que vous l'aurez signé vous aussi, et signer ne vous engage ni sur les conditions ni sur le tour.",
+    "sealYoursCta": "Signer le relevé",
+    "sealYoursTitle": "Il ne manque que votre signature"
   },
   "nda": {
     "parties": "Parties",
@@ -4483,6 +4524,15 @@
     "unsigned": "Pas encore signé",
     "version": "Version {version}",
     "waitingOnThem": "Votre signature est enregistrée. La conversation s'ouvrira dès que l'autre partie aura signé.",
-    "yourName": "Votre nom complet"
+    "yourName": "Votre nom complet",
+    "opensMessaging": "La messagerie s'ouvre entre vous dès que les deux signatures figurent sur ce relevé, et la plateforme cesse de retenir vos coordonnées respectives. Jusque-là, les offres, les contre-offres, les questions et les demandes de documents restent possibles."
+  },
+  "founderContact": {
+    "dealRequired": "Vous pouvez écrire à un investisseur une fois qu'une opération est ouverte avec lui. Ouvrez-en une depuis son profil : il l'accepte, vous signez tous les deux le relevé, et cette conversation s'ouvre.",
+    "dealsCta": "Accéder à l'opération",
+    "offerWaiting": "Cet investisseur a une offre en attente de votre réponse. Acceptez-la, puis signez tous les deux le relevé et la conversation s'ouvrira.",
+    "offersCta": "Voir l'offre",
+    "openDealCta": "Ouvrir une opération",
+    "proposalPending": "Votre demande d'opération est entre les mains de cet investisseur. Dès qu'il l'accepte et que vous avez tous les deux signé le relevé, vous pourrez échanger ici."
   }
 }

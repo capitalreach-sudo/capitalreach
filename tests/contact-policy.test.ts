@@ -62,8 +62,11 @@ vi.mock("@/lib/supabase-server", () => ({
   createServerSupabaseClient: async () => h.client(),
 }));
 
-const { mayPairContact, mayInvestorContact, contactRefusal, contactsUnlocked, SYMMETRIC_GATE_FROM } =
-  await import("@/lib/contact-policy");
+// Imported statically: vi.mock is hoisted above the imports, so the policy
+// module already sees the fake client when it is first evaluated.
+import {
+  mayPairContact, mayInvestorContact, contactRefusal, contactsUnlocked, SYMMETRIC_GATE_FROM,
+} from "@/lib/contact-policy";
 
 const S = "11111111-1111-4111-8111-111111111111";
 const I = "22222222-2222-4222-8222-222222222222";

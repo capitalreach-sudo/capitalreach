@@ -3396,7 +3396,28 @@
     "accepted": "Deal eröffnet — er liegt jetzt auf beiden Boards",
     "sent": "Anfrage gesendet — die Gegenseite muss erst zustimmen",
     "sentToFounder": "Anfrage gesendet — der Gründer entscheidet, ob der Deal geöffnet wird",
-    "emptyColumn": "Neue Anfragen landen hier"
+    "emptyColumn": "Neue Anfragen landen hier",
+    "acceptOpens": "Mit der Annahme dieser Konditionen werden der Deal und das Gespräch eröffnet. Ein Gegenangebot hält die Verhandlung mit Ihrer eigenen Zahl offen.",
+    "amount": "Betrag",
+    "changed": "Geändert",
+    "conditions": "Bedingungen",
+    "counter": "Gegenangebot",
+    "counterAria": "Auf das Angebot von {name} mit einem Gegenangebot antworten",
+    "counterOffer": "Gegenangebot",
+    "equity": "Anteile",
+    "historyHide": "Frühere Runden ausblenden",
+    "historyShow": "Alle {count} Runden anzeigen",
+    "instrument": "Instrument",
+    "notStated": "Keine Angabe",
+    "openingOffer": "Eröffnungsangebot",
+    "roundN": "Runde {n}",
+    "sideThem": "Gegenseite",
+    "sideYou": "Sie",
+    "theirNote": "Anmerkung der Gegenseite",
+    "valuation": "Bewertung",
+    "wasBefore": "Vorher {value}",
+    "wasUnset": "In der letzten Runde keine Angabe",
+    "yourNote": "Ihre Anmerkung"
   },
   "waitlist": {
     "joinIfSpace": "Auf die Warteliste",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "Ihr Angebot wird veröffentlicht, sobald Ihr Unternehmen und Ihre Vertretungsbefugnis verifiziert sind.",
     "messageBlocked": "Verifizieren Sie Ihre Identität, um Gespräche zu beginnen. Gründer hören nur von namentlich bekannten Personen.",
-    "dataroomBlocked": "Verifizieren Sie Ihre Identität, um Datenräume zu öffnen. Eine Vertraulichkeitsvereinbarung ist nur gegenüber einer namentlich benannten Gegenpartei durchsetzbar."
+    "dataroomBlocked": "Verifizieren Sie Ihre Identität, um Datenräume zu öffnen. Eine Vertraulichkeitsvereinbarung ist nur gegenüber einer namentlich benannten Gegenpartei durchsetzbar.",
+    "offerBody": "Nachrichten beginnen hier mit Konditionen: Betrag, Anteile, Bewertung, Instrument. So hat der Gründer etwas Konkretes, das er annehmen, ablehnen oder mit einem Gegenangebot beantworten kann.",
+    "offerCta": "Angebot machen",
+    "offerFounderCta": "Ihre Angebote öffnen",
+    "offerFounderBody": "Ein Angebot eines Investors, das Sie annehmen, hält Sie beide verbindlich fest und eröffnet den Nachrichtenaustausch. Alles, was auf eine Antwort wartet, liegt in Ihren Angeboten.",
+    "offerFounderTitle": "Dieses Gespräch wird durch ein angenommenes Angebot eröffnet",
+    "offerSentBody": "Der Gründer kann es annehmen, ablehnen oder mit einem eigenen Gegenangebot antworten. Der Nachrichtenaustausch wird eröffnet, sobald ein Angebot angenommen ist und Sie beide die Urkunde unterzeichnet haben.",
+    "offerSentCta": "Ihr Angebot ansehen",
+    "offerSentTitle": "Ihr Angebot liegt beim Gründer",
+    "offerTitle": "Ein Angebot eröffnet dieses Gespräch",
+    "rowSign": "Unterzeichnen, um das Gespräch zu eröffnen",
+    "rowUnsigned": "Urkunde nicht unterzeichnet",
+    "sealPendingBody": "Beide Seiten setzen ihren Namen unter die Deal-Urkunde, und die zweite Unterschrift eröffnet den Nachrichtenaustausch zwischen Ihnen. Angebote, Gegenangebote, Fragen und Dokumentenanfragen funktionieren in der Zwischenzeit weiterhin.",
+    "sealPendingCta": "Deal-Urkunde öffnen",
+    "sealPendingTitle": "Dieser Deal ist noch nicht unterzeichnet",
+    "sealTheirsBody": "Ihre Unterschrift steht auf der Deal-Urkunde, die der Gegenseite noch nicht. Der Nachrichtenaustausch wird in dem Moment eröffnet, in dem sie eingeht, und die Gegenseite wurde darauf hingewiesen, dass sie noch aussteht.",
+    "sealTheirsCta": "Urkunde ansehen",
+    "sealTheirsTitle": "Wartet auf die Unterschrift der Gegenseite",
+    "sealYoursBody": "Die Gegenseite hat die Deal-Urkunde unterzeichnet. Sobald Sie ebenfalls unterzeichnen, wird der Nachrichtenaustausch zwischen Ihnen eröffnet. Die Unterschrift verpflichtet Sie weder auf die Konditionen noch auf die Runde.",
+    "sealYoursCta": "Urkunde unterzeichnen",
+    "sealYoursTitle": "Ihre Unterschrift steht noch aus"
   },
   "nda": {
     "parties": "Vertragsparteien",
@@ -4483,6 +4524,15 @@
     "unsigned": "Noch nicht unterzeichnet",
     "version": "Fassung {version}",
     "waitingOnThem": "Ihre Unterschrift ist erfasst. Das Gespräch wird eröffnet, sobald die andere Seite unterzeichnet.",
-    "yourName": "Ihr vollständiger Name"
+    "yourName": "Ihr vollständiger Name",
+    "opensMessaging": "Der Nachrichtenaustausch zwischen Ihnen beiden wird in dem Moment eröffnet, in dem beide Unterschriften auf dieser Urkunde stehen, und die Plattform hält Ihre Kontaktdaten dann nicht mehr voreinander zurück. Bis dahin funktionieren Angebote, Gegenangebote, Fragen und Dokumentenanfragen weiterhin."
+  },
+  "founderContact": {
+    "dealRequired": "Sie können einem Investor schreiben, sobald ein Deal mit ihm besteht. Eröffnen Sie einen über sein Profil: Er nimmt ihn an, Sie unterzeichnen beide die Urkunde, und dieses Gespräch wird eröffnet.",
+    "dealsCta": "Zum Deal",
+    "offerWaiting": "Von diesem Investor liegt ein Angebot vor, das auf Ihre Antwort wartet. Nehmen Sie es an, danach unterzeichnen Sie beide die Urkunde und das Gespräch wird eröffnet.",
+    "offersCta": "Angebot ansehen",
+    "openDealCta": "Deal eröffnen",
+    "proposalPending": "Ihre Deal-Anfrage liegt bei diesem Investor. Sobald er sie annimmt und Sie beide die Urkunde unterzeichnen, können Sie hier sprechen."
   }
 }

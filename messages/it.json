@@ -3396,7 +3396,28 @@
     "accepted": "Deal aperto — ora è su entrambe le board",
     "sent": "Richiesta inviata — l'altra parte deve prima accettare",
     "sentToFounder": "Richiesta inviata — il founder decide se aprire il deal",
-    "emptyColumn": "Le nuove richieste arrivano qui"
+    "emptyColumn": "Le nuove richieste arrivano qui",
+    "acceptOpens": "Accettare queste condizioni apre il deal e la conversazione. Con una controfferta la trattativa resta aperta sul tuo importo.",
+    "amount": "Importo",
+    "changed": "Modificato",
+    "conditions": "Condizioni",
+    "counter": "Controfferta",
+    "counterAria": "Presenta una controfferta all'offerta di {name}",
+    "counterOffer": "Controfferta",
+    "equity": "Quota",
+    "historyHide": "Nascondi i round precedenti",
+    "historyShow": "Mostra tutti i {count} round",
+    "instrument": "Strumento",
+    "notStated": "Non indicato",
+    "openingOffer": "Offerta di apertura",
+    "roundN": "Round {n}",
+    "sideThem": "Loro",
+    "sideYou": "Tu",
+    "theirNote": "Il loro messaggio",
+    "valuation": "Valutazione",
+    "wasBefore": "Prima {value}",
+    "wasUnset": "Non indicato nel round precedente",
+    "yourNote": "Il tuo messaggio"
   },
   "waitlist": {
     "joinIfSpace": "Entra in lista d'attesa",
@@ -3948,7 +3969,27 @@
   "gate": {
     "publishBlocked": "L'annuncio sarà pubblicato dopo la verifica della società e del suo potere di rappresentanza.",
     "messageBlocked": "Verifica la tua identità per avviare le conversazioni. I fondatori dialogano solo con persone identificate.",
-    "dataroomBlocked": "Verifica la tua identità per accedere alle data room. Un NDA è opponibile solo a una controparte identificata."
+    "dataroomBlocked": "Verifica la tua identità per accedere alle data room. Un NDA è opponibile solo a una controparte identificata.",
+    "offerBody": "Qui la conversazione parte dalle condizioni -- importo, quota, valutazione, strumento -- così il fondatore ha qualcosa di concreto da accettare, rifiutare o controfferire.",
+    "offerCta": "Presenta un'offerta",
+    "offerFounderBody": "È l'offerta di un investitore, accettata da te, a mettere agli atti il rapporto tra voi e ad aprire la conversazione. Tutto ciò che attende una risposta si trova nelle tue offerte.",
+    "offerFounderCta": "Apri le tue offerte",
+    "offerFounderTitle": "Questa conversazione si apre con un'offerta accettata",
+    "offerSentBody": "Può accettarla, rifiutarla o rispondere con condizioni sue. La conversazione si apre quando un'offerta viene accettata e avete firmato entrambi l'atto.",
+    "offerSentCta": "Vedi la tua offerta",
+    "offerSentTitle": "La tua offerta è al vaglio del fondatore",
+    "offerTitle": "È un'offerta ad aprire questa conversazione",
+    "rowSign": "Firma per aprire la conversazione",
+    "rowUnsigned": "Atto non firmato",
+    "sealPendingBody": "Entrambe le parti appongono il proprio nome sull'atto dell'operazione, ed è la seconda firma ad aprire la conversazione tra voi. Nel frattempo restano attive offerte, controfferte, domande e richieste di documenti.",
+    "sealPendingCta": "Apri l'atto dell'operazione",
+    "sealPendingTitle": "Questa operazione non è ancora firmata",
+    "sealTheirsBody": "La tua firma è sull'atto dell'operazione, quella dell'altra parte no. La conversazione si apre nel momento in cui arriva, e l'altra parte è stata avvisata che manca.",
+    "sealTheirsCta": "Vedi l'atto",
+    "sealTheirsTitle": "In attesa della firma dell'altra parte",
+    "sealYoursBody": "L'altra parte ha firmato l'atto dell'operazione. La conversazione si apre non appena firmi anche tu, e la firma non ti vincola né alle condizioni né al round.",
+    "sealYoursCta": "Firma l'atto",
+    "sealYoursTitle": "Manca soltanto la tua firma"
   },
   "nda": {
     "parties": "Parti",
@@ -4483,6 +4524,15 @@
     "unsigned": "Non ancora firmato",
     "version": "Versione {version}",
     "waitingOnThem": "La tua firma è registrata. La conversazione si apre non appena firma anche l'altra parte.",
-    "yourName": "Il tuo nome completo"
+    "yourName": "Il tuo nome completo",
+    "opensMessaging": "Potrete scrivervi nel momento in cui entrambe le firme saranno su questo atto, e la piattaforma smetterà di trattenere i vostri recapiti reciproci. Fino ad allora restano attive offerte, controfferte, domande e richieste di documenti."
+  },
+  "founderContact": {
+    "dealRequired": "Puoi scrivere a un investitore quando tra voi c'è un deal. Aprine uno dal suo profilo: l'investitore accetta, firmate entrambi l'atto e questa conversazione si apre.",
+    "dealsCta": "Vai al deal",
+    "offerWaiting": "Questo investitore ha un'offerta in attesa di una tua risposta. Accettala, poi firmate entrambi l'atto e la conversazione si apre.",
+    "offersCta": "Vedi l'offerta",
+    "openDealCta": "Apri un deal",
+    "proposalPending": "La tua proposta di deal è al vaglio di questo investitore. Quando l'avrà accettata e avrete firmato entrambi l'atto, potrete parlare qui."
   }
 }
