@@ -3,7 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { resolveAdmin } from "@/lib/admin-guard";
 import { maskIp } from "@/lib/identity";
 import { isUuid } from "@/lib/utils";
-import { NDA_VERSION } from "@/lib/nda-text";
+import { CONFIDENTIALITY_MONTHS, NDA_VERSION } from "@/lib/nda-text";
 
 /**
  * GET -- the founder's evidence view of their own confidentiality record.
@@ -70,8 +70,10 @@ function readSnapshot(raw: unknown): CounterpartySnapshot | null {
   };
 }
 
-/** Clause 6 of the current wording: two years from acceptance. */
-const NDA_TERM_MONTHS = 24;
+/** Clause 6 of the current wording. Taken from the constant the clause itself
+ *  interpolates: a second copy of the number here would go on deriving expiry
+ *  dates from the old term the day the wording changes. */
+const NDA_TERM_MONTHS = CONFIDENTIALITY_MONTHS;
 
 function plusMonths(iso: string, months: number): string {
   const d = new Date(iso);

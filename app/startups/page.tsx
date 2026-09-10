@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { buildAccessContext, isSuspended } from "@/lib/access";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { browseIndexPublic } from "@/lib/listing-visibility";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
@@ -24,10 +25,21 @@ export default async function StartupsPage() {
   // Signed out, the product is the home page, the pricing page and the data
   // centre. The catalogue names real companies that are raising, and a
   // private marketplace does not put that in front of the street.
-  if (!(await browseIndexPublic())) {
+  {
     const gate = await createServerSupabaseClient();
     const { data: { user } } = await gate.auth.getUser();
-    if (!user) redirect("/auth/login?redirect=/startups");
+    if (!user && !(await browseIndexPublic())) redirect("/auth/login?redirect=/startups");
+    // A suspended account is signed in, so every "is there a user" gate let it
+    // straight through. INVESTOR_SUSPENDED sets browse:false and nothing was
+    // reading it.
+    if (user) {
+      const { data: prof } = await createAdminClient()
+        .from("profiles").select("id, role, subscription_tier, suspended, account_status")
+        .eq("id", user.id).maybeSingle();
+      if (prof && isSuspended(buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], false))) {
+        redirect("/suspended");
+      }
+    }
   }
 
   // Rows are fetched on the server so the page ships with its listings in

@@ -63,6 +63,14 @@
     --cr-card-edge:         inset 0 1px 0 rgba(255,255,255,0.6);
     --cr-nav-glass:         rgba(250,247,242,0.82);
 
+    /* Frosted panel surfaces. These exist because .plan-card and the paywall
+       veil used to carry the light palette as a literal, with no dark
+       counterpart, so in dark mode a cream card sat on a black page. A colour
+       whose only definition is a literal cannot follow the theme. */
+    --cr-card-veil:        rgba(245,240,232,0.70);
+    --cr-card-veil-strong: rgba(245,240,232,0.85);
+    --cr-card-veil-br:     rgba(216,208,196,0.80);
+
     /* shadcn/radix compatibility — warm theme */
     --background:             37 33% 93%;
     --foreground:             22 11% 9%;
@@ -130,6 +138,9 @@
     --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
     --cr-card-shadow-hover: 0 2px 4px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.5);
     --cr-card-edge:         inset 0 1px 0 rgba(240,234,224,0.06);
+    --cr-card-veil:        rgba(30,26,20,0.66);
+    --cr-card-veil-strong: rgba(34,29,22,0.82);
+    --cr-card-veil-br:     rgba(237,230,218,0.14);
     --cr-nav-glass:         rgba(15,13,10,0.75);
 
     --background:             30 20% 5%;
@@ -212,6 +223,9 @@
     --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.04);
     --cr-card-shadow-hover: 0 4px 14px rgba(0,0,0,0.08);
     --cr-card-edge:         inset 0 0 0 1px rgba(24,24,27,0.06);
+    --cr-card-veil:        rgba(250,250,250,0.72);
+    --cr-card-veil-strong: rgba(255,255,255,0.88);
+    --cr-card-veil-br:     rgba(24,24,27,0.12);
     --cr-nav-glass:         rgba(255,255,255,0.9);
 
     --background:             0 0% 100%;
@@ -276,6 +290,9 @@
     --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.5);
     --cr-card-shadow-hover: 0 6px 20px rgba(0,0,0,0.55);
     --cr-card-edge:         inset 0 0 0 1px rgba(244,244,245,0.07);
+    --cr-card-veil:        rgba(23,23,26,0.70);
+    --cr-card-veil-strong: rgba(28,28,32,0.86);
+    --cr-card-veil-br:     rgba(244,244,245,0.12);
     --cr-nav-glass:         rgba(10,10,10,0.8);
 
     --background:             240 6% 4%;
@@ -558,7 +575,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   content: '';
   position: absolute; inset: 0;
   backdrop-filter: blur(6px);
-  background: rgba(245,240,232,0.7);
+  background: var(--cr-card-veil);
   border-radius: inherit;
   pointer-events: none;
 }
@@ -1073,16 +1090,14 @@ a:hover > .cr-diamond-live {
 
 /* ── FEATURE 15: Frosted glass pricing cards ─────────────── */
 .plan-card {
-  background: rgba(245,240,232,0.7);
+  background: var(--cr-card-veil);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(216,208,196,0.8);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    0 4px 24px rgba(26,22,18,0.06);
+  border: 1px solid var(--cr-card-veil-br);
+  box-shadow: var(--cr-card-edge), var(--cr-card-shadow);
 }
 .plan-card.featured {
-  background: rgba(245,240,232,0.85);
+  background: var(--cr-card-veil-strong);
   border: 1px solid color-mix(in srgb, var(--cr-copper) 30%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--cr-copper) 15%, transparent),

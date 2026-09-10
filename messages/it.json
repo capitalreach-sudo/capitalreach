@@ -2902,7 +2902,9 @@
     "yourPortion": "Success fee sul tuo ticket ({fee}%, pagata dalla startup)",
     "investorPays": "Tu paghi",
     "footnote": "I costi legali per outreach a freddo e intermediari sono in genere di 5.000–20.000 € prima ancora che un round si apra.",
-    "detailNote": "La success fee del 2% viene fatturata alla startup solo dopo la chiusura di un round tramite CapitalReach. Gli investitori non pagano nulla."
+    "detailNote": "La success fee del 2% viene fatturata alla startup solo dopo la chiusura di un round tramite CapitalReach. Gli investitori non pagano nulla.",
+    "keepShare": "Il {pct}% del round resta in azienda.",
+    "setRaise": "Imposta l'importo del round a {amount}"
   },
   "welcome": {
     "eyebrow": "Benvenuto su CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} ha aperto un round",
     "investorJoined": "Un nuovo investitore si è unito",
     "ndaSigned": "È stato firmato un NDA",
-    "roundClosed": "Un round si è chiuso con successo"
+    "roundClosed": "Un round si è chiuso con successo",
+    "listingJoinedAnon": "Un'azienda ha aperto un round"
   },
   "radar": {
     "title": "Investitori adatti al tuo round",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Success fee saldata",
     "feeLiftedWaivedTitle": "Success fee stornata",
     "feeLiftedBody": "Ogni limitazione legata a questa fee è stata rimossa.",
-    "feeLiftedBodyRestored": "Ogni limitazione legata a questa fee è stata rimossa. Il tuo round è di nuovo {state}."
+    "feeLiftedBodyRestored": "Ogni limitazione legata a questa fee è stata rimossa. Il tuo round è di nuovo {state}.",
+    "dealSealPendingBody": "Manca soltanto la tua firma.",
+    "dealSealPendingTitle": "{name} ha firmato l'atto dell'operazione",
+    "dealSealedBody": "La conversazione è aperta.",
+    "dealSealedTitle": "{name} ha firmato. L'operazione è perfezionata."
   },
   "match": {
     "title": "Chi ti sta aspettando",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Gli obblighi hanno efficacia fino al {date}.",
     "tailMonths": "Il divieto di elusione ha durata di {months} mesi dalla presentazione.",
     "signedOnVersion": "Hai accettato la versione {version} il {date}. La tua accettazione resta regolata da quel testo.",
-    "wordingChanged": "Il testo attuale è cambiato rispetto a quello da te accettato."
+    "wordingChanged": "Il testo attuale è cambiato rispetto a quello da te accettato.",
+    "loadFailed": "Non è stato possibile caricare l'accordo, quindi nulla è stato accettato.",
+    "retry": "Riprova"
   },
   "discLog": {
     "title": "Registro di riservatezza",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Per scrivere ad altre aziende il tuo annuncio deve essere online. È da noi, in revisione."
+  },
+  "seal": {
+    "body": "Un'offerta accettata è il sì di una parte sola. Sono entrambi i nomi su questo atto ad aprire la conversazione, ed è su di essi che si fonda la fee se il round si chiude. La firma non ti obbliga a investire né ad accettare: le condizioni qui sotto sono quelle sul tavolo oggi, e ciascuno di voi può ancora rinegoziarle.",
+    "bodySealed": "Entrambe le parti hanno firmato. La conversazione è aperta e i recapiti non sono più riservati tra voi.",
+    "cardSealed": "Perfezionato il {date}",
+    "checkbox": "Ho letto l'atto qui sopra e lo firmo per la mia parte. Sono consapevole che, se questo round si chiude, la società è tenuta a pagare una success fee del 2%, e che questa firma viene registrata con l'ora e l'indirizzo di rete da cui proviene.",
+    "doneBody": "Entrambe le firme sono conservate con la rispettiva ora di registrazione e l'hash del documento esatto firmato da ciascuno.",
+    "doneTitle": "L'atto è perfezionato",
+    "eyebrow": "L'atto",
+    "failed": "Il salvataggio non è riuscito. Riprova.",
+    "footer": "Il tuo nome, l'ora e il tuo indirizzo di rete vengono registrati su questo documento.",
+    "hideDocument": "Nascondi l'atto",
+    "loadFailed": "Non è stato possibile caricare l'atto. Questo non dice nulla sull'operazione in sé, solo che questa pagina non è riuscita a raggiungerlo.",
+    "mustAgree": "Spunta la casella per confermare di aver letto l'atto.",
+    "namePlaceholder": "Digita il tuo nome per firmare",
+    "nameRequired": "Digita il tuo nome completo per firmare.",
+    "openConversation": "Apri la conversazione",
+    "readDocument": "Leggi l'atto integrale",
+    "required": "Potrete scrivervi quando l'atto dell'operazione sarà firmato da entrambe le parti.",
+    "sealed": "Perfezionato. Ora potete parlare.",
+    "sign": "Firma e perfeziona",
+    "signed": "La tua firma è registrata.",
+    "signing": "Registrazione della firma in corso",
+    "theCompany": "La società",
+    "theInvestor": "L'investitore",
+    "title": "Firma l'atto dell'operazione",
+    "titleSealed": "Perfezionato da entrambe le parti",
+    "unsigned": "Non ancora firmato",
+    "version": "Versione {version}",
+    "waitingOnThem": "La tua firma è registrata. La conversazione si apre non appena firma anche l'altra parte.",
+    "yourName": "Il tuo nome completo"
   }
 }

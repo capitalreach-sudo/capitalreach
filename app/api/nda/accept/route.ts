@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
 
-  const { startupId } = await req.json().catch(() => ({}));
+  const { startupId, agreedSha256 } = await req.json().catch(() => ({}));
   if (typeof startupId !== "string") {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   // The startup must exist, be live, and actually require an NDA.
   const { data: startup } = await admin
     .from("startups")
-    .select("id, name, owner_id, status, require_nda")
+    .select("id, slug, name, owner_id, status, require_nda")
     .eq("id", startupId)
     .single();
   if (!startup || startup.status !== "active") {
@@ -82,7 +82,12 @@ export async function POST(req: NextRequest) {
   // require it before the room opens. Attestable any time from Settings.
   if (!attest?.accreditation_certified) {
     return NextResponse.json(
-      { error: "Confirm your accredited-investor status in Settings to open data rooms." },
+      {
+        error: "Confirm your accredited-investor status in Settings to open data rooms.",
+        // Named so the dialog can offer the settings link rather than reading
+        // the sentence for the word "Settings".
+        code: "ACCREDITATION_REQUIRED",
+      },
       { status: 403 },
     );
   }
@@ -115,6 +120,20 @@ export async function POST(req: NextRequest) {
   // the wording was not edited afterwards; this can.
   const signedAt = new Date();
   const agreedText = ndaText(startup.name, recipientFrom(counterparty));
+  const textSha256 = sha256(agreedText);
+
+  // The client sends back the fingerprint it had on screen. A mismatch means
+  // the page was rendered against different bytes -- a wording change since it
+  // opened, or a name that has been corrected since -- and signing it would
+  // record agreement to a document this person never read. Absent (an older
+  // page still in a tab) it is not enforced, since the acceptance is still the
+  // server's own rendering and refusing would strand the signer.
+  if (typeof agreedSha256 === "string" && agreedSha256 !== textSha256) {
+    return NextResponse.json(
+      { error: "The agreement changed while it was open. Reload the page and read it again." },
+      { status: 409 },
+    );
+  }
 
   const { data: ndaRow, error } = await admin.from("nda_records").upsert(
     {
@@ -125,7 +144,7 @@ export async function POST(req: NextRequest) {
       nda_version: NDA_VERSION,
       signed_ip: ip,
       signed_ua: ua,
-      text_sha256: sha256(agreedText),
+      text_sha256: textSha256,
       counterparty: JSON.parse(JSON.stringify(counterparty)),
       obligations_end_at: obligationsEnd(signedAt),
     },
@@ -148,7 +167,9 @@ export async function POST(req: NextRequest) {
     type: "nda_signed",
     title: `NDA accepted — data room opened`,
     body: `An investor accepted your NDA and can now see your protected documents.`,
-    href: `/startups/${startup.id}`,
+    // The listing route resolves a slug, never an id: /startups/<uuid> is a
+    // 404, which is where this notification used to land the founder.
+    href: startup.slug ? `/startups/${startup.slug}` : "/dashboard/startup/nda",
   }).catch(() => {});
 
   return NextResponse.json({ success: true });

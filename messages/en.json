@@ -2902,7 +2902,9 @@
     "yourPortion": "Success fee on your check ({fee}%, paid by the startup)",
     "investorPays": "You pay",
     "footnote": "Legal costs for cold outreach and intermediaries typically run €5,000–€20,000 before a round even opens.",
-    "detailNote": "The 2% success fee is invoiced to the startup only after a round closes through CapitalReach. Investors pay nothing."
+    "detailNote": "The 2% success fee is invoiced to the startup only after a round closes through CapitalReach. Investors pay nothing.",
+    "keepShare": "{pct}% of the raise stays in the company.",
+    "setRaise": "Set raise amount to {amount}"
   },
   "welcome": {
     "eyebrow": "Welcome to CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} opened a round",
     "investorJoined": "A new investor joined",
     "ndaSigned": "An NDA was signed",
-    "roundClosed": "A round closed successfully"
+    "roundClosed": "A round closed successfully",
+    "listingJoinedAnon": "A company opened a round"
   },
   "radar": {
     "title": "Investors matching your round",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Success fee settled",
     "feeLiftedWaivedTitle": "Success fee written off",
     "feeLiftedBody": "Every hold from this fee is lifted.",
-    "feeLiftedBodyRestored": "Every hold from this fee is lifted. Your round is back to {state}."
+    "feeLiftedBodyRestored": "Every hold from this fee is lifted. Your round is back to {state}.",
+    "dealSealedTitle": "{name} signed. The deal is sealed.",
+    "dealSealedBody": "The conversation is open.",
+    "dealSealPendingTitle": "{name} signed the deal record",
+    "dealSealPendingBody": "Your signature is the one still outstanding."
   },
   "match": {
     "title": "Who's waiting for you",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Obligations run until {date}.",
     "tailMonths": "Non-circumvention runs {months} months from the introduction.",
     "signedOnVersion": "You accepted version {version} on {date}. That wording still governs your acceptance.",
-    "wordingChanged": "The current wording has changed since you accepted."
+    "wordingChanged": "The current wording has changed since you accepted.",
+    "loadFailed": "The agreement could not be loaded, so nothing has been accepted.",
+    "retry": "Try again"
   },
   "discLog": {
     "title": "Confidentiality record",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Your listing has to be live before you can message other companies. It is with us for review."
+  },
+  "seal": {
+    "eyebrow": "The record",
+    "title": "Sign the deal record",
+    "titleSealed": "Sealed by both parties",
+    "body": "An accepted offer is one side saying yes. Both names on this record is what opens the conversation, and it is what the fee rests on if this round closes. Signing does not commit you to invest or to accept: the terms below are the ones on the table today, and either of you may still renegotiate them.",
+    "bodySealed": "Both parties signed. The conversation is open and contact details are no longer withheld between you.",
+    "readDocument": "Read the full record",
+    "hideDocument": "Hide the record",
+    "version": "Version {version}",
+    "theCompany": "The company",
+    "theInvestor": "The investor",
+    "unsigned": "Not yet signed",
+    "yourName": "Your full name",
+    "namePlaceholder": "Type your name to sign",
+    "checkbox": "I have read the record above and I sign it on behalf of my side. I understand a 2% success fee is payable by the company if this round closes, and that this signature is recorded with the time and network address it came from.",
+    "sign": "Sign and seal",
+    "signing": "Recording your signature",
+    "signed": "Your signature is recorded.",
+    "sealed": "Sealed. You can talk now.",
+    "waitingOnThem": "Your signature is recorded. The conversation opens as soon as the other side signs.",
+    "doneTitle": "The record is sealed",
+    "doneBody": "Both signatures are on file with their timestamps and the hash of the exact document you each signed.",
+    "openConversation": "Open the conversation",
+    "footer": "Your name, the time and your network address are recorded against this document.",
+    "failed": "That did not save. Try again.",
+    "loadFailed": "The record could not be loaded. This says nothing about the deal itself, only that this page failed to reach it.",
+    "nameRequired": "Type your full name to sign.",
+    "mustAgree": "Tick the box to confirm you have read the record.",
+    "required": "You can message each other once the deal record is signed by both sides.",
+    "cardSealed": "Sealed {date}"
   }
 }

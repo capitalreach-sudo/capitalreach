@@ -2902,7 +2902,9 @@
     "yourPortion": "Comisión sobre tu ticket ({fee}%, la paga la startup)",
     "investorPays": "Tú pagas",
     "footnote": "Los costes legales de la prospección en frío y los intermediarios suelen ser de 5.000–20.000 € antes de que se abra una ronda.",
-    "detailNote": "La comisión de éxito del 2% se factura a la startup solo cuando una ronda se cierra a través de CapitalReach. Los inversores no pagan nada."
+    "detailNote": "La comisión de éxito del 2% se factura a la startup solo cuando una ronda se cierra a través de CapitalReach. Los inversores no pagan nada.",
+    "keepShare": "El {pct}% de lo recaudado se queda en la empresa.",
+    "setRaise": "Fijar el importe de la ronda en {amount}"
   },
   "welcome": {
     "eyebrow": "Bienvenido a CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} abrió una ronda",
     "investorJoined": "Un nuevo inversor se unió",
     "ndaSigned": "Se firmó un NDA",
-    "roundClosed": "Una ronda cerró con éxito"
+    "roundClosed": "Una ronda cerró con éxito",
+    "listingJoinedAnon": "Una empresa abrió una ronda"
   },
   "radar": {
     "title": "Inversores que encajan con tu ronda",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Comisión de éxito liquidada",
     "feeLiftedWaivedTitle": "Comisión de éxito condonada",
     "feeLiftedBody": "Se levantan todas las retenciones derivadas de esta comisión.",
-    "feeLiftedBodyRestored": "Se levantan todas las retenciones derivadas de esta comisión. Su ronda vuelve a estar {state}."
+    "feeLiftedBodyRestored": "Se levantan todas las retenciones derivadas de esta comisión. Su ronda vuelve a estar {state}.",
+    "dealSealPendingBody": "Su firma es la única que falta.",
+    "dealSealPendingTitle": "{name} ha firmado el acta del acuerdo",
+    "dealSealedBody": "La conversación está abierta.",
+    "dealSealedTitle": "{name} ha firmado. El acuerdo queda formalizado."
   },
   "match": {
     "title": "Quién te espera",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Las obligaciones se mantienen vigentes hasta el {date}.",
     "tailMonths": "La cláusula de no elusión rige durante {months} meses desde la presentación.",
     "signedOnVersion": "Usted aceptó la versión {version} el {date}. Esa redacción sigue rigiendo su aceptación.",
-    "wordingChanged": "La redacción vigente ha cambiado desde su aceptación."
+    "wordingChanged": "La redacción vigente ha cambiado desde su aceptación.",
+    "loadFailed": "No se ha podido cargar el acuerdo, así que no se ha aceptado nada.",
+    "retry": "Reintentar"
   },
   "discLog": {
     "title": "Registro de confidencialidad",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Su anuncio tiene que estar publicado para poder escribir a otras empresas. Lo tenemos en revisión."
+  },
+  "seal": {
+    "body": "Una oferta aceptada es una sola parte diciendo que sí. Lo que abre la conversación es que ambos nombres consten en esta acta, y es también lo que sustenta la comisión si esta ronda se cierra. Firmar no le obliga a invertir ni a aceptar: las condiciones que figuran abajo son las que hoy están sobre la mesa, y cualquiera de las dos partes puede renegociarlas.",
+    "bodySealed": "Ambas partes han firmado. La conversación está abierta y sus datos de contacto ya no se ocultan entre ustedes.",
+    "cardSealed": "Formalizado el {date}",
+    "checkbox": "He leído el acta que antecede y la firmo en nombre de mi parte. Entiendo que, si esta ronda se cierra, la empresa deberá abonar una comisión de éxito del 2%, y que esta firma queda registrada junto con la hora y la dirección de red desde la que se realiza.",
+    "doneBody": "Ambas firmas quedan registradas con su fecha y hora y con el hash del documento exacto que firmó cada parte.",
+    "doneTitle": "El acta queda formalizada",
+    "eyebrow": "El acta",
+    "failed": "No se ha guardado. Vuelva a intentarlo.",
+    "footer": "Su nombre, la hora y su dirección de red quedan registrados junto con este documento.",
+    "hideDocument": "Ocultar el acta",
+    "loadFailed": "No se ha podido cargar el acta. Esto no dice nada sobre el acuerdo en sí, solo que esta página no ha podido acceder a ella.",
+    "mustAgree": "Marque la casilla para confirmar que ha leído el acta.",
+    "namePlaceholder": "Escriba su nombre para firmar",
+    "nameRequired": "Escriba su nombre completo para firmar.",
+    "openConversation": "Abrir la conversación",
+    "readDocument": "Leer el acta completa",
+    "required": "Podrán escribirse cuando ambas partes hayan firmado el acta del acuerdo.",
+    "sealed": "Formalizado. Ya pueden hablar.",
+    "sign": "Firmar y formalizar",
+    "signed": "Su firma queda registrada.",
+    "signing": "Registrando su firma",
+    "theCompany": "La empresa",
+    "theInvestor": "El inversor",
+    "title": "Firmar el acta del acuerdo",
+    "titleSealed": "Formalizada por ambas partes",
+    "unsigned": "Aún sin firmar",
+    "version": "Versión {version}",
+    "waitingOnThem": "Su firma queda registrada. La conversación se abrirá en cuanto firme la otra parte.",
+    "yourName": "Su nombre completo"
   }
 }

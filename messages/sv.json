@@ -2902,7 +2902,9 @@
     "yourPortion": "Framgångsavgift på din check ({fee}%, betalas av startupen)",
     "investorPays": "Du betalar",
     "footnote": "Juridiska kostnader för kall kontakt och mellanhänder brukar landa på 5 000–20 000 € innan en runda ens öppnar.",
-    "detailNote": "Framgångsavgiften på 2% faktureras startupen först efter att en runda stängts via CapitalReach. Investerare betalar ingenting."
+    "detailNote": "Framgångsavgiften på 2% faktureras startupen först efter att en runda stängts via CapitalReach. Investerare betalar ingenting.",
+    "keepShare": "{pct}% av kapitalet stannar i bolaget.",
+    "setRaise": "Ange rundans storlek till {amount}"
   },
   "welcome": {
     "eyebrow": "Välkommen till CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} öppnade en runda",
     "investorJoined": "En ny investerare gick med",
     "ndaSigned": "Ett NDA undertecknades",
-    "roundClosed": "En runda stängdes framgångsrikt"
+    "roundClosed": "En runda stängdes framgångsrikt",
+    "listingJoinedAnon": "Ett bolag har öppnat en runda"
   },
   "radar": {
     "title": "Investerare som matchar din runda",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Framgångsavgift reglerad",
     "feeLiftedWaivedTitle": "Framgångsavgift avskriven",
     "feeLiftedBody": "Alla spärrar från den här avgiften är hävda.",
-    "feeLiftedBodyRestored": "Alla spärrar från den här avgiften är hävda. Din runda är tillbaka i läget {state}."
+    "feeLiftedBodyRestored": "Alla spärrar från den här avgiften är hävda. Din runda är tillbaka i läget {state}.",
+    "dealSealPendingBody": "Din underskrift är den som återstår.",
+    "dealSealPendingTitle": "{name} har undertecknat affärsdokumentet",
+    "dealSealedBody": "Konversationen är öppen.",
+    "dealSealedTitle": "{name} har undertecknat. Affären är beseglad."
   },
   "match": {
     "title": "Vem som väntar på dig",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Förpliktelserna gäller till och med {date}.",
     "tailMonths": "Kringgåendeförbudet gäller i {months} månader från introduktionen.",
     "signedOnVersion": "Du godkände version {version} den {date}. Den lydelsen gäller alltjämt för ditt godkännande.",
-    "wordingChanged": "Den nuvarande lydelsen har ändrats sedan du godkände avtalet."
+    "wordingChanged": "Den nuvarande lydelsen har ändrats sedan du godkände avtalet.",
+    "loadFailed": "Avtalet kunde inte hämtas, så ingenting har godkänts.",
+    "retry": "Försök igen"
   },
   "discLog": {
     "title": "Sekretessregister",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Din annons måste vara publicerad innan du kan skicka meddelanden till andra företag. Den ligger hos oss för granskning."
+  },
+  "seal": {
+    "body": "Ett accepterat bud är den ena partens ja. Det som öppnar konversationen är att båda namnen står på det här dokumentet, och det är också det som avgiften vilar på om rundan stängs. Att underteckna förbinder dig varken att investera eller att acceptera: villkoren nedan är de som ligger på bordet i dag, och ni kan båda fortfarande omförhandla dem.",
+    "bodySealed": "Båda parter har undertecknat. Konversationen är öppen och era kontaktuppgifter döljs inte längre för varandra.",
+    "cardSealed": "Beseglat {date}",
+    "checkbox": "Jag har läst dokumentet ovan och undertecknar det för min parts räkning. Jag är införstådd med att en framgångsavgift på 2% ska betalas av bolaget om rundan stängs, och med att den här underskriften registreras tillsammans med tidpunkten och den nätverksadress den kom från.",
+    "doneBody": "Båda underskrifterna finns registrerade med sina tidsstämplar och hashen av exakt det dokument som var och en av er undertecknade.",
+    "doneTitle": "Dokumentet är beseglat",
+    "eyebrow": "Dokumentet",
+    "failed": "Det sparades inte. Försök igen.",
+    "footer": "Ditt namn, tidpunkten och din nätverksadress registreras tillsammans med det här dokumentet.",
+    "hideDocument": "Dölj dokumentet",
+    "loadFailed": "Dokumentet kunde inte hämtas. Det säger ingenting om själva affären, bara att den här sidan inte nådde fram till det.",
+    "mustAgree": "Kryssa i rutan för att bekräfta att du har läst dokumentet.",
+    "namePlaceholder": "Skriv ditt namn för att underteckna",
+    "nameRequired": "Skriv ditt fullständiga namn för att underteckna.",
+    "openConversation": "Öppna konversationen",
+    "readDocument": "Läs hela dokumentet",
+    "required": "Ni kan skicka meddelanden till varandra när affärsdokumentet har undertecknats av båda parter.",
+    "sealed": "Beseglat. Ni kan tala nu.",
+    "sign": "Underteckna och besegla",
+    "signed": "Din underskrift är registrerad.",
+    "signing": "Registrerar din underskrift",
+    "theCompany": "Bolaget",
+    "theInvestor": "Investeraren",
+    "title": "Underteckna affärsdokumentet",
+    "titleSealed": "Beseglat av båda parter",
+    "unsigned": "Väntar på underskrift",
+    "version": "Version {version}",
+    "waitingOnThem": "Din underskrift är registrerad. Konversationen öppnas så snart motparten undertecknar.",
+    "yourName": "Ditt fullständiga namn"
   }
 }

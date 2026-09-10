@@ -2902,7 +2902,9 @@
     "yourPortion": "Erfolgsgebühr auf Ihr Ticket ({fee}%, zahlt das Startup)",
     "investorPays": "Sie zahlen",
     "footnote": "Rechtskosten für Kaltakquise und Intermediäre liegen typischerweise bei 5.000–20.000 €, bevor eine Runde überhaupt startet.",
-    "detailNote": "Die Erfolgsgebühr von 2% wird dem Startup erst nach Abschluss einer Runde über CapitalReach in Rechnung gestellt. Investoren zahlen nichts."
+    "detailNote": "Die Erfolgsgebühr von 2% wird dem Startup erst nach Abschluss einer Runde über CapitalReach in Rechnung gestellt. Investoren zahlen nichts.",
+    "keepShare": "{pct}% des eingesammelten Kapitals bleiben im Unternehmen.",
+    "setRaise": "Rundengröße auf {amount} setzen"
   },
   "welcome": {
     "eyebrow": "Willkommen bei CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} hat eine Runde eröffnet",
     "investorJoined": "Ein neuer Investor ist beigetreten",
     "ndaSigned": "Eine NDA wurde unterzeichnet",
-    "roundClosed": "Eine Runde wurde erfolgreich abgeschlossen"
+    "roundClosed": "Eine Runde wurde erfolgreich abgeschlossen",
+    "listingJoinedAnon": "Ein Unternehmen hat eine Runde eröffnet"
   },
   "radar": {
     "title": "Investoren, die zu deiner Runde passen",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Erfolgsprovision beglichen",
     "feeLiftedWaivedTitle": "Erfolgsprovision erlassen",
     "feeLiftedBody": "Alle Einschränkungen aus dieser Provision sind aufgehoben.",
-    "feeLiftedBodyRestored": "Alle Einschränkungen aus dieser Provision sind aufgehoben. Ihre Runde ist wieder {state}."
+    "feeLiftedBodyRestored": "Alle Einschränkungen aus dieser Provision sind aufgehoben. Ihre Runde ist wieder {state}.",
+    "dealSealPendingBody": "Ihre Unterschrift fehlt als einzige noch.",
+    "dealSealPendingTitle": "{name} hat die Deal-Urkunde unterzeichnet",
+    "dealSealedBody": "Das Gespräch ist eröffnet.",
+    "dealSealedTitle": "{name} hat unterzeichnet. Der Deal ist besiegelt."
   },
   "match": {
     "title": "Wer auf dich wartet",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Die Pflichten gelten bis zum {date}.",
     "tailMonths": "Das Umgehungsverbot gilt für {months} Monate ab der Vermittlung.",
     "signedOnVersion": "Sie haben die Fassung {version} am {date} angenommen. Für Ihre Annahme gilt weiterhin dieser Wortlaut.",
-    "wordingChanged": "Der aktuelle Wortlaut hat sich seit Ihrer Annahme geändert."
+    "wordingChanged": "Der aktuelle Wortlaut hat sich seit Ihrer Annahme geändert.",
+    "loadFailed": "Die Vereinbarung konnte nicht geladen werden, es wurde daher nichts angenommen.",
+    "retry": "Erneut versuchen"
   },
   "discLog": {
     "title": "Vertraulichkeitsnachweis",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Ihr Listing muss live sein, bevor Sie andere Unternehmen anschreiben können. Es liegt bei uns zur Prüfung."
+  },
+  "seal": {
+    "body": "Ein angenommenes Angebot ist das Ja einer Seite. Erst wenn beide Namen auf dieser Urkunde stehen, öffnet sich das Gespräch, und darauf stützt sich die Gebühr, falls diese Runde abgeschlossen wird. Die Unterschrift verpflichtet Sie nicht, zu investieren oder anzunehmen: Die nachstehenden Konditionen sind die, die heute auf dem Tisch liegen, und jede Seite kann sie weiterhin neu verhandeln.",
+    "bodySealed": "Beide Parteien haben unterzeichnet. Das Gespräch ist eröffnet, und Kontaktdaten werden zwischen Ihnen nicht länger zurückgehalten.",
+    "cardSealed": "Besiegelt am {date}",
+    "checkbox": "Ich habe die vorstehende Urkunde gelesen und unterzeichne sie für meine Seite. Mir ist bekannt, dass bei Abschluss dieser Runde eine Erfolgsgebühr von 2% vom Unternehmen zu zahlen ist und dass diese Unterschrift mit dem Zeitpunkt und der Netzwerkadresse ihrer Abgabe erfasst wird.",
+    "doneBody": "Beide Unterschriften sind mit ihren Zeitstempeln gespeichert, dazu der Hash des exakten Dokuments, das Sie jeweils unterzeichnet haben.",
+    "doneTitle": "Die Urkunde ist besiegelt",
+    "eyebrow": "Die Urkunde",
+    "failed": "Das wurde nicht gespeichert. Bitte erneut versuchen.",
+    "footer": "Ihr Name, der Zeitpunkt und Ihre Netzwerkadresse werden zu diesem Dokument erfasst.",
+    "hideDocument": "Urkunde ausblenden",
+    "loadFailed": "Die Urkunde konnte nicht geladen werden. Das sagt nichts über den Deal selbst aus, sondern nur, dass diese Seite ihn nicht erreicht hat.",
+    "mustAgree": "Setzen Sie das Häkchen, um zu bestätigen, dass Sie die Urkunde gelesen haben.",
+    "namePlaceholder": "Zum Unterzeichnen Ihren Namen eingeben",
+    "nameRequired": "Geben Sie zum Unterzeichnen Ihren vollständigen Namen ein.",
+    "openConversation": "Gespräch öffnen",
+    "readDocument": "Die vollständige Urkunde lesen",
+    "required": "Sie können einander schreiben, sobald die Deal-Urkunde von beiden Seiten unterzeichnet ist.",
+    "sealed": "Besiegelt. Sie können jetzt sprechen.",
+    "sign": "Unterzeichnen und besiegeln",
+    "signed": "Ihre Unterschrift ist erfasst.",
+    "signing": "Ihre Unterschrift wird erfasst",
+    "theCompany": "Das Unternehmen",
+    "theInvestor": "Der Investor",
+    "title": "Die Deal-Urkunde unterzeichnen",
+    "titleSealed": "Von beiden Parteien besiegelt",
+    "unsigned": "Noch nicht unterzeichnet",
+    "version": "Fassung {version}",
+    "waitingOnThem": "Ihre Unterschrift ist erfasst. Das Gespräch wird eröffnet, sobald die andere Seite unterzeichnet.",
+    "yourName": "Ihr vollständiger Name"
   }
 }

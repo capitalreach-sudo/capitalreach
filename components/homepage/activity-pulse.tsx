@@ -61,7 +61,12 @@ export function ActivityPulse() {
               <span style={{ display: "inline-flex", alignItems: "baseline", gap: "10px", minWidth: 0 }}>
                 <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {t(KIND_KEY[e.kind], e.name ? { name: e.name } : undefined)}
+                  {/* The name is withheld from viewers who may not see the
+                      market, so a listing event needs a wording that does not
+                      interpolate one, or the placeholder renders literally. */}
+                  {e.kind === "listing" && !e.name
+                    ? t("feed.listingJoinedAnon")
+                    : t(KIND_KEY[e.kind], e.name ? { name: e.name } : undefined)}
                 </span>
               </span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>

@@ -1,7 +1,7 @@
 import {
   Bell, Handshake, ArrowRightLeft, CheckCircle2, XCircle, MessageSquare,
   CalendarClock, FileSignature, ShieldCheck, BadgeCheck, Ban, Users, Crown,
-  SearchCheck, Bookmark, Megaphone, FileQuestion, Share2, HelpCircle, MessageCircleReply, Receipt, Flag, Sparkles, AlertTriangle, type LucideIcon,
+  SearchCheck, Bookmark, Megaphone, FileQuestion, Share2, HelpCircle, MessageCircleReply, Receipt, Flag, Sparkles, AlertTriangle, type LucideIcon, Stamp, PenLine,
 } from "lucide-react";
 
 /**
@@ -34,6 +34,8 @@ export const TYPE_ICON: Record<string, { Icon: LucideIcon; color: string }> = {
   admin_alert:      { Icon: AlertTriangle, color: "var(--cr-down)"   },
   interest:         { Icon: Sparkles,     color: "var(--cr-copper)" },
   fee_due:          { Icon: Receipt,        color: "var(--cr-down)"   },
+  deal_sealed:      { Icon: Stamp,          color: "var(--cr-up)"     },
+  deal_seal_pending:{ Icon: PenLine,        color: "var(--cr-copper)" },
 };
 
 // Unknown types still render plainly rather than disappearing -- a

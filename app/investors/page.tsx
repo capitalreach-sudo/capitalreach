@@ -2,8 +2,9 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { InvestorsClient } from "@/components/investors/investors-client";
 import { loadPublicInvestors } from "@/lib/browse-data";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import { buildAccessContext, isSuspended } from "@/lib/access";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,15 @@ export default async function InvestorsPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?redirect=/investors");
+  {
+    // Signed in is not the same as in good standing.
+    const { data: prof } = await createAdminClient()
+      .from("profiles").select("id, role, subscription_tier, suspended, account_status")
+      .eq("id", user.id).maybeSingle();
+    if (prof && isSuspended(buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], false))) {
+      redirect("/suspended");
+    }
+  }
 
   // Server-fetched so the directory is in the HTML on first paint (no
   // "Loading investors…"); the client only fetches if this returns null.

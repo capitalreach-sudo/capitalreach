@@ -172,12 +172,14 @@ export async function ndaRecordFor(
 // -- The disclosure log -------------------------------------------------------
 
 /**
- * Conventional item kinds. Typed loosely on purpose so a new surface can name
- * itself without a migration, but reach for one of these first or the log
- * stops being queryable.
+ * The item kinds the log accepts. This is not a convention: nda_disclosures
+ * .item_type carries a CHECK constraint (migration 113) listing exactly these
+ * seven values, and recordDisclosure swallows insert errors by design, so a
+ * name outside this list is not logged loosely -- it is not logged at all, and
+ * the caller is told nothing. A new surface needs a migration first.
  */
 export const DISCLOSURE_ITEM_TYPES = [
-  "document", "financials", "dataroom", "ai_report", "export", "attachment", "cap_table",
+  "data_room_open", "document", "financials", "metrics", "deck", "update", "message_thread",
 ] as const;
 export type DisclosureItemType = (typeof DISCLOSURE_ITEM_TYPES)[number];
 
@@ -216,7 +218,10 @@ export async function recordDisclosure(input: DisclosureInput): Promise<void> {
     let ndaRecordId = input.ndaRecordId ?? null;
     if (!ndaRecordId) {
       const record = await ndaRecordFor(input.startupId, input.investorId);
-      ndaRecordId = record?.signedAt ? record.id : null;
+      // `live`, not merely signed: an item handed over after the term in
+      // clause 6 ran out was not received under that undertaking, and hanging
+      // it off the record anyway would overstate what the NDA covers.
+      ndaRecordId = record?.live ? record.id : null;
     }
 
     const { error } = await admin.from("nda_disclosures").insert({

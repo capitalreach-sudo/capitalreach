@@ -2902,7 +2902,9 @@
     "yourPortion": "您投资额对应的成功费（{fee}%，由创业公司支付）",
     "investorPays": "您支付",
     "footnote": "陌生拓展与中介的法律成本通常在融资开始前就达 5,000–20,000 欧元。",
-    "detailNote": "2% 成功费仅在通过 CapitalReach 完成融资后向创业公司开具。投资者无需支付任何费用。"
+    "detailNote": "2% 成功费仅在通过 CapitalReach 完成融资后向创业公司开具。投资者无需支付任何费用。",
+    "keepShare": "融资额的 {pct}% 留在公司。",
+    "setRaise": "将融资金额设为 {amount}"
   },
   "welcome": {
     "eyebrow": "欢迎来到 CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} 开启了一轮融资",
     "investorJoined": "一位新投资人加入",
     "ndaSigned": "一份保密协议已签署",
-    "roundClosed": "一轮融资成功完成"
+    "roundClosed": "一轮融资成功完成",
+    "listingJoinedAnon": "一家公司开启了一轮融资"
   },
   "radar": {
     "title": "与你的融资轮匹配的投资人",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "成功佣金已结清",
     "feeLiftedWaivedTitle": "成功佣金已核销",
     "feeLiftedBody": "因此笔佣金产生的各项限制均已解除。",
-    "feeLiftedBodyRestored": "因此笔佣金产生的各项限制均已解除。您的融资已恢复为{state}。"
+    "feeLiftedBodyRestored": "因此笔佣金产生的各项限制均已解除。您的融资已恢复为{state}。",
+    "dealSealPendingBody": "目前仅差您的签名。",
+    "dealSealPendingTitle": "{name} 已签署交易记录",
+    "dealSealedBody": "对话已开启。",
+    "dealSealedTitle": "{name} 已签署。交易记录已完成签署。"
   },
   "match": {
     "title": "谁在等你",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "各项义务持续至 {date}。",
     "tailMonths": "禁止绕开条款自引荐之日起 {months} 个月内持续有效。",
     "signedOnVersion": "您已于 {date} 接受版本 {version}。该版本文本仍对您的接受具有约束力。",
-    "wordingChanged": "自您接受之后，现行文本已有修订。"
+    "wordingChanged": "自您接受之后，现行文本已有修订。",
+    "loadFailed": "协议未能加载，因此尚未接受任何内容。",
+    "retry": "重试"
   },
   "discLog": {
     "title": "保密披露记录",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "您的项目需要先上线，才能向其他公司发送消息。目前正在我们这边审核。"
+  },
+  "seal": {
+    "body": "接受报价只是一方表示同意。双方的姓名同时出现在这份交易记录上，对话才会开启；本轮融资若最终完成，成功费也以此为依据。签署并不意味着您承诺出资或承诺接受：以下条款是目前摆在桌面上的条件，双方仍可重新商议。",
+    "bodySealed": "双方均已签署。对话已开启，双方之间的联系方式不再隐去。",
+    "cardSealed": "{date} 签署完成",
+    "checkbox": "我已阅读以上交易记录，并代表我方签署。我了解本轮融资若最终完成，公司须支付 2% 成功费；我也了解本次签署将连同签署时间及来源网络地址一并记录。",
+    "doneBody": "双方签名均已存档，并附有各自的时间戳，以及双方各自所签署文件原文的哈希值。",
+    "doneTitle": "交易记录已完成签署",
+    "eyebrow": "交易记录",
+    "failed": "未能保存，请重试。",
+    "footer": "您的姓名、签署时间及网络地址将一并记录于本文件。",
+    "hideDocument": "收起交易记录",
+    "loadFailed": "交易记录未能加载。这与交易本身无关，只说明本页面未能取得该记录。",
+    "mustAgree": "请勾选方框，确认您已阅读该交易记录。",
+    "namePlaceholder": "输入您的姓名以签署",
+    "nameRequired": "请输入您的全名以签署。",
+    "openConversation": "打开对话",
+    "readDocument": "阅读完整交易记录",
+    "required": "交易记录经双方签署后，双方即可互相发送消息。",
+    "sealed": "签署完成，现在可以开始对话。",
+    "sign": "签署并生效",
+    "signed": "您的签名已记录。",
+    "signing": "正在记录您的签名",
+    "theCompany": "公司方",
+    "theInvestor": "投资方",
+    "title": "签署交易记录",
+    "titleSealed": "双方均已签署",
+    "unsigned": "尚未签署",
+    "version": "版本 {version}",
+    "waitingOnThem": "您的签名已记录。对方签署后，对话即会开启。",
+    "yourName": "您的全名"
   }
 }

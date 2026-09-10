@@ -2902,7 +2902,9 @@
     "yourPortion": "Succesfee op uw ticket ({fee}%, betaald door de startup)",
     "investorPays": "U betaalt",
     "footnote": "Juridische kosten voor koude acquisitie en tussenpersonen lopen doorgaans op tot € 5.000–20.000 voordat een ronde zelfs maar opent.",
-    "detailNote": "De succesfee van 2% wordt pas aan de startup gefactureerd nadat een ronde via CapitalReach is gesloten. Investeerders betalen niets."
+    "detailNote": "De succesfee van 2% wordt pas aan de startup gefactureerd nadat een ronde via CapitalReach is gesloten. Investeerders betalen niets.",
+    "keepShare": "{pct}% van het opgehaalde bedrag blijft in het bedrijf.",
+    "setRaise": "Rondebedrag instellen op {amount}"
   },
   "welcome": {
     "eyebrow": "Welkom bij CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} opende een ronde",
     "investorJoined": "Een nieuwe investeerder sloot zich aan",
     "ndaSigned": "Een NDA werd ondertekend",
-    "roundClosed": "Een ronde werd succesvol gesloten"
+    "roundClosed": "Een ronde werd succesvol gesloten",
+    "listingJoinedAnon": "Een bedrijf heeft een ronde geopend"
   },
   "radar": {
     "title": "Investeerders die bij je ronde passen",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Succesvergoeding voldaan",
     "feeLiftedWaivedTitle": "Succesvergoeding afgeboekt",
     "feeLiftedBody": "Elke maatregel uit deze vergoeding is opgeheven.",
-    "feeLiftedBodyRestored": "Elke maatregel uit deze vergoeding is opgeheven. Uw ronde staat weer op {state}."
+    "feeLiftedBodyRestored": "Elke maatregel uit deze vergoeding is opgeheven. Uw ronde staat weer op {state}.",
+    "dealSealPendingBody": "Alleen uw handtekening ontbreekt nog.",
+    "dealSealPendingTitle": "{name} heeft de vastlegging van de deal ondertekend",
+    "dealSealedBody": "Het gesprek is open.",
+    "dealSealedTitle": "{name} heeft ondertekend. De deal is bekrachtigd."
   },
   "match": {
     "title": "Wie er op je wacht",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "De verplichtingen lopen tot {date}.",
     "tailMonths": "Het non-circumventiebeding loopt {months} maanden vanaf de introductie.",
     "signedOnVersion": "U hebt versie {version} aanvaard op {date}. Die tekst blijft bepalend voor uw aanvaarding.",
-    "wordingChanged": "De huidige tekst is gewijzigd sinds uw aanvaarding."
+    "wordingChanged": "De huidige tekst is gewijzigd sinds uw aanvaarding.",
+    "loadFailed": "De overeenkomst kon niet worden geladen, er is dus niets geaccepteerd.",
+    "retry": "Opnieuw proberen"
   },
   "discLog": {
     "title": "Vertrouwelijkheidsregister",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Uw listing moet live staan voordat u andere bedrijven een bericht kunt sturen. Hij ligt bij ons ter beoordeling."
+  },
+  "seal": {
+    "body": "Een aanvaard bod is één partij die ja zegt. Pas wanneer beide namen onder deze vastlegging staan, gaat het gesprek open, en daarop berust ook de succesfee als deze ronde sluit. Ondertekenen verplicht u niet om te investeren of te aanvaarden: de voorwaarden hieronder zijn die van vandaag, en ieder van u kan er nog over onderhandelen.",
+    "bodySealed": "Beide partijen hebben ondertekend. Het gesprek is open en uw contactgegevens worden onderling niet langer afgeschermd.",
+    "cardSealed": "Bekrachtigd op {date}",
+    "checkbox": "Ik heb de vastlegging hierboven gelezen en onderteken haar namens mijn partij. Ik begrijp dat het bedrijf een succesfee van 2% verschuldigd is als deze ronde sluit, en dat deze handtekening wordt vastgelegd met het tijdstip en het netwerkadres waarvandaan zij is gezet.",
+    "doneBody": "Beide handtekeningen zijn bewaard, met hun tijdstempel en de hash van precies het document dat ieder van u heeft ondertekend.",
+    "doneTitle": "De vastlegging is bekrachtigd",
+    "eyebrow": "De vastlegging",
+    "failed": "Dat is niet opgeslagen. Probeer het opnieuw.",
+    "footer": "Uw naam, het tijdstip en uw netwerkadres worden bij dit document vastgelegd.",
+    "hideDocument": "Vastlegging verbergen",
+    "loadFailed": "De vastlegging kon niet worden geladen. Dat zegt niets over de deal zelf, alleen dat deze pagina haar niet kon bereiken.",
+    "mustAgree": "Vink het vakje aan om te bevestigen dat u de vastlegging hebt gelezen.",
+    "namePlaceholder": "Typ uw naam om te ondertekenen",
+    "nameRequired": "Typ uw volledige naam om te ondertekenen.",
+    "openConversation": "Het gesprek openen",
+    "readDocument": "Lees de volledige vastlegging",
+    "required": "U kunt elkaar berichten sturen zodra beide partijen de vastlegging van de deal hebben ondertekend.",
+    "sealed": "Bekrachtigd. U kunt nu met elkaar spreken.",
+    "sign": "Ondertekenen en bekrachtigen",
+    "signed": "Uw handtekening is vastgelegd.",
+    "signing": "Uw handtekening wordt vastgelegd",
+    "theCompany": "Het bedrijf",
+    "theInvestor": "De investeerder",
+    "title": "Onderteken de vastlegging van de deal",
+    "titleSealed": "Bekrachtigd door beide partijen",
+    "unsigned": "Nog niet ondertekend",
+    "version": "Versie {version}",
+    "waitingOnThem": "Uw handtekening is vastgelegd. Het gesprek gaat open zodra de andere partij ondertekent.",
+    "yourName": "Uw volledige naam"
   }
 }

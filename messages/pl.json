@@ -2902,7 +2902,9 @@
     "yourPortion": "Prowizja od Twojego czeku ({fee}%, płaci startup)",
     "investorPays": "Płacisz",
     "footnote": "Koszty prawne zimnego outreachu i pośredników zwykle wynoszą 5 000–20 000 € zanim runda w ogóle się otworzy.",
-    "detailNote": "Prowizja od sukcesu 2% jest fakturowana startupowi dopiero po zamknięciu rundy przez CapitalReach. Inwestorzy nie płacą nic."
+    "detailNote": "Prowizja od sukcesu 2% jest fakturowana startupowi dopiero po zamknięciu rundy przez CapitalReach. Inwestorzy nie płacą nic.",
+    "keepShare": "{pct}% pozyskanej kwoty zostaje w spółce.",
+    "setRaise": "Ustaw wielkość rundy na {amount}"
   },
   "welcome": {
     "eyebrow": "Witamy w CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} otworzył rundę",
     "investorJoined": "Dołączył nowy inwestor",
     "ndaSigned": "Podpisano NDA",
-    "roundClosed": "Runda zakończyła się sukcesem"
+    "roundClosed": "Runda zakończyła się sukcesem",
+    "listingJoinedAnon": "Pewna spółka otworzyła rundę"
   },
   "radar": {
     "title": "Inwestorzy pasujący do Twojej rundy",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Prowizja od sukcesu rozliczona",
     "feeLiftedWaivedTitle": "Prowizja od sukcesu umorzona",
     "feeLiftedBody": "Wszystkie wstrzymania wynikające z tej prowizji zostały zniesione.",
-    "feeLiftedBodyRestored": "Wszystkie wstrzymania wynikające z tej prowizji zostały zniesione. Twoja runda ma znów status: {state}."
+    "feeLiftedBodyRestored": "Wszystkie wstrzymania wynikające z tej prowizji zostały zniesione. Twoja runda ma znów status: {state}.",
+    "dealSealPendingBody": "Brakuje już tylko Twojego podpisu.",
+    "dealSealPendingTitle": "{name} podpisał zapis transakcji",
+    "dealSealedBody": "Rozmowa jest otwarta.",
+    "dealSealedTitle": "{name} podpisał. Transakcja jest przypieczętowana."
   },
   "match": {
     "title": "Kto na Ciebie czeka",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Zobowiązania obowiązują do {date}.",
     "tailMonths": "Zakaz obchodzenia pośrednictwa obowiązuje przez {months} mies. od dnia skojarzenia stron.",
     "signedOnVersion": "Zaakceptowałeś wersję {version} w dniu {date}. Ta treść nadal reguluje Twoją akceptację.",
-    "wordingChanged": "Obecna treść uległa zmianie od czasu Twojej akceptacji."
+    "wordingChanged": "Obecna treść uległa zmianie od czasu Twojej akceptacji.",
+    "loadFailed": "Nie udało się wczytać umowy, więc nic nie zostało zaakceptowane.",
+    "retry": "Spróbuj ponownie"
   },
   "discLog": {
     "title": "Rejestr poufności",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Zanim napiszesz do innych spółek, Twoja oferta musi być opublikowana. Jest teraz u nas do weryfikacji."
+  },
+  "seal": {
+    "body": "Przyjęcie oferty to zgoda jednej strony. Dopiero oba nazwiska pod tym zapisem otwierają rozmowę i to na nim opiera się prowizja, jeżeli ta runda zostanie zamknięta. Podpis nie zobowiązuje Cię do zainwestowania ani do przyjęcia oferty: poniższe warunki to te, które są dziś na stole, i każda ze stron może je jeszcze renegocjować.",
+    "bodySealed": "Obie strony podpisały. Rozmowa jest otwarta, a dane kontaktowe nie są już między Wami ukrywane.",
+    "cardSealed": "Przypieczętowano {date}",
+    "checkbox": "Potwierdzam zapoznanie się z powyższym zapisem i podpisuję go w imieniu swojej strony. Mam świadomość, że jeżeli ta runda zostanie zamknięta, spółka zapłaci prowizję od sukcesu w wysokości 2%, a ten podpis zostaje zapisany wraz z czasem i adresem sieciowym, z którego pochodzi.",
+    "doneBody": "Oba podpisy są przechowywane wraz ze znacznikami czasu i skrótem dokładnie tego dokumentu, który podpisała każda ze stron.",
+    "doneTitle": "Zapis przypieczętowany",
+    "eyebrow": "Zapis",
+    "failed": "Nie udało się zapisać. Spróbuj ponownie.",
+    "footer": "Przy tym dokumencie zapisujemy Twoje imię i nazwisko, czas oraz Twój adres sieciowy.",
+    "hideDocument": "Ukryj zapis",
+    "loadFailed": "Nie udało się wczytać zapisu. Nie mówi to nic o samej transakcji, a jedynie o tym, że ta strona do niego nie dotarła.",
+    "mustAgree": "Zaznacz pole, aby potwierdzić zapoznanie się z zapisem.",
+    "namePlaceholder": "Wpisz swoje imię i nazwisko, aby podpisać",
+    "nameRequired": "Wpisz pełne imię i nazwisko, aby podpisać.",
+    "openConversation": "Otwórz rozmowę",
+    "readDocument": "Przeczytaj pełny zapis",
+    "required": "Możecie pisać do siebie, gdy zapis transakcji zostanie podpisany przez obie strony.",
+    "sealed": "Przypieczętowane. Możecie teraz rozmawiać.",
+    "sign": "Podpisz i przypieczętuj",
+    "signed": "Twój podpis został zapisany.",
+    "signing": "Zapisywanie podpisu",
+    "theCompany": "Spółka",
+    "theInvestor": "Inwestor",
+    "title": "Podpisz zapis transakcji",
+    "titleSealed": "Przypieczętowany przez obie strony",
+    "unsigned": "Jeszcze bez podpisu",
+    "version": "Wersja {version}",
+    "waitingOnThem": "Twój podpis został zapisany. Rozmowa otworzy się, gdy tylko podpisze druga strona.",
+    "yourName": "Twoje pełne imię i nazwisko"
   }
 }

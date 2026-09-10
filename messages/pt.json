@@ -2902,7 +2902,9 @@
     "yourPortion": "Comissão sobre o seu ticket ({fee}%, paga pela startup)",
     "investorPays": "Você paga",
     "footnote": "Os custos legais de prospeção e intermediários rondam normalmente 5.000–20.000 € antes de uma ronda sequer abrir.",
-    "detailNote": "A comissão de sucesso de 2% é faturada à startup apenas após o fecho de uma ronda através da CapitalReach. Os investidores não pagam nada."
+    "detailNote": "A comissão de sucesso de 2% é faturada à startup apenas após o fecho de uma ronda através da CapitalReach. Os investidores não pagam nada.",
+    "keepShare": "{pct}% do montante angariado fica na empresa.",
+    "setRaise": "Definir o montante da ronda para {amount}"
   },
   "welcome": {
     "eyebrow": "Bem-vindo à CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} abriu uma ronda",
     "investorJoined": "Um novo investidor juntou-se",
     "ndaSigned": "Um NDA foi assinado",
-    "roundClosed": "Uma ronda fechou com sucesso"
+    "roundClosed": "Uma ronda fechou com sucesso",
+    "listingJoinedAnon": "Uma empresa abriu uma ronda"
   },
   "radar": {
     "title": "Investidores compatíveis com a sua ronda",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Comissão de sucesso liquidada",
     "feeLiftedWaivedTitle": "Comissão de sucesso anulada",
     "feeLiftedBody": "Todas as suspensões associadas a esta comissão foram levantadas.",
-    "feeLiftedBodyRestored": "Todas as suspensões associadas a esta comissão foram levantadas. A sua ronda voltou ao estado {state}."
+    "feeLiftedBodyRestored": "Todas as suspensões associadas a esta comissão foram levantadas. A sua ronda voltou ao estado {state}.",
+    "dealSealPendingBody": "A sua assinatura é a única que ainda falta.",
+    "dealSealPendingTitle": "{name} assinou o registo do negócio",
+    "dealSealedBody": "A conversa está aberta.",
+    "dealSealedTitle": "{name} assinou. O negócio está formalizado."
   },
   "match": {
     "title": "Quem espera por si",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "As obrigações vigoram até {date}.",
     "tailMonths": "A cláusula de não contorno vigora por {months} meses a contar da apresentação.",
     "signedOnVersion": "Aceitou a versão {version} em {date}. É essa redação que continua a reger a sua aceitação.",
-    "wordingChanged": "A redação atual foi alterada desde a sua aceitação."
+    "wordingChanged": "A redação atual foi alterada desde a sua aceitação.",
+    "loadFailed": "Não foi possível carregar o acordo, pelo que nada foi aceite.",
+    "retry": "Tentar novamente"
   },
   "discLog": {
     "title": "Registo de confidencialidade",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "O seu anúncio tem de estar online antes de poder enviar mensagens a outras empresas. Está connosco em análise."
+  },
+  "seal": {
+    "body": "Uma oferta aceite é apenas uma das partes a dizer que sim. São os dois nomes neste registo que abrem a conversa e é sobre eles que assenta a comissão se esta ronda fechar. Assinar não o obriga a investir nem a aceitar: as condições abaixo são as que estão hoje em cima da mesa, e qualquer uma das partes pode ainda renegociá-las.",
+    "bodySealed": "Ambas as partes assinaram. A conversa está aberta e os dados de contacto deixam de estar reservados entre ambas.",
+    "cardSealed": "Formalizado em {date}",
+    "checkbox": "Li o registo acima e assino-o em nome da minha parte. Compreendo que é devida pela empresa uma comissão de sucesso de 2% se esta ronda fechar e que esta assinatura fica registada com a data, a hora e o endereço de rede de onde foi efetuada.",
+    "doneBody": "As duas assinaturas ficam arquivadas com a respetiva data e hora e com o hash do documento exato que cada um assinou.",
+    "doneTitle": "O registo está formalizado",
+    "eyebrow": "O registo",
+    "failed": "Não foi possível guardar. Tente novamente.",
+    "footer": "O seu nome, a hora e o seu endereço de rede ficam registados e associados a este documento.",
+    "hideDocument": "Ocultar o registo",
+    "loadFailed": "Não foi possível carregar o registo. Isto nada diz sobre o negócio em si, apenas que esta página não conseguiu aceder-lhe.",
+    "mustAgree": "Assinale a caixa para confirmar que leu o registo.",
+    "namePlaceholder": "Escreva o seu nome para assinar",
+    "nameRequired": "Escreva o seu nome completo para assinar.",
+    "openConversation": "Abrir a conversa",
+    "readDocument": "Ler o registo completo",
+    "required": "Podem trocar mensagens assim que o registo do negócio estiver assinado por ambas as partes.",
+    "sealed": "Formalizado. Já podem falar.",
+    "sign": "Assinar e formalizar",
+    "signed": "A sua assinatura ficou registada.",
+    "signing": "A registar a sua assinatura",
+    "theCompany": "A empresa",
+    "theInvestor": "O investidor",
+    "title": "Assinar o registo do negócio",
+    "titleSealed": "Formalizado por ambas as partes",
+    "unsigned": "Ainda não assinado",
+    "version": "Versão {version}",
+    "waitingOnThem": "A sua assinatura ficou registada. A conversa abre assim que a outra parte assinar.",
+    "yourName": "O seu nome completo"
   }
 }

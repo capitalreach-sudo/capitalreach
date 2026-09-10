@@ -4,7 +4,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { sanitiseAttachmentName, type SanitisedAttachmentName } from "@/lib/attachment-name";
 import { dealRegistrationRequired } from "@/lib/deal-registration";
-import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
+import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
 import { notifyUser } from "@/lib/notify-user";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { uploadRatelimit } from "@/lib/redis";
@@ -147,10 +147,13 @@ export async function POST(req: NextRequest) {
   // while the identical words in a plain reply were withheld. The browser
   // reads this table directly, so it has to happen on write.
   const safetyCfg = await getSafetyConfig();
+  // Keyed on the seal. This used to ask dealRegistrationRequired, which
+  // answers "not required" when that retired feature is switched off, and the
+  // negation turned that into "already registered" -- masking off.
   const dealRegistered = isPair && pairStartupId && pairInvestorId
-    ? !(await dealRegistrationRequired({ startupId: pairStartupId, investorId: pairInvestorId })).required
+    ? await contactsUnlocked({ startupId: pairStartupId, investorId: pairInvestorId })
     // Nothing to withhold between two investors, or on a thread with no
-    // startup/investor pair to register a deal against.
+    // startup/investor pair the obligation could attach to.
     : true;
   // The displayed filename is masked on the same terms as the body: a file
   // called "call-me-+49-170-1234567.pdf" was a phone number in plain sight,

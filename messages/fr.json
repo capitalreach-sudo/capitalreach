@@ -2902,7 +2902,9 @@
     "yourPortion": "Commission sur votre ticket ({fee}%, payée par la startup)",
     "investorPays": "Vous payez",
     "footnote": "Les frais juridiques liés à la prospection et aux intermédiaires atteignent généralement 5 000–20 000 € avant même l'ouverture d'un tour.",
-    "detailNote": "La commission de succès de 2% est facturée à la startup uniquement après la clôture d'un tour via CapitalReach. Les investisseurs ne paient rien."
+    "detailNote": "La commission de succès de 2% est facturée à la startup uniquement après la clôture d'un tour via CapitalReach. Les investisseurs ne paient rien.",
+    "keepShare": "{pct}% de la levée reste dans l'entreprise.",
+    "setRaise": "Définir le montant levé à {amount}"
   },
   "welcome": {
     "eyebrow": "Bienvenue sur CapitalReach",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name} a ouvert un tour",
     "investorJoined": "Un nouvel investisseur a rejoint",
     "ndaSigned": "Un NDA a été signé",
-    "roundClosed": "Un tour s'est clôturé avec succès"
+    "roundClosed": "Un tour s'est clôturé avec succès",
+    "listingJoinedAnon": "Une entreprise a ouvert un tour"
   },
   "radar": {
     "title": "Investisseurs correspondant à votre tour",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "Commission de succès réglée",
     "feeLiftedWaivedTitle": "Commission de succès annulée",
     "feeLiftedBody": "Toutes les mesures liées à cette commission sont levées.",
-    "feeLiftedBodyRestored": "Toutes les mesures liées à cette commission sont levées. Votre tour est de nouveau {state}."
+    "feeLiftedBodyRestored": "Toutes les mesures liées à cette commission sont levées. Votre tour est de nouveau {state}.",
+    "dealSealPendingBody": "Il ne manque plus que votre signature.",
+    "dealSealPendingTitle": "{name} a signé le relevé de l'opération",
+    "dealSealedBody": "La conversation est ouverte.",
+    "dealSealedTitle": "{name} a signé. L'opération est scellée."
   },
   "match": {
     "title": "Qui vous attend",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "Les obligations courent jusqu'au {date}.",
     "tailMonths": "La clause de non-contournement court pendant {months} mois à compter de la mise en relation.",
     "signedOnVersion": "Vous avez accepté la version {version} le {date}. Cette rédaction continue de régir votre acceptation.",
-    "wordingChanged": "La rédaction actuelle a été modifiée depuis votre acceptation."
+    "wordingChanged": "La rédaction actuelle a été modifiée depuis votre acceptation.",
+    "loadFailed": "L'accord n'a pas pu être chargé : rien n'a donc été accepté.",
+    "retry": "Réessayer"
   },
   "discLog": {
     "title": "Registre de confidentialité",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "Votre annonce doit être en ligne avant de pouvoir envoyer des messages à d'autres entreprises. Elle est en cours d'examen de notre côté."
+  },
+  "seal": {
+    "body": "Une offre acceptée, c'est une partie qui dit oui. C'est la présence des deux noms sur ce relevé qui ouvre la conversation, et c'est sur elle que repose la commission si ce tour se clôture. Signer ne vous engage ni à investir ni à accepter : les conditions ci-dessous sont celles qui sont sur la table aujourd'hui, et chacun de vous peut encore les renégocier.",
+    "bodySealed": "Les deux parties ont signé. La conversation est ouverte et vos coordonnées ne sont plus retenues entre vous.",
+    "cardSealed": "Scellé le {date}",
+    "checkbox": "J'ai lu le relevé ci-dessus et je le signe au nom de la partie que je représente. Je comprends qu'une commission de succès de 2% est due par la société si ce tour se clôture, et que cette signature est enregistrée avec l'heure et l'adresse réseau depuis laquelle elle a été apposée.",
+    "doneBody": "Les deux signatures sont conservées avec leurs horodatages et l'empreinte du document exact que chacun a signé.",
+    "doneTitle": "Le relevé est scellé",
+    "eyebrow": "Le relevé",
+    "failed": "L'enregistrement a échoué. Réessayez.",
+    "footer": "Votre nom, l'heure et votre adresse réseau sont consignés avec ce document.",
+    "hideDocument": "Masquer le relevé",
+    "loadFailed": "Le relevé n'a pas pu être chargé. Cela ne dit rien de l'opération elle-même, seulement que cette page n'a pas réussi à y accéder.",
+    "mustAgree": "Cochez la case pour confirmer que vous avez lu le relevé.",
+    "namePlaceholder": "Saisissez votre nom pour signer",
+    "nameRequired": "Saisissez votre nom complet pour signer.",
+    "openConversation": "Ouvrir la conversation",
+    "readDocument": "Lire le relevé complet",
+    "required": "Vous pourrez échanger des messages dès que le relevé de l'opération aura été signé par les deux parties.",
+    "sealed": "Scellé. Vous pouvez maintenant échanger.",
+    "sign": "Signer et sceller",
+    "signed": "Votre signature est enregistrée.",
+    "signing": "Enregistrement de votre signature",
+    "theCompany": "La société",
+    "theInvestor": "L'investisseur",
+    "title": "Signer le relevé de l'opération",
+    "titleSealed": "Scellé par les deux parties",
+    "unsigned": "Pas encore signé",
+    "version": "Version {version}",
+    "waitingOnThem": "Votre signature est enregistrée. La conversation s'ouvrira dès que l'autre partie aura signé.",
+    "yourName": "Votre nom complet"
   }
 }

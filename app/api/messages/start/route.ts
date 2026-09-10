@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety, type SafetyConfig } from "@/lib/message-safety";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
-import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
+import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
 import { recordSignal } from "@/lib/trust-signals";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -86,12 +86,18 @@ async function newThreadLimitResponse(ctx: AccessContext, investorEntityId: stri
 // them would be worse than one module-local note read immediately after.
 let lastMasked: string[] = [];
 
+// Set once per request, immediately before the inserts, for the same reason
+// lastMasked exists: four insert sites, and threading it through all of them
+// reads worse than one note set and read a few lines apart. A pair that has
+// sealed may exchange details in their opening message too.
+let contactsOpen = false;
+
 function maskedPreview(body: string, config: SafetyConfig) {
-  return applyMessageSafety({ body, dealRegistered: false, config }).body;
+  return applyMessageSafety({ body, dealRegistered: contactsOpen, config }).body;
 }
 
 function safeBody(body: string, config: SafetyConfig) {
-  const safe = applyMessageSafety({ body, dealRegistered: false, config });
+  const safe = applyMessageSafety({ body, dealRegistered: contactsOpen, config });
   lastMasked = safe.flags?.masked ?? [];
   return {
     body: safe.body,
@@ -125,6 +131,9 @@ export async function POST(req: NextRequest) {
 
   const mine = await resolveEntity(user.id, "startup");
   const admin = createAdminClient();
+  // Reset per request: module state outlives a single call on a warm lambda,
+  // and a stale "open" here would unmask a stranger's first message.
+  contactsOpen = false;
 
   // ── Investor sender ─────────────────────────────────────────────────────
   if (!mine) {
@@ -223,6 +232,7 @@ export async function POST(req: NextRequest) {
         const contact = await mayInvestorContact({ startupId: st.id, investorId: me.id });
         if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
       }
+      contactsOpen = await contactsUnlocked({ startupId: st.id, investorId: me.id });
 
       const { data: existing } = await admin.from("threads").select("id")
         .match({ startup_id: st.id, investor_id: me.id }).maybeSingle();

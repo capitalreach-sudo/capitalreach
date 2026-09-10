@@ -97,7 +97,7 @@ export default async function HomePage() {
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
       const { data: prof } = await createAdminClient()
-        .from("profiles").select("role, subscription_tier, suspended, account_status").eq("id", user.id).maybeSingle();
+        .from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", user.id).maybeSingle();
       viewerRole = prof?.role ?? null;
       if (prof) {
         const ctx = buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], launch.isLaunch);
@@ -116,7 +116,20 @@ export default async function HomePage() {
       <Navbar />
       <JsonLdScript data={organizationJsonLd()} />
       <JsonLdScript data={webSiteJsonLd()} />
-      <HomepageClient stats={stats} listings={listings} tickerListings={tickerListings} launch={launch} viewerRole={viewerRole} canSeeMarket={canSeeMarket} />
+      {/* The market data is withheld from the PAYLOAD, not just from the
+          render. A server component that fetches and then conditionally
+          renders still serialises what it fetched into the RSC stream, where
+          anyone can read it -- which is exactly how anonymous visitors were
+          served every listing's name, stage and funding target while the page
+          appeared to show them nothing. */}
+      <HomepageClient
+        stats={stats}
+        listings={canSeeMarket ? listings : []}
+        tickerListings={canSeeMarket ? tickerListings : []}
+        launch={launch}
+        viewerRole={viewerRole}
+        canSeeMarket={canSeeMarket}
+      />
       <Footer />
     </>
   );

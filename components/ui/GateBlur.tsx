@@ -37,7 +37,10 @@ export function GateBlur({
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(to top, var(--cr-paper) 35%, rgba(245,240,232,0.55))",
+          // Both stops are the page's own paper. The literal cream that used
+          // to sit here was the warm light theme's value, so the veil stayed
+          // cream over the other three theme combinations.
+          background: "linear-gradient(to top, var(--cr-paper) 35%, color-mix(in srgb, var(--cr-paper) 55%, transparent))",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -63,12 +66,15 @@ export function GateBlur({
           {description}
         </p>
         <CtaEl
-          {...(onCta ? { onClick: onCta } : { href: ctaHref })}
+          {...(onCta ? { onClick: onCta, type: "button" } : { href: ctaHref })}
           style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
-            background: "var(--cr-copper)", color: "#fff",
+            background: "var(--cr-copper)", color: "var(--cr-band-ink)",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
             padding: "9px 20px", borderRadius: "4px", textDecoration: "none",
+            // The element is a <button> on the contractual path, which brings
+            // a default border and arrow cursor the <Link> path never had.
+            border: "none", cursor: "pointer",
           }}
         >
           {ctaLabel ?? t("common.viewPlans")} →

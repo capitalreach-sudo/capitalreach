@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DealProposals } from "@/components/shared/deal-proposals";
+import { DealSealPanel } from "@/components/deals/deal-seal";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -1937,6 +1938,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {expanded && (
         <>
+      {/* The countersignature. Sits above everything else on the card because
+          until it is done the pair cannot message each other, which makes it
+          the only thing on here that is blocking. Renders nothing once the
+          deal is sealed and nothing at all on a grandfathered one. */}
+      {isActive && <div style={{ marginTop: "12px" }}><DealSealPanel dealId={deal.id} /></div>}
+
       {/* C33: let other investors see you are looking at this company.
           Off by default, investor-side only, never shows the amount. */}
       {viewAs === "investor" && isActive && <PublicInterestToggle deal={deal} />}

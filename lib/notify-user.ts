@@ -11,6 +11,8 @@ export type NotificationType =
   | "nda_signed"
   | "listing_approved"
   | "listing_rejected"
+  | "deal_sealed"
+  | "deal_seal_pending"
   // Added by migration 024. Keep this union in step with that CHECK
   // constraint: a value here that the constraint rejects fails the insert at
   // runtime, and notifyUser deliberately never throws, so it would vanish.

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
-import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
+import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
 import { recordIntroduction, detectOffPlatformContact, offPlatformSeverity } from "@/lib/introductions";
 import { recordSignal } from "@/lib/trust-signals";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
@@ -184,7 +184,9 @@ export async function POST(req: NextRequest) {
   const safetyCfg = await getSafetyConfig();
   const safe = applyMessageSafety({
     body: messageBody.trim(),
-    dealRegistered: false,
+    // Released by the seal, which is the moment the obligation is captured
+    // and the relationship becomes theirs to run.
+    dealRegistered: await contactsUnlocked({ startupId, investorId: investor.id }),
     config: safetyCfg,
   });
   const { error: messageError } = await adminClient.from("messages").insert({

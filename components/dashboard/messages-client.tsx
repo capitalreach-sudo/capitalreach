@@ -326,7 +326,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       body: JSON.stringify({ threadId: selectedThread.id, body }),
     });
     const json = await res.json().catch(() => ({}));
-    if (res.status === 403 && json.error === "offer_required") {
+    if (res.status === 403 && json.error === "seal_required") {
+      // The deal exists but nobody has countersigned it yet. Send them to the
+      // record with a link rather than a sentence: a refusal whose remedy is
+      // one click away is a step, and the same refusal with no link is the
+      // dead end this codebase keeps rediscovering.
+      notify.info(t("seal.required"));
+      if (json.dealId) router.push(`/deals?deal=${json.dealId}`);
+    } else if (res.status === 403 && json.error === "offer_required") {
       // Contact costs an accepted offer now. Say which state they are in --
       // "your offer is waiting" is a different message from "make an offer",
       // and telling somebody to do a thing they already did is worse than

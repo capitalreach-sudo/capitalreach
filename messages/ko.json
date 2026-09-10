@@ -2902,7 +2902,9 @@
     "yourPortion": "투자 금액에 대한 성공 수수료 ({fee}%, 스타트업 부담)",
     "investorPays": "귀하의 부담",
     "footnote": "콜드 아웃리치와 중개인에 드는 법률 비용은 라운드가 열리기도 전에 보통 5,000–20,000유로에 이릅니다.",
-    "detailNote": "2% 성공 수수료는 CapitalReach를 통해 라운드가 마감된 후에만 스타트업에 청구됩니다. 투자자는 아무것도 지불하지 않습니다."
+    "detailNote": "2% 성공 수수료는 CapitalReach를 통해 라운드가 마감된 후에만 스타트업에 청구됩니다. 투자자는 아무것도 지불하지 않습니다.",
+    "keepShare": "조달 금액의 {pct}%가 회사에 남습니다.",
+    "setRaise": "조달 금액을 {amount}(으)로 설정"
   },
   "welcome": {
     "eyebrow": "CapitalReach에 오신 것을 환영합니다",
@@ -3716,7 +3718,8 @@
     "listingJoined": "{name}이(가) 라운드를 시작",
     "investorJoined": "새 투자자가 합류",
     "ndaSigned": "NDA가 체결됨",
-    "roundClosed": "라운드가 성공적으로 마감"
+    "roundClosed": "라운드가 성공적으로 마감",
+    "listingJoinedAnon": "어느 회사가 라운드를 시작"
   },
   "radar": {
     "title": "내 라운드에 맞는 투자자",
@@ -3757,7 +3760,11 @@
     "feeLiftedTitle": "성공보수 납부 완료",
     "feeLiftedWaivedTitle": "성공보수 면제 처리",
     "feeLiftedBody": "이 보수와 관련된 모든 조치가 해제되었습니다.",
-    "feeLiftedBodyRestored": "이 보수와 관련된 모든 조치가 해제되었습니다. 라운드가 {state} 상태로 복구되었습니다."
+    "feeLiftedBodyRestored": "이 보수와 관련된 모든 조치가 해제되었습니다. 라운드가 {state} 상태로 복구되었습니다.",
+    "dealSealPendingBody": "이제 귀하의 서명만 남았습니다.",
+    "dealSealPendingTitle": "{name}님이 딜 기록에 서명했습니다",
+    "dealSealedBody": "대화가 열렸습니다.",
+    "dealSealedTitle": "{name}님이 서명했습니다. 딜이 체결되었습니다."
   },
   "match": {
     "title": "당신을 기다리는 투자자",
@@ -3954,7 +3961,9 @@
     "obligationsUntil": "의무는 {date}까지 존속합니다.",
     "tailMonths": "우회금지 의무는 소개 시점부터 {months}개월간 존속합니다.",
     "signedOnVersion": "귀하는 {date}에 버전 {version}에 동의하였습니다. 해당 문안이 귀하의 동의에 계속 적용됩니다.",
-    "wordingChanged": "귀하가 동의한 이후 현행 문안이 변경되었습니다."
+    "wordingChanged": "귀하가 동의한 이후 현행 문안이 변경되었습니다.",
+    "loadFailed": "계약서를 불러오지 못했으므로 동의된 내용은 없습니다.",
+    "retry": "다시 시도"
   },
   "discLog": {
     "title": "비밀유지 기록",
@@ -4444,5 +4453,36 @@
   },
   "msgStart": {
     "listingNotLive": "다른 기업에 메시지를 보내려면 공고가 먼저 게시되어야 합니다. 현재 검토 중입니다."
+  },
+  "seal": {
+    "body": "수락된 오퍼는 한쪽이 동의했다는 뜻일 뿐입니다. 이 기록에 양측의 이름이 모두 올라야 대화가 열리고, 이 라운드가 마감될 경우 수수료도 이를 근거로 합니다. 서명한다고 해서 투자하거나 수락할 의무가 생기는 것은 아닙니다. 아래 조건은 오늘 논의되고 있는 내용이며, 어느 쪽이든 다시 협의할 수 있습니다.",
+    "bodySealed": "양측이 서명했습니다. 대화가 열렸으며, 서로의 연락처도 더 이상 가려지지 않습니다.",
+    "cardSealed": "{date} 체결",
+    "checkbox": "위 기록을 읽었으며, 우리 측을 대표하여 이에 서명합니다. 이 라운드가 마감되면 회사가 2% 성공 수수료를 부담한다는 점, 그리고 이 서명이 서명 시각 및 접속 네트워크 주소와 함께 기록된다는 점을 이해합니다.",
+    "doneBody": "양측의 서명이 각각의 시각, 그리고 각자 서명한 문서 원본의 해시와 함께 보관되어 있습니다.",
+    "doneTitle": "딜 기록이 체결되었습니다",
+    "eyebrow": "딜 기록",
+    "failed": "저장되지 않았습니다. 다시 시도해 주세요.",
+    "footer": "귀하의 성명, 시각, 네트워크 주소가 이 문서에 함께 기록됩니다.",
+    "hideDocument": "기록 숨기기",
+    "loadFailed": "기록을 불러오지 못했습니다. 딜 자체에는 아무 문제가 없으며, 이 페이지가 기록에 접근하지 못했을 뿐입니다.",
+    "mustAgree": "기록을 읽었음을 확인하려면 체크박스를 선택해 주세요.",
+    "namePlaceholder": "서명하려면 이름을 입력하세요",
+    "nameRequired": "서명하려면 전체 이름을 입력해 주세요.",
+    "openConversation": "대화 열기",
+    "readDocument": "기록 전문 읽기",
+    "required": "양측이 딜 기록에 서명하면 서로 메시지를 주고받을 수 있습니다.",
+    "sealed": "체결되었습니다. 이제 대화할 수 있습니다.",
+    "sign": "서명하고 체결하기",
+    "signed": "귀하의 서명이 기록되었습니다.",
+    "signing": "서명을 기록하는 중",
+    "theCompany": "회사",
+    "theInvestor": "투자자",
+    "title": "딜 기록에 서명",
+    "titleSealed": "양 당사자가 체결했습니다",
+    "unsigned": "아직 서명하지 않음",
+    "version": "버전 {version}",
+    "waitingOnThem": "귀하의 서명이 기록되었습니다. 상대측이 서명하는 즉시 대화가 열립니다.",
+    "yourName": "전체 이름"
   }
 }

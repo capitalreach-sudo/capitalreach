@@ -19,7 +19,7 @@ import type { Startup, SubscriptionTier } from "@/types";
 import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
-import { ndaText } from "@/lib/nda-text";
+import { NdaAgreementDialog } from "@/components/startup/nda-agreement-dialog";
 import { CURRENCIES, DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
 import { notify } from "@/components/ui/toast-notify";
 import { useRouter } from "next/navigation";
@@ -485,11 +485,9 @@ export function StartupDetailClient({
   );
   const [aiReport, setAiReport]                 = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
-  const [ndaLoading, setNdaLoading]             = useState(false);
   const [ndaModalOpen, setNdaModalOpen]         = useState(false);
   const [ddQuestions, setDdQuestions]           = useState("");
   const [ddSources, setDdSources]               = useState<{ read: string[]; skipped: string[] } | null>(null);
-  useEscapeKey(ndaModalOpen, () => setNdaModalOpen(false));
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
 
@@ -640,6 +638,12 @@ export function StartupDetailClient({
         }),
       });
       const data = await res.json().catch(() => ({}));
+      if (data.code === "NDA_REQUIRED") {
+        // The report is refused because the room is shut. Open the thing that
+        // opens it rather than leaving the reason in a toast.
+        setNdaModalOpen(true);
+        return;
+      }
       if (!res.ok || !data.report) {
         notify.error(data.error || t("errors.generic"));
         return;
@@ -650,27 +654,6 @@ export function StartupDetailClient({
       notify.error(t("errors.generic"));
     } finally {
       setGeneratingReport(false);
-    }
-  }
-
-  async function acceptNda() {
-    setNdaLoading(true);
-    try {
-      const res = await fetch("/api/nda/accept", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startupId: startup.id }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
-      notify.success(t("startupDetail.ndaAccepted"));
-      setNdaModalOpen(false);
-      // Re-fetch so ndaSigned becomes true server-side and the room unlocks.
-      router.refresh();
-    } catch {
-      notify.error(t("errors.generic"));
-    } finally {
-      setNdaLoading(false);
     }
   }
 
@@ -1524,7 +1507,11 @@ export function StartupDetailClient({
                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{doc.type.replace(/_/g, " ")}</p>
                         </div>
                       </div>
-                      {requiresNda && !ndaSigned ? (
+                      {/* The NDA button is only a way forward for somebody who
+                          has an investor entity to sign with. A visitor sent
+                          to the dialog met a 401 and no route out, so they
+                          fall through to the sign-in hint below. */}
+                      {requiresNda && investorId ? (
                         <button onClick={() => setNdaModalOpen(true)}
                           style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer" }}>
                           <Lock style={{ width: 11, height: 11 }} />
@@ -1619,27 +1606,18 @@ export function StartupDetailClient({
       </div>
 
       {/* ── NDA accept dialog ── */}
-      {ndaModalOpen && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "560px", maxHeight: "88vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "24px 24px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startupDetail.ndaTitle")}</h3>
-              <button onClick={() => setNdaModalOpen(false)} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}><X style={{ width: 18, height: 18 }} /></button>
-            </div>
-            <div style={{ padding: "16px 24px", overflowY: "auto" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "14px", lineHeight: 1.55 }}>{t("startupDetail.ndaIntro", { name: startup.name })}</p>
-              <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px", margin: 0 }}>{ndaText(startup.name)}</pre>
-            </div>
-            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "16px 24px 24px", borderTop: "1px solid var(--cr-rule)" }}>
-              <button onClick={() => setNdaModalOpen(false)} style={{ height: "40px", padding: "0 18px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>{t("common.cancel")}</button>
-              <button onClick={acceptNda} disabled={ndaLoading}
-                style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: ndaLoading ? 0.6 : 1 }}>
-                {ndaLoading ? t("common.saving") : t("startupDetail.ndaAcceptBtn")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <NdaAgreementDialog
+        open={ndaModalOpen}
+        startupId={startup.id}
+        startupName={startup.name}
+        onCancel={() => setNdaModalOpen(false)}
+        onAccepted={() => {
+          notify.success(t("startupDetail.ndaAccepted"));
+          setNdaModalOpen(false);
+          // Re-fetch so ndaSigned becomes true server-side and the room unlocks.
+          router.refresh();
+        }}
+      />
 
       {/* ── Non-circumvention acknowledgment (first contact only) ── */}
       <NonCircumventionModal

@@ -175,6 +175,19 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     viewerIsAdmin = profile?.role === "admin";
     viewerRole = profile?.role ?? null;
 
+    // A founder seat exempts the viewer from the tier wall below, on the
+    // reasoning that a founder sizing up the field is not the leak this
+    // guards against. That holds for a founder with a LIVE listing. It does
+    // not hold for anyone who filled in the onboarding form and stopped: an
+    // unapproved listing costs nothing, and without this it bought every
+    // company's problem, solution, market and use of funds for free.
+    if (profile?.role === "startup") {
+      const { data: own } = await supabase
+        .from("startups").select("status").eq("owner_id", user.id)
+        .eq("status", "active").limit(1).maybeSingle();
+      if (!own) viewerRole = "startup_pending";
+    }
+
     if (profile?.role === "investor" || profile?.role === "admin") {
       // Admins may own an investor profile of their own (the operator who
       // also writes cheques); the buttons follow the entity, not the role.

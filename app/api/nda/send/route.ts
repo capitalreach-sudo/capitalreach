@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     .from("nda_records")
     .select("id, signed_at, docusign_envelope_id")
     .match({ startup_id: startupId, investor_id: investorId })
-    .single();
+    .maybeSingle();
 
   if (existing?.signed_at) {
     return NextResponse.json({ message: "NDA already signed", signed: true });
@@ -90,6 +90,22 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("DocuSign error:", err);
     return NextResponse.json({ error: "Failed to send NDA envelope" }, { status: 500 });
+  }
+
+  // sendNdaEnvelope answers with this sentinel instead of throwing when no
+  // DocuSign account is configured. Writing a record for it used to leave the
+  // pair reading "NDA pending signature" for an envelope that was never sent,
+  // with no webhook coming to clear it: the Connect callback rejects every
+  // message while DOCUSIGN_CONNECT_HMAC_KEY is unset. Say so instead, and
+  // leave no row behind.
+  if (!envelopeId || envelopeId === "not-configured") {
+    return NextResponse.json(
+      {
+        error: "E-signature is not connected on this deployment. The investor can accept the NDA on your listing instead, which opens the data room immediately.",
+        code: "DOCUSIGN_NOT_CONFIGURED",
+      },
+      { status: 503 },
+    );
   }
 
   // Upsert NDA record

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { dealRegistrationRequired, registrationRequired } from "@/lib/deal-registration";
-import { mayInvestorContact, contactRefusal } from "@/lib/contact-policy";
+import { mayInvestorContact, contactRefusal, contactsUnlocked } from "@/lib/contact-policy";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
@@ -130,10 +130,15 @@ export async function POST(req: NextRequest) {
   // this table directly, so this has to happen on write -- there is no server
   // hop later where a mask could be applied.
   const safetyCfg = await getSafetyConfig();
-  const alreadyRegistered = !coInvestorThread && thread.startup_id && thread.investor_id
-    ? !(await dealRegistrationRequired({ startupId: thread.startup_id, investorId: thread.investor_id })).required
+  // Keyed on the SEAL, not on deal registration. Registration is retired and
+  // its helper answers "not required" when the feature is off, which read as
+  // "already registered" here and switched masking off for every reply on the
+  // platform. A gate whose disabled state means "let everything through" must
+  // never be asked a question phrased the other way round.
+  const unlocked = !coInvestorThread && thread.startup_id && thread.investor_id
+    ? await contactsUnlocked({ startupId: thread.startup_id, investorId: thread.investor_id })
     : true;
-  const safe = applyMessageSafety({ body, dealRegistered: alreadyRegistered, config: safetyCfg });
+  const safe = applyMessageSafety({ body, dealRegistered: unlocked, config: safetyCfg });
 
   const { data: message, error } = await admin
     .from("messages")

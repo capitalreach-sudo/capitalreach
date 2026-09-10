@@ -26,6 +26,14 @@ const UNION: NotificationType[] = [
   "verified",
   // Migration 078: an unpaid success fee.
   "fee_due",
+  // Migrations 095 and 101. These three were missing from this list for a
+  // while and the test did not notice, because latestCheckTypes() only
+  // recognises the "CHECK (type IN (...))" form and 095/101 were written as
+  // "= ANY (ARRAY[...])". The comparison silently fell back to an older
+  // migration. Keep new constraints in the IN form or this stops guarding.
+  "complaint_update", "interest", "admin_alert",
+  // Migration 120: the deal seal, and the half-signed state before it.
+  "deal_sealed", "deal_seal_pending",
 ];
 // If the union gains a member this list lacks, the annotation above errors;
 // if the list gains one the union lacks, the same. Compile-time both ways.
