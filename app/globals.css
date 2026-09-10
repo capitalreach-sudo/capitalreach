@@ -1967,3 +1967,31 @@ input:disabled:active {
 .cr-range:focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 6px color-mix(in srgb, var(--cr-copper) 22%, transparent);
 }
+
+
+/* ── Deal focus ring and dialog entrances ────────────────────────────────
+   The ring marks the one card a notification deep-linked to. It is a class
+   rather than an inline style because the card already carries an inline
+   `transition` from React, and writing the shorthand imperatively deleted it. */
+.cr-deal-focus {
+  box-shadow: 0 0 0 2px var(--cr-copper);
+  transition: box-shadow 300ms var(--ease-out);
+}
+
+/* Dialog entrance. `scale`, not `transform: scale()`, so the global :active
+   press rule is not clobbered. Enter only: these dialogs unmount on close, so
+   there is no exit to play. Modals keep transform-origin: center -- they are
+   the documented exception to origin-aware scaling, because they are not
+   anchored to a trigger. */
+@keyframes cr-dialog-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cr-dialog-panel-in {
+  from { opacity: 0; scale: 0.97; translate: 0 4px; }
+  to   { opacity: 1; scale: 1;    translate: 0 0; }
+}
+.cr-dialog-scrim { animation: cr-dialog-scrim-in 160ms var(--ease-out) both; }
+.cr-dialog-panel { animation: cr-dialog-panel-in 200ms var(--ease-out) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-dialog-scrim, .cr-dialog-panel { animation: none; }
+  .cr-deal-focus { transition: none; }
+}

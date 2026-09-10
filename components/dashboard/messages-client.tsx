@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
@@ -13,6 +13,23 @@ import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Measuring before paint is the whole point of a FLIP; on the server there
+ *  is no layout to measure, so the effect degrades to the passive one. */
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+/** Below Tailwind's `md`, the two panes are a master-detail stack. */
+const NARROW_QUERY = "(max-width: 767px)";
+function isNarrowLayout() {
+  return typeof window !== "undefined" && window.matchMedia(NARROW_QUERY).matches;
+}
+
+/**
+ * A message plus the two fields that exist only while a send is in flight.
+ * `_clientId` survives the swap to the server row so the bubble keeps its
+ * DOM node -- and therefore its settle -- instead of remounting.
+ */
+type LocalMessage = Message & { _clientId?: string; _pending?: boolean };
 
 /** House empty-state mark: one diamond, nothing else. */
 function EmptyDiamond() {
@@ -70,13 +87,19 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const searchParams = useSearchParams();
   const { t } = useTranslation();
   const [selectedThread, setSelectedThread] = useState<Thread | null>(initialThreads[0] || null);
-  const [messages, setMessages]             = useState<Message[]>([]);
+  const [messages, setMessages]             = useState<LocalMessage[]>([]);
+  // A thread's own messages are the only ones that may be rendered under its
+  // name. Until they arrive the pane holds a quiet mark rather than the
+  // previous conversation's bubbles or a false "start the conversation".
+  const [loadingThread, setLoadingThread]   = useState(false);
+  const [threadLoadError, setThreadLoadError] = useState(false);
   const [newMessage, setNewMessage]         = useState("");
   const [sending, setSending]               = useState(false);
   // The interruption when a conversation has become a negotiation, and the
   // in-flight state of the one click that clears it.
   const [registrationPrompt, setRegistrationPrompt] = useState<null | "volume" | "dataroom">(null);
   const [registering, setRegistering]       = useState(false);
+  const [promptSettled, setPromptSettled]   = useState(false);
   const [search, setSearch]                 = useState("");
   const [showNewModal, setShowNewModal]     = useState(false);
   useEscapeKey(showNewModal, () => setShowNewModal(false));
@@ -90,17 +113,43 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [sendingNew, setSendingNew]             = useState(false);
   const [sendNewError, setSendNewError]         = useState("");
   const [mobileShowChat, setMobileShowChat]     = useState(false);
+  // Narrow-layout master-detail is a push, not a cut: the conversation
+  // arrives from the right and leaves the same way, so Back visibly undoes
+  // Open. Never entered from md up, where both panes are already on screen
+  // and a 200ms overlay on the page's most repeated action would be a tax.
+  const [slidePhase, setSlidePhase] = useState<null | "enter-start" | "enter" | "exit">(null);
   const [statusFilter, setStatusFilter]         = useState("all");
   const [sortBy, setSortBy]                     = useState("recent");
 
-  const bottomRef        = useRef<HTMLDivElement>(null);
+  // Read once and kept in sync: several decisions here are taken in event
+  // handlers, where a media query has to be a value rather than a rule.
+  const [reduceMotion, setReduceMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const messagePaneRef   = useRef<HTMLDivElement>(null);
+  const composerRef      = useRef<HTMLTextAreaElement>(null);
   const supabaseRef      = useRef(createClient());
   const supabase         = supabaseRef.current;
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Which thread's response is still wanted, and which thread the reader has
+  // already been carried to the foot of.
+  const activeThreadRef  = useRef<string | null>(null);
+  const jumpedThreadRef  = useRef<string | null>(null);
 
   // Load + subscribe to messages when thread changes
   useEffect(() => {
     if (!selectedThread) return;
+    const threadId = selectedThread.id;
+    activeThreadRef.current = threadId;
+    setMessages([]);
+    setLoadingThread(true);
+    setThreadLoadError(false);
     // Opening a thread is reading it: clears these messages from the navbar
     // badge. Fire-and-forget is fine client-side.
     fetch("/api/messages/unread", {
@@ -117,9 +166,15 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       .eq("thread_id", selectedThread.id)
       .order("created_at", { ascending: true })
       .then(({ data, error }) => {
+        // Switching A -> B -> A fires three of these; only the one the reader
+        // is still looking at may write. Without the guard a slow response
+        // for A repaints the pane while B is on screen.
+        if (activeThreadRef.current !== threadId) return;
+        setLoadingThread(false);
         // A failed load must not be rendered as "no messages yet" -- that is
-        // indistinguishable from an empty thread and hides the failure.
-        if (error) { notify.error(t("dashboard.errLoadMessagesFailed")); return; }
+        // indistinguishable from an empty thread and hides the failure. The
+        // pane says so itself; a toast that has already faded cannot.
+        if (error) { setThreadLoadError(true); notify.error(t("dashboard.errLoadMessagesFailed")); return; }
         setMessages((data as Message[]) || []);
       });
 
@@ -127,13 +182,74 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `thread_id=eq.${selectedThread.id}` },
         (payload) => {
           const incoming = payload.new as Message;
-          setMessages(prev => prev.some(m => m.id === incoming.id) ? prev : [...prev, incoming]);
+          setMessages(prev => {
+            if (prev.some(m => m.id === incoming.id)) return prev;
+            // This broadcast can beat the reply route's own response. When it
+            // does, the sender's optimistic bubble is already on screen --
+            // adopt the server row into it rather than printing the sentence
+            // twice and then having to delete one of them.
+            const i = prev.findIndex(m => m._pending && m.sender_id === incoming.sender_id && m.body === incoming.body);
+            if (i === -1) return [...prev, incoming];
+            const next = prev.slice();
+            next[i] = { ...incoming, _clientId: prev[i]._clientId };
+            return next;
+          });
         })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [selectedThread?.id]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+  // Landing at the foot of a thread you just opened is arrival, not motion:
+  // an 80-message thread played a long smooth scroll before you could read
+  // anything, and `behavior: "smooth"` overrides the global scroll-behavior
+  // guard, so it ignored prefers-reduced-motion outright. Smooth is reserved
+  // for a message arriving in the thread already in front of you, which is
+  // the one case where the movement carries the news.
+  // Scrolls the pane rather than an anchor inside it: scrollIntoView walks
+  // every scrolling ancestor, so it moved the whole page to reach a sentinel
+  // that was already on screen.
+  useEffect(() => {
+    const pane = messagePaneRef.current;
+    if (loadingThread || !selectedThread || !pane) return;
+    const arriving = jumpedThreadRef.current === selectedThread.id;
+    jumpedThreadRef.current = selectedThread.id;
+    pane.scrollTo({ top: pane.scrollHeight, behavior: arriving && !reduceMotion ? "smooth" : "auto" });
+  }, [messages, loadingThread, selectedThread?.id, reduceMotion]);
+
+  // The composer's height is driven from its value, not from the input event,
+  // so a send or a restored draft resets it too. It stayed at its grown
+  // height after every send otherwise.
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
+  }, [newMessage]);
+
+  // The registration panel appears above the composer while the sender's
+  // hands are still in it, unrequested, and pushes it down. It cannot be
+  // pushed less -- height is layout -- but arriving rather than
+  // having-arrived is what makes the shove legible instead of startling.
+  // Once per conversation-turned-negotiation, so the budget is there.
+  useEffect(() => {
+    if (!registrationPrompt) { setPromptSettled(false); return; }
+    const raf = requestAnimationFrame(() => setPromptSettled(true));
+    return () => cancelAnimationFrame(raf);
+  }, [registrationPrompt]);
+
+  // enter-start paints the pane off to the right with no transition; the
+  // frame after arms it. transitionend ends both phases, and the timeout is
+  // only there for the case where the transition never runs at all.
+  useEffect(() => {
+    if (slidePhase === "enter-start") {
+      const raf = requestAnimationFrame(() => setSlidePhase("enter"));
+      return () => cancelAnimationFrame(raf);
+    }
+    if (slidePhase === "enter" || slidePhase === "exit") {
+      const id = setTimeout(() => setSlidePhase(null), 400);
+      return () => clearTimeout(id);
+    }
+  }, [slidePhase]);
 
   // Deep link from a deal card (?startupId=&investorId=) — select the matching
   // thread once on mount. Fails silently if no thread exists for that pair yet.
@@ -235,7 +351,15 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   function selectThread(t: Thread) {
     setSelectedThread(t);
     setMobileShowChat(true);
+    // Caught mid-dismissal, the pane is already parked off to the right with
+    // a transition armed, so it reverses from where it is rather than being
+    // snapped back to the start line first.
+    if (!reduceMotion && isNarrowLayout()) setSlidePhase(prev => (prev === "exit" ? "enter" : "enter-start"));
     setUnreadSet((prev) => { if (!prev.has(t.id)) return prev; const n = new Set(prev); n.delete(t.id); return n; });
+  }
+  function backToList() {
+    setMobileShowChat(false);
+    setSlidePhase(!reduceMotion && isNarrowLayout() ? "exit" : null);
   }
 
   // Per-user archive (migration 052) + in-thread message search. Archived
@@ -253,8 +377,54 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       .catch(() => {});
   }, []);
 
+  // Starring floats a conversation to the top of the list, which is the one
+  // place a row changes position under the reader. Measured before the sort
+  // and animated back from where it was, so the row is seen travelling
+  // rather than found somewhere else. Armed only here: the same list also
+  // reorders on search and on a filter change, and reordering per keystroke
+  // must never animate.
+  const threadListRef = useRef<HTMLDivElement>(null);
+  const rowTopsRef    = useRef<Map<string, number> | null>(null);
+
+  function captureRowTops() {
+    const root = threadListRef.current;
+    if (!root || reduceMotion) { rowTopsRef.current = null; return; }
+    const tops = new Map<string, number>();
+    root.querySelectorAll<HTMLElement>("[data-thread-row]").forEach(el => {
+      tops.set(el.dataset.threadRow as string, el.getBoundingClientRect().top);
+    });
+    rowTopsRef.current = tops;
+  }
+
+  useIsoLayoutEffect(() => {
+    const before = rowTopsRef.current;
+    rowTopsRef.current = null;
+    const root = threadListRef.current;
+    if (!before || !root) return;
+    // The token is the single source for this curve; WAAPI cannot read a
+    // custom property itself, so it is resolved here rather than restated.
+    const easing = getComputedStyle(document.documentElement).getPropertyValue("--ease-in-out").trim() || "ease-in-out";
+    root.querySelectorAll<HTMLElement>("[data-thread-row]").forEach(el => {
+      const from = before.get(el.dataset.threadRow as string);
+      if (from === undefined) return;
+      // Cancel any run still in flight BEFORE measuring. getBoundingClientRect
+      // includes a running transform, so starring and unstarring inside 240ms
+      // measured a rect that was mid-animation and the row snapped at the
+      // moment of interruption instead of retargeting from where it stood.
+      el.getAnimations().forEach(a => { if (a.id === "thread-flip") a.cancel(); });
+      const delta = from - el.getBoundingClientRect().top;
+      if (!delta) return;
+      const anim = el.animate(
+        [{ transform: `translateY(${delta}px)` }, { transform: "translateY(0)" }],
+        { duration: 240, easing },
+      );
+      anim.id = "thread-flip";
+    });
+  }, [importantIds]);
+
   async function toggleImportant(threadId: string) {
     const was = importantIds.has(threadId);
+    captureRowTops();
     setImportantIds(prev => {
       const next = new Set(prev);
       if (was) next.delete(threadId); else next.add(threadId);
@@ -284,12 +454,23 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
 
+  /**
+   * A refused send is not a lost draft. Three of the outcomes below are
+   * deliberate gates rather than failures, and every one of them has to end
+   * with the sender's own words back in the box -- unless they have already
+   * started typing something else over the top, which theirs outranks.
+   */
+  function undoOptimisticSend(clientId: string, body: string) {
+    setMessages(prev => prev.filter(m => m._clientId !== clientId));
+    setNewMessage(cur => (cur.trim() ? cur : body));
+  }
+
   async function sendMessage(e: { preventDefault(): void }) {
     e.preventDefault();
     if ((!newMessage.trim() && !attachedFile) || !selectedThread) return;
-    setSending(true);
 
     if (attachedFile) {
+      setSending(true);
       // Through the API, not a direct insert: the file has to reach storage
       // and the row has to point at it, and the route owns that pairing
       // (including deleting the object if the insert fails).
@@ -320,17 +501,38 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     // other participant (bell + email preview), enforces the length cap, and
     // bumps the thread — a browser-side insert did none of that.
     const body = newMessage.trim();
+    // The bubble is on screen before the request leaves. That route does
+    // notification and email-preview work, so holding the composer for the
+    // round trip left the sender's text sitting in the box for several
+    // hundred milliseconds with nothing saying it had gone anywhere. The
+    // composer is not gated on the response either: a second reply typed
+    // while the first is in flight is a chat working normally.
+    const clientId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const threadId = selectedThread.id;
+    setMessages(prev => [...prev, {
+      id: clientId, _clientId: clientId, _pending: true,
+      thread_id: threadId, sender_id: profile.id, body,
+      created_at: new Date().toISOString(), read_at: null,
+    }]);
+    setNewMessage("");
+
+    // A rejected fetch throws, and every rollback below is written for an
+    // answer. Unguarded, an offline send left the pending bubble at 0.55
+    // forever with the draft already cleared -- strictly worse than before the
+    // optimistic send, where the text at least stayed in the box.
     const res = await fetch("/api/messages/reply", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ threadId: selectedThread.id, body }),
-    });
+      body: JSON.stringify({ threadId, body }),
+    }).catch(() => null);
+    if (!res) { undoOptimisticSend(clientId, body); notify.error(t("dashboard.errSendMessageFailed")); return; }
     const json = await res.json().catch(() => ({}));
     if (res.status === 403 && json.error === "seal_required") {
       // The deal exists but nobody has countersigned it yet. Send them to the
       // record with a link rather than a sentence: a refusal whose remedy is
       // one click away is a step, and the same refusal with no link is the
       // dead end this codebase keeps rediscovering.
+      undoOptimisticSend(clientId, body);
       notify.info(t("seal.required"));
       if (json.dealId) router.push(`/deals?deal=${json.dealId}`);
     } else if (res.status === 403 && json.error === "offer_required") {
@@ -338,25 +540,31 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       // "your offer is waiting" is a different message from "make an offer",
       // and telling somebody to do a thing they already did is worse than
       // saying nothing.
+      undoOptimisticSend(clientId, body);
       notify.info(json.openProposalId ? t("offer.awaitingReply") : t("offer.required"));
     } else if (res.status === 409 && json.error === "deal_registration_required") {
       // Not a failure -- the conversation has become a negotiation and the
       // deal has to be on the record before it goes further. The draft is
       // kept: making somebody retype what they wrote to satisfy our
       // paperwork would be its own small insult.
+      undoOptimisticSend(clientId, body);
       setRegistrationPrompt(json.reason === "nda_signed" || json.reason === "data_room" ? "dataroom" : "volume");
     } else if (!res.ok || !json.message) {
+      undoOptimisticSend(clientId, body);
       notify.error(json.error || t("dashboard.errSendMessageFailed"));
     } else {
       const sent = json.message as Message;
-      setMessages(prev => prev.some(m => m.id === sent.id) ? prev : [...prev, sent]);
-      setNewMessage("");
+      setMessages(prev => {
+        // If the realtime broadcast already adopted this row, the placeholder
+        // is the only thing left to clear.
+        if (prev.some(m => m.id === sent.id)) return prev.filter(m => !(m._pending && m._clientId === clientId));
+        return prev.map(m => (m._clientId === clientId ? { ...sent, _clientId: clientId } : m));
+      });
       // Nothing gets rewritten silently. If details were withheld, the person
       // who wrote them hears it immediately rather than wondering later why
       // nobody called.
       if (json.contactsWithheld?.length) notify.info(t("msgSafety.withheld"));
     }
-    setSending(false);
   }
 
   /**
@@ -452,14 +660,19 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
         </div>
 
         {/* Main 2-col layout */}
-        <div style={{ display: "flex", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", height: "620px" }}>
+        {/* `position` is the anchor for the narrow-layout push: the chat pane
+            rides over the list on its way in and out, so the list is never
+            replaced by an empty frame mid-slide. */}
+        <div style={{ display: "flex", position: "relative", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", height: "620px" }}>
 
           {/* ── Sidebar ── */}
           {/* `display` stays in the class, never the inline style: an inline
               display beats md:flex, which collapsed both panes to one column
               at every width. mobileShowChat only governs the narrow layout;
-              from md up both panes are shown regardless. */}
-          <div className={`w-full md:w-[300px] md:flex ${mobileShowChat ? "hidden" : "flex"}`}
+              from md up both panes are shown regardless. The list also stays
+              mounted for the length of a slide, since it is what the
+              conversation slides over. */}
+          <div className={`w-full md:w-[300px] md:flex ${mobileShowChat && !slidePhase ? "hidden" : "flex"}`}
             style={{ flexShrink: 0, flexDirection: "column", borderRight: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)" }}>
             {/* Search */}
             <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
@@ -494,7 +707,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </div>
 
             {/* Thread list */}
-            <div style={{ flex: 1, overflowY: "auto" }}>
+            <div ref={threadListRef} style={{ flex: 1, overflowY: "auto" }}>
               {filteredThreads.length === 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: "24px", textAlign: "center", gap: "12px" }}>
                   <EmptyDiamond />
@@ -504,7 +717,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 const isSelected = selectedThread?.id === thread.id;
                 const st = thread.status || "active";
                 return (
-                  <button key={thread.id} onClick={() => selectThread(thread)}
+                  <button key={thread.id} data-thread-row={thread.id} onClick={() => selectThread(thread)}
                     style={{ width: "100%", textAlign: "left", padding: "16px", borderBottom: "1px solid var(--cr-rule)", background: isSelected ? "var(--cr-paper-3)" : "transparent", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent", cursor: "pointer" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
                       <div style={{ width: 36, height: 36, borderRadius: "4px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)" }}>
@@ -539,14 +752,31 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
           {/* ── Chat pane ── */}
           {selectedThread ? (
-            <div className={`md:flex ${mobileShowChat ? "flex" : "hidden"}`}
-              style={{ flex: 1, flexDirection: "column", minWidth: 0 }}>
+            <div className={`md:flex ${mobileShowChat || slidePhase === "exit" ? "flex" : "hidden"}`}
+              onTransitionEnd={e => {
+                if (e.target !== e.currentTarget || e.propertyName !== "transform") return;
+                setSlidePhase(null);
+              }}
+              style={{
+                flex: 1, flexDirection: "column", minWidth: 0,
+                // Only while sliding: laid over the list, opaque so the list
+                // does not read through it, and moved on transform alone.
+                // slidePhase is never set from md up, so switching threads on
+                // the two-pane layout stays a straight cut.
+                ...(slidePhase ? {
+                  position: "absolute" as const, inset: 0, zIndex: 2,
+                  background: "var(--cr-paper)",
+                  willChange: "transform",
+                  transform: slidePhase === "enter" ? "translateX(0)" : "translateX(100%)",
+                  transition: slidePhase === "enter-start" ? "none" : "transform 220ms var(--ease-out)",
+                } : null),
+              }}>
               {/* Chat header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", flexShrink: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
                   {/* Back to the list is a narrow-layout affordance only: from
                       md up the list never left, so the arrow would do nothing. */}
-                  <button onClick={() => setMobileShowChat(false)} aria-label={t("common.back")} className="flex md:hidden"
+                  <button onClick={backToList} aria-label={t("common.back")} className="flex md:hidden"
                     style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0 }}>
                     <ArrowLeft style={{ width: 16, height: 16 }} />
                   </button>
@@ -613,8 +843,23 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   </button>
                 )}
               </div>
-              <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "8px", background: "var(--cr-paper)" }}>
-                {messages.length === 0 && (
+              <div ref={messagePaneRef} aria-busy={loadingThread} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "8px", background: "var(--cr-paper)" }}>
+                {/* The quiet mark the deal card already uses for this. A
+                    crossfade would only lengthen the window in which the
+                    previous conversation is still legible under this one's
+                    name, which is the thing being fixed. */}
+                {loadingThread && (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                    <p aria-hidden style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>…</p>
+                  </div>
+                )}
+                {threadLoadError && (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "12px", padding: "24px", textAlign: "center" }}>
+                    <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)" }} />
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("dashboard.errLoadMessagesFailed")}</p>
+                  </div>
+                )}
+                {!loadingThread && !threadLoadError && messages.length === 0 && (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "12px", color: "var(--cr-ink-4)" }}>
                     <EmptyDiamond />
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.startConversation")}</p>
@@ -645,7 +890,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   const isOwn = msg.sender_id === profile.id;
                   const showTime = i === 0 || (new Date(msg.created_at).getTime() - new Date(visibleMessages[i - 1].created_at).getTime()) > 5 * 60 * 1000;
                   return (
-                    <div key={msg.id}>
+                    // Keyed by the client id where there is one, so the swap
+                    // to the server row keeps the same node and the bubble
+                    // settles instead of remounting at full strength.
+                    <div key={msg._clientId ?? msg.id}>
                       {showTime && (
                         <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
                           <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", padding: "3px 8px" }}>
@@ -656,12 +904,16 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       <div style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start" }}>
                         {/* Own messages: quiet ledger entry on paper, marked
                             "mine" by a 2px copper rule, not an accent slab. */}
+                        {/* In flight, the bubble is written but not yet filed:
+                            it settles to full strength when the row lands. */}
                         <div style={{
                           maxWidth: "70%", borderRadius: "4px", padding: "12px 16px",
                           background: isOwn ? "var(--cr-paper-3)" : "var(--cr-paper-2)",
                           border: isOwn ? "none" : "1px solid var(--cr-rule-dark)",
                           borderLeft: isOwn ? "2px solid var(--cr-copper)" : undefined,
                           color: "var(--cr-ink)",
+                          opacity: msg._pending ? 0.55 : 1,
+                          transition: "opacity 140ms var(--ease-out)",
                         }}>
                           {msg.attachment_path && (
                             <a href={`/api/messages/attachment?id=${msg.id}`}
@@ -709,7 +961,6 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   );
                   });
                 })()}
-                <div ref={bottomRef} />
               </div>
 
               {/* Compose */}
@@ -718,7 +969,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   wrote is still waiting -- explaining itself rather than
                   simply refusing. */}
               {registrationPrompt && (
-                <div style={{ padding: "16px", borderTop: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", flexShrink: 0 }}>
+                <div style={{
+                  padding: "16px", borderTop: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", flexShrink: 0,
+                  opacity: promptSettled ? 1 : 0,
+                  transform: promptSettled || reduceMotion ? "translateY(0)" : "translateY(8px)",
+                  transition: "opacity 200ms var(--ease-out), transform 200ms var(--ease-out)",
+                }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
                     <span aria-hidden style={{ color: "var(--cr-copper)" }}>{"\u2726"}</span>
                     {t("dealReg.title")}
@@ -765,18 +1021,21 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   style={{ width: 40, height: 40, background: attachedFile ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", border: attachedFile ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
                   <Paperclip style={{ width: 14, height: 14, color: attachedFile ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
                 </button>
-                <textarea value={newMessage} onChange={e => setNewMessage(e.target.value.slice(0, 2000))}
+                <textarea ref={composerRef} value={newMessage} onChange={e => setNewMessage(e.target.value.slice(0, 2000))}
                   maxLength={2000}
                   placeholder={attachedFile ? t("messages.attachCaptionPh", { name: attachedFile.name }) : t("dashboard.composePlaceholder")}
                   rows={1} style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px", resize: "none", minHeight: "40px", maxHeight: "120px", outline: "none", boxSizing: "border-box" }}
-                  onInput={e => { const el = e.target as HTMLTextAreaElement; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (newMessage.trim() || attachedFile) sendMessage(e); } }}
+                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault();
+                    // The submit button is disabled while an upload is in
+                    // flight; Enter was not, and attachedFile only clears on
+                    // success, so a second press re-uploaded the same file.
+                    if ((newMessage.trim() || attachedFile) && !(attachedFile && sending)) sendMessage(e); } }}
                   onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                   onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
                 />
                 <button type="submit" disabled={(!newMessage.trim() && !attachedFile) || sending}
                   style={{ width: 40, height: 40, background: "var(--cr-copper)", border: "none", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: (!newMessage.trim() && !attachedFile) || sending ? 0.5 : 1 }}>
-                  {sending ? <Loader2 style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} /> : <Send style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} />}
+                  {sending ? <Loader2 className="animate-spin" style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} /> : <Send style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} />}
                 </button>
               </form>
               {/* Character budget only when it matters (>1500 of 2000). */}
@@ -803,9 +1062,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       </div>
 
       {/* ── New Message Modal ── */}
+      {/* Enter only, and centred: the dialog is not anchored to its trigger,
+          and it unmounts on close, where an instant dismissal is the right
+          asymmetry. The two classes are the house recipe. */}
       {showNewModal && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
+        <div role="dialog" aria-modal="true" className="cr-dialog-scrim" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
+          <div className="cr-dialog-panel" style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
               <div>
                 <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("dashboard.messages")}</div>
@@ -880,7 +1142,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 10, maxHeight: "220px", overflowY: "auto" }}>
                       {accountSearching ? (
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "16px", gap: "8px", color: "var(--cr-ink-4)" }}>
-                          <Loader2 style={{ width: 14, height: 14 }} /> <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.searching")}</span>
+                          <Loader2 className="animate-spin" style={{ width: 14, height: 14 }} /> <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px" }}>{t("dashboard.searching")}</span>
                         </div>
                       ) : accountResults.length === 0 ? (
                         <p style={{ padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noResultsFound")}</p>
@@ -949,7 +1211,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 </button>
                 <button onClick={sendNewMessage} disabled={!selectedAccount || !newBody.trim() || sendingNew}
                   style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
-                  {sendingNew ? <><Loader2 style={{ width: 14, height: 14 }} /> {t("dashboard.sending2")}</> : <><Send style={{ width: 14, height: 14 }} /> {t("dashboard.sendMessageBtn")}</>}
+                  {sendingNew ? <><Loader2 className="animate-spin" style={{ width: 14, height: 14 }} /> {t("dashboard.sending2")}</> : <><Send style={{ width: 14, height: 14 }} /> {t("dashboard.sendMessageBtn")}</>}
                 </button>
               </div>
             </div>

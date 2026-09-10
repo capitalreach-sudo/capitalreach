@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState, useTransition, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EntityLogo } from "@/components/shared/entity-logo";
@@ -392,6 +392,11 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<"idle" | "accept" | "decline" | "counter">("idle");
   const [showTrail, setShowTrail] = useState(false);
+  // Answering is a fetch AND a re-read of a server component, and the second
+  // half is the longer one. Both count as working, or the card spends it
+  // offering an answer that has already been given.
+  const [refreshing, startRefresh] = useTransition();
+  const working = busy || refreshing;
 
   const o = chain.head;
   const inv = chain.investor;
@@ -442,15 +447,17 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
     }).catch(() => null);
     const j = await res?.json().catch(() => ({}));
     setBusy(false);
-    setMode("idle");
     if (!res || !res.ok) {
+      setMode("idle");
       notify.error(j?.error || t("errors.generic"));
       return;
     }
     notify.success(action === "accept" ? t("offerInbox.accepted") : t("offerInbox.declined"));
     // The page is a server component holding the record; re-read it rather
-    // than patching a copy of the truth in the browser.
-    router.refresh();
+    // than patching a copy of the truth in the browser. The confirmation
+    // stays on screen for the length of that read -- the row moving to
+    // Settled is what ends it.
+    startRefresh(() => router.refresh());
   }
 
   return (
@@ -602,7 +609,22 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
           >
             {showTrail ? t("offerInbox.chainHide") : t("offerInbox.chainShow", { count: chain.trail.length })}
           </button>
-          {showTrail && (
+          {/* However many counters deep the negotiation is, the rows arrive
+              between the terms and the buttons that answer them. Easing the
+              box open keeps the answer where the eye left it. */}
+          <div style={{
+            display: "grid",
+            gridTemplateRows: showTrail ? "1fr" : "0fr",
+            transition: "grid-template-rows 200ms var(--ease-out)",
+          }}>
+            <div style={{
+              minHeight: 0, overflow: "hidden",
+              visibility: showTrail ? "visible" : "hidden",
+              opacity: showTrail ? 1 : 0,
+              transition: showTrail
+                ? "opacity 160ms var(--ease-out) 40ms, visibility 0s"
+                : "opacity 120ms var(--ease-out), visibility 0s linear 200ms",
+            }}>
             <div style={{ marginTop: "8px" }}>
               {chain.trail.map((step) => (
                 <div key={step.id} style={{
@@ -622,7 +644,8 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
                 </div>
               ))}
             </div>
-          )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -650,7 +673,7 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
             head={o}
             ask={ask}
             investorName={inv.name}
-            onDone={() => { setMode("idle"); router.refresh(); }}
+            onDone={() => { setMode("idle"); startRefresh(() => router.refresh()); }}
             onCancel={() => setMode("idle")}
           />
         ) : mode === "accept" ? (
@@ -659,11 +682,11 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
               {t("offerInbox.acceptExplain", { name: inv.name })}
             </p>
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              <button type="button" onClick={() => answer("accept")} disabled={busy}
-                style={{ ...PRIMARY, opacity: busy ? 0.45 : 1 }}>
-                {busy ? t("offerInbox.working") : t("offerInbox.acceptConfirm")}
+              <button type="button" onClick={() => answer("accept")} disabled={working}
+                style={{ ...PRIMARY, opacity: working ? 0.45 : 1 }}>
+                {working ? t("offerInbox.working") : t("offerInbox.acceptConfirm")}
               </button>
-              <button type="button" onClick={() => setMode("idle")} disabled={busy} style={QUIET}>
+              <button type="button" onClick={() => setMode("idle")} disabled={working} style={QUIET}>
                 {t("offerInbox.notYet")}
               </button>
             </div>
@@ -677,30 +700,37 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
               {t("offerInbox.declineAsk")}
             </p>
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              <button type="button" onClick={() => answer("decline")} disabled={busy}
-                style={{ ...SECONDARY, opacity: busy ? 0.45 : 1 }}>
-                {busy ? t("offerInbox.working") : t("offerInbox.declineConfirm")}
+              <button type="button" onClick={() => answer("decline")} disabled={working}
+                style={{ ...SECONDARY, opacity: working ? 0.45 : 1 }}>
+                {working ? t("offerInbox.working") : t("offerInbox.declineConfirm")}
               </button>
-              <button type="button" onClick={() => setMode("idle")} disabled={busy} style={QUIET}>
+              <button type="button" onClick={() => setMode("idle")} disabled={working} style={QUIET}>
                 {t("offerInbox.keepIt")}
               </button>
             </div>
           </div>
         ) : (
           <>
+            {/* `working` gates this row as well as the confirmation panes.
+                A counter returns to idle while the re-read is still running,
+                and for the length of that read all three actions were live --
+                so Accept was reachable on an offer that had just been
+                countered out from under it. */}
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
               <button
                 type="button"
                 onClick={() => setMode("accept")}
-                disabled={restricted}
-                style={{ ...PRIMARY, opacity: restricted ? 0.45 : 1, cursor: restricted ? "default" : "pointer" }}
+                disabled={restricted || working}
+                style={{ ...PRIMARY, opacity: restricted || working ? 0.45 : 1, cursor: restricted || working ? "default" : "pointer" }}
               >
                 {t("offerInbox.accept")}
               </button>
-              <button type="button" onClick={() => setMode("counter")} style={SECONDARY}>
+              <button type="button" onClick={() => setMode("counter")} disabled={working}
+                style={{ ...SECONDARY, opacity: working ? 0.45 : 1, cursor: working ? "default" : "pointer" }}>
                 {t("offerInbox.counter")}
               </button>
-              <button type="button" onClick={() => setMode("decline")} style={QUIET}>
+              <button type="button" onClick={() => setMode("decline")} disabled={working}
+                style={{ ...QUIET, opacity: working ? 0.45 : 1, cursor: working ? "default" : "pointer" }}>
                 {t("offerInbox.decline")}
               </button>
             </div>

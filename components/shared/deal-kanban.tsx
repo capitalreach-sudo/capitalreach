@@ -100,9 +100,12 @@ interface DealKanbanProps {
   // Whether to show the CSV export button — computed server-side (admin
   // always, investors gated by canExportData(), never shown for startups).
   canExport?: boolean;
-  onSetFollowUp?: (dealId: string, date: string | null) => void;
+  /** Answers false when the record refused, so the control can put the old value back. */
+  onSetFollowUp?: (dealId: string, date: string | null) => void | Promise<boolean>;
   /** B17: record the commitment level (and optionally a new amount). */
-  onSetCommitment?: (dealId: string, commitmentType: CommitmentType, amount?: number | null) => void;
+  onSetCommitment?: (dealId: string, commitmentType: CommitmentType, amount?: number | null) => void | Promise<boolean>;
+  /** The stage a card has been asked to move to, while that request is out. */
+  movingDeal?: { id: string; status: DealStatus } | null;
 }
 
 export type CommitmentType = "interest" | "soft_circle" | "verbal" | "committed";
@@ -134,6 +137,45 @@ function colBadgeStyle(status: DealStatus, count: number): React.CSSProperties {
 
 /** How many cards a column shows before it offers the rest. */
 const COLUMN_PREVIEW = 5;
+
+// ── Collapsible region ────────────────────────────────────────────────────────
+
+/**
+ * A section that opens and closes without a jump, and without a measurement.
+ *
+ * `grid-template-rows` between 0fr and 1fr is the honest way to ease a box
+ * whose final height nobody knows yet: the sections inside are still fetching
+ * when it opens, and a pixel target measured at click time would animate to a
+ * stale number and then snap to the real one. 1fr simply tracks whatever the
+ * content becomes, mid-flight included.
+ *
+ * A transition rather than a keyframe, so a collapse caught halfway reverses
+ * from where it is instead of replaying from the top.
+ *
+ * `overflow: hidden` clips the closed content but leaves it in the tab order,
+ * so visibility follows -- held back by the length of the close so the content
+ * is still legible while the box is shutting, and switched instantly on open.
+ */
+function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateRows: open ? "1fr" : "0fr",
+      transition: "grid-template-rows 200ms var(--ease-out)",
+    }}>
+      <div style={{
+        minHeight: 0, overflow: "hidden",
+        visibility: open ? "visible" : "hidden",
+        opacity: open ? 1 : 0,
+        transition: open
+          ? "opacity 160ms var(--ease-out) 40ms, visibility 0s"
+          : "opacity 120ms var(--ease-out), visibility 0s linear 200ms",
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 // ── Empty column placeholder ──────────────────────────────────────────────────
 
@@ -363,11 +405,12 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
   return (
     <div
-      role="dialog" aria-modal="true"
+      role="dialog" aria-modal="true" className="cr-dialog-scrim"
       style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}
       onClick={onClose}
     >
       <div
+        className="cr-dialog-panel"
         style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: "100%", maxWidth: "420px", padding: "24px", maxHeight: "80vh", overflowY: "auto" }}
         onClick={e => e.stopPropagation()}
       >
@@ -640,10 +683,10 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
           <FileText style={{ width: 11, height: 11 }} />
           {t("deals.contracts")}{loaded && contracts.length > 0 ? ` (${contracts.length})` : ""}
         </span>
-        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }} />
+        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-out)" }} />
       </button>
 
-      {open && (
+      <Collapse open={open}>
         <div style={{ marginTop: "12px" }}>
           {loading && (
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>
@@ -748,12 +791,12 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
             </button>
           )}
         </div>
-      )}
+      </Collapse>
 
       {signing && (
-        <div role="dialog" aria-modal="true" onClick={() => setSigning(null)}
+        <div role="dialog" aria-modal="true" onClick={() => setSigning(null)} className="cr-dialog-scrim"
           style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", zIndex: 210, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
-          <div onClick={e => e.stopPropagation()}
+          <div onClick={e => e.stopPropagation()} className="cr-dialog-panel"
             style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", width: "100%", maxWidth: "480px", maxHeight: "86vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ padding: "16px 24px 12px", borderBottom: "1px solid var(--cr-rule)" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("deals.signTitle", { title: signing.title || t("deals.contract") })}</p>
@@ -864,10 +907,10 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
           <FileText style={{ width: 11, height: 11 }} />
           {t("deals.resources")}
         </span>
-        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }} />
+        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-out)" }} />
       </button>
 
-      {open && (
+      <Collapse open={open}>
         <div style={{ marginTop: "12px" }}>
           {loading && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>}
 
@@ -957,7 +1000,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
             </>
           )}
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }
@@ -1286,8 +1329,8 @@ function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; on
 
   const input: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none" };
   return (
-    <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: 16 }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="animate-fade-up"
+    <div role="dialog" aria-modal="true" className="cr-dialog-scrim" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: 16 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="cr-dialog-panel"
         style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, width: "100%", maxWidth: 420, padding: 24 }}>
         <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: 22, color: "var(--cr-ink)", marginBottom: 4 }}>{t("external.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", marginBottom: 16, lineHeight: 1.5 }}>{t("external.intro")}</p>
@@ -1560,10 +1603,10 @@ function ActivitySection({ dealId }: { dealId: string }) {
         <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           {t("deals.activity")}{loaded && activity.length > 0 ? ` (${activity.length})` : ""}
         </span>
-        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }} />
+        <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-out)" }} />
       </button>
 
-      {open && (
+      <Collapse open={open}>
         <div style={{ marginTop: "12px" }}>
           {loading && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>…</p>}
           {!loading && loaded && activity.length === 0 && (
@@ -1624,7 +1667,7 @@ function ActivitySection({ dealId }: { dealId: string }) {
             </button>
           </div>
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }
@@ -1691,15 +1734,17 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
 
 // ── Deal card ─────────────────────────────────────────────────────────────────
 
-function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null, onSetFollowUp, onSetCommitment }: {
+function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = true, equityOffered = null, onSetFollowUp, onSetCommitment, movingTo = null }: {
   deal: Deal;
   viewAs: "startup" | "investor" | "admin";
   onStatusChange?: (id: string, status: DealStatus, reason?: string) => void;
   onDealClose?: (id: string, amount: number, currency: string) => void;
   revealIdentity?: boolean;
   equityOffered?: number | null;
-  onSetFollowUp?: (id: string, date: string | null) => void;
-  onSetCommitment?: (id: string, commitmentType: CommitmentType, amount?: number | null) => void;
+  onSetFollowUp?: (id: string, date: string | null) => void | Promise<boolean>;
+  onSetCommitment?: (id: string, commitmentType: CommitmentType, amount?: number | null) => void | Promise<boolean>;
+  /** The stage this card has been asked to move to, while that request is out. */
+  movingTo?: DealStatus | null;
 }) {
   const { t } = useTranslation();
   const columns = useColumns();
@@ -1713,6 +1758,15 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [checklistOpen, setChecklistOpen] = useState(0);
   const [pendingMove, setPendingMove] = useState<DealStatus | null>(null);
   const [expanded, setExpanded] = useState(false);
+  // The detail sections stay mounted once opened: they are what the collapse
+  // eases between, and unmounting them would delete the box mid-transition.
+  // Only the FIRST open pays for their fetches, which is what the collapse
+  // was for; a second look is then free.
+  const [detailMounted, setDetailMounted] = useState(false);
+  // What this card was told, held until the record catches up. Both fall back
+  // to the server row, so a refusal puts the old value back by itself.
+  const [commitDraft, setCommitDraft] = useState<CommitmentType | null>(null);
+  const [followUpSaved, setFollowUpSaved] = useState<string | null | undefined>(undefined);
 
   const { investorName, startupName } = dealNames(deal, t);
   // B18: an off-platform contact has no account — anything that needs one
@@ -1749,19 +1803,24 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   // Where this deal stands in the process, as four quiet dots: filled up to
   // the current stage, copper on the active one, all-green when finalised,
   // struck when passed. The card answers "how far along?" before it is read.
-  const ladderPos = deal.status === "closed" ? 4
-    : deal.status === "passed" ? -1
-    : ["intro", "due_diligence", "term_sheet"].indexOf(deal.status) + 1;
+  //
+  // Reads the asked-for stage while a move is out, so the dots answer on the
+  // click. It is the one part of the card that may run ahead of the record:
+  // the buttons below stay locked on the stage the server still holds, so
+  // nothing rewrites itself under the cursor.
+  const shownStatus = movingTo ?? deal.status;
+  const ladderPos = shownStatus === "closed" ? 4
+    : shownStatus === "passed" ? -1
+    : ["intro", "due_diligence", "term_sheet"].indexOf(shownStatus) + 1;
 
   return (
     <div id={`deal-${deal.id}`} className="cr-lift" style={{
       position: "relative",
       background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
       borderRadius: "4px", padding: "16px",
-      transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease",
+      opacity: movingTo ? 0.55 : 1,
+      transition: "transform 180ms ease, box-shadow 180ms ease, opacity 120ms var(--ease-out)",
     }}
-      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)")}
-      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
     >
       {deal.status === "closed" && (
         <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
@@ -1772,8 +1831,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       <div aria-hidden style={{ display: "flex", gap: 4, marginBottom: 8 }}>
         {[1, 2, 3, 4].map(i => (
           <span key={i} style={{
+            // The width steps, it does not tween: the dot is answering an
+            // input, and a 9px layout tween on five dots per card is a
+            // reflow the board pays for something nobody can see. The colour
+            // carries the change instead.
             width: i === ladderPos ? 14 : 5, height: 5, borderRadius: 3,
-            transition: "width 200ms ease, background 200ms ease",
+            transition: "background-color 200ms var(--ease-out)",
             background: ladderPos === -1 ? "var(--cr-rule-dark)"
               : ladderPos === 4 ? "var(--cr-up)"
               : i < ladderPos ? "var(--cr-copper-br)"
@@ -1853,7 +1916,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
       {/* Quick-move buttons */}
       {onStatusChange && isActive && !showPassedPicker && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "12px" }}>
+        // Locked, not hidden, while the move is out: the row keeps its size
+        // and its words, and a second click cannot land on a card that has
+        // already answered.
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "12px", pointerEvents: movingTo ? "none" : undefined }}>
           {validMoves(deal.status).map((s) => (
             <button key={s} onClick={() => {
                 if (s === "passed") { setShowPassedPicker(true); return; }
@@ -1881,7 +1947,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           allow, muddying the history. Closed stays terminal on purpose: it has
           raised an invoice. */}
       {onStatusChange && deal.status === "passed" && (
-        <div style={{ marginTop: "12px" }}>
+        <div style={{ marginTop: "12px", pointerEvents: movingTo ? "none" : undefined }}>
           <button onClick={() => onStatusChange(deal.id, "intro")}
             style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
             ↺ {t("deals.reopen")}
@@ -1927,16 +1993,17 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
 
           Collapsed by default. The card shows who, how much, and how long it
           has been sitting; the rest opens on demand. */}
-      <button onClick={() => setExpanded(v => !v)}
+      <button onClick={() => { setDetailMounted(true); setExpanded(v => !v); }}
         style={{ background: "none", border: "none", cursor: "pointer", padding: 0, marginTop: "12px",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)",
           display: "flex", alignItems: "center", gap: "4px" }}
         aria-expanded={expanded}>
-        <ChevronDown style={{ width: 12, height: 12, transform: expanded ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
+        <ChevronDown style={{ width: 12, height: 12, transform: expanded ? "rotate(180deg)" : "none", transition: "transform 200ms var(--ease-out)" }} />
         {expanded ? t("deals.hideDetails") : t("deals.showDetails")}
       </button>
 
-      {expanded && (
+      <Collapse open={expanded}>
+        {detailMounted && (
         <>
       {/* The countersignature. Sits above everything else on the card because
           until it is done the pair cannot message each other, which makes it
@@ -1951,7 +2018,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {/* B17: commitment level — "we're in for X". Both sides can set it;
           the raise tracker on the founder dashboard reads it from day 0. */}
       {onSetCommitment && isActive && (() => {
-        const ct = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? "interest") as CommitmentType;
+        const serverCt = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? "interest") as CommitmentType;
+        const ct = commitDraft ?? serverCt;
         const chipStyle = (active: boolean): React.CSSProperties => ({
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", cursor: "pointer",
           background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -1963,7 +2031,15 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
               <InfoTip termKey="glossary.softCircle" />
               {(["interest", "soft_circle", "verbal", "committed"] as CommitmentType[]).map((c) => (
-                <button key={c} onClick={() => { if (c !== ct) onSetCommitment(deal.id, c); }} style={chipStyle(c === ct)} aria-pressed={c === ct}>
+                <button key={c} aria-pressed={c === ct} style={chipStyle(c === ct)}
+                  onClick={async () => {
+                    if (c === ct) return;
+                    // A four-way radio the user already knows the answer to.
+                    // Copper moves on the click; only a refusal moves it back.
+                    const previous = commitDraft;
+                    setCommitDraft(c);
+                    if (await onSetCommitment(deal.id, c) === false) setCommitDraft(previous);
+                  }}>
                   {t(COMMITMENT_KEY[c])}
                 </button>
               ))}
@@ -1972,28 +2048,38 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         );
       })()}
 
-      {/* Follow-up date */}
-      {onSetFollowUp && (
+      {/* Follow-up date. The editor closing IS the confirmation, so the line
+          it closes onto has to be the date that was just typed -- it used to
+          close onto the old one and sit there lying until the refresh. */}
+      {onSetFollowUp && (() => {
+        const followUp = followUpSaved !== undefined ? followUpSaved : deal.next_follow_up;
+        async function save(date: string | null) {
+          const previous = followUpSaved;
+          setFollowUpSaved(date);
+          setEditingFollowUp(false);
+          if (await onSetFollowUp!(deal.id, date) === false) setFollowUpSaved(previous);
+        }
+        return (
         <div style={{ marginTop: "8px" }}>
           {editingFollowUp ? (
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <input type="date" value={followUpDraft} onChange={e => setFollowUpDraft(e.target.value)}
                 style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
-              <button onClick={() => { onSetFollowUp(deal.id, followUpDraft || null); setEditingFollowUp(false); }}
+              <button onClick={() => save(followUpDraft || null)}
                 style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
                 {t("deals.save")}
               </button>
-              {deal.next_follow_up && (
-                <button onClick={() => { onSetFollowUp(deal.id, null); setFollowUpDraft(""); setEditingFollowUp(false); }}
+              {followUp && (
+                <button onClick={() => { setFollowUpDraft(""); save(null); }}
                   style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
                   <X style={{ width: 12, height: 12 }} />
                 </button>
               )}
             </div>
-          ) : deal.next_follow_up ? (
+          ) : followUp ? (
             <button onClick={() => setEditingFollowUp(true)}
-              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: new Date(deal.next_follow_up) < new Date() ? "var(--cr-down)" : "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
-              {t("deals.followUpLabel", { date: formatDate(deal.next_follow_up) })}
+              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: new Date(followUp) < new Date() ? "var(--cr-down)" : "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
+              {t("deals.followUpLabel", { date: formatDate(followUp) })}
             </button>
           ) : (
             <button onClick={() => setEditingFollowUp(true)}
@@ -2002,9 +2088,11 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             </button>
           )}
         </div>
-      )}
+        );
+      })()}
         </>
-      )}
+        )}
+      </Collapse>
 
       {/* A pending close proposal — both sides must agree before the fee fires. */}
       {isActive && onDealClose && !showCloseForm && deal.close_proposed_at && (
@@ -2083,7 +2171,8 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </div>
       )}
 
-      {expanded && (
+      <Collapse open={expanded}>
+        {detailMounted && (
         <>
       {/* D37: closed → funded. */}
       {deal.status === "closed" && <FundingBlock deal={deal} viewAs={viewAs} />}
@@ -2111,11 +2200,12 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         investorId={deal.investor_id}
       />
         </>
-      )}
-
-      <div style={{ display: expanded ? "block" : "none" }}>
-        <ChecklistSection dealId={deal.id} stage={deal.status} viewAs={viewAs} onOpenCount={setChecklistOpen} />
-      </div>
+        )}
+      {/* Mounted whether or not the card is open, unlike everything above it:
+          its open-item count is what the stage-move soft gate reads, and a
+          gate that only works on cards somebody has expanded is no gate. */}
+      <ChecklistSection dealId={deal.id} stage={deal.status} viewAs={viewAs} onOpenCount={setChecklistOpen} />
+      </Collapse>
       <ActivitySection dealId={deal.id} />
     </div>
   );
@@ -2139,7 +2229,7 @@ function csvEscape(v: unknown): string {
   return `"${String(v ?? "").replace(/"/g, '""')}"`;
 }
 
-export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp, onSetCommitment , onProposalsChanged }: DealKanbanProps) {
+export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp, onSetCommitment, movingDeal = null, onProposalsChanged }: DealKanbanProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const columns = useColumns();
@@ -2198,9 +2288,12 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
       // animates the nearest one, so the column scrolled internally and the
       // window never moved. Instant scroll walks every ancestor reliably.
       el.scrollIntoView({ behavior: "auto", block: "center", inline: "center" });
-      el.style.transition = "box-shadow 300ms ease";
-      el.style.boxShadow = "0 0 0 2px var(--cr-copper)";
-      setTimeout(() => { el.style.boxShadow = ""; }, 2600);
+      // A class, not inline styles. Writing `transition` on el.style
+      // overwrote the shorthand React had already put on this element, so the
+      // one card a person was deep-linked to lost its stage-move fade and its
+      // hover timing and never got them back on re-render.
+      el.classList.add("cr-deal-focus");
+      setTimeout(() => { el.classList.remove("cr-deal-focus"); }, 2600);
     }, 300);
     return () => clearInterval(iv);
   }, [focusDealId]);
@@ -2517,7 +2610,8 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", paddingRight: "2px", minHeight: 0 }}>
                     {colDeals.length === 0 ? <EmptySlot /> : visible.map(deal => (
                       <DealCard key={deal.id} deal={deal} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
-                        onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} onSetCommitment={onSetCommitment} />
+                        onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} onSetCommitment={onSetCommitment}
+                        movingTo={movingDeal?.id === deal.id ? movingDeal.status : null} />
                     ))}
 
                     {(hidden > 0 || showAll) && (

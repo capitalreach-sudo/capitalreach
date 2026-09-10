@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DealKanban, type OwnProfile } from "@/components/shared/deal-kanban";
 import { DealClosedMoment } from "@/components/shared/deal-closed-moment";
@@ -38,11 +38,33 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   const [ackPending, setAckPending] = useState<{ startupId: string; startupName: string; retry: () => Promise<void> } | null>(null);
   const [closedMoment, setClosedMoment] = useState<{ amount: number | null; currency: string | null; counterpartName: string | null } | null>(null);
 
+  // The stage the board has been asked for but has not been given yet. The
+  // card wears it while the request is out, so the most consequential click on
+  // the page answers on the click rather than a round trip later.
+  const [moving, setMoving] = useState<{ id: string; status: DealStatus } | null>(null);
+  const [, startTransition] = useTransition();
+
+  // The board is a server render, so a fresh `deals` array IS the new rows
+  // arriving. Holding the answered state until then means the card never
+  // flickers back to its old stage in the gap between fetch and refresh.
+  useEffect(() => { setMoving(null); }, [deals]);
+
   async function handleDealStatusChange(dealId: string, status: DealStatus, reason?: string) {
-    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status, reason }) });
+    setMoving({ id: dealId, status });
+    // A rejected fetch (offline, DNS, a dropped connection) throws rather than
+    // answering, and every branch below is written for an answer. Without this
+    // the card keeps the dimmed, pointer-events-none state forever and the only
+    // way out is a reload. An optimistic control that cannot fail is worse than
+    // no optimistic control.
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, status, reason }) })
+      .catch(() => null);
+    if (!res) { setMoving(null); notify.error(t("dashboard.dealUpdateFailed")); return; }
     if (res.status === 428) {
       const data = await res.json().catch(() => ({}));
       if (data.code === "ACK_REQUIRED" && data.startupId) {
+        // Not a move yet: the acknowledgment gates it. Hand the card back
+        // before the modal opens rather than leaving it dimmed underneath.
+        setMoving(null);
         setAckPending({
           startupId: data.startupId,
           startupName: data.startupName || t("deals.startupFallback"),
@@ -51,7 +73,8 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
         return;
       }
     }
-    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else router.refresh();
+    if (!res.ok) { setMoving(null); notify.error(t("dashboard.dealUpdateFailed")); return; }
+    startTransition(() => router.refresh());
   }
 
   async function handleDealClose(dealId: string, amount: number, currency: string) {
@@ -76,14 +99,27 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     router.refresh();
   }
 
-  async function handleSetCommitment(dealId: string, commitmentType: string, amount?: number | null) {
-    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, commitmentType, ...(amount !== undefined ? { amount } : {}) }) });
-    if (!res.ok) notify.error(t("dashboard.dealUpdateFailed")); else { notify.success(t("deals.commitmentSaved")); router.refresh(); }
+  // Both answer with whether the record took it, so the control that was
+  // clicked can show the new value at once and put the old one back if the
+  // server refuses. Same contract PublicInterestToggle already works to.
+  async function handleSetCommitment(dealId: string, commitmentType: string, amount?: number | null): Promise<boolean> {
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, commitmentType, ...(amount !== undefined ? { amount } : {}) }) })
+      .catch(() => null);
+    // The caller puts the old value back only on an explicit false, so a throw
+    // that returned undefined would leave the chip showing a commitment the
+    // record never took.
+    if (!res || !res.ok) { notify.error(t("dashboard.dealUpdateFailed")); return false; }
+    notify.success(t("deals.commitmentSaved"));
+    startTransition(() => router.refresh());
+    return true;
   }
 
-  async function handleSetFollowUp(dealId: string, date: string | null) {
-    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, nextFollowUp: date }) });
-    if (!res.ok) notify.error(t("deals.followUpSaveFailed")); else router.refresh();
+  async function handleSetFollowUp(dealId: string, date: string | null): Promise<boolean> {
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId, nextFollowUp: date }) })
+      .catch(() => null);
+    if (!res || !res.ok) { notify.error(t("deals.followUpSaveFailed")); return false; }
+    startTransition(() => router.refresh());
+    return true;
   }
 
   return (
@@ -142,6 +178,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
       canExport={canExport}
       onSetFollowUp={handleSetFollowUp}
       onSetCommitment={handleSetCommitment}
+      movingDeal={moving}
     />
     </>
   );

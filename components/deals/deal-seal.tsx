@@ -67,6 +67,12 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
   const [busy, setBusy] = useState(false);
   const [showFull, setShowFull] = useState(false);
   const [failed, setFailed] = useState(false);
+  // The countersignature that seals a deal happens once, ever, and the panel
+  // it happens in is replaced wholesale by the record. `sealing` holds the
+  // signing form on screen for the length of its own exit so the swap reads
+  // as one thing giving way to another rather than a cut.
+  const [sealing, setSealing] = useState(false);
+  const SEAL_EXIT_MS = 200;
 
   const load = useCallback(async () => {
     try {
@@ -91,10 +97,27 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) { notify.error(j.messageKey ? t(j.messageKey) : (j.error || t("seal.failed"))); return; }
-      await load();
-      if (j.sealed) { notify.success(t("seal.sealed")); onSealed?.(); }
-      else notify.success(t("seal.signed"));
+      if (j.sealed) {
+        // Let the form leave before the seal lands on top of it. The wait is
+        // the exit's own length, and it is the only deliberately slow moment
+        // on this surface -- once per deal, and it is the deal being made.
+        setSealing(true);
+        // The global reduced-motion rule collapses the CSS transition, but a
+        // setTimeout survives it. Without this check the exit becomes 200ms of
+        // an empty panel for exactly the people who asked for less motion.
+        const still = typeof matchMedia === "function"
+          && matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!still) await new Promise(r => setTimeout(r, SEAL_EXIT_MS));
+        await load();
+        setSealing(false);
+        notify.success(t("seal.sealed"));
+        onSealed?.();
+      } else {
+        await load();
+        notify.success(t("seal.signed"));
+      }
     } catch {
+      setSealing(false);
       notify.error(t("seal.failed"));
     } finally {
       setBusy(false);
@@ -160,15 +183,29 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
         }}>
           {showFull ? t("seal.hideDocument") : t("seal.readDocument")}
         </button>
-        {showFull && (
-          <pre style={{
-            marginTop: "16px", padding: "16px", background: "var(--cr-paper-2)",
-            border: "1px solid var(--cr-rule)", borderRadius: "4px",
-            fontFamily: "'JetBrains Mono', monospace", fontSize: "11.5px",
-            lineHeight: 1.7, color: "var(--cr-ink-2)",
-            whiteSpace: "pre-wrap", overflowX: "auto", maxHeight: "420px", overflowY: "auto",
-          }}>{data.text}</pre>
-        )}
+        {/* Four hundred pixels of contract arriving in one frame shoves the
+            signature slots and the button that signs them off the screen.
+            0fr to 1fr eases it without measuring anything, and reverses from
+            wherever it is if the reader changes their mind halfway. */}
+        <div style={{
+          display: "grid",
+          gridTemplateRows: showFull ? "1fr" : "0fr",
+          transition: "grid-template-rows 200ms var(--ease-out)",
+        }}>
+          <div style={{
+            minHeight: 0, overflow: "hidden",
+            visibility: showFull ? "visible" : "hidden",
+            transition: showFull ? "visibility 0s" : "visibility 0s linear 200ms",
+          }}>
+            <pre style={{
+              marginTop: "16px", padding: "16px", background: "var(--cr-paper-2)",
+              border: "1px solid var(--cr-rule)", borderRadius: "4px",
+              fontFamily: "'JetBrains Mono', monospace", fontSize: "11.5px",
+              lineHeight: 1.7, color: "var(--cr-ink-2)",
+              whiteSpace: "pre-wrap", overflowX: "auto", maxHeight: "420px", overflowY: "auto",
+            }}>{data.text}</pre>
+          </div>
+        </div>
         <div style={{ ...MONO, marginTop: "12px" }}>
           {t("seal.version", { version: data.version })} · {data.sha256.slice(0, 16)}
         </div>
@@ -206,7 +243,13 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
           <p style={{ ...BODY, margin: 0 }}>{t("seal.waitingOnThem")}</p>
         </div>
       ) : (
-        <div style={{ padding: "24px", borderTop: "1px solid var(--cr-rule)" }}>
+        <div style={{
+          padding: "24px", borderTop: "1px solid var(--cr-rule)",
+          opacity: sealing ? 0 : 1,
+          transform: sealing ? "translateY(-6px)" : "none",
+          pointerEvents: sealing ? "none" : undefined,
+          transition: `opacity ${SEAL_EXIT_MS}ms var(--ease-out), transform ${SEAL_EXIT_MS}ms var(--ease-out)`,
+        }}>
           <label style={{ display: "block" }}>
             <span style={LABEL}>{t("seal.yourName")}</span>
             <input
