@@ -160,15 +160,24 @@ export async function GET(req: NextRequest) {
   if (sides.startupId) filters.push(`startup_id.eq.${sides.startupId}`);
   if (sides.investorId) filters.push(`investor_id.eq.${sides.investorId}`);
 
-  const COLS = "id, startup_id, investor_id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, counters_id, opening_status, note, created_at, startup:startups(name, slug, logo_url, logo_color, funding_target, equity_offered, min_check, stage), investor:investors(display_name, firm_name, slug, logo_url, logo_color)";
+  const COLS = "id, startup_id, investor_id, from_side, status, amount, currency, equity_pct, valuation, instrument, conditions, counters_id, opening_status, note, created_at, startup:startups(name, slug, logo_url, logo_color, funding_target, equity_offered, min_check_size, stage), investor:investors(display_name, firm_name, slug, logo_url, logo_color)";
 
-  const { data } = await admin
+  // The error is read, not discarded. A select naming a column that does not
+  // exist answers 400, and with `const { data }` that arrived as data: null
+  // and went out as {incoming: [], outgoing: []} -- an empty deal portal for
+  // everybody, with a 200 on it and nothing in any log. That is exactly how a
+  // typo in this list reached production and stayed invisible.
+  const { data, error: listErr } = await admin
     .from("deal_proposals")
     .select(COLS)
     .or(filters.join(","))
     .eq("status", "pending")
     .order("created_at", { ascending: false })
     .limit(50);
+  if (listErr) {
+    console.error("[proposals] list failed:", listErr.message);
+    return NextResponse.json({ error: "Could not read your proposals" }, { status: 500 });
+  }
 
   // The rounds a live proposal ANSWERS. Migration 091 permits one pending
   // proposal per pair, so every earlier round has already been closed and the
@@ -181,8 +190,11 @@ export async function GET(req: NextRequest) {
     let frontier = (data ?? []).map((p) => p.counters_id).filter(Boolean) as string[];
     const seen = new Set<string>(frontier);
     for (let depth = 0; depth < 12 && frontier.length; depth++) {
-      const { data: prev } = await admin
+      const { data: prev, error: prevErr } = await admin
         .from("deal_proposals").select(COLS).in("id", frontier).limit(50);
+      // A chain that cannot be read is a shorter chain, not a broken page:
+      // the live round is already in hand and is the one that matters.
+      if (prevErr) { console.warn("[proposals] chain walk failed:", prevErr.message); break; }
       if (!prev?.length) break;
       (ancestors as unknown[]).push(...prev);
       frontier = prev
@@ -196,7 +208,7 @@ export async function GET(req: NextRequest) {
     const st = p.startup as unknown as {
       name: string; slug: string; logo_url: string | null; logo_color: string | null;
       funding_target: number | null; equity_offered: number | null;
-      min_check: number | null; stage: string | null;
+      min_check_size: number | null; stage: string | null;
     } | null;
     const inv = p.investor as unknown as { display_name: string | null; firm_name: string | null; slug: string; logo_url: string | null; logo_color: string | null } | null;
     // Incoming = the OTHER side proposed it to an entity I own.
@@ -226,7 +238,7 @@ export async function GET(req: NextRequest) {
       ask: st ? {
         fundingTarget: st.funding_target ?? null,
         equityOffered: st.equity_offered ?? null,
-        minCheck: st.min_check ?? null,
+        minCheck: st.min_check_size ?? null,
         stage: st.stage ?? null,
       } : null,
       counterpart: p.from_side === "startup"
