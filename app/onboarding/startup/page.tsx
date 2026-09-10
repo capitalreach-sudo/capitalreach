@@ -274,6 +274,7 @@ export default function StartupOnboardingPage() {
     // fails, don't lose the founder's work silently — warn so they can re-add
     // from the edit page rather than discovering the gap on their live profile.
     let partialLoss = false;
+    let contactBlocked: string | null = null;
     if (!isNew) {
       // Re-submit replaces the collections; appending duplicated every
       // founder and milestone on each pass through this handler.
@@ -288,16 +289,20 @@ export default function StartupOnboardingPage() {
           linkedin_url: f.linkedin_url || null, twitter_url: f.twitter_url || null, bio: f.bio || null,
         }))
       );
-      if (fErr) partialLoss = true;
+      // 23514 is the prose contact-detail trigger (123). Its message names the
+      // field and says what to do, and "some founders couldn't be added" would
+      // send somebody round the same loop forever without ever saying why.
+      if (fErr) { if (fErr.code === "23514") contactBlocked = fErr.message; else partialLoss = true; }
     }
     const validMilestones = milestones.filter(m => m.date && m.description);
     if (validMilestones.length > 0) {
       const { error: mErr } = await supabase.from("startup_milestones").insert(
         validMilestones.map(m => ({ startup_id: startup.id, ...m }))
       );
-      if (mErr) partialLoss = true;
+      if (mErr) { if (mErr.code === "23514") contactBlocked = mErr.message; else partialLoss = true; }
     }
-    if (partialLoss) notify.error(t("onboarding.su.partialSave"));
+    if (contactBlocked) notify.error(contactBlocked);
+    else if (partialLoss) notify.error(t("onboarding.su.partialSave"));
     if (isNew) {
       await fetch("/api/admin/notify-review", {
         method: "POST", headers: { "Content-Type": "application/json" },

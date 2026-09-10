@@ -70,6 +70,13 @@ export async function POST(req: NextRequest) {
       .from("investors")
       .update(safe.fields as never)
       .eq("id", existing.id);
+    // 23514 is the prose contact-detail trigger (123), and its message names
+    // the field and the remedy. It should not fire on this path -- maskProse
+    // ran above -- but it will the moment masking is switched off in config,
+    // and "Could not save" would leave a founder with no idea why.
+    if (error?.code === "23514") {
+      return NextResponse.json({ error: error.message, code: "contact_in_prose" }, { status: 400 });
+    }
     if (error) return NextResponse.json({ error: "Could not save" }, { status: 500 });
     return NextResponse.json({ id: existing.id, ...withheld });
   }
