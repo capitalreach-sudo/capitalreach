@@ -809,7 +809,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>{t("deals.signNameLabel")}</label>
               <input value={signerName} onChange={e => setSignerName(e.target.value)} autoFocus
                 placeholder={t("deals.signNamePlaceholder")}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', serif", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box" }} />
             </div>
             <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", padding: "16px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
               <button onClick={() => setSigning(null)} style={{ height: "40px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>

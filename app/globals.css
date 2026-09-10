@@ -332,6 +332,7 @@
      editorial masthead style leans on. Mono data labels are kept: financial
      terminals speak mono, and it reads precise rather than quaint. */
   [data-style="business"] [style*="Playfair"],
+  [data-style="business"] [style*="--font-serif"],
   [data-style="business"] .font-serif,
   [data-style="business"] .display {
     font-family: 'DM Sans', system-ui, sans-serif !important;
@@ -345,42 +346,9 @@
      colors; gradients kept their stops). The [style*=] matches are surgical:
      they re-paint exactly the literals they name. */
   [data-style="business"] .copper-foil {
-    background: linear-gradient(
-      105deg,
-      #065F46 0%,
-      #047857 25%,
-      #10B981 40%,
-      #6EE7B7 50%,
-      #10B981 60%,
-      #047857 75%,
-      #065F46 100%
-    );
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--cr-copper);
   }
-  [data-style="business"] [style*="#8A4A15"] {
-    background: linear-gradient(90deg, #065F46, #047857, #10B981) !important;
-  }
-  [data-style="business"] [style*="inset 2px 0 0 #B5651D"] {
-    box-shadow: inset 2px 0 0 #047857 !important;
-  }
-  [data-style="business"] [style*="2px solid #B5651D"] {
-    border-color: #047857 !important;
-  }
-}
 
-@layer base {
-  * { @apply border-border; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'DM Sans', system-ui, sans-serif;
-    background: var(--cr-paper);
-    color: var(--cr-ink);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
   ::selection { background: color-mix(in srgb, var(--cr-copper) 18%, transparent); color: var(--cr-ink); }
 
   /* The theme flip fades instead of snapping — surfaces inherit the body's
@@ -394,7 +362,11 @@
    business style resolves --font-serif to the sans, replacing the old
    flatten hack for font family; its style/weight flatten rules still win
    on specificity). */
-[style*="Playfair"], .font-serif {
+/* [style*="--font-serif"] joins the match because 20 headings had already
+   migrated off the literal and were therefore invisible to both this rule and
+   the business flatten below it, which is how one heading came to render
+   upright next to another in synthesised oblique. */
+[style*="Playfair"], [style*="--font-serif"], .font-serif {
   font-family: var(--font-serif) !important;
   font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
 }
@@ -1059,27 +1031,18 @@ a:hover > .cr-diamond-live {
   to   { transform: translateX(-33.333%); }
 }
 
-/* ── FEATURE 13: Copper foil shimmer ────────────────────── */
-@keyframes foilShimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
+/* ── Emphasis on the loudest words ──────────────────────────
+   This was a seven-stop gradient clipped to the text with an infinite
+   shimmer, on the hero's closing clause and the pricing page's 72px "2%".
+   Three problems, and only one of them was taste. The fill is transparent, so
+   those words VANISHED in print and under forced-colors -- on a page whose
+   whole argument is the number. An endlessly sliding metallic sweep is the
+   opposite of the register this product is written in. And gradient text is
+   the fastest-read signal that a page was generated rather than designed.
+   Colour alone carries it now, and the copper rule and the diamond are still
+   there for anything that needs more. */
 .copper-foil {
-  background: linear-gradient(
-    105deg,
-    #8A4A15 0%,
-    #B5651D 25%,
-    #D4842A 40%,
-    #F0C070 50%,
-    #D4842A 60%,
-    #B5651D 75%,
-    #8A4A15 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: foilShimmer 3s ease-in-out infinite;
+  color: var(--cr-copper);
 }
 
 /* ── FEATURE 14: Ruled-label bar extend ─────────────────── */
@@ -1361,7 +1324,6 @@ a:hover > .cr-diamond-live {
 
 @media (prefers-reduced-motion: reduce) {
 .hero-noise { animation: none; }
-  .copper-foil { animation: none; }
   .ruled-label::before { height: 16px; opacity: 1; animation: none; }
   .ruled-label.visible::before, .ruled-label[data-cr-visible]::before { animation: none; height: 16px; opacity: 1; }
   .word-reveal-word { opacity: 1 !important; transform: none !important; }

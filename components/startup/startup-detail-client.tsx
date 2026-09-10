@@ -1250,7 +1250,7 @@ export function StartupDetailClient({
                       ) : isOwner ? (
                         <QAAnswerBox questionId={q.id} />
                       ) : (
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", fontStyle: "italic" }}>—</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>—</p>
                       )}
                     </div>
                   ))}
