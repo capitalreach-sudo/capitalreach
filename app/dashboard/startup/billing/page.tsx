@@ -247,10 +247,17 @@ function SuccessFees() {
   const [busy, setBusy] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
+  const [feesFailed, setFeesFailed] = useState(false);
 
   async function load() {
-    const res = await fetch("/api/fees/mine");
-    setFees(res.ok ? (await res.json()).fees ?? [] : []);
+    // Three states, not two. A failed read used to arrive as an empty array,
+    // which this page renders identically to "you owe nothing" -- the worst
+    // direction for this particular page to fail in, now that an unpaid fee
+    // pauses a listing at fourteen days.
+    setFeesFailed(false);
+    const res = await fetch("/api/fees/mine").catch(() => null);
+    if (!res || !res.ok) { setFees([]); setFeesFailed(true); return; }
+    setFees((await res.json().catch(() => ({}))).fees ?? []);
   }
   useEffect(() => { void load(); }, []);
 
@@ -269,6 +276,25 @@ function SuccessFees() {
     void load();
   }
 
+  // Rendering nothing is right for a founder who genuinely has no fees. It is
+  // wrong for one whose fees could not be loaded: the section disappears and
+  // the page reads as though there is nothing owed.
+  if (feesFailed) {
+    return (
+      <section style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginTop: "24px" }}>
+        <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("myFees.title")}</div>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.7, margin: "0 0 16px", maxWidth: "58ch" }}>
+          {t("feePortal.loadFailed")} {t("feePortal.loadFailedNote")}
+        </p>
+        <button type="button" onClick={() => void load()} style={{
+          minHeight: "40px", padding: "0 20px", borderRadius: "999px",
+          background: "transparent", border: "1px solid var(--cr-rule-dark)",
+          color: "var(--cr-ink)", cursor: "pointer",
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
+        }}>{t("data.retry")}</button>
+      </section>
+    );
+  }
   if (!fees || fees.length === 0) return null;
 
   // Money direction, not decoration: settled fees read up-green, anything

@@ -200,9 +200,35 @@ export function amountLooksUnderstated(opts: {
   closedAmount: number | null;
   fundingTarget: number | null;
   largestMentioned: number | null;
-}): { understated: true; detail: Record<string, unknown> } | null {
-  const { closedAmount, fundingTarget, largestMentioned } = opts;
+  /** The figure on the record both parties countersigned, when there is one. */
+  agreedAmount?: number | null;
+  /** Whether that record actually carries two signatures. */
+  agreedIsSealed?: boolean;
+}): { understated: true; severity: "medium" | "high"; detail: Record<string, unknown> } | null {
+  const { closedAmount, fundingTarget, largestMentioned, agreedAmount, agreedIsSealed } = opts;
   if (!closedAmount || closedAmount <= 0) return null;
+
+  // THE AGREED FIGURE OUTRANKS EVERYTHING ELSE HERE, and it is why this check
+  // is worth running at all now. What somebody wrote in a chat is an argument:
+  // people say "we're raising 2M" about the whole round, not this cheque. What
+  // both parties SIGNED is a document with a hash over it, so a close an order
+  // of magnitude below it is not ambiguous in the same way, and a reviewer can
+  // put the two numbers side by side without interpreting anything.
+  if (agreedAmount && agreedAmount > 0) {
+    const vsAgreed = agreedAmount / closedAmount;
+    if (vsAgreed >= 10) {
+      return {
+        understated: true,
+        severity: agreedIsSealed ? "high" : "medium",
+        detail: {
+          closedAmount, agreedAmount, fundingTarget,
+          ratio: Math.round(vsAgreed),
+          against: agreedIsSealed ? "sealed_record" : "accepted_offer",
+        },
+      };
+    }
+  }
+
   if (!largestMentioned || largestMentioned <= 0) return null;
 
   const vsMentioned = largestMentioned / closedAmount;
@@ -214,6 +240,7 @@ export function amountLooksUnderstated(opts: {
 
   return {
     understated: true,
-    detail: { closedAmount, largestMentioned, fundingTarget, ratio: Math.round(vsMentioned) },
+    severity: "medium",
+    detail: { closedAmount, largestMentioned, fundingTarget, ratio: Math.round(vsMentioned), against: "messages" },
   };
 }

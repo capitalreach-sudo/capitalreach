@@ -61,3 +61,64 @@ describe("amountLooksUnderstated", () => {
     expect(amountLooksUnderstated({ closedAmount: 0, fundingTarget: 1_000_000, largestMentioned: 1_000_000 })).toBeNull();
   });
 });
+
+/**
+ * The signed figure as the primary reference.
+ *
+ * What somebody typed in a chat is an argument: people write "we're raising
+ * 2M" about the whole round rather than about this cheque, which is why the
+ * message-based check is deliberately generous. A number both parties
+ * countersigned is not ambiguous in the same way, so it is checked first and,
+ * once sealed, raised to high.
+ */
+describe("amountLooksUnderstated against the agreed figure", () => {
+  it("flags a close an order of magnitude below a SEALED agreement, at high", () => {
+    const f = amountLooksUnderstated({
+      closedAmount: 50, fundingTarget: 1_200_000, largestMentioned: null,
+      agreedAmount: 300_000, agreedIsSealed: true,
+    });
+    expect(f?.understated).toBe(true);
+    expect(f?.severity).toBe("high");
+    expect(f?.detail.against).toBe("sealed_record");
+  });
+
+  it("flags the same gap at medium when the record was never countersigned", () => {
+    const f = amountLooksUnderstated({
+      closedAmount: 50, fundingTarget: 1_200_000, largestMentioned: null,
+      agreedAmount: 300_000, agreedIsSealed: false,
+    });
+    expect(f?.severity).toBe("medium");
+    expect(f?.detail.against).toBe("accepted_offer");
+  });
+
+  it("does not flag a round that closed smaller for ordinary reasons", () => {
+    // Agreed 300k, closed 200k. Rounds shrink; that is not fraud.
+    expect(amountLooksUnderstated({
+      closedAmount: 200_000, fundingTarget: 1_200_000, largestMentioned: null,
+      agreedAmount: 300_000, agreedIsSealed: true,
+    })).toBeNull();
+  });
+
+  it("does not flag a close LARGER than the agreement", () => {
+    expect(amountLooksUnderstated({
+      closedAmount: 400_000, fundingTarget: 1_200_000, largestMentioned: null,
+      agreedAmount: 300_000, agreedIsSealed: true,
+    })).toBeNull();
+  });
+
+  it("still works with no agreed figure at all, which is every legacy deal", () => {
+    const f = amountLooksUnderstated({
+      closedAmount: 50, fundingTarget: null, largestMentioned: 2_000_000,
+      agreedAmount: null, agreedIsSealed: false,
+    });
+    expect(f?.understated).toBe(true);
+    expect(f?.detail.against).toBe("messages");
+  });
+
+  it("returns nothing when there is no close amount to judge", () => {
+    expect(amountLooksUnderstated({
+      closedAmount: null, fundingTarget: 1_000_000, largestMentioned: null,
+      agreedAmount: 300_000, agreedIsSealed: true,
+    })).toBeNull();
+  });
+});

@@ -268,25 +268,38 @@ export async function POST(req: NextRequest) {
   // adjustment: an investor taking a slice of a larger round writes big
   // figures in chat and closes a small one, which is entirely ordinary.
   try {
+    // NOT gated on a thread existing any more. It used to be, and the seal
+    // gate quietly turned that into "almost never": a pair cannot message
+    // until both of them have countersigned the deal, so the common shape now
+    // is a closed round with no conversation attached to it at all. The check
+    // that exists to catch an understated close was skipping exactly the
+    // rounds most worth checking.
     const { data: thread } = await adminClient
       .from("threads").select("id")
       .match({ startup_id: deal.startup_id, investor_id: deal.investor_id })
       .limit(1).maybeSingle();
+
+    let mentioned: number[] = [];
     if (thread) {
       const { data: msgs } = await adminClient
         .from("messages").select("body").eq("thread_id", thread.id).limit(400);
-      const mentioned = (msgs ?? []).flatMap((m) => amountsMentioned(m.body ?? ""));
-      const st = deal.startup as unknown as { funding_target?: number | null } | null;
-      const flag = amountLooksUnderstated({
-        closedAmount: finalAmount ?? null,
-        fundingTarget: st?.funding_target ?? null,
-        largestMentioned: mentioned.length ? mentioned[0] : null,
+      mentioned = (msgs ?? []).flatMap((m) => amountsMentioned(m.body ?? ""));
+    }
+
+    const st = deal.startup as unknown as { funding_target?: number | null } | null;
+    const flag = amountLooksUnderstated({
+      closedAmount: finalAmount ?? null,
+      fundingTarget: st?.funding_target ?? null,
+      largestMentioned: mentioned.length ? mentioned[0] : null,
+      // deals.amount is written from the accepted offer, and sealed_at says
+      // whether both parties put their names to it.
+      agreedAmount: (deal as unknown as { amount?: number | null }).amount ?? null,
+      agreedIsSealed: !!(deal as unknown as { sealed_at?: string | null }).sealed_at,
+    });
+    if (flag) {
+      await recordSignal("startup", deal.startup_id, "amount_understated", flag.severity, {
+        ...flag.detail, dealId, currency: finalCurrency,
       });
-      if (flag) {
-        await recordSignal("startup", deal.startup_id, "amount_understated", "medium", {
-          ...flag.detail, dealId, currency: finalCurrency,
-        });
-      }
     }
   } catch { /* a lead that fails to record must never fail a close */ }
 

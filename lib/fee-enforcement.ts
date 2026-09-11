@@ -115,6 +115,10 @@ export interface RestrictionState {
   accountRestricted: boolean;
   /** The oldest unpaid fee driving it, for the message shown to the founder. */
   since: string | null;
+  /** The read failed, so the two booleans above mean "not known", not "no".
+   *  Callers that REFUSE on a restriction should treat this as a reason to
+   *  say so rather than to proceed silently. */
+  unknown?: boolean;
 }
 
 /**
@@ -126,11 +130,21 @@ export async function restrictionsFor(startupId: string): Promise<RestrictionSta
   const none: RestrictionState = { listingPaused: false, accountRestricted: false, since: null };
   try {
     const admin = createAdminClient();
-    const { data } = await admin
+    const { data, error } = await admin
       .from("deals")
       .select("fee_enforcement, fee_enforced_at")
       .eq("startup_id", startupId)
       .in("fee_enforcement", ["listing_paused", "account_restricted"]);
+    // A failed read is not "nothing is wrong". Reported as none, it hid the
+    // banner from a founder whose listing IS paused, so they saw a pause with
+    // no explanation, and it silently stopped the surfaces this function
+    // describes as "the ones that must refuse". `unknown` lets a caller tell
+    // a clean answer from no answer; the shape still defaults to permissive,
+    // because a database wobble must not invent a restriction either.
+    if (error) {
+      console.warn("[fee-enforcement] restriction read failed:", error.message);
+      return { ...none, unknown: true };
+    }
     if (!data?.length) return none;
     return {
       listingPaused: data.some((d) => d.fee_enforcement === "listing_paused" || d.fee_enforcement === "account_restricted"),
