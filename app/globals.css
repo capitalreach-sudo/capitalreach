@@ -554,8 +554,11 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
 .content-gate::after {
   content: '';
   position: absolute; inset: 0;
-  backdrop-filter: blur(6px);
-  background: var(--cr-card-veil);
+  /* Suppression by opacity rather than blur. A blurred veil is the same
+     glassmorphism the spec bans, and it was also doing less than it looked:
+     blurred text is still legible enough to read a number off, which on a
+     paywalled financials panel is the one thing it must not be. */
+  background: var(--cr-card-veil-strong);
   border-radius: inherit;
   pointer-events: none;
 }

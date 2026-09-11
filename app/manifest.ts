@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "CapitalReach — Startup Investment Marketplace",
     short_name: "CapitalReach",
     description:
-      "Connect vetted early-stage startups with investors. Browse, filter, and fund the next generation of companies.",
+      "Where early-stage founders raising capital meet investors deploying it. Browse, filter and back the next generation of companies.",
     // Installed users are signed-in users, and a signed-in user lands on their
     // dashboard rather than the marketing homepage. /dashboard redirects by
     // role, and redirects anyone without a session to login, so it is the right

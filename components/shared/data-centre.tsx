@@ -343,6 +343,10 @@ function TabStrip<K extends string>({ tabs, active, onSelect, idBase, label }: {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// English wording for the withheld-names line, carried in code only until the
+// dictionaries have the key (see tf below).
+const NAMES_WITHHELD_EN = "Company names are part of a paid investor plan. Every figure on this page still counts them all.";
+
 export function DataCentre({ initialData }: { initialData?: PlatformData | null } = {}) {
   const { t } = useTranslation();
   // t() echoes the key back when no dictionary has it. The handful of keys
@@ -445,6 +449,14 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     { key: "scores" as const, label: t("data.topAiScores") },
     { key: "recent" as const, label: t("data.recentListings") },
   ];
+
+  // The two ledgers are the only NAMED thing on this page, and both the server
+  // page and /api/platform-data blank them for a viewer who may not read
+  // listings. The recent ledger is the newest five of whatever exists, so an
+  // aggregate that counts companies while that list is empty means the names
+  // were withheld -- and "none yet" would describe an empty platform that is
+  // demonstrably not empty.
+  const namesWithheld = !!data && data.startupCount > 0 && data.recentStartups.length === 0;
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
@@ -871,7 +883,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       {t("data.topPerforming")}
                     </p>
                     {data.topStartups.length === 0 ? (
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>{t("data.noScoresYet")}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>
+                        {namesWithheld ? tf("data.namesWithheld", NAMES_WITHHELD_EN) : t("data.noScoresYet")}
+                      </p>
                     ) : (
                       <>
                         {/* A header line names the columns, so the right-hand
@@ -909,7 +923,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 ) : (
                   <>
                     {data.recentStartups.length === 0 ? (
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>{t("data.noListingsYet")}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>
+                        {namesWithheld ? tf("data.namesWithheld", NAMES_WITHHELD_EN) : t("data.noListingsYet")}
+                      </p>
                     ) : (
                       <>
                         {/* The right-hand mono figure is the round being

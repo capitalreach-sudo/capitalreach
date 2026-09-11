@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase";
 import { announce } from "@/lib/announce";
 import {
   Search, SlidersHorizontal, X, ChevronDown, ChevronUp,
-  Users, Globe, Loader2, Crosshair, GitCompareArrows, Clock, BadgeCheck,
+  Users, Globe, Loader2, Crosshair, GitCompareArrows, Clock,
 } from "lucide-react";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn, STAGE_LABELS } from "@/lib/utils";
@@ -136,7 +136,7 @@ const DEFAULT: InvestorFilters = {
   minCheck: 0, maxCheck: 100_000_000, geographies: [], leadOnly: false, verifiedOnly: false, fitOnly: false, newOnly: false, sort: "recent",
 };
 
-export function InvestorsClient({ initialInvestors }: { initialInvestors?: Investor[] } = {}) {
+export function InvestorsClient({ initialInvestors, initialIsPartial }: { initialInvestors?: Investor[]; initialIsPartial?: boolean } = {}) {
   const { t } = useTranslation();
   // /investors?q= mirrors /startups?q= so the global search's "see all" can
   // land on either directory pre-filtered.
@@ -199,15 +199,23 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
 
   useEffect(() => {
     async function fetchInvestors() {
-      if (initialInvestors) return; // already rendered by the server
-      setLoading(true);
+      // A FULL server payload makes the round trip redundant. A PARTIAL one
+      // (the page ships the first screenfuls to keep the HTML light) is topped
+      // up quietly behind the rows already painted -- no spinner over a
+      // directory the reader is looking at, and no silent cap at 60.
+      if (initialInvestors && !initialIsPartial) return;
+      const toppingUp = !!initialInvestors;
+      if (!toppingUp) setLoading(true);
       try {
         // display_name / firm_name are the investor's own published fields;
         // profiles is not anonymously readable (019), so it is not joined.
+        // is_external mirrors the server loader: off-platform contacts belong
+        // to the startup that created them (RLS agrees, this is explicit).
         const { data } = await supabase
           .from("investors")
           .select("id, slug, type, bio, industries, stages, min_check, max_check, geography, subscription_tier, verified_at, lead_rounds, number_of_investments, created_at, display_name, firm_name, is_public, is_demo")
           .eq("is_public", true)
+          .eq("is_external", false)
           .order("created_at", { ascending: false });
 
         if (data) {
@@ -234,10 +242,12 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
           setLoadError(false);
         }
       } catch {
-        // A failed fetch must not render as "no investors yet".
-        setLoadError(true);
+        // A failed fetch must not render as "no investors yet" -- but a failed
+        // TOP-UP still has the server's rows on screen, and replacing a
+        // working directory with an error page would be the bigger lie.
+        if (!toppingUp) setLoadError(true);
       }
-      setLoading(false);
+      if (!toppingUp) setLoading(false);
     }
     fetchInvestors();
     (async () => {
@@ -356,9 +366,9 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
       // invests where I am?").
       const matchGeo = f.geographies.length === 0 || f.geographies.some(g => (inv.geography || []).includes(g));
       const matchLead = !f.leadOnly || !!inv.lead_rounds;
-      // Real verification (admin-granted, migration 049) -- this used to
-      // match subscription_tier !== "free", i.e. "pays us", which is not
-      // verification and misled the founders it was meant to protect.
+      // Matches on documents actually filed (admin-granted, migration 049).
+      // It used to match subscription_tier !== "free", i.e. "pays us", which
+      // is not a record of anything and misled the founders using it.
       const matchVerified = !f.verifiedOnly || !!inv.verified_at;
       const matchFit = !f.fitOnly || fits(inv);
       const matchNew = !f.newOnly || (!!inv.created_at && (Date.now() - new Date(inv.created_at).getTime()) / 86400000 <= 30);
@@ -916,9 +926,6 @@ export function InvestorsClient({ initialInvestors }: { initialInvestors?: Inves
                             <div>
                               <p className="leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>
                                 {displayName}
-                                {inv.verified_at && (
-                                  <BadgeCheck aria-label={t("investors.verifiedBadge")} className="inline-block ml-1.5 h-3.5 w-3.5 text-cr-copper align-[-2px]" />
-                                )}
                                 {(inv as { is_demo?: boolean }).is_demo && <span className="ml-1.5 align-middle inline-flex"><DemoBadge /></span>}
                               </p>
                               {inv.firm && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{inv.firm}</p>}

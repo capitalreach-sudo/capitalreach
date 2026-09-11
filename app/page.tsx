@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   title: "CapitalReach — Private Capital Marketplace",
   description:
-    "The private marketplace for founders raising capital and investors deploying it. Vetted listings. AI-powered analysis. 2% success fee, paid by the startup only after it closes a round — investors pay nothing.",
+    "The private marketplace for founders raising capital and investors deploying it. Listings on the record. AI-powered analysis. 2% success fee, paid by the startup only after it closes a round — investors pay nothing.",
 };
 
 export type ListingSnippet = {

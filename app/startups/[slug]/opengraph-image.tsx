@@ -51,7 +51,7 @@ export default async function StartupOgImage({ params }: { params: { slug: strin
   const name = active ? startup.name : "CapitalReach";
   const tagline = active
     ? startup.tagline
-    : "Vetted startups. Serious investors. Deals that close in one place.";
+    : "Founders raising. Investors deploying. Deals that close in one place.";
   const chips = active
     ? [startup.industry, STAGE_LABELS[startup.stage as keyof typeof STAGE_LABELS] ?? startup.stage]
     : [];

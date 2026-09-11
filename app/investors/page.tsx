@@ -40,8 +40,13 @@ export default async function InvestorsPage() {
     <>
       <Navbar />
       {/* First screenfuls only: at scale (10k+ rows) the full directory was a
-          600 KB payload serialized into every visit. The client tops up. */}
-      <InvestorsClient initialInvestors={initial ? initial.slice(0, 60) : undefined} />
+          600 KB payload serialized into every visit. `initialIsPartial` is
+          what tells the client to top up -- without it the directory stopped
+          at these 60 rows for good, with no count to say so. */}
+      <InvestorsClient
+        initialInvestors={initial ? initial.slice(0, 60) : undefined}
+        initialIsPartial={(initial?.length ?? 0) > 60}
+      />
       <Footer />
     </>
   );

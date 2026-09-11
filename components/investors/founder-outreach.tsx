@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MessageSquare, Handshake, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
+import { RefusalNotice, useRefusal, type Refusal } from "@/hooks/useRefusal";
 
 /**
  * B23: founder outbound from an investor profile — "Message" (opens a
@@ -15,28 +16,42 @@ import { notify } from "@/components/ui/toast-notify";
 export function FounderOutreach({ investorId, investorName, hasDeal }: { investorId: string; investorName: string; hasDeal: boolean }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const { readRefusal } = useRefusal();
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState<"msg" | "deal" | null>(null);
+  const [refusal, setRefusal] = useState<Refusal | null>(null);
+
+  /**
+   * The contact gate answers a founder with a sentence and the one place that
+   * lifts it (an offer in their inbox, or the deal to open). A toast can hold
+   * neither the link nor the reading time, so a refusal that names a way out
+   * stays on the page.
+   */
+  function refuse(res: Response, json: unknown) {
+    const r = readRefusal(res, json);
+    if (r.href) setRefusal(r);
+    else notify.error(r.message);
+  }
 
   async function send() {
     if (!body.trim() || busy) return;
-    setBusy("msg");
+    setBusy("msg"); setRefusal(null);
     const res = await fetch("/api/messages/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId, body }) });
     const j = await res.json().catch(() => ({}));
     setBusy(null);
-    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    if (!res.ok) { refuse(res, j); return; }
     notify.success(t("outreach.sent"));
     setOpen(false); setBody("");
     router.push(`/dashboard/messages?startupId=${j.startupId}&investorId=${j.investorId}`);
   }
   async function addToPipeline() {
     if (busy) return;
-    setBusy("deal");
+    setBusy("deal"); setRefusal(null);
     const res = await fetch("/api/deals/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ counterpartId: investorId }) });
     const j = await res.json().catch(() => ({}));
     setBusy(null);
-    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    if (!res.ok) { refuse(res, j); return; }
     if (j.proposal) { notify.success(t("proposals.sent")); router.push("/deals"); return; }
     if (!j.deal) { notify.error(t("errors.generic")); return; }
     notify.success(t("outreach.addedToPipeline"));
@@ -49,12 +64,13 @@ export function FounderOutreach({ investorId, investorName, hasDeal }: { investo
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         <button onClick={async () => {
           if (busy) return;
+          setRefusal(null);
           const res = await fetch("/api/messages/start", {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ investorId, open: true }),
           });
           const j = await res.json().catch(() => ({}));
-          if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+          if (!res.ok) { refuse(res, j); return; }
           router.push(`/dashboard/messages?thread=${j.threadId}`);
         }} style={{ ...btn, background: "var(--cr-paper-2)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
           <ArrowRight style={{ width: 13, height: 13 }} /> {t("intro.make")}
@@ -68,6 +84,7 @@ export function FounderOutreach({ investorId, investorName, hasDeal }: { investo
           </button>
         )}
       </div>
+      {refusal && <RefusalNotice refusal={refusal} />}
       {open && (
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: 12, maxWidth: 520 }}>
           <textarea value={body} onChange={(e) => setBody(e.target.value.slice(0, 2000))} rows={4} maxLength={2000} placeholder={t("outreach.placeholder", { name: investorName })} autoFocus

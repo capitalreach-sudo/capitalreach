@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!industry) return {};
   return {
     title: `${industry} startups raising capital`,
-    description: `Vetted ${industry} startups raising on CapitalReach — funding targets, traction and stage, with a 2% success fee paid by the startup only at close.`,
+    description: `${industry} startups raising on CapitalReach — funding targets, traction and stage, with a 2% success fee paid by the startup only at close.`,
   };
 }
 

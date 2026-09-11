@@ -129,8 +129,8 @@ export default async function OnePagerPage({ params, searchParams }: Props) {
 
   const closing = roundCloseState(startup.round_close_date);
   const metrics: Array<[string, string]> = [];
-  if (startup.mrr) metrics.push(["MRR", safeFormatMRR(startup.mrr)]);
-  if (startup.arr) metrics.push(["ARR", safeFormatMRR(startup.arr)]);
+  if (startup.mrr) metrics.push(["Monthly revenue", safeFormatMRR(startup.mrr)]);
+  if (startup.arr) metrics.push(["Annual revenue", safeFormatMRR(startup.arr)]);
   if (startup.growth_rate) metrics.push(["Growth", `${startup.growth_rate}% m/m`]);
   if (startup.runway_months) metrics.push(["Runway", `${startup.runway_months} mo`]);
   if (startup.paying_customers) metrics.push(["Customers", String(startup.paying_customers)]);
@@ -192,7 +192,7 @@ export default async function OnePagerPage({ params, searchParams }: Props) {
           )}
           {startup.min_check_size != null && startup.min_check_size > 0 && (
             <div>
-              <p style={label}>Min. check</p>
+              <p style={label}>Minimum investment</p>
               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)" }}>
                 {formatCurrency(startup.min_check_size, true)}
               </p>

@@ -187,6 +187,14 @@ function SignupForm() {
         setLoading(false);
         return;
       }
+      // A session here means email confirmation is OFF on the project, which
+      // is the exception, not the rule: the branch below is what a real signup
+      // takes. Both routes authenticate from the session cookie, so neither
+      // can be called until one exists -- when there is no session the same
+      // two calls run at the far side of the mail link instead (verify-email
+      // on confirmation, and the onboarding page on first authenticated
+      // load). Do not move them back up here on the assumption that this
+      // branch runs.
       if (data.session) {
         // Durable acceptance record (terms_acceptances) -- the checkbox alone
         // recorded nothing. Fire-and-forget: browser context, and a lost row

@@ -1,11 +1,11 @@
 "use client";
 
-import { BROKER_BENCHMARK_PERCENT } from "@/lib/circumvention-text";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { BROKER_BENCHMARK_PERCENT, SUCCESS_FEE_PERCENT } from "@/lib/circumvention-text";
+import { useState, useEffect, useRef, useMemo, type CSSProperties } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { Zap, TrendingUp, Info, Building2, ArrowRight, Brain, X, Sparkles } from "lucide-react";
+import { Zap, TrendingUp, Info, Building2, ArrowRight, Brain, Sparkles } from "lucide-react";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, annualPricingFrom } from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 // Type only: lib/pricing-stage reaches the database, so the value side of it
@@ -90,6 +90,47 @@ function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
     { text: t("pricing.feature_savedSearches"),     on: c.savedSearches,  tip: t("pricing.tipSavedSearches") },
   ];
 }
+
+// ── Fee comparison ─────────────────────────────────────────────
+//
+// Three ways the same round gets charged, set as a ledger: one fact per cell,
+// all three routes described in the same voice. The middle column is ours and
+// is marked by copper rules rather than by a ribbon it awarded itself, and the
+// other two are described rather than disparaged -- a house that tells you the
+// alternative is hopeless is arguing, not stating.
+
+const CMP_COLHEAD: CSSProperties = {
+  textAlign: "start", verticalAlign: "bottom",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.07em",
+  color: "var(--cr-ink-3)", padding: "0 16px 12px",
+  borderBottom: "1px solid var(--cr-rule-dark)",
+};
+
+const CMP_ROWLABEL: CSSProperties = {
+  textAlign: "start", verticalAlign: "top",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
+  textTransform: "uppercase", letterSpacing: "0.07em",
+  color: "var(--cr-ink-4)", padding: "12px 16px 12px 0",
+  borderBottom: "1px solid var(--cr-rule)", whiteSpace: "nowrap",
+};
+
+const CMP_CELL: CSSProperties = {
+  textAlign: "start", verticalAlign: "top",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+  color: "var(--cr-ink-3)", padding: "12px 16px",
+  borderBottom: "1px solid var(--cr-rule)",
+};
+
+/** The column that is us. Paper, not a tint: an accent-filled column is the
+ *  large accent fill the house reserves for the one primary button. */
+const CMP_OURS: CSSProperties = {
+  ...CMP_CELL,
+  color: "var(--cr-ink-2)",
+  background: "var(--cr-paper)",
+  borderLeft: "1px solid var(--cr-copper-br)",
+  borderRight: "1px solid var(--cr-copper-br)",
+};
 
 // ── Checkout ───────────────────────────────────────────────────
 
@@ -621,48 +662,66 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
               </h2>
             </div>
 
-            <div className="grid-plans-3" style={{ marginBottom: "48px" }}>
-              {[
-                {
-                  label: t("pricing.colTraditional"), fee: `${BROKER_BENCHMARK_PERCENT}%`,
-                  border: "color-mix(in srgb, var(--cr-down) 20%, transparent)", bg: "var(--cr-down-bg)", feeClr: "var(--cr-down)", badge: false, isUs: false,
-                  items: [t("pricing.tradItem1"), t("pricing.tradItem2"), t("pricing.tradItem3"), t("pricing.tradItem4"), t("pricing.tradItem5")],
-                },
-                {
-                  label: "CapitalReach", fee: "2%",
-                  border: "var(--cr-copper-br)", bg: "var(--cr-copper-bg)", feeClr: "var(--cr-copper)", badge: true, isUs: true,
-                  items: [t("pricing.crItem1"), t("pricing.crItem2"), t("pricing.crItem3"), t("pricing.crItem4"), t("pricing.crItem5")],
-                },
-                {
-                  label: t("pricing.colDiy"), fee: "0%",
-                  border: "var(--cr-rule-dark)", bg: "var(--cr-paper-3)", feeClr: "var(--cr-ink-4)", badge: false, isUs: false,
-                  items: [t("pricing.diyItem1"), t("pricing.diyItem2"), t("pricing.diyItem3"), t("pricing.diyItem4"), t("pricing.diyItem5")],
-                },
-              ].map((col) => (
-                <div key={col.label} style={{ position: "relative", borderRadius: "4px", border: `1px solid ${col.border}`, padding: "24px", background: col.bg }}>
-                  {col.badge && (
-                    <div style={{ position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)" }}>
-                      <span style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "4px 12px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>✓ {t("pricing.bestValue")}</span>
-                    </div>
-                  )}
-                  <div style={{ textAlign: "center", marginBottom: "24px" }}>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{col.label}</p>
-                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, lineHeight: 1, marginBottom: "4px", fontSize: "52px", letterSpacing: "-0.05em", color: col.feeClr }}>{col.fee}</p>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.12em" }}>{t("pricing.successFeeLower")}</p>
-                  </div>
-                  <ul style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {col.items.map((item) => (
-                      <li key={item} style={{ display: "flex", alignItems: "center", gap: "10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
-                        {col.isUs
-                          ? <span style={{ width: 14, height: 14, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--cr-copper)" }} /></span>
-                          : <X style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
-                        }
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            {/* A three-way comparison that reflows to two columns and one has
+                stopped comparing, so this holds its shape at every width and
+                scrolls inside its own box on a phone rather than putting a
+                sideways scroll on the page. */}
+            <div style={{ overflowX: "auto", marginBottom: "48px" }}>
+              <table style={{ width: "100%", minWidth: "620px", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...CMP_COLHEAD, width: "24%", padding: "0 16px 12px 0" }} />
+                    <th scope="col" style={CMP_COLHEAD}>{t("pricing.colTraditional")}</th>
+                    <th scope="col" style={{
+                      ...CMP_COLHEAD,
+                      color: "var(--cr-copper)", background: "var(--cr-paper)",
+                      borderTop: "2px solid var(--cr-copper)",
+                      borderLeft: "1px solid var(--cr-copper-br)",
+                      borderRight: "1px solid var(--cr-copper-br)",
+                      borderBottom: "1px solid var(--cr-copper-br)",
+                      padding: "12px 16px",
+                    }}>
+                      CapitalReach
+                    </th>
+                    <th scope="col" style={CMP_COLHEAD}>{t("pricing.colDiy")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* The fee row sets its figures in mono and its qualifier in
+                      prose: the house never lets running text carry a number,
+                      and the broker benchmark is a typical figure rather than a
+                      surveyed one, so the cell says so beside it. */}
+                  <tr>
+                    <th scope="row" style={CMP_ROWLABEL}>{t("pricing.cmpRowFee")}</th>
+                    <td style={CMP_CELL}>
+                      <span style={{ display: "inline-flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", fontVariantNumeric: "tabular-nums", color: "var(--cr-ink)" }}>{BROKER_BENCHMARK_PERCENT}%</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("pricing.cmpTypical")}</span>
+                      </span>
+                    </td>
+                    <td style={CMP_OURS}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", fontVariantNumeric: "tabular-nums", color: "var(--cr-copper)" }}>{SUCCESS_FEE_PERCENT}%</span>
+                    </td>
+                    <td style={CMP_CELL}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", fontVariantNumeric: "tabular-nums", color: "var(--cr-ink)" }}>0%</span>
+                    </td>
+                  </tr>
+                  {[
+                    { key: "PaidBy",   label: t("pricing.cmpRowPaidBy") },
+                    { key: "Upfront",  label: t("pricing.cmpRowUpfront") },
+                    { key: "Ongoing",  label: t("pricing.cmpRowOngoing") },
+                    { key: "Intros",   label: t("pricing.cmpRowIntros") },
+                    { key: "Tracking", label: t("pricing.cmpRowTracking") },
+                  ].map((row) => (
+                    <tr key={row.key}>
+                      <th scope="row" style={CMP_ROWLABEL}>{row.label}</th>
+                      <td style={CMP_CELL}>{t(`pricing.cmpTrad${row.key}`)}</td>
+                      <td style={CMP_OURS}>{t(`pricing.cmpCr${row.key}`)}</td>
+                      <td style={CMP_CELL}>{t(`pricing.cmpDiy${row.key}`)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
 
             {/* Interactive 2% calculator (Phase 1, mechanism D): the same

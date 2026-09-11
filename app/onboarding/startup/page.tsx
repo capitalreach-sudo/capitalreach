@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { COUNTRIES, normalizeCountry } from "@/lib/countries";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -101,6 +101,25 @@ interface Founder    { name: string; role: string; linkedin_url: string; twitter
 interface Milestone  { date: string; description: string; }
 interface Competitor { name: string; differentiator: string; }
 
+/**
+ * The two calls that used to sit behind `if (data.session)` on the signup
+ * form. Both need a session, and with email confirmation on there is none
+ * until the link in the mail is clicked, so they run on the first
+ * authenticated load instead of at signup.
+ *
+ * Safe to reach more than once: the acceptance route's own GET says whether
+ * there is anything to record, and the welcome hook claims a once-only marker
+ * server-side.
+ */
+async function runPostSignupHooks() {
+  try {
+    const res = await fetch("/api/account/accept-terms");
+    const state = res.ok ? await res.json().catch(() => null) : null;
+    if (state?.current === false) await fetch("/api/account/accept-terms", { method: "POST" });
+  } catch {}
+  fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
+}
+
 // Every step opens the house way: ruled label carrying the mono 01/07
 // counter, then the serif italic step title.
 function StepHead({ n, label, title, sub }: { n: number; label: string; title: string; sub: string }) {
@@ -127,6 +146,10 @@ export default function StartupOnboardingPage() {
   const router = useRouter();
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
+
+  // A confirmed founder lands here straight from the mail link, which is the
+  // earliest point in the flow that carries a session.
+  useEffect(() => { runPostSignupHooks(); }, []);
 
   // Step 1 — Company
   const [name, setName]               = useState("");
@@ -270,18 +293,34 @@ export default function StartupOnboardingPage() {
     const startup: { id: string } = { id: saved.id };
     const isNew = saved.created === true;
 
-    // The listing itself is saved by here; these are secondary. If either
-    // fails, don't lose the founder's work silently — warn so they can re-add
-    // from the edit page rather than discovering the gap on their live profile.
-    let partialLoss = false;
-    let contactBlocked: string | null = null;
-    if (!isNew) {
-      // Re-submit replaces the collections; appending duplicated every
-      // founder and milestone on each pass through this handler.
-      await supabase.from("startup_founders").delete().eq("startup_id", startup.id);
-      await supabase.from("startup_milestones").delete().eq("startup_id", startup.id);
+    // Depends on the listing row only, so it is sent before the collections
+    // are touched: a listing nobody reviews is worse than one whose team list
+    // needs a second pass.
+    if (isNew) {
+      await fetch("/api/admin/notify-review", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startupId: startup.id }),
+      }).catch(() => {});
     }
+
+    // The listing row is saved by here. Team and milestones are separate
+    // collections that a re-submit replaces wholesale -- appending duplicated
+    // every founder on each pass through this handler.
+    //
+    // ORDER IS LOAD-BEARING. Migration 123 rejects a contact detail in a
+    // founder bio, so the insert half of a replacement can be refused. With
+    // the delete running first, a refusal left the founder with neither the
+    // rows they had nor the ones they typed. So: read the old ids, write the
+    // replacement, and drop the old ids only once that write has landed. Both
+    // sets exist for the moment in between, and a duplicate is recoverable
+    // from the edit page; a listing with no founders on it is not.
+    let contactBlocked: string | null = null;
+    let collectionFailed = false;
+
+    const priorFounders = isNew ? [] :
+      (await supabase.from("startup_founders").select("id").eq("startup_id", startup.id)).data ?? [];
     const validFounders = founders.filter(f => f.name && f.role);
+    let foundersWritten = true;
     if (validFounders.length > 0) {
       const { error: fErr } = await supabase.from("startup_founders").insert(
         validFounders.map(f => ({
@@ -292,22 +331,39 @@ export default function StartupOnboardingPage() {
       // 23514 is the prose contact-detail trigger (123). Its message names the
       // field and says what to do, and "some founders couldn't be added" would
       // send somebody round the same loop forever without ever saying why.
-      if (fErr) { if (fErr.code === "23514") contactBlocked = fErr.message; else partialLoss = true; }
+      if (fErr) {
+        foundersWritten = false;
+        if (fErr.code === "23514") contactBlocked = fErr.message; else collectionFailed = true;
+      }
     }
+    if (foundersWritten && priorFounders.length > 0) {
+      await supabase.from("startup_founders").delete().in("id", priorFounders.map(r => r.id));
+    }
+
+    const priorMilestones = isNew ? [] :
+      (await supabase.from("startup_milestones").select("id").eq("startup_id", startup.id)).data ?? [];
     const validMilestones = milestones.filter(m => m.date && m.description);
+    let milestonesWritten = true;
     if (validMilestones.length > 0) {
       const { error: mErr } = await supabase.from("startup_milestones").insert(
         validMilestones.map(m => ({ startup_id: startup.id, ...m }))
       );
-      if (mErr) { if (mErr.code === "23514") contactBlocked = mErr.message; else partialLoss = true; }
+      if (mErr) {
+        milestonesWritten = false;
+        if (mErr.code === "23514") contactBlocked = mErr.message; else collectionFailed = true;
+      }
     }
-    if (contactBlocked) notify.error(contactBlocked);
-    else if (partialLoss) notify.error(t("onboarding.su.partialSave"));
-    if (isNew) {
-      await fetch("/api/admin/notify-review", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startupId: startup.id }),
-      }).catch(() => {});
+    if (milestonesWritten && priorMilestones.length > 0) {
+      await supabase.from("startup_milestones").delete().in("id", priorMilestones.map(r => r.id));
+    }
+
+    if (contactBlocked || collectionFailed) {
+      // Staying on the form is the point: the seven steps of typing are still
+      // on screen, and the field the trigger named is one of them. Returning
+      // false also keeps the paid-plan buttons from continuing to checkout.
+      notify.error(contactBlocked ?? t("onboarding.su.collectionsNotSaved"));
+      setLoading(false);
+      return false;
     }
 
     notify.success(t("onboarding.su.submitted"));

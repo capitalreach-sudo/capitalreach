@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { OfferButton } from "@/components/startup/offer-button";
 import { countryLabel } from "@/lib/country-label";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StartupCard } from "./startup-card";
-import { Globe, Share2, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake, CalendarClock, BadgeCheck } from "lucide-react";
+import { Globe, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake, CalendarClock, BadgeCheck, MoreHorizontal } from "lucide-react";
 import {
   formatCurrency, formatNumber, formatDate, formatPercent,
   STAGE_LABELS, getInitials,
@@ -20,8 +20,9 @@ import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { NdaAgreementDialog } from "@/components/startup/nda-agreement-dialog";
-import { CURRENCIES, DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
+import { DEFAULT_CURRENCY, formatMoney } from "@/lib/currency";
 import { notify } from "@/components/ui/toast-notify";
+import { useRefusal } from "@/hooks/useRefusal";
 import { useRouter } from "next/navigation";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -93,6 +94,51 @@ interface Props {
 const TABS = ["overview", "team", "financials", "documents", "traction"] as const;
 type Tab = typeof TABS[number];
 
+// ── Action-row treatments ─────────────────────────────────────────────────────
+
+/**
+ * Every non-primary control on the listing's action row wears this. The one
+ * primary is the offer -- contact opens on an accepted offer and nothing else,
+ * so the copper pill belongs to it alone; components/startup/offer-button.tsx
+ * owns that fill. These sit four pixels shorter than it, so the rank is
+ * legible before a single label has been read.
+ */
+const QUIET_ACTION: CSSProperties = {
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  minHeight: "36px", paddingInline: "16px",
+  background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
+  color: "var(--cr-ink-2)", textDecoration: "none", cursor: "pointer",
+  // A wrapped button label reads as a rendering fault, not a choice.
+  whiteSpace: "nowrap",
+};
+
+const MENU_ITEM: CSSProperties = {
+  display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+  width: "100%", textAlign: "start",
+  background: "none", border: "none", borderRadius: "3px", cursor: "pointer",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+  color: "var(--cr-ink-2)", padding: "8px 10px", textDecoration: "none",
+};
+
+const MENU_LABEL: CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px",
+  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em",
+  padding: "8px 10px 4px",
+};
+
+const MENU_RULE: CSSProperties = { display: "block", height: "1px", background: "var(--cr-rule)", margin: "4px 0" };
+
+/** The overflow panel's width, in px. Shared with the open handler, which
+ *  needs it to work out where the panel can sit without leaving the viewport
+ *  -- the row wraps, so the trigger's position is not knowable from CSS. */
+const MENU_WIDTH = 240;
+
+const menuHover = {
+  onMouseEnter: (e: React.MouseEvent<HTMLElement>) => { e.currentTarget.style.background = "var(--cr-paper-3)"; },
+  onMouseLeave: (e: React.MouseEvent<HTMLElement>) => { e.currentTarget.style.background = "none"; },
+};
+
 // ── Section text block ────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -133,17 +179,21 @@ function MetricCell({ label, value, copper, termKey }: { label: string; value: s
 /**
  * Send this listing to another investor on the platform (deal_shared
  * notification). Typeahead over /api/search, investors only.
+ *
+ * A pane rather than its own popover: it is one entry inside the listing's
+ * overflow menu, and a dropdown opening out of a dropdown is a stack neither
+ * the keyboard nor a narrow viewport can follow.
  */
-function SharePicker({ startupId }: { startupId: string }) {
+function SharePickerPanel({ startupId, onBack, onDone }: { startupId: string; onBack: () => void; onDone: () => void }) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const { notifyRefusal } = useRefusal();
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Array<{ id?: string; slug: string; name: string }>>([]);
   const [busy, setBusy] = useState(false);
   const [shareNote, setShareNote] = useState("");
 
   useEffect(() => {
-    if (!open || q.trim().length < 2) { setHits([]); return; }
+    if (q.trim().length < 2) { setHits([]); return; }
     const ctl = new AbortController();
     const id = setTimeout(async () => {
       try {
@@ -152,7 +202,7 @@ function SharePicker({ startupId }: { startupId: string }) {
       } catch { /* aborted */ }
     }, 200);
     return () => { clearTimeout(id); ctl.abort(); };
-  }, [q, open]);
+  }, [q]);
 
   async function share(inv: { slug: string; name: string; id?: string }) {
     setBusy(true);
@@ -168,34 +218,32 @@ function SharePicker({ startupId }: { startupId: string }) {
     // share opens, so "look at this" has somewhere to continue.
     const res = invId ? await fetch("/api/deals/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, toInvestorId: invId, note: shareNote.trim() || undefined }) }) : null;
     setBusy(false);
-    if (res?.ok) { notify.success(t("startupDetail.shared", { name: inv.name })); setOpen(false); setQ(""); setShareNote(""); }
-    else notify.error(t("errors.generic"));
+    // No id means the directory row never resolved, so no request was made and
+    // there is no server answer to read.
+    if (!res) { notify.error(t("errors.generic")); return; }
+    if (!res.ok) { notifyRefusal(res, await res.json().catch(() => ({}))); return; }
+    notify.success(t("startupDetail.shared", { name: inv.name })); setQ(""); setShareNote(""); onDone();
   }
 
   return (
-    <div style={{ position: "relative", display: "inline-block" }}>
-      <button onClick={() => setOpen(o => !o)}
-        style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-        <Share2 style={{ width: 13, height: 13 }} /> {t("startupDetail.shareWith")}
+    <div style={{ width: "100%", padding: "6px", boxSizing: "border-box" }}>
+      <button onClick={onBack}
+        style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", padding: "2px 0 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+        <ChevronLeft style={{ width: 13, height: 13 }} /> {t("common.back")}
       </button>
-      {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "260px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: "10px", zIndex: 55 }}>
-          <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder={t("startupDetail.shareSearchPh")}
-            style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
-          <textarea value={shareNote} onChange={e => setShareNote(e.target.value.slice(0, 2000))} rows={2} placeholder={t("startupDetail.shareNotePh")}
-            style={{ width: "100%", boxSizing: "border-box", marginTop: "6px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "7px 10px", outline: "none", resize: "vertical" }} />
-          <div style={{ marginTop: hits.length ? "8px" : 0, display: "flex", flexDirection: "column" }}>
-            {hits.map(h => (
-              <button key={h.slug} disabled={busy} onClick={() => share(h)}
-                style={{ textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", padding: "7px 6px", borderRadius: "3px" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
-                {h.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder={t("startupDetail.shareSearchPh")}
+        style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
+      <textarea value={shareNote} onChange={e => setShareNote(e.target.value.slice(0, 2000))} rows={2} placeholder={t("startupDetail.shareNotePh")}
+        style={{ width: "100%", boxSizing: "border-box", marginTop: "6px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "7px 10px", outline: "none", resize: "vertical" }} />
+      <div style={{ marginTop: hits.length ? "8px" : 0, display: "flex", flexDirection: "column" }}>
+        {hits.map(h => (
+          <button key={h.slug} disabled={busy} onClick={() => share(h)}
+            style={{ textAlign: "start", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", padding: "7px 6px", borderRadius: "3px" }}
+            {...menuHover}>
+            {h.name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -242,6 +290,7 @@ function TrackedVideo({ startupId, url }: { startupId: string; url: string }) {
  */
 function InlineWatchNote({ startupId }: { startupId: string }) {
   const { t } = useTranslation();
+  const { notifyRefusal } = useRefusal();
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -256,8 +305,10 @@ function InlineWatchNote({ startupId }: { startupId: string }) {
 
   if (note === null) return null;
 
+  // No margin of its own: the action row's second line owns the spacing, and
+  // a component that carries both is a component that cannot be placed twice.
   return (
-    <div style={{ marginTop: "10px" }}>
+    <div style={{ paddingTop: "8px" }}>
       {!open ? (
         <button onClick={() => setOpen(true)}
           style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px", padding: 0 }}>
@@ -273,7 +324,7 @@ function InlineWatchNote({ startupId }: { startupId: string }) {
               const res = await fetch("/api/watchlist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, note }) });
               setBusy(false);
               if (res.ok) { notify.success(t("toast.saved")); setOpen(false); }
-              else notify.error(t("errors.generic"));
+              else notifyRefusal(res, await res.json().catch(() => ({})));
             }}
             style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 12px", cursor: "pointer" }}>
             {busy ? "…" : t("common.save")}
@@ -286,6 +337,7 @@ function InlineWatchNote({ startupId }: { startupId: string }) {
 
 function DocRequestRow({ startupId }: { startupId: string }) {
   const { t } = useTranslation();
+  const { notifyRefusal } = useRefusal();
   const [docType, setDocType] = useState("pitch_deck");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
@@ -306,7 +358,7 @@ function DocRequestRow({ startupId }: { startupId: string }) {
           const res = await fetch("/api/documents/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, docType }) });
           setBusy(false);
           if (res.ok) { setSent(true); notify.success(t("startupDetail.reqSent")); }
-          else notify.error(t("errors.generic"));
+          else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
         style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", cursor: "pointer" }}>
         {busy ? "…" : t("startupDetail.askSend")}
@@ -323,6 +375,7 @@ function DocRequestRow({ startupId }: { startupId: string }) {
  */
 function ScorecardPanel({ startupId }: { startupId: string }) {
   const { t } = useTranslation();
+  const { notifyRefusal } = useRefusal();
   const [scores, setScores] = useState<ScorecardScores>({});
   const [weights, setWeights] = useState<ScorecardWeights>({});
   const [note, setNote] = useState("");
@@ -347,7 +400,7 @@ function ScorecardPanel({ startupId }: { startupId: string }) {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       const res = await fetch("/api/scorecard", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, scores: nextScores, weights: nextWeights, note: nextNote }) });
-      if (!res.ok) notify.error(t("errors.generic"));
+      if (!res.ok) notifyRefusal(res, await res.json().catch(() => ({})));
     }, 600);
   }
   function setScore(k: ScorecardCriterion, v: number) {
@@ -403,6 +456,7 @@ function ScorecardPanel({ startupId }: { startupId: string }) {
 
 function QAAskBox({ startupId }: { startupId: string }) {
   const { t } = useTranslation();
+  const { notifyRefusal } = useRefusal();
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
@@ -417,7 +471,7 @@ function QAAskBox({ startupId }: { startupId: string }) {
           const res = await fetch("/api/questions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, question: q }) });
           setBusy(false);
           if (res.ok) { setSent(true); notify.success(t("startupDetail.questionSent")); }
-          else notify.error(t("errors.generic"));
+          else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
         style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: q.trim().length < 10 ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.askSend")}
@@ -428,6 +482,7 @@ function QAAskBox({ startupId }: { startupId: string }) {
 
 function QAAnswerBox({ questionId }: { questionId: string }) {
   const { t } = useTranslation();
+  const { notifyRefusal } = useRefusal();
   const [a, setA] = useState("");
   const [priv, setPriv] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -444,7 +499,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
           const res = await fetch("/api/questions", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: questionId, answer: a, isPrivate: priv }) });
           setBusy(false);
           if (res.ok) { setDone(true); notify.success(t("startupDetail.answered")); }
-          else notify.error(t("errors.generic"));
+          else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
         style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.answerSend")}
@@ -466,31 +521,42 @@ export function StartupDetailClient({
   const [activeTab, setActiveTab]               = useState<Tab>("overview");
   const [isSaved, setIsSaved]                   = useState(false);
   const [viewerCount, setViewerCount]           = useState(1);
-  const [messageOpen, setMessageOpen]           = useState(false);
   const [bookingOpen, setBookingOpen]           = useState(false);
   // Phase 1: the non-circumvention acknowledgment gates first contact. Once
-  // recorded (server-side, with IP + timestamp) the message dialog opens.
+  // recorded (server-side, with IP + timestamp) the offer composer opens.
   const [acked, setAcked]                       = useState(circumventionAcked);
   const [ackModalOpen, setAckModalOpen]         = useState(false);
-  // B16: founder-controlled round state. Paused/closed rounds accept no new
-  // interest; oversubscribed still does (waitlist).
+  // The offer button owns the composer; this page owns the terms that gate it,
+  // so accepting them has to hand control back. Bumping this is that handover:
+  // an investor who has just signed something should not have to go and find
+  // the button again.
+  const [offerResume, setOfferResume]           = useState(0);
+  // B16: founder-controlled round state. Paused and closed rounds are refused
+  // by the proposals route; oversubscribed still accepts (waitlist).
   const roundState = (startup as unknown as { round_state?: string }).round_state ?? "open";
-  const interestOpen = roundState !== "paused" && roundState !== "closed";
-  function startInterest() {
-    if (!investorId || viewerSuspended) return;
-    if (!interestOpen) { notify.info(roundState === "closed" ? t("startupDetail.roundClosedNotice") : t("startupDetail.roundPausedNotice")); return; }
-    if (acked) setMessageOpen(true); else setAckModalOpen(true);
+  const roundOpen = roundState !== "paused" && roundState !== "closed";
+  // The listing's overflow menu, and which of its two panes is showing. The
+  // send-to-an-investor search replaces the list in place rather than opening
+  // a second popover on top of the first.
+  const [moreOpen, setMoreOpen]                 = useState(false);
+  const [morePane, setMorePane]                 = useState<"menu" | "send">("menu");
+  // Where the panel sits relative to its trigger. Neither edge alone is safe:
+  // the row wraps, so on a phone the trigger can land mid-row with too little
+  // room on either side, and a panel pinned to either edge falls off-screen.
+  const [moreOffset, setMoreOffset]             = useState(0);
+  useEscapeKey(moreOpen, () => { setMoreOpen(false); setMorePane("menu"); });
+
+  function toggleMore(trigger: HTMLElement) {
+    const r = trigger.getBoundingClientRect();
+    const gutter = 12;
+    const left = Math.min(Math.max(gutter, r.right - MENU_WIDTH), window.innerWidth - MENU_WIDTH - gutter);
+    setMoreOffset(left - r.left);
+    setMorePane("menu");
+    setMoreOpen(o => !o);
   }
-  useEscapeKey(messageOpen, () => setMessageOpen(false));
-  const [messageBody, setMessageBody]           = useState("");
-  const [sendingMessage, setSendingMessage]     = useState(false);
-  const [interestAmount, setInterestAmount]     = useState("");
-  const [shareMenuOpen, setShareMenuOpen]       = useState(false);
-  const [interestCurrency, setInterestCurrency] = useState<string>(
-    // The listing's own round currency is the only sensible default — a €68k
-    // round proposed in USD read as a different offer than the one made.
-    ((startup as { currency?: string | null }).currency ?? DEFAULT_CURRENCY),
-  );
+  // Every figure on this page is quoted in the round's own currency: a €68k
+  // round shown in USD reads as a different round than the one being raised.
+  const roundCurrency = (startup as { currency?: string | null }).currency ?? DEFAULT_CURRENCY;
   const [aiReport, setAiReport]                 = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [ndaModalOpen, setNdaModalOpen]         = useState(false);
@@ -580,56 +646,10 @@ export function StartupDetailClient({
     });
     if (!res.ok) {
       setIsSaved(!next);
-      const data = await res.json().catch(() => ({}));
-      notify.error(data.error || t("errors.generic"));
+      notifyRefusal(res, await res.json().catch(() => ({})));
       return;
     }
     if (next) notify.success(t("toast.saved")); else notify.info(t("toast.unsaved"));
-  }
-
-  async function expressInterest() {
-    if (!investorId || sendingMessage) return;
-    if (!messageBody.trim()) { notify.info(t("startupDetail.interestNeedsMessage")); return; }
-    setSendingMessage(true);
-    try {
-      const amt = parseFloat(interestAmount.replace(/[^0-9.]/g, ""));
-      const res = await fetch("/api/deals/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          counterpartId: startup.id,
-          amount: Number.isFinite(amt) && amt > 0 ? amt : undefined,
-          currency: interestCurrency,
-          note: messageBody.trim(),
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.status === 428 && data.code === "ACK_REQUIRED") {
-        // Server-side gate: the acknowledgment is missing (e.g. cleared in
-        // another tab). Show the modal; the message stays in the textarea.
-        setAcked(false); setMessageOpen(false); setAckModalOpen(true);
-        return;
-      }
-      if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
-      // Consent flow (091): interest is now a REQUEST the founder answers.
-      // The deal appears on both boards only once they accept.
-      if (data.proposal) {
-        notify.success(t("proposals.sentToFounder"));
-        setMessageOpen(false); setMessageBody(""); setInterestAmount("");
-        router.push("/deals");
-        return;
-      }
-      if (!data.deal) { notify.error(t("errors.generic")); return; }
-      notify.success(t("startupDetail.interestSent"));
-      setMessageOpen(false);
-      setMessageBody("");
-      setInterestAmount("");
-      router.push(`/deals?deal=${data.deal.id}`);
-    } catch {
-      notify.error(t("errors.generic"));
-    } finally {
-      setSendingMessage(false);
-    }
   }
 
   async function generateAiReport() {
@@ -653,7 +673,7 @@ export function StartupDetailClient({
         return;
       }
       if (!res.ok || !data.report) {
-        notify.error(data.error || t("errors.generic"));
+        notifyRefusal(res, data);
         return;
       }
       setAiReport(data.report);
@@ -666,6 +686,7 @@ export function StartupDetailClient({
   }
 
   const { t } = useTranslation();
+  const { notifyRefusal } = useRefusal();
   const score = startup.vaultrise_score ?? null;
 
   const TAB_LABELS: Record<Tab, string> = {
@@ -734,9 +755,10 @@ export function StartupDetailClient({
                   <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 38px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
                     {startup.name}
                   </h1>
-                  {/* The rung this listing stands on, opening onto the checks
-                      behind it. Silent at level 0 and after an expiry, which
-                      is why the slot is not reserved unconditionally. */}
+                  {/* What this company has filed with the house, opening onto
+                      the list itself. Silent with nothing on file and after a
+                      lapse, which is why the slot is not reserved
+                      unconditionally. */}
                   {(() => {
                     const legacyChecks = (startup as { verification_checks?: { checks?: string[]; at?: string } | null }).verification_checks ?? null;
                     if (!trustBadgeVisible({
@@ -875,110 +897,155 @@ export function StartupDetailClient({
                 </div>
               )}
 
-              {/* Action buttons */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
-                {startup.booking_url && (
-                  <button onClick={() => { track("startup", startup.id, "booking_open"); setBookingOpen(true); }}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 14px", cursor: "pointer" }}>
-                    <CalendarClock style={{ width: 13, height: 13 }} /> {t("startupDetail.bookCall")}
-                  </button>
-                )}
-                {startup.website && (
-                  <a href={startup.website} target="_blank" rel="noopener noreferrer"
-                    onClick={() => track("startup", startup.id, "website_click")}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
-                    <Globe style={{ width: 13, height: 13 }} /> {t("startupDetail.website")}
-                  </a>
-                )}
-                {/* Contact costs an accepted offer, so this is the primary
-                    action on the page for an investor -- ahead of the
-                    secondary chips it used to sit behind. */}
-                {!isOwner && !!investorId && (
-                  <OfferButton
-                    startupId={startup.id}
-                    companyName={startup.name}
-                    ask={{
-                      amount: startup.funding_target ?? null,
-                      currency: "USD",
-                      equityPct: startup.equity_offered ?? null,
-                      valuation: startup.valuation ?? null,
-                      instrument: startup.instrument ?? null,
-                    }}
-                    acked={circumventionAcked}
-                    onNeedsAck={() => setNdaModalOpen(false)}
-                  />
-                )}
-                {startup.product_hunt_url && (
-                  <a href={startup.product_hunt_url} target="_blank" rel="noopener noreferrer"
-                    onClick={() => track("startup", startup.id, "producthunt_click")}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", textDecoration: "none", cursor: "pointer" }}>
-                    <ExternalLink style={{ width: 13, height: 13 }} /> {t("startupDetail.productHunt")}
-                  </a>
-                )}
-                <button onClick={toggleSave} style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-                  <Bookmark style={{ width: 13, height: 13, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
-                  {isSaved ? t("toast.saved") : t("common.saveWatchlist")}
-                </button>
-                {/* One Share menu instead of five sibling buttons: copy link,
-                    X, LinkedIn, the one-pager and the PDF are all the same
-                    intent — "take this listing somewhere else" — and they
-                    were crowding out the actions that live HERE. */}
-                <span style={{ position: "relative", display: "inline-flex" }}>
-                  <button onClick={() => setShareMenuOpen(o => !o)} aria-expanded={shareMenuOpen}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 14px", cursor: "pointer" }}>
-                    <Share2 style={{ width: 13, height: 13 }} /> {t("common.share")} ▾
-                  </button>
-                  {shareMenuOpen && (
-                    <>
-                      <span onClick={() => setShareMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 60 }} />
-                      <span style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 61, minWidth: 200, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, boxShadow: "var(--cr-card-shadow-hover)", padding: 6, display: "flex", flexDirection: "column" }}>
-                        {[
-                          { label: t("share.copyLink"), act: () => { track("startup", startup.id, "share_copy"); navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); } },
-                          { label: t("startupDetail.shareX"), act: () => { track("startup", startup.id, "share_social"); window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer"); } },
-                          { label: t("startupDetail.shareLinkedIn"), act: () => { track("startup", startup.id, "share_social"); window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer"); } },
-                          { label: t("onePager.open"), act: () => { track("startup", startup.id, "onepager_open"); window.open(`/startups/${startup.slug}/one-pager`, "_blank"); } },
-                          { label: t("common.exportPdf"), act: () => window.print() },
-                        ].map(item => (
-                          <button key={item.label} onClick={() => { item.act(); setShareMenuOpen(false); }}
-                            style={{ textAlign: "start", background: "none", border: "none", cursor: "pointer", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: 13, color: "var(--cr-ink-2)", padding: "8px 10px" }}
-                            onMouseEnter={e => (e.currentTarget.style.background = "var(--cr-paper-3)")}
-                            onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-                            {item.label}
-                          </button>
-                        ))}
-                      </span>
-                    </>
+              {/* Action row. One primary: contact opens on an accepted offer
+                  and on nothing else, so the offer is what this page is for.
+                  Beside it, quiet pills of one shape and one weight; under the
+                  menu, everything that carries the listing somewhere else --
+                  the company's own links, the share targets, the export, the
+                  send-to-an-investor search. As siblings those errands
+                  outnumber the offer, and whatever outnumbers it outranks it. */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-start" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                  {!isOwner && !!investorId && !viewerSuspended && (
+                    <OfferButton
+                      startupId={startup.id}
+                      companyName={startup.name}
+                      ask={{
+                        amount: startup.funding_target ?? null,
+                        currency: roundCurrency,
+                        equityPct: startup.equity_offered ?? null,
+                        valuation: startup.valuation ?? null,
+                        instrument: startup.instrument ?? null,
+                      }}
+                      // The live flag, not the prop: the terms can be accepted
+                      // in this session, and the server prop only catches up on
+                      // the next load. Reading the prop left the button dead for
+                      // the rest of the visit.
+                      acked={acked}
+                      onNeedsAck={() => setAckModalOpen(true)}
+                      openSignal={offerResume}
+                      roundOpen={roundOpen}
+                    />
                   )}
-                </span>
-                {investorId && !viewerSuspended && <SharePicker startupId={startup.id} />}
-                {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
-                {/* A closed or oversubscribed round catches the demand it
-                    generates instead of dead-ending it. */}
-                {!viewerDeal && investorId && !viewerSuspended && (roundState === "closed" || roundState === "oversubscribed") && (
-                  <WaitlistButton startupId={startup.id} roundState={roundState} />
-                )}
-                {/* Any non-owner with a profile can just talk: peer founders
-                    since 012, investors since 098 (no deal required). */}
-                {(viewerStartupId || investorId) && !isOwner && !viewerSuspended && (
-                  <FounderToFounder startupId={startup.id} />
-                )}
-                {/* The founder hears this one — unlike a watchlist save,
-                    which is the investor's private bookmark. */}
-                {!viewerDeal && investorId && !viewerSuspended && (
-                  <InterestedButton targetType="startup" targetId={startup.id} />
-                )}
-                {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
-                  <button onClick={startInterest}
-                    className="btn-copper-shimmer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 18px", cursor: "pointer" }}>
-                    <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.expressInterest")}
+
+                  {viewerDeal && (
+                    <Link href={`/deals?deal=${viewerDeal.id}`} style={QUIET_ACTION}>
+                      <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.viewInPipeline")}
+                    </Link>
+                  )}
+
+                  {startup.booking_url && (
+                    <button onClick={() => { track("startup", startup.id, "booking_open"); setBookingOpen(true); }} style={QUIET_ACTION}>
+                      <CalendarClock style={{ width: 13, height: 13 }} /> {t("startupDetail.bookCall")}
+                    </button>
+                  )}
+
+                  {/* The founder hears this one — unlike a watchlist save,
+                      which is the investor's private bookmark. */}
+                  {!viewerDeal && investorId && !viewerSuspended && (
+                    <InterestedButton targetType="startup" targetId={startup.id} />
+                  )}
+
+                  {/* A closed or oversubscribed round catches the demand it
+                      generates instead of dead-ending it. */}
+                  {!viewerDeal && investorId && !viewerSuspended && (roundState === "closed" || roundState === "oversubscribed") && (
+                    <WaitlistButton startupId={startup.id} roundState={roundState} />
+                  )}
+
+                  <button onClick={toggleSave} aria-pressed={isSaved}
+                    style={{ ...QUIET_ACTION, color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-2)", borderColor: isSaved ? "var(--cr-copper-br)" : "var(--cr-paper-4)" }}>
+                    <Bookmark style={{ width: 13, height: 13, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
+                    {isSaved ? t("toast.saved") : t("common.saveWatchlist")}
                   </button>
-                )}
-                {viewerDeal && (
-                  <Link href={`/deals?deal=${viewerDeal.id}`}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", padding: "8px 18px", textDecoration: "none" }}>
-                    <Handshake style={{ width: 13, height: 13 }} /> {t("startupDetail.viewInPipeline")}
-                  </Link>
+
+                  <span style={{ position: "relative", display: "inline-flex" }}>
+                    <button onClick={(e) => toggleMore(e.currentTarget)}
+                      aria-haspopup="menu" aria-expanded={moreOpen}
+                      style={{ ...QUIET_ACTION, paddingInline: "12px", color: "var(--cr-ink-3)" }}>
+                      <MoreHorizontal style={{ width: 15, height: 15 }} /> {t("startupDetail.moreActions")}
+                    </button>
+                    {moreOpen && (
+                      <>
+                        <span onClick={() => { setMoreOpen(false); setMorePane("menu"); }} style={{ position: "fixed", inset: 0, zIndex: 60 }} />
+                        <span style={{ position: "absolute", top: "calc(100% + 6px)", left: `${moreOffset}px`, zIndex: 61, width: MENU_WIDTH, boxSizing: "border-box", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, boxShadow: "var(--cr-card-shadow-hover)", padding: 4, display: "flex", flexDirection: "column" }}>
+                          {morePane === "send" ? (
+                            <SharePickerPanel
+                              startupId={startup.id}
+                              onBack={() => setMorePane("menu")}
+                              onDone={() => { setMoreOpen(false); setMorePane("menu"); }}
+                            />
+                          ) : (
+                            <>
+                              {(startup.website || startup.product_hunt_url) && (
+                                <>
+                                  <span style={MENU_LABEL}>{t("startupDetail.moreCompany")}</span>
+                                  {startup.website && (
+                                    <a href={startup.website} target="_blank" rel="noopener noreferrer"
+                                      onClick={() => { track("startup", startup.id, "website_click"); setMoreOpen(false); }}
+                                      style={MENU_ITEM} {...menuHover}>
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                                        <Globe style={{ width: 13, height: 13, color: "var(--cr-ink-4)" }} /> {t("startupDetail.website")}
+                                      </span>
+                                      <ExternalLink style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />
+                                    </a>
+                                  )}
+                                  {startup.product_hunt_url && (
+                                    <a href={startup.product_hunt_url} target="_blank" rel="noopener noreferrer"
+                                      onClick={() => { track("startup", startup.id, "producthunt_click"); setMoreOpen(false); }}
+                                      style={MENU_ITEM} {...menuHover}>
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                                        <ExternalLink style={{ width: 13, height: 13, color: "var(--cr-ink-4)" }} /> {t("startupDetail.productHunt")}
+                                      </span>
+                                    </a>
+                                  )}
+                                  <span style={MENU_RULE} />
+                                </>
+                              )}
+
+                              <span style={MENU_LABEL}>{t("common.share")}</span>
+                              {[
+                                { label: t("share.copyLink"), act: () => { track("startup", startup.id, "share_copy"); navigator.clipboard.writeText(window.location.href); notify.success(t("toast.linkCopied")); } },
+                                { label: t("startupDetail.shareX"), act: () => { track("startup", startup.id, "share_social"); window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${startup.name} — ${startup.tagline ?? ""}`)}&url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer"); } },
+                                { label: t("startupDetail.shareLinkedIn"), act: () => { track("startup", startup.id, "share_social"); window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer"); } },
+                                { label: t("onePager.open"), act: () => { track("startup", startup.id, "onepager_open"); window.open(`/startups/${startup.slug}/one-pager`, "_blank"); } },
+                                { label: t("common.exportPdf"), act: () => window.print() },
+                              ].map(item => (
+                                <button key={item.label} onClick={() => { item.act(); setMoreOpen(false); }}
+                                  style={MENU_ITEM} {...menuHover}>
+                                  {item.label}
+                                </button>
+                              ))}
+                              {investorId && !viewerSuspended && (
+                                <button onClick={() => setMorePane("send")} aria-haspopup="menu"
+                                  style={MENU_ITEM} {...menuHover}>
+                                  {t("startupDetail.shareWith")}
+                                  <span aria-hidden style={{ color: "var(--cr-ink-4)" }}>›</span>
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </span>
+                      </>
+                    )}
+                  </span>
+                </div>
+
+                {/* A quieter register under the row. Both of these open a
+                    textarea in place, and a control that grows downward cannot
+                    sit in a wrapping row of pills without shoving its
+                    neighbours around as it opens. */}
+                {((viewerStartupId && !isOwner && !viewerSuspended) || (isSaved && investorId)) && (
+                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: "16px" }}>
+                    {/* Peer founders only, since 012. An investor's two buttons
+                        here were refused by /api/messages/start every time: the
+                        contact policy wants an accepted offer first, so the pair
+                        read as broken rather than as gated. The offer button
+                        above is the investor's way in. */}
+                    {viewerStartupId && !isOwner && !viewerSuspended && (
+                      <FounderToFounder startupId={startup.id} />
+                    )}
+                    {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
+                  </div>
                 )}
               </div>
             </div>
@@ -1013,7 +1080,7 @@ export function StartupDetailClient({
             <div className="grid grid-cols-2 md:grid-cols-4" style={{ borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)" }}>
               <MetricCell label={t("startupDetail.raising")}  value={safeFormatCurrencyAmount(startup.funding_target)} copper />
               <MetricCell label={t("startupDetail.equity")}   value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
-              <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : "Open"} />
+              <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : t("startupDetail.minCheckNone")} />
               <MetricCell label={t("startupDetail.pageViews")} value={formatNumber(startup.pageviews ?? 0)} />
             </div>
 
@@ -1124,10 +1191,14 @@ export function StartupDetailClient({
               <div>
                 <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("startupDetail.marketOpportunity")}</h3>
                 <div className="grid grid-cols-3" style={{ gap: "10px" }}>
-                  {([["TAM", startup.tam], ["SAM", startup.sam], ["SOM", startup.som]] as Array<[string, number | null | undefined]>).map(([k, v]) => (
-                    <div key={k} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
+                  {([
+                    ["tam", t("startupDetail.marketTotal"), startup.tam],
+                    ["sam", t("startupDetail.marketServiceable"), startup.sam],
+                    ["som", t("startupDetail.marketObtainable"), startup.som],
+                  ] as Array<[string, string, number | null | undefined]>).map(([id, label, v]) => (
+                    <div key={id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
                       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(16px, 2.6vw, 22px)", color: "var(--cr-copper)" }}>{safeFormatCurrencyAmount(v ?? null)}</div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{k}</div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{label}</div>
                     </div>
                   ))}
                 </div>
@@ -1301,7 +1372,7 @@ export function StartupDetailClient({
               const cheque = startup.min_check_size ?? 50_000;
               const own = post !== null ? ownershipForCheque(cheque, { ...inputs, valuation: post, valuationType: "post" }) : null;
               const gap = equityValuationMismatch(inputs);
-              const cur = interestCurrency;
+              const cur = roundCurrency;
               const cell = (label: string, value: string, note?: string, termKey?: string) => (
                 <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
                   <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(15px, 2.4vw, 20px)", color: "var(--cr-copper)" }}>{value}</div>
@@ -1355,7 +1426,7 @@ export function StartupDetailClient({
               <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("feeCalc.sectionTitle")}</h3>
               <FeeCalculator
                 variant={isOwner ? "raise" : "check"}
-                currency={interestCurrency}
+                currency={roundCurrency}
                 defaultAmount={isOwner ? (startup.funding_target ?? 500_000) : (startup.min_check_size ?? 50_000)}
               />
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "8px", lineHeight: 1.5 }}>
@@ -1387,13 +1458,11 @@ export function StartupDetailClient({
         {activeTab === "team" && canTeam && !identityRevealed && startup.founders && startup.founders.length > 0 && (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", marginBottom: "14px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
             <Lock style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
+            {/* A sentence, not a third entry point. The offer lives in one
+                place on this page, and a second copy of it here could not
+                read the state that decides what it should say. */}
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.5 }}>
-              {t("startupDetail.identityProtected")}{" "}
-              {investorId && !viewerDeal && !viewerSuspended && (
-                <button onClick={startInterest} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--cr-copper)" }}>
-                  {t("startupDetail.expressInterest")} →
-                </button>
-              )}
+              {t("startupDetail.identityProtected")}
             </p>
           </div>
         )}
@@ -1633,96 +1702,37 @@ export function StartupDetailClient({
         startupId={startup.id}
         startupName={startup.name}
         onCancel={() => setAckModalOpen(false)}
-        onConfirmed={() => { setAcked(true); setAckModalOpen(false); setMessageOpen(true); }}
+        // Straight back into the composer that raised this. Confirming into a
+        // closed modal and an unchanged page reads as the terms not having
+        // registered.
+        onConfirmed={() => { setAcked(true); setAckModalOpen(false); setOfferResume(n => n + 1); }}
       />
 
-      {/* ── Message dialog ── */}
-      {messageOpen && (
-        <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", width: "100%", maxWidth: "440px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startupDetail.expressInterest")}</h3>
-              <button onClick={() => setMessageOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
-                <X style={{ width: 18, height: 18 }} />
-              </button>
-            </div>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
-              {t("startupDetail.interestIntro", { name: startup.name })}
-            </p>
-            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-              <input
-                inputMode="decimal"
-                value={interestAmount}
-                onChange={(e) => setInterestAmount(e.target.value)}
-                placeholder={t("startupDetail.interestAmountPlaceholder")}
-                style={{ flex: 1, border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", padding: "11px 14px", outline: "none", boxSizing: "border-box" }}
-              />
-              <select value={interestCurrency} onChange={(e) => setInterestCurrency(e.target.value)}
-                aria-label={t("deals.currency")}
-                style={{ border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "0 10px" }}>
-                {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
-              </select>
-            </div>
-            <textarea
-              style={{ width: "100%", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink)", padding: "12px 14px", resize: "none", minHeight: "110px", outline: "none", boxSizing: "border-box" }}
-              placeholder={`Hi ${startup.name} team, I'm interested in your funding round…`}
-              value={messageBody}
-              onChange={(e) => setMessageBody(e.target.value)}
-              onFocus={e  => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
-              onBlur={e   => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
-            />
-            <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-              <button onClick={() => setMessageOpen(false)}
-                style={{ flex: 1, height: "44px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
-                {t("common.cancel")}
-              </button>
-              <button onClick={expressInterest} disabled={sendingMessage || !messageBody.trim()}
-                className="btn-copper-shimmer"
-                style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: sendingMessage || !messageBody.trim() ? 0.5 : 1 }}>
-                {sendingMessage ? t("common.saving") : t("startupDetail.expressInterestBtn")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* The header's eight-button action row wraps into a block on a phone and
-          is gone the moment you scroll to the traction. These three follow you
-          down. Deliberately not the full set -- a sticky bar that carries
-          everything is just the same block pinned to the bottom. */}
+      {/* The header's action row wraps into a block on a phone and is gone the
+          moment you scroll to the traction. What follows you down is what can
+          be duplicated honestly: the watchlist toggle reads the same state as
+          the one above, and the pipeline link is a link. The offer is NOT
+          here, because it is mounted once and a second copy would go on
+          saying "Make an offer" after the first one had sent it. */}
       <StickyActionBar>
         <button
           onClick={toggleSave}
           aria-pressed={isSaved}
           style={{
+            flex: 1, minWidth: 0,
             display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
-            height: "44px", paddingInline: "14px", flexShrink: 0,
+            height: "44px", paddingInline: "14px",
             border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
             color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", cursor: "pointer",
           }}
         >
-          <Bookmark style={{ width: 15, height: 15, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
-          <span className="sr-only">{isSaved ? t("toast.saved") : t("common.saveWatchlist")}</span>
+          <Bookmark style={{ width: 15, height: 15, flexShrink: 0, fill: isSaved ? "var(--cr-copper)" : "transparent" }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {isSaved ? t("toast.saved") : t("common.saveWatchlist")}
+          </span>
         </button>
 
-
-        {!viewerDeal && investorId && !viewerSuspended && interestOpen && (
-          <button
-            onClick={startInterest}
-            style={{
-              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
-              height: "44px", minWidth: 0,
-              background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer",
-            }}
-          >
-            <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {t("startupDetail.expressInterest")}
-            </span>
-          </button>
-        )}
         {viewerDeal && (
           <Link href={`/deals?deal=${viewerDeal.id}`}
             style={{

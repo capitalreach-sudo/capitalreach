@@ -22,9 +22,12 @@ import { TRUST_LADDER, effectiveTrustLevel } from "@/lib/trust";
  *
  * Three answers, and their weights are deliberately unequal.
  *
- *   ACCEPT is the moment a conversation opens. That is said beside the button
- *   rather than discovered afterwards, and it takes a second click, because a
- *   misclick that puts a stranger in your inbox is not a small thing.
+ *   ACCEPT is the moment the deal exists. It is not yet the moment the
+ *   conversation opens: acceptance writes the deal row, and under
+ *   seal-before-contact the thread waits for both signatures on that record.
+ *   What accepting does and does not do is said beside the button rather than
+ *   discovered afterwards, and it takes a second click, because a misclick
+ *   that binds you to a stranger is not a small thing.
  *
  *   COUNTER is an edit of THEIR terms, prefilled with what they wrote. A
  *   founder countering should be changing the two numbers they disagree with,
@@ -113,8 +116,8 @@ const PAD = "clamp(16px, 4vw, 24px)";
 // ── The shape the page hands over ───────────────────────────────────────────
 
 /** The investor as the founder is allowed to see them. No email, ever: the
- *  platform sells the introduction, and the introduction is the conversation
- *  an accepted offer opens -- not a contact detail lifted off an inbox row. */
+ *  platform sells the introduction, and the introduction is the conversation a
+ *  signed deal opens -- not a contact detail lifted off an inbox row. */
 export interface OfferInvestorIdentity {
   id: string;
   slug: string | null;
@@ -189,17 +192,19 @@ function standingOf(chain: OfferChain): Standing {
 export function OfferInbox({
   chains,
   ask,
-  startupId,
   restricted = false,
   contactGated = false,
 }: {
   chains: OfferChain[];
   ask: TheAsk;
-  /** The founder's own listing, for the thread an accepted offer opened. */
-  startupId: string;
+  /** The founder's own listing. Nothing here reads it: the links that used to
+   *  build a /dashboard/messages deep link out of it now address the deal by
+   *  id. Optional so the page can keep passing it until it stops. */
+  startupId?: string;
   /** An unpaid success fee is blocking new deals. Never hides anything. */
   restricted?: boolean;
-  /** offer_before_contact is on, so silence until acceptance is a real rule. */
+  /** A contact gate is on, so an investor's silence before the record settles
+   *  is a rule rather than a manner. */
   contactGated?: boolean;
 }) {
   const { t } = useTranslation();
@@ -253,7 +258,7 @@ export function OfferInbox({
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {groups.yours.map((c, i) => (
-                  <OfferCard key={c.key} chain={c} ask={ask} index={i + 1} startupId={startupId}
+                  <OfferCard key={c.key} chain={c} ask={ask} index={i + 1}
                     restricted={restricted} contactGated={contactGated} actionable />
                 ))}
               </div>
@@ -264,7 +269,7 @@ export function OfferInbox({
             <Section title={t("offerInbox.waitingOnThem")} count={groups.theirs.length}>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {groups.theirs.map((c, i) => (
-                  <OfferCard key={c.key} chain={c} ask={ask} index={i + 1} startupId={startupId}
+                  <OfferCard key={c.key} chain={c} ask={ask} index={i + 1}
                     restricted={restricted} contactGated={contactGated} actionable={false} />
                 ))}
               </div>
@@ -274,7 +279,7 @@ export function OfferInbox({
           {groups.settled.length > 0 && (
             <Section title={t("offerInbox.settled")} count={groups.settled.length}>
               <div>
-                {groups.settled.map((c) => <SettledRow key={c.key} chain={c} startupId={startupId} />)}
+                {groups.settled.map((c) => <SettledRow key={c.key} chain={c} />)}
               </div>
             </Section>
           )}
@@ -377,11 +382,10 @@ function Fact({ label, value, note }: { label: string; value: React.ReactNode; n
   );
 }
 
-function OfferCard({ chain, ask, index, startupId, restricted, contactGated, actionable }: {
+function OfferCard({ chain, ask, index, restricted, contactGated, actionable }: {
   chain: OfferChain;
   ask: TheAsk;
   index: number;
-  startupId: string;
   restricted: boolean;
   contactGated: boolean;
   actionable: boolean;
@@ -651,15 +655,23 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
 
       {/* The answers. */}
       <div style={{ ...RULE, marginTop: "16px", paddingTop: "16px" }}>
+        {/* The deal, not /dashboard/messages. Accepting creates the deal row
+            and nothing else: the thread is created on the first message, and
+            under seal-before-contact it cannot be created at all until both
+            parties have signed. A messages deep link for a pair with no thread
+            selects nothing and says nothing, so it pointed at a screen that
+            could not answer. /deals?deal= scrolls to the card, opens it, and
+            the signing panel is inside -- which is also the href
+            contactRefusal hands out for the same refusal. */}
         {chain.dealId && (
           <p style={{ ...BODY, fontSize: "12px", marginBottom: "8px" }}>
             <span style={{ color: "var(--verdigris)" }}>{t("offerInbox.dealExists")}</span>
             {" "}
             <Link
-              href={`/dashboard/messages?startupId=${encodeURIComponent(startupId)}&investorId=${encodeURIComponent(chain.investor.id)}`}
+              href={`/deals?deal=${encodeURIComponent(chain.dealId)}`}
               style={{ color: "var(--cr-copper)", fontWeight: 500, textDecoration: "none" }}
             >
-              {t("offerInbox.openConversation")} →
+              {t("founderContact.dealsCta")} →
             </Link>
           </p>
         )}
@@ -736,7 +748,13 @@ function OfferCard({ chain, ask, index, startupId, restricted, contactGated, act
             </div>
             {/* Said beside the button, not discovered after it. A restricted
                 account is told why the one button is dark, in the same place
-                the sentence about accepting would have been. */}
+                the sentence about accepting would have been.
+
+                The main sentence stops short of promising an open inbox,
+                because whether it opens on acceptance or on the second
+                signature is a platform_config value this component is never
+                told. `contactGated` only adds the caveat; it must not be what
+                keeps the sentence true. */}
             <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "12px", maxWidth: "60ch" }}>
               {restricted
                 ? t("offerInbox.restricted")
@@ -967,9 +985,9 @@ function CounterComposer({ head, ask, investorName, onDone, onCancel }: {
 // ── Settled ─────────────────────────────────────────────────────────────────
 
 /** Answered offers stay readable and stay quiet: rules, no cards, no colour.
- *  An accepted one keeps the single link that matters -- the conversation it
- *  opened. */
-function SettledRow({ chain, startupId }: { chain: OfferChain; startupId: string }) {
+ *  An accepted one keeps the single link that matters -- the deal it opened,
+ *  which is where the record is signed and the conversation is reached. */
+function SettledRow({ chain }: { chain: OfferChain }) {
   const { t } = useTranslation();
   const locale = useLocale();
   const o = chain.head;
@@ -997,12 +1015,16 @@ function SettledRow({ chain, startupId }: { chain: OfferChain; startupId: string
       }}>
         {statusLabel(o.status, t)}
       </span>
-      {accepted && (
+      {/* Only with a live deal to point at. A "passed" or "closed" deal is
+          dropped upstream, and an acceptance whose deal insert failed has
+          nothing to open, so the row goes without a link rather than offering
+          one that lands on an empty board. */}
+      {accepted && chain.dealId && (
         <Link
-          href={`/dashboard/messages?startupId=${encodeURIComponent(startupId)}&investorId=${encodeURIComponent(chain.investor.id)}`}
+          href={`/deals?deal=${encodeURIComponent(chain.dealId)}`}
           style={{ ...BODY, fontSize: "12px", fontWeight: 500, color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}
         >
-          {t("offerInbox.openConversation")} →
+          {t("founderContact.dealsCta")} →
         </Link>
       )}
     </div>

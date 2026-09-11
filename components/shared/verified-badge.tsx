@@ -1,27 +1,30 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { BadgeCheck, Clock, RotateCcw } from "lucide-react";
-import { TRUST_LADDER, effectiveTrustLevel, isExpired } from "@/lib/trust";
+import { RotateCcw } from "lucide-react";
+import { effectiveTrustLevel, isExpired } from "@/lib/trust";
 import { TrustPanel, resolveTrustLevel } from "@/components/shared/trust-panel";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 /**
- * The trust badge, tiered.
+ * The record chip.
  *
- * "Verified" was one bit, which is the wrong shape for the decision it feeds:
- * an investor about to open a data room needs to know WHAT was checked, not
- * that somebody once approved something. So the badge names the rung and
- * opens onto the evidence behind it.
+ * The house does not vouch for a member. A tick beside a name is the platform
+ * standing behind a company an investor may lose money on, and that is a
+ * representation, not a summary; so this chip says only that documents are on
+ * file and opens the list of them. What the reader concludes from a registry
+ * extract is the reader's own judgement, which is where it belongs.
  *
- * Three silences are deliberate:
- *   - Level 0 renders NOTHING. Absence is the signal; a grey "unverified"
- *     chip scolds every listing that has not queued for review yet.
- *   - An EXPIRED verification is level 0. It never keeps painting the old
- *     claim in a quieter colour -- lapsed is not "verified, slightly".
- *   - Only the owner is told a verification lapsed, because only the owner
- *     can act on it.
+ * Four silences are deliberate:
+ *   - Nothing on file renders NOTHING. Absence is the signal; a grey chip
+ *     scolds every listing that has not sent anything in yet.
+ *   - A LAPSED record is nothing on file. It never keeps painting the old
+ *     entry in a quieter colour.
+ *   - A case in flight paints nothing either. That the house is reading
+ *     someone's documents is not a fact about that someone.
+ *   - Only the owner is told a record lapsed, because only the owner can act
+ *     on it.
  */
 
 const PANEL_W = 320;
@@ -41,13 +44,13 @@ export function VerifiedBadge({
   /** Legacy verification_checks jsonb. */
   checks?: { checks?: string[]; at?: string } | null;
   verifiedAt?: string | null;
-  /* The word matters: a company is not a "verified investor". */
+  /** Decides which documents the record is read against. */
   kind?: "startup" | "investor";
   /** startups.trust_level / investors.trust_level. */
   trustLevel?: number | null;
   trustReviewedAt?: string | null;
   trustExpiresAt?: string | null;
-  /** A verification_cases row is open for this subject. Never inferred. */
+  /** A verification_cases row is open for this subject. Never stated here. */
   caseOpen?: boolean;
   /** The viewer owns this subject. Gates the lapse note, nothing else. */
   isOwner?: boolean;
@@ -60,7 +63,7 @@ export function VerifiedBadge({
   const btnRef = useRef<HTMLButtonElement>(null);
   useEscapeKey(open, () => setOpen(false));
 
-  // Fixed positioning, clamped to the viewport. The badge sits beside a
+  // Fixed positioning, clamped to the viewport. The chip sits beside a
   // display-size name, so on a 375px screen an absolutely positioned panel
   // anchored to it hangs off the right edge and scrolls the page sideways.
   const place = useCallback(() => {
@@ -89,24 +92,12 @@ export function VerifiedBadge({
   const shown = effectiveTrustLevel(raw, trustExpiresAt);
   const expired = raw > 0 && isExpired(trustExpiresAt);
 
-  // A case in flight is the honest middle state: during the founding stage a
-  // listing without a badge is usually queued, not rejected. Rendered only
-  // when the caller actually knows a case exists.
-  if (shown === 0 && caseOpen) {
-    return (
-      <span style={CHIP_NEUTRAL}>
-        <Clock style={{ width: 11, height: 11 }} aria-hidden />
-        {t("trust.inProgress")}
-      </span>
-    );
-  }
-
   if (shown === 0) {
     if (!expired || !isOwner) return null;
     return (
       <span style={CHIP_QUIET}>
         <RotateCcw style={{ width: 11, height: 11 }} aria-hidden />
-        {t("trust.reverifyDue")}
+        {t("trust.renewalDue")}
       </span>
     );
   }
@@ -129,14 +120,12 @@ export function VerifiedBadge({
       <button
         ref={btnRef}
         type="button"
-        className="cr-foil-badge"
         onClick={() => { place(); setOpen((o) => !o); }}
         aria-expanded={open}
         aria-haspopup="dialog"
-        style={CHIP_VERIFIED}
+        style={CHIP_RECORD}
       >
-        <BadgeCheck style={{ width: 11, height: 11 }} aria-hidden />
-        {t(TRUST_LADDER[shown].key)}
+        {t("trust.onFile")}
       </button>
       {open && pos && (
         <>
@@ -164,36 +153,28 @@ export function VerifiedBadge({
 }
 
 // ── Chips ───────────────────────────────────────────────────────────────────
-// One shape for all three states: 3px radius, hairline border, Label type.
-// Only the colour changes, and verdigris is reserved for the matured one.
+// One shape for both states: 3px radius, hairline border, Label type. Ink, not
+// green -- a colour that means "good" is the endorsement the words avoid, and
+// copper is spent on the one state that asks the owner to do something.
 
 const CHIP_BASE = {
   display: "inline-flex", alignItems: "center", gap: "4px",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
   borderRadius: "3px", padding: "3px 8px",
   textTransform: "uppercase" as const, letterSpacing: "0.06em",
   whiteSpace: "nowrap" as const,
 };
 
-const CHIP_VERIFIED = {
+const CHIP_RECORD = {
   ...CHIP_BASE,
-  background: "color-mix(in srgb, var(--verdigris) 8%, transparent)",
-  border: "1px solid color-mix(in srgb, var(--verdigris) 28%, transparent)",
-  color: "var(--verdigris)",
-  cursor: "pointer",
-};
-
-const CHIP_NEUTRAL = {
-  ...CHIP_BASE,
-  fontWeight: 500,
   background: "var(--cr-paper-2)",
   border: "1px solid var(--cr-rule-dark)",
   color: "var(--cr-ink-3)",
+  cursor: "pointer",
 };
 
 const CHIP_QUIET = {
   ...CHIP_BASE,
-  fontWeight: 500,
   background: "transparent",
   border: "1px solid var(--cr-copper-br)",
   color: "var(--cr-copper)",

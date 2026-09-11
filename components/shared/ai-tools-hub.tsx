@@ -907,11 +907,11 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
                       <th key={tier} style={{ padding: "16px", textAlign: "center", background: highlight ? "var(--cr-copper-bg)" : "transparent" }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: highlight ? "var(--cr-copper)" : "var(--cr-ink)" }}>{tier}</p>
                         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{sub}</p>
-                        {highlight && (
-                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "3px", padding: "2px 8px", display: "inline-block", marginTop: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                            {t("pricing.bestValue")}
-                          </span>
-                        )}
+                        {/* The ribbon said "Best Value", a superlative the
+                            product awards itself. The column is still marked
+                            as the recommended one by its copper ground and
+                            heading, which is a presentation choice rather
+                            than a claim about worth. */}
                       </th>
                     ))}
                   </tr>

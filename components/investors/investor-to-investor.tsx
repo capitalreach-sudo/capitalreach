@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MessageSquare, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
+import { RefusalNotice, useRefusal, type Refusal } from "@/hooks/useRefusal";
 
 /**
  * Investor → investor outreach from a profile. Co-investors could only talk
@@ -15,20 +16,33 @@ import { notify } from "@/components/ui/toast-notify";
 export function InvestorToInvestor({ investorId }: { investorId: string }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const { readRefusal } = useRefusal();
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [refusal, setRefusal] = useState<Refusal | null>(null);
+
+  /**
+   * The trust gate refuses an unverified investor with a sentence and the url
+   * that lifts it, and the plan gate with a sentence and nothing to click. A
+   * toast can carry neither link, so anything with one stays on the page.
+   */
+  function refuse(res: Response, json: unknown) {
+    const r = readRefusal(res, json);
+    if (r.href) setRefusal(r);
+    else notify.error(r.message);
+  }
 
   async function send() {
     if (!body.trim() || busy) return;
-    setBusy(true);
+    setBusy(true); setRefusal(null);
     const res = await fetch("/api/messages/start", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ investorId, body }),
     });
     const j = await res.json().catch(() => ({}));
     setBusy(false);
-    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    if (!res.ok) { refuse(res, j); return; }
     notify.success(t("outreach.sent"));
     setOpen(false); setBody("");
     router.push(`/dashboard/messages?thread=${j.threadId}`);
@@ -39,12 +53,13 @@ export function InvestorToInvestor({ investorId }: { investorId: string }) {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       <button onClick={async () => {
         if (busy) return;
+        setRefusal(null);
         const res = await fetch("/api/messages/start", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ investorId, open: true }),
         });
         const j = await res.json().catch(() => ({}));
-        if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+        if (!res.ok) { refuse(res, j); return; }
         router.push(`/dashboard/messages?thread=${j.threadId}`);
       }}
         style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>
@@ -55,6 +70,7 @@ export function InvestorToInvestor({ investorId }: { investorId: string }) {
         <MessageSquare style={{ width: 13, height: 13 }} /> {t("i2i.message")}
       </button>
       </div>
+      {refusal && <RefusalNotice refusal={refusal} />}
       {open && (
         <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "min(340px, 90vw)" }}>
           <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={2000} rows={3}

@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s | CapitalReach",
   },
   description:
-    "Connect vetted early-stage startups with investors. Browse, filter, and fund the next generation of companies on CapitalReach.",
+    "Where early-stage founders raising capital meet investors deploying it. Browse, filter and back the next generation of companies on CapitalReach.",
   metadataBase: new URL(brand.url),
   openGraph: {
     type: "website",

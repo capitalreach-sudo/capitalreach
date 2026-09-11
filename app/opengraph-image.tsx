@@ -90,7 +90,7 @@ export default async function OgImage() {
             display: "flex",
           }}
         >
-          Vetted startups. Serious investors. Deals that close in one place.
+          Founders raising. Investors deploying. Deals that close in one place.
         </div>
       </div>
     ),

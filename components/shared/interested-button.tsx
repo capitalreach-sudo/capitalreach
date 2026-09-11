@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { Sparkles, Check } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
@@ -15,6 +15,13 @@ import { notify } from "@/components/ui/toast-notify";
  * "no longer interested" bell — and re-toggling never re-notifies (the
  * server dedupes on the unique pair).
  */
+
+const BOX: CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: 6,
+  borderRadius: 4, padding: "8px 16px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13,
+};
+
 export function InterestedButton({ targetType, targetId }: {
   targetType: "startup" | "investor";
   targetId: string;
@@ -24,9 +31,15 @@ export function InterestedButton({ targetType, targetId }: {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch(`/api/interest?targetType=${targetType}&targetId=${targetId}`);
-    if (!res.ok) { setInterested(false); return; }
-    setInterested(!!(await res.json()).interested);
+    try {
+      const res = await fetch(`/api/interest?targetType=${targetType}&targetId=${targetId}`);
+      if (!res.ok) { setInterested(false); return; }
+      setInterested(!!(await res.json()).interested);
+    } catch {
+      // A dropped request used to leave this null forever, and null renders
+      // nothing: the control was simply absent from the row.
+      setInterested(false);
+    }
   }, [targetType, targetId]);
   useEffect(() => { void load(); }, [load]);
 
@@ -35,7 +48,10 @@ export function InterestedButton({ targetType, targetId }: {
     setBusy(true);
     try {
       if (interested) {
-        await fetch(`/api/interest?targetType=${targetType}&targetId=${targetId}`, { method: "DELETE" });
+        const res = await fetch(`/api/interest?targetType=${targetType}&targetId=${targetId}`, { method: "DELETE" });
+        // Withdrawing is silent by design, but a failed withdrawal must not
+        // look like it worked -- the signal would be back on the next load.
+        if (!res.ok) { notify.error(t("errors.generic")); return; }
         setInterested(false);
       } else {
         const res = await fetch("/api/interest", {
@@ -47,21 +63,34 @@ export function InterestedButton({ targetType, targetId }: {
         setInterested(true);
         notify.success(t("interest.sent"));
       }
+    } catch {
+      notify.error(t("errors.generic"));
     } finally {
       setBusy(false);
     }
   }
 
-  if (interested === null) return null;
+  // The row must not reflow when the answer arrives. An action that appears
+  // late where nothing was reads as a page still loading, in the one row
+  // where people are looking for the button they came for.
+  if (interested === null) {
+    return (
+      <span aria-hidden style={{ ...BOX, visibility: "hidden", border: "1px solid transparent" }}>
+        <Sparkles style={{ width: 13, height: 13 }} />
+        {t("interest.cta")}
+      </span>
+    );
+  }
+
   return (
-    <button onClick={toggle} disabled={busy}
+    <button type="button" onClick={toggle} disabled={busy} aria-pressed={interested}
       title={interested ? t("interest.withdraw") : t("interest.hint")}
       style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
+        ...BOX,
         background: interested ? "var(--cr-up-bg)" : "var(--cr-paper-2)",
-        border: `1px solid ${interested ? "rgba(45,106,79,0.3)" : "var(--cr-rule-dark)"}`,
-        borderRadius: 4, padding: "8px 16px", cursor: "pointer",
-        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13,
+        border: `1px solid ${interested ? "color-mix(in srgb, var(--cr-up) 30%, transparent)" : "var(--cr-rule-dark)"}`,
+        cursor: busy ? "progress" : "pointer",
+        opacity: busy ? 0.6 : 1,
         color: interested ? "var(--cr-up)" : "var(--cr-ink-2)",
       }}>
       {interested ? <Check style={{ width: 13, height: 13 }} /> : <Sparkles style={{ width: 13, height: 13 }} />}

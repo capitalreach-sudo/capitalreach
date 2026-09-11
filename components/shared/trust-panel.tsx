@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  TRUST_LADDER,
   effectiveTrustLevel,
   evidenceChecklist,
   isExpired,
@@ -15,13 +14,16 @@ import { useLocale } from "@/components/providers/locale-provider";
 import type { CSSProperties } from "react";
 
 /**
- * The expanded view behind the badge.
+ * The record behind the chip.
  *
- * A badge is a claim; this is the working. An investor about to open a data
- * room gets the rung this subject stands on, every check it rests on named in
- * words rather than schema slugs, the month each was confirmed and by what
- * method -- and, in the same breath, the sentence saying what we never looked
- * at. A trust surface that only lists its strengths is marketing.
+ * What this states is what the house holds: the documents a member supplied,
+ * the month each was taken, and by what method. It does not grade the member.
+ * A rung, a tick or a score is the house vouching, and vouching is a
+ * representation an investor may rely on and later sue over; a dated list of
+ * what arrived is a fact, and a fact is defensible.
+ *
+ * The sentence saying what none of it means sits on the same surface as the
+ * list, not in a footer nobody reaches.
  *
  * It reads nothing. Everything arrives as props, because verification_evidence
  * is service-role only (migration 111) and risk scores never reach a viewer.
@@ -30,7 +32,7 @@ import type { CSSProperties } from "react";
 // ── Deriving the level ──────────────────────────────────────────────────────
 
 /**
- * Rows verified before the ladder existed carry no trust_level of their own.
+ * Rows reviewed before the ladder existed carry no trust_level of their own.
  * Migration 111 settles those at 2 -- an admin did look at a human, but no
  * registry lookup or financial evidence was ever collected, so they are not
  * credited with rungs nobody climbed.
@@ -48,9 +50,14 @@ export function resolveTrustLevel(
 }
 
 /**
- * Whether the badge slot paints anything at all. Callers need this before they
- * reserve the slot: at level 0 with no case open the badge is deliberately
- * silent, and an empty wrapper still eats its own margin.
+ * Whether the chip slot paints anything at all. Callers need this before they
+ * reserve the slot: with nothing on file the slot is deliberately silent, and
+ * an empty wrapper still eats its own margin.
+ *
+ * `caseOpen` is accepted and deliberately does not open the slot. That a case
+ * is in flight says the house is looking at someone, which is a fact about the
+ * house rather than about the member, and it reads to a stranger as a promise
+ * that a verdict is coming.
  */
 export function trustBadgeVisible(args: {
   level?: number | null;
@@ -61,7 +68,6 @@ export function trustBadgeVisible(args: {
 }): boolean {
   const raw = resolveTrustLevel(args.level, args.verifiedAt);
   if (effectiveTrustLevel(raw, args.expiresAt) > 0) return true;
-  if (args.caseOpen) return true;
   // Lapsed, and only the owner is told: a stranger sees plain absence.
   return raw > 0 && !!args.isOwner;
 }
@@ -122,8 +128,6 @@ const BODY: CSSProperties = {
 
 const RULE: CSSProperties = { borderTop: "1px solid var(--cr-rule)" };
 
-const VERDIGRIS_DIM = "color-mix(in srgb, var(--verdigris) 65%, var(--cr-ink-4))";
-
 export interface TrustPanelProps {
   subject: SubjectType;
   /** Raw trust_level from startups/investors. */
@@ -137,7 +141,7 @@ export interface TrustPanelProps {
   verifiedAt?: string | null;
   /** Real evidence rows, when the caller is entitled to them. Never fetched here. */
   evidence?: TrustEvidenceRow[] | null;
-  /** An open verification_cases row exists for this subject. */
+  /** An open verification_cases row exists. Taken, and deliberately unstated. */
   caseOpen?: boolean;
   /** The viewer owns this subject: only they see the lapse note. */
   isOwner?: boolean;
@@ -145,7 +149,7 @@ export interface TrustPanelProps {
 
 export function TrustPanel({
   subject, level, reviewedAt, expiresAt, legacyChecks, verifiedAt,
-  evidence, caseOpen = false, isOwner = false,
+  evidence, isOwner = false,
 }: TrustPanelProps) {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -155,7 +159,7 @@ export function TrustPanel({
   const expired = raw > 0 && isExpired(expiresAt);
 
   // Mono figures, but a month rather than a day: the day a registry answered
-  // is precision nobody can act on, and it dates the badge for no reason.
+  // is precision nobody can act on, and it dates the record for no reason.
   const month = (iso: string | null | undefined): string | null => {
     if (!iso) return null;
     const d = new Date(iso);
@@ -165,14 +169,14 @@ export function TrustPanel({
 
   const grantedAt = reviewedAt ?? legacyChecks?.at ?? verifiedAt ?? null;
 
-  // What was checked, in order of how much the source actually knows: real
+  // What arrived, in order of how much the source actually knows: real
   // evidence rows, then an admin's recorded legacy checks, then the ladder
-  // itself (a granted level is a promise that its rungs were satisfied).
+  // itself (a granted level rests on a known set of documents).
   const legacyRows: TrustEvidenceRow[] = (legacyChecks?.checks ?? [])
     .map((slug) => ({ kind: LEGACY_KIND[slug] ?? ("other" as EvidenceKind) }));
   const fromLadder = level != null && level > 0;
-  // Nothing stands at level 0, lapsed included: a list of checks under an
-  // expired verification is the old claim wearing a different hat.
+  // Nothing is listed once the record has lapsed: a year-old list under a
+  // lapsed entry reads as current, which is the old claim in another hat.
   const rows: TrustEvidenceRow[] = shown === 0 ? []
     : evidence && evidence.length ? evidence
       : (!fromLadder && legacyRows.length) ? legacyRows
@@ -181,86 +185,29 @@ export function TrustPanel({
   return (
     <div style={{ display: "block" }}>
 
-      {/* Opener: the rung, and the one line an investor may conclude from it. */}
+      {/* Opener: what this list is, and the limit of it, before the list. */}
       <div className="ruled-label" style={{ marginBottom: "12px" }}>
         {t("trust.title")}
       </div>
 
-      <p style={{
-        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px",
-        lineHeight: 1.25, marginBottom: "8px",
-        color: shown > 0 ? "var(--verdigris)" : "var(--cr-ink-2)",
-      }}>
-        {t(TRUST_LADDER[shown].key)}
-      </p>
-      <p style={BODY}>{t(TRUST_LADDER[shown].meansKey)}</p>
+      <p style={BODY}>{t("trust.recordsLede")}</p>
 
       {expired && (
         <p style={{ ...DATA, color: "var(--cr-ink-4)", marginTop: "8px" }}>
           {t("trust.expiredOn", { date: month(expiresAt) ?? "" })}
         </p>
       )}
-      {caseOpen && shown === 0 && (
-        <p style={{ ...BODY, fontWeight: 400, marginTop: "8px" }}>
-          {t("trust.caseOpenNote")}
-        </p>
-      )}
 
-      {/* ── The ladder ─────────────────────────────────────────────────────
-          Four rungs, always all four: seeing what was NOT climbed is half of
-          what the rung reached actually means. */}
-      <div style={{ ...LABEL, marginTop: "24px", marginBottom: "8px" }}>
-        {t("trust.ladder")}
-      </div>
-      <div>
-        {([1, 2, 3, 4] as TrustLevel[]).map((rung) => {
-          const reached = rung <= shown;
-          const current = rung === shown;
-          return (
-            <div key={rung} style={{
-              ...RULE, display: "flex", alignItems: "baseline", gap: "8px",
-              padding: "8px 0",
-            }}>
-              {/* The one decorative glyph the house allows, spent on the one
-                  thing worth pointing at: the rung actually reached. */}
-              <span aria-hidden style={{
-                width: "10px", flexShrink: 0, fontSize: "9px", lineHeight: 1.4,
-                color: "var(--verdigris)",
-              }}>
-                {current ? "✦" : ""}
-              </span>
-              <span style={{
-                ...DATA, width: "20px", flexShrink: 0,
-                color: reached ? VERDIGRIS_DIM : "var(--cr-ink-4)",
-              }}>
-                {String(rung).padStart(2, "0")}
-              </span>
-              <span style={{
-                flex: 1, minWidth: 0,
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: current ? 600 : 400, fontSize: "13px",
-                color: reached ? "var(--cr-ink)" : "var(--cr-ink-4)",
-              }}>
-                {t(TRUST_LADDER[rung].key)}
-              </span>
-              <span style={{
-                ...LABEL, flexShrink: 0, fontSize: "9px",
-                color: reached ? VERDIGRIS_DIM : "var(--cr-ink-4)",
-              }}>
-                {reached ? t("trust.rungConfirmed") : t("trust.rungNotChecked")}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── The checks themselves ──────────────────────────────────────────
-          Named the way a person would say them, with the method beside each:
-          a DNS proof and a screenshot are not the same evidence. */}
-      {rows.length > 0 && (
+      {/* ── The record ─────────────────────────────────────────────────────
+          Each line names a document the way a person would say it, with the
+          method beside it: a DNS proof and a scanned page are not the same
+          thing, and the difference is the reader's to weigh, not ours. */}
+      {rows.length === 0 ? (
+        <p style={{ ...BODY, marginTop: "12px" }}>{t("trust.noneOnFile")}</p>
+      ) : (
         <>
           <div style={{ ...LABEL, marginTop: "24px", marginBottom: "8px" }}>
-            {t("verify.whatWasChecked")}
+            {t("trust.supplied")}
           </div>
           <div>
             {rows.map((row, i) => {
@@ -300,9 +247,10 @@ export function TrustPanel({
         </p>
       )}
 
-      {/* ── The honest half ────────────────────────────────────────────────
-          Stated on the same surface as the claim, not in a footer nobody
-          reaches. Verification is about identity, never about the deal. */}
+      {/* ── The limit ──────────────────────────────────────────────────────
+          On the same surface as the list, not in a footer nobody reaches. A
+          document on file says who the house corresponded with. It says
+          nothing about the business, and this is where that is said. */}
       <div style={{ ...LABEL, marginTop: "24px", marginBottom: "8px" }}>
         {t("trust.notCheckedTitle")}
       </div>

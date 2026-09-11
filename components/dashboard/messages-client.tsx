@@ -87,7 +87,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const [selectedThread, setSelectedThread] = useState<Thread | null>(initialThreads[0] || null);
+  // When the URL names a thread, start with NOTHING selected. Effects flush in
+  // declaration order and the load-and-mark-read effect below is declared
+  // before the deep-link effect, so seeding this with initialThreads[0] made
+  // arriving from a notification mark a different conversation read and send
+  // its author a false "seen" before the intended thread was even resolved.
+  const [selectedThread, setSelectedThread] = useState<Thread | null>(() => {
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("thread")) {
+      return null;
+    }
+    return initialThreads[0] || null;
+  });
   const [messages, setMessages]             = useState<LocalMessage[]>([]);
   // A thread's own messages are the only ones that may be rendered under its
   // name. Until they arrive the pane holds a quiet mark rather than the
@@ -270,16 +280,46 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     }
   }, [slidePhase]);
 
-  // Deep link from a deal card (?startupId=&investorId=) — select the matching
-  // thread once on mount. Fails silently if no thread exists for that pair yet.
+  // Deep link into one conversation. ?thread= is the id every notification,
+  // every "open the conversation" button and every reply/attach alert carries;
+  // ?startupId=&investorId= is the older deal-card form and remains the
+  // fallback. Read as values rather than inside the effect so a second
+  // notification opened while this page is already mounted -- a search-param
+  // change, not a mount -- moves the selection too.
+  const threadParam   = searchParams.get("thread");
+  const startupParam  = searchParams.get("startupId");
+  const investorParam = searchParams.get("investorId");
+  // A link that named a conversation and could not open it. Held on the page:
+  // the alternative is a reader who believes the thread in front of them is
+  // the one the link was about.
+  const [deepLinkMissing, setDeepLinkMissing] = useState(false);
   useEffect(() => {
-    const startupId = searchParams.get("startupId");
-    const investorId = searchParams.get("investorId");
-    if (!startupId || !investorId) return;
-    const match = initialThreads.find(th => th.startup_id === startupId && th.investor_id === investorId);
-    if (match) setSelectedThread(match);
+    // The page is handed every thread this account is a party to, unpaginated,
+    // so absence from this list is the same statement as "not yours to read".
+    const byId = threadParam ? initialThreads.find(th => th.id === threadParam) ?? null : null;
+    const byPair = !byId && startupParam && investorParam
+      ? initialThreads.find(th => th.startup_id === startupParam && th.investor_id === investorParam) ?? null
+      : null;
+    const match = byId ?? byPair;
+    if (match) {
+      setDeepLinkMissing(false);
+      setSelectedThread(match);
+      // The narrow layout opens on the list, which is the wrong half of a link
+      // that names one conversation. No slide phase: this is arrival, not the
+      // undoable Open the list rows perform.
+      setMobileShowChat(true);
+      return;
+    }
+    // No thread id means the deal-card form simply found nothing, which is the
+    // behaviour that was here before and claims nothing on screen.
+    if (!threadParam) return;
+    // Leaving the default selection standing would show whichever conversation
+    // sorts first under the heading of the one the link named.
+    setSelectedThread(null);
+    setMobileShowChat(false);
+    setDeepLinkMissing(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [threadParam, startupParam, investorParam]);
 
   // Account search — also runs with an empty query so the dropdown shows a
   // browsable list of available accounts immediately, not just after typing.
@@ -370,6 +410,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   function selectThread(t: Thread) {
     setSelectedThread(t);
     setMobileShowChat(true);
+    // Picking a conversation by hand answers the failed link.
+    setDeepLinkMissing(false);
     // Caught mid-dismissal, the pane is already parked off to the right with
     // a transition armed, so it reverses from where it is rather than being
     // snapped back to the start line first.
@@ -618,7 +660,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     // composer is not gated on the response either: a second reply typed
     // while the first is in flight is a chat working normally.
     const clientId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const threadId = selectedThread.id;
+    // Held across the await: a refusal has to be filed against the thread that
+    // was sent from, not against whichever one is on screen when it lands.
+    const th = selectedThread;
+    const threadId = th.id;
     setMessages(prev => [...prev, {
       id: clientId, _clientId: clientId, _pending: true,
       thread_id: threadId, sender_id: profile.id, body,
@@ -637,13 +682,15 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     }).catch(() => null);
     if (!res) { undoOptimisticSend(clientId, body); notify.error(t("dashboard.errSendMessageFailed")); return; }
     const json = await res.json().catch(() => ({}));
-    if (res.status === 403 && (json.error === "seal_required" || json.error === "offer_required")) {
-      // Both of these are the platform's own rules, and both are refused with
-      // the state and the remedy: which signature is missing, or which of
-      // "make an offer" and "your offer is waiting" they are actually in.
-      // Telling somebody to do a thing they already did is worse than silence.
+    if (res.status === 403 && showGateRefusal(th, json)) {
+      // Each of these is the platform's own rule, and each is refused with the
+      // state and the remedy: which signature is missing, which of "make an
+      // offer" and "your offer is waiting" they are in, or which of the three
+      // founder cases applies. Telling somebody to do a thing they already did
+      // is worse than silence. Matching on the parsed body rather than on
+      // `error` is what lets the founder refusal through at all: it puts its
+      // sentence in `error` and its code in `errorCode`.
       undoOptimisticSend(clientId, body);
-      showGateRefusal(selectedThread, json);
     } else if (res.status === 409 && json.error === "deal_registration_required") {
       // Not a failure -- the conversation has become a negotiation and the
       // deal has to be on the record before it goes further. The draft is
@@ -762,6 +809,27 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
           </button>
         </div>
+
+        {/* A link that named a conversation this account cannot open. Above
+            both panes rather than inside the empty one, since at narrow widths
+            that pane is not rendered at all. */}
+        {deepLinkMissing && (
+          <div role="status" style={{ display: "flex", alignItems: "flex-start", gap: "12px", padding: "16px", marginBottom: "16px", border: "1px solid var(--cr-rule-dark)", borderLeft: "2px solid var(--cr-copper)", borderRadius: "4px", background: "var(--cr-paper-2)" }}>
+            <AlertCircle aria-hidden style={{ width: 15, height: 15, color: "var(--cr-copper)", flexShrink: 0, marginTop: "3px" }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+                {t("messages.deepLinkMissingTitle")}
+              </p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginTop: "6px", maxWidth: "62ch" }}>
+                {t("messages.deepLinkMissingBody")}
+              </p>
+            </div>
+            <button type="button" onClick={() => setDeepLinkMissing(false)} aria-label={t("common.close")}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0, margin: "-8px -8px 0 0" }}>
+              <X style={{ width: 15, height: 15 }} />
+            </button>
+          </div>
+        )}
 
         {/* Main 2-col layout */}
         {/* `position` is the anchor for the narrow-layout push: the chat pane
@@ -1112,7 +1180,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 if (notice.href) href = notice.href;
                 if (notice.ctaKey) ctaKey = notice.ctaKey;
                 if (notice.kind === "deal") {
-                  titleKey = "founderContact.dealRequired";
+                  // A short heading, then the server's own sentence as the
+                  // body. founderContact.dealRequired is a full paragraph and
+                  // was being set as the TITLE, so the panel ran a paragraph
+                  // in heading type with nothing underneath it.
+                  titleKey = "gate.dealTitle";
                   bodyKey  = "";
                   if (!notice.ctaKey) ctaKey = "founderContact.openDealCta";
                 } else if (notice.kind === "seal") {

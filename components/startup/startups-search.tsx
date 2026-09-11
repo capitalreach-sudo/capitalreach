@@ -382,10 +382,14 @@ function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void 
   );
 }
 
-function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function FilterChip({ active, onClick, children, disabled, title }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; title?: string }) {
   return (
     <button
       onClick={onClick}
+      // A threshold the loaded rows cannot answer is offered as unavailable
+      // rather than as a filter that returns an empty market.
+      disabled={disabled}
+      title={title}
       style={{
         fontFamily:    "'DM Sans', sans-serif",
         fontWeight:    active ? 500 : 400,
@@ -394,8 +398,9 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
         borderRadius:  "3px",
         border:        active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
         background:    active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-        color:         active ? "var(--cr-copper)" : "var(--cr-ink-3)",
-        cursor:        "pointer",
+        color:         disabled ? "var(--cr-ink-4)" : active ? "var(--cr-copper)" : "var(--cr-ink-3)",
+        cursor:        disabled ? "not-allowed" : "pointer",
+        opacity:       disabled ? 0.55 : 1,
         whiteSpace:    "nowrap",
         transition:    "background-color 100ms ease, color 100ms ease",
       }}
@@ -858,6 +863,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     // deduped to a set of ids here.
     supabase.from("startup_views").select("startup_id").limit(1000)
       .then(({ data }) => { if (data) setViewedIds(new Set(data.map(v => v.startup_id))); });
+    // The filled bookmarks, read back from the watchlist the save button
+    // writes to. watchlists RLS is scoped to the viewing investor, so the bare
+    // select returns their own saves and nobody else's; a founder or anonymous
+    // session simply gets none.
+    supabase.from("watchlists").select("startup_id").limit(1000)
+      .then(({ data }) => { if (data) setSavedIds(new Set(data.map(w => w.startup_id))); });
     // Snoozed dismissals expire on their own: a row whose snooze_until has
     // passed no longer hides the listing (C35).
     supabase.from("startup_dismissals").select("startup_id, snooze_until").limit(1000)
@@ -946,6 +957,34 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     }
     return { industry, stage, country };
   }, [allStartups, dismissedIds, showHidden]);
+
+  /**
+   * Which traction thresholds the loaded rows can actually answer.
+   *
+   * These filters run in the browser over the rows the server sent, and the
+   * server nulls gated financials before serialising them (lib/browse-data),
+   * so a column absent from every row makes its filter match nothing at any
+   * threshold -- an empty market rather than an unavailable control. MRR,
+   * growth and runway are stripped together, so all three missing at once
+   * means the viewer's plan, while one missing alone means nobody filed it.
+   */
+  const tractionData = useMemo(() => {
+    // With nothing loaded there is nothing to conclude, and a bar of greyed
+    // chips over a load error would blame the plan for a network failure.
+    const known = allStartups.length > 0;
+    return {
+      known,
+      mrr:    !known || allStartups.some((s) => s.mrr != null),
+      runway: !known || allStartups.some((s) => s.runway_months != null),
+      growth: !known || allStartups.some((s) => s.growth_rate != null),
+    };
+  }, [allStartups]);
+  const financialsLocked = tractionData.known && !tractionData.mrr && !tractionData.runway && !tractionData.growth;
+  const tractionNote = financialsLocked
+    ? t("startups.financialsFilterLocked")
+    : !tractionData.mrr || !tractionData.runway || !tractionData.growth
+      ? t("startups.tractionFilterNoData")
+      : null;
 
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
@@ -1038,13 +1077,41 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     return () => clearTimeout(id);
   }, [filters]);
 
-  function toggleSave(id: string) {
-    setSavedIds((prev) => {
+  async function toggleSave(id: string) {
+    const wasSaved = savedIds.has(id);
+    const flip = (on: boolean) => setSavedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); notify.info(t("toast.unsaved")); }
-      else { next.add(id); notify.success(t("toast.saved")); }
+      if (on) next.add(id); else next.delete(id);
       return next;
     });
+    // Optimistic, then reconciled: the bookmark answers the click immediately
+    // and goes back the way it was if the write is refused. Through the API
+    // rather than a direct table write, so the plan's watchlist cap and the
+    // founder's "saved" notification apply here as they do on the detail page.
+    flip(!wasSaved);
+    let res: Response;
+    try {
+      res = await fetch("/api/watchlist", {
+        method: wasSaved ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startupId: id }),
+      });
+    } catch {
+      flip(wasSaved);
+      notify.error(t("errors.generic"));
+      return;
+    }
+    if (!res.ok) {
+      flip(wasSaved);
+      // 401 is the only refusal with no readable sentence behind it; every
+      // other one (no investor profile yet, the free plan's cap) arrives as
+      // `error` and says more than a generic failure could.
+      if (res.status === 401) { notify.info(t("startups.saveNeedsAccount")); return; }
+      const data = await res.json().catch(() => ({}));
+      notify.error(data.error || t("errors.generic"));
+      return;
+    }
+    if (wasSaved) notify.info(t("toast.unsaved")); else notify.success(t("toast.saved"));
   }
 
   async function toggleHide(id: string) {
@@ -1325,6 +1392,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               {MRR_PRESETS.map((m) => (
                 <FilterChip key={m.value}
                   active={filters.mrrMin === m.value}
+                  disabled={!tractionData.mrr}
+                  title={tractionData.mrr ? undefined : tractionNote ?? undefined}
                   onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
                   {m.label}
                 </FilterChip>
@@ -1348,10 +1417,14 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </FilterChip>
               ))}
               <FilterChip active={(filters.runwayMin ?? 0) > 0}
+                disabled={!tractionData.runway}
+                title={tractionData.runway ? undefined : tractionNote ?? undefined}
                 onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
                 {t("startups.runway12")}
               </FilterChip>
               <FilterChip active={(filters.growthMin ?? 0) > 0}
+                disabled={!tractionData.growth}
+                title={tractionData.growth ? undefined : tractionNote ?? undefined}
                 onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
                 {t("startups.growth20")}
               </FilterChip>
@@ -1363,6 +1436,13 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 onClick={() => patch({ hasDemo: !filters.hasDemo })}>
                 {t("startups.hasDemo")}
               </FilterChip>
+              {/* The reason lives in the panel, not only in a title attribute:
+                  a greyed chip with no explanation is the same dead end. */}
+              {tractionNote && (
+                <p style={{ flexBasis: "100%", margin: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", lineHeight: 1.5, color: "var(--cr-ink-4)" }}>
+                  {tractionNote}
+                </p>
+              )}
             </FilterGroup>
             <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}
               open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
@@ -1391,7 +1471,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 relationship reads top-down: pick a preset, see what it set. */}
             <div style={{ marginTop: "12px" }}>
               <FilterPresets
-                presets={STARTUP_PRESETS}
+                // A shortcut that sets a threshold the rows cannot answer is
+                // a one-click route to an empty market, so it is not offered.
+                presets={tractionData.mrr ? STARTUP_PRESETS : STARTUP_PRESETS.filter((p) => !("mrrMin" in p.patch))}
                 filters={filters as unknown as Record<string, unknown>}
                 defaults={DEFAULT_FILTERS as unknown as Record<string, unknown>}
                 onApply={(p) => patch(p as Partial<Filters>)}
@@ -1728,7 +1810,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </p>
                 <div style={ROW}>
                   {MRR_PRESETS.map((m) => (
-                    <FilterChip key={m.value} active={filters.mrrMin === m.value} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>
+                    <FilterChip key={m.value} active={filters.mrrMin === m.value} disabled={!tractionData.mrr} title={tractionData.mrr ? undefined : tractionNote ?? undefined} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>
                   ))}
                   {SCORE_PRESETS.map((sc) => (
                     <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
@@ -1736,12 +1818,17 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                   {RAISING_PRESETS.map((r) => (
                     <FilterChip key={r.value} active={filters.raisingMin === r.value} onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>{r.label}</FilterChip>
                   ))}
-                  <FilterChip active={(filters.runwayMin ?? 0) > 0} onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>{t("startups.runway12")}</FilterChip>
-                  <FilterChip active={(filters.growthMin ?? 0) > 0} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
+                  <FilterChip active={(filters.runwayMin ?? 0) > 0} disabled={!tractionData.runway} title={tractionData.runway ? undefined : tractionNote ?? undefined} onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>{t("startups.runway12")}</FilterChip>
+                  <FilterChip active={(filters.growthMin ?? 0) > 0} disabled={!tractionData.growth} title={tractionData.growth ? undefined : tractionNote ?? undefined} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
                   <FilterChip active={!!filters.newOnly} onClick={() => patch({ newOnly: !filters.newOnly })}>{t("startups.newThisWeek")}</FilterChip>
                   <FilterChip active={!!filters.closingSoon} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
                   <FilterChip active={!!filters.hasDemo} onClick={() => patch({ hasDemo: !filters.hasDemo })}>{t("startups.hasDemo")}</FilterChip>
                 </div>
+                {tractionNote && (
+                  <p style={{ margin: "8px 0 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", lineHeight: 1.5, color: "var(--cr-ink-4)" }}>
+                    {tractionNote}
+                  </p>
+                )}
               </div>
               {countries.length > 0 && (
                 <div>

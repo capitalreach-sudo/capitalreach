@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Mail } from "lucide-react";
@@ -8,6 +8,25 @@ import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { useTranslation } from "@/hooks/useTranslation";
+
+/**
+ * The two calls that used to sit behind `if (data.session)` on the signup
+ * form. Both need a session, and with email confirmation on there is none
+ * until the link in the mail is clicked, so they run at the moment this page
+ * sees the confirmation land.
+ *
+ * Safe to reach more than once: the acceptance route's own GET says whether
+ * there is anything to record, and the welcome hook claims a once-only marker
+ * server-side.
+ */
+async function runPostSignupHooks() {
+  try {
+    const res = await fetch("/api/account/accept-terms");
+    const state = res.ok ? await res.json().catch(() => null) : null;
+    if (state?.current === false) await fetch("/api/account/accept-terms", { method: "POST" });
+  } catch {}
+  await fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
+}
 
 /**
  * /auth/verify-email?email=… -- the "check your inbox" screen as its own
@@ -28,7 +47,11 @@ function VerifyEmailInner() {
   const email = (storedEmail || sp.get("email") || "").trim();
   const [resendIn, setResendIn] = useState(0);
   const [resending, setResending] = useState(false);
-  const supabase = createClient();
+  // Held in a ref because the poll below lists it as a dependency: a fresh
+  // client per render restarts that effect on every countdown tick, which
+  // tears down the interval and the once-only guard along with it.
+  const supabaseRef = useRef(createClient());
+  const supabase = supabaseRef.current;
 
   useEffect(() => {
     if (resendIn <= 0) return;
@@ -40,12 +63,18 @@ function VerifyEmailInner() {
   // becomes valid here too; check on focus and every 5s.
   useEffect(() => {
     let cancelled = false;
+    // The poll keeps firing while the hooks and the profile lookup are in
+    // flight, so the confirmation is claimed here rather than five seconds
+    // later by a second pass.
+    let advanced = false;
     async function check() {
+      if (advanced) return;
       const { data: { user } } = await supabase.auth.getUser();
-      if (!cancelled && user?.email_confirmed_at) {
-        const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-        router.replace(p?.role === "startup" ? "/onboarding/startup" : p?.role === "investor" ? "/onboarding/investor" : "/onboarding");
-      }
+      if (cancelled || !user?.email_confirmed_at) return;
+      advanced = true;
+      await runPostSignupHooks();
+      const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      router.replace(p?.role === "startup" ? "/onboarding/startup" : p?.role === "investor" ? "/onboarding/investor" : "/onboarding");
     }
     check();
     const id = setInterval(check, 5000);

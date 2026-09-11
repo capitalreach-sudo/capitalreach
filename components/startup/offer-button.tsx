@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -29,6 +29,15 @@ import { OfferComposer, type OfferAsk } from "@/components/deals/offer-composer"
  * instrument and conditions and THEN learned they were ineligible, with no
  * link to the page that fixes it. The requirement belongs in front of the
  * composer, not behind it.
+ *
+ * A sixth arrived with seal-before-contact (120): between "the founder said
+ * yes" and "you may talk" there is now a record both sides sign, and an
+ * investor sitting in that gap has contact CLOSED with a deal already on the
+ * table. Read through contactOpen alone that is indistinguishable from a
+ * stranger, so the listing invited a second offer at somebody whose first one
+ * had been accepted, and the POST answered 409 after a page of terms. The
+ * verdict's `reason` is what separates the two, which is why this reads it
+ * rather than the boolean alone.
  *
  * The state comes from the API rather than from props, because the verdict is
  * lib/contact-policy's to give: a button that decided for itself would be one
@@ -60,6 +69,13 @@ interface ListingState {
   scope: "listing";
   role: "investor" | "none";
   contactOpen: boolean;
+  /** The verdict's own word for WHY. contactOpen carries the yes or no, and
+   *  every yes reads the same, but the refusals do not: one of them is a
+   *  stranger and one of them is a deal waiting for a signature. A refusal
+   *  this button cannot name falls through to the primary action, which is an
+   *  offer the POST is going to refuse. */
+  reason?: "policy_off" | "deal_exists" | "deal_sealed" | "offer_accepted"
+    | "needs_accepted_offer" | "needs_seal";
   proposal: {
     id: string;
     fromSide: "startup" | "investor";
@@ -68,6 +84,9 @@ interface ListingState {
     currency: string | null;
   } | null;
   dealId: string | null;
+  /** The route sends it; without it the seal state cannot tell a live deal
+   *  from one that was closed or passed. */
+  dealStatus?: string | null;
   threadId: string | null;
   /** POST refuses an offer without this, and an offer is the only way in. */
   accredited?: boolean;
@@ -84,9 +103,18 @@ interface Props {
   onNeedsAck?: () => void;
   /** Told after an offer lands, so the page can refresh what it shows. */
   onSent?: () => void;
+  /** Bumped by the page once the terms it collects have been accepted. The
+   *  modal belongs to the listing, so the composer cannot reopen itself, and
+   *  an investor who has just signed something should not have to find this
+   *  button a second time. */
+  openSignal?: number;
+  /** A paused or closed round is refused by the POST. Without this the listing
+   *  showed its primary action and reported the refusal only after amount,
+   *  equity, valuation and instrument had been filled in. */
+  roundOpen?: boolean;
 }
 
-export function OfferButton({ startupId, companyName, ask, acked = true, onNeedsAck, onSent }: Props) {
+export function OfferButton({ startupId, companyName, ask, acked = true, onNeedsAck, onSent, openSignal, roundOpen = true }: Props) {
   const { t } = useTranslation();
   const [state, setState] = useState<ListingState | null>(null);
   const [open, setOpen] = useState(false);
@@ -100,6 +128,14 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
   }, [startupId]);
   useEffect(() => { void load(); }, [load]);
 
+  // Seeded with the incoming value so a mount is never mistaken for a signal.
+  const lastSignal = useRef(openSignal);
+  useEffect(() => {
+    if (lastSignal.current === openSignal) return;
+    lastSignal.current = openSignal;
+    setOpen(true);
+  }, [openSignal]);
+
   useEscapeKey(open, () => setOpen(false));
 
   // Nothing is rendered until the answer is known. A button that said "Make an
@@ -108,6 +144,20 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
   if (!state || state.role !== "investor") return null;
 
   const pending = state.proposal && state.proposal.status === "pending" ? state.proposal : null;
+  // Only for a deal that is still going somewhere. contact-policy's lookup has
+  // no status filter, so it returns needs_seal for a CLOSED or PASSED deal too
+  // -- and sending that investor to a signing panel for a deal nobody intends
+  // to complete is the same dead link this state exists to remove, just
+  // pointing somewhere else.
+  const LIVE_DEAL = !["closed", "passed"].includes(String(state.dealStatus ?? ""));
+  const needsSeal = state.reason === "needs_seal" && LIVE_DEAL;
+
+  // A paused or closed round has no offer to make. The listing puts a waitlist
+  // in this same row, which is the honest action there. An offer already on
+  // the table, a conversation already open, or a record still short of one
+  // signature all outlive the round's state -- a founder pausing the round
+  // does not undo an offer they accepted while it was open.
+  if (!roundOpen && !pending && !state.contactOpen && !needsSeal) return null;
 
   function startOffer() {
     // The terms are the listing page's modal to collect; asking for them here
@@ -149,18 +199,42 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
         {caption(t("offerButton.waiting"))}
       </span>
     );
-  } else if (state.accredited === false) {
+  } else if (needsSeal) {
+    // Placed under the pending states on purpose: lib/contact-policy counts a
+    // deal in ANY status, including one already closed or passed, and the POST
+    // does not -- so a pair with a dead deal and a live offer between them is
+    // in both states at once, and the live offer is the one with a next move.
+    //
+    // ?deal= is not decoration: that card unfolds its signing panel when it is
+    // reached this way, so the link lands on the signature itself.
+    const href = state.dealId ? `/deals?deal=${state.dealId}` : "/deals";
     control = (
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px" }}>
-        <Link href="/dashboard/investor/settings#accreditation" style={QUIET}>
-          {t("offerButton.certify")}
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px", maxWidth: "320px" }}>
+        <Link href={href} style={{ ...QUIET, borderColor: "var(--cr-copper-br)", color: "var(--cr-copper)" }}>
+          {t("offerButton.seal")} →
+        </Link>
+        {caption(t("offerButton.sealNote"))}
+      </span>
+    );
+  } else if (state.accredited === false) {
+    // Copper outline, the same register the countered state uses: the ball is
+    // on this side of the table. Plain grey here read as a disabled control
+    // standing where the offer button was supposed to be, which is the one
+    // reading of this state that must not be available.
+    control = (
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px", maxWidth: "320px" }}>
+        <Link href="/dashboard/investor/settings#accreditation"
+          style={{ ...QUIET, borderColor: "var(--cr-copper-br)", color: "var(--cr-copper)" }}>
+          {t("offerButton.certify")} →
         </Link>
         {caption(t("offerButton.certifyNote"))}
       </span>
     );
   } else {
     control = (
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px" }}>
+      // Capped: the caption is a sentence, and an uncapped column stretches
+      // the row it shares with every other action on the listing.
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px", maxWidth: "320px" }}>
         <button type="button" onClick={startOffer} style={PRIMARY} className="btn-copper-shimmer">
           {t("offerButton.make")}
         </button>
