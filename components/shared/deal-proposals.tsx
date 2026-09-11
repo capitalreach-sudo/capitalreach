@@ -331,6 +331,11 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
   // strip can. Both show the amount, which is never dropped.
   const shown = compact ? cells.filter((c) => c.value !== null) : cells;
   const conditionsChanged = !!prev && (prev.conditions ?? "") !== (p.conditions ?? "");
+  // Striking a term is an answer and has to read as one. Rendering only what
+  // the live round carries let a counter drop the other side's conditions with
+  // nothing on the card to show for it, and this card is what gets accepted.
+  const struckConditions = conditionsChanged && !p.conditions ? prev?.conditions ?? null : null;
+  const shownConditions = struckConditions ?? p.conditions;
 
   const actions = incoming ? (
     <>
@@ -432,14 +437,24 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
         ))}
       </div>
 
-      {p.conditions && (
+      {shownConditions && (
         <div style={{ borderTop: RULE, marginTop: compact ? 6 : 12, paddingTop: 8 }}>
           <span style={LABEL}>{t("proposals.conditions")}</span>
           {conditionsChanged && (
-            <span style={{ ...LABEL, color: "var(--cr-copper)", marginLeft: 8 }}>{t("proposals.changed")}</span>
+            <span style={{ ...LABEL, color: "var(--cr-copper)", marginLeft: 8 }}>
+              {struckConditions ? t("proposals.conditionsRemoved") : t("proposals.changed")}
+            </span>
           )}
-          <p style={{ ...BODY, fontSize: compact ? 11 : 13, color: "var(--cr-ink-2)", marginTop: 3, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-            {p.conditions}
+          {/* Struck, not gone. The words are the previous round's, ruled
+              through, so the term being given up is readable before it is
+              accepted. */}
+          <p style={{
+            ...BODY, fontSize: compact ? 11 : 13,
+            color: struckConditions ? "var(--cr-ink-4)" : "var(--cr-ink-2)",
+            textDecoration: struckConditions ? "line-through" : undefined,
+            marginTop: 3, whiteSpace: "pre-wrap", overflowWrap: "anywhere",
+          }}>
+            {shownConditions}
           </p>
         </div>
       )}

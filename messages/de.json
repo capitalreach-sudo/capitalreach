@@ -345,7 +345,7 @@
     "free": "Kostenlos",
     "popular": "Beliebt",
     "pageTitle": "Einfache, transparente Preise.",
-    "pageSub": "Kostenlos während des Launches. Abonnements beginnen nach den ersten 100 Mitgliedern.",
+    "pageSub": "Kostenlos während des Launches. Abonnements beginnen nach den ersten 150 Mitgliedern.",
     "successFee": "2% Erfolgsgebühr auf alle abgeschlossenen Runden — nur vom Gründer, nach Kapitaleingang.",
     "freeLabel": "Kostenlos",
     "starterLabel": "Starter",
@@ -362,8 +362,8 @@
     "faq": {
       "q1": "Wie funktioniert die 2%-Erfolgsgebühr?",
       "a1": "Wenn ein Investor einen Deal als abgeschlossen markiert, stellen wir dem Startup 2% des eingesammelten Betrags in Rechnung — nach dem Abschluss. 14-tägiges Zahlungsfenster über Stripe. Keine Vorabgebühren.",
-      "q2": "Was bedeutet 'Kostenlos bis 100 Mitglieder'?",
-      "a2": "Wir verzichten auf Abonnementgebühren für unsere ersten 100 Mitglieder. Alle erhalten kostenlosen Vollzugang zur höchsten Stufe. Sobald wir 100 Mitglieder erreichen, gelten reguläre Preise für neue Anmeldungen.",
+      "q2": "Was bedeutet 'Kostenlos bis 150 Mitglieder'?",
+      "a2": "Wir verzichten auf Abonnementgebühren für unsere ersten 150 Mitglieder. Alle erhalten kostenlosen Vollzugang zur höchsten Stufe. Sobald wir 150 Mitglieder erreichen, gelten reguläre Preise für neue Anmeldungen.",
       "q3": "Kann ich mein Abonnement jederzeit kündigen?",
       "a3": "Ja. Kündigung jederzeit über das Stripe-Kundenportal in Ihrem Dashboard. Sie behalten den Zugang bis zum Ende Ihrer Abrechnungsperiode.",
       "q4": "Was gilt als 'abgeschlossener Deal' für die 2%-Gebühr?",
@@ -2148,6 +2148,8 @@
     "tabAllStartups": "Alle Startups",
     "tabInvestors": "Investoren",
     "tabDeals": "Deals",
+    "tabIncidents": "Vorfallmeldungen",
+    "tabRegisterChecks": "Registerprüfungen",
     "allCaughtUp": "Alles erledigt! Keine ausstehenden Prüfungen.",
     "approve": "Genehmigen",
     "reject": "Ablehnen",
@@ -2172,6 +2174,7 @@
     "editsAcked": "Als erneut geprüft markiert.",
     "viewDashboard": "Dashboard",
     "viewListing": "Listing",
+    "openReview": "Prüfliste",
     "stageTitle": "Preisstufe",
     "stageSubEarly": "Early - kostenpflichtige Tarife liegen bei etwa der Hälfte des Standardpreises.",
     "foundingCohort": "Founding-Kohorte",
@@ -2417,7 +2420,7 @@
     "s4Title": "4. Abonnementpläne und Gebühren",
     "s4p1": "CapitalReach bietet kostenlose und kostenpflichtige Abonnementstufen für Startups und Investoren an. Kostenpflichtige Pläne werden monatlich wiederkehrend über unseren Zahlungsdienstleister Stripe abgerechnet.",
     "s4h1": "4.1 Kostenlose Periode",
-    "s4h1p1": "Während der frühen Startphase von CapitalReach werden alle Abonnementstufen kostenlos bereitgestellt, bis die Plattform 100 registrierte Nutzer erreicht. Sobald dieser Schwellenwert erreicht ist, gilt die auf der {link} veröffentlichte Standardpreisgestaltung. Nutzer mit kostenpflichtigen Plänen zum Zeitpunkt des Endes der kostenlosen Periode werden mindestens 7 Tage vor jeglicher Berechnung per E-Mail benachrichtigt.",
+    "s4h1p1": "Während der frühen Startphase von CapitalReach werden alle Abonnementstufen kostenlos bereitgestellt, bis die Plattform 150 registrierte Nutzer erreicht. Sobald dieser Schwellenwert erreicht ist, gilt die auf der {link} veröffentlichte Standardpreisgestaltung. Nutzer mit kostenpflichtigen Plänen zum Zeitpunkt des Endes der kostenlosen Periode werden mindestens 7 Tage vor jeglicher Berechnung per E-Mail benachrichtigt.",
     "s4h2": "4.2 Erfolgsgebühr",
     "s4h2p1": "Startups, die eine Finanzierungsrunde durch auf CapitalReach vermittelte Einführungen abschließen, unterliegen einer Erfolgsgebühr von 2 % des Gesamtbetrags, der von über die Plattform verbundenen Investoren aufgebracht wird. Diese Gebühr wird nach Abschluss der Runde in Rechnung gestellt und ist innerhalb von 14 Tagen nach Rechnungsdatum fällig. Für Kapital, das aus Quellen aufgebracht wird, die nicht über CapitalReach verbunden sind, wird keine Erfolgsgebühr berechnet.",
     "s4h3": "4.3 Kündigungen und Rückerstattungen",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Mit der Annahme dieser Konditionen werden der Deal und das Gespräch eröffnet. Ein Gegenangebot hält die Verhandlung mit Ihrer eigenen Zahl offen.",
     "amount": "Betrag",
     "changed": "Geändert",
+    "conditionsRemoved": "Gestrichen",
     "conditions": "Bedingungen",
     "counter": "Gegenangebot",
     "counterAria": "Auf das Angebot von {name} mit einem Gegenangebot antworten",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "Nachrichten sind möglich, sobald ein Deal zwischen Ihnen und der Gegenseite unterschrieben ist."
+  },
+  "docDownloads": {
+    "none": "nicht heruntergeladen",
+    "count": "{count} Downloads",
+    "count_one": "{count} Download",
+    "hint": "Jede Kopie, die ein Investor öffnet, trägt seinen Namen und den Zeitpunkt des Abrufs."
   }
 }

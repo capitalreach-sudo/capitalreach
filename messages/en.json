@@ -345,7 +345,7 @@
     "free": "Free",
     "popular": "Popular",
     "pageTitle": "Simple, transparent pricing.",
-    "pageSub": "Free during launch. Subscriptions begin after our first 100 members.",
+    "pageSub": "Free during launch. Subscriptions begin after our first 150 members.",
     "successFee": "2% success fee on all closed rounds — charged to the founder only, after capital is received.",
     "freeLabel": "Free",
     "starterLabel": "Starter",
@@ -362,8 +362,8 @@
     "faq": {
       "q1": "How does the 2% success fee work?",
       "a1": "When an investor marks a deal as closed, we invoice the startup for 2% of the amount raised — after closing. 14-day payment window via Stripe. Zero upfront fees.",
-      "q2": "What does 'Free until 100 members' mean?",
-      "a2": "We're waiving subscription fees entirely for our first 100 members. Everyone gets full access to the top tier at no cost. Once we hit 100 members, regular pricing kicks in for new signups.",
+      "q2": "What does 'Free until 150 members' mean?",
+      "a2": "We're waiving subscription fees entirely for our first 150 members. Everyone gets full access to the top tier at no cost. Once we hit 150 members, regular pricing kicks in for new signups.",
       "q3": "Can I cancel my subscription anytime?",
       "a3": "Yes. Cancel from your dashboard via the Stripe Customer Portal at any time. You retain access until the end of your billing period.",
       "q4": "What counts as a 'closed deal' for the 2% fee?",
@@ -2148,6 +2148,8 @@
     "tabAllStartups": "All Startups",
     "tabInvestors": "Investors",
     "tabDeals": "Deals",
+    "tabIncidents": "Incident reports",
+    "tabRegisterChecks": "Register checks",
     "allCaughtUp": "All caught up! No pending reviews.",
     "approve": "Approve",
     "reject": "Reject",
@@ -2172,6 +2174,7 @@
     "editsAcked": "Marked as re-checked.",
     "viewDashboard": "Dashboard",
     "viewListing": "Listing",
+    "openReview": "Review checklist",
     "stageTitle": "Pricing stage",
     "stageSubEarly": "Early -- paid tiers bind at about half the standard price.",
     "foundingCohort": "Founding cohort",
@@ -2417,7 +2420,7 @@
     "s4Title": "4. Subscription Plans and Fees",
     "s4p1": "CapitalReach offers free and paid subscription tiers for both startups and investors. Paid plans are billed on a monthly recurring basis through our payment processor, Stripe.",
     "s4h1": "4.1 Free Period",
-    "s4h1p1": "During CapitalReach's early launch period, all subscription tiers are provided at no charge until the platform reaches 100 registered users. Once this threshold is reached, standard pricing as published on the {link} will apply. Users on paid plans at the time the free period ends will be notified by email at least 7 days before any charges occur.",
+    "s4h1p1": "During CapitalReach's early launch period, all subscription tiers are provided at no charge until the platform reaches 150 registered users. Once this threshold is reached, standard pricing as published on the {link} will apply. Users on paid plans at the time the free period ends will be notified by email at least 7 days before any charges occur.",
     "s4h2": "4.2 Success Fee",
     "s4h2p1": "Startups that close a funding round through introductions made on CapitalReach are subject to a 2% success fee on the total amount raised from investors connected through the platform. This fee is invoiced after round closure and is due within 14 days of the invoice date. No success fee is charged on capital raised from sources not connected through CapitalReach.",
     "s4h3": "4.3 Cancellations and Refunds",
@@ -3447,6 +3450,7 @@
     "wasBefore": "Was {value}",
     "wasUnset": "Not stated last round",
     "changed": "Changed",
+    "conditionsRemoved": "Removed",
     "openingOffer": "Opening offer",
     "counterOffer": "Counter-offer",
     "roundN": "Round {n}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "Messaging opens once a deal between you and the other party is signed."
+  },
+  "docDownloads": {
+    "none": "not downloaded",
+    "count": "{count} downloads",
+    "count_one": "{count} download",
+    "hint": "Every copy an investor opens is stamped with their name and the moment they took it."
   }
 }

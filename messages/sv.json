@@ -329,7 +329,7 @@
     "free": "Gratis",
     "popular": "Populär",
     "pageTitle": "Enkla, transparenta priser.",
-    "pageSub": "Gratis under lanseringen. Prenumerationer börjar efter våra första 100 medlemmar.",
+    "pageSub": "Gratis under lanseringen. Prenumerationer börjar efter våra första 150 medlemmar.",
     "successFee": "2% framgångsavgift på alla stängda rundor — debiteras endast grundaren, efter att kapital mottagits.",
     "freeLabel": "Gratis",
     "starterLabel": "Starter",
@@ -347,7 +347,7 @@
       "q1": "När debiteras avgiften?",
       "a1": "2%-avgiften debiteras bara efter att rundan stängts och kapital faktiskt mottagits. Inga kostnader före stängning.",
       "q2": "Kan jag använda plattformen gratis?",
-      "a2": "Ja. Under lanseringen är plattformen helt gratis för de första 100 medlemmarna. Därefter börjar prenumerationer.",
+      "a2": "Ja. Under lanseringen är plattformen helt gratis för de första 150 medlemmarna. Därefter börjar prenumerationer.",
       "q3": "Betalar investerare avgifter?",
       "a3": "Nej. Investerare betalar inga avgifter. 2% framgångsavgiften gäller bara grundare som tar emot kapital.",
       "q4": "Vilka betalningsmetoder accepterar ni?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Alla startups",
     "tabInvestors": "Investerare",
     "tabDeals": "Affärer",
+    "tabIncidents": "Incidentrapporter",
+    "tabRegisterChecks": "Registerkontroller",
     "allCaughtUp": "Allt är klart! Inga väntande granskningar.",
     "approve": "Godkänn",
     "reject": "Avvisa",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Markerad som omkontrollerad.",
     "viewDashboard": "Instrumentpanel",
     "viewListing": "Notering",
+    "openReview": "Checklista",
     "stageTitle": "Prissteg",
     "stageSubEarly": "Tidig - betalda nivåer binds till ungefär halva standardpriset.",
     "foundingCohort": "Grundande kohort",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Prenumerationsplaner och avgifter",
     "s4p1": "CapitalReach erbjuder gratis och betalda prenumerationsnivåer för både startups och investerare. Betalda planer faktureras på månatlig återkommande basis via vår betalningsleverantör, Stripe.",
     "s4h1": "4.1 Gratisperiod",
-    "s4h1p1": "Under CapitalReachs tidiga lanseringsperiod tillhandahålls alla prenumerationsnivåer gratis tills plattformen når 100 registrerade användare. När denna gräns nås gäller standardprissättningen som publicerats på {link}. Användare med betalda planer vid tidpunkten då gratisperioden upphör kommer att meddelas via e-post minst 7 dagar innan några avgifter uppstår.",
+    "s4h1p1": "Under CapitalReachs tidiga lanseringsperiod tillhandahålls alla prenumerationsnivåer gratis tills plattformen når 150 registrerade användare. När denna gräns nås gäller standardprissättningen som publicerats på {link}. Användare med betalda planer vid tidpunkten då gratisperioden upphör kommer att meddelas via e-post minst 7 dagar innan några avgifter uppstår.",
     "s4h2": "4.2 Framgångsavgift",
     "s4h2p1": "Startups som avslutar en finansieringsrunda genom introduktioner gjorda på CapitalReach är föremål för en framgångsavgift på 2% av det totala beloppet som samlats in från investerare kopplade via plattformen. Denna avgift faktureras efter att rundan avslutats och förfaller inom 14 dagar från fakturadatumet. Ingen framgångsavgift tas ut på kapital som samlats in från källor som inte är kopplade via CapitalReach.",
     "s4h3": "4.3 Avbokningar och återbetalningar",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Att acceptera de här villkoren öppnar affären och konversationen. Ett motbud håller den öppen med din egen siffra.",
     "amount": "Belopp",
     "changed": "Ändrat",
+    "conditionsRemoved": "Borttaget",
     "conditions": "Villkor",
     "counter": "Motbjud",
     "counterAria": "Motbjud budet från {name}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "Meddelanden öppnas när en affär mellan dig och motparten är undertecknad."
+  },
+  "docDownloads": {
+    "none": "inte nedladdad",
+    "count": "{count} nedladdningar",
+    "count_one": "{count} nedladdning",
+    "hint": "Varje kopia som en investerare öppnar märks med namnet och tidpunkten då den hämtades."
   }
 }

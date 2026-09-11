@@ -45,6 +45,10 @@ type StageInfo = {
   stages: string[];
 };
 
+/** An inactive tab's type, without a tab's chrome: these sit outside the pill
+ *  because following one leaves the page. */
+const BENCH_LINK = "whitespace-nowrap px-3 py-1.5 text-sm font-medium text-cr-i3 hover:text-cr-copper transition-colors";
+
 export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue, feeMonths = [], adminLevel }: Props) {
   // The price ladder: founding (everyone free) -> early -> standard.
   // null until loaded.
@@ -78,6 +82,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
   const [processingId, setProcessingId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // The register bench and the listing review both read through routes that
+  // require operator, so for a support admin those two links would lead to a
+  // page that can only say no.
+  const canOperate = adminLevel === "operator" || adminLevel === "owner";
 
   async function toggleVerified(investorId: string, verified: boolean) {
     const res = await fetch("/api/admin/investor/verify", {
@@ -352,24 +361,37 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       </div>
 
       <Tabs defaultValue="pending">
-        <TabsList className="mb-6">
-          <TabsTrigger value="pending">
-            {t("admin.tabPending")}
-            {pendingStartups.length > 0 && (
-              <span className="ml-1.5 bg-cr-copper/15 text-cr-copper font-mono text-xs px-1.5 py-0.5 rounded-full">
-                {pendingStartups.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="verification">{t("reviewQueue.title")}</TabsTrigger>
-          <TabsTrigger value="circumvention">{t("caseFile.title")}</TabsTrigger>
-          <TabsTrigger value="startups">{t("admin.tabAllStartups")}</TabsTrigger>
-          <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
-          <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
-          <TabsTrigger value="fees">{t("fees.tab")}</TabsTrigger>
-          <TabsTrigger value="reports">{t("report.tab")}</TabsTrigger>
-          <TabsTrigger value="complaints">{t("complaints.tab")}</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center flex-wrap gap-1 mb-6">
+          <TabsList>
+            <TabsTrigger value="pending">
+              {t("admin.tabPending")}
+              {pendingStartups.length > 0 && (
+                <span className="ml-1.5 bg-cr-copper/15 text-cr-copper font-mono text-xs px-1.5 py-0.5 rounded-full">
+                  {pendingStartups.length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="verification">{t("reviewQueue.title")}</TabsTrigger>
+            <TabsTrigger value="circumvention">{t("caseFile.title")}</TabsTrigger>
+            <TabsTrigger value="startups">{t("admin.tabAllStartups")}</TabsTrigger>
+            <TabsTrigger value="investors">{t("admin.tabInvestors")}</TabsTrigger>
+            <TabsTrigger value="deals">{t("admin.tabDeals")}</TabsTrigger>
+            <TabsTrigger value="fees">{t("fees.tab")}</TabsTrigger>
+            <TabsTrigger value="reports">{t("report.tab")}</TabsTrigger>
+            <TabsTrigger value="complaints">{t("complaints.tab")}</TabsTrigger>
+          </TabsList>
+
+          {/* Benches that are whole routes rather than tab panels, listed in
+              the same strip because it is the only place an operator looks for
+              one. The report bench here is the incident queue -- claims about a
+              party, filed by anyone including a visitor with no account -- and
+              is a different table from the content queue on the tab above. */}
+          <Link href="/admin/users" className={BENCH_LINK}>{t("adminUsers.pageTitle")}</Link>
+          <Link href="/admin/reports" className={BENCH_LINK}>{t("admin.tabIncidents")}</Link>
+          {canOperate && (
+            <Link href="/admin/register-checks" className={BENCH_LINK}>{t("admin.tabRegisterChecks")}</Link>
+          )}
+        </div>
 
         {/* Pending */}
         <TabsContent value="pending">
@@ -393,6 +415,19 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                         <p className="text-sm text-cr-i3">{s.tagline}</p>
                         <p className="text-xs text-cr-i4 mt-1">
                           {t("admin.byLabel")} {s.owner?.full_name || s.owner?.email} · <span className="font-mono">{formatDate(s.created_at)}</span>
+                          {/* The long way to the same decision: the checklist
+                              bench, which records what was looked at and
+                              refuses to approve until the required items pass.
+                              Per listing, so it belongs on the row and not in
+                              the strip above. */}
+                          {canOperate && (
+                            <>
+                              {" · "}
+                              <Link href={`/admin/listings/${s.id}/review`} className="text-cr-copper underline underline-offset-2">
+                                {t("admin.openReview")}
+                              </Link>
+                            </>
+                          )}
                         </p>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">

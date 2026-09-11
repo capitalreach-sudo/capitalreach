@@ -666,11 +666,13 @@ export async function PATCH(req: NextRequest) {
  * accepted a second ago, it matches nothing and the caller says so instead of
  * quietly forking the negotiation in two.
  *
- * 'countered' is the honest state and the one lib/contact-policy reads, but
- * migration 091's CHECK constraint predates it and 118 did not widen it. Until
- * a migration adds the value, a rejected check falls back to 'declined' --
+ * 'countered' is the honest state and the one lib/contact-policy reads.
+ * Migration 091's CHECK predated the value and 118 did not widen it; 122 did,
+ * and production now permits pending, accepted, declined, withdrawn and
+ * countered. The 'declined' fallback below is therefore no longer expected to
+ * fire and is kept only for a database that has not had 122 applied: it is
  * true as far as it goes (this offer was not taken) and counters_id still
- * carries the real story. See the note at the bottom of this file.
+ * carries the real story. Delete it once no such database is left.
  */
 async function closeAsCountered(admin: Admin, id: string): Promise<boolean> {
   const now = new Date().toISOString();
@@ -749,16 +751,3 @@ async function notifyResolution(
     });
   } catch { /* a lost notification must not fail the action */ }
 }
-
-/*
- * OPEN ITEM for whoever owns migrations: deal_proposals.status still carries
- * 091's CHECK (pending, accepted, declined, withdrawn). lib/contact-policy
- * queries for 'countered' and this route writes it, so the constraint needs
- *
- *   alter table public.deal_proposals drop constraint deal_proposals_status_check;
- *   alter table public.deal_proposals add constraint deal_proposals_status_check
- *     check (status in ('pending','accepted','declined','withdrawn','countered'));
- *
- * Until then closeAsCountered() degrades to 'declined' rather than failing the
- * counter outright, which is why counters work today and read slightly wrong.
- */

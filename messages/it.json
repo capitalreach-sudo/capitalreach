@@ -329,7 +329,7 @@
     "free": "Gratuito",
     "popular": "Popolare",
     "pageTitle": "Prezzi semplici e trasparenti.",
-    "pageSub": "Gratuito durante il lancio. Gli abbonamenti iniziano dopo i primi 100 membri.",
+    "pageSub": "Gratuito durante il lancio. Gli abbonamenti iniziano dopo i primi 150 membri.",
     "successFee": "Commissione di successo del 2% su tutti i round chiusi — addebitata solo al fondatore, dopo aver ricevuto il capitale.",
     "freeLabel": "Gratuito",
     "starterLabel": "Starter",
@@ -347,7 +347,7 @@
       "q1": "Quando viene addebitata la commissione?",
       "a1": "La commissione del 2% viene addebitata solo dopo la chiusura del round e l'effettivo ricevimento del capitale. Nessun costo prima della chiusura.",
       "q2": "Posso usare la piattaforma gratuitamente?",
-      "a2": "Sì. Durante il lancio, la piattaforma è completamente gratuita per i primi 100 membri. Dopodiché inizieranno gli abbonamenti.",
+      "a2": "Sì. Durante il lancio, la piattaforma è completamente gratuita per i primi 150 membri. Dopodiché inizieranno gli abbonamenti.",
       "q3": "Gli investitori pagano commissioni?",
       "a3": "No. Gli investitori non pagano alcuna commissione. Il 2% di successo si applica solo ai fondatori che ricevono il capitale.",
       "q4": "Quali metodi di pagamento accettate?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Tutte le startup",
     "tabInvestors": "Investitori",
     "tabDeals": "Deal",
+    "tabIncidents": "Segnalazioni di incidenti",
+    "tabRegisterChecks": "Verifiche al registro",
     "allCaughtUp": "Tutto aggiornato! Nessuna revisione in sospeso.",
     "approve": "Approva",
     "reject": "Rifiuta",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Segnata come ricontrollata.",
     "viewDashboard": "Dashboard",
     "viewListing": "Annuncio",
+    "openReview": "Lista di controllo",
     "stageTitle": "Fase tariffaria",
     "stageSubEarly": "Anticipata - i piani a pagamento si fissano a circa metà del prezzo standard.",
     "foundingCohort": "Gruppo dei fondatori",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Piani di abbonamento e commissioni",
     "s4p1": "CapitalReach offre livelli di abbonamento gratuiti e a pagamento sia per le startup che per gli investitori. I piani a pagamento vengono fatturati su base mensile ricorrente tramite il nostro elaboratore di pagamenti, Stripe.",
     "s4h1": "4.1 Periodo gratuito",
-    "s4h1p1": "Durante il periodo di lancio iniziale di CapitalReach, tutti i livelli di abbonamento vengono forniti gratuitamente fino a quando la piattaforma non raggiunge 100 utenti registrati. Una volta raggiunta questa soglia, si applicheranno i prezzi standard pubblicati sulla {link}. Gli utenti con piani a pagamento al momento della fine del periodo gratuito riceveranno una notifica via e-mail almeno 7 giorni prima di qualsiasi addebito.",
+    "s4h1p1": "Durante il periodo di lancio iniziale di CapitalReach, tutti i livelli di abbonamento vengono forniti gratuitamente fino a quando la piattaforma non raggiunge 150 utenti registrati. Una volta raggiunta questa soglia, si applicheranno i prezzi standard pubblicati sulla {link}. Gli utenti con piani a pagamento al momento della fine del periodo gratuito riceveranno una notifica via e-mail almeno 7 giorni prima di qualsiasi addebito.",
     "s4h2": "4.2 Commissione di successo",
     "s4h2p1": "Le startup che chiudono un round di finanziamento tramite presentazioni effettuate su CapitalReach sono soggette ad una commissione di successo pari al 2% dell'importo totale raccolto da investitori collegati tramite la piattaforma. Questa commissione viene fatturata dopo la chiusura del round ed è dovuta entro 14 giorni dalla data della fattura. Nessuna commissione di successo viene addebitata sul capitale raccolto da fonti non collegate tramite CapitalReach.",
     "s4h3": "4.3 Cancellazioni e rimborsi",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Accettare queste condizioni apre il deal e la conversazione. Con una controfferta la trattativa resta aperta sul tuo importo.",
     "amount": "Importo",
     "changed": "Modificato",
+    "conditionsRemoved": "Rimosso",
     "conditions": "Condizioni",
     "counter": "Controfferta",
     "counterAria": "Presenta una controfferta all'offerta di {name}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "La messaggistica si apre quando un accordo tra te e l'altra parte è firmato."
+  },
+  "docDownloads": {
+    "none": "non scaricato",
+    "count": "{count} download",
+    "count_one": "{count} download",
+    "hint": "Ogni copia aperta da un investitore riporta il suo nome e il momento in cui l'ha presa."
   }
 }

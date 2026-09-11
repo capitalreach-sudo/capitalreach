@@ -338,7 +338,7 @@
     "free": "Gratis",
     "popular": "Popular",
     "pageTitle": "Precios simples y transparentes.",
-    "pageSub": "Gratis durante el lanzamiento. Las suscripciones comienzan después de nuestros primeros 100 miembros.",
+    "pageSub": "Gratis durante el lanzamiento. Las suscripciones comienzan después de nuestros primeros 150 miembros.",
     "successFee": "Comisión de éxito del 2% en todas las rondas cerradas — cobrada al fundador únicamente, tras recibir el capital.",
     "freeLabel": "Gratis",
     "starterLabel": "Starter",
@@ -355,8 +355,8 @@
     "faq": {
       "q1": "¿Cómo funciona la comisión de éxito del 2%?",
       "a1": "Cuando un inversor marca un deal como cerrado, facturamos a la startup el 2% del importe recaudado — después del cierre. Ventana de pago de 14 días a través de Stripe. Sin comisiones iniciales.",
-      "q2": "¿Qué significa 'Gratis hasta 100 miembros'?",
-      "a2": "Estamos exonerado totalmente las cuotas de suscripción para nuestros primeros 100 miembros. Todos obtienen acceso completo al nivel superior sin coste. Una vez alcanzados los 100 miembros, los precios regulares se aplican a los nuevos registros.",
+      "q2": "¿Qué significa 'Gratis hasta 150 miembros'?",
+      "a2": "Estamos exonerado totalmente las cuotas de suscripción para nuestros primeros 150 miembros. Todos obtienen acceso completo al nivel superior sin coste. Una vez alcanzados los 150 miembros, los precios regulares se aplican a los nuevos registros.",
       "q3": "¿Puedo cancelar mi suscripción en cualquier momento?",
       "a3": "Sí. Cancela desde tu panel a través del Portal de Clientes de Stripe en cualquier momento. Conservas el acceso hasta el final de tu período de facturación.",
       "q4": "¿Qué cuenta como 'deal cerrado' para la comisión del 2%?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Todas las startups",
     "tabInvestors": "Inversores",
     "tabDeals": "Deals",
+    "tabIncidents": "Denuncias de incidentes",
+    "tabRegisterChecks": "Comprobaciones del registro",
     "allCaughtUp": "¡Todo al día! No hay revisiones pendientes.",
     "approve": "Aprobar",
     "reject": "Rechazar",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Marcada como revisada.",
     "viewDashboard": "Panel",
     "viewListing": "Ficha",
+    "openReview": "Lista de verificación",
     "stageTitle": "Etapa de precios",
     "stageSubEarly": "Inicial - los planes de pago se fijan en torno a la mitad del precio estándar.",
     "foundingCohort": "Cohorte fundacional",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Planes de suscripción y tarifas",
     "s4p1": "CapitalReach ofrece niveles de suscripción gratuitos y de pago tanto para startups como para inversores. Los planes de pago se facturan mensualmente de forma recurrente a través de nuestro procesador de pagos, Stripe.",
     "s4h1": "4.1 Período gratuito",
-    "s4h1p1": "Durante el período de lanzamiento inicial de CapitalReach, todos los niveles de suscripción se proporcionan sin cargo hasta que la plataforma alcance los 100 usuarios registrados. Una vez alcanzado este umbral, se aplicará el precio estándar publicado en la {link}. Los usuarios con planes de pago en el momento en que finalice el período gratuito serán notificados por correo electrónico al menos 7 días antes de que se produzca cualquier cargo.",
+    "s4h1p1": "Durante el período de lanzamiento inicial de CapitalReach, todos los niveles de suscripción se proporcionan sin cargo hasta que la plataforma alcance los 150 usuarios registrados. Una vez alcanzado este umbral, se aplicará el precio estándar publicado en la {link}. Los usuarios con planes de pago en el momento en que finalice el período gratuito serán notificados por correo electrónico al menos 7 días antes de que se produzca cualquier cargo.",
     "s4h2": "4.2 Comisión de éxito",
     "s4h2p1": "Las startups que cierren una ronda de financiación mediante presentaciones realizadas en CapitalReach están sujetas a una comisión de éxito del 2% sobre el monto total recaudado de inversores conectados a través de la plataforma. Esta comisión se factura después del cierre de la ronda y vence dentro de los 14 días posteriores a la fecha de la factura. No se cobra ninguna comisión de éxito sobre el capital recaudado de fuentes no conectadas a través de CapitalReach.",
     "s4h3": "4.3 Cancelaciones y reembolsos",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Aceptar estas condiciones abre la operación y la conversación. Contraofertar mantiene la negociación abierta con su propio importe.",
     "amount": "Importe",
     "changed": "Modificado",
+    "conditionsRemoved": "Eliminado",
     "conditions": "Condiciones",
     "counter": "Contraofertar",
     "counterAria": "Contraofertar la oferta de {name}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "La mensajería se abre cuando se firma un acuerdo entre usted y la otra parte."
+  },
+  "docDownloads": {
+    "none": "no descargado",
+    "count": "{count} descargas",
+    "count_one": "{count} descarga",
+    "hint": "Cada copia que abre un inversor lleva grabado su nombre y el momento en que la obtuvo."
   }
 }

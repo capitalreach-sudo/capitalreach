@@ -329,7 +329,7 @@
     "free": "Grátis",
     "popular": "Popular",
     "pageTitle": "Preços simples e transparentes.",
-    "pageSub": "Grátis durante o lançamento. As assinaturas começam após nossos primeiros 100 membros.",
+    "pageSub": "Grátis durante o lançamento. As assinaturas começam após nossos primeiros 150 membros.",
     "successFee": "Taxa de sucesso de 2% em todos os rounds fechados — cobrada apenas do fundador, após recebimento do capital.",
     "freeLabel": "Grátis",
     "starterLabel": "Starter",
@@ -347,7 +347,7 @@
       "q1": "Quando a taxa é cobrada?",
       "a1": "A taxa de 2% é cobrada apenas após o fechamento do round e o recebimento efetivo do capital. Nenhum custo antes do fechamento.",
       "q2": "Posso usar a plataforma gratuitamente?",
-      "a2": "Sim. Durante o lançamento, a plataforma é completamente gratuita para os primeiros 100 membros. Depois disso, as assinaturas começam.",
+      "a2": "Sim. Durante o lançamento, a plataforma é completamente gratuita para os primeiros 150 membros. Depois disso, as assinaturas começam.",
       "q3": "Os investidores pagam taxas?",
       "a3": "Não. Os investidores não pagam nenhuma taxa. O sucesso de 2% se aplica apenas aos fundadores que recebem capital.",
       "q4": "Quais métodos de pagamento vocês aceitam?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Todas as startups",
     "tabInvestors": "Investidores",
     "tabDeals": "Negócios",
+    "tabIncidents": "Denúncias de incidentes",
+    "tabRegisterChecks": "Verificações no registo",
     "allCaughtUp": "Tudo em dia! Sem revisões pendentes.",
     "approve": "Aprovar",
     "reject": "Rejeitar",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Marcada como reverificada.",
     "viewDashboard": "Painel",
     "viewListing": "Anúncio",
+    "openReview": "Lista de verificação",
     "stageTitle": "Fase de preços",
     "stageSubEarly": "Antecipada - os planos pagos são fixados a cerca de metade do preço padrão.",
     "foundingCohort": "Grupo fundador",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Planos de Subscrição e Taxas",
     "s4p1": "A CapitalReach oferece níveis de subscrição gratuitos e pagos tanto para startups como para investidores. Os planos pagos são faturados numa base mensal recorrente através do nosso processador de pagamentos, Stripe.",
     "s4h1": "4.1 Período Gratuito",
-    "s4h1p1": "Durante o período de lançamento inicial da CapitalReach, todos os níveis de subscrição são fornecidos gratuitamente até a plataforma atingir 100 utilizadores registados. Uma vez atingido este limite, aplicar-se-á o preço padrão publicado na {link}. Os utilizadores em planos pagos no momento em que o período gratuito termina serão notificados por e-mail pelo menos 7 dias antes de qualquer cobrança ocorrer.",
+    "s4h1p1": "Durante o período de lançamento inicial da CapitalReach, todos os níveis de subscrição são fornecidos gratuitamente até a plataforma atingir 150 utilizadores registados. Uma vez atingido este limite, aplicar-se-á o preço padrão publicado na {link}. Os utilizadores em planos pagos no momento em que o período gratuito termina serão notificados por e-mail pelo menos 7 dias antes de qualquer cobrança ocorrer.",
     "s4h2": "4.2 Taxa de Sucesso",
     "s4h2p1": "As startups que fecham uma ronda de financiamento através de apresentações feitas na CapitalReach estão sujeitas a uma taxa de sucesso de 2% sobre o montante total angariado de investidores conectados através da plataforma. Esta taxa é faturada após o fecho da ronda e é devida no prazo de 14 dias a partir da data da fatura. Nenhuma taxa de sucesso é cobrada sobre capital angariado de fontes não conectadas através da CapitalReach.",
     "s4h3": "4.3 Cancelamentos e Reembolsos",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Aceitar estas condições abre o negócio e a conversa. Contrapropor mantém a negociação aberta com um número seu.",
     "amount": "Montante",
     "changed": "Alterado",
+    "conditionsRemoved": "Removido",
     "conditions": "Condições",
     "counter": "Contrapropor",
     "counterAria": "Contrapropor à oferta de {name}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "As mensagens abrem assim que um acordo entre si e a outra parte for assinado."
+  },
+  "docDownloads": {
+    "none": "não descarregado",
+    "count": "{count} descarregamentos",
+    "count_one": "{count} descarregamento",
+    "hint": "Cada cópia que um investidor abre fica marcada com o seu nome e o momento em que a obteve."
   }
 }

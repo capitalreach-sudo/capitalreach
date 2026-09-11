@@ -329,7 +329,7 @@
     "free": "Bezpłatny",
     "popular": "Popularny",
     "pageTitle": "Proste, przejrzyste ceny.",
-    "pageSub": "Bezpłatnie podczas startu. Subskrypcje zaczynają się po pierwszych 100 członkach.",
+    "pageSub": "Bezpłatnie podczas startu. Subskrypcje zaczynają się po pierwszych 150 członkach.",
     "successFee": "2% prowizji od sukcesu dla wszystkich zamkniętych rund — pobierana wyłącznie od założyciela, po otrzymaniu kapitału.",
     "freeLabel": "Bezpłatny",
     "starterLabel": "Starter",
@@ -347,7 +347,7 @@
       "q1": "Kiedy pobierana jest prowizja?",
       "a1": "Prowizja 2% jest pobierana wyłącznie po zamknięciu rundy i faktycznym otrzymaniu kapitału. Brak kosztów przed zamknięciem.",
       "q2": "Czy mogę używać platformy za darmo?",
-      "a2": "Tak. Podczas startu platforma jest całkowicie bezpłatna dla pierwszych 100 członków. Następnie zaczynają się subskrypcje.",
+      "a2": "Tak. Podczas startu platforma jest całkowicie bezpłatna dla pierwszych 150 członków. Następnie zaczynają się subskrypcje.",
       "q3": "Czy inwestorzy płacą prowizje?",
       "a3": "Nie. Inwestorzy nie płacą żadnych prowizji. 2% prowizja od sukcesu dotyczy wyłącznie założycieli otrzymujących kapitał.",
       "q4": "Jakie metody płatności akceptujecie?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Wszystkie startupy",
     "tabInvestors": "Inwestorzy",
     "tabDeals": "Transakcje",
+    "tabIncidents": "Zgłoszenia incydentów",
+    "tabRegisterChecks": "Kontrole w rejestrze",
     "allCaughtUp": "Wszystko na bieżąco! Brak oczekujących weryfikacji.",
     "approve": "Zatwierdź",
     "reject": "Odrzuć",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Oznaczono jako ponownie sprawdzony.",
     "viewDashboard": "Panel",
     "viewListing": "Ogłoszenie",
+    "openReview": "Lista kontrolna",
     "stageTitle": "Etap cennika",
     "stageSubEarly": "Wczesny - taryfy płatne są ustalane na poziomie około połowy ceny standardowej.",
     "foundingCohort": "Kohorta założycielska",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Plany subskrypcji i opłaty",
     "s4p1": "CapitalReach oferuje bezpłatne i płatne poziomy subskrypcji zarówno dla startupów, jak i inwestorów. Płatne plany są rozliczane co miesiąc w cyklu odnawialnym za pośrednictwem naszego procesora płatności, Stripe.",
     "s4h1": "4.1 Okres bezpłatny",
-    "s4h1p1": "Podczas wczesnego okresu uruchomienia CapitalReach, wszystkie poziomy subskrypcji są dostępne bezpłatnie, dopóki platforma nie osiągnie 100 zarejestrowanych użytkowników. Po osiągnięciu tego progu obowiązywać będzie standardowa cena opublikowana na {link}. Użytkownicy z płatnymi planami w momencie zakończenia okresu bezpłatnego zostaną powiadomieni e-mailem co najmniej 7 dni przed naliczeniem jakichkolwiek opłat.",
+    "s4h1p1": "Podczas wczesnego okresu uruchomienia CapitalReach, wszystkie poziomy subskrypcji są dostępne bezpłatnie, dopóki platforma nie osiągnie 150 zarejestrowanych użytkowników. Po osiągnięciu tego progu obowiązywać będzie standardowa cena opublikowana na {link}. Użytkownicy z płatnymi planami w momencie zakończenia okresu bezpłatnego zostaną powiadomieni e-mailem co najmniej 7 dni przed naliczeniem jakichkolwiek opłat.",
     "s4h2": "4.2 Opłata za sukces",
     "s4h2p1": "Startupy, które zamykają rundę finansowania poprzez wprowadzenia dokonane na CapitalReach, podlegają opłacie za sukces w wysokości 2% całkowitej kwoty zebranej od inwestorów połączonych za pośrednictwem platformy. Opłata ta jest fakturowana po zamknięciu rundy i jest płatna w ciągu 14 dni od daty faktury. Żadna opłata za sukces nie jest pobierana od kapitału zebranego ze źródeł niepołączonych za pośrednictwem CapitalReach.",
     "s4h3": "4.3 Anulowania i zwroty",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Przyjęcie tych warunków otwiera transakcję i rozmowę. Kontroferta podtrzymuje negocjacje przy Twojej kwocie.",
     "amount": "Kwota",
     "changed": "Zmienione",
+    "conditionsRemoved": "Usunięte",
     "conditions": "Warunki",
     "counter": "Kontroferta",
     "counterAria": "Odpowiedz kontrofertą na ofertę od {name}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "Wiadomości stają się dostępne po podpisaniu umowy między Tobą a drugą stroną."
+  },
+  "docDownloads": {
+    "none": "nie pobrano",
+    "count": "Pobrania: {count}",
+    "count_one": "Pobranie: {count}",
+    "hint": "Każda kopia otwarta przez inwestora jest oznaczona jego nazwiskiem i momentem pobrania."
   }
 }

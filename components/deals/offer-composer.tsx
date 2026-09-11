@@ -176,7 +176,10 @@ export function OfferComposer({
   const [equity, setEquity] = useState(asField(ask?.equityPct));
   const [valuation, setValuation] = useState(asField(ask?.valuation));
   const [instrument, setInstrument] = useState(ask?.instrument ?? "");
-  const [conditions, setConditions] = useState("");
+  // Conditions prefill with the rest. Starting this one empty made a counter
+  // that touched only the number send conditions: null, striking the other
+  // side's terms without anybody choosing to.
+  const [conditions, setConditions] = useState(ask?.conditions ?? "");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [needsAccreditation, setNeedsAccreditation] = useState(false);

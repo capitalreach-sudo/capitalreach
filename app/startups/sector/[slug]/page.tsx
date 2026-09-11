@@ -27,11 +27,25 @@ interface Props {
   params: { slug: string };
 }
 
-export const revalidate = 3600;
-
-export function generateStaticParams() {
-  return SECTOR_SLUGS.map(({ slug }) => ({ slug }));
-}
+/**
+ * Rendered per request, not prerendered, and that is a correction rather than
+ * a preference.
+ *
+ * These pages were `revalidate = 3600` plus generateStaticParams, which reads
+ * as a cheap SEO win and was not one. createAdminClient pins every request to
+ * `cache: "no-store"` on purpose (lib/supabase-server.ts:48, so a listing edit
+ * is never served from Next's fetch cache), and a no-store fetch inside a
+ * statically generated page raises DynamicServerError. supabase-js caught that
+ * error and handed it back as `{ data: null, error }`, the old code destructured
+ * `data` alone, and so every sector page prerendered with an empty list and
+ * stayed that way for an hour at a time. Confirmed on production before this
+ * change: /startups/sector/ai-machine-learning carried zero listing links.
+ *
+ * So the choice is not static-versus-dynamic, it is empty-versus-correct. Two
+ * dozen sectors answering a query for at most 24 rows is a cheap page to
+ * render on demand.
+ */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const industry = industryFromSlug(params.slug);
@@ -42,9 +56,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// i18n note: deliberately English-only. These are SSG SEO landing pages
-// (generateStaticParams); reading the locale cookie would force them dynamic.
-// Same policy as /blog.
+// i18n note: deliberately English-only. These are SEO landing pages written
+// for a crawler rather than for a signed-in member, and the reason no longer
+// has anything to do with rendering mode -- the page is dynamic now. Same
+// policy as /blog.
 export default async function SectorPage({ params }: Props) {
   // Same rule as the index: a sector page is the catalogue, filtered.
   if (!(await browseIndexPublic())) {
@@ -56,14 +71,24 @@ export default async function SectorPage({ params }: Props) {
   if (!industry) notFound();
 
   const admin = createAdminClient();
-  const { data: startups } = await admin
+  // Same query shape as loadActiveStartups, one industry narrower -- the shared
+  // loader takes no industry argument, so the filters are repeated here rather
+  // than the whole market being loaded and sliced down to one sector.
+  const { data: startups, error } = await admin
     .from("startups")
     .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score, round_close_date")
     .eq("status", "active")
+    // B16: a founder-paused round is off the market until they resume it.
+    .neq("round_state", "paused")
     .eq("industry", industry)
     .order("created_at", { ascending: false })
     .limit(24)
     .returns<StartupCardData[]>();
+  // The empty state below is a factual claim about the sector, and this page
+  // is cached for an hour, so a failed read must not become one. Throwing
+  // holds the last good render through a revalidation and fails the build
+  // loudly rather than prerendering a sector as empty.
+  if (error) throw new Error(`sector ${params.slug}: ${error.message}`);
 
   // This page is statically generated for anonymous crawlers and always passes
   // investorTier={null} to the card, so gated figures are never displayed

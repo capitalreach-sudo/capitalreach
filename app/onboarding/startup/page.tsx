@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { COUNTRIES, normalizeCountry } from "@/lib/countries";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -143,9 +144,53 @@ export default function StartupOnboardingPage() {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
+
+  // This form always posts create:true, and the save route answers that with an
+  // UPDATE once the founder owns a row. Reaching onboarding a second time --
+  // a bookmark, the back button, a typed URL -- would therefore write these
+  // empty fields over a live listing and replace its founders and milestones
+  // wholesale, with nothing on screen to say so. A founder who already has a
+  // listing belongs on the edit page, and nothing is rendered until this has
+  // answered: a blank "01 / 07" flashing over a real listing is alarming even
+  // in the moment before the redirect lands.
+  useEffect(() => {
+    (async () => {
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      // A signed-out browser comes back as AuthSessionMissingError, and that
+      // one is not a failure: with no session there is no listing to protect,
+      // and handleSubmit already sends that visitor to the login page. Any
+      // other auth failure leaves ownership unknown, which is the state this
+      // guard exists to refuse.
+      if (authErr && authErr.name !== "AuthSessionMissingError") {
+        console.error("[onboarding/startup] session read failed:", authErr.message);
+        notify.error(t("common.error"));
+        router.replace("/dashboard/startup");
+        return;
+      }
+      if (user) {
+        const { data: existing, error } = await supabase
+          .from("startups").select("id").eq("owner_id", user.id).limit(1).maybeSingle();
+        if (error) {
+          // Captured, not discarded. Read as "no row" a failed check hands the
+          // founder the blank form, which is the overwrite it is here to stop.
+          // The dashboard is right either way: it shows the listing, or the
+          // empty state whose one action links back here.
+          console.error("[onboarding/startup] existing-listing check failed:", error.message);
+          notify.error(t("common.error"));
+          router.replace("/dashboard/startup");
+          return;
+        }
+        // Any row at all, live or pending review or rejected: the save route
+        // updates whatever the founder owns.
+        if (existing) { router.replace("/dashboard/startup/edit"); return; }
+      }
+      setChecking(false);
+    })();
+  }, []);
 
   // A confirmed founder lands here straight from the mail link, which is the
   // earliest point in the flow that carries a session.
@@ -381,6 +426,12 @@ export default function StartupOnboardingPage() {
   };
 
   const progress = Math.round((step / STEPS.length) * 100);
+
+  if (checking) return (
+    <div style={{ minHeight: "100vh", background: "var(--cr-paper)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <LedgerLoader />
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--cr-paper)" }}>

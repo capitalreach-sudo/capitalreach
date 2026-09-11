@@ -50,7 +50,7 @@ export async function buildAssistantContext(
         .select("id, role, subscription_tier, suspended, account_status")
         .eq("id", userId).maybeSingle()).data
     : null;
-  const { isLaunch } = await getLaunchStatus();
+  const { isLaunch, target } = await getLaunchStatus();
   const ctx = buildAccessContext(viewer, isLaunch);
 
   switch (ref.kind) {
@@ -63,7 +63,7 @@ export async function buildAssistantContext(
     case "data":
       return dataContext(admin);
     case "pricing":
-      return { text: PRICING_CONTEXT, label: "the pricing page", redacted: false };
+      return { text: pricingContext(target), label: "the pricing page", redacted: false };
     default:
       return { text: "", label: "CapitalReach", redacted: false };
   }
@@ -201,7 +201,10 @@ async function dataContext(admin: ReturnType<typeof createAdminClient>): Promise
   };
 }
 
-const PRICING_CONTEXT = `CapitalReach pricing.
+// The cohort size is admin-editable platform_config, and this block is the
+// only thing the model knows about the offer: a number written down here
+// quotes the visitor a promise the page beside it no longer makes.
+const pricingContext = (target: number) => `CapitalReach pricing.
 
 Founder plans: Free (no public listing); Starter $29/mo or $259/yr; Growth $79/mo or $699/yr.
 Investor plans: Explorer (free, browse only); Angel $99/mo or $879/yr; Pro Investor $249/mo or $2,190/yr; Institution (custom, contact sales).
@@ -211,4 +214,4 @@ There is also a 2% success fee, charged only when a round actually closes.
 It is paid by the STARTUP receiving the investment, never by the investor.
 A founder can spread that fee over 2-6 monthly instalments.
 
-During the launch period the first 100 members get every paid feature free.`;
+During the launch period the first ${target} members get every paid feature free.`;

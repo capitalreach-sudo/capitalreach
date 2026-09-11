@@ -329,7 +329,7 @@
     "free": "Gratis",
     "popular": "Populair",
     "pageTitle": "Eenvoudige, transparante prijzen.",
-    "pageSub": "Gratis tijdens de lancering. Abonnementen starten na onze eerste 100 leden.",
+    "pageSub": "Gratis tijdens de lancering. Abonnementen starten na onze eerste 150 leden.",
     "successFee": "2% succesfee op alle gesloten rounds — alleen in rekening gebracht bij de oprichter, na ontvangst van het kapitaal.",
     "freeLabel": "Gratis",
     "starterLabel": "Starter",
@@ -347,7 +347,7 @@
       "q1": "Wanneer wordt de fee in rekening gebracht?",
       "a1": "De 2% fee wordt alleen in rekening gebracht nadat de ronde is gesloten en het kapitaal daadwerkelijk is ontvangen. Geen kosten vóór closing.",
       "q2": "Kan ik het platform gratis gebruiken?",
-      "a2": "Ja. Tijdens de lancering is het platform volledig gratis voor de eerste 100 leden. Daarna starten abonnementen.",
+      "a2": "Ja. Tijdens de lancering is het platform volledig gratis voor de eerste 150 leden. Daarna starten abonnementen.",
       "q3": "Betalen investeerders fees?",
       "a3": "Nee. Investeerders betalen geen fees. De 2% succesfee geldt alleen voor oprichters die kapitaal ontvangen.",
       "q4": "Welke betaalmethoden accepteren jullie?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Alle startups",
     "tabInvestors": "Investeerders",
     "tabDeals": "Deals",
+    "tabIncidents": "Incidentmeldingen",
+    "tabRegisterChecks": "Registercontroles",
     "allCaughtUp": "Alles bijgewerkt! Geen beoordelingen in behandeling.",
     "approve": "Goedkeuren",
     "reject": "Afwijzen",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Gemarkeerd als opnieuw gecontroleerd.",
     "viewDashboard": "Dashboard",
     "viewListing": "Vermelding",
+    "openReview": "Controlelijst",
     "stageTitle": "Tariefase",
     "stageSubEarly": "Early - betaalde niveaus liggen op ongeveer de helft van het Standard-tarief.",
     "foundingCohort": "Founding-cohort",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Abonnementen en kosten",
     "s4p1": "CapitalReach biedt gratis en betaalde abonnementsniveaus voor zowel startups als investeerders. Betaalde plannen worden maandelijks terugkerend gefactureerd via onze betalingsverwerker, Stripe.",
     "s4h1": "4.1 Gratis periode",
-    "s4h1p1": "Gedurende de vroege lanceringsperiode van CapitalReach worden alle abonnementsniveaus gratis aangeboden totdat het platform 100 geregistreerde gebruikers bereikt. Zodra deze drempel is bereikt, geldt de standaardprijs zoals gepubliceerd op de {link}. Gebruikers met betaalde plannen op het moment dat de gratis periode eindigt, worden per e-mail geïnformeerd, minstens 7 dagen voordat er kosten in rekening worden gebracht.",
+    "s4h1p1": "Gedurende de vroege lanceringsperiode van CapitalReach worden alle abonnementsniveaus gratis aangeboden totdat het platform 150 geregistreerde gebruikers bereikt. Zodra deze drempel is bereikt, geldt de standaardprijs zoals gepubliceerd op de {link}. Gebruikers met betaalde plannen op het moment dat de gratis periode eindigt, worden per e-mail geïnformeerd, minstens 7 dagen voordat er kosten in rekening worden gebracht.",
     "s4h2": "4.2 Succesvergoeding",
     "s4h2p1": "Startups die een financieringsronde afsluiten via introducties gemaakt op CapitalReach zijn onderworpen aan een succesvergoeding van 2% van het totale bedrag opgehaald bij investeerders die via het platform zijn verbonden. Deze vergoeding wordt gefactureerd na het sluiten van de ronde en is verschuldigd binnen 14 dagen na de factuurdatum. Er wordt geen succesvergoeding in rekening gebracht op kapitaal dat is opgehaald bij bronnen die niet via CapitalReach zijn verbonden.",
     "s4h3": "4.3 Annuleringen en terugbetalingen",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Aanvaardt u deze voorwaarden, dan gaan de deal en het gesprek open. Met een tegenbod houdt u het open met uw eigen bedrag.",
     "amount": "Bedrag",
     "changed": "Gewijzigd",
+    "conditionsRemoved": "Verwijderd",
     "conditions": "Voorwaarden",
     "counter": "Tegenbod",
     "counterAria": "Een tegenbod doen op het bod van {name}",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "Berichten worden mogelijk zodra een deal tussen jou en de andere partij is ondertekend."
+  },
+  "docDownloads": {
+    "none": "niet gedownload",
+    "count": "{count} downloads",
+    "count_one": "{count} download",
+    "hint": "Elke kopie die een investeerder opent, draagt zijn naam en het moment waarop hij hem ophaalde."
   }
 }

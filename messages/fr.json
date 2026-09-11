@@ -338,7 +338,7 @@
     "free": "Gratuit",
     "popular": "Populaire",
     "pageTitle": "Des tarifs simples et transparents.",
-    "pageSub": "Gratuit pendant le lancement. Les abonnements débutent après nos 100 premiers membres.",
+    "pageSub": "Gratuit pendant le lancement. Les abonnements débutent après nos 150 premiers membres.",
     "successFee": "Commission de réussite de 2% sur tous les tours clôturés — facturée au fondateur uniquement, après réception du capital.",
     "freeLabel": "Gratuit",
     "starterLabel": "Starter",
@@ -355,8 +355,8 @@
     "faq": {
       "q1": "Comment fonctionne la commission de réussite de 2% ?",
       "a1": "Quand un investisseur marque un deal comme clôturé, nous facturons à la startup 2% du montant levé — après la clôture. Fenêtre de paiement de 14 jours via Stripe. Zéro frais initiaux.",
-      "q2": "Que signifie « Gratuit jusqu'à 100 membres » ?",
-      "a2": "Nous exonérons entièrement les frais d'abonnement pour nos 100 premiers membres. Tous bénéficient d'un accès complet au niveau supérieur sans frais. Une fois 100 membres atteints, les tarifs réguliers s'appliquent aux nouvelles inscriptions.",
+      "q2": "Que signifie « Gratuit jusqu'à 150 membres » ?",
+      "a2": "Nous exonérons entièrement les frais d'abonnement pour nos 150 premiers membres. Tous bénéficient d'un accès complet au niveau supérieur sans frais. Une fois 150 membres atteints, les tarifs réguliers s'appliquent aux nouvelles inscriptions.",
       "q3": "Puis-je annuler mon abonnement à tout moment ?",
       "a3": "Oui. Annulez depuis votre tableau de bord via le portail client Stripe à tout moment. Vous conservez l'accès jusqu'à la fin de votre période de facturation.",
       "q4": "Qu'est-ce qui compte comme « deal clôturé » pour la commission de 2% ?",
@@ -2141,6 +2141,8 @@
     "tabAllStartups": "Toutes les startups",
     "tabInvestors": "Investisseurs",
     "tabDeals": "Deals",
+    "tabIncidents": "Signalements d'incidents",
+    "tabRegisterChecks": "Vérifications au registre",
     "allCaughtUp": "Tout est à jour ! Aucune révision en attente.",
     "approve": "Approuver",
     "reject": "Rejeter",
@@ -2165,6 +2167,7 @@
     "editsAcked": "Marquée comme revérifiée.",
     "viewDashboard": "Tableau de bord",
     "viewListing": "Annonce",
+    "openReview": "Liste de contrôle",
     "stageTitle": "Palier tarifaire",
     "stageSubEarly": "Anticipé - les formules payantes s'établissent à environ la moitié du prix standard.",
     "foundingCohort": "Cohorte fondatrice",
@@ -2410,7 +2413,7 @@
     "s4Title": "4. Formules d'abonnement et frais",
     "s4p1": "CapitalReach propose des niveaux d'abonnement gratuits et payants pour les startups et les investisseurs. Les formules payantes sont facturées mensuellement de manière récurrente via notre processeur de paiement, Stripe.",
     "s4h1": "4.1 Période gratuite",
-    "s4h1p1": "Pendant la période de lancement initiale de CapitalReach, tous les niveaux d'abonnement sont fournis gratuitement jusqu'à ce que la plateforme atteigne 100 utilisateurs inscrits. Une fois ce seuil atteint, la tarification standard publiée sur la {link} s'appliquera. Les utilisateurs des formules payantes au moment où la période gratuite se termine seront notifiés par e-mail au moins 7 jours avant tout prélèvement.",
+    "s4h1p1": "Pendant la période de lancement initiale de CapitalReach, tous les niveaux d'abonnement sont fournis gratuitement jusqu'à ce que la plateforme atteigne 150 utilisateurs inscrits. Une fois ce seuil atteint, la tarification standard publiée sur la {link} s'appliquera. Les utilisateurs des formules payantes au moment où la période gratuite se termine seront notifiés par e-mail au moins 7 jours avant tout prélèvement.",
     "s4h2": "4.2 Frais de succès",
     "s4h2p1": "Les startups qui concluent un tour de financement grâce à des présentations effectuées sur CapitalReach sont soumises à des frais de succès de 2 % sur le montant total levé auprès des investisseurs connectés via la plateforme. Ces frais sont facturés après la clôture du tour et sont dus dans les 14 jours suivant la date de facturation. Aucun frais de succès n'est facturé sur le capital levé auprès de sources non connectées via CapitalReach.",
     "s4h3": "4.3 Annulations et remboursements",
@@ -3438,6 +3441,7 @@
     "acceptOpens": "Accepter ces conditions ouvre l'opération et la conversation. Faire une contre-offre poursuit la négociation avec votre propre chiffre.",
     "amount": "Montant",
     "changed": "Modifié",
+    "conditionsRemoved": "Supprimé",
     "conditions": "Conditions",
     "counter": "Contre-offre",
     "counterAria": "Répondre à l'offre de {name} par une contre-offre",
@@ -4705,5 +4709,11 @@
   },
   "contactGate": {
     "peerClosed": "La messagerie s'ouvre une fois qu'un accord entre vous et l'autre partie est signé."
+  },
+  "docDownloads": {
+    "none": "non téléchargé",
+    "count": "{count} téléchargements",
+    "count_one": "{count} téléchargement",
+    "hint": "Chaque copie ouverte par un investisseur porte son nom et l'instant où il l'a récupérée."
   }
 }
