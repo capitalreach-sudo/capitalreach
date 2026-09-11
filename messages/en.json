@@ -111,7 +111,7 @@
     "raising": "Raising",
     "score": "Score",
     "view": "View",
-    "aiScore": "AI Score",
+    "aiScore": "AI consistency score",
     "noListings": "No active listings yet. Be the first to list your startup.",
     "empty": "No active listings yet. Be the first to list your startup.",
     "listNow": "List now",
@@ -1408,7 +1408,7 @@
   "data": {
     "eyebrow": "Live Platform Data",
     "title": "Data Centre",
-    "subtitle": "Real-time platform analytics — startup counts, funding activity, industry breakdown, and top-performing listings.",
+    "subtitle": "Real-time platform analytics: startup counts, funding activity, industry breakdown, and recent listings.",
     "lastRefreshed": "Last refreshed",
     "refresh": "Refresh",
     "loading": "Loading platform data...",
@@ -1418,7 +1418,6 @@
     "deals": "Deals closed",
     "industryBreakdown": "Industry breakdown",
     "stageBreakdown": "Stage breakdown",
-    "topPerforming": "Top performing startups",
     "recentListings": "Recent listings",
     "noData": "Platform data will appear as startups join.",
     "errorRetry": "Data temporarily unavailable. Try refreshing.",
@@ -1428,7 +1427,6 @@
     "noDataYet": "No data yet",
     "noScoresYet": "No scores yet",
     "noListingsYet": "No listings yet",
-    "topAiScores": "Top AI Scores",
     "errorTitle": "Data temporarily unavailable",
     "errorSub": "Try refreshing the page.",
     "beFirstFounders": "Be among the first founders listed.",
@@ -1462,7 +1460,13 @@
     "tabIndustry": "Industry",
     "tabMedians": "Medians",
     "listingsCount": "Listings",
-    "namesWithheld": "Company names are part of a paid investor plan. Every figure on this page still counts them all."
+    "namesWithheld": "Company names are part of a paid investor plan. Every figure on this page still counts them all.",
+    "totalsLabel": "Totals to date",
+    "byConsistency": "By consistency score",
+    "stageDistributionNote": "Deals standing at each stage right now. Closed and passed are totals to date, so this is a snapshot rather than one group moving left to right.",
+    "closeRateBasis": "of deals that ended",
+    "consistencyLead": "Listings ranked by AI consistency score.",
+    "consistencyCaption": "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, and not a verification of any figure."
   },
   "filters": {
     "industry": "Industry",
@@ -1856,12 +1860,12 @@
     "languageChanged": "Language updated"
   },
   "footer": {
-    "tagline": "A private marketplace connecting founders raising capital with qualified investors deploying it.",
+    "tagline": "A private marketplace connecting founders raising capital with investors deploying it.",
     "platform": "Platform",
     "founders": "Founders",
     "investors": "Investors",
     "company": "Company",
-    "legal": "Not a registered broker-dealer or investment adviser. The 2% success fee is charged to the startup receiving the investment, only after a funding round closes. Investors are never charged.",
+    "legal": "Early-stage investments carry a high risk of total loss. Figures on listings are self-reported by founders. CapitalReach reviews submissions for completeness and identity; it does not audit or verify financial claims. Not investment advice. The 2% success fee is charged to the startup receiving the investment, only after a funding round closes. Investors are never charged.",
     "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "Browse startups",
     "findInvestors": "Find investors",

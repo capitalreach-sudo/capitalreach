@@ -369,7 +369,10 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   // every chart still has a table for anyone the colours fail.
   const [growthView, setGrowthView] = useState<"activity" | "capital" | "numbers">("activity");
   const [breakdown, setBreakdown] = useState<"deals" | "industry" | "stage" | "medians">("deals");
-  const [ledger, setLedger] = useState<"scores" | "recent">("scores");
+  // Opens on what was listed, not on what scored highest. A ranking is the
+  // default reading of whatever sits first, and this one ranks a completeness
+  // check -- leading with it invites it to be read as a recommendation.
+  const [ledger, setLedger] = useState<"scores" | "recent">("recent");
 
   const growthId = useId();
   const breakdownId = useId();
@@ -446,8 +449,8 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   ];
 
   const ledgerTabs = [
-    { key: "scores" as const, label: t("data.topAiScores") },
     { key: "recent" as const, label: t("data.recentListings") },
+    { key: "scores" as const, label: tf("data.byConsistency", "By consistency score") },
   ];
 
   // The two ledgers are the only NAMED thing on this page, and both the server
@@ -568,7 +571,10 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 commanding total under a heavy ink rule, three supporting
                 totals a full size down beneath it. */}
             <section style={{ marginBottom: SECTION_GAP }}>
-              <div className="ruled-label" style={{ marginBottom: BLOCK_GAP }}>{t("data.eyebrow")}</div>
+              {/* Not the page eyebrow again: this rule sat directly under the
+                  masthead carrying the identical words, so the first thing the
+                  page said twice was its own name. */}
+              <div className="ruled-label" style={{ marginBottom: BLOCK_GAP }}>{tf("data.totalsLabel", "Totals to date")}</div>
               <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$" />
               {/* The three supporting totals as one hairline-divided strip:
                   vertical rules between the figures, not a grid of tiles.
@@ -726,6 +732,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
                           {t("data.closeRate")}{" "}
                           <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>{data.closeRate}%</strong>
+                          {/* The denominator is deals that ENDED, closed plus
+                              passed. Every still-open deal is excluded, so an
+                              unqualified figure reads as the share of all
+                              deals here that close, which it is not. */}
+                          <span style={{ color: "var(--cr-ink-4)" }}> {tf("data.closeRateBasis", "of deals that ended")}</span>
                         </span>
                       )}
                     </div>
@@ -738,18 +749,22 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         without a media query. */}
                     <div style={{ overflow: "hidden" }}>
                       <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
-                        {DEAL_STAGES.map(({ key, color }, idx) => {
+                        {DEAL_STAGES.map(({ key, color }) => {
                           const n = data.byDealStage[key] ?? 0;
                           const max = Math.max(...Object.values(data.byDealStage), 1);
                           return (
                             <div key={key} style={{ flex: "1 1 150px", minWidth: 0, display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule-dark)", borderLeft: "1px solid var(--cr-rule)", padding: "12px 24px 0" }}>
-                              {/* Numbered rail: the 01-05 says these are one
-                                  sequence, read left to right, ending in the
-                                  two outcomes. It is the only numbered rail
-                                  left on the page, so the device now means
-                                  "this is ordered" and nothing else. */}
+                              {/* No 01-05 rail here. Numbering a row of
+                                  figures asserts that one becomes the next,
+                                  and these are occupancy counts: how many
+                                  deals stand at each stage right now, read at
+                                  one instant. Intro 8 beside Diligence 10 is
+                                  ordinary for a distribution and impossible
+                                  for a cohort, so the device was claiming a
+                                  flow the numbers cannot show. The columns
+                                  keep pipeline order, which is real; what went
+                                  is the implication that they are a sequence. */}
                               <p style={{ ...capsLabel, fontSize: "9px", letterSpacing: "0.1em", marginBottom: "12px" }}>
-                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", marginRight: LABEL_GAP }}>{`0${idx + 1}`}</span>
                                 {t(`data.stage_${key}`)}
                               </p>
                               {/* Same figure size as every other second-rank
@@ -769,6 +784,13 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         })}
                       </div>
                     </div>
+
+                    {/* Says what the row is before anyone reads it as a
+                        funnel. Without this the two largest bars sit at the
+                        end and the strip appears to show deals multiplying. */}
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+                      {tf("data.stageDistributionNote", "Deals standing at each stage right now. Closed and passed are totals to date, so this is a snapshot rather than one group moving left to right.")}
+                    </p>
 
                     {data.closedCurrencies?.length > 1 && (
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP }}>
@@ -876,11 +898,18 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               >
                 {ledger === "scores" ? (
                   <>
-                    {/* One plain-language line saying what the ranking is.
-                        "Top AI Scores" alone told a first-time visitor
-                        nothing about what is scored. */}
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", margin: `0 0 ${ROW_GAP}` }}>
-                      {t("data.topPerforming")}
+                    {/* What the number is, attached to the only place it is
+                        ranked. "Top performing startups" stood here, which
+                        names investment performance: this score reads a
+                        submission for completeness and internal consistency
+                        and has never seen a return. The caption travels with
+                        the ranking rather than sitting in a tooltip, because
+                        a ranking is read at a glance and a tooltip is not. */}
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", margin: `0 0 ${LABEL_GAP}`, maxWidth: "560px", lineHeight: 1.6 }}>
+                      {tf("data.consistencyLead", "Listings ranked by AI consistency score.")}
+                    </p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", margin: `0 0 ${ROW_GAP}`, maxWidth: "560px", lineHeight: 1.6 }}>
+                      {tf("data.consistencyCaption", "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, and not a verification of any figure.")}
                     </p>
                     {data.topStartups.length === 0 ? (
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: `${BLOCK_GAP} 0` }}>

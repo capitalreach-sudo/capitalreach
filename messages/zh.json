@@ -100,7 +100,7 @@
     "raising": "正在融资",
     "score": "评分",
     "view": "查看",
-    "aiScore": "AI 评分",
+    "aiScore": "AI 一致性评分",
     "noListings": "暂无活跃列表。成为第一家发布的创业公司。",
     "empty": "暂无活跃项目。成为第一个发布创业公司的人。",
     "listNow": "立即列出",
@@ -1397,7 +1397,7 @@
   "data": {
     "eyebrow": "实时平台数据",
     "title": "数据中心",
-    "subtitle": "实时平台分析——创业公司数量、融资活动、行业分布及顶级表现列表。",
+    "subtitle": "实时平台数据：初创公司数量、融资动态、行业分布与最新项目。",
     "lastRefreshed": "最后刷新",
     "refresh": "刷新",
     "loading": "正在加载平台数据…",
@@ -1407,7 +1407,6 @@
     "deals": "完成交易",
     "industryBreakdown": "行业分布",
     "stageBreakdown": "阶段分布",
-    "topPerforming": "表现最佳创业公司",
     "recentListings": "最新项目",
     "noData": "创业公司加入后将显示平台数据。",
     "errorRetry": "数据暂时不可用，请尝试刷新。",
@@ -1417,7 +1416,6 @@
     "noDataYet": "暂无数据",
     "noScoresYet": "暂无评分",
     "noListingsYet": "暂无列表",
-    "topAiScores": "AI评分排行",
     "errorTitle": "数据暂时不可用",
     "errorSub": "请尝试刷新页面。",
     "beFirstFounders": "成为首批入驻的创始人。",
@@ -1451,7 +1449,13 @@
     "tabIndustry": "行业",
     "tabMedians": "中位数",
     "listingsCount": "项目数",
-    "namesWithheld": "公司名称属于付费投资人方案的内容。本页的每一项数字仍然把它们全部计算在内。"
+    "namesWithheld": "公司名称属于付费投资人方案的内容。本页的每一项数字仍然把它们全部计算在内。",
+    "totalsLabel": "迄今合计",
+    "byConsistency": "按一致性评分",
+    "stageDistributionNote": "当前处于各阶段的交易数量。已成交和已放弃为累计数字，因此这是某一时点的分布，而非同一批交易自左向右推进。",
+    "closeRateBasis": "已结束交易中",
+    "consistencyLead": "按 AI 一致性评分排列的项目。",
+    "consistencyCaption": "衡量所提交材料的完整性与内部一致性。既不是收益预测，也不是投资建议，更不是对任何数字的核实。"
   },
   "filters": {
     "industry": "行业",
@@ -1845,12 +1849,12 @@
     "languageChanged": "语言已更新"
   },
   "footer": {
-    "tagline": "连接寻求资本的创始人与部署资本的合格投资者的私人市场。",
+    "tagline": "连接融资创始人与出资投资人的私密市场。",
     "platform": "平台",
     "founders": "创始人",
     "investors": "投资者",
     "company": "公司",
-    "legal": "非注册经纪商或投资顾问。2% 成功费仅在融资完成后向获得投资的创业公司收取。投资者从不付费。",
+    "legal": "早期投资存在本金全部损失的高风险。项目所列数字由创始人自行申报。CapitalReach 审核提交材料的完整性与身份信息，但不对财务陈述进行审计或核实。本内容不构成投资建议。2% 的成功费向获得投资的初创公司收取，且仅在融资轮次完成后收取。投资人无需支付任何费用。",
     "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "浏览创业公司",
     "findInvestors": "寻找投资者",

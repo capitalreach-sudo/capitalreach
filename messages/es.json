@@ -100,7 +100,7 @@
     "raising": "Buscando",
     "score": "Puntuación",
     "view": "Ver",
-    "aiScore": "Puntuación IA",
+    "aiScore": "Puntuación de coherencia IA",
     "noListings": "Aún no hay listings activos. Sé el primero en listar tu startup.",
     "empty": "Aún no hay listings activos. Sé el primero en listar tu startup.",
     "listNow": "Listar ahora",
@@ -1397,7 +1397,7 @@
   "data": {
     "eyebrow": "Datos de plataforma en directo",
     "title": "Centro de datos",
-    "subtitle": "Analíticas de la plataforma en tiempo real — recuento de startups, actividad de financiación, desglose por industria y listings con mejor rendimiento.",
+    "subtitle": "Analíticas de la plataforma en tiempo real: número de startups, actividad de financiación, desglose por sector y listados recientes.",
     "lastRefreshed": "Última actualización",
     "refresh": "Actualizar",
     "loading": "Cargando datos de la plataforma…",
@@ -1407,7 +1407,6 @@
     "deals": "Deals cerrados",
     "industryBreakdown": "Desglose por industria",
     "stageBreakdown": "Desglose por etapa",
-    "topPerforming": "Startups con mejor rendimiento",
     "recentListings": "Listings recientes",
     "noData": "Los datos de la plataforma aparecerán cuando se unan startups.",
     "errorRetry": "Datos temporalmente no disponibles. Intenta actualizar.",
@@ -1417,7 +1416,6 @@
     "noDataYet": "Aún sin datos",
     "noScoresYet": "Aún sin puntuaciones",
     "noListingsYet": "Aún sin listados",
-    "topAiScores": "Mejores puntuaciones IA",
     "errorTitle": "Datos temporalmente no disponibles",
     "errorSub": "Intenta refrescar la página.",
     "beFirstFounders": "Sé de los primeros fundadores listados.",
@@ -1451,7 +1449,13 @@
     "tabIndustry": "Sector",
     "tabMedians": "Medianas",
     "listingsCount": "Anuncios",
-    "namesWithheld": "Los nombres de las empresas forman parte de un plan de inversor de pago. Las cifras de esta página las siguen contando todas."
+    "namesWithheld": "Los nombres de las empresas forman parte de un plan de inversor de pago. Las cifras de esta página las siguen contando todas.",
+    "totalsLabel": "Totales hasta la fecha",
+    "byConsistency": "Por puntuación de coherencia",
+    "stageDistributionNote": "Operaciones que se encuentran ahora en cada etapa. Cerradas y descartadas son totales acumulados, por lo que se trata de una instantánea y no de un grupo que avanza de izquierda a derecha.",
+    "closeRateBasis": "de las operaciones finalizadas",
+    "consistencyLead": "Listados ordenados por puntuación de coherencia de IA.",
+    "consistencyCaption": "Mide la exhaustividad y la coherencia interna de la información presentada. No es una previsión de rentabilidad, ni asesoramiento de inversión, ni una verificación de ninguna cifra."
   },
   "filters": {
     "industry": "Industria",
@@ -1845,12 +1849,12 @@
     "languageChanged": "Idioma actualizado"
   },
   "footer": {
-    "tagline": "Un mercado privado que conecta a fundadores que buscan capital con inversores cualificados que lo despliegan.",
+    "tagline": "Un mercado privado que conecta a fundadores que buscan capital con inversores que lo despliegan.",
     "platform": "Plataforma",
     "founders": "Fundadores",
     "investors": "Inversores",
     "company": "Empresa",
-    "legal": "No somos broker-dealer ni asesor de inversiones registrado. La comisión de éxito del 2% se cobra a la startup que recibe la inversión, solo tras el cierre de una ronda. A los inversores nunca.",
+    "legal": "Las inversiones en fases iniciales conllevan un alto riesgo de pérdida total. Las cifras de los listados las declaran los propios fundadores. CapitalReach revisa las solicitudes en cuanto a exhaustividad e identidad; no audita ni verifica las afirmaciones financieras. No constituye asesoramiento de inversión. La comisión de éxito del 2% se cobra a la startup que recibe la inversión, solo tras el cierre de una ronda. Los inversores nunca pagan.",
     "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "Explorar startups",
     "findInvestors": "Encontrar inversores",

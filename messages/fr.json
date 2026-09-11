@@ -100,7 +100,7 @@
     "raising": "Lève",
     "score": "Score",
     "view": "Voir",
-    "aiScore": "Score IA",
+    "aiScore": "Score de cohérence IA",
     "noListings": "Aucun listing actif pour l'instant. Soyez le premier à lister votre startup.",
     "empty": "Aucun listing actif pour l'instant. Soyez le premier à lister votre startup.",
     "listNow": "Lister maintenant",
@@ -1397,7 +1397,7 @@
   "data": {
     "eyebrow": "Données de la plateforme en direct",
     "title": "Centre de données",
-    "subtitle": "Analyses de la plateforme en temps réel — nombre de startups, activité de financement, répartition sectorielle et listings les plus performants.",
+    "subtitle": "Analyses de la plateforme en temps réel : nombre de startups, activité de financement, répartition sectorielle et annonces récentes.",
     "lastRefreshed": "Dernière actualisation",
     "refresh": "Actualiser",
     "loading": "Chargement des données de la plateforme…",
@@ -1407,7 +1407,6 @@
     "deals": "Deals conclus",
     "industryBreakdown": "Répartition sectorielle",
     "stageBreakdown": "Répartition par étape",
-    "topPerforming": "Startups les plus performantes",
     "recentListings": "Listings récents",
     "noData": "Les données de la plateforme apparaîtront dès que des startups nous rejoindront.",
     "errorRetry": "Données temporairement indisponibles. Essayez d'actualiser.",
@@ -1417,7 +1416,6 @@
     "noDataYet": "Pas encore de données",
     "noScoresYet": "Pas encore de scores",
     "noListingsYet": "Pas encore d'annonces",
-    "topAiScores": "Meilleurs scores IA",
     "errorTitle": "Données temporairement indisponibles",
     "errorSub": "Essayez de rafraîchir la page.",
     "beFirstFounders": "Soyez parmi les premiers fondateurs listés.",
@@ -1451,7 +1449,13 @@
     "tabIndustry": "Secteur",
     "tabMedians": "Médianes",
     "listingsCount": "Annonces",
-    "namesWithheld": "Les noms des sociétés relèvent d'un abonnement investisseur payant. Les chiffres de cette page les comptent tous, sans exception."
+    "namesWithheld": "Les noms des sociétés relèvent d'un abonnement investisseur payant. Les chiffres de cette page les comptent tous, sans exception.",
+    "totalsLabel": "Totaux à ce jour",
+    "byConsistency": "Par score de cohérence",
+    "stageDistributionNote": "Opérations actuellement à chaque étape. Les opérations conclues et abandonnées sont des totaux cumulés, il s'agit donc d'un instantané et non d'un groupe progressant de gauche à droite.",
+    "closeRateBasis": "des opérations terminées",
+    "consistencyLead": "Annonces classées par score de cohérence IA.",
+    "consistencyCaption": "Mesure l'exhaustivité et la cohérence interne du dossier. Ni prévision de rendement, ni conseil en investissement, ni vérification d'un quelconque chiffre."
   },
   "filters": {
     "industry": "Secteur",
@@ -1845,12 +1849,12 @@
     "languageChanged": "Langue mise à jour"
   },
   "footer": {
-    "tagline": "Une place de marché privée reliant les fondateurs qui lèvent des fonds aux investisseurs qualifiés qui les déploient.",
+    "tagline": "Une place de marché privée qui met en relation les fondateurs en levée de fonds et les investisseurs.",
     "platform": "Plateforme",
     "founders": "Fondateurs",
     "investors": "Investisseurs",
     "company": "Entreprise",
-    "legal": "Ni courtier ni conseiller en investissement enregistré. La commission de succès de 2 % est facturée à la startup qui reçoit l'investissement, uniquement après la clôture d'un tour. Les investisseurs ne paient jamais.",
+    "legal": "Les investissements en amorçage comportent un risque élevé de perte totale. Les chiffres des annonces sont déclarés par les fondateurs eux-mêmes. CapitalReach vérifie l'exhaustivité des dossiers et l'identité des parties ; il n'audite ni ne vérifie les données financières. Ne constitue pas un conseil en investissement. La commission de succès de 2% est facturée à la startup qui reçoit l'investissement, uniquement après la clôture d'un tour de financement. Les investisseurs ne paient jamais.",
     "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "Parcourir les startups",
     "findInvestors": "Trouver des investisseurs",

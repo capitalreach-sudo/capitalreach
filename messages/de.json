@@ -107,7 +107,7 @@
     "raising": "Sucht",
     "score": "Score",
     "view": "Ansehen",
-    "aiScore": "KI-Score",
+    "aiScore": "KI-Konsistenzwert",
     "noListings": "Noch keine aktiven Listings. Seien Sie das erste Startup.",
     "empty": "Noch keine aktiven Listings. Sei der Erste, der sein Startup listet.",
     "listNow": "Jetzt listen",
@@ -1404,7 +1404,7 @@
   "data": {
     "eyebrow": "Live-Plattformdaten",
     "title": "Datenzentrum",
-    "subtitle": "Echtzeit-Plattformanalysen — Startup-Zahlen, Finanzierungsaktivität, Branchenaufschlüsselung und Top-Listings.",
+    "subtitle": "Echtzeit-Plattformanalysen: Startup-Zahlen, Finanzierungsaktivität, Branchenaufteilung und neue Einträge.",
     "lastRefreshed": "Zuletzt aktualisiert",
     "refresh": "Aktualisieren",
     "loading": "Plattformdaten werden geladen…",
@@ -1414,7 +1414,6 @@
     "deals": "Abgeschlossene Deals",
     "industryBreakdown": "Branchenaufschlüsselung",
     "stageBreakdown": "Phasenaufschlüsselung",
-    "topPerforming": "Top-Startups",
     "recentListings": "Neue Listings",
     "noData": "Plattformdaten erscheinen, sobald Startups beitreten.",
     "errorRetry": "Daten vorübergehend nicht verfügbar. Aktualisieren versuchen.",
@@ -1424,7 +1423,6 @@
     "noDataYet": "Noch keine Daten",
     "noScoresYet": "Noch keine Scores",
     "noListingsYet": "Noch keine Listings",
-    "topAiScores": "Top-KI-Scores",
     "errorTitle": "Daten vorübergehend nicht verfügbar",
     "errorSub": "Versuche, die Seite neu zu laden.",
     "beFirstFounders": "Sei unter den ersten gelisteten Gründern.",
@@ -1458,7 +1456,13 @@
     "tabIndustry": "Branche",
     "tabMedians": "Mediane",
     "listingsCount": "Angebote",
-    "namesWithheld": "Firmennamen sind Teil eines kostenpflichtigen Investorentarifs. Jede Zahl auf dieser Seite zählt sie dennoch alle mit."
+    "namesWithheld": "Firmennamen sind Teil eines kostenpflichtigen Investorentarifs. Jede Zahl auf dieser Seite zählt sie dennoch alle mit.",
+    "totalsLabel": "Summen bis heute",
+    "byConsistency": "Nach Konsistenzwert",
+    "stageDistributionNote": "Deals, die derzeit in der jeweiligen Phase stehen. Abgeschlossen und abgelehnt sind Gesamtwerte bis heute, dies ist also eine Momentaufnahme und keine Gruppe, die von links nach rechts wandert.",
+    "closeRateBasis": "der beendeten Deals",
+    "consistencyLead": "Einträge nach KI-Konsistenzwert sortiert.",
+    "consistencyCaption": "Misst Vollständigkeit und interne Konsistenz der Angaben. Keine Renditeprognose, keine Anlageberatung und keine Überprüfung einzelner Zahlen."
   },
   "filters": {
     "industry": "Branche",
@@ -1852,12 +1856,12 @@
     "languageChanged": "Sprache aktualisiert"
   },
   "footer": {
-    "tagline": "Ein privater Marktplatz, der Gründer, die Kapital suchen, mit qualifizierten Investoren verbindet.",
+    "tagline": "Ein privater Marktplatz, der Gründer auf Kapitalsuche mit Investoren zusammenbringt.",
     "platform": "Plattform",
     "founders": "Gründer",
     "investors": "Investoren",
     "company": "Unternehmen",
-    "legal": "Kein registrierter Broker-Dealer oder Anlageberater. Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält, erst nach Abschluss einer Finanzierungsrunde. Investoren zahlen nie.",
+    "legal": "Investitionen in der Frühphase tragen ein hohes Risiko des Totalverlusts. Angaben in Einträgen stammen von den Gründern selbst. CapitalReach prüft Einreichungen auf Vollständigkeit und Identität; eine Prüfung finanzieller Angaben findet nicht statt. Keine Anlageberatung. Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält, erst nach Abschluss einer Finanzierungsrunde. Investoren zahlen nie.",
     "copyright": "© 2026 CapitalReach Ltd.",
     "browseStartups": "Startups durchsuchen",
     "findInvestors": "Investoren finden",
