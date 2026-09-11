@@ -4346,7 +4346,8 @@
     "certify": "Confirm your investor status",
     "certifyNote": "An offer commits capital, so we ask you to certify your status once. It takes a minute, it holds for every listing, and the offer button appears here as soon as it is done.",
     "seal": "Go to the deal record",
-    "sealNote": "Your offer was accepted. The conversation opens once both of you have signed the record."
+    "sealNote": "Your offer was accepted. The conversation opens once both of you have signed the record.",
+    "messageAsAdmin": "Message founder (admin)"
   },
   "offerComposer": {
     "eyebrow": "Offer",

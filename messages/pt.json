@@ -4346,7 +4346,8 @@
     "certify": "Confirme o seu estatuto de investidor",
     "certifyNote": "Uma oferta compromete capital, por isso pedimos que certifique o seu estatuto uma vez. Demora um minuto, passa a valer para todos os anúncios, e o botão de oferta aparece aqui assim que estiver concluído.",
     "seal": "Ir para o registo do negócio",
-    "sealNote": "A sua oferta foi aceite. A conversa abre assim que ambos tiverem assinado o registo."
+    "sealNote": "A sua oferta foi aceite. A conversa abre assim que ambos tiverem assinado o registo.",
+    "messageAsAdmin": "Contactar o fundador (admin)"
   },
   "offerComposer": {
     "eyebrow": "Oferta",

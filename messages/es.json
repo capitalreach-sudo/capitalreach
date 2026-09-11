@@ -4346,7 +4346,8 @@
     "certify": "Confirmar su condición de inversor",
     "certifyNote": "Una oferta compromete capital, así que le pedimos que certifique su condición una sola vez. Lleva un minuto, sirve para todos los anuncios y el botón de oferta aparece aquí en cuanto lo haga.",
     "seal": "Ir al acta del acuerdo",
-    "sealNote": "Su oferta ha sido aceptada. La conversación se abre cuando ambos hayan firmado el acta."
+    "sealNote": "Su oferta ha sido aceptada. La conversación se abre cuando ambos hayan firmado el acta.",
+    "messageAsAdmin": "Escribir al fundador (admin)"
   },
   "offerComposer": {
     "eyebrow": "Oferta",

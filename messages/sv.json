@@ -4346,7 +4346,8 @@
     "certify": "Bekräfta din investerarstatus",
     "certifyNote": "Ett bud binder kapital, därför ber vi dig att intyga din status en gång. Det tar en minut, det gäller sedan för alla annonser, och budknappen visas här så snart det är klart.",
     "seal": "Gå till affärsdokumentet",
-    "sealNote": "Ditt bud accepterades. Konversationen öppnas när ni båda har undertecknat affärsdokumentet."
+    "sealNote": "Ditt bud accepterades. Konversationen öppnas när ni båda har undertecknat affärsdokumentet.",
+    "messageAsAdmin": "Meddela grundaren (admin)"
   },
   "offerComposer": {
     "eyebrow": "Bud",

@@ -4346,7 +4346,8 @@
     "certify": "Confirmer votre statut d'investisseur",
     "certifyNote": "Une offre engage des capitaux, nous vous demandons donc de certifier votre statut une seule fois. Cela prend une minute, cela vaut pour toutes les annonces, et le bouton d'offre apparaît ici dès que c'est fait.",
     "seal": "Accéder au registre de l'opération",
-    "sealNote": "Votre offre a été acceptée. La conversation s'ouvre une fois que vous avez tous les deux signé le registre."
+    "sealNote": "Votre offre a été acceptée. La conversation s'ouvre une fois que vous avez tous les deux signé le registre.",
+    "messageAsAdmin": "Écrire au fondateur (admin)"
   },
   "offerComposer": {
     "eyebrow": "Offre",

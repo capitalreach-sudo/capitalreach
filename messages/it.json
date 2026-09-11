@@ -4346,7 +4346,8 @@
     "certify": "Conferma il tuo status di investitore",
     "certifyNote": "Un'offerta impegna del capitale, quindi ti chiediamo di certificare il tuo status una volta sola. Richiede un minuto, vale per ogni annuncio e il pulsante per offrire compare qui appena hai finito.",
     "seal": "Vai all'atto dell'operazione",
-    "sealNote": "La tua offerta è stata accettata. La conversazione si apre quando entrambi avete firmato l'atto."
+    "sealNote": "La tua offerta è stata accettata. La conversazione si apre quando entrambi avete firmato l'atto.",
+    "messageAsAdmin": "Scrivi al fondatore (admin)"
   },
   "offerComposer": {
     "eyebrow": "Offerta",

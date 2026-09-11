@@ -4346,7 +4346,8 @@
     "certify": "Investorenstatus bestätigen",
     "certifyNote": "Mit einem Angebot sagen Sie Kapital zu, deshalb bitten wir Sie, Ihren Status einmalig zu bestätigen. Das dauert einen Moment, gilt danach für jedes Listing, und die Angebotsschaltfläche erscheint hier, sobald es erledigt ist.",
     "seal": "Zum Deal-Protokoll",
-    "sealNote": "Ihr Angebot wurde angenommen. Das Gespräch öffnet sich, sobald Sie beide das Protokoll unterzeichnet haben."
+    "sealNote": "Ihr Angebot wurde angenommen. Das Gespräch öffnet sich, sobald Sie beide das Protokoll unterzeichnet haben.",
+    "messageAsAdmin": "Gründer anschreiben (Admin)"
   },
   "offerComposer": {
     "eyebrow": "Angebot",

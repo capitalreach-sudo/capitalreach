@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { OfferComposer, type OfferAsk } from "@/components/deals/offer-composer";
+import { notify } from "@/components/ui/toast-notify";
 
 /**
  * The listing's entry point, where "message this startup" used to be.
@@ -118,6 +119,31 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
   const { t } = useTranslation();
   const [state, setState] = useState<ListingState | null>(null);
   const [open, setOpen] = useState(false);
+  const [opening, setOpening] = useState(false);
+
+  // Admin only. Opens (or finds) the thread with this founder and goes to it.
+  // A failure leaves the button where it was rather than navigating somewhere
+  // that will not have a conversation on it.
+  const openAdminThread = useCallback(async () => {
+    setOpening(true);
+    try {
+      const res = await fetch("/api/messages/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startupId, open: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.threadId) {
+        window.location.href = `/dashboard/messages?thread=${data.threadId}`;
+        return;
+      }
+      notify.error(data?.error || t("errors.generic"));
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally {
+      setOpening(false);
+    }
+  }, [startupId, t]);
 
   const load = useCallback(async () => {
     try {
@@ -171,7 +197,23 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
   );
 
   let control;
-  if (state.contactOpen) {
+  if (state.contactOpen && state.reason === "admin" && !state.threadId) {
+    // An admin reaching a founder is not in the pipeline and has no deal to be
+    // sent to, so the link the other allowed states use would land them on an
+    // empty page. open:true asks the route to create or find the thread and
+    // hand back its id, which is the same path the intro button uses; the
+    // first words are then typed in the real composer rather than here.
+    control = (
+      <button
+        type="button"
+        disabled={opening}
+        onClick={openAdminThread}
+        style={{ ...QUIET, border: QUIET.border, cursor: opening ? "wait" : "pointer", opacity: opening ? 0.6 : 1 }}
+      >
+        {opening ? t("common.saving") : t("offerButton.messageAsAdmin")}
+      </button>
+    );
+  } else if (state.contactOpen) {
     // An accepted offer, or a deal that already existed: the conversation is
     // the thing they want, and the pipeline is where it lives if no thread has
     // been opened yet.

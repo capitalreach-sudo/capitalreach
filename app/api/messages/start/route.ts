@@ -239,7 +239,12 @@ export async function POST(req: NextRequest) {
         .match({ startup_id: st.id, investor_id: me.id }).maybeSingle();
       let threadId = existing?.id;
       if (!threadId) {
-        const limited = await newThreadLimitResponse(ctx, me.id);
+        // An admin passes the contact gate above, so stopping them here on a
+        // plan's monthly thread allowance would refuse the same request twice
+        // over, and for a reason that does not apply: the allowance meters
+        // investors approaching founders, and this one is neither buying a
+        // plan nor approaching as an investor.
+        const limited = senderProfile?.role === "admin" ? null : await newThreadLimitResponse(ctx, me.id);
         if (limited) return limited;
         const { data: created, error } = await admin.from("threads")
           .insert({ startup_id: st.id, investor_id: me.id, status: "active" }).select("id").single();

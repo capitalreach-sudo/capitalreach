@@ -4346,7 +4346,8 @@
     "certify": "Investeerdersstatus bevestigen",
     "certifyNote": "Een bod is een toezegging van kapitaal, dus vragen wij u uw status eenmalig te certificeren. Het kost u een minuut, het geldt voor elke listing, en de bodknop verschijnt hier zodra het klaar is.",
     "seal": "Ga naar het dealdossier",
-    "sealNote": "Uw bod is aanvaard. Het gesprek gaat open zodra u beiden het dossier heeft ondertekend."
+    "sealNote": "Uw bod is aanvaard. Het gesprek gaat open zodra u beiden het dossier heeft ondertekend.",
+    "messageAsAdmin": "Oprichter berichten (admin)"
   },
   "offerComposer": {
     "eyebrow": "Bod",

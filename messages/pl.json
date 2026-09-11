@@ -4346,7 +4346,8 @@
     "certify": "Potwierdź swój status inwestora",
     "certifyNote": "Oferta angażuje kapitał, dlatego prosimy o jednorazowe potwierdzenie statusu. Zajmuje to chwilę, obowiązuje dla każdej oferty, a przycisk złożenia oferty pojawi się tutaj zaraz po jego zakończeniu.",
     "seal": "Przejdź do zapisu transakcji",
-    "sealNote": "Twoja oferta została przyjęta. Rozmowa otworzy się, gdy oboje podpiszecie zapis transakcji."
+    "sealNote": "Twoja oferta została przyjęta. Rozmowa otworzy się, gdy oboje podpiszecie zapis transakcji.",
+    "messageAsAdmin": "Napisz do założyciela (admin)"
   },
   "offerComposer": {
     "eyebrow": "Oferta",
