@@ -64,6 +64,28 @@ describe("dealSealText", () => {
     expect(t).toMatch(/renegotiate/i);
   });
 
+  it("gives CapitalReach a right to evidence of the closed amount", () => {
+    // The fee is charged to a company that has by then raised money and moved
+    // on. Without a right to ask, an understated figure is unanswerable.
+    const t = flat(dealSealText(BASE));
+    expect(t).toMatch(/produce ordinary evidence of that figure/i);
+    expect(t).toMatch(/share allotment|companies registry/i);
+    expect(t).toMatch(/no more than once per round/i);
+  });
+
+  it("says what an understated figure costs, and what does NOT count as one", () => {
+    const t = flat(dealSealText(BASE));
+    expect(t).toMatch(/materially understated/i);
+    expect(t).toMatch(/reasonable cost of establishing it/i);
+    // The carve-out matters as much as the teeth: rounds shrink, and a smaller
+    // close is not a lie. Without this the clause would read as a trap.
+    expect(t).toMatch(/not understated because the round closed smaller/i);
+  });
+
+  it("promises not to publish what the evidence right produces", () => {
+    expect(flat(dealSealText(BASE))).toMatch(/confidential under clause 6 and will not publish it/i);
+  });
+
   it("carries the carve-out, since a term with none gets read down entirely", () => {
     expect(flat(dealSealText(BASE))).toMatch(/predates the recorded introduction date/i);
   });

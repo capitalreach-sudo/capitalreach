@@ -26,7 +26,11 @@ import { CIRCUMVENTION_TERMS_VERSION, NON_CIRCUMVENTION_MONTHS } from "@/lib/cir
 
 /** Must match the CHECK constraint on introductions.channel (migration 113). */
 export type IntroductionChannel =
-  | "message" | "deal" | "nda" | "interest" | "data_room" | "introduction_request";
+  | "message" | "deal" | "nda" | "interest" | "data_room" | "introduction_request"
+  // The weakest of them, and recorded as such: one side looked at a page,
+  // where every other channel is an act by both. Kept distinct rather than
+  // folded in, so a reviewer weighs it for what it is (124).
+  | "listing_view";
 
 export interface Introduction {
   id: string;

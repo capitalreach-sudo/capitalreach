@@ -30,7 +30,7 @@ import { SUCCESS_FEE_PERCENT, NON_CIRCUMVENTION_MONTHS } from "@/lib/circumventi
  * the version and the hash in force when it was made, so an older seal is
  * never reinterpreted under newer terms.
  */
-export const DEAL_SEAL_VERSION = "2026-09-10";
+export const DEAL_SEAL_VERSION = "2026-09-11";
 
 export type SealParty = "startup" | "investor";
 
@@ -120,23 +120,38 @@ ${terms.join("\n")}
    or brings to the Company on the strength of this introduction. Moving the
    conversation elsewhere does not end the obligation.
 
-5. CONFIDENTIALITY. Each party will keep what the other discloses in
+5. DECLARING THE CLOSE. The Company will tell CapitalReach what it actually
+   raised from the Investor, within 30 days of the round closing. On written
+   request, and no more than once per round, the Company will produce ordinary
+   evidence of that figure: the share allotment or subscription document, the
+   filing made to its companies registry, or a statement from its own counsel
+   or accountant. CapitalReach will treat anything produced under this clause
+   as confidential under clause 6 and will not publish it.
+
+   Where a declared figure is materially understated, the Company pays the fee
+   on the true amount together with the reasonable cost of establishing it, and
+   any discount, waiver or instalment arrangement on that fee falls away. A
+   figure is not understated because the round closed smaller than clause 1:
+   rounds shrink, and clause 3 already charges the fee on capital actually
+   received.
+
+6. CONFIDENTIALITY. Each party will keep what the other discloses in
    confidence and use it only to evaluate and negotiate this investment. This
    does not displace any separate confidentiality undertaking already in force
    between them; where both apply, the stricter governs.
 
-6. WHAT IS NOT COVERED. A relationship between these parties that demonstrably
+7. WHAT IS NOT COVERED. A relationship between these parties that demonstrably
    predates the recorded introduction date -- a prior investment, a term sheet,
    a signed confidentiality undertaking, or documented substantive contact.
    Capital raised from a party the Investor did not introduce and does not
    control, manage or advise. A round closing after the date in clause 3.
 
-7. EVIDENCE. A claim rests on CapitalReach's own records: this record and both
+8. EVIDENCE. A claim rests on CapitalReach's own records: this record and both
    signatures with their timestamps, IP addresses and version, the offer and
    any counters that preceded it, the introduction record, and the log of what
    was disclosed. Those records are producible to either party on request.
 
-8. NO EXCLUSIVITY. Nothing here restricts whom the Investor may invest in or
+9. NO EXCLUSIVITY. Nothing here restricts whom the Investor may invest in or
    whom the Company may raise from. It fixes only what is owed to CapitalReach
    for an introduction it made.
 

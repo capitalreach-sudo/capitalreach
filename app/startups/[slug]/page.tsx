@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { recordIntroduction } from "@/lib/introductions";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { stripCardFinancials } from "@/lib/browse-data";
 import { listingDetailPublic } from "@/lib/listing-visibility";
@@ -208,9 +209,15 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         ndaSigned = !!nda?.signed_at;
       }
 
-      // Terms §3 defines a "CapitalReach connection" as the investor finding
-      // the startup here — this is the record that proves it for fee purposes.
-      // One row per pair per day (unique index); conflicts are expected.
+      // Two records, and they are not the same thing. startup_views is a daily
+      // log for the founder's own analytics. introductions is the row a fee
+      // claim rests on -- first contact, channel, terms version, tail expiry --
+      // and until now nothing wrote it for the plainest circumvention there is:
+      // browse, read the name, google it, write to the founder directly.
+      //
+      // recordIntroduction is idempotent and keeps the EARLIEST contact, so a
+      // later message or NDA does not overwrite the day they actually found the
+      // company here, and a hundred page views do not become a hundred rows.
       if (investorId) {
         try {
           const admin = createAdminClient();
@@ -219,6 +226,11 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
             investor_id: investorId,
           });
         } catch { /* duplicate view for today — nothing to record */ }
+        await recordIntroduction({
+          startupId: startup.id,
+          investorId,
+          channel: "listing_view",
+        }).catch(() => null);
       }
     }
   }
