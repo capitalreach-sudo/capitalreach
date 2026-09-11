@@ -50,9 +50,17 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const industry = industryFromSlug(params.slug);
   if (!industry) return {};
+  // While the browse index is members-only, an anonymous crawler gets this
+  // page with zero listings on it: twelve words of chrome under a robots tag
+  // that said "index, follow". Twenty indexable empty pages is what Google
+  // files as thin content, a negative signal for the whole domain. So the
+  // robots verdict FOLLOWS the config: the moment public_browse_index opens,
+  // these pages carry content again and re-invite the crawler on their own.
+  const indexable = await browseIndexPublic();
   return {
     title: `${industry} startups raising capital`,
     description: `${industry} startups raising on CapitalReach — funding targets, traction and stage, with a 2% success fee paid by the startup only at close.`,
+    ...(indexable ? {} : { robots: { index: false, follow: true } }),
   };
 }
 

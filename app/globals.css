@@ -751,7 +751,7 @@ body::before {
   text-align: right;
 }
 .listing-row:hover .listing-row-num {
-  color: var(--cr-copper);
+  color: var(--cr-ink);
 }
 
 /* ── FEATURE 6: Stat counter glow ───────────────────────── */
@@ -763,7 +763,10 @@ body::before {
   animation: statGlow 800ms ease 100ms forwards;
 }
 
-/* ── FEATURE 7: Copper left-border slide on listing rows ── */
+/* ── FEATURE 7: Ink left-border slide on listing rows ─────
+   Was copper, which the business register resolves to emerald: a green
+   tick lighting up on every hovered row on every page. The slide stays,
+   in ink, so the row is still marked without the accent. */
 .listing-row {
   position: relative;
   transition: background 150ms ease, padding-left 200ms ease;
@@ -775,7 +778,7 @@ body::before {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--cr-copper);
+  background: var(--cr-ink-3);
   clip-path: inset(100% 0 0 0);
   transition: clip-path 250ms cubic-bezier(.16,1,.3,1);
 }
@@ -885,18 +888,11 @@ body::before {
   to   { clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%)); }
 }
 
-/* Cursor spotlight: a soft copper highlight that follows the pointer
-   across a card. The card sets --mx/--my from its own mousemove; the
-   overlay never intercepts events and vanishes when the pointer leaves. */
+/* Cursor spotlight: retired. The accent-tinted radial that followed the
+   pointer read as a green smear in the business register (copper remaps to
+   emerald there), and it was on every listing surface. The class is kept so
+   the call sites need no sweep; it simply no longer paints. */
 .cr-spot { position: relative; }
-.cr-spot::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
-  pointer-events: none; opacity: 0; transition: opacity 260ms ease;
-  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--cr-copper) 10%, transparent), transparent 65%);
-}
-.cr-spot:hover::after { opacity: 1; }
-@media (hover: none) { .cr-spot::after { display: none; } }
 
 /* Scrollbars finished to match: thin, quiet, copper on grip. */
 * { scrollbar-width: thin; scrollbar-color: var(--cr-paper-4) transparent; }
@@ -1203,22 +1199,14 @@ a:hover > .cr-diamond-live {
   }
 }
 
-/* ── FEATURE 22: Spotlight hover on listing rows ─────────── */
+/* ── FEATURE 22: Spotlight hover on listing rows — retired ── */
+/* Same story as .cr-spot above: an accent radial under the cursor turns
+   green in the business register and was visible on every page with rows.
+   The class stays for the call sites; the paint is gone. The row hover
+   itself (paper-3 wash) still marks the row. */
 .listing-row-spotlight {
   position: relative;
   overflow: hidden;
-}
-.listing-row-spotlight::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(160px circle at var(--spot-x, 50%) var(--spot-y, 50%), color-mix(in srgb, var(--cr-copper) 8%, transparent), transparent 70%);
-  opacity: 0;
-  transition: opacity 200ms ease;
-  pointer-events: none;
-}
-.listing-row-spotlight:hover::after {
-  opacity: 1;
 }
 
 /* ── FEATURE 23: Editorial pull quote ────────────────────── */
