@@ -4702,5 +4702,8 @@
     "dashTitle": "Onderteken de verklaring bij je vermelding",
     "dashBody": "Bevestig dat de informatie in je vermelding juist is en dat je bevoegd bent het bedrijf te vertegenwoordigen.",
     "dashCta": "Lezen en ondertekenen"
+  },
+  "contactGate": {
+    "peerClosed": "Berichten worden mogelijk zodra een deal tussen jou en de andere partij is ondertekend."
   }
 }

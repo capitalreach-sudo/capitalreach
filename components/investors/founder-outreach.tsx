@@ -13,7 +13,14 @@ import { RefusalNotice, useRefusal, type Refusal } from "@/hooks/useRefusal";
  * an intro-stage deal → /deals). Rendered by the server page for founder
  * viewers only; the pipeline button is hidden once a deal exists.
  */
-export function FounderOutreach({ investorId, investorName, hasDeal }: { investorId: string; investorName: string; hasDeal: boolean }) {
+/**
+ * canMessage is the contact verdict, resolved on the server by the page. Both
+ * message controls are ABSENT until it is true, rather than shown and then
+ * refused: a deal row existing is not the test, a deal both sides have signed
+ * is, and hasDeal goes true the moment one is opened. Adding this pipeline is
+ * still offered without it -- that is how the conversation gets earned.
+ */
+export function FounderOutreach({ investorId, investorName, hasDeal, canMessage = false }: { investorId: string; investorName: string; hasDeal: boolean; canMessage?: boolean }) {
   const { t } = useTranslation();
   const router = useRouter();
   const { readRefusal } = useRefusal();
@@ -62,22 +69,26 @@ export function FounderOutreach({ investorId, investorName, hasDeal }: { investo
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        <button onClick={async () => {
-          if (busy) return;
-          setRefusal(null);
-          const res = await fetch("/api/messages/start", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ investorId, open: true }),
-          });
-          const j = await res.json().catch(() => ({}));
-          if (!res.ok) { refuse(res, j); return; }
-          router.push(`/dashboard/messages?thread=${j.threadId}`);
-        }} style={{ ...btn, background: "var(--cr-paper-2)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
-          <ArrowRight style={{ width: 13, height: 13 }} /> {t("intro.make")}
-        </button>
-        <button onClick={() => setOpen((o) => !o)} style={{ ...btn, background: "var(--cr-copper)", color: "#fff", border: "1px solid var(--cr-copper-d)" }}>
-          <MessageSquare style={{ width: 13, height: 13 }} /> {t("outreach.message", { name: investorName })}
-        </button>
+        {canMessage && (
+          <button onClick={async () => {
+            if (busy) return;
+            setRefusal(null);
+            const res = await fetch("/api/messages/start", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ investorId, open: true }),
+            });
+            const j = await res.json().catch(() => ({}));
+            if (!res.ok) { refuse(res, j); return; }
+            router.push(`/dashboard/messages?thread=${j.threadId}`);
+          }} style={{ ...btn, background: "var(--cr-paper-2)", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)" }}>
+            <ArrowRight style={{ width: 13, height: 13 }} /> {t("intro.make")}
+          </button>
+        )}
+        {canMessage && (
+          <button onClick={() => setOpen((o) => !o)} style={{ ...btn, background: "var(--cr-copper)", color: "#fff", border: "1px solid var(--cr-copper-d)" }}>
+            <MessageSquare style={{ width: 13, height: 13 }} /> {t("outreach.message", { name: investorName })}
+          </button>
+        )}
         {!hasDeal && (
           <button onClick={addToPipeline} disabled={busy === "deal"} style={{ ...btn, background: "transparent", color: "var(--cr-copper)", border: "1px solid var(--cr-copper-br)", opacity: busy === "deal" ? 0.6 : 1 }}>
             <Handshake style={{ width: 13, height: 13 }} /> {busy === "deal" ? "…" : t("outreach.addToPipeline")}

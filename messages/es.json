@@ -4702,5 +4702,8 @@
     "dashTitle": "Firma la declaración de tu listado",
     "dashBody": "Confirma que la información de tu listado es veraz y que estás autorizado para representar a la empresa.",
     "dashCta": "Leer y firmar"
+  },
+  "contactGate": {
+    "peerClosed": "La mensajería se abre cuando se firma un acuerdo entre usted y la otra parte."
   }
 }

@@ -57,11 +57,16 @@ export default async function HomePage() {
     const [statsRes, launchRes, listingsRes, tickerRes] = await Promise.all([
       cachedStats(),
       getLaunchStatus(),
+      // Newest, not highest-scoring. The homepage is the most prominent
+      // surface on the site, and ranking it by a number the product calls a
+      // score is closer to a recommendation than to a filter -- the same
+      // reason the browse page stopped defaulting to that sort. Recency is a
+      // fact about the listing rather than a judgement about it.
       supabase
         .from("startups")
         .select("id,name,slug,industry,stage,funding_target,vaultrise_score")
         .eq("status", "active")
-        .order("vaultrise_score", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false })
         .limit(8),
       // The ticker is the whole market moving, not a shortlist: EVERY active
       // round rides the lane (Jack's call). Light projection, cached with the

@@ -4702,5 +4702,8 @@
     "dashTitle": "Signer la déclaration de votre annonce",
     "dashBody": "Confirmez que les informations de votre annonce sont exactes et que vous êtes habilité à représenter la société.",
     "dashCta": "Lire et signer"
+  },
+  "contactGate": {
+    "peerClosed": "La messagerie s'ouvre une fois qu'un accord entre vous et l'autre partie est signé."
   }
 }

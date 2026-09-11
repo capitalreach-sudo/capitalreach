@@ -21,6 +21,7 @@ import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
+import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { ScoreBadge } from "@/components/ui/score-badge";
 
@@ -1603,6 +1604,15 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 option set is unchanged -- one control instead of two. */}
           </div>
         </div>
+
+        {/* One note for the whole column, not one per card. Every card below
+            carries a score, so the sentence that says what the number is has
+            to be on this page -- but nine copies of it is small print nobody
+            reads. It sits above the grid it covers, the way a footnote sits
+            with its table, and it is the same string the detail page shows. */}
+        {!loading && filtered.length > 0 && (
+          <ScoreCaption style={{ marginBottom: RHYTHM.block }} />
+        )}
 
         {/* Grid */}
         {loading ? (

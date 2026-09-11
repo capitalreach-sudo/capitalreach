@@ -174,8 +174,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // investor → investor: a direct thread, no startup anchor (098).
+    // investor → investor: CLOSED. Messaging on this platform is the reward
+    // for a deal that both parties have signed, and two investors can never
+    // have one with each other, so there is no state in which this channel
+    // could open. It was exempt because it "is not contact with a company",
+    // which is true and beside the point: it is an unstructured channel
+    // between two members, which is the thing the rule exists to withhold.
+    // Refused here rather than only hidden in the UI -- a removed button is
+    // not a rule.
     if (isUuid(investorId)) {
+      if (senderProfile?.role !== "admin") {
+        return NextResponse.json({
+          error: "Messaging opens once a deal between you and the other party is signed.",
+          messageKey: "contactGate.peerClosed",
+        }, { status: 403 });
+      }
       const { data: other } = await admin.from("investors")
         .select("id, owner_id, display_name, firm_name").eq("id", investorId).maybeSingle();
       if (!other) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -281,7 +294,22 @@ export async function POST(req: NextRequest) {
   }
 
 
-  // Founder → founder.
+  // Founder → founder: CLOSED, for the same reason as investor to investor.
+  // Two founders cannot sign a deal with each other, so no sequence of events
+  // opens this channel. The sender-listing-must-be-live check below was the
+  // defence against someone registering a listing purely to reach the market
+  // ungated; closing the branch outright removes the need for it.
+  // Read here rather than reused: senderProfile above is scoped to the
+  // investor block, and a founder never enters it.
+  const { data: founderProfile } = await admin
+    .from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (isUuid(targetStartupId) && founderProfile?.role !== "admin") {
+    return NextResponse.json({
+      error: "Messaging opens once a deal between you and the other party is signed.",
+      messageKey: "contactGate.peerClosed",
+    }, { status: 403 });
+  }
+
   if (isUuid(targetStartupId)) {
     const [{ data: other }, { data: me }] = await Promise.all([
       admin.from("startups").select("id, owner_id, name, status").eq("id", targetStartupId).maybeSingle(),

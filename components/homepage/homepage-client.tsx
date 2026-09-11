@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useReveal } from "@/hooks/useReveal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
+import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
 import { MarketMatcher } from "@/components/homepage/market-matcher";
@@ -414,6 +415,12 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
                 {t("listings.viewAll")} →
               </Link>
             </div>
+
+            {/* The table below carries a score column, so the sentence saying
+                what that number is belongs on this page. One note above the
+                table rather than a line in every row, and the same string the
+                detail page shows. */}
+            <ScoreCaption style={{ marginBottom: "16px" }} />
 
             {/* Tokens, not rgba literals; 4px corners like every other card;
                 no copper gradient bar on top -- the table is the content. */}

@@ -4702,5 +4702,8 @@
     "dashTitle": "Skriv under intygandet för din annons",
     "dashBody": "Bekräfta att uppgifterna i din annons stämmer och att du har rätt att företräda bolaget.",
     "dashCta": "Läs och skriv under"
+  },
+  "contactGate": {
+    "peerClosed": "Meddelanden öppnas när en affär mellan dig och motparten är undertecknad."
   }
 }

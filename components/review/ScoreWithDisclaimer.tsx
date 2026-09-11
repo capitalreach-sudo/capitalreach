@@ -94,6 +94,34 @@ const SIZES = {
   lg: { figure: "34px", caption: "12.5px", label: "9.5px" },
 } as const;
 
+/**
+ * The caption alone, for a surface that shows MANY scores.
+ *
+ * On the detail page the figure and its caption are one block, and that is the
+ * right shape when there is one score on the page. A grid of nine cards is a
+ * different problem: repeating a 56-character paragraph under every card is
+ * five lines of small print nine times over, which is how a disclaimer stops
+ * being read. A list gets one note covering the column, the way a table
+ * footnote covers a table.
+ *
+ * It lives in this file and reads the same key so the two can never drift:
+ * editing the caption on the detail page edits it here.
+ */
+export function ScoreCaption({ style }: { style?: React.CSSProperties }) {
+  const { t } = useTranslation();
+  const out = t("listingScore.caption");
+  return (
+    <p style={{
+      fontFamily: UI, fontWeight: 400, fontSize: "11px", lineHeight: 1.55,
+      color: "var(--cr-ink-4)", margin: 0, maxWidth: "72ch", ...style,
+    }}>
+      {out === "listingScore.caption"
+        ? "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, not a verification of any figure."
+        : out}
+    </p>
+  );
+}
+
 export function ScoreWithDisclaimer({
   score,
   dimensions,

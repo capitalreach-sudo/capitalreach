@@ -4702,5 +4702,8 @@
     "dashTitle": "Podpisz oświadczenie do swojej oferty",
     "dashBody": "Potwierdź, że informacje w Twojej ofercie są prawdziwe i że jesteś upoważniony do reprezentowania spółki.",
     "dashCta": "Przeczytaj i podpisz"
+  },
+  "contactGate": {
+    "peerClosed": "Wiadomości stają się dostępne po podpisaniu umowy między Tobą a drugą stroną."
   }
 }

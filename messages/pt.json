@@ -4702,5 +4702,8 @@
     "dashTitle": "Assine a declaração da sua listagem",
     "dashBody": "Confirme que as informações da sua listagem são verdadeiras e que está autorizado a representar a empresa.",
     "dashCta": "Ler e assinar"
+  },
+  "contactGate": {
+    "peerClosed": "As mensagens abrem assim que um acordo entre si e a outra parte for assinado."
   }
 }

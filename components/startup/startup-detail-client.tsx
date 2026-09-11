@@ -33,7 +33,6 @@ import { track } from "@/lib/track";
 import { StickyActionBar } from "@/components/shared/sticky-action-bar";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { WaitlistButton } from "@/components/startup/waitlist-button";
-import { FounderToFounder } from "@/components/startup/founder-to-founder";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { RiskWarning } from "@/components/startup/risk-warning";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
@@ -1051,14 +1050,13 @@ export function StartupDetailClient({
                     neighbours around as it opens. */}
                 {((viewerStartupId && !isOwner && !viewerSuspended) || (isSaved && investorId)) && (
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: "16px" }}>
-                    {/* Peer founders only, since 012. An investor's two buttons
-                        here were refused by /api/messages/start every time: the
-                        contact policy wants an accepted offer first, so the pair
-                        read as broken rather than as gated. The offer button
-                        above is the investor's way in. */}
-                    {viewerStartupId && !isOwner && !viewerSuspended && (
-                      <FounderToFounder startupId={startup.id} />
-                    )}
+                    {/* Founder to founder is gone rather than gated. Messaging
+                        is what a signed deal buys, and two founders can never
+                        sign one with each other, so there was no state in which
+                        this control could have become usable. Offering it and
+                        refusing it would be worse than not offering it. The
+                        route refuses this pair as well; the button was never
+                        the rule. */}
                     {isSaved && investorId && <InlineWatchNote startupId={startup.id} />}
                   </div>
                 )}

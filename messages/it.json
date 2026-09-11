@@ -4702,5 +4702,8 @@
     "dashTitle": "Firma la dichiarazione del tuo annuncio",
     "dashBody": "Conferma che le informazioni nel tuo annuncio sono veritiere e che sei autorizzato a rappresentare la società.",
     "dashCta": "Leggi e firma"
+  },
+  "contactGate": {
+    "peerClosed": "La messaggistica si apre quando un accordo tra te e l'altra parte è firmato."
   }
 }

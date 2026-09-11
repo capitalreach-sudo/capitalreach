@@ -4702,5 +4702,8 @@
     "dashTitle": "Sign your listing statement",
     "dashBody": "Confirm that the information in your listing is true and that you are authorised to represent the company.",
     "dashCta": "Read and sign"
+  },
+  "contactGate": {
+    "peerClosed": "Messaging opens once a deal between you and the other party is signed."
   }
 }

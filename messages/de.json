@@ -4702,5 +4702,8 @@
     "dashTitle": "Erklärung zum Eintrag unterschreiben",
     "dashBody": "Bestätigen Sie, dass die Angaben in Ihrem Eintrag zutreffen und dass Sie berechtigt sind, das Unternehmen zu vertreten.",
     "dashCta": "Lesen und unterschreiben"
+  },
+  "contactGate": {
+    "peerClosed": "Nachrichten sind möglich, sobald ein Deal zwischen Ihnen und der Gegenseite unterschrieben ist."
   }
 }

@@ -10,8 +10,8 @@ import { Navbar } from "@/components/shared/navbar";
 import { TargetButton } from "@/components/investors/target-button";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { FounderOutreach } from "@/components/investors/founder-outreach";
-import { InvestorToInvestor } from "@/components/investors/investor-to-investor";
 import { resolveEntity } from "@/lib/membership";
+import { mayPairContact } from "@/lib/contact-policy";
 import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
@@ -169,6 +169,7 @@ export default async function InvestorProfilePage({ params }: Props) {
   // Founder viewers also get the target-list button (migration 031); RLS
   // scopes the lookup to the caller's own startup.
   let viewerIsFounder = false;
+  let viewerMayMessage = false;
   let viewerIsInvestor = false;
   let viewerTargeted = false;
   if (user && !isOwnProfile) {
@@ -202,6 +203,15 @@ export default async function InvestorProfilePage({ params }: Props) {
       ]);
       viewerDeal = (deal as ViewerDeal | null) ?? null;
       viewerTargeted = !!target;
+      // The same verdict /api/messages/start applies, asked here so the
+      // control is absent rather than present-and-refused. A deal ROW existing
+      // is not the test: the rule is a deal both sides have signed, and
+      // viewerDeal is true from the moment one is opened.
+      viewerMayMessage = (await mayPairContact({
+        startupId: membership.entityId,
+        investorId: investor.id,
+        side: "startup",
+      })).allowed;
     }
   }
 
@@ -411,11 +421,12 @@ export default async function InvestorProfilePage({ params }: Props) {
             </div>
             {/* B23: founder outbound — message / add to pipeline, right here. */}
             {viewerIsFounder && !isOwnProfile && (
-              <FounderOutreach investorId={investor.id} investorName={displayName} hasDeal={!!viewerDeal} />
+              <FounderOutreach investorId={investor.id} investorName={displayName} hasDeal={!!viewerDeal} canMessage={viewerMayMessage} />
             )}
-            {viewerIsInvestor && !isOwnProfile && (
-              <InvestorToInvestor investorId={investor.id} />
-            )}
+            {/* Investor to investor is gone rather than gated, for the same
+                reason founder to founder is: two investors cannot sign a deal
+                with each other, so the channel had no route to being earned.
+                /api/messages/start refuses the pair too. */}
             {investor.bio && (
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)", maxWidth: "60ch" }}>
                 <T field="bio">{investor.bio}</T>
