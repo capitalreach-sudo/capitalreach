@@ -118,6 +118,122 @@ export async function lookupCompany(opts: {
   }
 }
 
+// ── The company's own account of a round ─────────────────────────────────────
+//
+// lookupCompany above answers "does this company exist and may this person act
+// for it", which is an identity question asked at verification time. This
+// answers a different one: what has this company published about its share
+// capital since a round closed here. It is therefore not gated on the
+// applicant's country -- the register type is already recorded against the
+// startup -- and it deliberately returns no officers. The register check is
+// about a filing, and a list of directors' names in an admin response is a
+// dossier on people that nothing downstream of it needs.
+
+export interface CompanyFiling {
+  date: string | null;
+  type: string | null;
+  description: string | null;
+}
+
+export type CompanyRecordStatus =
+  | "ok"
+  | "not_found"
+  | "unconfigured"
+  | "invalid_number"
+  | "error";
+
+export interface CompanyRegisterRecord {
+  status: CompanyRecordStatus;
+  name: string | null;
+  number: string;
+  companyStatus: string | null;
+  incorporatedOn: string | null;
+  /** Capital filings only: allotments and statements of capital are where a
+   *  round shows up. Accounts and confirmation statements say far more about
+   *  the company than the question being asked. */
+  filings: CompanyFiling[];
+  /** The human page, always returned when the number is well formed, so a
+   *  reviewer can read the register themselves when this call fails. */
+  sourceUrl: string | null;
+  filingHistoryUrl: string | null;
+}
+
+/** Filing history rows fetched. A company with more capital events than this
+ *  is one the reviewer should be reading on the register itself. */
+const FILING_HISTORY_LIMIT = 25;
+
+export async function companiesHouseRecord(companyNumber: string): Promise<CompanyRegisterRecord> {
+  const num = (companyNumber ?? "").trim().toUpperCase();
+  const base: CompanyRegisterRecord = {
+    status: "error", name: null, number: num, companyStatus: null,
+    incorporatedOn: null, filings: [], sourceUrl: null, filingHistoryUrl: null,
+  };
+
+  // Registration numbers are alphanumeric; anything else is a caller bug or an
+  // injection attempt, and either way must not reach the URL.
+  if (!/^[A-Z0-9]{6,10}$/.test(num)) return { ...base, status: "invalid_number" };
+
+  const sourceUrl = `https://find-and-update.company-information.service.gov.uk/company/${num}`;
+  const filingHistoryUrl = `${sourceUrl}/filing-history`;
+  const located = { ...base, sourceUrl, filingHistoryUrl };
+
+  const auth = chAuth();
+  if (!auth) return { ...located, status: "unconfigured" };
+
+  try {
+    const res = await fetch(`${CH_BASE}/company/${num}`, {
+      headers: { Authorization: auth },
+      // A filing is a fact about the world and does not change while a
+      // reviewer reads the screen.
+      next: { revalidate: 3600 },
+    });
+    if (res.status === 404) return { ...located, status: "not_found" };
+    if (!res.ok) return located;
+
+    const c = await res.json() as {
+      company_name?: string; company_number?: string;
+      company_status?: string; date_of_creation?: string;
+    };
+
+    let filings: CompanyFiling[] = [];
+    try {
+      const f = await fetch(
+        `${CH_BASE}/company/${num}/filing-history?category=capital&items_per_page=${FILING_HISTORY_LIMIT}`,
+        { headers: { Authorization: auth }, next: { revalidate: 3600 } },
+      );
+      if (f.ok) {
+        const list = await f.json() as {
+          items?: Array<{ date?: string; type?: string; description?: string }>;
+        };
+        filings = (list.items ?? []).slice(0, FILING_HISTORY_LIMIT).map((i) => ({
+          date: i.date ?? null,
+          type: i.type ?? null,
+          // Companies House descriptions are dotted enum keys
+          // ("capital-allotment-shares"); rendered as words they are still
+          // readable, and the reviewer opens the filing itself either way.
+          description: (i.description ?? "").replace(/-/g, " ") || null,
+        }));
+      }
+    } catch {
+      // The company record is the answer; its filing list is a convenience,
+      // and losing it must not turn a found company into an error.
+    }
+
+    return {
+      status: "ok",
+      name: c.company_name ?? null,
+      number: c.company_number ?? num,
+      companyStatus: c.company_status ?? null,
+      incorporatedOn: c.date_of_creation ?? null,
+      filings,
+      sourceUrl,
+      filingHistoryUrl,
+    };
+  } catch {
+    return located;
+  }
+}
+
 /**
  * Is this applicant plausibly an officer of that company?
  *

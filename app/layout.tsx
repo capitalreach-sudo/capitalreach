@@ -1,20 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { DeferredChrome } from "@/components/shared/deferred-chrome";
+// Everything non-critical the layout used to mount goes through these two
+// slots. They are the only place that decides what waits; see the file itself
+// for which components are in there and what each one was costing.
+import { DeferredBanner, DeferredChrome } from "@/components/shared/deferred-chrome";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import { ToastNotifyProvider } from "@/components/ui/toast-notify";
-import { LaunchBanner } from "@/components/ui/LaunchBanner";
-import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
-import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
-import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { SkipToContent } from "@/components/ui/SkipToContent";
 import { cookies } from "next/headers";
-import { BottomNav } from "@/components/shared/bottom-nav";
-import { ShortcutsHelp } from "@/components/shared/shortcuts-help";
-import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { isRTL, getLocaleFont } from "@/lib/locale";
+import { fontVariables } from "@/lib/fonts";
 import { getLocale, getMessages } from "@/lib/locale-server";
 import { brand } from "@/lib/brand";
 
@@ -99,49 +94,47 @@ export default async function RootLayout({
   const extraFont = getLocaleFont(locale);
 
   return (
-    <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} data-style={style} suppressHydrationWarning>
+    <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} data-style={style} className={fontVariables} suppressHydrationWarning>
       <head>
-        {/* First in head: the connection is warm before any font CSS asks for it. */}
-        {/* The client talks to Supabase from the first interactive moment
-            (session, saved lists, sparklines) — pay the TLS setup early. */}
+        {/* First in head so the handshake overlaps the rest of the document.
+            The client talks to Supabase from the first interactive moment
+            (session, saved lists, sparklines), so pay the TLS setup early. */}
         {process.env.NEXT_PUBLIC_SUPABASE_URL && (
           <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} crossOrigin="" />
         )}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* The house families load from the head, in parallel with the app
-            CSS -- this used to be an @import inside globals.css, which
-            chained html -> css -> google css -> font and billed ~1s of
-            render-blocking to every page. Fraunces requests only the axis
-            ranges the site actually sets (wght 600-700, SOFT 0-50). */}
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,600..700,0..50,0..1;1,9..144,600..700,0..50,0..1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700&display=swap" />
+        {/* The four house families are self-hosted by next/font (lib/fonts.ts),
+            so nothing in the head reaches fonts.googleapis.com any more.
+            The per-locale face still does. Its CJK members are sliced into
+            101-124 @font-face rules apiece, and next/font imports are static,
+            so pulling all six of those families in would put roughly 330 KB of
+            @font-face CSS into every route for every locale in order to spare
+            six locales one request. The two origins are therefore warmed only
+            on the locales that actually fetch from them. */}
         {extraFont && (
-          <link
-            rel="stylesheet"
-            href={`https://fonts.googleapis.com/css2?family=${extraFont.replace(/ /g, "+")}:wght@300;400;500;600;700&display=swap`}
-          />
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+            <link
+              rel="stylesheet"
+              href={`https://fonts.googleapis.com/css2?family=${extraFont.replace(/ /g, "+")}:wght@300;400;500;600;700&display=swap`}
+            />
+          </>
         )}
       </head>
       <body className="font-sans">
         {/* Seeds every client component with the server-resolved locale, so the
             first paint is already correct rather than English-then-swap. */}
         <LocaleProvider initialLocale={locale} initialMessages={messages}>
+        {/* First stop in the tab order, so it cannot wait for anything. */}
         <SkipToContent />
-        <RuleLabelAnimator />
-        <LaunchBanner />
-        <LocaleChangeToast />
+        <DeferredBanner />
         {children}
-        {/* Global shell. The Navbar is mounted per page, but these three are
-            the same everywhere, so the layout is the one place they belong. */}
-        <ShortcutsHelp />
-        <ScrollToTop />
-        <BottomNav />
-        {/* Ask about this page. Hides itself on the working surfaces. */}
+        {/* Global shell. The Navbar is mounted per page, but this chrome is the
+            same everywhere, so the layout is the one place it belongs. */}
         <DeferredChrome />
+        {/* Server-rendered and empty: a filter that resolves before hydration
+            still needs a region to announce into. */}
         <LiveRegion />
-        <Toaster />
-        <ToastNotifyProvider />
-        <ServiceWorkerRegistrar />
         </LocaleProvider>
         {/* The paper-grain source: an SVG turbulence filter referenced by
             body::before. Rendered once, invisible, zero layout cost. */}

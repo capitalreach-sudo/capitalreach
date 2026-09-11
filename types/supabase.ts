@@ -829,12 +829,18 @@ export type Database = {
           funds_sent_at: string | null
           funds_sent_by: string | null
           id: string
+          instrument_doc_extracted_amount: number | null
+          instrument_doc_url: string | null
           investor_id: string
           next_follow_up: string | null
           notes: string | null
           ownership_percent: number | null
           passed_at: string | null
           public_interest: boolean
+          reconciliation_status: string
+          register_check_due: string | null
+          register_check_status: string
+          register_filed_amount: number | null
           seal_sha256: string | null
           seal_version: string | null
           sealed_at: string | null
@@ -891,12 +897,18 @@ export type Database = {
           funds_sent_at?: string | null
           funds_sent_by?: string | null
           id?: string
+          instrument_doc_extracted_amount?: number | null
+          instrument_doc_url?: string | null
           investor_id: string
           next_follow_up?: string | null
           notes?: string | null
           ownership_percent?: number | null
           passed_at?: string | null
           public_interest?: boolean
+          reconciliation_status?: string
+          register_check_due?: string | null
+          register_check_status?: string
+          register_filed_amount?: number | null
           seal_sha256?: string | null
           seal_version?: string | null
           sealed_at?: string | null
@@ -953,12 +965,18 @@ export type Database = {
           funds_sent_at?: string | null
           funds_sent_by?: string | null
           id?: string
+          instrument_doc_extracted_amount?: number | null
+          instrument_doc_url?: string | null
           investor_id?: string
           next_follow_up?: string | null
           notes?: string | null
           ownership_percent?: number | null
           passed_at?: string | null
           public_interest?: boolean
+          reconciliation_status?: string
+          register_check_due?: string | null
+          register_check_status?: string
+          register_filed_amount?: number | null
           seal_sha256?: string | null
           seal_version?: string | null
           sealed_at?: string | null
@@ -1004,6 +1022,58 @@ export type Database = {
           },
           {
             foreignKeyName: "deals_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_downloads: {
+        Row: {
+          document_id: string | null
+          downloaded_at: string
+          id: string
+          investor_id: string
+          ip_address: string | null
+          startup_id: string
+          watermark_id: string
+        }
+        Insert: {
+          document_id?: string | null
+          downloaded_at?: string
+          id?: string
+          investor_id: string
+          ip_address?: string | null
+          startup_id: string
+          watermark_id: string
+        }
+        Update: {
+          document_id?: string | null
+          downloaded_at?: string
+          id?: string
+          investor_id?: string
+          ip_address?: string | null
+          startup_id?: string
+          watermark_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_downloads_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "startup_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_downloads_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_downloads_startup_id_fkey"
             columns: ["startup_id"]
             isOneToOne: false
             referencedRelation: "startups"
@@ -2023,6 +2093,7 @@ export type Database = {
           avatar_url: string | null
           check_size_max: number | null
           check_size_min: number | null
+          circumvention_strikes: number
           created_at: string
           deleted_at: string | null
           deletion_reason: string | null
@@ -2066,6 +2137,7 @@ export type Database = {
           avatar_url?: string | null
           check_size_max?: number | null
           check_size_min?: number | null
+          circumvention_strikes?: number
           created_at?: string
           deleted_at?: string | null
           deletion_reason?: string | null
@@ -2109,6 +2181,7 @@ export type Database = {
           avatar_url?: string | null
           check_size_max?: number | null
           check_size_min?: number | null
+          circumvention_strikes?: number
           created_at?: string
           deleted_at?: string | null
           deletion_reason?: string | null
@@ -2730,6 +2803,7 @@ export type Database = {
           languages_spoken: string[] | null
           lead_investor: string | null
           lead_investor_status: string | null
+          legal_entity_name: string | null
           listed_at: string | null
           logo_color: string | null
           logo_url: string | null
@@ -2745,6 +2819,8 @@ export type Database = {
           previous_funding: number | null
           problem: string | null
           product_hunt_url: string | null
+          register_number: string | null
+          register_type: string | null
           require_nda: boolean
           revenue_model: string | null
           round_close_date: string | null
@@ -2816,6 +2892,7 @@ export type Database = {
           languages_spoken?: string[] | null
           lead_investor?: string | null
           lead_investor_status?: string | null
+          legal_entity_name?: string | null
           listed_at?: string | null
           logo_color?: string | null
           logo_url?: string | null
@@ -2831,6 +2908,8 @@ export type Database = {
           previous_funding?: number | null
           problem?: string | null
           product_hunt_url?: string | null
+          register_number?: string | null
+          register_type?: string | null
           require_nda?: boolean
           revenue_model?: string | null
           round_close_date?: string | null
@@ -2902,6 +2981,7 @@ export type Database = {
           languages_spoken?: string[] | null
           lead_investor?: string | null
           lead_investor_status?: string | null
+          legal_entity_name?: string | null
           listed_at?: string | null
           logo_color?: string | null
           logo_url?: string | null
@@ -2917,6 +2997,8 @@ export type Database = {
           previous_funding?: number | null
           problem?: string | null
           product_hunt_url?: string | null
+          register_number?: string | null
+          register_type?: string | null
           require_nda?: boolean
           revenue_model?: string | null
           round_close_date?: string | null
@@ -3448,6 +3530,7 @@ export type Database = {
           languages_spoken: string[] | null
           lead_investor: string | null
           lead_investor_status: string | null
+          legal_entity_name: string | null
           listed_at: string | null
           logo_color: string | null
           logo_url: string | null
@@ -3463,6 +3546,8 @@ export type Database = {
           previous_funding: number | null
           problem: string | null
           product_hunt_url: string | null
+          register_number: string | null
+          register_type: string | null
           require_nda: boolean
           revenue_model: string | null
           round_close_date: string | null
@@ -3529,6 +3614,7 @@ export type Database = {
           tagline: string
         }[]
       }
+      has_unmasked_contact: { Args: { txt: string }; Returns: boolean }
       increment_pageview: { Args: { startup_id: string }; Returns: undefined }
       is_deal_counterparty: { Args: { p_startup_id: string }; Returns: boolean }
       is_investor_member: { Args: { iid: string }; Returns: boolean }

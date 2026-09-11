@@ -57,6 +57,18 @@ function tidy(text: string): string {
   return text.replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
 }
 
+/**
+ * Plain text from one PDF whose bytes the caller already holds.
+ *
+ * Same parser and same whitespace handling as extractDocuments, so a document
+ * that reads as empty here reads as empty there too. An empty string means the
+ * file carries no text layer -- a scan or a photograph -- which callers must
+ * treat as "not readable" rather than as "says nothing".
+ */
+export async function pdfBufferToText(buf: Buffer): Promise<string> {
+  return tidy(await pdfToText(buf));
+}
+
 export async function extractDocuments(docs: ExtractableDoc[]): Promise<{ extracted: ExtractedDoc[]; skipped: string[] }> {
   const admin = createAdminClient();
   const extracted: ExtractedDoc[] = [];

@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback } from "react";
-// English is the ONLY dictionary bundled statically: it is the fallback for
-// every missing key in every locale, so it must always be present. The other
-// 14 languages used to be imported here too (~3.2 MB shipped on every page);
-// now the active locale's dictionary arrives from the server through
-// LocaleProvider, and language switches dynamic-import a single chunk.
-import en from "../messages/en.json";
 import { useLocale, useLocaleMessages } from "@/components/providers/locale-provider";
+import type { Dictionary } from "@/lib/i18n-dictionary";
+
+// Nothing in this file may statically import a locale JSON. en.json alone is
+// 247 KB, and every page that renders any text pulls this module, so a static
+// import lands the whole dictionary in every route's first-load bundle. The
+// active locale arrives from the server through LocaleProvider instead.
+const EMPTY: Dictionary = {};
 
 export function useTranslation() {
   // Both come from the server via LocaleProvider, so the first render --
@@ -17,9 +18,8 @@ export function useTranslation() {
   // once hydration ran.
   const locale = useLocale();
 
-  // null when the active locale is English, or when rendered outside the
-  // provider -- either way the static English dictionary is the right answer.
-  const messages = useLocaleMessages() ?? en;
+  // null only outside the provider, which the root layout makes unreachable.
+  const messages = useLocaleMessages() ?? EMPTY;
 
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>): string => {
@@ -60,10 +60,15 @@ export function useTranslation() {
             }
             return typeof v === "string" ? v : undefined;
           };
-          value = resolvePlural(messages) ?? resolvePlural(en);
+          value = resolvePlural(messages);
         }
       }
-      value ??= resolve(messages) ?? resolve(en) ?? key;
+      // No second lookup against English: tests/i18n.test.ts asserts every
+      // locale holds every en key, including every plural form, so a
+      // per-key English fallback can only ever return what the line above
+      // already returned. A key that goes missing is a failing test, not a
+      // page that quietly turns English halfway down.
+      value ??= resolve(messages) ?? key;
       if (!vars) return value;
       return value.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? `{${k}}`));
     },

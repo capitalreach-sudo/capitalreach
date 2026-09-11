@@ -10,6 +10,7 @@ import { isAccountSuspended } from "@/lib/suspension-guard";
 import { notifyUsers } from "@/lib/notify-user";
 import { postMoney } from "@/lib/round-math";
 import { recordIntroduction, withinTail } from "@/lib/introductions";
+import { registerCheckOnClose } from "@/lib/register-check";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -43,7 +44,10 @@ export async function POST(req: NextRequest) {
 
   const { data: deal } = await adminClient
     .from("deals")
-    .select("*, startup:startups(name, owner_id, valuation, valuation_type, funding_target), investor:investors(owner_id, display_name, firm_name)")
+    // register_type and register_number are read with the service-role client
+    // on purpose: 109 keeps them out of the client-key column grant, and they
+    // leave this route only as a scheduling date.
+    .select("*, startup:startups(name, owner_id, valuation, valuation_type, funding_target, register_type, register_number), investor:investors(owner_id, display_name, firm_name)")
     .eq("id", dealId)
     .single();
 
@@ -178,7 +182,10 @@ export async function POST(req: NextRequest) {
     firstContactAt: deal.created_at,
   });
 
-  const { data: closedRows } = await adminClient
+  const startupRegister = deal.startup as unknown as
+    { register_type?: string | null; register_number?: string | null } | null;
+
+  const { data: closedRows, error: closeError } = await adminClient
     .from("deals")
     .update({
       status: "closed",
@@ -203,6 +210,18 @@ export async function POST(req: NextRequest) {
       success_fee_amount: finalAmount
         ? Math.round(finalAmount * 0.02 * minorUnitsFactor(finalCurrency ?? "usd"))
         : null,
+      // What the company itself files at its register is the only account of
+      // this round that neither party to the fee can write. It lands weeks
+      // after the close, so the comparison is SCHEDULED here rather than run
+      // here, and only where there is a register entity on file to compare
+      // against. Written in the same statement as the close so a deal can
+      // never be closed without its check being either queued or explicitly
+      // not queued.
+      ...registerCheckOnClose({
+        closedAt: new Date(),
+        registerType: startupRegister?.register_type,
+        registerNumber: startupRegister?.register_number,
+      }),
       // D40: snapshot the position as it was at close. Deriving ownership
       // later from the company's *current* valuation would restate history
       // every time they raised again.
@@ -248,6 +267,15 @@ export async function POST(req: NextRequest) {
     .neq("status", "closed")
     .select("id");
 
+  // A rejected UPDATE and a lost race both arrive here as an empty result set,
+  // and they mean opposite things: one is "somebody else closed this", the
+  // other is "nothing was written at all". Reporting the second as the first
+  // would tell both parties their round was closed while the row still says
+  // otherwise and no fee was ever raised.
+  if (closeError) {
+    console.error("[deals/close]", closeError);
+    return NextResponse.json({ error: "Could not close the deal" }, { status: 500 });
+  }
   if (!closedRows || closedRows.length === 0) {
     return NextResponse.json({ success: true, alreadyClosed: true, invoiceUrl: "" });
   }
