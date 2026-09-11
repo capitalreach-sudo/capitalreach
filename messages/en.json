@@ -75,10 +75,6 @@
     "bullet2": "Invoiced after close",
     "bullet3": "Founders only"
   },
-  "pullQuote": {
-    "text": "We put every data room behind an NDA, record what each member files, and take our fee only when a round closes.",
-    "attribution": "The CapitalReach Standard"
-  },
   "trustIndicators": {
     "startupsListed": "startups listed",
     "verifiedInvestors": "investors listed",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Message investor",
     "placeholder": "Introduce yourself — a co-invest, a question about their thesis, anything."
-  },
-  "ticker": {
-    "aria": "Live fundraising rounds"
   },
   "verify": {
     "whatWasChecked": "What was checked",

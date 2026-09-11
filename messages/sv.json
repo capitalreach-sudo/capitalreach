@@ -2639,10 +2639,6 @@
     "noEntity": "Slutför din profil innan du bjuder in någon.",
     "unavailable": "Teamkonton är inte påslagna än. Kom tillbaka snart."
   },
-  "pullQuote": {
-    "text": "Vi lägger varje datarum bakom ett NDA, registrerar vad varje medlem lämnar in och tar vår avgift först när en runda stängs.",
-    "attribution": "CapitalReach-standarden"
-  },
   "pulse": {
     "title": "Denna vecka",
     "healthTitle": "Noteringarnas hälsa",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Meddela investeraren",
     "placeholder": "Presentera dig — en saminvestering, en fråga om tesen, vad som helst."
-  },
-  "ticker": {
-    "aria": "Pågående finansieringsrundor"
   },
   "verify": {
     "whatWasChecked": "Vad som kontrollerades",

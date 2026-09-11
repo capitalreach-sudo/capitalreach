@@ -2484,10 +2484,6 @@
     "reconsentAccept": "Akzeptieren",
     "reconsentDone": "Danke — du bist auf dem aktuellen Stand."
   },
-  "pullQuote": {
-    "text": "Wir sichern jeden Datenraum mit einem NDA, halten fest, was jedes Mitglied einreicht, und berechnen unsere Gebühr erst, wenn eine Runde schließt.",
-    "attribution": "Der CapitalReach-Standard"
-  },
   "notifications": {
     "title": "Benachrichtigungen",
     "markAllRead": "Alle als gelesen markieren",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Investor:in anschreiben",
     "placeholder": "Stellen Sie sich vor — ein Co-Investment, eine Frage zur These, was immer ansteht."
-  },
-  "ticker": {
-    "aria": "Aktive Finanzierungsrunden"
   },
   "verify": {
     "whatWasChecked": "Was geprüft wurde",

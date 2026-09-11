@@ -2639,10 +2639,6 @@
     "noEntity": "Termina a configuração do teu perfil antes de convidar alguém.",
     "unavailable": "As contas de equipa ainda não estão ativas. Volta em breve."
   },
-  "pullQuote": {
-    "text": "Protegemos todas as data rooms com um NDA, registamos o que cada membro entrega e só cobramos a nossa comissão quando uma ronda fecha.",
-    "attribution": "O padrão CapitalReach"
-  },
   "pulse": {
     "title": "Esta semana",
     "healthTitle": "Saúde das oportunidades",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Mensagem ao investidor",
     "placeholder": "Apresente-se — um coinvestimento, uma pergunta sobre a tese, o que for."
-  },
-  "ticker": {
-    "aria": "Rondas de financiamento ativas"
   },
   "verify": {
     "whatWasChecked": "O que foi verificado",

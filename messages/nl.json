@@ -2639,10 +2639,6 @@
     "noEntity": "Maak eerst je profiel af voordat je iemand uitnodigt.",
     "unavailable": "Teamaccounts staan nog niet aan. Kom snel terug."
   },
-  "pullQuote": {
-    "text": "Wij zetten elke dataroom achter een NDA, leggen vast wat elk lid indient, en rekenen onze fee pas wanneer een ronde sluit.",
-    "attribution": "De CapitalReach-standaard"
-  },
   "pulse": {
     "title": "Deze week",
     "healthTitle": "Gezondheid van het aanbod",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Bericht aan investeerder",
     "placeholder": "Stel jezelf voor — een co-investering, een vraag over de these, wat dan ook."
-  },
-  "ticker": {
-    "aria": "Actieve financieringsrondes"
   },
   "verify": {
     "whatWasChecked": "Wat is gecontroleerd",

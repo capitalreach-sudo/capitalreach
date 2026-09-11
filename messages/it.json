@@ -2639,10 +2639,6 @@
     "noEntity": "Completa il tuo profilo prima di invitare qualcuno.",
     "unavailable": "Gli account team non sono ancora attivi. Torna a breve."
   },
-  "pullQuote": {
-    "text": "Proteggiamo ogni data room con un NDA, registriamo ciò che ogni membro deposita e applichiamo la nostra commissione solo alla chiusura di un round.",
-    "attribution": "Lo standard CapitalReach"
-  },
   "pulse": {
     "title": "Questa settimana",
     "healthTitle": "Salute delle opportunità",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Scrivi all'investitore",
     "placeholder": "Presentati: un co-investimento, una domanda sulla sua tesi, qualsiasi cosa."
-  },
-  "ticker": {
-    "aria": "Round di raccolta attivi"
   },
   "verify": {
     "whatWasChecked": "Cosa è stato verificato",

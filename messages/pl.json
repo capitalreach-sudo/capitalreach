@@ -2639,10 +2639,6 @@
     "noEntity": "Dokończ konfigurację profilu, zanim kogoś zaprosisz.",
     "unavailable": "Konta zespołowe nie są jeszcze włączone. Zajrzyj wkrótce."
   },
-  "pullQuote": {
-    "text": "Każdy data room zabezpieczamy umową NDA, odnotowujemy, co składa każdy członek, i pobieramy prowizję dopiero po zamknięciu rundy.",
-    "attribution": "Standard CapitalReach"
-  },
   "pulse": {
     "title": "W tym tygodniu",
     "healthTitle": "Kondycja ofert",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Napisz do inwestora",
     "placeholder": "Przedstaw się — koinwestycja, pytanie o tezę, cokolwiek."
-  },
-  "ticker": {
-    "aria": "Aktywne rundy finansowania"
   },
   "verify": {
     "whatWasChecked": "Co sprawdzono",

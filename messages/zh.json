@@ -2639,10 +2639,6 @@
     "noEntity": "邀请他人前请先完成个人资料设置。",
     "unavailable": "团队账户尚未开放，请稍后再来。"
   },
-  "pullQuote": {
-    "text": "我们为每一间资料室加上保密协议，记录每位成员提交的材料，并且只在融资完成时收取费用。",
-    "attribution": "CapitalReach 标准"
-  },
   "pulse": {
     "title": "本周",
     "healthTitle": "项目健康度",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "给投资人发消息",
     "placeholder": "介绍一下自己——共同投资、关于其投资理念的问题，都可以。"
-  },
-  "ticker": {
-    "aria": "进行中的融资轮次"
   },
   "verify": {
     "whatWasChecked": "核验内容",

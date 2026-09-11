@@ -2639,10 +2639,6 @@
     "noEntity": "Terminez la configuration de votre profil avant d'inviter quelqu'un.",
     "unavailable": "Les comptes d'équipe ne sont pas encore activés. Revenez bientôt."
   },
-  "pullQuote": {
-    "text": "Nous protégeons chaque data room par un NDA, consignons ce que chaque membre dépose, et ne percevons notre commission qu'à la clôture d'un tour.",
-    "attribution": "Le standard CapitalReach"
-  },
   "pulse": {
     "title": "Cette semaine",
     "healthTitle": "Santé des annonces",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "Contacter l'investisseur",
     "placeholder": "Présentez-vous — un co-investissement, une question sur sa thèse, autre chose."
-  },
-  "ticker": {
-    "aria": "Levées de fonds en cours"
   },
   "verify": {
     "whatWasChecked": "Ce qui a été vérifié",

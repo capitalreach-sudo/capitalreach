@@ -2639,10 +2639,6 @@
     "noEntity": "누군가를 초대하기 전에 프로필 설정을 완료하세요.",
     "unavailable": "팀 계정은 아직 활성화되지 않았습니다. 잠시 후 다시 확인해 주세요."
   },
-  "pullQuote": {
-    "text": "당사는 모든 데이터룸을 NDA 뒤에 두고, 각 회원이 제출한 자료를 기록하며, 수수료는 라운드가 성사될 때만 받습니다.",
-    "attribution": "CapitalReach 기준"
-  },
   "pulse": {
     "title": "이번 주",
     "healthTitle": "목록 상태",
@@ -3603,9 +3599,6 @@
   "i2i": {
     "message": "투자자에게 메시지",
     "placeholder": "자기소개를 해주세요. 공동 투자, 투자 철학에 대한 질문 등 무엇이든."
-  },
-  "ticker": {
-    "aria": "진행 중인 펀딩 라운드"
   },
   "verify": {
     "whatWasChecked": "확인한 항목",
