@@ -290,14 +290,22 @@ async function listingState(admin: Admin, startupId: string, investorId: string 
     // refusal is the difference between a marketplace and a wall, and the
     // button has to say so BEFORE the composer takes a page of terms.
     admin
-      .from("profiles").select("accreditation_certified").eq("id", userId).maybeSingle(),
+      .from("profiles").select("accreditation_certified, role").eq("id", userId).maybeSingle(),
   ]);
+
+  // Every messaging route lets an admin through -- send, start, reply and
+  // attach each test role !== "admin" before consulting the gate -- but this
+  // endpoint decides whether the BUTTON appears, and it was asking the pair
+  // question alone. The admin was therefore refused a control that the route
+  // behind it would have honoured, which reads as the gate being broken
+  // rather than as one surface disagreeing with another.
+  const isAdmin = attest?.role === "admin";
 
   return NextResponse.json({
     scope: "listing",
     role: "investor",
-    contactOpen: verdict.allowed,
-    reason: verdict.reason,
+    contactOpen: verdict.allowed || isAdmin,
+    reason: isAdmin && !verdict.allowed ? "admin" : verdict.reason,
     accredited: !!attest?.accreditation_certified,
     proposal: proposal
       ? {

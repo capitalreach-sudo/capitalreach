@@ -75,7 +75,7 @@ interface ListingState {
    *  this button cannot name falls through to the primary action, which is an
    *  offer the POST is going to refuse. */
   reason?: "policy_off" | "deal_exists" | "deal_sealed" | "offer_accepted"
-    | "needs_accepted_offer" | "needs_seal";
+    | "admin" | "needs_accepted_offer" | "needs_seal";
   proposal: {
     id: string;
     fromSide: "startup" | "investor";

@@ -48,6 +48,18 @@ import { sealState } from "@/lib/deal-seal";
 /** Which end of the pair is asking. The rule is one; the way out of it is two. */
 export type ContactSide = "startup" | "investor";
 
+/**
+ * "admin" is never returned from this file, and that is deliberate rather than
+ * an omission. Every function here answers one question -- may this STARTUP and
+ * this INVESTOR talk -- and an admin is neither of them, so there is nothing in
+ * the pair for the exception to hang off. The bypass therefore lives at each
+ * call site, where the viewer is known: messages/send, start, reply and attach
+ * each test the sender's role before consulting the gate, and so does
+ * listingState in api/deals/proposals, which decides whether the control even
+ * renders. Adding a viewer argument here would put the answer in two places and
+ * let them drift; a caller that forgets the check is a visible bug, which is
+ * how the missing one in listingState was eventually found.
+ */
 export type ContactVerdict =
   | { allowed: true; reason: "policy_off" | "founder_side" | "offer_accepted" | "deal_exists" | "admin" | "deal_sealed" | "predates_gate" }
   | { allowed: false; reason: "needs_accepted_offer"; openProposalId: string | null; openStatus: string | null }
