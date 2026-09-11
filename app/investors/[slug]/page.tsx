@@ -15,6 +15,7 @@ import { resolveEntity } from "@/lib/membership";
 import { createAdminClient } from "@/lib/supabase-server";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
+import WhatWeChecked from "@/components/review/WhatWeChecked";
 import { JsonLdScript } from "@/components/shared/json-ld";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { investorJsonLd, breadcrumbJsonLd } from "@/lib/seo";
@@ -684,6 +685,14 @@ export default async function InvestorProfilePage({ params }: Props) {
             </a>
           </div>
         )}
+        {/* Unconditional, and deliberately not folded into the record chip
+            above: that chip renders nothing when nothing is on file, which is
+            right for a claim and wrong for a review. This section says the
+            absence out loud. */}
+        <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+          <WhatWeChecked subjectType="investor" subjectId={investor.id} />
+        </section>
+
         <JsonLdScript data={investorJsonLd({
           slug: investor.slug,
           displayName: investor.display_name ?? null,

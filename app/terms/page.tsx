@@ -102,6 +102,10 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s1Title")}>
             <p>{t("terms.s1p1")}</p>
+            {/* [LAWYER] s1p2 scopes the audience by Rule 501 of Regulation D,
+                US securities law, in the terms of a company whose venue is
+                Berlin. Which regime actually applies has not been settled, so
+                the wording is not editable from here. */}
             <p className="mt-3">{t("terms.s1p2")}</p>
           </Section>
 
@@ -113,6 +117,10 @@ export default async function TermsPage() {
               <Bullet t={t} k="s2l3" />
               <Bullet t={t} k="s2l4" />
             </ul>
+            {/* [LAWYER] s2p2 disclaims broker-dealer and investment-adviser
+                status. It is a negative statement about licensing, and it is
+                only true while the platform holds no such licence; changing it
+                requires knowing which registration route has been chosen. */}
             <p className="mt-3">{t("terms.s2p2")}</p>
           </Section>
 
@@ -170,6 +178,11 @@ export default async function TermsPage() {
           </Section>
 
           <Section title={t("terms.s7Title")}>
+            {/* [LAWYER] s7p1Bold disclaims broker-dealer, adviser and
+                crowdfunding-portal status under the JOBS Act -- US securities
+                law, asserted by a Berlin-venue company. Same constraint as
+                s2p2: the sentence turns on a licensing route nobody has
+                picked, so it is not rewritten here. */}
             <p>
               <strong style={{ fontWeight: 600, color: "var(--cr-ink-2)" }}>{t("terms.s7p1Bold")}</strong> {t("terms.s7p1Rest")}
             </p>

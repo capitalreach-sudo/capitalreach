@@ -2101,12 +2101,17 @@ export type Database = {
           email_opt_out: boolean
           full_name: string | null
           id: string
+          identity_check_at: string | null
+          identity_check_method: string | null
           investment_thesis: string | null
+          investor_declaration_at: string | null
           investor_declarations: Json | null
+          investor_status_declared: string
           investor_type: string | null
           invite_code: string | null
           invited_by: string | null
           languages: string[] | null
+          last_review_id: string | null
           lead_investor: boolean | null
           muted_notification_types: string[]
           portfolio_count: number | null
@@ -2145,12 +2150,17 @@ export type Database = {
           email_opt_out?: boolean
           full_name?: string | null
           id: string
+          identity_check_at?: string | null
+          identity_check_method?: string | null
           investment_thesis?: string | null
+          investor_declaration_at?: string | null
           investor_declarations?: Json | null
+          investor_status_declared?: string
           investor_type?: string | null
           invite_code?: string | null
           invited_by?: string | null
           languages?: string[] | null
+          last_review_id?: string | null
           lead_investor?: boolean | null
           muted_notification_types?: string[]
           portfolio_count?: number | null
@@ -2189,12 +2199,17 @@ export type Database = {
           email_opt_out?: boolean
           full_name?: string | null
           id?: string
+          identity_check_at?: string | null
+          identity_check_method?: string | null
           investment_thesis?: string | null
+          investor_declaration_at?: string | null
           investor_declarations?: Json | null
+          investor_status_declared?: string
           investor_type?: string | null
           invite_code?: string | null
           invited_by?: string | null
           languages?: string[] | null
+          last_review_id?: string | null
           lead_investor?: boolean | null
           muted_notification_types?: string[]
           portfolio_count?: number | null
@@ -2218,6 +2233,13 @@ export type Database = {
           unsubscribe_token?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_last_review_id_fkey"
+            columns: ["last_review_id"]
+            isOneToOne: false
+            referencedRelation: "review_checklists"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_suspended_by_fkey"
             columns: ["suspended_by"]
@@ -2247,6 +2269,104 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          detail: string | null
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          reason: string
+          reporter_id: string | null
+          status: string
+          subject_id: string
+          subject_type: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          reason: string
+          reporter_id?: string | null
+          status?: string
+          subject_id: string
+          subject_type: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string | null
+          status?: string
+          subject_id?: string
+          subject_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_handled_by_fkey"
+            columns: ["handled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_checklists: {
+        Row: {
+          checklist_version: string
+          id: string
+          items: Json
+          outcome: string
+          outcome_reason: string | null
+          reviewed_at: string
+          reviewer_id: string | null
+          subject_id: string
+          subject_type: string
+        }
+        Insert: {
+          checklist_version: string
+          id?: string
+          items: Json
+          outcome: string
+          outcome_reason?: string | null
+          reviewed_at?: string
+          reviewer_id?: string | null
+          subject_id: string
+          subject_type: string
+        }
+        Update: {
+          checklist_version?: string
+          id?: string
+          items?: Json
+          outcome?: string
+          outcome_reason?: string | null
+          reviewed_at?: string
+          reviewer_id?: string | null
+          subject_id?: string
+          subject_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_checklists_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       round_closures: {
         Row: {
@@ -2793,6 +2913,10 @@ export type Database = {
           featured: boolean
           founded_date: string | null
           founded_year: number | null
+          founder_attestation_at: string | null
+          founder_attestation_ip: string | null
+          founder_attestation_sha256: string | null
+          founder_attestation_version: string | null
           funding_target: number
           growth_rate: number | null
           id: string
@@ -2801,6 +2925,7 @@ export type Database = {
           is_demo: boolean
           languages: string[] | null
           languages_spoken: string[] | null
+          last_review_id: string | null
           lead_investor: string | null
           lead_investor_status: string | null
           legal_entity_name: string | null
@@ -2882,6 +3007,10 @@ export type Database = {
           featured?: boolean
           founded_date?: string | null
           founded_year?: number | null
+          founder_attestation_at?: string | null
+          founder_attestation_ip?: string | null
+          founder_attestation_sha256?: string | null
+          founder_attestation_version?: string | null
           funding_target?: number
           growth_rate?: number | null
           id?: string
@@ -2890,6 +3019,7 @@ export type Database = {
           is_demo?: boolean
           languages?: string[] | null
           languages_spoken?: string[] | null
+          last_review_id?: string | null
           lead_investor?: string | null
           lead_investor_status?: string | null
           legal_entity_name?: string | null
@@ -2971,6 +3101,10 @@ export type Database = {
           featured?: boolean
           founded_date?: string | null
           founded_year?: number | null
+          founder_attestation_at?: string | null
+          founder_attestation_ip?: string | null
+          founder_attestation_sha256?: string | null
+          founder_attestation_version?: string | null
           funding_target?: number
           growth_rate?: number | null
           id?: string
@@ -2979,6 +3113,7 @@ export type Database = {
           is_demo?: boolean
           languages?: string[] | null
           languages_spoken?: string[] | null
+          last_review_id?: string | null
           lead_investor?: string | null
           lead_investor_status?: string | null
           legal_entity_name?: string | null
@@ -3040,6 +3175,13 @@ export type Database = {
           website?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "startups_last_review_id_fkey"
+            columns: ["last_review_id"]
+            isOneToOne: false
+            referencedRelation: "review_checklists"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "startups_owner_id_fkey"
             columns: ["owner_id"]
@@ -3520,6 +3662,10 @@ export type Database = {
           featured: boolean
           founded_date: string | null
           founded_year: number | null
+          founder_attestation_at: string | null
+          founder_attestation_ip: string | null
+          founder_attestation_sha256: string | null
+          founder_attestation_version: string | null
           funding_target: number
           growth_rate: number | null
           id: string
@@ -3528,6 +3674,7 @@ export type Database = {
           is_demo: boolean
           languages: string[] | null
           languages_spoken: string[] | null
+          last_review_id: string | null
           lead_investor: string | null
           lead_investor_status: string | null
           legal_entity_name: string | null

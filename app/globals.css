@@ -898,20 +898,6 @@ body::before {
 .cr-spot:hover::after { opacity: 1; }
 @media (hover: none) { .cr-spot::after { display: none; } }
 
-/* The live rounds ticker: one slow, seamless lane of active raises.
-   Content is duplicated once; -50% loops without a seam. Pauses on hover
-   (someone is reading), gone entirely under reduced motion. */
-.cr-ticker { overflow: hidden; position: relative; }
-.cr-ticker-lane {
-  display: inline-flex; gap: 0; white-space: nowrap; width: max-content;
-  /* Duration rides the lane length (set inline as --ticker-secs): a
-     150-round tape at a fixed 60s sprints past unreadably. */
-  animation: cr-ticker-roll var(--ticker-secs, 60s) linear infinite;
-}
-.cr-ticker:hover .cr-ticker-lane { animation-play-state: paused; }
-@keyframes cr-ticker-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .cr-ticker { display: none; } }
-
 /* Scrollbars finished to match: thin, quiet, copper on grip. */
 * { scrollbar-width: thin; scrollbar-color: var(--cr-paper-4) transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }

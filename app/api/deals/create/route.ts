@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
         .from("profiles").select("accreditation_certified").eq("id", user.id).maybeSingle();
       if (!attest?.accreditation_certified) {
         return NextResponse.json(
-          { error: "Confirm your accredited-investor status in Settings to start a deal." },
+          { error: "Confirm your investor status in Settings to start a deal." },
           { status: 403 },
         );
       }

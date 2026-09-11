@@ -126,8 +126,8 @@
     "founderStep1Title": "Listing erstellen",
     "f1desc": "Profil vervollständigen, Pitch Deck hochladen, Finanzdaten hinzufügen und wichtige Investorenfragen beantworten.",
     "founderStep1Desc": "Profil vervollständigen, Pitch Deck hochladen, Finanzdaten hinzufügen und wichtige Investorenfragen beantworten.",
-    "f2title": "KI-Bewertung erhalten",
-    "founderStep2Title": "KI-Bewertung erhalten",
+    "f2title": "KI-Konsistenzwert erhalten",
+    "founderStep2Title": "KI-Konsistenzwert erhalten",
     "f2desc": "Unser Modell bewertet Ihr Deck, Finanzdaten und Team — mit einem 0–100 Score und vollständiger Aufschlüsselung.",
     "founderStep2Desc": "Unser Modell bewertet Ihr Deck, Finanzdaten und Team — mit einem 0–100 Score und vollständiger Aufschlüsselung.",
     "f3title": "Mit Investoren matchen",
@@ -320,7 +320,7 @@
       "pitchAnalyzer": "Pitch-Analyse",
       "investorMatching": "Investor-Matching",
       "dueDiligence": "Due-Diligence-Berichte",
-      "aiScore": "KI-Startup-Score",
+      "aiScore": "KI-Konsistenzwert",
       "savedReports": "Gespeicherte Berichte",
       "exportPdf": "Berichte exportieren (PDF)",
       "viewOnly": "Nur ansehen"
@@ -370,8 +370,8 @@
       "a4": "Ein Deal gilt als abgeschlossen, wenn beide Parteien bestätigen, dass die Investition über eine CapitalReach-Verbindung zustande kam. Wir berechnen keine Gebühren für außerhalb der Plattform abgeschlossene Deals.",
       "q5": "Zahlen Investoren die Erfolgsgebühr?",
       "a5": "Nein. Die 2%-Gebühr wird nur Startups berechnet. Investoren zahlen keine Transaktionsgebühren.",
-      "q6": "Was ist die Akkreditierungszertifizierung?",
-      "a6": "Investoren müssen sich als akkreditiert selbst zertifizieren, um auf Finanzdaten zuzugreifen. CapitalReach speichert diese Zertifizierung und kann für institutionelle Konten Dokumentation anfordern."
+      "q6": "Was ist der Status als professioneller Investor?",
+      "a6": "Investoren müssen den Status als professioneller Anleger selbst erklären, um auf Finanzdaten zuzugreifen. CapitalReach speichert diese Erklärung und kann für institutionelle Konten Dokumentation anfordern."
     },
     "feature_publicListing": "Öffentliches, durchsuchbares Listing",
     "feature_analyticsBoard": "Analytics-Dashboard",
@@ -452,7 +452,7 @@
     "feature_investorExport": "Datenexport",
     "tipListings": "Wie viele Startup-Profile du gleichzeitig veröffentlichen kannst.",
     "tipPublicListing": "Dein Profil ist live und für jeden Investor auf der Plattform auffindbar.",
-    "tipAiScore": "Ein KI-Score deines Pitches (0-100) mit schriftlichem Feedback zur Verbesserung.",
+    "tipAiScore": "Ein KI-Konsistenzwert deines Pitches (0-100) mit schriftlichem Feedback zur Verbesserung.",
     "tipNda": "Investoren müssen ein NDA unterschreiben, bevor sie deinen Datenraum öffnen können.",
     "tipPipeline": "Verfolge jedes Investorengespräch vom ersten Kontakt bis zum Abschluss.",
     "tipAnalytics": "Sieh, wer dein Profil angesehen und gespeichert hat und wie sich das Engagement entwickelt.",
@@ -683,7 +683,7 @@
     "profileViews": "Profilaufrufe (30 Tage)",
     "investorSaves": "Investor-Speicherungen",
     "activeDeals": "Aktive Deals",
-    "aiScore": "KI-Score",
+    "aiScore": "KI-Konsistenzwert",
     "watchlistSaved": "Gespeichert",
     "watchlistRemove": "Entfernen",
     "exportCsv": "CSV exportieren",
@@ -1125,7 +1125,7 @@
     "allCountries": "Alle Länder",
     "clearFilters": "Filter löschen",
     "raising": "Sucht",
-    "aiScore": "KI-Score",
+    "aiScore": "KI-Konsistenzwert",
     "runway": "{months} Mon. Runway",
     "noScore": "Ausstehend",
     "savedSearches": "Gespeicherte Suchen",
@@ -1193,7 +1193,7 @@
     "team": "Team",
     "traction": "Traktion",
     "documents": "Dokumente",
-    "aiScore": "KI-Score",
+    "aiScore": "KI-Konsistenzwert",
     "scoredBy": "Bewertet von CapitalReach KI",
     "share": "Teilen",
     "milestones": "Meilensteine",
@@ -1201,12 +1201,12 @@
     "removeWatchlist": "Von Watchlist entfernen",
     "new": "Neu",
     "runwayMonths": "{n} Mon. Reichweite",
-    "unlockScores": "Upgrade, um Finanzen & KI-Scores freizuschalten",
-    "scoreTitle": "KI-Score: {score}/100",
+    "unlockScores": "Upgrade, um Finanzen & KI-Konsistenzwerte freizuschalten",
+    "scoreTitle": "KI-Konsistenzwert: {score}/100",
     "closingSoon": "Schließt bald",
     "closesIn": "Schließt in {count} T.",
-    "scoreLabel": "KI-Score",
-    "scoreLocked": "Upgrade, um den KI-Score zu sehen",
+    "scoreLabel": "KI-Konsistenzwert",
+    "scoreLocked": "Upgrade, um den KI-Konsistenzwert zu sehen",
     "scoreNone": "Noch nicht bewertet"
   },
   "startupDetail": {
@@ -1347,7 +1347,7 @@
     "filterStage": "Phasenfokus",
     "filterIndustry": "Branchenfokus",
     "directoryTitle": "Investoren-Verzeichnis",
-    "directorySub": "Durchsuche akkreditierte Angels, VCs und institutionelle Fonds, die aktiv Kapital einsetzen. Filtere nach Phase, Branche, Check-Größe und mehr.",
+    "directorySub": "Durchsuche Angels, VCs und institutionelle Fonds, die den Status als professioneller Anleger selbst erklärt haben und aktiv Kapital einsetzen. Filtere nach Phase, Branche, Check-Größe und mehr.",
     "registeredCount": "{count} registrierte Investoren",
     "registeredCountOne": "1 registrierter Investor",
     "filters": "Filter",
@@ -1472,7 +1472,7 @@
     "apply": "Filter anwenden",
     "reset": "Zurücksetzen",
     "sort": "Sortieren nach",
-    "sortScore": "KI-Score",
+    "sortScore": "KI-Konsistenzwert",
     "sortRecent": "Neueste zuerst",
     "sortRaising": "Finanzierungsbetrag",
     "thresholds": "Traktion",
@@ -1672,7 +1672,7 @@
       "unlocksTitle": "Was jeder Tarif für dein Profil freischaltet:",
       "unlockFree": "Name, Tagline, Phase, Branche",
       "unlockStarter": "+ Voller Pitch, Team-Bios, 3 Dokumente",
-      "unlockGrowth": "+ Finanzen, Demo-Video, KI-Score",
+      "unlockGrowth": "+ Finanzen, Demo-Video, KI-Konsistenzwert",
       "planFreeDesc": "Erstelle dein Profil und lass es von unserem Team prüfen.",
       "planStarterDesc": "Öffentliches Live-Profil, für alle Investoren durchsuchbar.",
       "planGrowthDesc": "KI-Pitch-Feedback, vollständige Analysen und Priority-Support.",
@@ -1813,7 +1813,7 @@
       "af2": "Pitch-Deck- & Dokumentenzugang",
       "af3": "Direkte Nachrichten (5 Threads/Monat)",
       "af4": "Gespeicherte Watchlists",
-      "af5": "KI-Score-Zugang",
+      "af5": "Zugang zum KI-Konsistenzwert",
       "al1": "KI-Due-Diligence-Berichte",
       "al2": "Unbegrenzte Nachrichten",
       "al3": "CSV-Datenexport",
@@ -1821,7 +1821,7 @@
       "pf1": "Alles aus Angel",
       "pf2": "Unbegrenzte Nachrichten",
       "pf3": "KI-Due-Diligence-Berichte inklusive",
-      "pf4": "Wöchentlicher kuratierter Dealflow-Digest",
+      "pf4": "Wöchentlicher Dealflow-Digest",
       "pf5": "CSV-Datenexport",
       "pf6": "Früher Zugang zu neuen Deals",
       "if1": "Alles aus Pro",
@@ -3225,7 +3225,8 @@
       "other": "Etwas anderes"
     },
     "medianTarget": "Medianes Rundenziel",
-    "newThisMonth": "Neue Runden diesen Monat"
+    "newThisMonth": "Neue Runden diesen Monat",
+    "anonNote": "Sie brauchen kein Konto, um dies zu senden."
   },
   "deleteAccount": {
     "willAnonymise": "Dein Konto hat abgeschlossene Deals auf der Plattform und kann deshalb nicht einfach gelöscht werden — die Gegenseite hat ebenfalls einen Beleg, und offene Gebühren verschwinden nicht mit dem Konto. Stattdessen werden Name, E-Mail, Foto und Profiltexte dauerhaft entfernt und das Listing geht offline. Übrig bleibt ein Transaktionsbeleg ohne persönliche Daten.",
@@ -3291,7 +3292,7 @@
       "demoVideo": "Demo-Video im Listing",
       "priorityReview": "Bevorzugte Prüfung",
       "analytics": "Vollständige Listing-Analytics",
-      "aiScore": "KI-Reifegrad-Score",
+      "aiScore": "KI-Konsistenzwert",
       "aiWritten": "Schriftliches KI-Feedback zum Pitch",
       "exportData": "Pipeline als CSV exportieren",
       "identity": "Sehen, welcher Investor interessiert ist",
@@ -3314,7 +3315,7 @@
       "savedSearches": "Gespeicherte Suchen mit Benachrichtigung",
       "advancedFilters": "Erweiterte Filter",
       "coInvestors": "Sehen, wer sonst in der Runde ist",
-      "aiScore": "KI-Reifegrad-Score bei jedem Listing",
+      "aiScore": "KI-Konsistenzwert bei jedem Listing",
       "aiMatching": "KI-Matching zu deiner These",
       "aiDiligence": "KI-Due-Diligence-Berichte",
       "scorecards": "Scorecards nach deinen eigenen Kriterien",
@@ -3328,7 +3329,7 @@
   },
   "glossary": {
     "whatIsThis": "Was ist das?",
-    "aiScore": "Eine Schätzung von 0–100, wie startklar eine Runde wirkt — wie vollständig das Listing ist, wie belegt die Traktion und wie stimmig die Zahlen sind. Ein Modell erzeugt sie aus dem, was der Gründer veröffentlicht hat. Sie bewertet nicht das Unternehmen, ist keine Anlageberatung, und niemand bei CapitalReach hat sie geprüft.",
+    "aiScore": "Ein Wert von 0 bis 100 für die Einreichung selbst: wie vollständig der Eintrag ist und wie gut seine eigenen Zahlen zueinander passen. Keine Renditeprognose, keine Anlageberatung und keine Prüfung, ob eine Zahl zutrifft.",
     "aiMatching": "Sortiert laufende Runden nach der These in deinem Profil — Phase, Branche, Ticketgröße, Region — damit die relevanten zuerst kommen. Es liest nur, was Gründer veröffentlicht haben.",
     "aiDiligence": "Ein strukturierter Bericht, den ein Modell aus dem Listing und geteilten Dokumenten schreibt: was auffällt, was fehlt und welche Fragen sich lohnen. Ein Ausgangspunkt für deine eigene Prüfung, nie ein Ersatz dafür.",
     "nda": "Eine Vertraulichkeitsvereinbarung. Der Gründer kann sie verlangen, bevor er Zahlen oder Dokumente teilt; du unterschreibst sie auf der Plattform und die Unterschrift wird am Deal festgehalten.",
@@ -3415,7 +3416,7 @@
       "mrr": "Monatsumsatz",
       "growth_rate": "Wachstum",
       "runway_months": "Runway",
-      "vaultrise_score": "KI-Score"
+      "vaultrise_score": "KI-Konsistenzwert"
     }
   },
   "logo": {
@@ -4653,5 +4654,59 @@
   },
   "refusal": {
     "verifyCta": "Identität verifizieren"
+  },
+  "reviewLedger": {
+    "title": "Was wir geprüft haben",
+    "intro": "Das ist die Liste, die ein Prüfer durchgegangen ist, und was jede Zeile tatsächlich umfasst. Die Prüfungen, die nicht durchgeführt wurden, stehen ebenfalls darauf.",
+    "unavailable": "Der Prüfbericht zu diesem Listing konnte nicht geladen werden. Das heißt weder, dass das Listing geprüft wurde, noch, dass es nicht geprüft wurde. Zu dem, was geprüft oder nicht geprüft wurde, kann hier gerade nichts angezeigt werden.",
+    "none": "Für dieses Listing ist keine Prüfung erfasst. Nichts darin wurde von uns geprüft.",
+    "reviewedOn": "Geprüft am {date}.",
+    "reviewedUndated": "Das Datum dieser Prüfung wurde nicht erfasst.",
+    "listVersion": "Liste {version}.",
+    "emptyItems": "Für dieses Listing ist eine Prüfung erfasst, sie enthält jedoch keine Punkte. Zu dem, was geprüft wurde, kann nichts angezeigt werden.",
+    "selfReported": "Umsatz, Traction und Finanzzahlen sind Eigenangaben des Gründers und wurden weder geprüft noch unabhängig bestätigt. Führe vor einer Investition deine eigene Due Diligence durch.",
+    "outcome": {
+      "approved": "Geprüft und gelistet.",
+      "rejected": "Geprüft und nicht angenommen.",
+      "changes_requested": "Geprüft, mit Änderungswünschen."
+    },
+    "item": {
+      "pass": "Geprüft",
+      "fail": "Nicht bestanden",
+      "na": "Nicht zutreffend",
+      "missing": "Nicht erfasst"
+    }
+  },
+  "listingScore": {
+    "label": "KI-Konsistenzwert",
+    "locked": "In deinem Tarif nicht sichtbar",
+    "none": "Nicht bewertet",
+    "caption": "Misst die Vollständigkeit und die innere Stimmigkeit der Angaben. Keine Prognose von Renditen, keine Anlageberatung, keine Überprüfung irgendeiner Zahl.",
+    "state": {
+      "present": "Angegeben",
+      "absent": "Nicht angegeben",
+      "unknown": "Nicht feststellbar"
+    },
+    "dimension": {
+      "clarity": "Klarheit der Beschreibung",
+      "marketSizing": "Marktgröße angegeben",
+      "differentiation": "Abgrenzung genannt",
+      "teamInfo": "Angaben zum Team vorhanden",
+      "metrics": "Kennzahlen angegeben und stimmig"
+    }
+  },
+  "attest": {
+    "eyebrow": "Ihre Erklärung",
+    "title": "Eintrag bestätigen",
+    "loadFailed": "Die Erklärung konnte nicht geladen werden, es gibt derzeit nichts zu unterschreiben.",
+    "already": "Sie haben diesen Wortlaut bereits unterschrieben. Eine erneute Unterschrift ersetzt die alte.",
+    "checkbox": "Ich habe die Erklärung gelesen und bestätige sie.",
+    "nameLabel": "Vollständigen Namen eingeben",
+    "namePlaceholder": "Ihr vollständiger Name",
+    "confirm": "Erklärung unterschreiben",
+    "version": "Fassung {version}",
+    "dashTitle": "Erklärung zum Eintrag unterschreiben",
+    "dashBody": "Bestätigen Sie, dass die Angaben in Ihrem Eintrag zutreffen und dass Sie berechtigt sind, das Unternehmen zu vertreten.",
+    "dashCta": "Lesen und unterschreiben"
   }
 }

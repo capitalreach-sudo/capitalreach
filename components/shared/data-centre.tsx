@@ -132,7 +132,10 @@ function exportPlatformCsv(d: PlatformData) {
   const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const rows: Array<[string, string, string | number]> = [
     ["headline", "Active startups", d.startupCount],
-    ["headline", "Verified investors", d.investorCount],
+    // "Verified investors" stood here while the card for the same number said
+    // "Investors", which broke this function's own rule above and exported a
+    // verification claim the platform does not make.
+    ["headline", "Investors", d.investorCount],
     ["headline", "Total raised", d.totalRaised],
     ["headline", "Deals closed", d.dealsCount],
     ["headline", "Active deals", d.activeDeals],

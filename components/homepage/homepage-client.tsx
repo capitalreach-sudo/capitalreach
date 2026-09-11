@@ -9,7 +9,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ScoreBadge } from "@/components/ui/score-badge";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
-import { WaxSeal } from "@/components/ui/WaxSeal";
 import { MarketMatcher } from "@/components/homepage/market-matcher";
 import { safeFormatCurrency } from "@/lib/format";
 import { safeFormatTotal, sumFundingTargets } from "@/lib/validators";
@@ -401,33 +400,6 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       {/* ── 4. WHO'S WAITING ────────────────────────────────── */}
       <MarketMatcher viewerRole={viewerRole} />
 
-      {/* ── 5. THE MARKET, MOVING ───────────────────────────── */}
-      {/* One slow lane of what is actually raising right now -- the ledger
-          moving, sitting directly on top of the table it summarises. Data the
-          page already holds; duplicated once for a seamless loop; pauses on
-          hover; absent under reduced motion. Monotone now: a copper figure
-          every third item made the tape flicker. */}
-      {canSeeMarket && lane.length >= 4 && (
-        <div className="cr-ticker" aria-label={t("ticker.aria")}
-          style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", padding: "12px 0" }}>
-          <div className="cr-ticker-lane" style={{ "--ticker-secs": `${Math.max(60, lane.length * 3)}s` } as React.CSSProperties}>
-            {[...lane, ...lane].map((l, i) => {
-              const Item = (viewerRole ? Link : "span") as React.ElementType;
-              return (
-              <Item key={`${l.id}-${i}`} {...(viewerRole ? { href: `/startups/${l.slug}` } : {})} aria-hidden={i >= lane.length}
-                style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", padding: "0 24px", textDecoration: "none", borderLeft: "1px solid var(--cr-rule)" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)" }}>{l.name}</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{l.stage.replace(/_/g, " ")}</span>
-                {l.funding_target ? (
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink-3)", fontVariantNumeric: "tabular-nums" }}>{safeFormatCurrency(l.funding_target)}</span>
-                ) : null}
-              </Item>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       {/* ── 6. TOP LISTINGS (only when there is something to show) ── */}
       {canSeeMarket && listings.length > 0 && (
         <section
@@ -542,38 +514,6 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       {/* Moved down beside the other evidence of a live market: it is proof,
           not an argument, so it belongs after the argument is made. */}
       <ActivityPulse />
-
-      {/* ── 8. THE CHARTER -- the page's one band moment ─────── */}
-      {/* The creed as a filed document. Redesigned per Jack: the guilloche
-          corner read as green scribble in the business register and the
-          accent-colored attribution shouted -- the artifact is now purely
-          typographic (ref row, quote, quiet attribution). The wax seal
-          survives only in the editorial register, where its wax reads as
-          wax; business gets the clean sheet. */}
-      <section aria-label={t("pullQuote.attribution")} style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)" }}>
-        <div className="max-w-[760px] mx-auto px-6 md:px-10 py-16 md:py-24">
-          <div style={{ position: "relative", border: "1px solid color-mix(in srgb, var(--cr-band-ink) 22%, transparent)", borderRadius: "2px", padding: "32px" }}>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "24px", paddingBottom: "12px", borderBottom: "1px solid color-mix(in srgb, var(--cr-band-ink) 12%, transparent)" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--cr-band-ink-dim)" }}>
-                CAPITALREACH {"·"} CHARTER
-              </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.14em", color: "var(--cr-band-ink-dim)" }}>
-                {"№"} 0001{"–"}A
-              </span>
-            </div>
-            <blockquote style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-band-ink)", lineHeight: 1.4, letterSpacing: "-0.01em", textWrap: "balance", margin: 0 }}>
-              {"“"}{t("pullQuote.text")}{"”"}
-            </blockquote>
-            <p style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: "24px" }}>
-              <span aria-hidden style={{ color: "var(--cr-copper)" }}>{"✦"}</span>
-              {t("pullQuote.attribution")}
-            </p>
-            <div aria-hidden className="charter-seal" style={{ position: "absolute", bottom: "-16px", right: "24px", transform: "rotate(-8deg)", opacity: 0.9 }}>
-              <WaxSeal size={64} />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── 9. CLOSING CTA -- what to do next ───────────────── */}
       <section aria-label={t("cta.label")} style={{ background: "var(--cr-paper)" }}>

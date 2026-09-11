@@ -130,8 +130,8 @@
     "founderStep1Title": "Create your listing",
     "f1desc": "Complete your profile, upload your pitch deck, add financials, and answer key investor questions.",
     "founderStep1Desc": "Complete your profile, upload your pitch deck, add financials, and answer key investor questions.",
-    "f2title": "Get AI scored",
-    "founderStep2Title": "Get AI scored",
+    "f2title": "Get an AI consistency score",
+    "founderStep2Title": "Get an AI consistency score",
     "f2desc": "Our model evaluates your deck, financials, and team — returning a 0–100 score with a full breakdown.",
     "founderStep2Desc": "Our model evaluates your deck, financials, and team — returning a 0–100 score with a full breakdown.",
     "f3title": "Match with investors",
@@ -324,7 +324,7 @@
       "pitchAnalyzer": "Pitch Analyzer",
       "investorMatching": "Investor Matching",
       "dueDiligence": "Due Diligence Reports",
-      "aiScore": "AI Startup Score",
+      "aiScore": "AI consistency score",
       "savedReports": "Saved Reports",
       "exportPdf": "Export Reports (PDF)",
       "viewOnly": "View only"
@@ -374,8 +374,8 @@
       "a4": "A deal is closed when both parties confirm the investment was completed through a CapitalReach connection. We don't charge for deals made outside the platform.",
       "q5": "Do investors pay the success fee?",
       "a5": "No. The 2% fee is charged only to startups. Investors pay zero transaction fees.",
-      "q6": "What is accreditation certification?",
-      "a6": "Investors must self-certify as accredited to access financial data. CapitalReach stores this certification and may request documentation for institutional accounts."
+      "q6": "What is professional investor status?",
+      "a6": "Investors must self-declare professional investor status to access financial data. CapitalReach stores this declaration and may request documentation for institutional accounts."
     },
     "feature_publicListing": "Public, searchable listing",
     "feature_analyticsBoard": "Analytics dashboard",
@@ -456,7 +456,7 @@
     "feature_investorExport": "Data export",
     "tipListings": "How many startup profiles you can publish at once.",
     "tipPublicListing": "Your profile is live and searchable by every investor on the platform.",
-    "tipAiScore": "An AI score of your pitch (0-100) with written feedback on how to improve it.",
+    "tipAiScore": "An AI consistency score of your pitch (0-100) with written feedback on how to improve it.",
     "tipNda": "Require investors to sign an NDA before they can open your data room.",
     "tipPipeline": "Track every investor conversation from first intro to closed deal.",
     "tipAnalytics": "See who viewed your profile, who saved it, and how engagement develops over time.",
@@ -687,7 +687,7 @@
     "profileViews": "Profile Views (30d)",
     "investorSaves": "Investor Saves",
     "activeDeals": "Active Deals",
-    "aiScore": "AI Score",
+    "aiScore": "AI consistency score",
     "watchlistSaved": "Saved",
     "watchlistRemove": "Remove",
     "exportCsv": "Export CSV",
@@ -1129,7 +1129,7 @@
     "allCountries": "All countries",
     "clearFilters": "Clear filters",
     "raising": "Raising",
-    "aiScore": "AI Score",
+    "aiScore": "AI consistency score",
     "runway": "{months}mo runway",
     "noScore": "Pending",
     "savedSearches": "Saved searches",
@@ -1197,7 +1197,7 @@
     "team": "Team",
     "traction": "Traction",
     "documents": "Documents",
-    "aiScore": "AI Score",
+    "aiScore": "AI consistency score",
     "scoredBy": "Scored by CapitalReach AI",
     "share": "Share",
     "milestones": "Milestones",
@@ -1205,12 +1205,12 @@
     "removeWatchlist": "Remove from watchlist",
     "new": "New",
     "runwayMonths": "{n}mo runway",
-    "unlockScores": "Upgrade to unlock financials & AI scores",
-    "scoreTitle": "AI Score: {score}/100",
+    "unlockScores": "Upgrade to unlock financials & AI consistency scores",
+    "scoreTitle": "AI consistency score: {score}/100",
     "closingSoon": "Closing soon",
     "closesIn": "Closes in {count}d",
-    "scoreLabel": "AI score",
-    "scoreLocked": "Upgrade to see the AI score",
+    "scoreLabel": "AI consistency score",
+    "scoreLocked": "Upgrade to see the AI consistency score",
     "scoreNone": "Not scored yet"
   },
   "startupDetail": {
@@ -1351,7 +1351,7 @@
     "filterStage": "Stage focus",
     "filterIndustry": "Industry focus",
     "directoryTitle": "Investor Directory",
-    "directorySub": "Browse accredited angels, VCs, and institutional funds actively deploying capital. Filter by stage, sector, check size, and more.",
+    "directorySub": "Browse angels, VCs, and institutional funds who have declared professional status and are actively deploying capital. Filter by stage, sector, check size, and more.",
     "registeredCount": "{count} Registered Investors",
     "registeredCountOne": "1 Registered Investor",
     "filters": "Filters",
@@ -1476,7 +1476,7 @@
     "apply": "Apply filters",
     "reset": "Reset",
     "sort": "Sort by",
-    "sortScore": "AI Score",
+    "sortScore": "AI consistency score",
     "sortRecent": "Most recent",
     "sortRaising": "Raising amount",
     "thresholds": "Traction",
@@ -1676,7 +1676,7 @@
       "unlocksTitle": "What each plan unlocks for your profile:",
       "unlockFree": "Name, tagline, stage, industry",
       "unlockStarter": "+ Full pitch, team bios, 3 docs",
-      "unlockGrowth": "+ Financials, demo video, AI score",
+      "unlockGrowth": "+ Financials, demo video, AI consistency score",
       "planFreeDesc": "Create your profile and get reviewed by our team.",
       "planStarterDesc": "Live public profile, searchable by all investors.",
       "planGrowthDesc": "AI pitch feedback, full analytics, and priority support.",
@@ -1817,7 +1817,7 @@
       "af2": "Pitch deck & document access",
       "af3": "Direct messaging (5 threads/mo)",
       "af4": "Saved watchlists",
-      "af5": "AI score access",
+      "af5": "AI consistency score access",
       "al1": "AI due diligence reports",
       "al2": "Unlimited messaging",
       "al3": "CSV data export",
@@ -1825,7 +1825,7 @@
       "pf1": "Everything in Angel",
       "pf2": "Unlimited messaging",
       "pf3": "AI due diligence reports included",
-      "pf4": "Weekly curated deal flow digest",
+      "pf4": "Weekly deal flow digest",
       "pf5": "CSV data export",
       "pf6": "Early access to new deals",
       "if1": "Everything in Pro",
@@ -3225,7 +3225,8 @@
       "other": "Something else"
     },
     "medianTarget": "Median round target",
-    "newThisMonth": "New rounds this month"
+    "newThisMonth": "New rounds this month",
+    "anonNote": "You do not need an account to send this."
   },
   "deleteAccount": {
     "willAnonymise": "Your account has closed deals on the platform, so it cannot simply be erased — the other side of those deals has a record too, and any fee still owed does not disappear with the account. Instead your name, email, photo and profile text are permanently removed and the listing comes down. What is left is a transaction record with nothing personal on it.",
@@ -3291,7 +3292,7 @@
       "demoVideo": "Demo video on your listing",
       "priorityReview": "Priority review",
       "analytics": "Full listing analytics",
-      "aiScore": "AI readiness score",
+      "aiScore": "AI consistency score",
       "aiWritten": "Written AI feedback on your pitch",
       "exportData": "Export your pipeline to CSV",
       "identity": "See which investor is interested",
@@ -3314,7 +3315,7 @@
       "savedSearches": "Saved searches with alerts",
       "advancedFilters": "Advanced filters",
       "coInvestors": "See who else is in a round",
-      "aiScore": "AI readiness score on every listing",
+      "aiScore": "AI consistency score on every listing",
       "aiMatching": "AI matching to your thesis",
       "aiDiligence": "AI diligence reports",
       "scorecards": "Scorecards against your own criteria",
@@ -3328,7 +3329,7 @@
   },
   "glossary": {
     "whatIsThis": "What is this?",
-    "aiScore": "A 0–100 estimate of how ready a round looks — how complete the listing is, how much traction is evidenced, and how coherent the numbers are. It is generated by a model from what the founder published. It is not a rating of the company, not investment advice, and no human at CapitalReach has reviewed it.",
+    "aiScore": "A 0 to 100 reading of the submission itself: how complete the listing is and how well its own figures agree with each other. It is not a prediction of returns, not investment advice, and not a check of whether any figure is true.",
     "aiMatching": "Ranks live rounds against the thesis on your profile — stage, sector, cheque size and geography — so the ones worth your time come first. It reads only what founders have published.",
     "aiDiligence": "A structured report a model writes from the listing and any documents the founder shared: what stands out, what is missing, and the questions worth asking. A starting point for your own diligence, never a substitute for it.",
     "nda": "A non-disclosure agreement. The founder can require one before sharing financials or documents; you sign it in-platform and the signature is recorded on the deal.",
@@ -3415,7 +3416,7 @@
       "mrr": "Monthly revenue",
       "growth_rate": "Growth",
       "runway_months": "Runway",
-      "vaultrise_score": "AI score"
+      "vaultrise_score": "AI consistency score"
     }
   },
   "logo": {
@@ -4653,5 +4654,59 @@
   },
   "refusal": {
     "verifyCta": "Verify your identity"
+  },
+  "reviewLedger": {
+    "title": "What we checked",
+    "intro": "This is the list a reviewer worked through, and what each line actually involves. The checks that were not done are on it too.",
+    "unavailable": "The review record for this listing could not be loaded. This does not mean the listing was reviewed and it does not mean it was not. Nothing about what was or was not checked can be shown here right now.",
+    "none": "No review is recorded for this listing. Nothing on it has been checked by us.",
+    "reviewedOn": "Reviewed {date}.",
+    "reviewedUndated": "The date of this review was not recorded.",
+    "listVersion": "List {version}.",
+    "emptyItems": "A review was recorded for this listing, but it carries no items. Nothing can be shown about what was checked.",
+    "selfReported": "Revenue, traction, and financial figures are self-reported by the founder and have not been audited or independently confirmed. Conduct your own due diligence before investing.",
+    "outcome": {
+      "approved": "Reviewed and listed.",
+      "rejected": "Reviewed and not accepted.",
+      "changes_requested": "Reviewed, with changes asked for."
+    },
+    "item": {
+      "pass": "Checked",
+      "fail": "Not passed",
+      "na": "Not applicable",
+      "missing": "Not recorded"
+    }
+  },
+  "listingScore": {
+    "label": "AI consistency score",
+    "locked": "Not shown on your plan",
+    "none": "Not scored",
+    "caption": "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, not a verification of any figure.",
+    "state": {
+      "present": "Provided",
+      "absent": "Not provided",
+      "unknown": "Not established"
+    },
+    "dimension": {
+      "clarity": "Clarity of description",
+      "marketSizing": "Market sizing provided",
+      "differentiation": "Differentiation stated",
+      "teamInfo": "Team information provided",
+      "metrics": "Metrics provided and consistent"
+    }
+  },
+  "attest": {
+    "eyebrow": "Your statement",
+    "title": "Confirm your listing",
+    "loadFailed": "The statement could not be loaded, so there is nothing to sign yet.",
+    "already": "You have already signed this wording. Signing again records a new statement and replaces the old one.",
+    "checkbox": "I have read the statement above and I confirm it.",
+    "nameLabel": "Type your full name",
+    "namePlaceholder": "Your full name",
+    "confirm": "Sign this statement",
+    "version": "Version {version}",
+    "dashTitle": "Sign your listing statement",
+    "dashBody": "Confirm that the information in your listing is true and that you are authorised to represent the company.",
+    "dashCta": "Read and sign"
   }
 }

@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
   if (!attest?.accreditation_certified) {
     return NextResponse.json(
       {
-        error: "Confirm your accredited-investor status in Settings to open data rooms.",
+        error: "Confirm your investor status in Settings to open data rooms.",
         // Named so the dialog can offer the settings link rather than reading
         // the sentence for the word "Settings".
         code: "ACCREDITATION_REQUIRED",

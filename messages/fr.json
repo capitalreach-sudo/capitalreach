@@ -119,8 +119,8 @@
     "founderStep1Title": "Créez votre listing",
     "f1desc": "Complétez votre profil, téléchargez votre pitch deck, ajoutez vos données financières et répondez aux questions clés des investisseurs.",
     "founderStep1Desc": "Complétez votre profil, téléchargez votre pitch deck, ajoutez vos données financières et répondez aux questions clés des investisseurs.",
-    "f2title": "Obtenez un score IA",
-    "founderStep2Title": "Obtenez un score IA",
+    "f2title": "Obtenez un score de cohérence IA",
+    "founderStep2Title": "Obtenez un score de cohérence IA",
     "f2desc": "Notre modèle évalue votre deck, vos finances et votre équipe — retournant un score de 0 à 100 avec une analyse complète.",
     "founderStep2Desc": "Notre modèle évalue votre deck, vos finances et votre équipe — retournant un score de 0 à 100 avec une analyse complète.",
     "f3title": "Matchez avec des investisseurs",
@@ -313,7 +313,7 @@
       "pitchAnalyzer": "Analyseur de Pitch",
       "investorMatching": "Matching Investisseurs",
       "dueDiligence": "Rapports de Due Diligence",
-      "aiScore": "Score IA Startup",
+      "aiScore": "Score de cohérence IA",
       "savedReports": "Rapports sauvegardés",
       "exportPdf": "Exporter les rapports (PDF)",
       "viewOnly": "Consultation seule"
@@ -363,8 +363,8 @@
       "a4": "Un deal est clôturé quand les deux parties confirment que l'investissement a été réalisé via une connexion CapitalReach. Nous ne facturons pas les deals conclus en dehors de la plateforme.",
       "q5": "Les investisseurs paient-ils la commission de réussite ?",
       "a5": "Non. La commission de 2% est facturée uniquement aux startups. Les investisseurs ne paient aucuns frais de transaction.",
-      "q6": "Qu'est-ce que la certification d'accréditation?",
-      "a6": "Les investisseurs doivent s'auto-certifier comme accrédités pour accéder aux données financières. CapitalReach stocke cette certification et peut demander de la documentation pour les comptes institutionnels."
+      "q6": "Qu'est-ce que le statut d'investisseur professionnel ?",
+      "a6": "Les investisseurs doivent déclarer eux-mêmes leur statut d'investisseur professionnel pour accéder aux données financières. CapitalReach conserve cette déclaration et peut demander de la documentation pour les comptes institutionnels."
     },
     "feature_publicListing": "Annonce publique et recherchable",
     "feature_analyticsBoard": "Tableau de bord analytique",
@@ -445,7 +445,7 @@
     "feature_investorExport": "Export de données",
     "tipListings": "Le nombre de profils de startup que vous pouvez publier en même temps.",
     "tipPublicListing": "Votre profil est en ligne et consultable par tous les investisseurs de la plateforme.",
-    "tipAiScore": "Un score IA de votre pitch (0-100) avec un retour écrit pour l'améliorer.",
+    "tipAiScore": "Un score de cohérence IA de votre pitch (0-100) avec un retour écrit pour l'améliorer.",
     "tipNda": "Exigez la signature d'un NDA avant que les investisseurs ouvrent votre data room.",
     "tipPipeline": "Suivez chaque conversation avec un investisseur, du premier contact à la clôture.",
     "tipAnalytics": "Voyez qui a consulté votre profil, qui l'a enregistré et l'évolution de l'engagement.",
@@ -676,7 +676,7 @@
     "profileViews": "Vues du profil (30j)",
     "investorSaves": "Sauvegardes investisseurs",
     "activeDeals": "Deals actifs",
-    "aiScore": "Score IA",
+    "aiScore": "Score de cohérence IA",
     "watchlistSaved": "Sauvegardé",
     "watchlistRemove": "Retirer",
     "exportCsv": "Exporter CSV",
@@ -1118,7 +1118,7 @@
     "allCountries": "Tous les pays",
     "clearFilters": "Effacer les filtres",
     "raising": "Lève",
-    "aiScore": "Score IA",
+    "aiScore": "Score de cohérence IA",
     "runway": "{months} mois de runway",
     "noScore": "En attente",
     "savedSearches": "Recherches enregistrées",
@@ -1186,7 +1186,7 @@
     "team": "Équipe",
     "traction": "Traction",
     "documents": "Documents",
-    "aiScore": "Score IA",
+    "aiScore": "Score de cohérence IA",
     "scoredBy": "Évalué par CapitalReach IA",
     "share": "Partager",
     "milestones": "Jalons",
@@ -1194,12 +1194,12 @@
     "removeWatchlist": "Retirer de la watchlist",
     "new": "Nouveau",
     "runwayMonths": "{n} mois de trésorerie",
-    "unlockScores": "Passez à un forfait supérieur pour débloquer finances et scores IA",
-    "scoreTitle": "Score IA : {score}/100",
+    "unlockScores": "Passez à un forfait supérieur pour débloquer finances et scores de cohérence IA",
+    "scoreTitle": "Score de cohérence IA : {score}/100",
     "closingSoon": "Clôture imminente",
     "closesIn": "Clôture dans {count} j",
-    "scoreLabel": "Score IA",
-    "scoreLocked": "Passez à un plan supérieur pour voir le score IA",
+    "scoreLabel": "Score de cohérence IA",
+    "scoreLocked": "Passez à un plan supérieur pour voir le score de cohérence IA",
     "scoreNone": "Pas encore évalué"
   },
   "startupDetail": {
@@ -1339,7 +1339,7 @@
     "filterStage": "Focus sur l'étape",
     "filterIndustry": "Focus sectoriel",
     "directoryTitle": "Annuaire des investisseurs",
-    "directorySub": "Parcourez les business angels accrédités, VCs et fonds institutionnels qui déploient activement du capital. Filtrez par étape, secteur, taille de chèque et plus.",
+    "directorySub": "Parcourez les business angels, VCs et fonds institutionnels qui ont déclaré un statut d'investisseur professionnel et déploient activement du capital. Filtrez par étape, secteur, taille de chèque et plus.",
     "registeredCount": "{count} investisseurs inscrits",
     "registeredCountOne": "1 investisseur inscrit",
     "filters": "Filtres",
@@ -1465,7 +1465,7 @@
     "apply": "Appliquer les filtres",
     "reset": "Réinitialiser",
     "sort": "Trier par",
-    "sortScore": "Score IA",
+    "sortScore": "Score de cohérence IA",
     "sortRecent": "Plus récent",
     "sortRaising": "Montant levé",
     "thresholds": "Traction",
@@ -1665,7 +1665,7 @@
       "unlocksTitle": "Ce que chaque formule débloque pour votre profil:",
       "unlockFree": "Nom, slogan, étape, secteur",
       "unlockStarter": "+ Pitch complet, bios d'équipe, 3 docs",
-      "unlockGrowth": "+ Finances, vidéo démo, score IA",
+      "unlockGrowth": "+ Finances, vidéo démo, score de cohérence IA",
       "planFreeDesc": "Créez votre profil et faites-le examiner par notre équipe.",
       "planStarterDesc": "Profil public en ligne, visible par tous les investisseurs.",
       "planGrowthDesc": "Retours IA sur le pitch, analyses complètes et support prioritaire.",
@@ -1806,7 +1806,7 @@
       "af2": "Accès aux pitch decks & documents",
       "af3": "Messagerie directe (5 fils/mois)",
       "af4": "Watchlists enregistrées",
-      "af5": "Accès au score IA",
+      "af5": "Accès au score de cohérence IA",
       "al1": "Rapports de due diligence IA",
       "al2": "Messagerie illimitée",
       "al3": "Export de données CSV",
@@ -1814,7 +1814,7 @@
       "pf1": "Tout dans Angel",
       "pf2": "Messagerie illimitée",
       "pf3": "Rapports de due diligence IA inclus",
-      "pf4": "Digest hebdomadaire curaté du deal flow",
+      "pf4": "Digest hebdomadaire du deal flow",
       "pf5": "Export de données CSV",
       "pf6": "Accès anticipé aux nouveaux deals",
       "if1": "Tout dans Pro",
@@ -3225,7 +3225,8 @@
       "other": "Autre chose"
     },
     "medianTarget": "Objectif médian de tour",
-    "newThisMonth": "Nouveaux tours ce mois-ci"
+    "newThisMonth": "Nouveaux tours ce mois-ci",
+    "anonNote": "Aucun compte n'est nécessaire pour envoyer ce signalement."
   },
   "deleteAccount": {
     "willAnonymise": "Votre compte a des opérations clôturées sur la plateforme : il ne peut donc pas être simplement effacé — la contrepartie en garde trace, et une commission due ne disparaît pas avec le compte. À la place, vos nom, e-mail, photo et textes de profil sont supprimés définitivement et l'annonce est retirée. Il ne reste qu'un enregistrement de transaction sans données personnelles.",
@@ -3291,7 +3292,7 @@
       "demoVideo": "Vidéo de démo sur l'annonce",
       "priorityReview": "Examen prioritaire",
       "analytics": "Analytics complets de l'annonce",
-      "aiScore": "Score de maturité IA",
+      "aiScore": "Score de cohérence IA",
       "aiWritten": "Retour écrit de l'IA sur votre pitch",
       "exportData": "Exporter votre pipeline en CSV",
       "identity": "Voir quel investisseur s'intéresse",
@@ -3314,7 +3315,7 @@
       "savedSearches": "Recherches enregistrées avec alertes",
       "advancedFilters": "Filtres avancés",
       "coInvestors": "Voir qui d'autre est dans la levée",
-      "aiScore": "Score de maturité IA sur chaque annonce",
+      "aiScore": "Score de cohérence IA sur chaque annonce",
       "aiMatching": "Matching IA avec votre thèse",
       "aiDiligence": "Rapports de due diligence IA",
       "scorecards": "Scorecards selon vos propres critères",
@@ -3328,7 +3329,7 @@
   },
   "glossary": {
     "whatIsThis": "Qu'est-ce que c'est ?",
-    "aiScore": "Une estimation de 0 à 100 du degré de préparation d'une levée : complétude de l'annonce, traction démontrée, cohérence des chiffres. Elle est produite par un modèle à partir de ce que le fondateur a publié. Ce n'est pas une notation de l'entreprise, ni un conseil en investissement, et personne chez CapitalReach ne l'a relue.",
+    "aiScore": "Une note de 0 à 100 portant sur le dossier lui-même : son exhaustivité et la cohérence de ses propres chiffres entre eux. Ce n'est ni une prévision de rendement, ni un conseil en investissement, ni une vérification de l'exactitude d'un chiffre.",
     "aiMatching": "Classe les levées en cours selon la thèse de votre profil — stade, secteur, ticket, géographie — pour que les plus pertinentes remontent. Ne lit que ce que les fondateurs ont publié.",
     "aiDiligence": "Un rapport structuré qu'un modèle rédige à partir de l'annonce et des documents partagés : ce qui ressort, ce qui manque, les questions à poser. Un point de départ pour votre diligence, jamais un substitut.",
     "nda": "Un accord de confidentialité. Le fondateur peut l'exiger avant de partager ses chiffres ou ses documents ; vous le signez sur la plateforme et la signature est consignée sur l'opération.",
@@ -3415,7 +3416,7 @@
       "mrr": "Revenu mensuel",
       "growth_rate": "Croissance",
       "runway_months": "Runway",
-      "vaultrise_score": "Score IA"
+      "vaultrise_score": "Score de cohérence IA"
     }
   },
   "logo": {
@@ -4653,5 +4654,59 @@
   },
   "refusal": {
     "verifyCta": "Vérifiez votre identité"
+  },
+  "reviewLedger": {
+    "title": "Ce que nous avons vérifié",
+    "intro": "Voici la liste qu'un relecteur a parcourue, et ce que chaque ligne implique réellement. Les vérifications qui n'ont pas été faites y figurent aussi.",
+    "unavailable": "Le relevé de vérification de cette annonce n'a pas pu être chargé. Cela ne signifie ni qu'elle a été vérifiée, ni qu'elle ne l'a pas été. Rien de ce qui a été ou n'a pas été vérifié ne peut être affiché ici pour le moment.",
+    "none": "Aucune vérification n'est enregistrée pour cette annonce. Nous n'y avons rien vérifié.",
+    "reviewedOn": "Vérifié le {date}.",
+    "reviewedUndated": "La date de cette vérification n'a pas été enregistrée.",
+    "listVersion": "Liste {version}.",
+    "emptyItems": "Une vérification est enregistrée pour cette annonce, mais elle ne contient aucun point. Rien ne peut être affiché sur ce qui a été vérifié.",
+    "selfReported": "Le chiffre d'affaires, la traction et les données financières sont déclarés par le fondateur et n'ont été ni audités ni confirmés de façon indépendante. Menez votre propre diligence avant d'investir.",
+    "outcome": {
+      "approved": "Vérifiée et publiée.",
+      "rejected": "Vérifiée et non acceptée.",
+      "changes_requested": "Vérifiée, avec des modifications demandées."
+    },
+    "item": {
+      "pass": "Vérifié",
+      "fail": "Non concluant",
+      "na": "Sans objet",
+      "missing": "Non renseigné"
+    }
+  },
+  "listingScore": {
+    "label": "Score de cohérence IA",
+    "locked": "Non affiché dans votre formule",
+    "none": "Non noté",
+    "caption": "Mesure l'exhaustivité et la cohérence interne du dossier. Ce n'est pas une prévision de rendement, ni un conseil en investissement, ni une vérification d'un chiffre quelconque.",
+    "state": {
+      "present": "Fourni",
+      "absent": "Non fourni",
+      "unknown": "Non établi"
+    },
+    "dimension": {
+      "clarity": "Clarté de la description",
+      "marketSizing": "Taille du marché fournie",
+      "differentiation": "Différenciation énoncée",
+      "teamInfo": "Informations sur l'équipe fournies",
+      "metrics": "Indicateurs fournis et cohérents"
+    }
+  },
+  "attest": {
+    "eyebrow": "Votre déclaration",
+    "title": "Confirmer votre annonce",
+    "loadFailed": "La déclaration n'a pas pu être chargée, il n'y a donc rien à signer pour le moment.",
+    "already": "Vous avez déjà signé cette version. Une nouvelle signature remplace la précédente.",
+    "checkbox": "J'ai lu la déclaration ci-dessus et je la confirme.",
+    "nameLabel": "Saisissez votre nom complet",
+    "namePlaceholder": "Votre nom complet",
+    "confirm": "Signer cette déclaration",
+    "version": "Version {version}",
+    "dashTitle": "Signer la déclaration de votre annonce",
+    "dashBody": "Confirmez que les informations de votre annonce sont exactes et que vous êtes habilité à représenter la société.",
+    "dashCta": "Lire et signer"
   }
 }

@@ -20,6 +20,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
 import { MetricsRecorder } from "@/components/dashboard/metrics-recorder";
 import { FundraiseChecklist } from "@/components/dashboard/fundraise-checklist";
+import { FounderAttestationModal } from "@/components/review/FounderAttestationModal";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -947,6 +948,12 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
+  // The signature is a listing-level record, not a step in a wizard: a founder
+  // signs once, and again only when the wording changes. It is offered here
+  // rather than wired into a submit gate so that an unsigned listing is
+  // visible without a half-finished edit becoming unsubmittable.
+  const [attestOpen, setAttestOpen] = useState(false);
+  const [attestedAt, setAttestedAt] = useState<string | null>(null);
 
   // Arrival notices from onboarding/checkout. Read once from the URL --
   // welcome=1 greets, billing=soon explains why a paid pick landed on Free
@@ -1132,6 +1139,36 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <Link href="/dashboard/startup/edit" style={{ ...primaryBtn, fontSize: "12px", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
           </div>
         )}
+
+        {/* The founder's signature on their own figures. A hairline row, not a
+            tinted banner: it is a standing task rather than something wrong,
+            and the coloured slabs above are reserved for states that need
+            attention today. */}
+        <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "0 0 16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("attest.dashTitle")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "4px", lineHeight: 1.5 }}>{t("attest.dashBody")}</p>
+          </div>
+          {attestedAt ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-up)" }}>
+              <CheckCircle2 style={{ width: 14, height: 14 }} /> {formatDate(attestedAt)}
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setAttestOpen(true)}
+              style={{ ...primaryBtn, fontSize: "12px", whiteSpace: "nowrap", border: "none", cursor: "pointer" }}
+            >
+              {t("attest.dashCta")} →
+            </button>
+          )}
+        </div>
+        <FounderAttestationModal
+          open={attestOpen}
+          startupId={startup.id}
+          onCancel={() => setAttestOpen(false)}
+          onAttested={({ attestedAt: at }) => { setAttestedAt(at); setAttestOpen(false); }}
+        />
         {startup.status === "active" && (
           /* Live is the everyday state, so it gets a hairline and a dot, not a
              tinted slab: a founder should not meet a coloured banner every

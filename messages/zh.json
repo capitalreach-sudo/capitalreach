@@ -119,8 +119,8 @@
     "founderStep1Title": "创建您的项目",
     "f1desc": "完善您的资料，上传路演材料，添加财务数据，回答投资者关键问题。",
     "founderStep1Desc": "完善您的档案，上传路演材料，添加财务数据，并回答投资者关键问题。",
-    "f2title": "获取AI评分",
-    "founderStep2Title": "获取 AI 评分",
+    "f2title": "获取 AI 一致性评分",
+    "founderStep2Title": "获取 AI 一致性评分",
     "f2desc": "我们的模型评估您的材料、财务状况和团队——返回0-100分的评分和完整分析。",
     "founderStep2Desc": "我们的模型评估您的材料、财务和团队，返回 0–100 分的完整分析报告。",
     "f3title": "与投资者匹配",
@@ -313,7 +313,7 @@
       "pitchAnalyzer": "路演分析器",
       "investorMatching": "投资者匹配",
       "dueDiligence": "尽职调查报告",
-      "aiScore": "AI初创公司评分",
+      "aiScore": "AI 一致性评分",
       "savedReports": "已保存报告",
       "exportPdf": "导出报告（PDF）",
       "viewOnly": "仅查看"
@@ -363,8 +363,8 @@
       "a4": "当双方确认通过CapitalReach连接完成投资时，交易即视为完成。我们不对平台外完成的交易收费。",
       "q5": "投资者需要支付成功费吗？",
       "a5": "不需要。2%的费用仅向创业公司收取。投资者不支付任何交易费用。",
-      "q6": "什么是认证资质认证？",
-      "a6": "投资者必须自我认证为合格投资者才能访问财务数据。CapitalReach 存储此认证，并可能要求机构账户提供文件。"
+      "q6": "什么是专业投资者身份？",
+      "a6": "投资者必须自行声明专业投资者身份才能访问财务数据。CapitalReach 会存储该声明，并可能要求机构账户提供文件。"
     },
     "feature_publicListing": "公开可搜索的列表",
     "feature_analyticsBoard": "数据分析仪表板",
@@ -445,7 +445,7 @@
     "feature_investorExport": "数据导出",
     "tipListings": "您可以同时发布的初创公司主页数量。",
     "tipPublicListing": "您的主页已上线，平台上所有投资人均可搜索到。",
-    "tipAiScore": "对您路演的AI评分（0-100），并附改进建议。",
+    "tipAiScore": "对您路演的 AI 一致性评分（0-100），并附改进建议。",
     "tipNda": "要求投资人先签署保密协议才能打开您的资料室。",
     "tipPipeline": "跟踪与每位投资人的对话，从初次接触到成交。",
     "tipAnalytics": "查看谁浏览、收藏了您的主页，以及关注度的变化趋势。",
@@ -676,7 +676,7 @@
     "profileViews": "档案访问量（30天）",
     "investorSaves": "投资者收藏数",
     "activeDeals": "活跃交易",
-    "aiScore": "AI评分",
+    "aiScore": "AI 一致性评分",
     "watchlistSaved": "已保存",
     "watchlistRemove": "移除",
     "exportCsv": "导出CSV",
@@ -1118,7 +1118,7 @@
     "allCountries": "所有国家",
     "clearFilters": "清除筛选",
     "raising": "融资金额",
-    "aiScore": "AI 评分",
+    "aiScore": "AI 一致性评分",
     "runway": "{months} 个月资金储备",
     "noScore": "待评分",
     "savedSearches": "已保存的搜索",
@@ -1186,7 +1186,7 @@
     "team": "团队",
     "traction": "牵引力",
     "documents": "文件",
-    "aiScore": "AI评分",
+    "aiScore": "AI 一致性评分",
     "scoredBy": "由CapitalReach AI评分",
     "share": "分享",
     "milestones": "里程碑",
@@ -1194,12 +1194,12 @@
     "removeWatchlist": "从关注列表移除",
     "new": "新",
     "runwayMonths": "{n}个月现金跑道",
-    "unlockScores": "升级以解锁财务数据和AI评分",
-    "scoreTitle": "AI评分：{score}/100",
+    "unlockScores": "升级以解锁财务数据和 AI 一致性评分",
+    "scoreTitle": "AI 一致性评分：{score}/100",
     "closingSoon": "即将截止",
     "closesIn": "{count} 天后截止",
-    "scoreLabel": "AI 评分",
-    "scoreLocked": "升级后可查看 AI 评分",
+    "scoreLabel": "AI 一致性评分",
+    "scoreLocked": "升级后可查看 AI 一致性评分",
     "scoreNone": "尚未评分"
   },
   "startupDetail": {
@@ -1339,7 +1339,7 @@
     "filterStage": "阶段偏好",
     "filterIndustry": "行业偏好",
     "directoryTitle": "投资者目录",
-    "directorySub": "浏览正在积极投资的认证天使投资人、风投和机构基金。可按阶段、行业、投资额度等筛选。",
+    "directorySub": "浏览已自行声明专业投资者身份并正在积极投资的天使投资人、风投和机构基金。可按阶段、行业、投资额度等筛选。",
     "registeredCount": "{count} 位注册投资者",
     "registeredCountOne": "1 位注册投资者",
     "filters": "筛选",
@@ -1465,7 +1465,7 @@
     "apply": "应用筛选",
     "reset": "重置",
     "sort": "排序方式",
-    "sortScore": "AI评分",
+    "sortScore": "AI 一致性评分",
     "sortRecent": "最新优先",
     "sortRaising": "融资金额",
     "thresholds": "业务进展",
@@ -1665,7 +1665,7 @@
       "unlocksTitle": "各套餐为您的档案解锁的内容：",
       "unlockFree": "名称、标语、阶段、行业",
       "unlockStarter": "+ 完整路演、团队介绍、3份文件",
-      "unlockGrowth": "+ 财务数据、演示视频、AI评分",
+      "unlockGrowth": "+ 财务数据、演示视频、AI 一致性评分",
       "planFreeDesc": "创建档案并由我们的团队审核。",
       "planStarterDesc": "公开在线档案，所有投资者可搜索。",
       "planGrowthDesc": "AI路演反馈、完整分析和优先支持。",
@@ -1806,7 +1806,7 @@
       "af2": "路演文稿和文件访问",
       "af3": "直接消息（每月5个会话）",
       "af4": "保存的关注列表",
-      "af5": "AI评分访问",
+      "af5": "AI 一致性评分访问",
       "al1": "AI尽职调查报告",
       "al2": "无限消息",
       "al3": "CSV数据导出",
@@ -1814,7 +1814,7 @@
       "pf1": "包含Angel的所有功能",
       "pf2": "无限消息",
       "pf3": "包含AI尽职调查报告",
-      "pf4": "每周精选项目摘要",
+      "pf4": "每周项目摘要",
       "pf5": "CSV数据导出",
       "pf6": "新项目抢先体验",
       "if1": "包含Pro的所有功能",
@@ -3225,7 +3225,8 @@
       "other": "其他"
     },
     "medianTarget": "轮次目标中位数",
-    "newThisMonth": "本月新增轮次"
+    "newThisMonth": "本月新增轮次",
+    "anonNote": "无需账户即可提交。"
   },
   "deleteAccount": {
     "willAnonymise": "你的账户在平台上有已交割的交易，因此不能直接删除 —— 对方同样保有记录，未付费用也不会随账户消失。取而代之的是：你的姓名、邮箱、照片和资料文本被永久删除，项目页下线。留下的是一条不含任何个人信息的交易记录。",
@@ -3291,7 +3292,7 @@
       "demoVideo": "项目页上的演示视频",
       "priorityReview": "优先审核",
       "analytics": "完整项目页分析",
-      "aiScore": "AI 就绪评分",
+      "aiScore": "AI 一致性评分",
       "aiWritten": "AI 对你 pitch 的书面反馈",
       "exportData": "把管线导出为 CSV",
       "identity": "看到是哪位投资人感兴趣",
@@ -3314,7 +3315,7 @@
       "savedSearches": "带提醒的已保存搜索",
       "advancedFilters": "高级筛选",
       "coInvestors": "看到还有谁在这一轮",
-      "aiScore": "每个项目页的 AI 就绪评分",
+      "aiScore": "每个项目页的 AI 一致性评分",
       "aiMatching": "按你的投资主题进行 AI 匹配",
       "aiDiligence": "AI 尽调报告",
       "scorecards": "按你自己的标准打分",
@@ -3328,7 +3329,7 @@
   },
   "glossary": {
     "whatIsThis": "这是什么？",
-    "aiScore": "对一轮融资准备程度的 0–100 估计：项目页有多完整、增长数据有多少佐证、各项数字是否自洽。它由模型根据创始人公开的内容生成。它不是对公司的评级，不构成投资建议，CapitalReach 也没有人工复核过。",
+    "aiScore": "针对所提交材料本身的 0 到 100 分：项目信息是否完整，以及其中的数字彼此是否吻合。它不是收益预测，不是投资建议，也不是对任何数字真实性的核实。",
     "aiMatching": "按你资料中的投资主题——阶段、行业、支票规模、地域——对进行中的轮次排序，让值得你花时间的排在前面。它只读取创始人已公开的内容。",
     "aiDiligence": "模型根据项目页和创始人分享的文件写出的结构化报告：哪些突出、哪些缺失、值得追问什么。这是你自己尽调的起点，绝不是替代。",
     "nda": "保密协议。创始人可以要求先签署再分享财务或文件；你在平台内签署，签署记录会保存在这笔交易上。",
@@ -3415,7 +3416,7 @@
       "mrr": "月收入",
       "growth_rate": "增长",
       "runway_months": "跑道",
-      "vaultrise_score": "AI 评分"
+      "vaultrise_score": "AI 一致性评分"
     }
   },
   "logo": {
@@ -4653,5 +4654,59 @@
   },
   "refusal": {
     "verifyCta": "完成身份核验"
+  },
+  "reviewLedger": {
+    "title": "我们检查了什么",
+    "intro": "这是审核人逐项走过的清单，以及每一项实际包含的内容。未执行的检查同样列在其中。",
+    "unavailable": "无法加载该项目的审核记录。这既不表示该项目已被审核，也不表示未被审核。目前无法在此显示任何关于是否检查过的内容。",
+    "none": "该项目没有审核记录。其中的内容我们均未检查。",
+    "reviewedOn": "{date} 审核。",
+    "reviewedUndated": "本次审核的日期未被记录。",
+    "listVersion": "清单 {version}。",
+    "emptyItems": "该项目有审核记录，但其中没有任何条目。无法显示检查了哪些内容。",
+    "selfReported": "收入、增长数据和财务数字均由创始人自行填报，未经审计，也未经独立核实。投资前请自行开展尽职调查。",
+    "outcome": {
+      "approved": "已审核并上架。",
+      "rejected": "已审核，未通过。",
+      "changes_requested": "已审核，需修改。"
+    },
+    "item": {
+      "pass": "已检查",
+      "fail": "未通过",
+      "na": "不适用",
+      "missing": "未记录"
+    }
+  },
+  "listingScore": {
+    "label": "AI 一致性评分",
+    "locked": "当前方案不显示",
+    "none": "未评分",
+    "caption": "衡量所提交资料的完整性与内部一致性。它不是回报预测，不是投资建议，也不是对任何数字的核实。",
+    "state": {
+      "present": "已提供",
+      "absent": "未提供",
+      "unknown": "无法确定"
+    },
+    "dimension": {
+      "clarity": "描述的清晰度",
+      "marketSizing": "已提供市场规模",
+      "differentiation": "已说明差异化",
+      "teamInfo": "已提供团队信息",
+      "metrics": "指标已提供且一致"
+    }
+  },
+  "attest": {
+    "eyebrow": "您的声明",
+    "title": "确认您的项目信息",
+    "loadFailed": "声明未能加载，目前没有可签署的内容。",
+    "already": "您已签署过该版本文本。再次签署将记录一份新的声明并替换旧的。",
+    "checkbox": "我已阅读上述声明并予以确认。",
+    "nameLabel": "请输入您的全名",
+    "namePlaceholder": "您的全名",
+    "confirm": "签署此声明",
+    "version": "版本 {version}",
+    "dashTitle": "签署您的项目声明",
+    "dashBody": "请确认项目信息属实，且您有权代表该公司。",
+    "dashCta": "阅读并签署"
   }
 }

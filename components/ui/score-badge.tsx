@@ -4,7 +4,7 @@ import { Lock } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 /**
- * The AI readiness score, as a number.
+ * The AI consistency score, as a number.
  *
  * This was a ring with the figure drawn inside it. The ring rendered; the
  * number did not — the text element counter-rotated the parent SVG's
@@ -34,9 +34,14 @@ export function ScoreBadge({ score, locked = false, size = "md" }: {
     display: "inline-flex", flexDirection: "column", alignItems: "flex-end",
     gap: dims.gap, flexShrink: 0, lineHeight: 1,
   };
+  // The caption names the number in full, which is longer than the figure
+  // above it. Capped and right-aligned so it wraps under itself rather than
+  // widening a badge the card header cannot shrink, which would eat the space
+  // the company name is truncated into.
   const label: React.CSSProperties = {
     fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: dims.label,
     textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)",
+    maxWidth: "84px", textAlign: "right", lineHeight: 1.25,
   };
 
   if (locked) {

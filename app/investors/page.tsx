@@ -14,7 +14,10 @@ export const metadata: Metadata = {
   // whatever domain it ends up on), and duplicate URLs split their own ranking.
   alternates: { canonical: "/investors" },
   title: "Investor Directory",
-  description: "Browse accredited angels, VCs, and institutional investors actively looking to fund startups on CapitalReach.",
+  // Professional status here is declared by the member, never checked by the
+  // platform, so the description says declared rather than naming a regulatory
+  // class the platform does not certify anyone into.
+  description: "Browse angels, VCs, and institutional investors who have declared professional status and are actively looking to fund startups on CapitalReach.",
 };
 
 export default async function InvestorsPage() {

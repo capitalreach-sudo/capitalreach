@@ -8,6 +8,13 @@ import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 const REASONS = ["misleading", "impersonation", "spam", "not_raising", "abuse", "other"] as const;
 
+/** A claim about a PARTY goes to the incident bench, which takes a report from
+ *  a visitor with no session -- the person who can say "those are not their
+ *  founders" is very often a competitor or an ex-employee with no account. A
+ *  claim about a piece of CONTENT stays on the moderation queue, which keys its
+ *  one-open-report-per-person rule on a reporter and so needs one. */
+const PARTY_TARGETS = ["startup", "investor"] as const;
+
 /**
  * E50: report this.
  *
@@ -21,7 +28,12 @@ export function ReportButton({ targetType, targetId, label }: {
   targetId: string;
   label?: string;
 }) {
+  const isParty = (PARTY_TARGETS as readonly string[]).includes(targetType);
   const { t } = useTranslation();
+  // t() returns the key itself where a locale has not got the line yet, so a
+  // line the copy has not reached is absent rather than rendered as a dotted
+  // key on a public page.
+  const anonNote = isParty && t("report.anonNote") !== "report.anonNote" ? t("report.anonNote") : null;
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<string>("misleading");
   const [detail, setDetail] = useState("");
@@ -31,13 +43,24 @@ export function ReportButton({ targetType, targetId, label }: {
   async function submit() {
     if (busy) return;
     setBusy(true);
-    const res = await fetch("/api/report", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ targetType, targetId, reason, detail }),
-    });
-    const j = await res.json().catch(() => ({}));
-    setBusy(false);
-    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    let res: Response | null = null;
+    let j: { error?: string } = {};
+    try {
+      res = await fetch(isParty ? "/api/reports" : "/api/report", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          isParty
+            ? { subjectType: targetType, subjectId: targetId, reason, detail }
+            : { targetType, targetId, reason, detail },
+        ),
+      });
+      j = await res.json().catch(() => ({}));
+    } catch {
+      j = {};
+    } finally {
+      setBusy(false);
+    }
+    if (!res?.ok) { notify.error(j.error || t("errors.generic")); return; }
     setOpen(false); setDetail("");
     notify.success(t("report.thanks"));
   }
@@ -55,7 +78,10 @@ export function ReportButton({ targetType, targetId, label }: {
           <div onClick={e => e.stopPropagation()}
             style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 8, padding: 20, width: "100%", maxWidth: 420 }}>
             <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: 4 }}>{t("report.title")}</h3>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: 14 }}>{t("report.intro")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: anonNote ? 6 : 14 }}>{t("report.intro")}</p>
+            {anonNote && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: 14 }}>{anonNote}</p>
+            )}
 
             <div style={{ display: "grid", gap: 6, marginBottom: 12 }}>
               {REASONS.map(r => (

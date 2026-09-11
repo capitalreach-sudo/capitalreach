@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/startups" },
   title: "Find Startups",
   description:
-    "Browse startups currently raising capital. Filter by industry, stage, monthly revenue, AI score and more.",
+    "Browse startups currently raising capital. Filter by industry, stage, monthly revenue, AI consistency score and more.",
 };
 
 export default async function StartupsPage() {

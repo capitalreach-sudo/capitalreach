@@ -6,6 +6,7 @@ import { listingDetailPublic } from "@/lib/listing-visibility";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { ReportButton } from "@/components/shared/report-button";
+import WhatWeChecked from "@/components/review/WhatWeChecked";
 import { JsonLdScript } from "@/components/shared/json-ld";
 import { startupJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { StartupDetailClient } from "@/components/startup/startup-detail-client";
@@ -528,6 +529,13 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
         initialTranslation={initialTranslation}
         translationAvailable={translationAvailable}
       />
+      {/* Unconditional. Not gated on tier, on the NDA, or on a review
+          existing: a viewer who reaches the listing body reaches this, and the
+          module states the absence of a review as plainly as it states one.
+          Anything that hides it in some states turns silence into a pass. */}
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 32px" }}>
+        <WhatWeChecked subjectType="startup" subjectId={safeStartup.id} />
+      </div>
       {/* E50: reporting a listing needs someone to come back to, so it is
           offered to signed-in visitors who are not the owner. */}
       {user && !isOwner && !previewing && (

@@ -358,7 +358,7 @@ export async function POST(req: NextRequest) {
     .from("profiles").select("accreditation_certified").eq("id", user.id).maybeSingle();
   if (!attest?.accreditation_certified) {
     return NextResponse.json(
-      { error: "Confirm your accredited-investor status in Settings before making an offer.",
+      { error: "Confirm your investor status in Settings before making an offer.",
         messageKey: "offerComposer.notAccredited" },
       { status: 403 },
     );

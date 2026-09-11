@@ -60,9 +60,13 @@ const RAISING_PRESETS = [
   { value: 2_000_000, label: "Raising $2M+" },
 ];
 
+// Newest leads, and it is the default below. The score is a model's reading of
+// what a founder published; ordering the whole catalogue by it out of the box
+// makes the platform the one recommending, which is a claim it cannot back. It
+// stays available as a sort the reader chooses.
 const SORT_OPTIONS = [
-  { value: "score",   labelKey: "filters.sortScore"   },
   { value: "recent",  labelKey: "filters.sortRecent"  },
+  { value: "score",   labelKey: "filters.sortScore"   },
   { value: "updated", labelKey: "filters.sortUpdated" },
   { value: "closing", labelKey: "filters.sortClosing" },
   { value: "founded", labelKey: "filters.sortFounded" },
@@ -116,7 +120,7 @@ interface Filters {
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
-  mrrMin: 0, aiScoreMin: 0, sort: "score", country: "", newOnly: false,
+  mrrMin: 0, aiScoreMin: 0, sort: "recent", country: "", newOnly: false,
   raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
 };
 
@@ -770,7 +774,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     // Neutralize spreadsheet formula injection (=,+,-,@ leading a cell) with a
     // leading apostrophe, then quote and double internal quotes.
     const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
-    const header = ["Name", "Tagline", "Industry", "Stage", "Raising", "MRR", "Growth %", "Runway (mo)", "AI score", "Country", "Profile"];
+    const header = ["Name", "Tagline", "Industry", "Stage", "Raising", "MRR", "Growth %", "Runway (mo)", "AI consistency score", "Country", "Profile"];
     const lines = filtered.map((s) => [
       s.name, s.tagline, s.industry, s.stage, s.funding_target,
       s.mrr ?? "", s.growth_rate ?? "", s.runway_months ?? "", s.vaultrise_score ?? "", s.country ?? "",

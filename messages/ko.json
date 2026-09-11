@@ -110,8 +110,8 @@
     "founderStep1Title": "등록 생성",
     "f1desc": "프로필을 작성하고, 피치 덱을 업로드하고, 재무 데이터를 추가하고, 핵심 투자자 질문에 답하세요.",
     "founderStep1Desc": "프로필을 작성하고, 피치 덱을 업로드하고, 재무 데이터를 추가하고, 핵심 투자자 질문에 답하세요.",
-    "f2title": "AI 점수 받기",
-    "founderStep2Title": "AI 점수 받기",
+    "f2title": "AI 일관성 점수 받기",
+    "founderStep2Title": "AI 일관성 점수 받기",
     "f2desc": "모델이 덱, 재무, 팀을 평가하여 전체 분석과 함께 0-100 점수를 반환합니다.",
     "founderStep2Desc": "모델이 덱, 재무, 팀을 평가하여 전체 분석과 함께 0-100 점수를 반환합니다.",
     "f3title": "투자자와 매칭",
@@ -304,7 +304,7 @@
       "pitchAnalyzer": "피치 분석기",
       "investorMatching": "투자자 매칭",
       "dueDiligence": "실사 보고서",
-      "aiScore": "AI 스타트업 점수",
+      "aiScore": "AI 일관성 점수",
       "savedReports": "저장된 보고서",
       "exportPdf": "보고서 내보내기 (PDF)",
       "viewOnly": "보기 전용"
@@ -354,8 +354,8 @@
       "a4": "Stripe를 통해 모든 주요 신용카드와 은행 이체를 지원합니다.",
       "q5": "언제든지 취소할 수 있나요?",
       "a5": "네, 언제든지 구독을 취소할 수 있습니다. 위약금이나 약정 기간이 없습니다.",
-      "q6": "인증이란 무엇인가요?",
-      "a6": "투자자는 재무 데이터에 접근하려면 적격 투자자로 자체 인증해야 합니다. CapitalReach는 이 인증을 저장하며 기관 계정에 대한 문서를 요청할 수 있습니다."
+      "q6": "전문 투자자 자격이란 무엇인가요?",
+      "a6": "투자자는 재무 데이터에 접근하려면 전문 투자자 지위를 스스로 신고해야 합니다. CapitalReach는 이 신고 내용을 저장하며 기관 계정에 대한 문서를 요청할 수 있습니다."
     },
     "feature_publicListing": "공개 검색 가능한 목록",
     "feature_analyticsBoard": "분석 대시보드",
@@ -436,7 +436,7 @@
     "feature_investorExport": "데이터 내보내기",
     "tipListings": "동시에 게시할 수 있는 스타트업 프로필 수입니다.",
     "tipPublicListing": "프로필이 공개되어 플랫폼의 모든 투자자가 검색할 수 있습니다.",
-    "tipAiScore": "피치에 대한 AI 점수(0-100)와 개선을 위한 서면 피드백입니다.",
+    "tipAiScore": "피치에 대한 AI 일관성 점수(0-100)와 개선을 위한 서면 피드백입니다.",
     "tipNda": "투자자가 데이터룸을 열기 전에 NDA 서명을 요구할 수 있습니다.",
     "tipPipeline": "첫 만남부터 딜 종료까지 모든 투자자 대화를 추적합니다.",
     "tipAnalytics": "누가 프로필을 보고 저장했는지, 관심이 어떻게 변하는지 확인합니다.",
@@ -645,7 +645,7 @@
     "activeDeals": "활성 딜",
     "closedDeals": "성사된 딜",
     "noPipeline": "아직 파이프라인에 딜이 없습니다",
-    "aiScore": "AI 점수",
+    "aiScore": "AI 일관성 점수",
     "sendMessage": "메시지 보내기",
     "activeSubscription": "활성 구독",
     "aiFeedback": "AI 피드백",
@@ -1109,7 +1109,7 @@
     "allCountries": "모든 국가",
     "clearFilters": "필터 초기화",
     "raising": "조달 중",
-    "aiScore": "AI 점수",
+    "aiScore": "AI 일관성 점수",
     "runway": "런웨이 {months}개월",
     "noScore": "점수 없음",
     "savedSearches": "저장한 검색",
@@ -1288,7 +1288,7 @@
     "apply": "필터 적용",
     "reset": "초기화",
     "sort": "정렬",
-    "sortScore": "AI 점수순",
+    "sortScore": "AI 일관성 점수순",
     "sortRecent": "최신순",
     "sortRaising": "조달금액순",
     "thresholds": "트랙션",
@@ -1409,7 +1409,7 @@
   },
   "startup": {
     "raising": "조달 금액",
-    "aiScore": "AI 점수",
+    "aiScore": "AI 일관성 점수",
     "back": "디렉토리로 돌아가기",
     "createAccount": "계정 만들기",
     "documents": "문서",
@@ -1433,12 +1433,12 @@
     "removeWatchlist": "관심목록에서 제거",
     "new": "신규",
     "runwayMonths": "활주로 {n}개월",
-    "unlockScores": "업그레이드하여 재무 정보와 AI 점수를 잠금 해제하세요",
-    "scoreTitle": "AI 점수: {score}/100",
+    "unlockScores": "업그레이드하여 재무 정보와 AI 일관성 점수를 잠금 해제하세요",
+    "scoreTitle": "AI 일관성 점수: {score}/100",
     "closingSoon": "곧 마감",
     "closesIn": "{count}일 후 마감",
-    "scoreLabel": "AI 점수",
-    "scoreLocked": "AI 점수를 보려면 업그레이드하세요",
+    "scoreLabel": "AI 일관성 점수",
+    "scoreLocked": "AI 일관성 점수를 보려면 업그레이드하세요",
     "scoreNone": "아직 점수 없음"
   },
   "investors": {
@@ -1449,7 +1449,7 @@
     "checkSize": "투자 규모",
     "viewProfile": "프로필 보기",
     "directoryTitle": "투자자 디렉토리",
-    "directorySub": "적극적으로 자본을 투자하는 공인 엔젤, VC, 기관 펀드를 탐색하세요. 단계, 섹터, 투자 규모 등으로 필터링하세요.",
+    "directorySub": "전문 투자자 지위를 스스로 신고하고 적극적으로 자본을 투자하는 엔젤, VC, 기관 펀드를 탐색하세요. 단계, 섹터, 투자 규모 등으로 필터링하세요.",
     "registeredCount": "등록된 투자자 {count}명",
     "registeredCountOne": "등록된 투자자 1명",
     "filters": "필터",
@@ -1683,7 +1683,7 @@
       "unlocksTitle": "각 플랜이 프로필에서 잠금 해제하는 것:",
       "unlockFree": "이름, 태그라인, 단계, 산업",
       "unlockStarter": "+ 전체 피치, 팀 소개, 문서 3개",
-      "unlockGrowth": "+ 재무, 데모 영상, AI 점수",
+      "unlockGrowth": "+ 재무, 데모 영상, AI 일관성 점수",
       "planFreeDesc": "프로필을 만들고 저희 팀의 검토를 받으세요.",
       "planStarterDesc": "모든 투자자가 검색 가능한 공개 프로필.",
       "planGrowthDesc": "AI 피치 피드백, 전체 분석, 우선 지원.",
@@ -1855,7 +1855,7 @@
       "af2": "피치 덱 및 문서 접근",
       "af3": "직접 메시지 (월 5개 스레드)",
       "af4": "저장된 관심 목록",
-      "af5": "AI 점수 접근",
+      "af5": "AI 일관성 점수 접근",
       "al1": "AI 실사 보고서",
       "al2": "무제한 메시지",
       "al3": "CSV 데이터 내보내기",
@@ -1863,7 +1863,7 @@
       "pf1": "Angel의 모든 기능",
       "pf2": "무제한 메시지",
       "pf3": "AI 실사 보고서 포함",
-      "pf4": "주간 큐레이션 딜 플로우 다이제스트",
+      "pf4": "주간 딜 플로우 다이제스트",
       "pf5": "CSV 데이터 내보내기",
       "pf6": "신규 딜 조기 접근",
       "if1": "Pro의 모든 기능",
@@ -3225,7 +3225,8 @@
       "other": "기타"
     },
     "medianTarget": "라운드 목표 중앙값",
-    "newThisMonth": "이번 달 신규 라운드"
+    "newThisMonth": "이번 달 신규 라운드",
+    "anonNote": "보내는 데 계정은 필요하지 않습니다."
   },
   "deleteAccount": {
     "willAnonymise": "회원님의 계정에는 마감된 거래가 있어 그대로 삭제할 수 없습니다 — 상대방에게도 기록이 있고, 미납 수수료는 계정과 함께 사라지지 않습니다. 대신 이름, 이메일, 사진, 프로필 텍스트가 영구 삭제되고 리스팅이 내려갑니다. 남는 것은 개인정보가 없는 거래 기록뿐입니다.",
@@ -3291,7 +3292,7 @@
       "demoVideo": "리스팅의 데모 영상",
       "priorityReview": "우선 검토",
       "analytics": "리스팅 전체 분석",
-      "aiScore": "AI 준비도 점수",
+      "aiScore": "AI 일관성 점수",
       "aiWritten": "피치에 대한 AI 서면 피드백",
       "exportData": "파이프라인 CSV 내보내기",
       "identity": "어느 투자자가 관심을 보였는지 확인",
@@ -3314,7 +3315,7 @@
       "savedSearches": "알림이 있는 저장된 검색",
       "advancedFilters": "고급 필터",
       "coInvestors": "같은 라운드의 다른 투자자 확인",
-      "aiScore": "모든 리스팅의 AI 준비도 점수",
+      "aiScore": "모든 리스팅의 AI 일관성 점수",
       "aiMatching": "투자 논지에 맞춘 AI 매칭",
       "aiDiligence": "AI 실사 리포트",
       "scorecards": "자체 기준 스코어카드",
@@ -3328,7 +3329,7 @@
   },
   "glossary": {
     "whatIsThis": "이게 무엇인가요?",
-    "aiScore": "라운드가 얼마나 준비돼 보이는지를 0–100으로 추정한 값입니다. 리스팅이 얼마나 충실한지, 트랙션이 얼마나 입증됐는지, 숫자가 서로 맞는지를 봅니다. 창업자가 공개한 내용을 바탕으로 모델이 생성합니다. 회사에 대한 등급도, 투자 자문도 아니며, CapitalReach의 사람이 검토한 것도 아닙니다.",
+    "aiScore": "제출 내용 자체에 대한 0에서 100 사이의 값입니다. 목록이 얼마나 완전한지, 기재된 수치가 서로 얼마나 일치하는지를 봅니다. 수익 예측도, 투자 자문도, 어떤 수치가 사실인지에 대한 확인도 아닙니다.",
     "aiMatching": "프로필에 적힌 투자 논지 — 단계, 섹터, 수표 규모, 지역 — 에 맞춰 진행 중인 라운드를 정렬해, 시간을 쓸 만한 것을 먼저 보여줍니다. 창업자가 공개한 내용만 읽습니다.",
     "aiDiligence": "리스팅과 공유된 자료를 바탕으로 모델이 쓰는 구조화된 리포트입니다. 무엇이 눈에 띄고 무엇이 빠졌는지, 어떤 질문을 해야 하는지를 정리합니다. 직접 실사의 출발점일 뿐 대체물이 아닙니다.",
     "nda": "비밀유지계약입니다. 창업자는 재무나 자료를 공유하기 전에 이를 요구할 수 있으며, 플랫폼에서 서명하면 서명 사실이 거래에 기록됩니다.",
@@ -3415,7 +3416,7 @@
       "mrr": "월 매출",
       "growth_rate": "성장률",
       "runway_months": "런웨이",
-      "vaultrise_score": "AI 점수"
+      "vaultrise_score": "AI 일관성 점수"
     }
   },
   "logo": {
@@ -4653,5 +4654,59 @@
   },
   "refusal": {
     "verifyCta": "본인 확인하기"
+  },
+  "reviewLedger": {
+    "title": "우리가 확인한 항목",
+    "intro": "검토자가 확인한 항목 목록과 각 항목이 실제로 무엇을 뜻하는지입니다. 수행하지 않은 확인도 함께 기재되어 있습니다.",
+    "unavailable": "이 리스팅의 검토 기록을 불러오지 못했습니다. 이는 검토가 이루어졌다는 뜻도, 이루어지지 않았다는 뜻도 아닙니다. 무엇이 확인되었고 무엇이 확인되지 않았는지는 지금 여기에 표시할 수 없습니다.",
+    "none": "이 리스팅에는 검토 기록이 없습니다. 저희가 확인한 내용은 없습니다.",
+    "reviewedOn": "{date}에 검토됨.",
+    "reviewedUndated": "이 검토의 날짜는 기록되지 않았습니다.",
+    "listVersion": "목록 {version}.",
+    "emptyItems": "이 리스팅에 검토 기록이 있으나 항목이 없습니다. 무엇이 확인되었는지 표시할 수 없습니다.",
+    "selfReported": "매출, 트랙션, 재무 수치는 창업자가 스스로 보고한 것으로 감사나 독립적인 확인을 거치지 않았습니다. 투자 전에 직접 실사를 진행하십시오.",
+    "outcome": {
+      "approved": "검토 후 게시됨.",
+      "rejected": "검토 후 수용되지 않음.",
+      "changes_requested": "검토 후 수정 요청됨."
+    },
+    "item": {
+      "pass": "확인함",
+      "fail": "통과하지 못함",
+      "na": "해당 없음",
+      "missing": "기록 없음"
+    }
+  },
+  "listingScore": {
+    "label": "AI 일관성 점수",
+    "locked": "현재 요금제에서는 표시되지 않음",
+    "none": "점수 없음",
+    "caption": "제출 내용의 완결성과 내부 정합성을 측정합니다. 수익 예측도, 투자 자문도, 어떤 수치의 검증도 아닙니다.",
+    "state": {
+      "present": "제공됨",
+      "absent": "제공되지 않음",
+      "unknown": "확인되지 않음"
+    },
+    "dimension": {
+      "clarity": "설명의 명확성",
+      "marketSizing": "시장 규모 제시",
+      "differentiation": "차별점 명시",
+      "teamInfo": "팀 정보 제공",
+      "metrics": "지표 제공 및 정합성"
+    }
+  },
+  "attest": {
+    "eyebrow": "귀하의 진술",
+    "title": "목록 확인",
+    "loadFailed": "진술서를 불러오지 못해 지금은 서명할 항목이 없습니다.",
+    "already": "이 문안에는 이미 서명하셨습니다. 다시 서명하면 새 진술이 기록되어 기존 것을 대체합니다.",
+    "checkbox": "위 진술을 읽었으며 이를 확인합니다.",
+    "nameLabel": "전체 이름을 입력하세요",
+    "namePlaceholder": "전체 이름",
+    "confirm": "이 진술에 서명",
+    "version": "버전 {version}",
+    "dashTitle": "목록 진술서에 서명하기",
+    "dashBody": "목록의 정보가 사실이며 회사를 대표할 권한이 있음을 확인해 주세요.",
+    "dashCta": "읽고 서명하기"
   }
 }

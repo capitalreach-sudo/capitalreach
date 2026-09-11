@@ -131,10 +131,20 @@ function OutstandingRequests() {
   );
 }
 
+/**
+ * One copy leaving the room. The raw row also carries the address it was taken
+ * from and the stamp burned into the file; neither reaches this page. The
+ * founder owns the document, so who and when are theirs -- the rest belongs to
+ * a leak investigation, and /api/documents/downloads leaves it on the server.
+ */
+type DocDownload = { documentId: string | null; at: string; investorName: string | null };
+
 export default function DocumentsPage() {
   const { t } = useTranslation();
   const [startup, setStartup] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [downloads, setDownloads] = useState<DocDownload[]>([]);
+  const [ledgerFor, setLedgerFor] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [docsLoading, setDocsLoading] = useState(true);
   const [docType, setDocType] = useState("pitch_deck");
@@ -164,6 +174,12 @@ export default function DocumentsPage() {
       const { data: docs } = await supabase.from("startup_documents").select("*").eq("startup_id", s.id);
       setDocuments(docs || []);
       setDocsLoading(false);
+      // document_downloads is service-role only, so the ledger cannot be read
+      // with the browser's key the way the documents above are.
+      fetch("/api/documents/downloads")
+        .then(r => r.ok ? r.json() : null)
+        .then(j => setDownloads(j?.downloads ?? []))
+        .catch(() => setDownloads([]));
     })();
   }, []);
 
@@ -211,6 +227,16 @@ export default function DocumentsPage() {
 
   const isLimitedPlan = startup?.subscription_tier === "starter";
   const atLimit = isLimitedPlan && documents.length >= 3;
+
+  // A download whose document row was deleted keeps its record (the copy
+  // outlived the row), but there is no longer a line here to hang it under.
+  const downloadsByDoc = new Map<string, DocDownload[]>();
+  for (const d of downloads) {
+    if (!d.documentId) continue;
+    const seen = downloadsByDoc.get(d.documentId);
+    if (seen) seen.push(d);
+    else downloadsByDoc.set(d.documentId, [d]);
+  }
 
   return (
     <>
@@ -320,8 +346,12 @@ export default function DocumentsPage() {
                 </div>
               ) : (
                 <div>
-                  {documents.map((doc, docIdx) => (
-                    <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "12px 20px", borderTop: docIdx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                  {documents.map((doc, docIdx) => {
+                    const taken = downloadsByDoc.get(doc.id) ?? [];
+                    const showing = ledgerFor === doc.id;
+                    return (
+                    <div key={doc.id} style={{ borderTop: docIdx > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "12px 20px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
                         <span aria-hidden style={{ ...MONO, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", flexShrink: 0 }}>
                           {String(docIdx + 1).padStart(2, "0")}
@@ -335,6 +365,17 @@ export default function DocumentsPage() {
                                 {t("dashboard.ndaRequired")}
                               </span>
                             )}
+                            {taken.length === 0 ? (
+                              <span style={{ ...LABEL_TYPE, color: "var(--cr-ink-4)" }}>{t("docDownloads.none")}</span>
+                            ) : (
+                              <button
+                                onClick={() => setLedgerFor(showing ? null : doc.id)}
+                                aria-expanded={showing}
+                                style={{ ...LABEL_TYPE, color: "var(--cr-copper)", background: "transparent", border: "none", padding: "4px 0", cursor: "pointer" }}
+                              >
+                                {t("docDownloads.count", { count: taken.length })} {showing ? "↑" : "↓"}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -347,7 +388,24 @@ export default function DocumentsPage() {
                         </button>
                       </div>
                     </div>
-                  ))}
+                    {showing && (
+                      <div style={{ padding: "0 20px 12px 54px" }}>
+                        <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.5, margin: "0 0 4px" }}>{t("docDownloads.hint")}</p>
+                        {taken.map((d, i) => (
+                          <div key={`${doc.id}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--cr-rule)", padding: "8px 0" }}>
+                            <span style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {d.investorName || t("deals.investorFallback")}
+                            </span>
+                            <span style={{ ...MONO, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", flexShrink: 0 }}>
+                              {new Date(d.at).toLocaleString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

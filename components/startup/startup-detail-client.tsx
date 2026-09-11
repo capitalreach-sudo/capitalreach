@@ -26,7 +26,7 @@ import { useRefusal } from "@/hooks/useRefusal";
 import { useRouter } from "next/navigation";
 import { PrintHeader } from "@/components/ui/PrintHeader";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ScoreDial } from "@/components/ui/score-dial";
+import { ScoreWithDisclaimer, scoreDimensionsFromListing } from "@/components/review/ScoreWithDisclaimer";
 import { InfoTip } from "@/components/shared/info-tip";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { track } from "@/lib/track";
@@ -865,14 +865,29 @@ export function StartupDetailClient({
                       <Eye style={{ width: 11, height: 11 }} /> <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-3)" }}>{viewerCount}</span> viewing
                     </span>
                   )}
-                  {score != null && (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                      <ScoreDial score={score} />
-                      {/* A model produced this number about somebody's
-                          company. Say what it measures, next to it. */}
-                      <InfoTip termKey="glossary.aiScore" />
-                    </span>
-                  )}
+                </div>
+
+                {/* Out of the badge row on purpose. A figure out of 100 sitting
+                    in a line of chips reads as one more attribute of the
+                    company, and the sentence saying what it actually measures
+                    does not fit on that line. The breakdown is passed only when
+                    this viewer can see the financials: with them stripped, an
+                    absent metric is the gate, not the founder, and the rows
+                    would report a gap that is not there. */}
+                <div style={{ marginTop: "14px" }}>
+                  <ScoreWithDisclaimer
+                    score={score}
+                    dimensions={canFinancials ? scoreDimensionsFromListing({
+                      problem: startup.problem,
+                      solution: startup.solution,
+                      market: startup.market,
+                      competitive_advantage: startup.competitive_advantage,
+                      mrr: startup.mrr,
+                      arr: startup.arr,
+                      user_count: startup.user_count,
+                      founderCount: startup.founders?.length ?? null,
+                    }) : undefined}
+                  />
                 </div>
               </div>
 

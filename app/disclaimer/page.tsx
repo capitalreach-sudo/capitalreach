@@ -90,6 +90,9 @@ export default async function DisclaimerPage() {
 
         <div>
           <LegalSection title={t("disclaimer.s1Title")}>
+            {/* [LAWYER] s1Text disclaims broker-dealer and adviser status. It
+                holds only while no such licence exists; the sentence changes
+                the moment a registration route is chosen. */}
             <p>
               {t("disclaimer.s1Text")}
             </p>
@@ -109,6 +112,11 @@ export default async function DisclaimerPage() {
           </LegalSection>
 
           <LegalSection title={t("disclaimer.s3Title")}>
+            {/* [LAWYER] s3Title/s3Text restrict access by the Rule 501
+                Regulation D definition of an accredited investor -- a US
+                standard, asserted by a Berlin-venue company, and one nothing
+                on the platform checks. Which regime governs has not been
+                settled, so the section is left as written. */}
             <p>
               {t("disclaimer.s3Text")}
             </p>

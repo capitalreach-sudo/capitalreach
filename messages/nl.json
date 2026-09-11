@@ -110,8 +110,8 @@
     "founderStep1Title": "Maak je listing aan",
     "f1desc": "Vul je profiel in, upload je pitch deck, voeg financiële gegevens toe en beantwoord vragen van investeerders.",
     "founderStep1Desc": "Vul je profiel in, upload je pitch deck, voeg financiële gegevens toe en beantwoord vragen van investeerders.",
-    "f2title": "Ontvang een AI-score",
-    "founderStep2Title": "Ontvang een AI-score",
+    "f2title": "Ontvang een AI-consistentiescore",
+    "founderStep2Title": "Ontvang een AI-consistentiescore",
     "f2desc": "Ons model beoordeelt deck, financiën en team — en geeft een score van 0 tot 100 met volledige analyse.",
     "founderStep2Desc": "Ons model beoordeelt deck, financiën en team — en geeft een score van 0 tot 100 met volledige analyse.",
     "f3title": "Match met investeerders",
@@ -304,7 +304,7 @@
       "pitchAnalyzer": "Pitch-analysator",
       "investorMatching": "Investeerdersmatching",
       "dueDiligence": "Due diligence-rapporten",
-      "aiScore": "AI Startup Score",
+      "aiScore": "AI-consistentiescore",
       "savedReports": "Opgeslagen rapporten",
       "exportPdf": "Rapporten exporteren (PDF)",
       "viewOnly": "Alleen bekijken"
@@ -354,8 +354,8 @@
       "a4": "We accepteren alle grote creditcards en bankoverschrijvingen via Stripe.",
       "q5": "Kan ik op elk moment opzeggen?",
       "a5": "Ja, je kunt je abonnement op elk moment opzeggen. Geen boetes of verplichtingen.",
-      "q6": "Wat is accreditatiecertificering?",
-      "a6": "Investeerders moeten zichzelf certificeren als geaccrediteerd om toegang te krijgen tot financiële gegevens. CapitalReach bewaart deze certificering en kan documentatie opvragen voor institutionele accounts."
+      "q6": "Wat is de status van professionele belegger?",
+      "a6": "Investeerders moeten zelf verklaren dat zij professioneel belegger zijn om toegang te krijgen tot financiële gegevens. CapitalReach bewaart deze verklaring en kan documentatie opvragen voor institutionele accounts."
     },
     "feature_publicListing": "Openbare, doorzoekbare listing",
     "feature_analyticsBoard": "Analysedashboard",
@@ -436,7 +436,7 @@
     "feature_investorExport": "Gegevens exporteren",
     "tipListings": "Hoeveel startup-profielen je tegelijk kunt publiceren.",
     "tipPublicListing": "Je profiel is live en vindbaar voor elke investeerder op het platform.",
-    "tipAiScore": "Een AI-score van je pitch (0-100) met schriftelijke feedback om te verbeteren.",
+    "tipAiScore": "Een AI-consistentiescore van je pitch (0-100) met schriftelijke feedback om te verbeteren.",
     "tipNda": "Laat investeerders een NDA tekenen voordat ze je dataroom kunnen openen.",
     "tipPipeline": "Volg elk investeerdersgesprek van eerste kennismaking tot afgeronde deal.",
     "tipAnalytics": "Zie wie je profiel bekeek, wie het opsloeg en hoe de interesse zich ontwikkelt.",
@@ -645,7 +645,7 @@
     "activeDeals": "Actieve deals",
     "closedDeals": "Gesloten deals",
     "noPipeline": "Nog geen deals in pipeline",
-    "aiScore": "AI-score",
+    "aiScore": "AI-consistentiescore",
     "sendMessage": "Bericht sturen",
     "activeSubscription": "Actief abonnement",
     "aiFeedback": "AI-feedback",
@@ -1109,7 +1109,7 @@
     "allCountries": "Alle landen",
     "clearFilters": "Filters wissen",
     "raising": "Haalt op",
-    "aiScore": "AI-score",
+    "aiScore": "AI-consistentiescore",
     "runway": "{months} maanden runway",
     "noScore": "Geen score",
     "savedSearches": "Opgeslagen zoekopdrachten",
@@ -1288,7 +1288,7 @@
     "apply": "Filters toepassen",
     "reset": "Terugzetten",
     "sort": "Sorteren",
-    "sortScore": "Op AI-score",
+    "sortScore": "Op AI-consistentiescore",
     "sortRecent": "Nieuwste eerst",
     "sortRaising": "Op ophaalbedrag",
     "thresholds": "Tractie",
@@ -1409,7 +1409,7 @@
   },
   "startup": {
     "raising": "Op te halen bedrag",
-    "aiScore": "AI-score",
+    "aiScore": "AI-consistentiescore",
     "back": "Terug naar overzicht",
     "createAccount": "Account aanmaken",
     "documents": "Documenten",
@@ -1433,12 +1433,12 @@
     "removeWatchlist": "Verwijderen uit watchlist",
     "new": "Nieuw",
     "runwayMonths": "{n} mnd cashrunway",
-    "unlockScores": "Upgrade om financiën en AI-scores te ontgrendelen",
-    "scoreTitle": "AI-score: {score}/100",
+    "unlockScores": "Upgrade om financiën en AI-consistentiescores te ontgrendelen",
+    "scoreTitle": "AI-consistentiescore: {score}/100",
     "closingSoon": "Sluit binnenkort",
     "closesIn": "Sluit over {count} d",
-    "scoreLabel": "AI-score",
-    "scoreLocked": "Upgrade om de AI-score te zien",
+    "scoreLabel": "AI-consistentiescore",
+    "scoreLocked": "Upgrade om de AI-consistentiescore te zien",
     "scoreNone": "Nog niet gescoord"
   },
   "investors": {
@@ -1449,7 +1449,7 @@
     "checkSize": "Chequegrootte",
     "viewProfile": "Profiel bekijken",
     "directoryTitle": "Investeerdersgids",
-    "directorySub": "Bekijk geaccrediteerde angels, VC's en institutionele fondsen die actief kapitaal investeren. Filter op fase, sector, chequegrootte en meer.",
+    "directorySub": "Bekijk angels, VC's en institutionele fondsen die hebben verklaard professioneel belegger te zijn en actief kapitaal investeren. Filter op fase, sector, chequegrootte en meer.",
     "registeredCount": "{count} geregistreerde investeerders",
     "registeredCountOne": "1 geregistreerde investeerder",
     "filters": "Filters",
@@ -1683,7 +1683,7 @@
       "unlocksTitle": "Wat elk plan ontgrendelt voor uw profiel:",
       "unlockFree": "Naam, tagline, fase, sector",
       "unlockStarter": "+ Volledige pitch, teambios, 3 docs",
-      "unlockGrowth": "+ Financiën, demovideo, AI-score",
+      "unlockGrowth": "+ Financiën, demovideo, AI-consistentiescore",
       "planFreeDesc": "Maak uw profiel aan en laat het beoordelen door ons team.",
       "planStarterDesc": "Live openbaar profiel, doorzoekbaar door alle investeerders.",
       "planGrowthDesc": "AI-pitchfeedback, volledige analyses en prioriteitssupport.",
@@ -1855,7 +1855,7 @@
       "af2": "Toegang tot pitch decks & documenten",
       "af3": "Directe berichten (5 threads/maand)",
       "af4": "Opgeslagen watchlists",
-      "af5": "Toegang tot AI-score",
+      "af5": "Toegang tot AI-consistentiescore",
       "al1": "AI due diligence-rapporten",
       "al2": "Onbeperkte berichten",
       "al3": "CSV-gegevensexport",
@@ -1863,7 +1863,7 @@
       "pf1": "Alles van Angel",
       "pf2": "Onbeperkte berichten",
       "pf3": "AI due diligence-rapporten inbegrepen",
-      "pf4": "Wekelijkse gecureerde dealflow-digest",
+      "pf4": "Wekelijkse dealflow-digest",
       "pf5": "CSV-gegevensexport",
       "pf6": "Vroege toegang tot nieuwe deals",
       "if1": "Alles van Pro",
@@ -3225,7 +3225,8 @@
       "other": "Iets anders"
     },
     "medianTarget": "Mediaan rondedoel",
-    "newThisMonth": "Nieuwe rondes deze maand"
+    "newThisMonth": "Nieuwe rondes deze maand",
+    "anonNote": "Je hebt geen account nodig om dit te versturen."
   },
   "deleteAccount": {
     "willAnonymise": "Je account heeft afgeronde deals op het platform en kan dus niet zomaar worden gewist — de tegenpartij heeft er ook vastlegging van, en een openstaande fee verdwijnt niet met het account. In plaats daarvan worden je naam, e-mail, foto en profielteksten permanent verwijderd en gaat de listing offline. Wat overblijft is een transactievastlegging zonder persoonsgegevens.",
@@ -3291,7 +3292,7 @@
       "demoVideo": "Demovideo op je listing",
       "priorityReview": "Voorrang bij beoordeling",
       "analytics": "Volledige listing-analytics",
-      "aiScore": "AI-gereedheidsscore",
+      "aiScore": "AI-consistentiescore",
       "aiWritten": "Geschreven AI-feedback op je pitch",
       "exportData": "Je pijplijn naar CSV exporteren",
       "identity": "Zien welke investeerder geïnteresseerd is",
@@ -3314,7 +3315,7 @@
       "savedSearches": "Opgeslagen zoekopdrachten met meldingen",
       "advancedFilters": "Geavanceerde filters",
       "coInvestors": "Zien wie er nog meer in de ronde zit",
-      "aiScore": "AI-gereedheidsscore op elke listing",
+      "aiScore": "AI-consistentiescore op elke listing",
       "aiMatching": "AI-matching op jouw thesis",
       "aiDiligence": "AI-diligencerapporten",
       "scorecards": "Scorecards op je eigen criteria",
@@ -3328,7 +3329,7 @@
   },
   "glossary": {
     "whatIsThis": "Wat is dit?",
-    "aiScore": "Een schatting van 0–100 van hoe klaar een ronde oogt: hoe compleet de listing is, hoeveel tractie is onderbouwd en hoe consistent de cijfers zijn. Een model maakt hem op basis van wat de oprichter heeft gepubliceerd. Het is geen oordeel over het bedrijf, geen beleggingsadvies, en niemand bij CapitalReach heeft het nagekeken.",
+    "aiScore": "Een score van 0 tot 100 over de aanmelding zelf: hoe volledig de vermelding is en hoe goed de eigen cijfers onderling kloppen. Het is geen rendementsvoorspelling, geen beleggingsadvies en geen controle of een cijfer juist is.",
     "aiMatching": "Rangschikt lopende rondes tegen de thesis in je profiel — fase, sector, ticketgrootte en regio — zodat wat je tijd waard is bovenaan komt. Leest alleen wat oprichters publiceren.",
     "aiDiligence": "Een gestructureerd rapport dat een model schrijft op basis van de listing en gedeelde documenten: wat opvalt, wat ontbreekt en welke vragen de moeite waard zijn. Een startpunt voor je eigen onderzoek, nooit een vervanging.",
     "nda": "Een geheimhoudingsovereenkomst. De oprichter kan die eisen voordat cijfers of documenten worden gedeeld; je tekent hem in het platform en de handtekening wordt bij de deal vastgelegd.",
@@ -3415,7 +3416,7 @@
       "mrr": "Maandelijkse omzet",
       "growth_rate": "Groei",
       "runway_months": "Runway",
-      "vaultrise_score": "AI-score"
+      "vaultrise_score": "AI-consistentiescore"
     }
   },
   "logo": {
@@ -4653,5 +4654,59 @@
   },
   "refusal": {
     "verifyCta": "Verifieer uw identiteit"
+  },
+  "reviewLedger": {
+    "title": "Wat we hebben gecontroleerd",
+    "intro": "Dit is de lijst die een beoordelaar heeft doorlopen, en wat elke regel werkelijk inhoudt. De controles die niet zijn gedaan, staan er ook op.",
+    "unavailable": "Het beoordelingsverslag van deze listing kon niet worden geladen. Dat betekent niet dat de listing is beoordeeld en ook niet dat dat niet is gebeurd. Er kan hier nu niets worden getoond over wat wel of niet is gecontroleerd.",
+    "none": "Voor deze listing is geen beoordeling vastgelegd. Wij hebben er niets van gecontroleerd.",
+    "reviewedOn": "Beoordeeld op {date}.",
+    "reviewedUndated": "De datum van deze beoordeling is niet vastgelegd.",
+    "listVersion": "Lijst {version}.",
+    "emptyItems": "Voor deze listing is een beoordeling vastgelegd, maar die bevat geen punten. Er kan niets worden getoond over wat is gecontroleerd.",
+    "selfReported": "Omzet, tractie en financiële cijfers zijn door de oprichter zelf opgegeven en zijn niet gecontroleerd of onafhankelijk bevestigd. Doe je eigen due diligence voordat je investeert.",
+    "outcome": {
+      "approved": "Beoordeeld en geplaatst.",
+      "rejected": "Beoordeeld en niet geaccepteerd.",
+      "changes_requested": "Beoordeeld, met gevraagde wijzigingen."
+    },
+    "item": {
+      "pass": "Gecontroleerd",
+      "fail": "Niet geslaagd",
+      "na": "Niet van toepassing",
+      "missing": "Niet vastgelegd"
+    }
+  },
+  "listingScore": {
+    "label": "AI-consistentiescore",
+    "locked": "Niet zichtbaar in jouw abonnement",
+    "none": "Geen score",
+    "caption": "Meet de volledigheid en de interne consistentie van de ingediende gegevens. Geen voorspelling van rendement, geen beleggingsadvies, en geen verificatie van enig cijfer.",
+    "state": {
+      "present": "Opgegeven",
+      "absent": "Niet opgegeven",
+      "unknown": "Niet vastgesteld"
+    },
+    "dimension": {
+      "clarity": "Duidelijkheid van de beschrijving",
+      "marketSizing": "Marktomvang opgegeven",
+      "differentiation": "Onderscheidend vermogen benoemd",
+      "teamInfo": "Teamgegevens opgegeven",
+      "metrics": "Cijfers opgegeven en consistent"
+    }
+  },
+  "attest": {
+    "eyebrow": "Jouw verklaring",
+    "title": "Bevestig je vermelding",
+    "loadFailed": "De verklaring kon niet worden geladen, dus er valt nu nog niets te ondertekenen.",
+    "already": "Je hebt deze versie al ondertekend. Opnieuw ondertekenen legt een nieuwe verklaring vast en vervangt de oude.",
+    "checkbox": "Ik heb de verklaring hierboven gelezen en bevestig deze.",
+    "nameLabel": "Typ je volledige naam",
+    "namePlaceholder": "Je volledige naam",
+    "confirm": "Verklaring ondertekenen",
+    "version": "Versie {version}",
+    "dashTitle": "Onderteken de verklaring bij je vermelding",
+    "dashBody": "Bevestig dat de informatie in je vermelding juist is en dat je bevoegd bent het bedrijf te vertegenwoordigen.",
+    "dashCta": "Lezen en ondertekenen"
   }
 }
