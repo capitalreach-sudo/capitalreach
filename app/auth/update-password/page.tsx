@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { isPasswordBreached } from "@/lib/password-check";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
@@ -56,6 +57,17 @@ export default function UpdatePasswordPage() {
     if (password !== confirm) { notify.error(t("auth.passwordsNoMatch")); return; }
     if (password.length < 8) { notify.error(t("auth.passwordMin")); return; }
     setLoading(true);
+    // Signup and the settings page both refuse a known-breached password.
+    // This page did not, so "Forgot password" was a way round the control:
+    // the password rejected at the front door was accepted at the side one.
+    // isPasswordBreached fails OPEN on a network error, so an outage at the
+    // range API cannot lock somebody out of their own reset link.
+    const { breached, count } = await isPasswordBreached(password);
+    if (breached) {
+      notify.error(t("auth.passwordBreached", { count }));
+      setLoading(false);
+      return;
+    }
     const { error } = await supabase.auth.updateUser({ password });
     if (error) { notify.error(authErrorMessage(error, t)); }
     else {

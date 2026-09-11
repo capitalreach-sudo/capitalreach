@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { safeRedirect } from "@/lib/safe-redirect";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -51,7 +52,9 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const rawRedirect = searchParams.get("redirect") || "/";
   // Same-origin relative paths only -- never navigate to an attacker host.
-  const redirect = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/";
+  // A path on this site, or "/". See lib/safe-redirect: the old test here
+  // admitted "/\\evil.com", which browsers resolve off-site.
+  const redirect = safeRedirect(rawRedirect, "/");
   const supabase = createClient();
 
   async function handleLogin(e: React.FormEvent) {
