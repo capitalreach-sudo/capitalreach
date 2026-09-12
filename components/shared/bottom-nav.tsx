@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, Compass, Handshake, MessageSquare, Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
@@ -27,6 +28,7 @@ type Tab = {
   href: string;
   label: string;
   badge?: number;
+  Icon: typeof LayoutDashboard;
 };
 
 export function BottomNav() {
@@ -77,11 +79,11 @@ export function BottomNav() {
   const browseHref = profile.role === "startup" ? "/investors" : "/startups";
 
   const tabs: Tab[] = [
-    { href: dashboardPath, label: t("nav.home") },
-    { href: browseHref, label: t("nav.browse") },
-    { href: "/deals", label: t("nav.deals") },
-    { href: "/dashboard/messages", label: t("nav.messages"), badge: unreadMessages },
-    { href: "/dashboard/notifications", label: t("nav.alerts"), badge: unreadAlerts },
+    { href: dashboardPath, label: t("nav.home"), Icon: LayoutDashboard },
+    { href: browseHref, label: t("nav.browse"), Icon: Compass },
+    { href: "/deals", label: t("nav.deals"), Icon: Handshake },
+    { href: "/dashboard/messages", label: t("nav.messages"), badge: unreadMessages, Icon: MessageSquare },
+    { href: "/dashboard/notifications", label: t("nav.alerts"), badge: unreadAlerts, Icon: Bell },
   ];
 
   return (
@@ -92,7 +94,7 @@ export function BottomNav() {
         className="cr-bottom-nav lg:hidden"
         aria-label={t("nav.primaryMobile")}
       >
-      {tabs.map(({ href, label, badge }, i) => {
+      {tabs.map(({ href, label, badge, Icon }) => {
         // Exact match for the dashboards: /dashboard/startup must not light up
         // while the user is on /dashboard/messages.
         const active = href.startsWith("/dashboard/") || href === "/admin"
@@ -116,24 +118,18 @@ export function BottomNav() {
               position: "relative",
             }}
           >
-            {/* Fixed-height marker slot, so the label row cannot shift when
-                a tab flips between its index and the diamond. */}
-            <span aria-hidden style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", width: "16px", height: "12px" }}>
-              {active ? (
-                <svg width="8" height="8" viewBox="0 0 8 8">
-                  <path d="M4 0L8 4L4 8L0 4Z" fill="currentColor" />
-                </svg>
-              ) : (
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.08em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              )}
+            {/* The glyph, not an index: numbering a nav asserts a sequence
+                its five destinations do not have, and the owner read it as
+                exactly that. Weight carries the active state; the label's
+                copper does the rest. */}
+            <span aria-hidden style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon size={20} strokeWidth={active ? 2.1 : 1.6} />
               {!!badge && badge > 0 && (
                 <span
                   style={{
                     position: "absolute",
-                    top: "-6px",
-                    insetInlineEnd: "-10px",
+                    top: "-5px",
+                    insetInlineEnd: "-9px",
                     minWidth: "15px",
                     height: "15px",
                     padding: "0 4px",
