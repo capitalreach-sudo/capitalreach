@@ -449,6 +449,20 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
   const showFinancials = financialsAllowed || (isOwner && !previewing) || (viewerIsAdmin && !previewing);
   const safeStartup = {
     ...startup,
+    // Server-only columns, stripped UNCONDITIONALLY. The row is read with the
+    // service role and spread into client props, so anything not removed here
+    // ships to every member's browser regardless of what renders: the audit
+    // found founder_attestation_ip sitting in the page payload. The register
+    // columns are the circumvention route the fee model exists to close, and
+    // an IP beside a signature is evidence for a dispute, not page data.
+    founder_attestation_ip: null,
+    founder_attestation_sha256: null,
+    verification_checks: null,
+    verified_by: null,
+    legal_entity_name: null,
+    register_type: null,
+    register_number: null,
+    last_review_id: null,
     ...(showFinancials ? {} : { mrr: null, arr: null, user_count: null, growth_rate: null, valuation: null, paying_customers: null, runway_months: null, churn_rate: null }),
     founders: protectFounders(startup.founders, identityRevealed),
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx, previewing ? null : shareToken)),
