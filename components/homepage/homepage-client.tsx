@@ -282,24 +282,12 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
                 </div>
               ))}
             </div>
-            {/* The three freshest rounds, as ledger rows. Named companies,
-                so members only -- the figures above stay public because an
-                aggregate says nothing about any one company. */}
-            {canSeeMarket && (
-            <div style={{ borderTop: "1px solid var(--cr-rule)" }}>
-              {lane.slice(0, 3).map((l, i) => {
-                const Row = (viewerRole ? Link : "div") as React.ElementType;
-                return (
-                <Row key={l.id} {...(viewerRole ? { href: `/startups/${l.slug}` } : {})}
-                  style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "12px 16px", textDecoration: "none", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.name}</span>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize", whiteSpace: "nowrap" }}>{l.stage.replace(/_/g, " ")}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{safeFormatCurrency(l.funding_target)}</span>
-                </Row>
-                );
-              })}
-            </div>
-            )}
+            {/* No named rows here, per Jack. The hero's side panel is the
+                market's WEATHER, and three company names under it made it a
+                shortlist -- which reads as endorsement in the most prominent
+                spot on the site. The aggregates carry the panel; the named
+                table further down is where companies appear, labelled for
+                what its order actually is. */}
           </div>
         </aside>
         </div>
