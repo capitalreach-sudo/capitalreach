@@ -141,10 +141,12 @@ const menuHover = {
 // ── Section text block ────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  // The one section opener on this page: ruled label, 16px, then content.
+  // Prose sets at a 65ch reading measure with real leading, never full-width.
   return (
     <div>
-      <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{title}</h3>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.7 }}>{children}</p>
+      <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{title}</h3>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.75, maxWidth: "65ch" }}>{children}</p>
     </div>
   );
 }
@@ -160,9 +162,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  * own frame, which the house reads as card-in-card.
  */
 function MetricCell({ label, value, copper, termKey, note }: { label: string; value: string | null; copper?: boolean; termKey?: string; note?: string }) {
+  // Right-aligned throughout: a strip of cells reads as a ledger, and ledger
+  // figures sit on the column's right edge. The label speaks in the same
+  // 10px voice as every other metric label on the profile pages.
   return (
-    <div style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0 }}>
-      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "6px" }}>
+    <div style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0, textAlign: "right" }}>
+      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>
         {label}
         {termKey && <InfoTip termKey={termKey} />}
       </div>
@@ -729,13 +734,15 @@ export function StartupDetailClient({
 
       {/* ── Editorial hero ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "48px", paddingBottom: "32px" }}>
+        {/* Letterhead air: the identity block opens with room above and
+            below the name, not a form header's crawl space. */}
+        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "64px", paddingBottom: "48px" }}>
 
           {/* Back link */}
           <Link href="/startups" style={{
             display: "inline-flex", alignItems: "center", gap: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px",
-            color: "var(--cr-ink-4)", textDecoration: "none", marginBottom: "24px",
+            color: "var(--cr-ink-4)", textDecoration: "none", marginBottom: "32px",
           }}
             onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
@@ -758,7 +765,7 @@ export function StartupDetailClient({
 
               {/* Name + tagline */}
               <div style={{ flex: 1, minWidth: "200px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "6px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "8px" }}>
                   {/* The one loudest element on the page. Everything else in
                       the hero sits at least a full step below it. */}
                   <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 4.5vw, 42px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
@@ -816,7 +823,8 @@ export function StartupDetailClient({
                     </span>
                   )}
                 </div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
+                {/* The meta line, quiet under the name. */}
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
                   <T field="tagline">{startup.tagline}</T>
                 </p>
 
@@ -1080,7 +1088,9 @@ export function StartupDetailClient({
               const target = startup.funding_target && startup.funding_target > 0 ? startup.funding_target : null;
               const pct = target ? Math.min(100, Math.round((momentum.committedAmount / target) * 100)) : null;
               return (
-                <div style={{ marginBottom: "14px", padding: "12px 14px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px" }}>
+                // A hairline seats the aggregate; the old tinted box was a
+                // border doing no work inside the page's own frame.
+                <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
                   <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: pct !== null ? "8px" : 0 }}>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-copper)" }}>
                       {momentum.committedAmount > 0 ? formatMoney(momentum.committedAmount, momentum.currency, { compact: true }) : "—"}
@@ -1120,11 +1130,14 @@ export function StartupDetailClient({
               if (startup.company_type) facts.push({ label: t("startupDetail.companyType"), value: startup.company_type });
               if (startup.previous_funding) facts.push({ label: t("startupDetail.previousFunding"), value: formatCurrency(startup.previous_funding, true) });
               if (facts.length === 0) return null;
+              // The same closed ruled strip as the figures above it, not a
+              // loose wrap of label/value pairs: facts and figures read as
+              // two rows of one ledger, right-aligned on the same edge.
               return (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px 32px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
+                <div className="grid grid-cols-2 md:grid-cols-3" style={{ marginTop: "16px", borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)" }}>
                   {facts.map((f) => (
-                    <div key={f.label}>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{f.label}</div>
+                    <div key={f.label} style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0, textAlign: "right" }}>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>{f.label}</div>
                       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)" }}>{f.value}</div>
                     </div>
                   ))}
@@ -1205,7 +1218,9 @@ export function StartupDetailClient({
 
         {/* ── Tab: Overview ── */}
         {activeTab === "overview" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+          /* One SECTION step (48) between sections, and every section opens
+             the same way: ruled label, 16px, content. */
+          <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
             {/* The prose sections read from the translation when one is
                 showing, and from the founder's own text otherwise. */}
             {startup.problem             && <Section title={t("startupDetail.problem")}><T field="problem">{startup.problem}</T></Section>}
@@ -1217,7 +1232,7 @@ export function StartupDetailClient({
                 card-in-card, and three copper figures as three loud things. */}
             {(startup.tam || startup.sam || startup.som) ? (
               <div>
-                <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("startupDetail.marketOpportunity")}</h3>
+                <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.marketOpportunity")}</h3>
                 <div className="grid grid-cols-3" style={METRIC_STRIP}>
                   <MetricCell label={t("startupDetail.marketTotal")}       value={startup.tam ? safeFormatCurrencyAmount(startup.tam) : null} />
                   <MetricCell label={t("startupDetail.marketServiceable")} value={startup.sam ? safeFormatCurrencyAmount(startup.sam) : null} />
@@ -1228,15 +1243,17 @@ export function StartupDetailClient({
             {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}><T field="competitive_advantage">{startup.competitive_advantage}</T></Section>}
             {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}><T field="use_of_funds">{startup.use_of_funds}</T></Section>}
 
-            {/* Competitors — captured at onboarding, never shown until now. */}
+            {/* Competitors — captured at onboarding, never shown until now.
+                Hairline-ruled rows, not a grid of tinted boxes: the border
+                on each box did no work a rule between rows doesn't do. */}
             {Array.isArray(startup.competitors_json) && startup.competitors_json.length > 0 && (
               <div>
-                <div className="ruled-label" style={{ marginBottom: "14px" }}>{t("startupDetail.competitors")}</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "12px" }}>
+                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.competitors")}</div>
+                <div>
                   {startup.competitors_json.filter((c) => c?.name).map((c, i) => (
-                    <div key={i} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px 16px" }}>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: c.differentiator ? "4px" : 0 }}>{c.name}</div>
-                      {c.differentiator && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{c.differentiator}</div>}
+                    <div key={i} style={{ padding: i > 0 ? "12px 0" : "0 0 12px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: c.differentiator ? "4px" : 0 }}>{c.name}</div>
+                      {c.differentiator && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "65ch" }}>{c.differentiator}</div>}
                     </div>
                   ))}
                 </div>
@@ -1280,9 +1297,11 @@ export function StartupDetailClient({
 
             {/* Metric history: rendered only when the server sent it — the
                 same financial gate as the single MRR figure, enforced where
-                the data lives rather than here. */}
+                the data lives rather than here. A ruled section like every
+                other; the chart's own caption rides beneath the label. */}
             {metricHistory.length >= 2 && (
-              <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
+              <div>
+                <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.traction")}</h3>
                 <TractionChart points={metricHistory} />
               </div>
             )}
@@ -1305,19 +1324,21 @@ export function StartupDetailClient({
               </div>
             )}
             {/* ── Updates feed ── */}
+            {/* A dated ledger of entries under hairlines, not a stack of
+                boxes: the section gap owns the top spacing now. */}
             {updates.length > 0 && (
-              <div style={{ marginTop: "32px" }}>
+              <div>
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.updates")}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                  {updates.map((u) => (
-                    <div key={u.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 20px" }}>
+                <div>
+                  {updates.map((u, i) => (
+                    <div key={u.id} style={{ padding: i > 0 ? "16px 0" : "0 0 16px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
                       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "6px" }}>
                         <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{u.title}</h4>
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                           {new Date(u.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </span>
                       </div>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, whiteSpace: "pre-wrap" }}>{u.body}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, whiteSpace: "pre-wrap", maxWidth: "65ch" }}>{u.body}</p>
                     </div>
                   ))}
                 </div>
@@ -1325,12 +1346,14 @@ export function StartupDetailClient({
             )}
 
             {/* ── Q&A ── */}
+            {/* Question threads as ruled entries; the ask box closes the
+                ledger under its own rule. */}
             {(questions.length > 0 || (investorId && !viewerSuspended)) && (
-              <div style={{ marginTop: "32px" }}>
+              <div>
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.qa")}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {questions.map((q) => (
-                    <div key={q.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px" }}>
+                <div>
+                  {questions.map((q, i) => (
+                    <div key={q.id} style={{ padding: i > 0 ? "16px 0" : "0 0 16px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: q.answer || q.asker ? "6px" : 0 }}>
                         <span style={{ color: "var(--cr-copper)", fontWeight: 700 }}>Q&nbsp;</span>{q.question}
                       </p>

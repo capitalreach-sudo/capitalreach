@@ -5,6 +5,7 @@ import { STAGE_LABELS } from "@/lib/utils";
 import { RefreshCw, AlertTriangle, Download, Building2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
+import { InfoTip } from "@/components/shared/info-tip";
 import { LiveClock } from "@/components/ui/LiveClock";
 import { LedgerLoader } from "@/components/ui/LedgerLoader";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -204,6 +205,25 @@ const DEAL_STAGES = [
 // stage breakdown and recent listings showed raw enum values for half the
 // stages.
 
+// InfoTip resolves its termKey through t(), and t() echoes an unknown key
+// back raw. The glossary keys this pass adds are new, so until the
+// dictionaries carry them the English wording itself is passed as the key:
+// t() returns unknown strings verbatim, which is the same fallback path the
+// component's tf() gives plain labels.
+const tipKey = (t: (k: string) => string, key: string, fallback: string) =>
+  t(key) === key ? fallback : key;
+
+// What each funnel stage means, hoverable where the label stands. Diligence
+// and the term sheet reuse the glossary entries the rest of the product
+// defines them with; the other three are counting notes for this funnel.
+const STAGE_TIP: Record<(typeof DEAL_STAGES)[number]["key"], { key: string; fallback: string }> = {
+  intro:         { key: "glossary.stageIntro",  fallback: "The first working stage: the two sides are connected and talking. Nothing is committed yet, and a deal moves one stage at a time as the conversation firms up." },
+  due_diligence: { key: "glossary.dueDiligence", fallback: "The investigation an investor runs before committing money: reading the financials, talking to customers, checking the claims on the listing against evidence." },
+  term_sheet:    { key: "glossary.termSheet",    fallback: "The document that fixes the terms of the investment, amount, valuation and rights, before the final contracts. Signing one means the negotiation is over and the lawyers begin." },
+  closed:        { key: "glossary.dealsClosed", fallback: "Deals both sides confirmed as an investment made, counted since the platform opened. A deal that ended in a pass is recorded separately and never counted here." },
+  passed:        { key: "glossary.stagePassed", fallback: "The deal ended without an investment, with the reason recorded. Passing concludes the deal but not the relationship: a passed deal can be reopened if talks restart." },
+};
+
 // Goes through the shared safety net, which renders an absence dash for
 // implausible values rather than a wrong number.
 function fmtRaising(n: number | null | undefined) { return safeFormatCurrency(n); }
@@ -246,11 +266,13 @@ function useCountUp(target: number, duration = 900) {
 // frame it. Each stat is an overline hairline, a small-caps label and a
 // confident mono figure sitting directly on the paper. `lead` promotes the
 // one commanding figure on the page, under a heavier ink rule.
-function StatCard({ label, value, prefix = "", lead = false }: {
+function StatCard({ label, value, prefix = "", lead = false, tip }: {
   label: string;
   value: number;
   prefix?: string;
   lead?: boolean;
+  /** One InfoTip beside the label: what this total counts, what it excludes. */
+  tip?: React.ReactNode;
 }) {
   const { value: displayed, done } = useCountUp(value);
   return (
@@ -260,7 +282,7 @@ function StatCard({ label, value, prefix = "", lead = false }: {
       // and its supporters read as a mistake rather than a hierarchy.
       paddingTop: lead ? "24px" : "12px",
     }}>
-      <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: LABEL_GAP }}>{label}</p>
+      <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: LABEL_GAP }}>{label}{tip}</p>
       <p
         className={done ? "count-glow-done" : ""}
         style={{ ...monoFigure, fontSize: lead ? FIG_LEAD : FIG_2, overflowWrap: "anywhere" }}
@@ -633,7 +655,12 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   masthead carrying the identical words, so the first thing the
                   page said twice was its own name. */}
               <div className="ruled-label" style={{ marginBottom: BLOCK_GAP }}>{tf("data.totalsLabel", "Totals to date")}</div>
-              <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$" />
+              {/* Each total says what it counts and what it excludes, on
+                  hover, focus and tap, in the same InfoTip idiom the browse
+                  filters use -- a headline figure with no definition invites
+                  the most generous possible misreading. */}
+              <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$"
+                tip={<InfoTip termKey={tipKey(t, "glossary.totalRaised", "Every amount confirmed at the close of a deal here, summed to date. Money still being negotiated or soft-circled is not counted, and passed deals never enter the figure.")} />} />
               {/* The three supporting totals as one hairline-divided strip:
                   vertical rules between the figures, not a grid of tiles.
                   The crop trick (overflow hidden + a negative margin equal to
@@ -643,13 +670,16 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               <div style={{ overflow: "hidden", marginTop: BLOCK_GAP }}>
                 <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.startups")} value={data.startupCount} />
+                    <StatCard label={t("data.startups")} value={data.startupCount}
+                      tip={<InfoTip termKey={tipKey(t, "glossary.activeStartups", "Companies with a live listing right now. Drafts, listings still under review and suspended listings are not counted.")} />} />
                   </div>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.investors")} value={data.investorCount} />
+                    <StatCard label={t("data.investors")} value={data.investorCount}
+                      tip={<InfoTip termKey={tipKey(t, "glossary.investorCount", "Investor accounts registered on the platform, whatever their plan. Registration is a sign-up, not a verification of anyone's funds.")} />} />
                   </div>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.deals")} value={data.dealsCount} />
+                    <StatCard label={t("data.deals")} value={data.dealsCount}
+                      tip={<InfoTip termKey={tipKey(t, "glossary.dealsClosed", "Deals both sides confirmed as an investment made, counted since the platform opened. A deal that ended in a pass is recorded separately and never counted here.")} />} />
                   </div>
                 </div>
               </div>
@@ -806,7 +836,8 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       </span>
                       {data.closeRate != null && (
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
-                          {t("data.closeRate")}{" "}
+                          {t("data.closeRate")}
+                          <InfoTip termKey={tipKey(t, "glossary.closeRate", "Of the deals that have ended, the share that closed rather than passed. Deals still in progress count toward neither side, so this is not the share of all deals that succeed.")} />{" "}
                           <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>{data.closeRate}%</strong>
                           {/* The denominator is deals that ENDED, closed plus
                               passed. Every still-open deal is excluded, so an
@@ -846,6 +877,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                                   the page did not need. */}
                               <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
                                 {t(`data.stage_${key}`)}
+                                <InfoTip termKey={tipKey(t, STAGE_TIP[key].key, STAGE_TIP[key].fallback)} />
                               </p>
                               {/* Same figure size as every other second-rank
                                   number on the page. The meter pins to the
@@ -925,7 +957,10 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         <thead>
                           <tr>
                             <th style={cellThFirst}>{t("listings.stage")}</th>
-                            <th style={cellThNum}>{t("report.medianTarget")}</th>
+                            {/* What a median IS, where the medians are read:
+                                the wrong mental model here is "average", and
+                                one mega-round makes that model lie. */}
+                            <th style={cellThNum}>{t("report.medianTarget")}<InfoTip termKey={tipKey(t, "glossary.medianTarget", "The middle round target among listings at that stage: half ask for more, half ask for less. A median rather than an average, so one outsized round cannot move the figure.")} /></th>
                             <th style={cellThNumLast}>{tf("data.listingsCount", "Listings")}</th>
                           </tr>
                         </thead>

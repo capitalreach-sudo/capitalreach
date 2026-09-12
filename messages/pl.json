@@ -196,7 +196,7 @@
       "descLong": "Opisz swój startup — problem, rozwiązanie, wielkość rynku, doświadczenie zespołu i trakcję. GPT-4o oceni go w 5 wymiarach inwestycyjnych i poda praktyczne wskazówki.",
       "proTipLabel": "Wskazówka pro:",
       "proTipBody": "Podaj wielkość rynku, miesięczny przychód i tempo wzrostu, wcześniejsze wyjścia, biogramy zespołu oraz kluczowe wskaźniki, które za nimi stoją, aby uzyskać najdokładniejszą ocenę.",
-      "footerInfo": "Napędzane przez GPT-4o · ~3 sekundy · 5 darmowych analiz/godzinę · Brak przechowywania danych",
+      "footerInfo": "Napędzane przez GPT-4o · ~3 sekundy · Brak przechowywania danych",
       "analysisFailedErr": "Analiza nie powiodła się",
       "analysisFailedFull": "Analiza pitchu nie powiodła się. Sprawdź połączenie i spróbuj ponownie.",
       "placeholder": "Wklej tutaj swój pitch — problem, rozwiązanie, trakcję, zespół i prośbę...",
@@ -307,7 +307,8 @@
       "aiScore": "Ocena spójności AI",
       "savedReports": "Zapisane raporty",
       "exportPdf": "Eksportuj raporty (PDF)",
-      "viewOnly": "Tylko podgląd"
+      "viewOnly": "Tylko podgląd",
+      "day": "dzień"
     },
     "signInTitle": "Zaloguj się, aby korzystać z narzędzi AI",
     "signInSub": "Załóż darmowe konto, aby korzystać z oceny pitchu, dopasowania inwestorów i raportów due diligence.",

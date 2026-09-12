@@ -305,7 +305,10 @@ export async function POST(req: NextRequest) {
   if (!success) return NextResponse.json({ error: "Too many questions just now — try again in a minute." }, { status: 429 });
   // Redis fails open in prod, so a DB-backed daily allowance is the real
   // ceiling on model spend (the assistant had no counter at all).
-  const allowance = await checkAiAllowance(user!.id, "assistant", ai.isAdmin ? "institution" : undefined);
+  // ai.tier, never re-derived: this line once passed undefined for every
+  // non-admin, aiDailyLimit(undefined) answered 0, and the feature refused
+  // the top-plan customers it exists for on their first question of the day.
+  const allowance = await checkAiAllowance(user!.id, "assistant", ai.tier);
   if (!allowance.ok) return NextResponse.json({ error: "You've used the assistant a lot today — try again tomorrow." }, { status: 429 });
   await logAiUsage(user!.id, "assistant").catch(() => {});
 

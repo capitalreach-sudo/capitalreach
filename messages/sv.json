@@ -196,7 +196,7 @@
       "descLong": "Beskriv din startup — problem, lösning, marknadsstorlek, teambakgrund och traktion. GPT-4o poängsätter den över 5 investeringsdimensioner och ger handlingsbar feedback.",
       "proTipLabel": "Proffstips:",
       "proTipBody": "Inkludera marknadsstorlek, månadsintäkter och tillväxttakt, tidigare exits, teambios och nyckeltalen bakom dem för den mest exakta poängen.",
-      "footerInfo": "Drivs av GPT-4o · ~3 sekunder · 5 gratis analyser/timme · Ingen data lagras",
+      "footerInfo": "Drivs av GPT-4o · ~3 sekunder · Ingen data lagras",
       "analysisFailedErr": "Analysen misslyckades",
       "analysisFailedFull": "Pitchanalysen misslyckades. Kontrollera din anslutning och försök igen.",
       "placeholder": "Klistra in din pitch här — problem, lösning, traktion, team och önskemål...",
@@ -307,7 +307,8 @@
       "aiScore": "AI-konsistenspoäng",
       "savedReports": "Sparade rapporter",
       "exportPdf": "Exportera rapporter (PDF)",
-      "viewOnly": "Endast visning"
+      "viewOnly": "Endast visning",
+      "day": "dag"
     },
     "signInTitle": "Logga in för att använda AI-verktygen",
     "signInSub": "Skapa ett gratiskonto för pitchbedömning, investerarmatchning och due diligence-rapporter.",

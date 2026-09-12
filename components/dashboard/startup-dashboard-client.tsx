@@ -48,6 +48,18 @@ interface Props {
 // they just no longer compete for the same eyeful on arrival.
 type StartupTab = "overview" | "raise" | "investors" | "documents" | "ai" | "billing";
 
+// InfoTip resolves its termKey through t(), and t() echoes an unknown key
+// back raw. The glossary keys this pass adds are new, so until the
+// dictionaries carry them the English wording itself is passed as the key:
+// t() returns unknown strings verbatim, the same fallback path the local
+// tf() helpers give plain labels.
+const tipKey = (t: (k: string) => string, key: string, fallback: string) =>
+  t(key) === key ? fallback : key;
+
+// One definition for the raise meter, shared by the glance band and the full
+// tracker so the two readings of the same figure can never drift apart.
+const RAISE_TIP = { key: "glossary.raiseProgress", fallback: "Committed is money at finalised deals or amounts an investor marked committed. Soft-circled is money spoken for: soft circles, verbal yeses and open term sheets. Both read against the round target you set." };
+
 
 
 // ── Status badge ──────────────────────────────────────────────────────────────
@@ -445,7 +457,10 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
   return (
     <div style={panel}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "8px" }}>
-        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.raiseProgress")}</h3>
+        <h3 className="ruled-label" data-cr-visible="1">
+          {t("dashboard.raiseProgress")}
+          <InfoTip termKey={tipKey(t, RAISE_TIP.key, RAISE_TIP.fallback)} />
+        </h3>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
           {formatCurrency(committed + softCircled, true)} <span style={{ fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-4)" }}>/ {formatCurrency(target, true)}</span>
         </span>
@@ -495,7 +510,11 @@ function RaiseGlance({ target, softCircled, committed, live, onOpenRaise }: { ta
     <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "24px 0" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "8px" }}>{t("dashboard.raiseProgress")}</h3>
+          <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "8px" }}>
+            {t("dashboard.raiseProgress")}
+            {/* Same key as the full tracker: one figure, one definition. */}
+            <InfoTip termKey={tipKey(t, RAISE_TIP.key, RAISE_TIP.fallback)} />
+          </h3>
           <p style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatCurrency(total, true)}</span>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>/ {formatCurrency(target, true)}</span>
@@ -1283,6 +1302,10 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div style={{ padding: "32px 24px" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
               {t("dashboard.profileViews")}
+              {/* The headline says what it counts: visits, not visitors. A
+                  founder reading 40 as forty interested investors is being
+                  set up for the wrong conversation. */}
+              <InfoTip termKey={tipKey(t, "glossary.profileViews", "How many times your listing was opened in the last 30 days. Every visit counts, so one returning investor can appear several times.")} />
             </p>
             <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "48px", lineHeight: 1, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
               {analytics.views}
@@ -1297,8 +1320,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 /* Saves are answered on the investors tab (who saved, and the
                    panels around it), so the count leads there rather than
                    sitting inert: a figure a founder can act on is a link. */
-                { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries, tab: "investors" as StartupTab },
-                { label: t("dashboard.activeDeals"),   val: analytics.deals,                series: analytics.dealSeries, href: "/deals" },
+                { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries, tab: "investors" as StartupTab, info: tipKey(t, "glossary.investorSaves", "Investors who bookmarked your listing to their watchlist. A save is interest you can act on; the investors tab shows the activity around it, and paid plans show who saved.") },
+                { label: t("dashboard.activeDeals"),   val: analytics.deals,                series: analytics.dealSeries, href: "/deals", info: tipKey(t, "glossary.activeDeals", "Deals still in play: everything in the pipeline that has not yet been finalised and has not been passed, whatever stage it stands at.") },
                 { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", info: "glossary.aiScore", dial: true },
               ].map(({ label, val, series, href, info, dial, tab }: { label: string; val: number | string; series?: number[]; href?: string; info?: string; dial?: boolean; tab?: StartupTab }) => {
                 const open = href ? () => router.push(href) : tab ? () => setActiveTab(tab) : undefined;
@@ -1362,7 +1385,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div className="grid-third-stack" style={{ gap: "24px", alignItems: "start" }}>
             {/* Profile completion */}
             <div style={panel}>
-              <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.profileCompletion")}</h3>
+              <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
+                {t("dashboard.profileCompletion")}
+                {/* The same InfoTip idiom the benchmark band uses: the meter
+                    is weighted, and a founder chasing the wrong 3% because
+                    they assumed a box count deserves to know that here. */}
+                <InfoTip termKey={tipKey(t, "glossary.completeness", "Weighted by what investors look for, not a count of boxes ticked: heavier items move the number further, and the suggested next step is always the heaviest gap still open.")} />
+              </h3>
               {/* 22px ink, not 32px copper. The headline on this page is
                   profile views; a second big copper number beside it is a
                   second headline, and two headlines is none. */}

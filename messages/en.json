@@ -231,7 +231,7 @@
       "descLong": "Describe your startup — problem, solution, market size, team background, and traction. GPT-4o will score it across 5 investment dimensions and give actionable feedback.",
       "proTipLabel": "Pro tip:",
       "proTipBody": "Include market size, monthly revenue and growth rate, prior exits, team bios, and the key metrics behind them for the most accurate score.",
-      "footerInfo": "Powered by GPT-4o · ~3 seconds · 5 free analyses/hour · No data stored",
+      "footerInfo": "Powered by GPT-4o · ~3 seconds · No data stored",
       "analysisFailedErr": "Analysis failed",
       "analysisFailedFull": "Pitch analysis failed. Check your connection and try again.",
       "placeholderExample": "Example:\n\nWe're building AI that transcribes clinical encounters in real-time, reducing documentation by 70% for rural healthcare providers.\n\nProblem: Physicians spend 3+ hours/day on admin, causing $18B in lost productivity.\n\nTraction: $42K monthly revenue, 18% month-on-month growth, 3 hospital letters of intent. Ex-Epic + Stanford clinical AI PhD."
@@ -323,7 +323,8 @@
       "aiScore": "AI consistency score",
       "savedReports": "Saved Reports",
       "exportPdf": "Export Reports (PDF)",
-      "viewOnly": "View only"
+      "viewOnly": "View only",
+      "day": "day"
     },
     "signInTitle": "Sign in to use AI tools",
     "signInSub": "Create a free account to access pitch scoring, investor matching, and due diligence reports.",

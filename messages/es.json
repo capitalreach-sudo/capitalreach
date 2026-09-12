@@ -224,7 +224,7 @@
       "descLong": "Describe tu startup — problema, solución, tamaño del mercado, trayectoria del equipo y tracción. GPT-4o la puntuará en 5 dimensiones de inversión y dará comentarios prácticos.",
       "proTipLabel": "Consejo pro:",
       "proTipBody": "Incluye el tamaño de mercado, los ingresos mensuales y la tasa de crecimiento, salidas previas, biografías del equipo y las métricas clave que hay detrás para obtener la puntuación más precisa.",
-      "footerInfo": "Con tecnología de GPT-4o · ~3 segundos · 5 análisis gratis/hora · Sin datos almacenados",
+      "footerInfo": "Con tecnología de GPT-4o · ~3 segundos · Sin datos almacenados",
       "analysisFailedErr": "Error en el análisis",
       "analysisFailedFull": "El análisis del pitch falló. Comprueba tu conexión e inténtalo de nuevo.",
       "placeholderExample": "Ejemplo:\n\nEstamos creando IA que transcribe encuentros clínicos en tiempo real, reduciendo la documentación en un 70% para proveedores de salud rurales.\n\nProblema: los médicos dedican más de 3 horas/día a tareas administrativas, causando $18B en productividad perdida.\n\nTracción: $42K de ingresos mensuales, 18% de crecimiento intermensual, 3 cartas de intención hospitalarias. Ex-Epic + doctorado en IA clínica de Stanford."
@@ -316,7 +316,8 @@
       "aiScore": "Puntuación de coherencia IA",
       "savedReports": "Informes guardados",
       "exportPdf": "Exportar informes (PDF)",
-      "viewOnly": "Solo ver"
+      "viewOnly": "Solo ver",
+      "day": "día"
     },
     "signInTitle": "Inicia sesión para usar las herramientas de IA",
     "signInSub": "Crea una cuenta gratuita para acceder a la puntuación de pitches, el emparejamiento con inversores y los informes de due diligence.",

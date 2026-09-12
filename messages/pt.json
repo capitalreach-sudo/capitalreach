@@ -196,7 +196,7 @@
       "descLong": "Descreva a sua startup — problema, solução, tamanho de mercado, histórico da equipa e tração. O GPT-4o irá pontuá-la em 5 dimensões de investimento e dar feedback acionável.",
       "proTipLabel": "Dica pro:",
       "proTipBody": "Inclua a dimensão do mercado, a receita mensal e a taxa de crescimento, saídas anteriores, bios da equipa e as métricas-chave por detrás delas para obter a pontuação mais precisa.",
-      "footerInfo": "Com tecnologia GPT-4o · ~3 segundos · 5 análises grátis/hora · Nenhum dado armazenado",
+      "footerInfo": "Com tecnologia GPT-4o · ~3 segundos · Nenhum dado armazenado",
       "analysisFailedErr": "Análise falhou",
       "analysisFailedFull": "A análise do pitch falhou. Verifique a sua ligação e tente novamente.",
       "placeholder": "Cole o seu pitch aqui — problema, solução, tração, equipa e pedido...",
@@ -307,7 +307,8 @@
       "aiScore": "Pontuação de coerência IA",
       "savedReports": "Relatórios guardados",
       "exportPdf": "Exportar relatórios (PDF)",
-      "viewOnly": "Apenas ver"
+      "viewOnly": "Apenas ver",
+      "day": "dia"
     },
     "signInTitle": "Inicia sessão para usar as ferramentas de IA",
     "signInSub": "Cria uma conta gratuita para aceder à avaliação de pitches, correspondência de investidores e relatórios de due diligence.",

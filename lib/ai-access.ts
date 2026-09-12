@@ -34,10 +34,15 @@ export interface AiAccess {
   /** The cheapest plan that would grant it, for the upgrade link. */
   needsPlan: string | null;
   isAdmin: boolean;
+  /** The entity tier the verdict was computed FROM. Callers metering the call
+   *  afterwards must use this, not re-derive it: the assistant route passed
+   *  undefined here once, aiDailyLimit(undefined) answered 0, and every
+   *  non-admin on the top plan was refused their first question of the day. */
+  tier: string | null;
 }
 
 const DENY = (reason: AiAccess["reason"], needsPlan: string | null): AiAccess =>
-  ({ allowed: false, reason, needsPlan, isAdmin: false });
+  ({ allowed: false, reason, needsPlan, isAdmin: false, tier: null });
 
 export async function checkAiAccess(userId: string | null, feature: "ai" | "assistant" = "ai"): Promise<AiAccess> {
   if (!userId) return DENY("signed_out", null);
@@ -51,7 +56,7 @@ export async function checkAiAccess(userId: string | null, feature: "ai" | "assi
 
   if (!profile) return DENY("signed_out", null);
   if (profile.role === "admin") {
-    return { allowed: true, reason: "ok", needsPlan: null, isAdmin: true };
+    return { allowed: true, reason: "ok", needsPlan: null, isAdmin: true, tier: "institution" };
   }
 
   // The entity's own tier governs, as everywhere else: an admin grant lands on
@@ -76,7 +81,7 @@ export async function checkAiAccess(userId: string | null, feature: "ai" | "assi
   if (feature === "assistant") {
     // Top plan only, on either side of the marketplace.
     const allowed = profile.role === "startup" ? tier === "growth" : tier === "institution";
-    if (allowed) return { allowed: true, reason: "ok", needsPlan: null, isAdmin: false };
+    if (allowed) return { allowed: true, reason: "ok", needsPlan: null, isAdmin: false, tier };
     return DENY("plan", profile.role === "startup" ? "Growth" : "Institution");
   }
 
@@ -87,6 +92,6 @@ export async function checkAiAccess(userId: string | null, feature: "ai" | "assi
     ? founderCan(ctx).aiPitchScore
     : investorCan(ctx).aiScore;
 
-  if (allowed) return { allowed: true, reason: "ok", needsPlan: null, isAdmin: false };
+  if (allowed) return { allowed: true, reason: "ok", needsPlan: null, isAdmin: false, tier };
   return DENY("plan", profile.role === "startup" ? "Starter" : "Angel");
 }

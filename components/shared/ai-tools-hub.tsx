@@ -722,6 +722,8 @@ type Tab = "pitch" | "matching" | "diligence";
 // ── Main Hub ───────────────────────────────────────────────────
 export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const [activeTab, setActiveTab] = useState<Tab>("pitch");
   // The routes already answer 401 to anonymous calls; hiding the forms too
   // stops signed-out visitors from typing a pitch into a tool that can only
@@ -759,8 +761,8 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
   ];
 
   const TIER_ROWS = [
-    { feature: t("ai.tier.pitchAnalyzer"),    free: "5/hr",      angel: "20/hr",      pro: t("common.unlimited") },
-    { feature: t("ai.tier.investorMatching"), free: "5/hr",      angel: "20/hr",      pro: t("common.unlimited") },
+    { feature: t("ai.tier.pitchAnalyzer"),    free: false,       angel: "20/" + tf("ai.tier.day", "day"), pro: t("common.unlimited") },
+    { feature: t("ai.tier.investorMatching"), free: false,       angel: "20/" + tf("ai.tier.day", "day"), pro: t("common.unlimited") },
     { feature: t("ai.tier.dueDiligence"),     free: false,       angel: false,        pro: t("common.unlimited") },
     { feature: t("ai.tier.aiScore"),          free: t("ai.tier.viewOnly"), angel: true, pro: true                },
     { feature: t("ai.tier.savedReports"),     free: false,       angel: false,        pro: true                  },

@@ -4,6 +4,7 @@ import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboa
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { AdminNotes } from "@/components/admin/admin-notes";
+import { AdminBack } from "@/components/admin/admin-back";
 import { MemberMessages } from "@/components/admin/member-messages";
 import { isUuid } from "@/lib/utils";
 
@@ -68,6 +69,9 @@ export default async function AdminViewInvestorPage({
   return (
     <>
       <Navbar />
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "12px 24px 0" }}>
+        <AdminBack label="Back" />
+      </div>
       <InvestorDashboardClient
         profile={owner ?? viewer}
         investor={investor}

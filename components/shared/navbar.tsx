@@ -18,9 +18,14 @@ import type { Profile } from "@/types";
 
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
   <svg className="cr-diamond-live" width={size} height={size} viewBox="0 0 10 10" fill="none" aria-hidden>
-    <rect x="1" y="1" width="8" height="8" rx="1"
+    {/* Two squares, offset 45 degrees: at rest only the diamond shows; on
+        hover the inner one fades in counter-rotated, so the mark opens into
+        the house four-point star and closes again when the pointer leaves. */}
+    <rect className="cr-mark-outer" x="1" y="1" width="8" height="8" rx="1"
       fill="none" stroke="var(--cr-copper)" strokeWidth="1.5"
       transform="rotate(45 5 5)" />
+    <rect className="cr-mark-inner" x="2.2" y="2.2" width="5.6" height="5.6" rx="0.8"
+      fill="none" stroke="var(--cr-copper)" strokeWidth="1.2" />
   </svg>
 );
 

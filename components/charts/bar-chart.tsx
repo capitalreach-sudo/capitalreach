@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { seriesColor } from "./palette";
 
@@ -23,6 +23,19 @@ export function BarChart({ bars, format, hrefFor }: {
   hrefFor?: (key: string) => string | null;
 }) {
   const [hover, setHover] = useState<string | null>(null);
+  // Inline styles cannot carry a media query, so the growing-bar transition
+  // is gated in script: a reader who asked for reduced motion gets the bars
+  // already at length.
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const max = Math.max(1, ...bars.map(b => b.value));
   const total = bars.reduce((s, b) => s + b.value, 0);
 
@@ -33,7 +46,7 @@ export function BarChart({ bars, format, hrefFor }: {
         const href = hrefFor?.(b.key) ?? null;
         const rowStyle: React.CSSProperties = {
           display: "grid", gridTemplateColumns: "minmax(90px, 130px) 1fr auto",
-          alignItems: "center", gap: 10, textDecoration: "none",
+          alignItems: "center", gap: 12, textDecoration: "none",
           cursor: href ? "pointer" : "default",
         };
         const label = (
@@ -48,15 +61,18 @@ export function BarChart({ bars, format, hrefFor }: {
             style={{ display: "contents" }}>
           <div style={rowStyle}>
             {href ? <Link href={href} style={{ textDecoration: "none" }}>{label}</Link> : label}
-            <div style={{ height: 10, background: "var(--cr-paper-3)", borderRadius: 5, overflow: "hidden" }}>
+            {/* The track is a quiet channel one step off the paper; the bar
+                is the mark. 8px keeps the row a ledger line rather than a
+                slab. */}
+            <div style={{ height: 8, background: "var(--cr-paper-3)", borderRadius: 4, overflow: "hidden" }}>
               <div style={{
                 width: `${Math.max(pct, b.value > 0 ? 2 : 0)}%`, height: "100%",
                 // Rounded only at the data end; the baseline end stays square
                 // so every bar starts from the same visual zero.
-                borderRadius: "0 5px 5px 0",
+                borderRadius: "0 4px 4px 0",
                 background: seriesColor(b.colorIndex ?? i),
                 opacity: hover && hover !== b.key ? 0.55 : 1,
-                transition: "width 260ms ease, opacity 120ms",
+                transition: reducedMotion ? "opacity 120ms" : "width 260ms ease, opacity 120ms",
               }} />
             </div>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: 11.5, color: "var(--cr-ink)", minWidth: 34, textAlign: "right" }}>

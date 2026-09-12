@@ -46,6 +46,14 @@ export interface PortfolioPosition {
 
 type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
 
+// InfoTip resolves its termKey through t(), and t() echoes an unknown key
+// back raw. The glossary keys this pass adds are new, so until the
+// dictionaries carry them the English wording itself is passed as the key:
+// t() returns unknown strings verbatim, the same fallback path the local
+// tf() helpers give plain labels.
+const tipKey = (t: (k: string) => string, key: string, fallback: string) =>
+  t(key) === key ? fallback : key;
+
 // ── Shared button styles ──────────────────────────────────────────────────────
 
 // Secondary: hairline outline pill, ink text. Primary: the one copper fill
@@ -883,23 +891,34 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               tab, since that content lives behind it. Only the watchlist
               headline stays inert: its list is directly below this strip. */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", marginLeft: "-1px" }}>
+            {/* The deal cells navigate through the same role="link" cell the
+                reports cell (and the founder strip's /deals cell) already
+                use, rather than a wrapping <Link>: each label now carries an
+                InfoTip, the tip is a button, and a button must never nest
+                inside an anchor. The click target and Enter key behave as
+                before. */}
             {[
-              { label: t("dashboard.watchlist"),   val: watchlist.length,  href: null,     go: null,                              headline: true,  color: "var(--cr-ink)" },
-              { label: t("dashboard.activeDeals"), val: activeDeals,       href: "/deals", go: null,                              headline: false, color: "var(--cr-ink-2)" },
-              { label: t("dashboard.closedDeals"), val: closedDeals,       href: "/deals", go: null,                              headline: false, color: closedDeals > 0 ? "var(--verdigris)" : "var(--cr-ink-2)" },
-              { label: t("dashboard.aiReports"),   val: reports.length,    href: null,     go: () => setActiveTab("reports"),     headline: false, color: "var(--cr-ink-2)" },
-            ].map(({ label, val, href, go, headline, color }) => {
+              { label: t("dashboard.watchlist"),   val: watchlist.length,  go: null,                              headline: true,  color: "var(--cr-ink)",
+                tip: tipKey(t, "glossary.watchlist", "Companies you saved from the directory. Each save can carry a note, a triage status and a priority, so the list works as a pipeline rather than a pile of bookmarks.") },
+              { label: t("dashboard.activeDeals"), val: activeDeals,       go: () => router.push("/deals"),       headline: false, color: "var(--cr-ink-2)",
+                tip: tipKey(t, "glossary.activeDeals", "Deals still in play: everything in the pipeline that has not yet been finalised and has not been passed, whatever stage it stands at.") },
+              { label: t("dashboard.closedDeals"), val: closedDeals,       go: () => router.push("/deals"),       headline: false, color: closedDeals > 0 ? "var(--verdigris)" : "var(--cr-ink-2)",
+                tip: tipKey(t, "glossary.closedDeals", "Deals of yours where both sides confirmed the investment. Once a deal closes it stops counting as active and becomes a position the portfolio tab tracks.") },
+              { label: t("dashboard.aiReports"),   val: reports.length,    go: () => setActiveTab("reports"),     headline: false, color: "var(--cr-ink-2)",
+                tip: "glossary.aiDiligence" },
+            ].map(({ label, val, go, headline, color, tip }) => {
               const cell = (
                 <div style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", height: "100%" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: RHYTHM.pair }}>
-                    {label}{(href || go) && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
+                    {label}
+                    {tip && <InfoTip termKey={tip} />}
+                    {go && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
                   </p>
                   {/* Same scale as the founder strip: 40px headline, the rest
                       a size down at 500 -- one obvious number per strip. */}
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: headline ? 700 : 500, fontSize: headline ? "40px" : "22px", lineHeight: 1.05, color, fontVariantNumeric: "tabular-nums" }}>{val}</p>
                 </div>
               );
-              if (href) return <Link key={label} href={href} style={{ textDecoration: "none", display: "block" }}>{cell}</Link>;
               if (go) {
                 return (
                   <div key={label} onClick={go} role="link" tabIndex={0}

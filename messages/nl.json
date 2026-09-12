@@ -196,7 +196,7 @@
       "descLong": "Beschrijf uw startup — probleem, oplossing, marktomvang, teamachtergrond en tractie. GPT-4o beoordeelt het op 5 investeringsdimensies en geeft bruikbare feedback.",
       "proTipLabel": "Pro-tip:",
       "proTipBody": "Neem marktomvang, maandelijkse omzet en groeipercentage, eerdere exits, teambio's en de belangrijkste cijfers daarachter op voor de meest nauwkeurige score.",
-      "footerInfo": "Aangedreven door GPT-4o · ~3 seconden · 5 gratis analyses/uur · Geen data opgeslagen",
+      "footerInfo": "Aangedreven door GPT-4o · ~3 seconden · Geen data opgeslagen",
       "analysisFailedErr": "Analyse mislukt",
       "analysisFailedFull": "Pitchanalyse mislukt. Controleer uw verbinding en probeer het opnieuw.",
       "placeholder": "Plak hier uw pitch — probleem, oplossing, tractie, team en vraag...",
@@ -307,7 +307,8 @@
       "aiScore": "AI-consistentiescore",
       "savedReports": "Opgeslagen rapporten",
       "exportPdf": "Rapporten exporteren (PDF)",
-      "viewOnly": "Alleen bekijken"
+      "viewOnly": "Alleen bekijken",
+      "day": "dag"
     },
     "signInTitle": "Log in om de AI-tools te gebruiken",
     "signInSub": "Maak een gratis account voor pitchbeoordeling, investeerdersmatching en due-diligencerapporten.",

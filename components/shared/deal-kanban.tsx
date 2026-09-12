@@ -28,6 +28,31 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { WaxSeal } from "@/components/ui/WaxSeal";
 import { scheduleTotal, scheduleReconciles, receivedTotal, allReceived } from "@/lib/tranches";
 
+// InfoTip resolves its termKey through t(), and t() echoes an unknown key
+// back raw. The glossary keys this pass adds are new, so until the
+// dictionaries carry them the English wording itself is passed as the key:
+// t() returns unknown strings verbatim, the same fallback path tf() gives
+// plain labels elsewhere.
+const tipKey = (t: (k: string) => string, key: string, fallback: string) =>
+  t(key) === key ? fallback : key;
+
+// What each stage means ON THIS BOARD, tied to what it unlocks: shown beside
+// the stage filter chips, which exist in both the kanban and the list view.
+// Diligence and the term sheet reuse the glossary entries the columns already
+// carry; the rest are new keys with their wording carried here until the
+// dictionaries have them.
+const STAGE_CHIP_TIP: Record<string, { key: string; fallback: string }> = {
+  proposal:      { key: "glossary.stageProposal", fallback: "A deal request one side sent the other. Nothing lands in either pipeline until the receiving side accepts, so every deal on this board was agreed to by both parties." },
+  intro:         { key: "glossary.stageIntro",    fallback: "The first working stage: the two sides are connected and talking. Nothing is committed yet, and a deal moves one stage at a time as the conversation firms up." },
+  due_diligence: { key: "glossary.dueDiligence",  fallback: "The investigation an investor runs before committing money: reading the financials, talking to customers, checking the claims on the listing against evidence." },
+  term_sheet:    { key: "glossary.termSheet",     fallback: "The document that fixes the terms of the investment, amount, valuation and rights, before the final contracts. Signing one means the negotiation is over and the lawyers begin." },
+  closed:        { key: "glossary.stageClosed",   fallback: "Both sides confirmed the investment at an agreed amount. Closing needs a signed contract and both parties' confirmation; it raises the 2% success fee invoice and cannot be reopened." },
+  passed:        { key: "glossary.stagePassed",   fallback: "The deal ended without an investment, with the reason recorded. Passing concludes the deal but not the relationship: a passed deal can be reopened if talks restart." },
+};
+
+// The follow-up date explained where it is set and where it is sorted by.
+const FOLLOW_UP_TIP = { key: "glossary.followUpDue", fallback: "A date you set on a deal as your own reminder to chase it. The label turns red once the date passes, and the follow-up sort lifts the deals whose date has arrived." };
+
 const CONTRACT_TYPES: ContractType[] = ["term_sheet", "safe", "convertible_note", "nda", "custom"];
 const CONTRACT_TYPE_KEY: Record<ContractType, string> = {
   term_sheet:       "deals.contractTypeTermSheet",
@@ -2088,15 +2113,24 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               )}
             </div>
           ) : followUp ? (
-            <button onClick={() => setEditingFollowUp(true)}
-              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: new Date(followUp) < new Date() ? "var(--cr-down)" : "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
-              {t("deals.followUpLabel", { date: formatDate(followUp) })}
-            </button>
+            <>
+              <button onClick={() => setEditingFollowUp(true)}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: new Date(followUp) < new Date() ? "var(--cr-down)" : "var(--cr-copper)", padding: "0", textDecoration: "underline" }}>
+                {t("deals.followUpLabel", { date: formatDate(followUp) })}
+              </button>
+              {/* Beside the control, never inside it -- and needed most in
+                  the red state, which otherwise reads as an error rather
+                  than as "this date has arrived". */}
+              <InfoTip termKey={tipKey(t, FOLLOW_UP_TIP.key, FOLLOW_UP_TIP.fallback)} />
+            </>
           ) : (
-            <button onClick={() => setEditingFollowUp(true)}
-              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "0", textDecoration: "underline" }}>
-              {t("deals.setFollowUp")}
-            </button>
+            <>
+              <button onClick={() => setEditingFollowUp(true)}
+                style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", padding: "0", textDecoration: "underline" }}>
+                {t("deals.setFollowUp")}
+              </button>
+              <InfoTip termKey={tipKey(t, FOLLOW_UP_TIP.key, FOLLOW_UP_TIP.fallback)} />
+            </>
           )}
         </div>
         );
@@ -2484,20 +2518,26 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           boxes. A metric with nothing to measure is omitted entirely:
           absence is absence, not a dash. */}
       {(() => {
-        const metrics: { key: string; label: string; value: string; accent?: boolean; hint?: string }[] = [];
+        const metrics: { key: string; label: string; value: string; accent?: boolean; hint?: string; tip?: string }[] = [];
         if (stats.byCurrency.size > 0) metrics.push({
           key: "pipeline", label: t("deals.statActivePipeline"), accent: true,
           value: Array.from(stats.byCurrency.entries()).map(([cur, amt]) => formatMoney(amt, cur, { compact: true })).join(" + "),
         });
         metrics.push({ key: "active", label: t("deals.statActiveDeals"), value: String(stats.activeCount) });
-        if (stats.closeRate != null) metrics.push({ key: "closeRate", label: t("deals.statCloseRate"), value: `${Math.round(stats.closeRate * 100)}%` });
-        if (stats.medianCycle != null) metrics.push({ key: "cycle", label: t("deals.statCycle"), value: t("deals.days", { n: stats.medianCycle }), hint: t("deals.statCycleHint") });
-        if (stats.medianAge != null) metrics.push({ key: "age", label: t("deals.statAge"), value: t("deals.days", { n: stats.medianAge }), hint: t("deals.statAgeHint"), accent: stats.medianAge > 30 });
+        // The tips make each figure's definition reachable on hover, focus
+        // and tap: the title= hints only ever answered a long mouse hover,
+        // which is no answer at all on the phone this board defaults to
+        // list view for. Cycle and age reuse the hint keys that already
+        // define them; close rate shares the glossary entry the Data Centre
+        // uses for the same ratio.
+        if (stats.closeRate != null) metrics.push({ key: "closeRate", label: t("deals.statCloseRate"), value: `${Math.round(stats.closeRate * 100)}%`, tip: tipKey(t, "glossary.closeRate", "Of the deals that have ended, the share that closed rather than passed. Deals still in progress count toward neither side, so this is not the share of all deals that succeed.") });
+        if (stats.medianCycle != null) metrics.push({ key: "cycle", label: t("deals.statCycle"), value: t("deals.days", { n: stats.medianCycle }), hint: t("deals.statCycleHint"), tip: "deals.statCycleHint" });
+        if (stats.medianAge != null) metrics.push({ key: "age", label: t("deals.statAge"), value: t("deals.days", { n: stats.medianAge }), hint: t("deals.statAgeHint"), accent: stats.medianAge > 30, tip: "deals.statAgeHint" });
         return (
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>
             {metrics.map((m, i) => (
               <div key={m.key} title={m.hint} style={{ padding: i === 0 ? "12px 24px 12px 0" : "12px 24px", borderLeft: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{m.label}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{m.label}{m.tip && <InfoTip termKey={m.tip} />}</p>
                 <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: m.accent ? "var(--cr-copper)" : "var(--cr-ink)", marginTop: "4px" }}>{m.value}</p>
               </div>
             ))}
@@ -2552,17 +2592,27 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           ["term_sheet", t("deals.colTermSheet")],
           ["closed", t("deals.colClosed")],
           ["passed", t("deals.colPassed")],
-        ] as const).map(([v, label]) => (
-          <button key={v} onClick={() => setStatusFilter(v)}
-            style={{
-              background: statusFilter === v ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-              border: `1px solid ${statusFilter === v ? "var(--cr-copper-br)" : "var(--cr-rule)"}`,
-              borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === v ? 500 : 400, fontSize: "13px",
-              color: statusFilter === v ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap",
-            }}>
-            {label}
-          </button>
-        ))}
+        ] as const).map(([v, label]) => {
+          const tip = STAGE_CHIP_TIP[v];
+          return (
+          <span key={v} style={{ display: "inline-flex", alignItems: "center" }}>
+            <button onClick={() => setStatusFilter(v)}
+              style={{
+                background: statusFilter === v ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                border: `1px solid ${statusFilter === v ? "var(--cr-copper-br)" : "var(--cr-rule)"}`,
+                borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === v ? 500 : 400, fontSize: "13px",
+                color: statusFilter === v ? "var(--cr-copper)" : "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap",
+              }}>
+              {label}
+            </button>
+            {/* Beside the chip, never inside it: a button cannot nest a
+                button. This row exists in both views, so it is where every
+                stage explains what it means here and what it unlocks --
+                the list view has no column headers to carry that. */}
+            {tip && <InfoTip termKey={tipKey(t, tip.key, tip.fallback)} />}
+          </span>
+          );
+        })}
         {filterOptions.length > 0 && <span aria-hidden style={{ width: 1, alignSelf: "stretch", background: "var(--cr-rule)" }} />}
         {filterOptions.map(v => (
           <button key={v} onClick={() => toggleFilter(v)}
@@ -2650,8 +2700,17 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "'DM Sans', sans-serif", fontSize: "12px" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
-                {[t("deals.csvCounterpart"), t("deals.listStageOrType"), t("deals.csvAmount"), t("deals.csvStatus"), t("deals.sortFollowUp"), t("deals.csvUpdated")].map(h => (
-                  <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                {([
+                  { label: t("deals.csvCounterpart") },
+                  { label: t("deals.listStageOrType") },
+                  { label: t("deals.csvAmount") },
+                  { label: t("deals.csvStatus") },
+                  // "Follow-up due" is this table's one term of art, so it is
+                  // the one column that explains itself.
+                  { label: t("deals.sortFollowUp"), tip: tipKey(t, FOLLOW_UP_TIP.key, FOLLOW_UP_TIP.fallback) },
+                  { label: t("deals.csvUpdated") },
+                ]).map(({ label, tip }) => (
+                  <th key={label} style={{ textAlign: "left", padding: "8px 12px", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}{tip && <InfoTip termKey={tip} />}</th>
                 ))}
               </tr>
             </thead>

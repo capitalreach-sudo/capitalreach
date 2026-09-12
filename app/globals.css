@@ -964,11 +964,28 @@ body::before {
 
 /* The living diamond: the brand mark glints when greeted. */
 .cr-diamond-live { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 400ms ease; }
-a:hover > .cr-diamond-live {
-  transform: rotate(90deg) scale(1.12);
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cr-copper) 50%, transparent));
+.cr-diamond-live .cr-mark-outer,
+.cr-diamond-live .cr-mark-inner {
+  transform-origin: 5px 5px;
+  transition: transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 320ms ease;
 }
-@media (prefers-reduced-motion: reduce) { .cr-diamond-live, a:hover > .cr-diamond-live { transition: none; transform: none; } }
+.cr-diamond-live .cr-mark-inner { opacity: 0; transform: rotate(45deg) scale(0.5); }
+a:hover > .cr-diamond-live {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cr-copper) 45%, transparent));
+}
+/* The open: outer square keeps turning one way, inner arrives turning the
+   other, and the overlap reads as the four-point star the brand uses as its
+   ornament. Active presses it back toward the closed diamond. */
+a:hover > .cr-diamond-live .cr-mark-outer { transform: rotate(135deg); }
+a:hover > .cr-diamond-live .cr-mark-inner { opacity: 1; transform: rotate(0deg) scale(1); }
+a:active > .cr-diamond-live { transform: scale(0.94); }
+@media (prefers-reduced-motion: reduce) {
+  .cr-diamond-live, a:hover > .cr-diamond-live, a:active > .cr-diamond-live { transition: none; transform: none; }
+  .cr-diamond-live .cr-mark-outer, .cr-diamond-live .cr-mark-inner,
+  a:hover > .cr-diamond-live .cr-mark-outer { transition: none; transform: rotate(45deg); }
+  a:hover > .cr-diamond-live .cr-mark-inner { opacity: 0; }
+}
 
 /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */

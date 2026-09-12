@@ -62,7 +62,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 });
     }
 
-    const { industry, stage } = await req.json().catch(() => ({}));
+    const { industry, stage: rawStage } = await req.json().catch(() => ({}));
+    // The UI sends display labels ("Seed", "Series B+") while investors.stages
+    // stores DB values ("seed", "series_b_plus"). Unnormalised, the stage
+    // weight in scoreInvestor could never fire -- every result capped at 70%
+    // and the stage picker changed nothing. Accept either form.
+    const STAGE_BY_LABEL: Record<string, string> = {
+      "pre-seed": "pre-seed", "seed": "seed", "series a": "series_a", "series b+": "series_b_plus",
+    };
+    const stage = typeof rawStage === "string"
+      ? (STAGE_BY_LABEL[rawStage.trim().toLowerCase()] ?? rawStage)
+      : rawStage;
 
     const supabase = createAdminClient();
     const { data: investors } = await supabase

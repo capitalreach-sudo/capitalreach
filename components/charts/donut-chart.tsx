@@ -39,7 +39,10 @@ export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total:
   const total = totalOverride ?? shown.reduce((s, x) => s + x.value, 0);
   if (total <= 0) return null;
 
-  const R = 54, r = 34, C = 70;
+  // A slimmer ring than the default pie geometry: share is carried by arc
+  // length, not by wedge area, so the band can thin down to an editorial
+  // stroke and lose nothing but weight.
+  const R = 54, r = 38, C = 70;
   let angle = -Math.PI / 2;
 
   const arc = (fraction: number) => {
@@ -66,7 +69,10 @@ export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total:
         {shown.map((s, i) => (
           <path key={s.key} d={arc(s.value / total)}
             fill={s.key === "__other" ? OTHER : seriesColor(i)}
-            stroke="var(--cr-paper)" strokeWidth={hover === s.key ? 2 : 0}
+            // A permanent paper hairline keeps neighbouring fills apart even
+            // where the angular gap closes on a sliver; hover thickens it
+            // rather than introducing a new device.
+            stroke="var(--cr-paper)" strokeWidth={hover === s.key ? 2 : 1}
             opacity={hover && hover !== s.key ? 0.45 : 1}
             onPointerEnter={(e) => { if (e.pointerType !== "touch") setHover(s.key); }}
             onPointerLeave={(e) => { if (e.pointerType !== "touch") setHover(null); }}

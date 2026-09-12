@@ -21,14 +21,13 @@ import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { investorJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Linkedin, MapPin, DollarSign, Globe, Twitter,
-  Briefcase, BookOpen, Eye, Pencil, Handshake, BadgeCheck } from "lucide-react";
+import { Linkedin, Globe, Twitter, Eye, Pencil, Handshake } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import { detectLanguage } from "@/lib/detect-language";
 import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 interface Props { params: { slug: string } }
 
@@ -65,11 +64,47 @@ const DATA: CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
 };
 
-// Metric cell in the stats strip: stacked with rules between on mobile,
-// hairline-divided columns from sm up.
-const STAT_CELL =
-  "flex-1 min-w-0 py-3 first:pt-0 last:pb-0 sm:py-0 sm:px-6 sm:first:pl-0 sm:last:pr-0 " +
-  "border-t first:border-t-0 sm:border-t-0 sm:border-l sm:first:border-l-0 border-[color:var(--cr-rule)]";
+// The ruled strip: the container carries the top and left hairlines, each
+// cell its own right and bottom, so any cell count closes into one ruled
+// block at any wrap -- same idiom as the startup page's metric strips.
+const STRIP: CSSProperties = {
+  borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)",
+};
+
+// Every figure sits on the cell's right edge -- a ledger column, not a form
+// field -- and every label speaks in the one LABEL voice above it.
+const CELL: CSSProperties = {
+  borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)",
+  padding: "12px 16px", minWidth: 0, textAlign: "right",
+};
+
+// The three voices a cell value can carry: a mono figure, a mono span
+// (stage ranges, country names), and plain text for prose-valued facts.
+const CELL_FIGURE: CSSProperties = {
+  ...DATA, fontWeight: 700, fontSize: "20px", lineHeight: 1.2, color: "var(--cr-ink)",
+};
+const CELL_SPAN: CSSProperties = {
+  ...DATA, fontWeight: 600, fontSize: "13px", lineHeight: 1.4,
+  textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--cr-ink)",
+};
+const CELL_TEXT: CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
+  lineHeight: 1.5, color: "var(--cr-ink-2)",
+};
+
+function Cell({ label, value, sub, valueStyle = CELL_FIGURE }: {
+  label: string; value: ReactNode; sub?: ReactNode; valueStyle?: CSSProperties;
+}) {
+  return (
+    <div style={CELL}>
+      <p style={{ ...LABEL, marginBottom: "8px" }}>{label}</p>
+      <p style={valueStyle}>{value}</p>
+      {sub != null && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", lineHeight: 1.5, color: "var(--cr-ink-4)", marginTop: "4px" }}>{sub}</p>
+      )}
+    </div>
+  );
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
@@ -331,7 +366,7 @@ export default async function InvestorProfilePage({ params }: Props) {
       <main className="container mx-auto px-4 py-12 max-w-3xl" style={{ background: "var(--cr-paper)" }}>
 
         {/* Back nav */}
-        <Link href="/investors" className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i4 hover:text-cr-i2 mb-4 transition-colors">
+        <Link href="/investors" className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i4 hover:text-cr-i2 mb-8 transition-colors">
           ← {t("investorProfile.back")}
         </Link>
 
@@ -355,8 +390,11 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* ── Profile header ─────────────────────────────────────────────── */}
-        <header className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-8">
+        {/* ── Profile header ─────────────────────────────────────────────
+            The letterhead: firm eyebrow, the name in the display voice with
+            room around it, the meta line quiet underneath. Everything else
+            in the header sits a register below the name. */}
+        <header className="flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
           <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
             <AvatarFallback className="bg-cr-copper/15 text-cr-cu-l text-2xl"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
@@ -365,14 +403,14 @@ export default async function InvestorProfilePage({ params }: Props) {
           </Avatar>
           <div className="flex-1 min-w-0 w-full">
             {investor.firm_name && (
-              <p style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "8px" }}>
+              <p style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "12px" }}>
                 {investor.firm_name}
               </p>
             )}
             {/* The badge is a sibling of the name, not a child of it: it opens
                 a panel, and a dialog nested inside an h1 is neither valid nor
                 readable to a screen reader announcing the heading. */}
-            <div className="flex items-center flex-wrap gap-x-3 gap-y-2" style={{ marginBottom: "12px" }}>
+            <div className="flex items-center flex-wrap gap-x-3 gap-y-2" style={{ marginBottom: "8px" }}>
               <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 5vw, 44px)", lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
                 {displayName}
               </h1>
@@ -401,7 +439,19 @@ export default async function InvestorProfilePage({ params }: Props) {
                 />
               )}
             </div>
-            <div className="flex items-center gap-2 flex-wrap mb-3">
+            {/* The meta line: what kind of cheque this is and how long the
+                account has stood, quiet under the name. One fact, one place:
+                the type chip and the floating member-since line both lived
+                elsewhere before and said the same things louder. */}
+            {(typeLabel(investor.type) || memberSince) && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", letterSpacing: "0.01em", color: "var(--cr-ink-4)", marginBottom: "16px" }}>
+                {[
+                  typeLabel(investor.type),
+                  memberSince ? t("investorProfile.memberSince", { date: memberSince }) : null,
+                ].filter(Boolean).join(" · ")}
+              </p>
+            )}
+            <div className="flex items-center gap-2 flex-wrap mb-4">
               {viewerDeal && (
                 // Same pill as the startup profile: the two ends of a deal
                 // should both show it. Wording reuses the kanban's own column
@@ -427,7 +477,6 @@ export default async function InvestorProfilePage({ params }: Props) {
                   {t("startupDetail.bookCall")}
                 </a>
               )}
-              <span style={BADGE}>{typeLabel(investor.type)}</span>
               {investor.is_demo && <span className="inline-flex align-middle"><DemoBadge /></span>}
               {investor.subscription_tier !== "free" && (
                 <span style={BADGE_COPPER}>
@@ -461,14 +510,14 @@ export default async function InvestorProfilePage({ params }: Props) {
               <p style={{
                 fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400,
                 fontSize: "clamp(17px, 2.6vw, 21px)", lineHeight: 1.5, color: "var(--cr-ink-2)",
-                maxWidth: "46ch", margin: "4px 0 12px",
+                maxWidth: "46ch", margin: "8px 0 16px",
                 display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden",
               }}>
                 <T field="investment_thesis">{thesis}</T>
               </p>
             )}
             {investor.bio && (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)", maxWidth: "60ch" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.7, color: "var(--cr-ink-3)", maxWidth: "65ch" }}>
                 <T field="bio">{investor.bio}</T>
               </p>
             )}
@@ -497,58 +546,84 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         </header>
 
-        {/* ── Mandate at a glance ─────────────────────────────────────────
-            The opening's second act: check size, stages, sectors, geography
-            as mono figures over hairlines, so a founder can rule this
-            investor in or out before reading a paragraph. Only cells that
-            HAVE values render. */}
-        {(investor.min_check || investor.max_check || stageSpan || industries.length > 0 || geographies.length > 0) && (
-          <section className="pt-8 flex flex-col sm:flex-row" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-            {(investor.min_check || investor.max_check) && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investors.checkSize")}</p>
-                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(16px, 2.4vw, 21px)", lineHeight: 1.2, color: "var(--cr-ink)", whiteSpace: "nowrap" }}>
-                  {investor.min_check
+        {/* ── Mandate ─────────────────────────────────────────────────────
+            What this cheque is for, as one ruled strip: check size, stages,
+            sectors, geography, board seats, follow-on and languages together,
+            every figure on the ledger edge, every label in the one voice.
+            These lived as a strip plus two sections of scattered pairs
+            before; a founder rules this investor in or out from one block
+            now. Only cells that HAVE values render. */}
+        {(investor.min_check || investor.max_check || stageSpan || industries.length > 0 || geographies.length > 0 || investor.board_seat_pref || investor.follow_on_policy || (investor.languages ?? []).length > 0) && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("investorProfile.mandate", "Mandate")}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3" style={STRIP}>
+              {(investor.min_check || investor.max_check) && (
+                <Cell
+                  label={t("investors.checkSize")}
+                  value={investor.min_check
                     ? `${formatCurrency(investor.min_check, true)} – ${investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}`
-                    : investor.max_check
-                      ? `${tf("investorProfile.upTo", "Up to")} ${formatCurrency(investor.max_check, true)}`
-                      : null}
-                </p>
-              </div>
-            )}
-            {stageSpan && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.stagesLabel")}</p>
-                <p style={{ ...DATA, fontWeight: 600, fontSize: "13px", lineHeight: 1.4, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--cr-ink)" }}>
-                  {stageSpan}
-                </p>
-              </div>
-            )}
-            {industries.length > 0 && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.industriesLabel")}</p>
-                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(16px, 2.4vw, 21px)", lineHeight: 1.2, color: "var(--cr-ink)" }}>
-                  {industries.length}
-                </p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                  {industries.slice(0, 3).join(", ")}
-                  {industries.length > 3 ? ` ${tf("investorProfile.moreCount", `+${industries.length - 3} more`, { count: industries.length - 3 })}` : ""}
-                </p>
-              </div>
-            )}
-            {geographies.length > 0 && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{tf("investorProfile.geographyLabel", "Geography")}</p>
-                <p style={{ ...DATA, fontWeight: 600, fontSize: "13px", lineHeight: 1.4, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--cr-ink)" }}>
-                  {countryLabel(t, geographies[0])}
-                </p>
-                {geographies.length > 1 && (
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                    {tf("investorProfile.moreCount", `+${geographies.length - 1} more`, { count: geographies.length - 1 })}
-                  </p>
-                )}
-              </div>
-            )}
+                    : `${tf("investorProfile.upTo", "Up to")} ${formatCurrency(investor.max_check ?? 0, true)}`}
+                />
+              )}
+              {stageSpan && (
+                <Cell label={t("investorProfile.stagesLabel")} value={stageSpan} valueStyle={CELL_SPAN} />
+              )}
+              {industries.length > 0 && (
+                <Cell label={t("investorProfile.industriesLabel")} value={industries.length} sub={industries.join(", ")} />
+              )}
+              {geographies.length > 0 && (
+                <Cell
+                  label={tf("investorProfile.geographyLabel", "Geography")}
+                  value={countryLabel(t, geographies[0])}
+                  valueStyle={CELL_SPAN}
+                  sub={geographies.length > 1 ? geographies.slice(1).map((g) => countryLabel(t, g)).join(", ") : undefined}
+                />
+              )}
+              {investor.board_seat_pref && (
+                <Cell label={t("investorProfile.boardSeat")} value={investor.board_seat_pref} valueStyle={CELL_TEXT} />
+              )}
+              {investor.follow_on_policy && (
+                <Cell label={t("investorProfile.followOn")} value={investor.follow_on_policy} valueStyle={CELL_TEXT} />
+              )}
+              {(investor.languages ?? []).length > 0 && (
+                <Cell label={t("investorProfile.languagesLabel")} value={(investor.languages ?? []).join(", ")} valueStyle={CELL_TEXT} />
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── Investment thesis ──────────────────────────────────────────
+            Only when the header lede could not hold all of it. Set at a
+            reading measure with real leading: a thesis is the one paragraph
+            a founder actually reads. */}
+        {thesis && thesisIsLong && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investors.thesis")}</div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", lineHeight: 1.75, color: "var(--cr-ink-2)", maxWidth: "65ch" }}>
+              <T field="investment_thesis">{thesis}</T>
+            </p>
+          </section>
+        )}
+
+        {/* ── Track record ────────────────────────────────────────────────
+            Same strip anatomy as the mandate: only metrics that HAVE values
+            render. portfolio_count is deliberately not repeated here -- it
+            is the same number as number_of_investments. Member-since lives
+            in the header meta line now, not as a floating footnote. */}
+        {(investor.aum || investor.number_of_investments || investor.avg_hold_period) && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("investorProfile.trackRecord", "Track record")}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3" style={STRIP}>
+              {investor.aum && (
+                <Cell label={t("investorProfile.aumFundSize")} value={investor.aum} />
+              )}
+              {investor.number_of_investments != null && (
+                <Cell label={t("investorProfile.investmentsLabel")} value={investor.number_of_investments} />
+              )}
+              {investor.avg_hold_period && (
+                <Cell label={t("investorProfile.avgHold")} value={investor.avg_hold_period} />
+              )}
+            </div>
           </section>
         )}
 
@@ -557,7 +632,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             the plan still includes it, so a downgrade retires the video
             without touching the row. */}
         {investor.video_url && (investor.subscription_tier === "pro" || investor.subscription_tier === "institution") && (
-          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investorProfile.introVideo")}</div>
             <div style={{ aspectRatio: "16/9", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
               <iframe
@@ -568,137 +643,6 @@ export default async function InvestorProfilePage({ params }: Props) {
             </div>
           </section>
         )}
-
-        {/* ── Investment thesis ──────────────────────────────────────────
-            Only when the header lede could not hold all of it. Set with
-            room: a thesis is the one paragraph a founder actually reads. */}
-        {thesis && thesisIsLong && (
-          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investors.thesis")}</div>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", lineHeight: 1.75, color: "var(--cr-ink-2)", maxWidth: "62ch" }}>
-              <T field="investment_thesis">{thesis}</T>
-            </p>
-          </section>
-        )}
-
-        {/* ── Key stats strip ─────────────────────────────────────────────
-            A hairline-divided metrics strip, not three boxes: only metrics
-            that HAVE values render. */}
-        {(investor.aum || investor.number_of_investments || investor.avg_hold_period) && (
-          <section className="mt-8 pt-8 flex flex-col sm:flex-row" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-            {investor.aum && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.aumFundSize")}</p>
-                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", lineHeight: 1, color: "var(--cr-ink)" }}>{investor.aum}</p>
-              </div>
-            )}
-            {investor.number_of_investments != null && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.investmentsLabel")}</p>
-                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", lineHeight: 1, color: "var(--cr-ink)" }}>{investor.number_of_investments}</p>
-              </div>
-            )}
-            {investor.avg_hold_period && (
-              <div className={STAT_CELL}>
-                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.avgHold")}</p>
-                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(22px, 4vw, 28px)", lineHeight: 1, color: "var(--cr-ink)" }}>{investor.avg_hold_period}</p>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* A founder deciding whether to spend an intro on someone wants to
-            know they are a real, established account. This is the only such
-            signal the schema currently supports -- there is no last-active
-            column, so it is not claimed. */}
-        {memberSince && (
-          <p className="mt-4" style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", letterSpacing: "0.02em" }}>
-            {t("investorProfile.memberSince", { date: memberSince })}
-          </p>
-        )}
-
-        {/* ── Investor detail ───────────────────────────────────────────── */}
-        {/* portfolio_count is deliberately not repeated here: it is the same
-            number as number_of_investments, already shown in the stats row.
-            Check size is not repeated either -- it leads the mandate strip
-            under the header now, and one fact gets one place. */}
-        {(investor.languages?.length || investor.board_seat_pref || investor.follow_on_policy) && (
-          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investorProfile.investorDetail")}</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              {investor.board_seat_pref && (
-                <div>
-                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.boardSeat")}</p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.board_seat_pref}</p>
-                </div>
-              )}
-              {investor.follow_on_policy && (
-                <div>
-                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.followOn")}</p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.follow_on_policy}</p>
-                </div>
-              )}
-              {(investor.languages ?? []).length > 0 && (
-                <div className="sm:col-span-2">
-                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.languagesLabel")}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {(investor.languages ?? []).map((lang: string) => (
-                      <span key={lang} style={BADGE}>{lang}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ── Investment preferences ─────────────────────────────────────── */}
-        <section className="mt-8 pt-8 space-y-6" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-          <div className="ruled-label">{t("investorProfile.investmentPreferences")}</div>
-
-          {investor.industries?.length > 0 && (
-            <div>
-              <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.industriesLabel")}</p>
-              <div className="flex flex-wrap gap-2">
-                {investor.industries.map((ind: string) => (
-                  <span key={ind} style={BADGE}>{ind}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {investor.stages?.length > 0 && (
-            <div>
-              <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.stagesLabel")}</p>
-              <div className="flex flex-wrap gap-2">
-                {investor.stages.map((s: string) => (
-                  <span key={s} style={BADGE}>
-                    {s.replace(/_/g, " ")}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Check size is deliberately not repeated here. It is already shown,
-              better formatted, in the Investor Detail block above -- this was a
-              second rendering of the same two columns. */}
-
-          {investor.geography?.length > 0 && (
-            <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: "var(--cr-ink-4)" }} />
-              <div className="flex flex-wrap gap-2">
-                {investor.geography.map((g: string) => (
-                  <span key={g} style={BADGE}>{countryLabel(t, g)}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Follow-on policy and board preference are deliberately not
-              repeated here: both already render, under the same labels'
-              meanings, in the Investor Detail block above. */}
-        </section>
 
         {/* ── Portfolio companies ────────────────────────────────────────── */}
         {/* Ledger rows with a numbered rail, not a grid of boxes. Past six
@@ -726,7 +670,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             </div>
           );
           return (
-            <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
               <div className="flex items-baseline justify-between gap-3" style={{ marginBottom: "8px" }}>
                 <div className="ruled-label">{t("investorProfile.portfolioCompanies")}</div>
                 <span style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{portfolio.length}</span>
@@ -757,7 +701,7 @@ export default async function InvestorProfilePage({ params }: Props) {
 
         {/* ── Similar investors ── */}
         {similar.length > 0 && (
-          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("investorProfile.similarInvestors")}</div>
             <div>
               {similar.map((s, i) => (
@@ -788,7 +732,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             sign up as a startup, including the investor viewing their own page
             and founders who already have a listing. */}
         {!user && (
-          <div className="mt-8 pt-8 flex flex-col items-center text-center" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+          <div className="mt-12 pt-8 flex flex-col items-center text-center" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)", maxWidth: "44ch", marginBottom: "16px" }}>
               {t("investorProfile.founderCta", { name: displayName })}
             </p>
@@ -802,7 +746,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             above: that chip renders nothing when nothing is on file, which is
             right for a claim and wrong for a review. This section says the
             absence out loud. */}
-        <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+        <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
           <WhatWeChecked subjectType="investor" subjectId={investor.id} />
         </section>
 
@@ -823,7 +767,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             claims. Signed-out visitors cannot — a report needs someone to
             come back to. */}
         {user && (
-          <div className="mt-8" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
+          <div className="mt-12" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
             <ReportButton targetType="investor" targetId={investor.id} />
           </div>
         )}

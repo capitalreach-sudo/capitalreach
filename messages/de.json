@@ -231,7 +231,7 @@
       "descLong": "Beschreibe dein Startup — Problem, Lösung, Marktgröße, Team-Hintergrund und Traktion. GPT-4o bewertet es anhand von 5 Investment-Dimensionen und gibt umsetzbares Feedback.",
       "proTipLabel": "Profi-Tipp:",
       "proTipBody": "Gib Marktgröße, Monatsumsatz und Wachstumsrate, frühere Exits, Team-Bios und die Kennzahlen dahinter an, um den genauesten Score zu erhalten.",
-      "footerInfo": "Powered by GPT-4o · ~3 Sekunden · 5 kostenlose Analysen/Stunde · Keine Datenspeicherung",
+      "footerInfo": "Powered by GPT-4o · ~3 Sekunden · Keine Datenspeicherung",
       "analysisFailedErr": "Analyse fehlgeschlagen",
       "analysisFailedFull": "Pitch-Analyse fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
       "placeholderExample": "Beispiel:\n\nWir entwickeln KI, die klinische Gespräche in Echtzeit transkribiert und die Dokumentation für Gesundheitsdienstleister im ländlichen Raum um 70 % reduziert.\n\nProblem: Ärzte verbringen mehr als 3 Stunden pro Tag mit Verwaltung, was zu 18 Mrd. $ Produktivitätsverlust führt.\n\nTraktion: 42.000 $ Monatsumsatz, 18 % Wachstum im Monatsvergleich, 3 Absichtserklärungen von Krankenhäusern. Ex-Epic und Stanford-Promotion in klinischer KI."
@@ -323,7 +323,8 @@
       "aiScore": "KI-Konsistenzwert",
       "savedReports": "Gespeicherte Berichte",
       "exportPdf": "Berichte exportieren (PDF)",
-      "viewOnly": "Nur ansehen"
+      "viewOnly": "Nur ansehen",
+      "day": "Tag"
     },
     "signInTitle": "Anmelden, um KI-Tools zu nutzen",
     "signInSub": "Erstellen Sie ein kostenloses Konto für Pitch-Scoring, Investoren-Matching und Due-Diligence-Berichte.",
