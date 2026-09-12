@@ -2595,7 +2595,10 @@
     "unmarkImportant": "Markierung entfernen",
     "importantAria": "Als wichtig markiert",
     "deepLinkMissingBody": "Das Gespräch, auf das er verweist, liegt nicht in diesem Postfach, und an seiner Stelle wurde nichts geöffnet. Wenn Sie mehrere Konten haben, prüfen Sie, ob Sie in dem Konto angemeldet sind, an das der Link ging.",
-    "deepLinkMissingTitle": "Dieser Link hat kein Gespräch geöffnet"
+    "deepLinkMissingTitle": "Dieser Link hat kein Gespräch geöffnet",
+    "emptyGateTitle": "Unterhaltungen öffnen sich, sobald beide Seiten einen Deal unterschrieben haben",
+    "emptyGateBody": "Ein Investor macht ein Angebot, der Gründer nimmt es an, und beide Seiten unterschreiben den Deal; bis dahin bleiben Nachrichten geschlossen.",
+    "emptyGateCta": "Deals ansehen"
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",

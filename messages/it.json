@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Rimuovi importanza",
     "importantAria": "Segnato importante",
     "deepLinkMissingBody": "La conversazione a cui rimanda non si trova in questa casella e nulla è stato aperto al suo posto. Se hai più di un account, controlla di aver effettuato l'accesso con quello a cui è stato inviato il link.",
-    "deepLinkMissingTitle": "Quel link non ha aperto alcuna conversazione"
+    "deepLinkMissingTitle": "Quel link non ha aperto alcuna conversazione",
+    "emptyGateTitle": "Le conversazioni si aprono quando entrambe le parti firmano un accordo",
+    "emptyGateBody": "Un investitore fa un'offerta, il fondatore la accetta ed entrambe le parti firmano l'accordo; fino ad allora la messaggistica resta chiusa.",
+    "emptyGateCta": "Vedi le operazioni"
   },
   "completeness": {
     "nextBest": "Fai questo ora",

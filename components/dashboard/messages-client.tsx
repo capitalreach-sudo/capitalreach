@@ -39,6 +39,30 @@ function EmptyDiamond() {
   );
 }
 
+/**
+ * The zero-threads answer. Every member sees this tab, but under the seal
+ * rule most have no threads yet, and a bare "no conversations" reads as
+ * messaging being open and simply unused. The empty pane has to say the
+ * rule itself: conversations open once a deal is signed by both sides.
+ */
+function ZeroThreadsNotice({ tf }: { tf: (key: string, fallback: string) => string }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textAlign: "center", padding: "24px" }}>
+      <EmptyDiamond />
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+        {tf("messages.emptyGateTitle", "Conversations open once a deal is signed by both sides")}
+      </p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "44ch" }}>
+        {tf("messages.emptyGateBody", "An investor makes an offer, the founder accepts it, and both sides sign the deal; until then, messaging stays closed.")}
+      </p>
+      <Link href="/deals"
+        style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+        {tf("messages.emptyGateCta", "View deals")} →
+      </Link>
+    </div>
+  );
+}
+
 function timeAgo(iso: string, t: (key: string, vars?: Record<string, string | number>) => string) {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
   if (diff < 60)    return t("dashboard.timeJustNow");
@@ -87,6 +111,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
+  // Renders sensibly before the keys land in messages/; the orchestrated
+  // dictionary pass replaces the fallbacks with localized strings.
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
   // When the URL names a thread, start with NOTHING selected. Effects flush in
   // declaration order and the load-and-mark-read effect below is declared
   // before the deep-link effect, so seeding this with initialThreads[0] made
@@ -881,10 +911,25 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             {/* Thread list */}
             <div ref={threadListRef} style={{ flex: 1, overflowY: "auto" }}>
               {filteredThreads.length === 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: "24px", textAlign: "center", gap: "12px" }}>
-                  <EmptyDiamond />
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noConversationsYet")}</p>
-                </div>
+                <>
+                  {/* No threads at all is the seal rule at work, not an unused
+                      inbox, and only the true zero case may say so: a search
+                      or filter that matched nothing keeps the quiet mark.
+                      Below md this list IS the page, so the explanation lives
+                      here; from md up the wide pane carries it and this
+                      column stays quiet. `display` stays in the class, never
+                      the inline style -- an inline display beats md:flex. */}
+                  {initialThreads.length === 0 && (
+                    <div className="flex md:hidden" style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                      <ZeroThreadsNotice tf={tf} />
+                    </div>
+                  )}
+                  <div className={initialThreads.length === 0 ? "hidden md:flex" : "flex"}
+                    style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: "24px", textAlign: "center", gap: "12px" }}>
+                    <EmptyDiamond />
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("dashboard.noConversationsYet")}</p>
+                  </div>
+                </>
               ) : filteredThreads.map(thread => {
                 const isSelected = selectedThread?.id === thread.id;
                 const st = thread.status || "active";
@@ -1328,11 +1373,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </div>
           ) : (
             <div className="hidden md:flex" style={{ flex: 1, alignItems: "center", justifyContent: "center", background: "var(--cr-paper)" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ marginBottom: "12px" }}><EmptyDiamond /></div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
-              </div>
+              {/* "Select a conversation" presumes there is one. With zero
+                  threads the pane answers the seal rule instead. */}
+              {initialThreads.length === 0 ? (
+                <ZeroThreadsNotice tf={tf} />
+              ) : (
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ marginBottom: "12px" }}><EmptyDiamond /></div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
+                </div>
+              )}
             </div>
           )}
         </div>

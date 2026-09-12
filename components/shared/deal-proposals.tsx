@@ -217,11 +217,12 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
           <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 3, padding: "3px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-copper)" }}>
             <Handshake style={{ width: 11, height: 11 }} /> {t("deals.colProposal")}
           </span>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{chains.length}</span>
+          {/* Weight 300, like every other column count on the board. */}
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{chains.length}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", paddingRight: "2px", minHeight: 0 }}>
           {chains.length === 0 ? (
-            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "16px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)" }}>
+            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: 4, padding: "24px 12px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)" }}>
               <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", marginBottom: 8 }}>✦</span>
               {t("proposals.emptyColumn")}
             </div>
@@ -240,8 +241,11 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
   if (!loaded || chains.length === 0) return null;
 
   return (
-    <section style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "16px", marginBottom: 24 }}>
-      <p className="ruled-label" style={{ marginBottom: 4 }}>
+    // A band, not a box: top and bottom copper hairlines on a tinted ground,
+    // the same shape every other "this needs you" strip on the product uses.
+    // The full border made a second card of the section that holds cards.
+    <section style={{ background: "var(--cr-copper-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "16px", marginBottom: 24 }}>
+      <p className="ruled-label" style={{ marginBottom: 12 }}>
         {t("proposals.title")}
       </p>
       {chains.map((c) => (
@@ -380,17 +384,21 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
   );
 
   return (
+    // Same card anatomy as every DealCard in the neighbouring columns: same
+    // ground, same hairline, same 16px internals. The copper border marked a
+    // whole card with the accent; the column label and the amount already
+    // say what is urgent here.
     <div style={compact
-      ? { background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: 12 }
+      ? { background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: 16 }
       : { borderTop: RULE, padding: "16px 0" }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", gap: compact ? 8 : 12, flexWrap: "wrap" }}>
         <EntityLogo name={p.counterpart.name} logoUrl={p.counterpart.logoUrl} logoColor={p.counterpart.logoColor} size={compact ? 28 : 36} radius={4} />
         <div style={{ flex: "1 1 140px", minWidth: 0 }}>
-          <p style={{ ...NAME, fontSize: compact ? 13 : 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <p style={{ ...NAME, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {p.counterpart.name}
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
             {/* Which round this is, said on the card rather than left to be
                 inferred from a number that changed since last week. */}
             <span style={{ ...LABEL, color: p.countersId ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>
@@ -401,8 +409,11 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
         </div>
         <div style={{ textAlign: "right", minWidth: 0 }}>
           <span style={{
+            // The card's figure matches the DealCard figure beside it: 600/13
+            // on the board, 700/15 on the page strip where it is the loudest
+            // thing on the row.
             fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
-            fontWeight: 700, fontSize: compact ? 13 : 15, color: "var(--cr-copper)",
+            fontWeight: compact ? 600 : 700, fontSize: compact ? 13 : 15, color: "var(--cr-copper)",
           }}>
             {p.amount != null ? formatMoney(p.amount, p.currency, { compact }) : t("proposals.notStated")}
           </span>
@@ -411,34 +422,36 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
 
       {/* The terms. All four on the strip, present or not: a round that states
           no equity is saying something, and an empty row says it. */}
+      {/* A grid, not a wrap: the strip's four term columns line up from card
+          to card, so two offers read against each other down the page. */}
       <div style={compact
         ? { marginTop: 8 }
-        : { marginTop: 12, display: "flex", flexWrap: "wrap", gap: "12px 24px" }}
+        : { marginTop: 12, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px 24px" }}
       >
         {shown.map((c) => (
           <div key={c.key} style={compact
-            ? { borderTop: RULE, padding: "5px 0", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }
-            : { flex: "1 1 120px", minWidth: 0 }}
+            ? { borderTop: RULE, padding: "8px 0", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }
+            : { minWidth: 0 }}
           >
             <span style={LABEL}>{c.label}</span>
             <span style={{
               ...DATA, display: compact ? "inline" : "block",
               fontSize: compact ? 11 : 13,
-              marginTop: compact ? 0 : 3,
+              marginTop: compact ? 0 : 4,
               color: c.value ? "var(--cr-ink)" : "var(--cr-ink-4)",
               overflowWrap: "anywhere", textAlign: compact ? "right" : "left",
             }}>
               {c.value ?? t("proposals.notStated")}
             </span>
             {c.was && !compact && (
-              <span style={{ ...LABEL, display: "block", color: "var(--cr-copper)", marginTop: 3 }}>{c.was}</span>
+              <span style={{ ...LABEL, display: "block", color: "var(--cr-copper)", marginTop: 4 }}>{c.was}</span>
             )}
           </div>
         ))}
       </div>
 
       {shownConditions && (
-        <div style={{ borderTop: RULE, marginTop: compact ? 6 : 12, paddingTop: 8 }}>
+        <div style={{ borderTop: RULE, marginTop: compact ? 8 : 12, paddingTop: 8 }}>
           <span style={LABEL}>{t("proposals.conditions")}</span>
           {conditionsChanged && (
             <span style={{ ...LABEL, color: "var(--cr-copper)", marginLeft: 8 }}>
@@ -452,7 +465,7 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
             ...BODY, fontSize: compact ? 11 : 13,
             color: struckConditions ? "var(--cr-ink-4)" : "var(--cr-ink-2)",
             textDecoration: struckConditions ? "line-through" : undefined,
-            marginTop: 3, whiteSpace: "pre-wrap", overflowWrap: "anywhere",
+            marginTop: 4, whiteSpace: "pre-wrap", overflowWrap: "anywhere",
           }}>
             {shownConditions}
           </p>
@@ -460,9 +473,9 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
       )}
 
       {p.note && (
-        <div style={{ borderTop: RULE, marginTop: compact ? 6 : 12, paddingTop: 8 }}>
+        <div style={{ borderTop: RULE, marginTop: compact ? 8 : 12, paddingTop: 8 }}>
           <span style={LABEL}>{incoming ? t("proposals.theirNote") : t("proposals.yourNote")}</span>
-          <p style={{ ...BODY, fontSize: compact ? 11 : 13, color: "var(--cr-ink-2)", marginTop: 3, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+          <p style={{ ...BODY, fontSize: compact ? 11 : 13, color: "var(--cr-ink-2)", marginTop: 4, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
             {p.note}
           </p>
         </div>
@@ -483,16 +496,20 @@ function ProposalCard({ chain, compact, busy, onAct, onCounter }: {
           }}>
             <div style={{ minHeight: 0, overflow: "hidden", visibility: showTrail ? "visible" : "hidden" }}>
               <div style={{ marginTop: 4 }}>
+                {/* A ledger row: who moved on the left, the figure right-
+                    aligned in mono, the date at the margin. The amount used
+                    to sit inside the sentence, so five rounds never lined up. */}
                 {chain.trail.map((step, i) => (
-                  <div key={step.id} style={{ borderTop: RULE, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, padding: "6px 0" }}>
-                    <span style={{ ...BODY, fontSize: 12, color: "var(--cr-ink-2)", minWidth: 0 }}>
+                  <div key={step.id} style={{ borderTop: RULE, display: "flex", alignItems: "baseline", gap: 12, padding: "8px 0" }}>
+                    <span style={{ ...BODY, fontSize: 12, color: "var(--cr-ink-2)", minWidth: 0, flex: "1 1 auto" }}>
                       {t("proposals.roundN", { n: i + 1 })}
                       {" · "}
                       {step.direction === "outgoing" ? t("proposals.sideYou") : t("proposals.sideThem")}
-                      {" · "}
+                    </span>
+                    <span style={{ ...DATA, fontSize: 12, color: "var(--cr-ink-2)", whiteSpace: "nowrap", flexShrink: 0 }}>
                       {step.amount != null ? formatMoney(step.amount, step.currency, { compact: true }) : t("proposals.notStated")}
                     </span>
-                    <span style={{ ...DATA, fontSize: 11, color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                    <span style={{ ...DATA, fontSize: 11, color: "var(--cr-ink-4)", whiteSpace: "nowrap", flexShrink: 0 }}>
                       {stamp(step.createdAt)}
                     </span>
                   </div>
@@ -535,7 +552,8 @@ function CounterDialog({ proposal, onClose, onSent }: {
         position: "fixed", inset: 0, zIndex: 80, overflowY: "auto",
         display: "flex", alignItems: "flex-start", justifyContent: "center",
         padding: "clamp(16px, 6vh, 64px) 16px",
-        background: "color-mix(in srgb, var(--cr-ink) 55%, transparent)",
+        // The scrim token, not a mixed literal: both themes carry their own.
+        background: "var(--cr-scrim)",
       }}
     >
       <div style={{ width: "100%", maxWidth: "640px" }}>

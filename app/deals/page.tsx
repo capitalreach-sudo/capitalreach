@@ -10,6 +10,17 @@ import { Footer } from "@/components/shared/footer";
 import { DealsPortalClient } from "@/components/shared/deals-portal-client";
 import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
+
+// One shell and one masthead for all three role views: same copy keys, same
+// structure -- only the composition is shared. var(--font-serif) keeps the
+// display face register-correct (the business style resolves it to the sans).
+const MAIN: CSSProperties = { background: "var(--cr-paper)", minHeight: "60vh" };
+const WRAP: CSSProperties = { maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" };
+const H1: CSSProperties = {
+  fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700,
+  fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em",
+};
 
 export const metadata: Metadata = {
   title: "Deal Portal — CapitalReach",
@@ -58,10 +69,10 @@ export default async function DealsPage() {
     return (
       <>
         <Navbar />
-        <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
+        <main style={MAIN}>
+          <div style={WRAP}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("deals.portalLabel")}</div>
+            <h1 style={{ ...H1, marginBottom: "32px" }}>
               {t("deals.yourDeals")}
             </h1>
             <DealsPortalClient
@@ -109,10 +120,10 @@ export default async function DealsPage() {
     return (
       <>
         <Navbar />
-        <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "32px" }}>
+        <main style={MAIN}>
+          <div style={WRAP}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("deals.portalLabel")}</div>
+            <h1 style={{ ...H1, marginBottom: "32px" }}>
               {t("deals.yourDeals")}
             </h1>
             <DealsPortalClient
@@ -169,13 +180,13 @@ export default async function DealsPage() {
     return (
       <>
         <Navbar />
-        <main style={{ background: "var(--cr-paper)", minHeight: "60vh" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 24px 64px" }}>
-            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("deals.portalLabel")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "8px" }}>
+        <main style={MAIN}>
+          <div style={WRAP}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("deals.portalLabel")}</div>
+            <h1 style={{ ...H1, marginBottom: "8px" }}>
               {t("deals.allDeals")}
             </h1>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", marginBottom: "32px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)", maxWidth: "62ch", marginBottom: "32px" }}>
               {t("deals.adminSubtitle")}
             </p>
             <DealsPortalClient deals={(deals ?? []) as Deal[]} viewAs="admin" canExport myEntityIds={myEntityIds} />
@@ -190,7 +201,7 @@ export default async function DealsPage() {
   return (
     <>
       <Navbar />
-      <main style={{ background: "var(--cr-paper)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <main style={{ ...MAIN, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ padding: "96px 24px", textAlign: "center" }}>
           <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "14px", marginBottom: "12px" }}>✦</span>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>

@@ -61,7 +61,7 @@ export function Footer() {
         {/* Copper promise line */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "center",
-          gap: "8px", marginBottom: "40px",
+          gap: "8px", marginBottom: "48px",
           padding: "12px 0",
           borderTop: "1px solid var(--cr-copper-br)",
           borderBottom: "1px solid var(--cr-copper-br)",
@@ -75,17 +75,20 @@ export function Footer() {
           </span>
         </div>
 
-        {/* Row 1 — logo + link groups */}
-        <div className="flex flex-col lg:flex-row justify-between gap-10 mb-12">
+        {/* Row 1 — brand and every link column on ONE grid, so the five
+            groups share equal tracks instead of four columns plus a
+            wrapped orphan. Brand takes the first track at xl and spans
+            the full row below it. */}
+        <div className="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 xl:grid-cols-[220px_repeat(5,minmax(0,1fr))] mb-12">
 
           {/* Brand */}
-          <div className="flex-shrink-0" style={{ maxWidth: "220px" }}>
-            <Link href="/" className="flex items-center gap-[10px] w-fit select-none" style={{ textDecoration: "none" }}>
+          <div className="col-span-2 md:col-span-3 xl:col-span-1" style={{ maxWidth: "220px" }}>
+            <Link href="/" className="flex items-center gap-2 w-fit select-none" style={{ textDecoration: "none" }}>
               <DiamondLogo />
               <span style={{
                 fontFamily:    "'Playfair Display', Georgia, serif",
                 fontWeight:    700,
-                fontSize:      "17px",
+                fontSize:      "16px",
                 color:         "var(--cr-ink)",
                 letterSpacing: "-0.02em",
               }}>
@@ -104,46 +107,45 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Link groups */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1 lg:max-w-[680px]">
-            {LINK_GROUPS.map(([heading, links]) => (
-              <div key={heading}>
-                <h4 style={{
-                  fontFamily:    "'DM Sans', sans-serif",
-                  fontWeight:    500,
-                  fontSize:      "11px",
-                  color:         "var(--cr-ink-4)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  marginBottom:  "16px",
-                }}>
-                  {heading}
-                </h4>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {links.map(([label, href]) => (
-                    <li key={label} style={{ marginBottom: "10px" }}>
-                      <Link
-                        href={href}
-                        style={{
-                          fontFamily:     "'DM Sans', sans-serif",
-                          fontWeight:     300,
-                          fontSize:       "14px",
-                          color:          "var(--cr-ink-3)",
-                          textDecoration: "none",
-                          display:        "block",
-                          transition:     "color 150ms ease",
-                        }}
-                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
-                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          {/* Link groups — headers set in the house caps label (11px / 500 /
+              0.08em / ink-3), links one step lighter beneath them. */}
+          {LINK_GROUPS.map(([heading, links]) => (
+            <div key={heading}>
+              <h4 style={{
+                fontFamily:    "'DM Sans', sans-serif",
+                fontWeight:    500,
+                fontSize:      "11px",
+                color:         "var(--cr-ink-3)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom:  "16px",
+              }}>
+                {heading}
+              </h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {links.map(([label, href]) => (
+                  <li key={label} style={{ marginBottom: "12px" }}>
+                    <Link
+                      href={href}
+                      style={{
+                        fontFamily:     "'DM Sans', sans-serif",
+                        fontWeight:     300,
+                        fontSize:       "14px",
+                        color:          "var(--cr-ink-3)",
+                        textDecoration: "none",
+                        display:        "block",
+                        transition:     "color 150ms ease",
+                      }}
+                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)")}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Divider */}
@@ -164,18 +166,19 @@ export function Footer() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontWeight: 300,
-            fontSize:   "11px",
+            fontSize:   "12px",
             color:      "var(--cr-ink-4)",
             textAlign:  "center",
-            maxWidth:   "360px",
-            lineHeight: 1.55,
+            /* Readable measure, never full-width. */
+            maxWidth:   "70ch",
+            lineHeight: 1.6,
           }}>
             {t("footer.legal")}
             <br />
             {t("footer.aiDisclosure")}
           </p>
 
-          <div className="flex items-center gap-5 flex-shrink-0">
+          <div className="flex items-center gap-4 flex-shrink-0">
             {([
               // Real profiles only; placeholders removed. Add entries here
               // once the accounts exist.

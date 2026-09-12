@@ -128,10 +128,10 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
   // "nothing to sign here".
   if (failed) {
     return (
-      <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
+      <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px" }}>
         <p style={{ ...BODY, margin: 0 }}>{t("seal.loadFailed")}</p>
         <button type="button" onClick={() => void load()} style={{
-          marginTop: "16px", background: "none", border: "1px solid var(--cr-rule-dark)",
+          marginTop: "16px", background: "none", border: "1px solid var(--cr-paper-4)",
           borderRadius: "999px", minHeight: "40px", padding: "0 20px", cursor: "pointer",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)",
         }}>{t("data.retry")}</button>
@@ -140,8 +140,13 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
   }
   if (!data) return null;
 
-  const Slot = ({ who, sig }: { who: string; sig: Signature | null }) => (
-    <div style={{ flex: "1 1 200px", padding: "16px", background: "var(--cr-paper-2)", borderRadius: "4px", border: "1px solid var(--cr-rule)" }}>
+  // A signature line, not a box: inside a card, structure is rules. The old
+  // paper-2 tiles sat on the paper-2 board card and vanished into it.
+  const Slot = ({ who, sig, ruled }: { who: string; sig: Signature | null; ruled?: boolean }) => (
+    <div style={ruled
+      ? { borderTop: "1px solid var(--cr-rule)", marginTop: "12px", paddingTop: "12px" }
+      : undefined}
+    >
       <div style={LABEL}>{who}</div>
       {sig ? (
         <>
@@ -158,12 +163,14 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
   );
 
   return (
-    <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
-      <div style={{ padding: "24px", borderBottom: "1px solid var(--cr-rule)" }}>
+    // Paper on the card's paper-2 ground, 16px internals throughout: the
+    // panel lives inside a 264px board card whose own padding is 16.
+    <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
+      <div style={{ padding: "16px", borderBottom: "1px solid var(--cr-rule)" }}>
         <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("seal.eyebrow")}</div>
         <h3 style={{
           fontFamily: "var(--font-serif)", fontWeight: 700, fontStyle: "italic",
-          fontSize: "clamp(20px, 3vw, 26px)", color: "var(--cr-ink)",
+          fontSize: "clamp(18px, 2.6vw, 22px)", color: "var(--cr-ink)",
           letterSpacing: "-0.01em", margin: 0, textWrap: "balance",
         }}>
           {data.sealed ? t("seal.titleSealed") : t("seal.title")}
@@ -175,7 +182,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
 
       {/* The document itself. Collapsed by default because it is long, and
           expanded in full before anyone is asked to put their name to it. */}
-      <div style={{ padding: "24px", borderBottom: "1px solid var(--cr-rule)" }}>
+      <div style={{ padding: "16px", borderBottom: "1px solid var(--cr-rule)" }}>
         <button type="button" onClick={() => setShowFull((v) => !v)} style={{
           background: "none", border: "none", padding: 0, cursor: "pointer",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
@@ -200,7 +207,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
             <pre style={{
               marginTop: "16px", padding: "16px", background: "var(--cr-paper-2)",
               border: "1px solid var(--cr-rule)", borderRadius: "4px",
-              fontFamily: "'JetBrains Mono', monospace", fontSize: "11.5px",
+              fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
               lineHeight: 1.7, color: "var(--cr-ink-2)",
               whiteSpace: "pre-wrap", overflowX: "auto", maxHeight: "420px", overflowY: "auto",
             }}>{data.text}</pre>
@@ -211,22 +218,22 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
         </div>
       </div>
 
-      <div style={{ padding: "24px", display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      <div style={{ padding: "16px" }}>
         <Slot who={data.companyName || t("seal.theCompany")} sig={data.startup} />
-        <Slot who={t("seal.theInvestor")} sig={data.investor} />
+        <Slot who={t("seal.theInvestor")} sig={data.investor} ruled />
       </div>
 
       {data.sealed ? (
         <div style={{
-          padding: "32px 24px", borderTop: "1px solid var(--cr-rule)",
-          display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap",
+          padding: "24px 16px", borderTop: "1px solid var(--cr-rule)",
+          display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap",
           background: "var(--cr-copper-bg)",
         }}>
           <WaxSeal size={72} date={day(data.sealedAt)} stamp />
           <div style={{ flex: "1 1 240px" }}>
             <div style={{
               fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 600,
-              fontSize: "18px", color: "var(--cr-ink)", marginBottom: "6px",
+              fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px",
             }}>{t("seal.doneTitle")}</div>
             <p style={{ ...BODY, fontSize: "13px", margin: 0 }}>{t("seal.doneBody")}</p>
           </div>
@@ -239,12 +246,12 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
           }}>{t("seal.openConversation")}</Link>
         </div>
       ) : data.mine ? (
-        <div style={{ padding: "24px", borderTop: "1px solid var(--cr-rule)" }}>
+        <div style={{ padding: "16px", borderTop: "1px solid var(--cr-rule)" }}>
           <p style={{ ...BODY, margin: 0 }}>{t("seal.waitingOnThem")}</p>
         </div>
       ) : (
         <div style={{
-          padding: "24px", borderTop: "1px solid var(--cr-rule)",
+          padding: "16px", borderTop: "1px solid var(--cr-rule)",
           opacity: sealing ? 0 : 1,
           transform: sealing ? "translateY(-6px)" : "none",
           pointerEvents: sealing ? "none" : undefined,
@@ -254,7 +261,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
               from a refused message needs the two halves in one place: what
               the signature buys, and that nothing else they can do here is
               being held. */}
-          <p style={{ ...BODY, fontSize: "13px", margin: "0 0 24px", maxWidth: "62ch", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+          <p style={{ ...BODY, fontSize: "13px", margin: "0 0 16px", maxWidth: "62ch", display: "flex", gap: "8px", alignItems: "flex-start" }}>
             <span aria-hidden style={{ color: "var(--cr-copper)", flexShrink: 0 }}>{"✦"}</span>
             <span>{t("seal.opensMessaging")}</span>
           </p>
@@ -272,10 +279,10 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
               }}
             />
           </label>
-          <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginTop: "20px", cursor: "pointer" }}>
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginTop: "16px", cursor: "pointer" }}>
             <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)}
               style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: 3, flexShrink: 0, cursor: "pointer" }} />
-            <span style={{ ...BODY, fontSize: "13.5px", color: "var(--cr-ink)" }}>{t("seal.checkbox")}</span>
+            <span style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink)" }}>{t("seal.checkbox")}</span>
           </label>
           <button type="button" onClick={sign} disabled={busy || !agreed || name.trim().length < 2}
             style={{
@@ -324,7 +331,7 @@ export function DealSealPanel({ dealId }: { dealId: string }) {
 
   if (state.sealed) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <WaxSeal size={28} />
         <span style={{
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",

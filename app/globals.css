@@ -341,13 +341,9 @@
   }
   [data-style="business"] ::selection { background: rgba(4,120,87,0.14); }
 
-  /* Business recolour for the handful of effects that bake copper literals
-     into a gradient or an inline style (the sweep to tokens covered flat
-     colors; gradients kept their stops). The [style*=] matches are surgical:
-     they re-paint exactly the literals they name. */
-  [data-style="business"] .copper-foil {
-    color: var(--cr-copper);
-  }
+  /* .copper-foil already resolves through var(--cr-copper), which each
+     register remaps itself; the business-scoped duplicate that repeated the
+     identical declaration is gone. */
 
   ::selection { background: color-mix(in srgb, var(--cr-copper) 18%, transparent); color: var(--cr-ink); }
 
@@ -482,11 +478,9 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   to   { transform: translateX(0);    opacity: 1; }
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────  */
-::-webkit-scrollbar         { width: 4px; height: 4px; }
-::-webkit-scrollbar-track   { background: var(--cr-paper-2); }
-::-webkit-scrollbar-thumb   { background: var(--cr-paper-4); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--cr-ink-4); }
+/* ── Scrollbar: styled once, by the finished rules near the end of the
+   file (thin, copper on grip). A 4px draft used to sit here; every one of
+   its declarations was overridden by that later block, so it is gone. ── */
 
 /* ── Scrollbar hide utility ─────────────────────────────────  */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -511,7 +505,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
   font-size: 14px;
-  padding: 11px 24px;
+  padding: 12px 24px;
   border-radius: 4px;
   border: none;
   cursor: pointer;
@@ -526,7 +520,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
   font-size: 14px;
-  padding: 11px 24px;
+  padding: 12px 24px;
   border-radius: 4px;
   border: none;
   cursor: pointer;
@@ -541,7 +535,9 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   font-family: 'DM Sans', sans-serif;
   font-weight: 400;
   font-size: 14px;
-  padding: 10px 24px;
+  /* 11px + the 1px border equals the solid buttons' 12px, so all three
+     button classes share one outer height. */
+  padding: 11px 24px;
   border-radius: 4px;
   border: 1px solid var(--cr-paper-4);
   cursor: pointer;
@@ -581,7 +577,8 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
 /* ── Reduced motion ──────────────────────────────────────────  */
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
-  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  /* The global animation/transition kill lives in the reduced-motion block
+     near the end of the file; the * rule that duplicated it here is gone. */
 }
 
 /* ── Print / PDF export ──────────────────────────────────────  */
@@ -1172,7 +1169,7 @@ a:hover > .cr-diamond-live {
    measuring width in JS, so the server and client markup always agree. */
 .launch-banner-short { display: none; }
 @media (max-width: 640px) {
-  .launch-banner { padding: 7px 14px !important; gap: 6px !important; }
+  .launch-banner { padding: 8px 12px !important; gap: 8px !important; }
   .launch-banner-icon { display: none; }
   .launch-banner-full { display: none; }
   .launch-banner-short { display: inline; }
@@ -1236,7 +1233,7 @@ a:hover > .cr-diamond-live {
   margin: 0;
 }
 .pull-quote-attribution {
-  margin-top: 20px;
+  margin-top: 24px;
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
   font-size: 12px;
@@ -1321,19 +1318,17 @@ a:hover > .cr-diamond-live {
    already forces scroll-behavior back to auto for anyone who asked. */
 html { scroll-behavior: smooth; }
 
-/* Keyboard users get the same copper the mouse gets -- the default browser
-   outline disappears against paper. */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--cr-copper);
-  outline-offset: 2px;
-  border-radius: 3px;
-}
+/* Keyboard focus is drawn once, by the box-shadow ring in "Focus, restored"
+   near the end of the file. Two earlier copper-outline rules sat here and
+   further down at the same (0,1,0) specificity and lost every declaration
+   to that later rule, so both are gone. */
 
-/* Anyone who asked their system for less motion gets none of it. */
+/* Anyone who asked their system for less motion gets none of it.
+   (scroll-behavior is already forced back to auto by the global
+   reduced-motion block near the end of the file.) */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up, .animate-fade-up-1, .animate-fade-up-2,
   .animate-fade-up-3, .animate-fade-up-4 { animation: none !important; }
-  * { scroll-behavior: auto !important; }
 }
 
 /* ── Mobile tab bar ──────────────────────────────────────────────────────
@@ -1379,7 +1374,7 @@ html { scroll-behavior: smooth; }
   top: 8px;
   inset-inline-start: 8px;
   z-index: 200;
-  padding: 10px 16px;
+  padding: 12px 16px;
   border-radius: 4px;
   background: var(--cr-copper);
   color: #fff;
@@ -1398,7 +1393,8 @@ html { scroll-behavior: smooth; }
 [data-tip] {
   position: relative;
   cursor: help;
-  text-decoration: underline dotted rgba(181, 101, 29, 0.5);
+  /* Token, not the copper literal: the business register remaps the accent. */
+  text-decoration: underline dotted color-mix(in srgb, var(--cr-copper) 50%, transparent);
   text-underline-offset: 3px;
 }
 [data-tip]::after {
@@ -1409,8 +1405,10 @@ html { scroll-behavior: smooth; }
   z-index: 60;
   width: max-content;
   max-width: 260px;
-  background: #1a1612;
-  color: #f5f0e8;
+  /* The band tokens ARE the inverted-surface pair; the baked warm-dark
+     literals ignored both the dark theme and the business register. */
+  background: var(--cr-band-bg);
+  color: var(--cr-band-ink);
   font-family: "DM Sans", sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -1435,7 +1433,7 @@ html { scroll-behavior: smooth; }
   bottom: calc(100% + 4px);
   z-index: 60;
   border: 5px solid transparent;
-  border-top-color: #1a1612;
+  border-top-color: var(--cr-band-bg);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease;
@@ -1451,7 +1449,7 @@ html { scroll-behavior: smooth; }
    fixed-column inline grids the layout audit flagged. */
 .grid-plans-3, .grid-plans-4 {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 .form-row-2 {
@@ -1464,7 +1462,7 @@ html { scroll-behavior: smooth; }
 .grid-third-stack {
   display: grid;
   grid-template-columns: minmax(0,1fr) minmax(0,2fr);
-  gap: 20px;
+  gap: 24px;
 }
 @media (max-width: 760px) {
   .grid-third-stack { grid-template-columns: minmax(0,1fr); }
@@ -1488,17 +1486,13 @@ html { scroll-behavior: smooth; }
 }
 .one-pager-cols {
   column-count: 2;
-  column-gap: 28px;
+  column-gap: 24px;
 }
+/* A stray copy of the .milestone-row pair used to nest inside this query
+   (re-declaring the desktop columns, then a nested query putting 1fr back);
+   its net computed styles were identical to the rules above plus this. */
 @media (max-width: 640px) {
-  .milestone-row {
-  display: grid;
-  grid-template-columns: 150px 1fr auto;
-}
-@media (max-width: 640px) {
-  .milestone-row { grid-template-columns: 1fr; }
-}
-.one-pager-cols { column-count: 1; }
+  .one-pager-cols { column-count: 1; }
 }
 
 /* The deal-closed moment eases in rather than snapping — a bell, not a popup. */
@@ -1597,13 +1591,6 @@ body::before {
 @keyframes sealThud {
   0%, 100% { transform: translateY(0); }
   64% { transform: translateY(2px); }
-}
-
-/* ── Focus: keyboard users get copper. The cheapest finished-feeling. ── */
-*:focus-visible {
-  outline: 2px solid var(--cr-copper);
-  outline-offset: 3px;
-  border-radius: 2px;
 }
 
 /* ── Reduced motion, global. Per-feature opt-outs ride on top. ── */

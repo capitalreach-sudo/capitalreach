@@ -2601,7 +2601,10 @@
     "unmarkImportant": "マークを外す",
     "importantAria": "重要マーク済み",
     "deepLinkMissingBody": "リンク先の会話はこの受信箱にはなく、代わりに別の会話が開かれることもありません。複数のアカウントをお持ちの場合は、リンクの送信先アカウントでログインしているかご確認ください。",
-    "deepLinkMissingTitle": "そのリンクからは会話を開けませんでした"
+    "deepLinkMissingTitle": "そのリンクからは会話を開けませんでした",
+    "emptyGateTitle": "会話は双方が取引に署名すると開きます",
+    "emptyGateBody": "投資家がオファーを出し、創業者が受諾し、双方が取引に署名します。それまでメッセージは閉じられています。",
+    "emptyGateCta": "取引を見る"
   },
   "completeness": {
     "nextBest": "次にやること",

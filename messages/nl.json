@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Markering verwijderen",
     "importantAria": "Als belangrijk gemarkeerd",
     "deepLinkMissingBody": "Het gesprek waarnaar de link verwijst staat niet in deze inbox, en er is niets anders voor in de plaats geopend. Als u meer dan één account heeft, controleer dan of u bent aangemeld bij het account waarnaar de link is gestuurd.",
-    "deepLinkMissingTitle": "Die link heeft geen gesprek geopend"
+    "deepLinkMissingTitle": "Die link heeft geen gesprek geopend",
+    "emptyGateTitle": "Gesprekken openen zodra beide partijen een deal hebben ondertekend",
+    "emptyGateBody": "Een investeerder doet een aanbod, de oprichter accepteert het, en beide partijen ondertekenen de deal; tot die tijd blijven berichten gesloten.",
+    "emptyGateCta": "Deals bekijken"
   },
   "completeness": {
     "nextBest": "Doe dit hierna",

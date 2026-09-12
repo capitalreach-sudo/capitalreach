@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Remover importância",
     "importantAria": "Marcado importante",
     "deepLinkMissingBody": "A conversa para que aponta não está nesta caixa de entrada, e nada foi aberto no seu lugar. Se tiver mais do que uma conta, confirme que iniciou sessão naquela para onde o link foi enviado.",
-    "deepLinkMissingTitle": "Esse link não abriu nenhuma conversa"
+    "deepLinkMissingTitle": "Esse link não abriu nenhuma conversa",
+    "emptyGateTitle": "As conversas abrem quando ambas as partes assinam um acordo",
+    "emptyGateBody": "Um investidor faz uma oferta, o fundador aceita-a e ambas as partes assinam o acordo; até lá, as mensagens permanecem fechadas.",
+    "emptyGateCta": "Ver negócios"
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",

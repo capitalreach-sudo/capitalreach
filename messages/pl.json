@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Usuń oznaczenie",
     "importantAria": "Oznaczone jako ważne",
     "deepLinkMissingBody": "Rozmowy, do której prowadzi ten link, nie ma w tej skrzynce i nic nie zostało otwarte w jej miejsce. Jeśli masz więcej niż jedno konto, sprawdź, czy jesteś zalogowany na to, na które link został wysłany.",
-    "deepLinkMissingTitle": "Ten link nie otworzył rozmowy"
+    "deepLinkMissingTitle": "Ten link nie otworzył rozmowy",
+    "emptyGateTitle": "Rozmowy otwierają się, gdy obie strony podpiszą umowę",
+    "emptyGateBody": "Inwestor składa ofertę, założyciel ją przyjmuje, a obie strony podpisują umowę; do tego czasu wiadomości pozostają zamknięte.",
+    "emptyGateCta": "Zobacz transakcje"
   },
   "completeness": {
     "nextBest": "Zrób to teraz",

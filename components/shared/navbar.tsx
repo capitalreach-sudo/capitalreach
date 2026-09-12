@@ -98,7 +98,7 @@ export function Navbar() {
 
           {/* Logo + 2% signal */}
           <div className="flex items-center gap-4 flex-shrink-0 select-none">
-            <Link href="/" className="flex items-center gap-[10px]" style={{ textDecoration: "none" }}>
+            <Link href="/" className="flex items-center gap-2" style={{ textDecoration: "none" }}>
               <DiamondLogo size={10} />
               <span style={{
                 fontFamily:    "'Playfair Display', Georgia, serif",
@@ -118,7 +118,7 @@ export function Navbar() {
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
                 fontSize: "11px", color: "var(--cr-copper)", letterSpacing: "0.02em",
-                display: "flex", alignItems: "center", gap: "5px",
+                display: "flex", alignItems: "center", gap: "4px",
               }}>
                 <span style={{ fontSize: "9px" }}>✦</span>
                 {t("navbar.feeBadge")}
@@ -127,7 +127,7 @@ export function Navbar() {
           </div>
 
           {/* Center links — desktop */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-10">
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
             {NAV_LINKS.map(({ href, label }) => (
               <Link
                 key={href}
@@ -157,14 +157,14 @@ export function Navbar() {
           </div>
 
           {/* Right — auth */}
-          <div className="hidden lg:flex items-center gap-5">
+          <div className="hidden lg:flex items-center gap-4">
             <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
             {/* The keyboard path, advertised: one glance teaches the shortcut. */}
             <button
               onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
               aria-label={t("palette.openAria")}
               className="hidden xl:inline-flex"
-              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
+              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
               ⌘K
             </button>
             <StyleToggle />
@@ -176,7 +176,7 @@ export function Navbar() {
                 <ErrorBoundary fallback={null}><MessagesIcon /></ErrorBoundary>
                 <div className="relative group">
                   <button
-                    className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] transition-colors"
+                    className="flex items-center gap-2 px-2 py-1 rounded-[4px] transition-colors"
                     aria-label={t("navbar.accountMenuAria")}
                     aria-haspopup="menu"
                     onClick={() => setMenuOpen((v) => !v)}
@@ -281,7 +281,7 @@ export function Navbar() {
                     fontFamily:   "'DM Sans', sans-serif",
                     fontWeight:   600,
                     fontSize:     "14px",
-                    padding:      "11px 24px",
+                    padding:      "12px 24px",
                     borderRadius: "4px",
                     border:       "none",
                     cursor:       "pointer",
@@ -297,25 +297,26 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile: search sits beside the hamburger, since the desktop
-              cluster above is hidden entirely below lg. */}
-          <div className="lg:hidden flex items-center">
+          {/* Mobile: search and hamburger travel as one cluster, so
+              justify-between reads logo left, controls right -- the search
+              affordance no longer floats alone mid-bar. */}
+          <div className="lg:hidden flex items-center gap-1">
             <ErrorBoundary fallback={null}><GlobalSearch /></ErrorBoundary>
+            {/* Hamburger -- 24px icon, 44px touch target; the negative
+                margin puts the ICON, not the box, on the container edge. */}
+            <button
+              className="flex items-center justify-center"
+              style={{
+                width: "44px", height: "44px",
+                marginRight: "-10px",
+                color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer",
+              }}
+              onClick={() => setMobileOpen(true)}
+              aria-label={t("nav.openMenu")}
+            >
+              <Menu size={24} />
+            </button>
           </div>
-
-          {/* Mobile hamburger -- 24px icon, 44px touch target */}
-          <button
-            className="lg:hidden flex items-center justify-center"
-            style={{
-              width: "44px", height: "44px",
-              marginRight: "-10px",
-              color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer",
-            }}
-            onClick={() => setMobileOpen(true)}
-            aria-label={t("nav.openMenu")}
-          >
-            <Menu size={24} />
-          </button>
         </div>
       </nav>
 
@@ -337,10 +338,10 @@ export function Navbar() {
           >
             {/* Drawer header */}
             <div
-              className="flex items-center justify-between px-5 flex-shrink-0"
+              className="flex items-center justify-between px-6 flex-shrink-0"
               style={{ height: "56px", borderBottom: "1px solid var(--cr-rule)" }}
             >
-              <Link href="/" className="flex items-center gap-[10px]" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
+              <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
                 <DiamondLogo size={10} />
                 <span style={{
                   fontFamily:    "'Playfair Display', Georgia, serif",
@@ -354,7 +355,7 @@ export function Navbar() {
               </Link>
               <button
                 onClick={() => setMobileOpen(false)}
-                style={{ color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{ color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer", width: 44, height: 44, marginRight: -12, display: "flex", alignItems: "center", justifyContent: "center" }}
                 aria-label={t("nav.closeMenu")}
               >
                 <X size={20} />
@@ -365,9 +366,11 @@ export function Navbar() {
                 before any navigation. */}
             {profile && (
               <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-5 py-4 flex-shrink-0"
+                className="flex items-center gap-3 px-6 py-4 flex-shrink-0"
                 style={{ borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                {/* Same avatar treatment as the desktop bar: paper disc,
+                    copper initials -- the initials carry the accent. */}
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", flexShrink: 0 }}>
                   {getInitials(profile.full_name || profile.email)}
                 </div>
                 <div style={{ minWidth: 0 }}>
@@ -402,8 +405,8 @@ export function Navbar() {
                   { href: "/dashboard/settings",      label: t("nav.settings"),        Icon: Settings        },
                 ] }] : []),
               ]).map(({ header, items }) => (
-                <div key={header} style={{ paddingBottom: "6px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.1em", padding: "14px 20px 6px" }}>
+                <div key={header} style={{ paddingBottom: "8px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.1em", padding: "16px 24px 8px" }}>
                     {header}
                   </p>
                   {items.map(({ href, label, Icon }) => {
@@ -411,7 +414,7 @@ export function Navbar() {
                     return (
                       <Link key={href} href={href} onClick={() => setMobileOpen(false)}
                         aria-current={active ? "page" : undefined}
-                        className="flex items-center gap-3 px-5"
+                        className="flex items-center gap-3 px-6"
                         style={{
                           height:         "48px",
                           fontFamily:     "'DM Sans', sans-serif",
@@ -419,7 +422,7 @@ export function Navbar() {
                           fontSize:       "15px",
                           color:          active ? "var(--cr-copper)" : "var(--cr-ink)",
                           boxShadow:      active ? "inset 2px 0 0 var(--cr-copper)" : "none",
-                          background:     active ? "var(--cr-copper-bg)" : "transparent",
+                          background:     "transparent",
                           textDecoration: "none",
                         }}>
                         <Icon size={16} style={{ color: active ? "var(--cr-copper)" : "var(--cr-ink-4)", flexShrink: 0 }} />
@@ -432,7 +435,7 @@ export function Navbar() {
             </div>
 
             {/* Language, demoted from prime position to just above the footer. */}
-            <div className="px-5 py-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="px-6 py-3 flex items-center gap-4 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
               <StyleToggle />
               <ThemeToggle />
               <LanguageSwitcher currentLocale={locale} />
@@ -440,7 +443,7 @@ export function Navbar() {
 
             {/* Drawer footer */}
             {!profile ? (
-              <div className="px-5 py-5 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+              <div className="px-6 py-4 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
                     height: "44px", background: "var(--cr-copper)", color: "var(--cr-band-ink)",
@@ -466,7 +469,7 @@ export function Navbar() {
                 </p>
               </div>
             ) : (
-              <div className="px-5 py-5 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+              <div className="px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)" }}>
                 <button
                   onClick={() => { signOut(); setMobileOpen(false); }}
                   className="w-full"

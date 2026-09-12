@@ -2601,7 +2601,10 @@
     "unmarkImportant": "표시 해제",
     "importantAria": "중요 표시됨",
     "deepLinkMissingBody": "링크가 가리키는 대화가 이 수신함에 없으며, 대신 열린 대화도 없습니다. 계정을 두 개 이상 쓰고 계신다면, 링크를 받은 계정으로 로그인했는지 확인해 주십시오.",
-    "deepLinkMissingTitle": "링크로 대화를 열지 못했습니다"
+    "deepLinkMissingTitle": "링크로 대화를 열지 못했습니다",
+    "emptyGateTitle": "대화는 양측이 거래에 서명하면 열립니다",
+    "emptyGateBody": "투자자가 오퍼를 내고 창업자가 수락한 뒤 양측이 거래에 서명합니다. 그때까지 메시지는 닫혀 있습니다.",
+    "emptyGateCta": "거래 보기"
   },
   "completeness": {
     "nextBest": "다음에 할 일",

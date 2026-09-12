@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Ta bort markering",
     "importantAria": "Markerad som viktig",
     "deepLinkMissingBody": "Konversationen som länken pekar på finns inte i den här inkorgen, och ingenting har öppnats i stället. Om du har fler än ett konto, kontrollera att du är inloggad på det som länken skickades till.",
-    "deepLinkMissingTitle": "Länken öppnade ingen konversation"
+    "deepLinkMissingTitle": "Länken öppnade ingen konversation",
+    "emptyGateTitle": "Konversationer öppnas när båda parter har undertecknat en affär",
+    "emptyGateBody": "En investerare lägger ett bud, grundaren accepterar det och båda parter undertecknar affären; till dess förblir meddelanden stängda.",
+    "emptyGateCta": "Visa affärer"
   },
   "completeness": {
     "nextBest": "Gör det här härnäst",

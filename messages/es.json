@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Quitar importancia",
     "importantAria": "Marcado importante",
     "deepLinkMissingBody": "La conversación a la que apunta no está en esta bandeja y no se ha abierto nada en su lugar. Si tienes más de una cuenta, comprueba que has iniciado sesión en aquella a la que se envió el enlace.",
-    "deepLinkMissingTitle": "Ese enlace no ha abierto ninguna conversación"
+    "deepLinkMissingTitle": "Ese enlace no ha abierto ninguna conversación",
+    "emptyGateTitle": "Las conversaciones se abren cuando ambas partes firman un acuerdo",
+    "emptyGateBody": "Un inversor hace una oferta, el fundador la acepta y ambas partes firman el acuerdo; hasta entonces, la mensajería permanece cerrada.",
+    "emptyGateCta": "Ver operaciones"
   },
   "completeness": {
     "nextBest": "Haz esto ahora",

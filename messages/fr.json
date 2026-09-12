@@ -2601,7 +2601,10 @@
     "unmarkImportant": "Retirer l'importance",
     "importantAria": "Marqué important",
     "deepLinkMissingBody": "La conversation vers laquelle il pointe ne figure pas dans cette boîte de réception, et rien n'a été ouvert à sa place. Si vous avez plusieurs comptes, vérifiez que vous êtes connecté à celui auquel le lien a été envoyé.",
-    "deepLinkMissingTitle": "Ce lien n'a ouvert aucune conversation"
+    "deepLinkMissingTitle": "Ce lien n'a ouvert aucune conversation",
+    "emptyGateTitle": "Les conversations s'ouvrent une fois l'accord signé par les deux parties",
+    "emptyGateBody": "Un investisseur fait une offre, le fondateur l'accepte, et les deux parties signent l'accord ; d'ici là, la messagerie reste fermée.",
+    "emptyGateCta": "Voir les opérations"
   },
   "completeness": {
     "nextBest": "À faire ensuite",

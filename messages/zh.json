@@ -2601,7 +2601,10 @@
     "unmarkImportant": "取消标记",
     "importantAria": "已标为重要",
     "deepLinkMissingBody": "链接指向的对话不在此收件箱中，也没有打开其他内容作为替代。如果您有多个账户，请确认当前登录的正是收到该链接的那个账户。",
-    "deepLinkMissingTitle": "该链接未能打开对话"
+    "deepLinkMissingTitle": "该链接未能打开对话",
+    "emptyGateTitle": "双方签署交易后即可开启对话",
+    "emptyGateBody": "投资人发出报价，创始人接受，双方签署交易；在此之前，消息功能保持关闭。",
+    "emptyGateCta": "查看交易"
   },
   "completeness": {
     "nextBest": "下一步",

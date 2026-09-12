@@ -80,11 +80,16 @@ const monoFigure: React.CSSProperties = {
   color: "var(--cr-ink)", lineHeight: 1,
 };
 
-// Tables: a header row in Label type over a heavy rule, rows split by
-// hairlines. Cells get 12px of air rather than the old 6px -- the fix for a
-// dense table is room, not fewer columns.
+// Tables: the same double-rule head the two ledgers set -- heavy ink rule,
+// column names in Label type, hairline, then the rows -- so every table on
+// the page speaks one language. Cells get 12px of air rather than the old
+// 6px: the fix for a dense table is room, not fewer columns.
+const tableBase: React.CSSProperties = {
+  width: "100%", borderCollapse: "collapse", minWidth: "480px",
+  borderTop: "2px solid var(--cr-ink)",
+};
 const cellTh: React.CSSProperties = {
-  ...capsLabel, textAlign: "left", padding: "0 12px 12px",
+  ...capsLabel, textAlign: "left", padding: `${LABEL_GAP} 12px`,
   borderBottom: "1px solid var(--cr-rule-dark)",
 };
 const cellThNum: React.CSSProperties = { ...cellTh, textAlign: "right" };
@@ -97,6 +102,14 @@ const cellTd: React.CSSProperties = {
   borderTop: "1px solid var(--cr-rule)",
 };
 const cellTdNum: React.CSSProperties = { ...cellTd, textAlign: "right" };
+
+// First and last columns sit flush with the section's own edges, so a table
+// lines up with the tab strip and captions above it instead of floating 12px
+// inside them.
+const cellThFirst: React.CSSProperties = { ...cellTh, paddingLeft: 0 };
+const cellThNumLast: React.CSSProperties = { ...cellThNum, paddingRight: 0 };
+const cellTdFirst: React.CSSProperties = { ...cellTd, paddingLeft: 0 };
+const cellTdNumLast: React.CSSProperties = { ...cellTdNum, paddingRight: 0 };
 
 /** Axis money: "$100M", never "100000000". Tiers to $T, as the totals in the
  *  table do -- an axis stopping at "$2000B" would not read as the same ladder. */
@@ -243,7 +256,9 @@ function StatCard({ label, value, prefix = "", lead = false }: {
   return (
     <div style={{
       borderTop: lead ? "2px solid var(--cr-ink)" : "1px solid var(--cr-rule-dark)",
-      paddingTop: lead ? ROW_GAP : "12px",
+      // A full step apart, not 16 beside 12: near-equal insets on the lead
+      // and its supporters read as a mistake rather than a hierarchy.
+      paddingTop: lead ? "24px" : "12px",
     }}>
       <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: LABEL_GAP }}>{label}</p>
       <p
@@ -276,7 +291,9 @@ function ScorePill({ score }: { score: number | null }) {
   return (
     <span style={{
       fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px",
-      color, background: `color-mix(in srgb, ${color} 8%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 25%, transparent)`,
+      // The tint alone frames the chip; a border on top of it was a second
+      // frame around the same number.
+      color, background: `color-mix(in srgb, ${color} 8%, transparent)`,
       borderRadius: "3px", padding: "2px 8px",
     }}>
       {score}
@@ -502,8 +519,10 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
       {/* Header strip */}
       <div style={{ position: "relative", background: "var(--cr-band-bg)", borderBottom: "1px solid var(--cr-copper-br)" }}>
         {/* Side gutters relax on small screens: a fixed 32px left 311px of
-            content at 375px, which forced every grid into a squeeze. */}
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px clamp(24px, 5vw, 32px) 48px" }}>
+            content at 375px, which forced every grid into a squeeze. The
+            band breathes at the page's own section step top and bottom --
+            64 over 48 was the same near-unequal pair the body is swept for. */}
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: `${SECTION_GAP} clamp(24px, 5vw, 32px)` }}>
           {/* The masthead opens like every chapter below it: the ruled label,
               not an icon -- the pictogram repeated what the words say. */}
           <div className="ruled-label" style={{ marginBottom: ROW_GAP, color: "var(--cr-band-ink-dim)" }}>{t("data.eyebrow")}</div>
@@ -548,7 +567,10 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             <button
               onClick={fetchData}
               disabled={loading}
-              style={{ display: "flex", alignItems: "center", gap: LABEL_GAP, background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", opacity: loading ? 0.5 : 1, padding: 0 }}
+              // As quiet as the export beside it: the colophon's one copper
+              // mark is the live dot, and a utility is not the most important
+              // thing in the band.
+              style={{ display: "flex", alignItems: "center", gap: LABEL_GAP, background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "var(--cr-band-ink-dim)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", opacity: loading ? 0.5 : 1, padding: 0 }}
             >
               <RefreshCw style={{ width: 12, height: 12, animation: loading ? "spin 1s linear infinite" : "none" }} />
               {t("data.refresh")}
@@ -557,7 +579,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         </div>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px clamp(24px, 5vw, 32px) 96px" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: `${SECTION_GAP} clamp(24px, 5vw, 32px) 96px` }}>
 
         {/* Loading: the ledger being written, not a soup of gray bars. */}
         {loading && (
@@ -569,7 +591,8 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         {/* Error state */}
         {!loading && error && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", textAlign: "center" }}>
-            <AlertTriangle style={{ width: 32, height: 32, color: "var(--cr-copper)", marginBottom: ROW_GAP }} />
+            {/* Ink, not copper: the view's one accent is the retry button. */}
+            <AlertTriangle style={{ width: 32, height: 32, color: "var(--cr-ink-3)", marginBottom: ROW_GAP }} />
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: LABEL_GAP }}>{t("data.errorTitle")}</p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "24px" }}>{t("data.errorSub")}</p>
             <button
@@ -618,7 +641,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   state, so the strip is flush left on desktop and each stat
                   stacks clean at phone widths. */}
               <div style={{ overflow: "hidden", marginTop: BLOCK_GAP }}>
-                <div style={{ display: "flex", flexWrap: "wrap", rowGap: "24px", marginLeft: "-24px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
                     <StatCard label={t("data.startups")} value={data.startupCount} />
                   </div>
@@ -663,21 +686,21 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                        sit below 3:1 against paper, and a reader who cannot
                        separate them still needs the numbers. */
                     <div style={{ overflowX: "auto" }}>
-                      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+                      <table style={tableBase}>
                         <thead>
                           <tr>
                             {/* Ledger alignment: the month reads left, every
                                 figure right, so magnitudes line up down each
                                 column the way a yearbook sets them. */}
                             {[t("data.month"), t("data.newListings"), t("data.dealsClosed"), t("data.capitalSought")].map((h, i) => (
-                              <th key={h} style={i === 0 ? cellTh : cellThNum}>{h}</th>
+                              <th key={h} style={i === 0 ? cellThFirst : i === 3 ? cellThNumLast : cellThNum}>{h}</th>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
                           {monthly.map((m, i) => (
                             <tr key={m.month}>
-                              <td style={cellTd}>
+                              <td style={cellTdFirst}>
                                 {m.month}
                                 {/* The last row is a month in progress; its
                                     figures are partial counts and must say so
@@ -693,7 +716,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                               {/* A total, not one listing's figure: the
                                   per-listing bound prints a legitimate month
                                   as an absence while the chart plots it. */}
-                              <td style={cellTdNum}>{safeFormatTotal(m.sought)}</td>
+                              <td style={cellTdNumLast}>{safeFormatTotal(m.sought)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -705,7 +728,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                           frame. Two scales on one axis can be made to cross
                           wherever you like, which is the commonest way a
                           chart lies. */}
-                      <p style={{ ...capsLabel, letterSpacing: "0.1em", margin: `0 0 ${ROW_GAP}` }}>
+                      <p style={{ ...capsLabel, margin: `0 0 ${ROW_GAP}` }}>
                         {t("data.capitalSought")}
                         <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: LABEL_GAP, color: "var(--cr-ink-4)" }}>$/mo</span>
                       </p>
@@ -724,7 +747,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       {/* The caption names both series in the frame; the mono
                           "/mo" says what one point on the line IS -- a count
                           for that month, not a running total. */}
-                      <p style={{ ...capsLabel, letterSpacing: "0.1em", margin: `0 0 ${ROW_GAP}` }}>
+                      <p style={{ ...capsLabel, margin: `0 0 ${ROW_GAP}` }}>
                         {t("data.newListings")} · {t("data.dealsClosed")}
                         <span className="mono" style={{ textTransform: "none", fontWeight: 500, letterSpacing: 0, marginLeft: LABEL_GAP, color: "var(--cr-ink-4)" }}>/mo</span>
                       </p>
@@ -817,7 +840,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                                   flow the numbers cannot show. The columns
                                   keep pipeline order, which is real; what went
                                   is the implication that they are a sequence. */}
-                              <p style={{ ...capsLabel, fontSize: "9px", letterSpacing: "0.1em", marginBottom: "12px" }}>
+                              {/* The base Label voice, and the label-to-figure
+                                  gap every other labelled figure uses: 9px
+                                  with wider tracking was a third caps size
+                                  the page did not need. */}
+                              <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
                                 {t(`data.stage_${key}`)}
                               </p>
                               {/* Same figure size as every other second-rank
@@ -894,22 +921,22 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 {activeBreakdown === "medians" && data.report && (
                   <>
                     <div style={{ overflowX: "auto" }}>
-                      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+                      <table style={tableBase}>
                         <thead>
                           <tr>
-                            <th style={cellTh}>{t("listings.stage")}</th>
+                            <th style={cellThFirst}>{t("listings.stage")}</th>
                             <th style={cellThNum}>{t("report.medianTarget")}</th>
-                            <th style={cellThNum}>{tf("data.listingsCount", "Listings")}</th>
+                            <th style={cellThNumLast}>{tf("data.listingsCount", "Listings")}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {medianEntries.map(([stage, median]) => (
                             <tr key={stage}>
-                              <td style={{ ...cellTd, fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}>
+                              <td style={{ ...cellTdFirst, fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}>
                                 {(STAGE_LABELS[stage] ?? stage).replace(/_/g, " ")}
                               </td>
                               <td style={{ ...cellTdNum, color: "var(--cr-ink)", fontWeight: 600 }}>{medianMoney(median)}</td>
-                              <td style={cellTdNum}>{data.byStage[stage] ?? 0}</td>
+                              <td style={cellTdNumLast}>{data.byStage[stage] ?? 0}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -975,8 +1002,12 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                             first row. The 2px ink rule over it is the classic
                             yearbook table head: heavy rule, column names,
                             light rule, then the rows. */}
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: LABEL_GAP, paddingBottom: LABEL_GAP, borderBottom: "1px solid var(--cr-rule-dark)" }}>
-                          <span style={capsLabel}>{t("listings.company")}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: ROW_GAP, borderTop: "2px solid var(--cr-ink)", paddingTop: LABEL_GAP, paddingBottom: LABEL_GAP, borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                          {/* The spacer mirrors the rank rail below, so the
+                              column name sits over the names it labels rather
+                              than over the numbering. */}
+                          <span aria-hidden style={{ minWidth: "24px" }} />
+                          <span style={{ ...capsLabel, flex: 1 }}>{t("listings.company")}</span>
                           <span style={capsLabel}>{t("listings.aiScore")}</span>
                         </div>
                         {/* Ledger rows: the 01-style mono rail replaces the
@@ -1014,8 +1045,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                             raised; without a column name it read as any
                             number at all. Same double-rule table head as the
                             ranking beside it. */}
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", borderTop: "2px solid var(--cr-ink)", paddingTop: LABEL_GAP, paddingBottom: LABEL_GAP, borderBottom: "1px solid var(--cr-rule-dark)" }}>
-                          <span style={capsLabel}>{t("listings.company")}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: ROW_GAP, borderTop: "2px solid var(--cr-ink)", paddingTop: LABEL_GAP, paddingBottom: LABEL_GAP, borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                          {/* Same spacer as the ranking's head: the rail is
+                              part of the row grid, and the head follows it. */}
+                          <span aria-hidden style={{ minWidth: "24px" }} />
+                          <span style={{ ...capsLabel, flex: 1 }}>{t("listings.company")}</span>
                           <span style={capsLabel}>{t("listings.raising")}</span>
                         </div>
                         {data.recentStartups.map((s, i) => (
