@@ -120,6 +120,12 @@ function monthLabel(key: string): string {
   return m === "01" ? `${name} ${y.slice(2)}` : name;
 }
 
+/** "2026-09" → "Sep 2026", for captions that name a month in prose. */
+function monthLong(key: string): string {
+  const [y, m] = key.split("-");
+  return new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString("en", { month: "short", year: "numeric", timeZone: "UTC" });
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 /**
@@ -422,6 +428,20 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   }, []);
 
   const monthly = data?.monthly ?? [];
+  // Interior empty months stay plotted -- dropping one draws a segment across
+  // the gap and lies about steadiness. LEADING emptiness is different: months
+  // before the platform's first recorded activity say nothing, so the plotted
+  // domain starts at the first month with any, and one caption line under the
+  // chart owns the quiet before it. The numbers tab and the CSV keep the full
+  // window -- a ledger does not trim its own history.
+  const firstActive = monthly.findIndex(m => m.listings > 0 || m.closed > 0 || m.sought > 0);
+  const plotMonths = firstActive > 0 ? monthly.slice(firstActive) : monthly;
+  // The window's last month is the one still being written -- three days into
+  // it, "deals closed this month" is a partial count, not a collapse. Marked
+  // only when the series actually ends at the snapshot's own month, so a
+  // pinned or stale window is not decorated with a claim about today.
+  const lastInProgress = !!data && plotMonths.length > 0
+    && plotMonths[plotMonths.length - 1].month === data.lastUpdated.slice(0, 7);
   const industryEntries = data
     ? Object.entries(data.byIndustry).sort((a, b) => b[1] - a[1]).slice(0, 6)
     : [];
@@ -455,6 +475,18 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     { key: "recent" as const, label: t("data.recentListings") },
     { key: "scores" as const, label: tf("data.byConsistency", "By consistency score") },
   ];
+
+  // One caption line owns what the plotted domain cannot say for itself: the
+  // quiet before the first active month, and that the last point is a month
+  // still in progress. It sits under both chart tabs; the numbers tab needs
+  // neither, because the full window is right there.
+  const chartFootnote = (firstActive > 0 || lastInProgress) ? (
+    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+      {firstActive > 0 && tf("data.quietBefore", "Nothing was listed or closed before {month}, so the chart starts there.").replace("{month}", monthLong(plotMonths[0].month))}
+      {firstActive > 0 && lastInProgress ? " " : ""}
+      {lastInProgress && tf("data.monthInProgress", "{month} is still in progress; its hollow last point counts the month so far.").replace("{month}", monthLong(plotMonths[plotMonths.length - 1].month))}
+    </p>
+  ) : null;
 
   // The two ledgers are the only NAMED thing on this page, and both the server
   // page and /api/platform-data blank them for a viewer who may not read
@@ -603,12 +635,14 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
             {/* ── The one primary chart ─────────────────────────────────────
                 Totals say how big the platform is and nothing about whether
                 it is growing, so growth is the single chart the page shows on
-                arrival. Twelve months, empty months included: dropping them
-                draws a straight line across the gap, which reads as steady
-                activity and is the opposite of what happened. Capital sits on
-                its own tab rather than its own frame -- two units in one
-                eyeful was two charts where the reader needed one -- and the
-                numbers behind both are the third tab. */}
+                arrival. Interior empty months stay: dropping one draws a
+                straight line across the gap, which reads as steady activity
+                and is the opposite of what happened. Leading empty months go,
+                because a chart spending half its width on a flat zero says
+                nothing -- the caption under the frame owns that quiet.
+                Capital sits on its own tab rather than its own frame -- two
+                units in one eyeful was two charts where the reader needed
+                one -- and the numbers behind both are the third tab. */}
             {monthly.length > 0 && (
               <section style={{ marginBottom: SECTION_GAP }}>
                 <div className="ruled-label" style={{ marginBottom: ROW_GAP }}>{t("data.overTime")}</div>
@@ -641,9 +675,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                           </tr>
                         </thead>
                         <tbody>
-                          {monthly.map(m => (
+                          {monthly.map((m, i) => (
                             <tr key={m.month}>
-                              <td style={cellTd}>{m.month}</td>
+                              <td style={cellTd}>
+                                {m.month}
+                                {/* The last row is a month in progress; its
+                                    figures are partial counts and must say so
+                                    in the same cell that names the month. */}
+                                {lastInProgress && i === monthly.length - 1 && (
+                                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", marginLeft: "8px" }}>
+                                    {tf("data.soFar", "so far")}
+                                  </span>
+                                )}
+                              </td>
                               <td style={cellTdNum}>{m.listings}</td>
                               <td style={cellTdNum}>{m.closed}</td>
                               {/* A total, not one listing's figure: the
@@ -667,10 +711,13 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       </p>
                       <LineChart
                         height={200}
-                        labels={monthly.map(m => monthLabel(m.month))}
+                        labels={plotMonths.map(m => monthLabel(m.month))}
                         formatTick={(n) => (n === 0 ? "0" : compactMoney(n))}
-                        series={[{ key: "sought", label: t("data.capitalSought"), values: monthly.map(m => m.sought), format: safeFormatTotal }]}
+                        series={[{ key: "sought", label: t("data.capitalSought"), values: plotMonths.map(m => m.sought), format: safeFormatTotal }]}
+                        inProgressLast={lastInProgress}
+                        inProgressLabel={tf("data.soFar", "so far")}
                       />
+                      {chartFootnote}
                     </>
                   ) : (
                     <>
@@ -683,12 +730,15 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       </p>
                       <LineChart
                         height={200}
-                        labels={monthly.map(m => monthLabel(m.month))}
+                        labels={plotMonths.map(m => monthLabel(m.month))}
                         series={[
-                          { key: "listings", label: t("data.newListings"), values: monthly.map(m => m.listings) },
-                          { key: "closed", label: t("data.dealsClosed"), values: monthly.map(m => m.closed) },
+                          { key: "listings", label: t("data.newListings"), values: plotMonths.map(m => m.listings) },
+                          { key: "closed", label: t("data.dealsClosed"), values: plotMonths.map(m => m.closed) },
                         ]}
+                        inProgressLast={lastInProgress}
+                        inProgressLabel={tf("data.soFar", "so far")}
                       />
+                      {chartFootnote}
                     </>
                   )}
                 </div>

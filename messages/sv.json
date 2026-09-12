@@ -1031,7 +1031,15 @@
     "investorTabNote": "Vilka som sparade annonsen, vilka som öppnade den, vad de klickade på, vilka frågor de ställde och vilka investerare ni följer upp. Paneler visas här allteftersom aktiviteten kommer in.",
     "errAttachContactsWithheld": "Kontaktuppgifter i din bildtext hölls inne tills affären är registrerad.",
     "offersInbox": "Mottagna bud",
-    "offersInboxNote": "Ett bud är den enda signalen här som redan väntar på ditt svar. Att acceptera ett bud för in affären i affärsdokumentet, och konversationen följer därifrån."
+    "offersInboxNote": "Ett bud är den enda signalen här som redan väntar på ditt svar. Att acceptera ett bud för in affären i affärsdokumentet, och konversationen följer därifrån.",
+    "raiseEmptyTitle": "Inget på mätaren ännu",
+    "raiseEmptyBody": "Här kommer {target} insamlat att visas när bud accepteras och affärer bär belopp.",
+    "raiseGlanceEmpty": "Rör sig när ett bud accepteras, det första startar räkningen.",
+    "attnTitle": "Behöver din uppmärksamhet",
+    "attnOffers": "Bud som väntar på ditt svar",
+    "attnNegotiating": "Affärer i förhandling",
+    "noDocsBody": "Din deck, ekonomi och datarumsfiler listas här, var och en med hur många investerare som öppnat den.",
+    "uploadFirstDoc": "Ladda upp ditt första dokument"
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1573,7 +1581,10 @@
     "stageDistributionNote": "Affärer som just nu befinner sig i varje skede. Avslutade och avböjda är ackumulerade totaler, så detta är en ögonblicksbild och inte en grupp som rör sig från vänster till höger.",
     "closeRateBasis": "av avslutade affärer",
     "consistencyLead": "Annonser rangordnade efter AI-konsistenspoäng.",
-    "consistencyCaption": "Mäter hur fullständig och internt konsekvent ansökan är. Ingen avkastningsprognos, ingen investeringsrådgivning och ingen verifiering av någon siffra."
+    "consistencyCaption": "Mäter hur fullständig och internt konsekvent ansökan är. Ingen avkastningsprognos, ingen investeringsrådgivning och ingen verifiering av någon siffra.",
+    "soFar": "hittills",
+    "quietBefore": "Inget listades eller stängdes före {month}, så diagrammet börjar där.",
+    "monthInProgress": "{month} pågår fortfarande; dess ihåliga sista punkt räknar månaden hittills."
   },
   "onboarding": {
     "welcomeTitle": "Välkommen till CapitalReach",
@@ -2817,7 +2828,8 @@
     "investorInterest": "Investerarintresse",
     "profileViewers": "Profilbesökare",
     "targetInvestors": "Målinvesterare",
-    "documentAnalytics": "Dokumentstatistik"
+    "documentAnalytics": "Dokumentstatistik",
+    "needsAttention": "Behöver din uppmärksamhet"
   },
   "adminUsers": {
     "tabAll": "Alla",
@@ -3350,7 +3362,16 @@
     "successFee": "CapitalReach tar 2 % av en runda när den stängs. Avgiften betalas av startupen som tar emot investeringen — aldrig av investeraren.",
     "dueDiligence": "Granskningen en investerare gör innan pengar utlovas: läsa räkenskaperna, prata med kunder, pröva annonsens påståenden mot belägg. Räkna med dokumentförfrågningar och frågor — en due diligence utan frågor har inte börjat.",
     "termSheet": "Dokumentet som slår fast investeringens villkor — belopp, värdering, rättigheter — före de slutliga avtalen. Oftast inte bindande för själva pengarna, men när det är undertecknat är förhandlingen över och juristerna tar vid.",
-    "assistant": "En AI-hjälp som svarar på frågor om sidan du tittar på — villkoren i en notering, en investerares tes, vad ett nyckeltal betyder. Den ser bara det din plan visar dig."
+    "assistant": "En AI-hjälp som svarar på frågor om sidan du tittar på — villkoren i en notering, en investerares tes, vad ett nyckeltal betyder. Den ser bara det din plan visar dig.",
+    "filterIndustry": "Visar bara de branscher som grundarna registrerat sina bolag under; att välja flera breddar urvalet. Siffran bredvid varje bransch anger hur många aktiva annonser den rymmer.",
+    "filterStage": "Den runda bolaget säger sig ta in, från pre-seed till serie B och vidare. Uppgiven av grundaren, inte bedömd av plattformen.",
+    "filterTraction": "Tröskelfilter på det grundarna uppger: månadsintäkter, tillväxt, runway, rundans storlek och AI-konsistenspoängen. De läser annonsen som den lämnats in, så siffror som din plan döljer går inte att filtrera på.",
+    "filterRegion": "Visar bolag med säte i ett land, enligt annonsen. Stavningar normaliseras, så varje land visas en gång, med sitt antal annonser.",
+    "filterBusinessModel": "Hur bolaget säger sig tjäna pengar: abonnemang, marknadsplats, licenser och så vidare, hämtat ur annonsen som den lämnats in.",
+    "filterSort": "Ändrar bara ordningen på resultaten; inget läggs till eller tas bort. Nyast först är standard, och sortering efter poäng, intäkter eller stängningsdatum läser de siffror grundarna lämnat in.",
+    "filterRaising": "Behåller rundor från den här storleken och uppåt. Filtret läser det mål grundaren satt för rundan, inte beloppet som redan utlovats.",
+    "filterGrowth": "Månatlig intäktstillväxt så som grundaren uppgett den i annonsen. Siffran kommer från grundaren; plattformen kontrollerar den inte.",
+    "filterClosingSoon": "Rundor vars stängningsdatum, satt av grundaren, infaller inom 60 dagar eller redan har passerats. Löpande rundor utan datum tas inte med."
   },
   "translate": {
     "offer": "Det här skrevs på ett annat språk.",
@@ -3829,7 +3850,14 @@
   "match": {
     "title": "Vem som väntar på dig",
     "hint": "Välj din fas och sektor.",
-    "result": "av {total} aktiva investerare förklarar aptit på exakt denna runda"
+    "result": "av {total} aktiva investerare förklarar aptit på exakt denna runda",
+    "stage": "Fas",
+    "sector": "Sektor",
+    "readout": "Direktavläsning",
+    "unavailable": "Direktsiffror är inte tillgängliga just nu.",
+    "retry": "Försök igen",
+    "openRounds": "Öppna rundor",
+    "cta": "Se matchande rundor"
   },
   "pipeline": {
     "title": "Hur en runda stängs",

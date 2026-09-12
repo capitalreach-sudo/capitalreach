@@ -1040,7 +1040,15 @@
     "investorTabNote": "Qui a enregistré l'annonce, qui l'a ouverte, ce sur quoi ils ont cliqué, les questions posées et les investisseurs que vous relancez. Les panneaux apparaissent ici au fur et à mesure de l'activité.",
     "errAttachContactsWithheld": "Les coordonnées figurant dans votre légende ont été masquées jusqu'à l'enregistrement de l'opération.",
     "offersInbox": "Offres reçues",
-    "offersInboxNote": "Une offre est le seul signal ici qui attend déjà votre réponse. En accepter une inscrit l'opération au registre, et la conversation suit."
+    "offersInboxNote": "Une offre est le seul signal ici qui attend déjà votre réponse. En accepter une inscrit l'opération au registre, et la conversation suit.",
+    "raiseEmptyTitle": "Rien au compteur pour l'instant",
+    "raiseEmptyBody": "Ce compteur affichera {target} levés à mesure que des offres sont acceptées et que les opérations portent des montants.",
+    "raiseGlanceEmpty": "Bouge dès qu'une offre est acceptée, la première lance le compte.",
+    "attnTitle": "Requiert votre attention",
+    "attnOffers": "Offres en attente de votre réponse",
+    "attnNegotiating": "Opérations en négociation",
+    "noDocsBody": "Votre deck, vos états financiers et vos fichiers de data room s'affichent ici, avec le nombre d'investisseurs les ayant ouverts.",
+    "uploadFirstDoc": "Déposer votre premier document"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",
@@ -1455,7 +1463,10 @@
     "stageDistributionNote": "Opérations actuellement à chaque étape. Les opérations conclues et abandonnées sont des totaux cumulés, il s'agit donc d'un instantané et non d'un groupe progressant de gauche à droite.",
     "closeRateBasis": "des opérations terminées",
     "consistencyLead": "Annonces classées par score de cohérence IA.",
-    "consistencyCaption": "Mesure l'exhaustivité et la cohérence interne du dossier. Ni prévision de rendement, ni conseil en investissement, ni vérification d'un quelconque chiffre."
+    "consistencyCaption": "Mesure l'exhaustivité et la cohérence interne du dossier. Ni prévision de rendement, ni conseil en investissement, ni vérification d'un quelconque chiffre.",
+    "soFar": "à ce jour",
+    "quietBefore": "Rien n'a été listé ni clôturé avant {month}, le graphique commence donc là.",
+    "monthInProgress": "{month} est encore en cours ; son dernier point creux compte le mois à ce jour."
   },
   "filters": {
     "industry": "Secteur",
@@ -2817,7 +2828,8 @@
     "investorInterest": "Intérêt des investisseurs",
     "profileViewers": "Visiteurs du profil",
     "targetInvestors": "Investisseurs cibles",
-    "documentAnalytics": "Statistiques des documents"
+    "documentAnalytics": "Statistiques des documents",
+    "needsAttention": "Requiert votre attention"
   },
   "adminUsers": {
     "tabAll": "Tous",
@@ -3350,7 +3362,16 @@
     "successFee": "CapitalReach prélève 2 % d'une levée à sa clôture. Cette commission est payée par la startup qui reçoit l'investissement — jamais par l'investisseur.",
     "dueDiligence": "L'examen qu'un investisseur mène avant d'engager son argent : lire les comptes, parler aux clients, confronter les affirmations de l'annonce aux preuves. Attendez-vous à des demandes de documents et à des questions — une due diligence sans questions n'a pas commencé.",
     "termSheet": "Le document qui fixe les conditions de l'investissement — montant, valorisation, droits — avant les contrats définitifs. Rarement contraignant sur l'argent lui-même, mais le signer clôt la négociation et lance les avocats.",
-    "assistant": "Un assistant IA qui répond aux questions sur la page affichée — les conditions d'une annonce, la thèse d'un investisseur, la signification d'un indicateur. Il ne voit que ce que votre offre vous montre."
+    "assistant": "Un assistant IA qui répond aux questions sur la page affichée — les conditions d'une annonce, la thèse d'un investisseur, la signification d'un indicateur. Il ne voit que ce que votre offre vous montre.",
+    "filterIndustry": "N'affiche que les secteurs sous lesquels les fondateurs ont inscrit leur société ; en choisir plusieurs élargit la sélection. Le chiffre à côté de chaque secteur indique le nombre de listings actifs qu'il contient.",
+    "filterStage": "Le tour que la société dit être en train de lever, du pre-seed à la série B et au-delà. Déclaré par le fondateur, non évalué par la plateforme.",
+    "filterTraction": "Des filtres à seuil sur ce que déclarent les fondateurs : revenu mensuel, croissance, trésorerie, taille du tour et score de cohérence IA. Ils lisent le listing tel que déposé ; impossible donc de filtrer sur des chiffres que votre formule masque.",
+    "filterRegion": "N'affiche que les sociétés basées dans un pays, tel qu'indiqué dans le listing. Les graphies sont normalisées : chaque pays n'apparaît qu'une fois, avec son nombre de listings.",
+    "filterBusinessModel": "La façon dont la société dit gagner de l'argent : abonnement, place de marché, licences, etc., reprise du listing tel que déposé.",
+    "filterSort": "Change l'ordre des résultats ; rien n'est ajouté ni retiré. Le plus récent d'abord est l'ordre par défaut, et trier par score, revenu ou date de clôture lit les chiffres déposés par les fondateurs.",
+    "filterRaising": "Conserve les tours à partir de cette taille. Le filtre lit l'objectif de levée fixé par le fondateur pour le tour, pas le montant déjà engagé.",
+    "filterGrowth": "La croissance mensuelle du revenu telle que le fondateur l'a déclarée dans le listing. Le chiffre vient du fondateur ; la plateforme ne le vérifie pas.",
+    "filterClosingSoon": "Les tours dont la date de clôture fixée par le fondateur tombe dans les 60 prochains jours ou est déjà atteinte. Les tours continus sans date sont exclus."
   },
   "translate": {
     "offer": "Ceci a été rédigé dans une autre langue.",
@@ -3829,7 +3850,14 @@
   "match": {
     "title": "Qui vous attend",
     "hint": "Choisissez votre stade et votre secteur.",
-    "result": "sur {total} investisseurs actifs déclarent un appétit pour ce tour précis"
+    "result": "sur {total} investisseurs actifs déclarent un appétit pour ce tour précis",
+    "stage": "Stade",
+    "sector": "Secteur",
+    "readout": "Lecture en direct",
+    "unavailable": "Les chiffres en direct sont indisponibles pour le moment.",
+    "retry": "Réessayer",
+    "openRounds": "Tours ouverts",
+    "cta": "Voir les tours correspondants"
   },
   "pipeline": {
     "title": "Comment un tour se conclut",

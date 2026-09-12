@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Linkedin, MapPin, DollarSign, Globe, Twitter,
   Briefcase, BookOpen, Eye, Pencil, Handshake, BadgeCheck } from "lucide-react";
-import { formatCurrency, getInitials } from "@/lib/utils";
+import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import { detectLanguage } from "@/lib/detect-language";
 import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
@@ -105,6 +105,12 @@ export default async function InvestorProfilePage({ params }: Props) {
   }
   const supabase = await createServerSupabaseClient();
   const t = await getTranslator(getLocale());
+  // Renders before the dictionary has the newer keys; a missing key must not
+  // put a dot-path where a label belongs (same pattern as WhatWeChecked).
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    return out === key ? fallback : out;
+  };
 
   const INVESTOR_TYPE_LABELS: Record<string, string> = {
     angel: t("investorProfile.angelInvestor"),
@@ -255,6 +261,25 @@ export default async function InvestorProfilePage({ params }: Props) {
     Array.isArray(investor.portfolio_json)
       ? (investor.portfolio_json as Array<{ name: string; stage?: string; outcome?: string }>).filter((c) => c?.name)
       : [];
+
+  // The mandate strip's derived figures. Stages resolve through the same
+  // labels the startup surfaces use and sort into ladder order, so the span
+  // reads "Pre-Seed – Series A" whatever order the settings form saved them.
+  const STAGE_ORDER = ["pre-seed", "seed", "series_a", "series_b_plus"];
+  const stageName = (s: string) => STAGE_LABELS[s] ?? s.replace(/_/g, " ");
+  const stagesSorted = [...((investor.stages ?? []) as string[])].sort(
+    (a, b) => ((STAGE_ORDER.indexOf(a) + 1) || 99) - ((STAGE_ORDER.indexOf(b) + 1) || 99),
+  );
+  const stageSpan =
+    stagesSorted.length > 1
+      ? `${stageName(stagesSorted[0])} – ${stageName(stagesSorted[stagesSorted.length - 1])}`
+      : stagesSorted.length === 1 ? stageName(stagesSorted[0]) : null;
+  const industries = (investor.industries ?? []) as string[];
+  const geographies = (investor.geography ?? []) as string[];
+  const thesis: string | null = investor.investment_thesis || null;
+  // Under ~140 characters the header lede holds the whole thesis; longer ones
+  // clamp there and run in full as prose in their own section below.
+  const thesisIsLong = !!thesis && thesis.length > 140;
 
   // Similar investors — others who overlap on industry or stage, so a founder
   // browsing one lead can find the rest of the shortlist without going back.
@@ -427,6 +452,21 @@ export default async function InvestorProfilePage({ params }: Props) {
                 reason founder to founder is: two investors cannot sign a deal
                 with each other, so the channel had no route to being earned.
                 /api/messages/start refuses the pair too. */}
+            {/* The thesis line, in the display voice: the sentence that says
+                what this cheque is for, before any figure. A long thesis
+                clamps here and runs in full as prose in its own section --
+                the standfirst pattern, so the clamp never swallows text that
+                appears nowhere else. */}
+            {thesis && (
+              <p style={{
+                fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400,
+                fontSize: "clamp(17px, 2.6vw, 21px)", lineHeight: 1.5, color: "var(--cr-ink-2)",
+                maxWidth: "46ch", margin: "4px 0 12px",
+                display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden",
+              }}>
+                <T field="investment_thesis">{thesis}</T>
+              </p>
+            )}
             {investor.bio && (
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)", maxWidth: "60ch" }}>
                 <T field="bio">{investor.bio}</T>
@@ -457,6 +497,61 @@ export default async function InvestorProfilePage({ params }: Props) {
           </div>
         </header>
 
+        {/* ── Mandate at a glance ─────────────────────────────────────────
+            The opening's second act: check size, stages, sectors, geography
+            as mono figures over hairlines, so a founder can rule this
+            investor in or out before reading a paragraph. Only cells that
+            HAVE values render. */}
+        {(investor.min_check || investor.max_check || stageSpan || industries.length > 0 || geographies.length > 0) && (
+          <section className="pt-8 flex flex-col sm:flex-row" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            {(investor.min_check || investor.max_check) && (
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investors.checkSize")}</p>
+                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(16px, 2.4vw, 21px)", lineHeight: 1.2, color: "var(--cr-ink)", whiteSpace: "nowrap" }}>
+                  {investor.min_check
+                    ? `${formatCurrency(investor.min_check, true)} – ${investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}`
+                    : investor.max_check
+                      ? `${tf("investorProfile.upTo", "Up to")} ${formatCurrency(investor.max_check, true)}`
+                      : null}
+                </p>
+              </div>
+            )}
+            {stageSpan && (
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.stagesLabel")}</p>
+                <p style={{ ...DATA, fontWeight: 600, fontSize: "13px", lineHeight: 1.4, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--cr-ink)" }}>
+                  {stageSpan}
+                </p>
+              </div>
+            )}
+            {industries.length > 0 && (
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.industriesLabel")}</p>
+                <p style={{ ...DATA, fontWeight: 700, fontSize: "clamp(16px, 2.4vw, 21px)", lineHeight: 1.2, color: "var(--cr-ink)" }}>
+                  {industries.length}
+                </p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                  {industries.slice(0, 3).join(", ")}
+                  {industries.length > 3 ? ` ${tf("investorProfile.moreCount", `+${industries.length - 3} more`, { count: industries.length - 3 })}` : ""}
+                </p>
+              </div>
+            )}
+            {geographies.length > 0 && (
+              <div className={STAT_CELL}>
+                <p style={{ ...LABEL, marginBottom: "8px" }}>{tf("investorProfile.geographyLabel", "Geography")}</p>
+                <p style={{ ...DATA, fontWeight: 600, fontSize: "13px", lineHeight: 1.4, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--cr-ink)" }}>
+                  {countryLabel(t, geographies[0])}
+                </p>
+                {geographies.length > 1 && (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                    {tf("investorProfile.moreCount", `+${geographies.length - 1} more`, { count: geographies.length - 1 })}
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+
         {/* ── Intro video ────────────────────────────────────────────────── */}
         {/* Intro video — a paid feature that stays paid: rendered only while
             the plan still includes it, so a downgrade retires the video
@@ -474,12 +569,14 @@ export default async function InvestorProfilePage({ params }: Props) {
           </section>
         )}
 
-        {/* ── Investment thesis ──────────────────────────────────────────── */}
-        {investor.investment_thesis && (
+        {/* ── Investment thesis ──────────────────────────────────────────
+            Only when the header lede could not hold all of it. Set with
+            room: a thesis is the one paragraph a founder actually reads. */}
+        {thesis && thesisIsLong && (
           <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investors.thesis")}</div>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", lineHeight: 1.65, color: "var(--cr-ink-2)", maxWidth: "62ch" }}>
-              <T field="investment_thesis">{investor.investment_thesis}</T>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", lineHeight: 1.75, color: "var(--cr-ink-2)", maxWidth: "62ch" }}>
+              <T field="investment_thesis">{thesis}</T>
             </p>
           </section>
         )}
@@ -522,21 +619,13 @@ export default async function InvestorProfilePage({ params }: Props) {
 
         {/* ── Investor detail ───────────────────────────────────────────── */}
         {/* portfolio_count is deliberately not repeated here: it is the same
-            number as number_of_investments, already shown in the stats row. */}
-        {(investor.min_check || investor.max_check || investor.languages?.length || investor.board_seat_pref || investor.follow_on_policy) && (
+            number as number_of_investments, already shown in the stats row.
+            Check size is not repeated either -- it leads the mandate strip
+            under the header now, and one fact gets one place. */}
+        {(investor.languages?.length || investor.board_seat_pref || investor.follow_on_policy) && (
           <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("investorProfile.investorDetail")}</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              {(investor.min_check || investor.max_check) && (
-                <div>
-                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investors.checkSize")}</p>
-                  <p style={{ ...DATA, fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
-                    {investor.min_check ? formatCurrency(investor.min_check, true) : "—"}
-                    {" – "}
-                    {investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}
-                  </p>
-                </div>
-              )}
               {investor.board_seat_pref && (
                 <div>
                   <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.boardSeat")}</p>
@@ -606,52 +695,65 @@ export default async function InvestorProfilePage({ params }: Props) {
             </div>
           )}
 
-          {(investor.follow_on_policy || investor.board_seat_pref) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
-              {investor.follow_on_policy && (
-                <div>
-                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.followOnPolicy")}</p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.follow_on_policy}</p>
-                </div>
-              )}
-              {investor.board_seat_pref && (
-                <div>
-                  <p style={{ ...LABEL, marginBottom: "8px" }}>{t("investorProfile.boardPreference")}</p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "var(--cr-ink-2)" }}>{investor.board_seat_pref}</p>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Follow-on policy and board preference are deliberately not
+              repeated here: both already render, under the same labels'
+              meanings, in the Investor Detail block above. */}
         </section>
 
         {/* ── Portfolio companies ────────────────────────────────────────── */}
-        {/* Ledger rows with a numbered rail, not a grid of boxes. */}
-        {portfolio.length > 0 && (
-          <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-            <div className="ruled-label" style={{ marginBottom: "8px" }}>{t("investorProfile.portfolioCompanies")}</div>
-            <div>
-              {portfolio.map((co, i) => (
-                <div key={i} className="flex items-center justify-between gap-3 flex-wrap"
-                  style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
-                  <div className="flex items-baseline gap-3 min-w-0">
-                    <span style={{ ...DATA, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", minWidth: "20px", flexShrink: 0 }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="truncate" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{co.name}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    {co.stage && (
-                      <span style={BADGE}>{co.stage.replace(/_/g, " ")}</span>
-                    )}
-                    {co.outcome && (
-                      <span style={BADGE_COPPER}>{co.outcome.replace(/_/g, " ")}</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+        {/* Ledger rows with a numbered rail, not a grid of boxes. Past six
+            rows the ledger folds behind a native disclosure -- interaction
+            with no client component -- and the count is stated either way,
+            so a folded list never understates a record. */}
+        {portfolio.length > 0 && (() => {
+          const row = (co: { name: string; stage?: string; outcome?: string }, i: number) => (
+            <div key={i} className="flex items-center justify-between gap-3 flex-wrap"
+              style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+              <div className="flex items-baseline gap-3 min-w-0">
+                <span style={{ ...DATA, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", minWidth: "20px", flexShrink: 0 }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="truncate" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{co.name}</span>
+              </div>
+              <div className="flex gap-2">
+                {co.stage && (
+                  <span style={BADGE}>{co.stage.replace(/_/g, " ")}</span>
+                )}
+                {co.outcome && (
+                  <span style={BADGE_COPPER}>{co.outcome.replace(/_/g, " ")}</span>
+                )}
+              </div>
             </div>
-          </section>
-        )}
+          );
+          return (
+            <section className="mt-8 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+              <div className="flex items-baseline justify-between gap-3" style={{ marginBottom: "8px" }}>
+                <div className="ruled-label">{t("investorProfile.portfolioCompanies")}</div>
+                <span style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{portfolio.length}</span>
+              </div>
+              <div>
+                {portfolio.slice(0, 6).map(row)}
+                {portfolio.length > 6 && (
+                  <details data-cr-expander>
+                    <summary
+                      style={{
+                        listStyle: "none", cursor: "pointer",
+                        display: "flex", alignItems: "center", gap: "6px",
+                        minHeight: "40px", padding: "8px 0",
+                        borderTop: "1px solid var(--cr-rule)",
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px",
+                        color: "var(--cr-copper)",
+                      }}
+                    >
+                      {tf("investorProfile.showAllPortfolio", `Show all ${portfolio.length} companies`, { count: portfolio.length })}
+                    </summary>
+                    {portfolio.slice(6).map((co, i) => row(co, i + 6))}
+                  </details>
+                )}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── Similar investors ── */}
         {similar.length > 0 && (

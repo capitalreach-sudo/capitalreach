@@ -25,9 +25,6 @@ export const SERIES = [
 ] as const;
 
 export const OTHER = "#9C8E82";      // --cr-ink-4: "everything else" is deliberately grey
-export const GRID = "rgba(107,96,86,0.14)";
-export const AXIS_TEXT = "#9C8E82";
-export const SURFACE = "#FAF7F2";
 
 /** Fixed slot for an entity, so its colour never depends on rank or filters. */
 export function seriesColor(index: number): string {

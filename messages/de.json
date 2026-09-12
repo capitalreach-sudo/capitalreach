@@ -1047,7 +1047,15 @@
     "investorTabNote": "Wer das Angebot gespeichert hat, wer es geöffnet hat, was angeklickt wurde, welche Fragen gestellt wurden und welche Investoren Sie verfolgen. Panels erscheinen hier, sobald die Aktivität eintrifft.",
     "errAttachContactsWithheld": "Kontaktdaten in Ihrer Bildunterschrift wurden zurückgehalten, bis der Deal registriert ist.",
     "offersInbox": "Eingegangene Angebote",
-    "offersInboxNote": "Ein Angebot ist hier das einzige Signal, das bereits auf Ihre Antwort wartet. Nehmen Sie eines an, wird der Deal festgehalten, und das Gespräch ergibt sich daraus."
+    "offersInboxNote": "Ein Angebot ist hier das einzige Signal, das bereits auf Ihre Antwort wartet. Nehmen Sie eines an, wird der Deal festgehalten, und das Gespräch ergibt sich daraus.",
+    "raiseEmptyTitle": "Noch nichts auf dem Zähler",
+    "raiseEmptyBody": "Hier steht {target} eingesammelt, sobald Angebote angenommen werden und Deals Beträge tragen.",
+    "raiseGlanceEmpty": "Bewegt sich, sobald ein Angebot angenommen wird, das erste startet die Zählung.",
+    "attnTitle": "Braucht Ihre Aufmerksamkeit",
+    "attnOffers": "Angebote, die auf Ihre Antwort warten",
+    "attnNegotiating": "Deals in Verhandlung",
+    "noDocsBody": "Ihr Deck, Ihre Finanzen und Datenraum-Dateien erscheinen hier, jeweils mit der Zahl der Investoren, die sie geöffnet haben.",
+    "uploadFirstDoc": "Erstes Dokument hochladen"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",
@@ -1462,7 +1470,10 @@
     "stageDistributionNote": "Deals, die derzeit in der jeweiligen Phase stehen. Abgeschlossen und abgelehnt sind Gesamtwerte bis heute, dies ist also eine Momentaufnahme und keine Gruppe, die von links nach rechts wandert.",
     "closeRateBasis": "der beendeten Deals",
     "consistencyLead": "Einträge nach KI-Konsistenzwert sortiert.",
-    "consistencyCaption": "Misst Vollständigkeit und interne Konsistenz der Angaben. Keine Renditeprognose, keine Anlageberatung und keine Überprüfung einzelner Zahlen."
+    "consistencyCaption": "Misst Vollständigkeit und interne Konsistenz der Angaben. Keine Renditeprognose, keine Anlageberatung und keine Überprüfung einzelner Zahlen.",
+    "soFar": "bisher",
+    "quietBefore": "Vor {month} wurde nichts gelistet oder abgeschlossen, daher beginnt das Diagramm dort.",
+    "monthInProgress": "{month} läuft noch; der hohle letzte Punkt zählt den bisherigen Monat."
   },
   "filters": {
     "industry": "Branche",
@@ -2817,7 +2828,8 @@
     "investorInterest": "Investoreninteresse",
     "profileViewers": "Profilbesucher",
     "targetInvestors": "Ziel-Investoren",
-    "documentAnalytics": "Dokumentanalysen"
+    "documentAnalytics": "Dokumentanalysen",
+    "needsAttention": "Braucht Ihre Aufmerksamkeit"
   },
   "adminUsers": {
     "tabAll": "Alle",
@@ -3350,7 +3362,16 @@
     "successFee": "CapitalReach berechnet 2 % einer Runde beim Abschluss. Sie zahlt das Startup, das die Investition erhält — nie der Investor.",
     "dueDiligence": "Die Prüfung, die ein Investor vor der Zusage durchführt: Finanzzahlen lesen, mit Kunden sprechen, die Angaben im Listing gegen Belege prüfen. Rechne mit Dokumentanfragen und Fragen — eine Due Diligence ohne Rückfragen hat nicht begonnen.",
     "termSheet": "Das Dokument, das die Konditionen des Investments festhält — Betrag, Bewertung, Rechte — vor den finalen Verträgen. Meist nicht bindend fürs Geld selbst, aber mit der Unterschrift ist die Verhandlung vorbei und die Anwälte beginnen.",
-    "assistant": "Ein KI-Helfer, der Fragen zur aktuellen Seite beantwortet — die Konditionen eines Listings, die These eines Investors, die Bedeutung einer Kennzahl. Er sieht nur, was Ihr Plan Ihnen zeigt."
+    "assistant": "Ein KI-Helfer, der Fragen zur aktuellen Seite beantwortet — die Konditionen eines Listings, die These eines Investors, die Bedeutung einer Kennzahl. Er sieht nur, was Ihr Plan Ihnen zeigt.",
+    "filterIndustry": "Zeigt nur die Branchen, unter denen Gründer ihre Unternehmen eingetragen haben; mehrere auszuwählen erweitert die Auswahl. Die Zahl neben jeder Branche ist die Anzahl der aktiven Einträge darin.",
+    "filterStage": "Die Finanzierungsrunde, die das Unternehmen nach eigener Angabe gerade aufnimmt, von Pre-Seed bis Series B und darüber hinaus. Vom Gründer angegeben, nicht von der Plattform bewertet.",
+    "filterTraction": "Schwellenfilter auf das, was Gründer angeben: Monatsumsatz, Wachstum, Runway, Rundengröße und den KI-Konsistenzwert. Sie lesen den Eintrag wie eingereicht, nach Zahlen, die dein Tarif verbirgt, lässt sich also nicht filtern.",
+    "filterRegion": "Zeigt Unternehmen mit Sitz in einem Land, wie im Eintrag angegeben. Schreibweisen werden vereinheitlicht, jedes Land erscheint also nur einmal, mit der Zahl seiner Einträge.",
+    "filterBusinessModel": "Wie das Unternehmen nach eigener Angabe verdient: Abo, Marktplatz, Lizenzen und so weiter, übernommen aus dem Eintrag wie eingereicht.",
+    "filterSort": "Ändert nur die Reihenfolge der Ergebnisse; nichts kommt hinzu oder fällt weg. Neueste zuerst ist die Voreinstellung, und die Sortierung nach Wert, Umsatz oder Schlussdatum liest die von den Gründern eingereichten Zahlen.",
+    "filterRaising": "Behält Runden ab dieser Größe. Gelesen wird das Finanzierungsziel, das der Gründer für die Runde gesetzt hat, nicht der bereits zugesagte Betrag.",
+    "filterGrowth": "Das monatliche Umsatzwachstum, wie der Gründer es im Eintrag angegeben hat. Die Zahl stammt vom Gründer und wird von der Plattform nicht geprüft.",
+    "filterClosingSoon": "Runden, deren vom Gründer gesetztes Schlussdatum in den nächsten 60 Tagen liegt oder bereits erreicht ist. Laufende Runden ohne Datum bleiben außen vor."
   },
   "translate": {
     "offer": "Dies wurde in einer anderen Sprache verfasst.",
@@ -3829,7 +3850,14 @@
   "match": {
     "title": "Wer auf dich wartet",
     "hint": "Wähle Phase und Branche.",
-    "result": "von {total} aktiven Investoren erklären Interesse an genau dieser Runde"
+    "result": "von {total} aktiven Investoren erklären Interesse an genau dieser Runde",
+    "stage": "Phase",
+    "sector": "Branche",
+    "readout": "Live-Anzeige",
+    "unavailable": "Live-Zahlen sind gerade nicht verfügbar.",
+    "retry": "Erneut versuchen",
+    "openRounds": "Offene Runden",
+    "cta": "Passende Runden ansehen"
   },
   "pipeline": {
     "title": "Wie eine Runde schliesst",

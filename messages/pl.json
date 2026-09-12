@@ -1031,7 +1031,15 @@
     "investorTabNote": "Kto zapisał ofertę, kto ją otworzył, w co kliknął, jakie zadał pytania i których inwestorów sam śledzisz. Panele pojawią się tutaj wraz z napływem aktywności.",
     "errAttachContactsWithheld": "Dane kontaktowe z Twojego opisu zostały wstrzymane do czasu zarejestrowania transakcji.",
     "offersInbox": "Otrzymane oferty",
-    "offersInboxNote": "Oferta to jedyny sygnał na tej stronie, który już czeka na Twoją odpowiedź. Jej przyjęcie wpisuje transakcję do zapisu, a rozmowa wynika już z tego."
+    "offersInboxNote": "Oferta to jedyny sygnał na tej stronie, który już czeka na Twoją odpowiedź. Jej przyjęcie wpisuje transakcję do zapisu, a rozmowa wynika już z tego.",
+    "raiseEmptyTitle": "Licznik jeszcze pusty",
+    "raiseEmptyBody": "Pojawi się tu {target} zebrane, gdy oferty będą przyjmowane, a transakcje będą nieść kwoty.",
+    "raiseGlanceEmpty": "Rusza, gdy oferta zostanie przyjęta, pierwsza rozpoczyna liczenie.",
+    "attnTitle": "Wymaga Twojej uwagi",
+    "attnOffers": "Oferty czekające na Twoją odpowiedź",
+    "attnNegotiating": "Transakcje w negocjacjach",
+    "noDocsBody": "Twój deck, finanse i pliki data room pojawią się tutaj, każdy z liczbą inwestorów, którzy go otworzyli.",
+    "uploadFirstDoc": "Prześlij pierwszy dokument"
   },
   "settings": {
     "pageTitle": "Ustawienia",
@@ -1573,7 +1581,10 @@
     "stageDistributionNote": "Transakcje znajdujące się obecnie na każdym etapie. Zamknięte i odrzucone to sumy narastające, więc jest to obraz stanu w danej chwili, a nie jedna grupa przechodząca od lewej do prawej.",
     "closeRateBasis": "zakończonych transakcji",
     "consistencyLead": "Oferty uszeregowane według oceny spójności AI.",
-    "consistencyCaption": "Mierzy kompletność i wewnętrzną spójność zgłoszenia. Nie jest prognozą zwrotu, poradą inwestycyjną ani weryfikacją jakiejkolwiek liczby."
+    "consistencyCaption": "Mierzy kompletność i wewnętrzną spójność zgłoszenia. Nie jest prognozą zwrotu, poradą inwestycyjną ani weryfikacją jakiejkolwiek liczby.",
+    "soFar": "do tej pory",
+    "quietBefore": "Przed {month} niczego nie opublikowano ani nie zamknięto, więc wykres zaczyna się właśnie tam.",
+    "monthInProgress": "{month} wciąż trwa; jego pusty ostatni punkt liczy miesiąc do tej pory."
   },
   "onboarding": {
     "welcomeTitle": "Witaj w CapitalReach",
@@ -2817,7 +2828,8 @@
     "investorInterest": "Zainteresowanie inwestorów",
     "profileViewers": "Odwiedzający profil",
     "targetInvestors": "Inwestorzy docelowi",
-    "documentAnalytics": "Analityka dokumentów"
+    "documentAnalytics": "Analityka dokumentów",
+    "needsAttention": "Wymaga Twojej uwagi"
   },
   "adminUsers": {
     "tabAll": "Wszyscy",
@@ -3350,7 +3362,16 @@
     "successFee": "CapitalReach pobiera 2% rundy przy jej zamknięciu. Płaci je startup otrzymujący inwestycję — nigdy inwestor.",
     "dueDiligence": "Badanie, które inwestor przeprowadza przed zaangażowaniem pieniędzy: czytanie finansów, rozmowy z klientami, konfrontowanie twierdzeń z ogłoszenia z dowodami. Spodziewaj się próśb o dokumenty i pytań — due diligence bez pytań się nie zaczęło.",
     "termSheet": "Dokument ustalający warunki inwestycji — kwotę, wycenę, prawa — przed ostatecznymi umowami. Zwykle nie wiąże co do samych pieniędzy, ale jego podpisanie kończy negocjacje i oddaje sprawę prawnikom.",
-    "assistant": "Asystent AI odpowiadający na pytania o oglądaną stronę — warunki ogłoszenia, tezę inwestora, znaczenie wskaźnika. Widzi tylko to, co pokazuje Ci Twój plan."
+    "assistant": "Asystent AI odpowiadający na pytania o oglądaną stronę — warunki ogłoszenia, tezę inwestora, znaczenie wskaźnika. Widzi tylko to, co pokazuje Ci Twój plan.",
+    "filterIndustry": "Pokazuje tylko branże, w których założyciele zgłosili swoje spółki; wybranie kilku poszerza wybór. Liczba obok każdej branży to liczba aktywnych ofert w niej.",
+    "filterStage": "Runda, którą spółka według własnej deklaracji właśnie pozyskuje, od pre-seed po serię B i dalej. Deklaruje ją założyciel; platforma jej nie ocenia.",
+    "filterTraction": "Filtry progowe na tym, co deklarują założyciele: miesięczny przychód, wzrost, runway, wielkość rundy i ocena spójności AI. Czytają ofertę taką, jaką złożono, więc nie da się filtrować po liczbach, które ukrywa Twój plan.",
+    "filterRegion": "Pokazuje spółki z siedzibą w jednym kraju, zgodnie z ofertą. Pisownia jest ujednolicana, więc każdy kraj pojawia się raz, z liczbą swoich ofert.",
+    "filterBusinessModel": "Jak spółka według własnej deklaracji zarabia: subskrypcja, marketplace, licencje i tak dalej, przejęte z oferty w złożonej postaci.",
+    "filterSort": "Zmienia tylko kolejność wyników; niczego nie dodaje ani nie usuwa. Domyślnie najnowsze są pierwsze, a sortowanie po ocenie, przychodzie lub dacie zamknięcia czyta liczby złożone przez założycieli.",
+    "filterRaising": "Zostawia rundy od tej wielkości wzwyż. Czyta cel finansowania ustalony przez założyciela dla rundy, a nie kwotę już zadeklarowaną.",
+    "filterGrowth": "Miesięczny wzrost przychodów taki, jaki założyciel podał w ofercie. Liczba pochodzi od założyciela; platforma jej nie weryfikuje.",
+    "filterClosingSoon": "Rundy, których ustalona przez założyciela data zamknięcia przypada w ciągu najbliższych 60 dni albo już minęła. Rundy ciągłe bez daty są pomijane."
   },
   "translate": {
     "offer": "To napisano w innym języku.",
@@ -3829,7 +3850,14 @@
   "match": {
     "title": "Kto na Ciebie czeka",
     "hint": "Wybierz etap i branżę.",
-    "result": "z {total} aktywnych inwestorów deklaruje apetyt na dokładnie taką rundę"
+    "result": "z {total} aktywnych inwestorów deklaruje apetyt na dokładnie taką rundę",
+    "stage": "Etap",
+    "sector": "Branża",
+    "readout": "Odczyt na żywo",
+    "unavailable": "Dane na żywo są w tej chwili niedostępne.",
+    "retry": "Spróbuj ponownie",
+    "openRounds": "Otwarte rundy",
+    "cta": "Zobacz pasujące rundy"
   },
   "pipeline": {
     "title": "Jak zamyka się runda",

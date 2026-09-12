@@ -16,6 +16,7 @@ import { ShareLinks } from "@/components/startup/share-links";
 import type { BenchmarkResult } from "@/lib/benchmarks";
 import { CapTableCard } from "@/components/dashboard/cap-table-card";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { notify } from "@/components/ui/toast-notify";
 import { listingCompleteness } from "@/lib/listing-completeness";
 import { MetricsRecorder } from "@/components/dashboard/metrics-recorder";
@@ -415,7 +416,30 @@ function ViewsSparkline({ series, width = 96, height = 20 }: { series: number[];
  */
 function RaiseTracker({ target, softCircled, committed }: { target: number; softCircled: number; committed: number }) {
   const { t } = useTranslation();
-  if (!target || (softCircled === 0 && committed === 0)) return null;
+  // Renders sensibly before the key lands in messages/; the orchestrated
+  // dictionary pass replaces the fallback with the localized string.
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    return out === key ? fallback.replace(/\{(\w+)\}/g, (_, k) => String(vars?.[k] ?? `{${k}}`)) : out;
+  };
+  if (!target) return null;
+  if (softCircled === 0 && committed === 0) {
+    // A target with nothing against it is an empty state, not an absent
+    // panel: say what the meter will read and the one place it starts.
+    // The action is a copper link, not a filled pill -- RoundControls below
+    // already holds this tab's one copper fill.
+    return (
+      <EmptyState
+        title={tf("dashboard.raiseEmptyTitle", "Nothing on the meter yet")}
+        body={tf("dashboard.raiseEmptyBody", "This will read {target} raised as offers are accepted and deals carry amounts.", { target: formatCurrency(target, true) })}
+        action={
+          <Link href="/dashboard/startup/offers" style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+            {t("dashboard.offersInbox")} {"→"}
+          </Link>
+        }
+      />
+    );
+  }
   const pctC = Math.min(100, (committed / target) * 100);
   const pctS = Math.min(100 - pctC, (softCircled / target) * 100);
   return (
@@ -440,6 +464,66 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
           {t("dashboard.softCircled")}: {formatCurrency(softCircled, true)}
         </span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The overview's one-line answer to "how is my raise going", from props the
+ * page already holds. The strip above carries interest (views, saves, deals),
+ * the completion panel below carries the next action; this band carries the
+ * money, so arrival reads raise -> interest -> next step without a tab
+ * change. The full tracker stays one tab away -- this is a glance, so the
+ * figure sits at the 22px supporting step: the 48px headline above is the
+ * view's one loudest number.
+ */
+function RaiseGlance({ target, softCircled, committed, live, onOpenRaise }: { target: number; softCircled: number; committed: number; live: boolean; onOpenRaise: () => void }) {
+  const { t } = useTranslation();
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
+  const total = committed + softCircled;
+  // A listing that is not live cannot receive the offers this band counts,
+  // so promising a zero would be a lie about the next step: the draft and
+  // review banners above already own that state. Money already on the
+  // record still shows regardless.
+  if (!target || (!live && total === 0)) return null;
+  const pctC = Math.min(100, (committed / target) * 100);
+  const pctS = Math.min(100 - pctC, (softCircled / target) * 100);
+  return (
+    <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "24px 0" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+        <div style={{ minWidth: 0 }}>
+          <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "8px" }}>{t("dashboard.raiseProgress")}</h3>
+          <p style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatCurrency(total, true)}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>/ {formatCurrency(target, true)}</span>
+          </p>
+        </div>
+        {/* A tab switch, not a route: the number stays a real link without
+            the page moving underneath it. */}
+        <button type="button" onClick={onOpenRaise} style={tertiaryBtn}>
+          {t("sections.raiseProgress")} <span aria-hidden>{"→"}</span>
+        </button>
+      </div>
+      {total > 0 ? (
+        /* Same split as the full tracker: green is money that landed,
+           copper-tinted is money spoken for -- direction, never decoration. */
+        <div style={{ height: "4px", background: "var(--cr-paper-4)", borderRadius: "2px", overflow: "hidden", display: "flex", marginTop: "16px" }}>
+          <div style={{ width: `${pctC}%`, background: "var(--cr-up)" }} />
+          <div style={{ width: `${pctS}%`, background: "var(--cr-copper)", opacity: 0.75 }} />
+        </div>
+      ) : (
+        /* The zero is stated with the target it counts toward, and the one
+           action that moves it sits in the same breath. */
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "12px", lineHeight: 1.5 }}>
+          {tf("dashboard.raiseGlanceEmpty", "Moves when an offer is accepted -- the first one starts the count.")}{" "}
+          <Link href="/dashboard/startup/offers" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>
+            {t("dashboard.offersInbox")} {"→"}
+          </Link>
+        </p>
+      )}
     </div>
   );
 }
@@ -1210,21 +1294,26 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div style={{ borderTop: "1px solid var(--cr-rule)", overflow: "hidden" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(176px, 1fr))", marginLeft: "-1px" }}>
               {[
-                { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries },
+                /* Saves are answered on the investors tab (who saved, and the
+                   panels around it), so the count leads there rather than
+                   sitting inert: a figure a founder can act on is a link. */
+                { label: t("dashboard.investorSaves"), val: analytics.saves,                series: analytics.saveSeries, tab: "investors" as StartupTab },
                 { label: t("dashboard.activeDeals"),   val: analytics.deals,                series: analytics.dealSeries, href: "/deals" },
                 { label: t("dashboard.aiScore"),       val: startup.vaultrise_score ?? "—", info: "glossary.aiScore", dial: true },
-              ].map(({ label, val, series, href, info, dial }: { label: string; val: number | string; series?: number[]; href?: string; info?: string; dial?: boolean }) => (
-                <div key={label} onClick={href ? () => router.push(href) : undefined}
-                  role={href ? "link" : undefined} tabIndex={href ? 0 : undefined}
-                  onKeyDown={href ? (e) => { if (e.key === "Enter") router.push(href); } : undefined}
-                  style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", cursor: href ? "pointer" : "default", display: "flex", flexDirection: "column" }}>
+              ].map(({ label, val, series, href, info, dial, tab }: { label: string; val: number | string; series?: number[]; href?: string; info?: string; dial?: boolean; tab?: StartupTab }) => {
+                const open = href ? () => router.push(href) : tab ? () => setActiveTab(tab) : undefined;
+                return (
+                <div key={label} onClick={open}
+                  role={open ? "link" : undefined} tabIndex={open ? 0 : undefined}
+                  onKeyDown={open ? (e) => { if (e.key === "Enter") open(); } : undefined}
+                  style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", cursor: open ? "pointer" : "default", display: "flex", flexDirection: "column" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
                     {label}
                     {/* The founder is being shown a number about their own
                         company that a model produced. They deserve to know what
                         it measures without leaving the page. */}
                     {info && <InfoTip termKey={info} />}
-                    {href && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
+                    {open && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
                   </p>
                   {dial && typeof val === "number" ? (
                     /* Stepped down from 48: the dial is the loudest object in
@@ -1235,7 +1324,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   )}
                   {series && <ViewsSparkline series={series} />}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1254,8 +1344,21 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* ── Overview: the state of the listing itself ── */}
         {activeTab === "overview" && (
-          /* 24px gap inline: the shared class carries 20px, which is off the
-             4/8/12/16/24 scale -- this surface keeps the rhythm honest. */
+          <div style={stack24}>
+          {/* The raise, first: the founder's question on arrival is answered
+              before the housekeeping below gets a say. Hidden until a target
+              exists -- the completion panel is what says to set one. */}
+          <ErrorBoundary labelKey="sections.raiseProgress">
+            <RaiseGlance
+              target={startup.funding_target}
+              softCircled={analytics.raise?.softCircled ?? 0}
+              committed={analytics.raise?.committed ?? 0}
+              live={startup.status === "active"}
+              onOpenRaise={() => setActiveTab("raise")}
+            />
+          </ErrorBoundary>
+          {/* 24px gap inline: the shared class carries 20px, which is off the
+             4/8/12/16/24 scale -- this surface keeps the rhythm honest. */}
           <div className="grid-third-stack" style={{ gap: "24px", alignItems: "start" }}>
             {/* Profile completion */}
             <div style={panel}>
@@ -1410,6 +1513,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               </Flush>
             </div>
           </div>
+          </div>
         )}
 
         {/* ── Raise progress: the round, its shape and its history ── */}
@@ -1498,9 +1602,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <div style={panel}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap", marginBottom: "24px" }}>
                 <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.uploadedDocuments")}</h3>
-                <Link href="/dashboard/startup/documents" style={primaryBtn}>
-                  {t("dashboard.manage")}
-                </Link>
+                {/* With an empty list, the EmptyState below owns this view's
+                    one copper fill; two pills to the same page is noise. */}
+                {startup.documents && startup.documents.length > 0 && (
+                  <Link href="/dashboard/startup/documents" style={primaryBtn}>
+                    {t("dashboard.manage")}
+                  </Link>
+                )}
               </div>
               {startup.documents && startup.documents.length > 0 ? (
                 <div>
@@ -1526,9 +1634,23 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   ))}
                 </div>
               ) : (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>
-                  {t("dashboard.noDocuments")}
-                </p>
+                (() => {
+                  const tf = (key: string, fallback: string) => {
+                    const out = t(key);
+                    return out === key ? fallback : out;
+                  };
+                  return (
+                    <EmptyState
+                      title={t("dashboard.noDocuments")}
+                      body={tf("dashboard.noDocsBody", "Your deck, financials and data-room files list here, each with how many investors opened it.")}
+                      action={
+                        <Link href="/dashboard/startup/documents" style={primaryBtn}>
+                          {tf("dashboard.uploadFirstDoc", "Upload your first document")}
+                        </Link>
+                      }
+                    />
+                  );
+                })()
               )}
             </div>
             <ErrorBoundary labelKey="sections.documentAnalytics"><DocAnalyticsPanel /></ErrorBoundary>

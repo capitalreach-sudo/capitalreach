@@ -1047,7 +1047,15 @@
     "investorTabNote": "Who saved the listing, who opened it, what they clicked, the questions they asked, and the investors you are chasing. Panels appear here as the activity arrives.",
     "errAttachContactsWithheld": "Contact details in your caption were withheld. They can be exchanged once a deal is open.",
     "offersInbox": "Offers received",
-    "offersInboxNote": "An offer is the one signal here that is already waiting on your answer. Accepting one puts the deal on the record, and the conversation follows from there."
+    "offersInboxNote": "An offer is the one signal here that is already waiting on your answer. Accepting one puts the deal on the record, and the conversation follows from there.",
+    "raiseEmptyTitle": "Nothing on the meter yet",
+    "raiseEmptyBody": "This will read {target} raised as offers are accepted and deals carry amounts.",
+    "raiseGlanceEmpty": "Moves when an offer is accepted, the first one starts the count.",
+    "attnTitle": "Needs your attention",
+    "attnOffers": "Offers awaiting your reply",
+    "attnNegotiating": "Deals mid-negotiation",
+    "noDocsBody": "Your deck, financials and data-room files list here, each with how many investors opened it.",
+    "uploadFirstDoc": "Upload your first document"
   },
   "settings": {
     "pageTitle": "Account Settings",
@@ -1462,7 +1470,10 @@
     "stageDistributionNote": "Deals standing at each stage right now. Closed and passed are totals to date, so this is a snapshot rather than one group moving left to right.",
     "closeRateBasis": "of deals that ended",
     "consistencyLead": "Listings ranked by AI consistency score.",
-    "consistencyCaption": "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, and not a verification of any figure."
+    "consistencyCaption": "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, and not a verification of any figure.",
+    "soFar": "so far",
+    "quietBefore": "Nothing was listed or closed before {month}, so the chart starts there.",
+    "monthInProgress": "{month} is still in progress; its hollow last point counts the month so far."
   },
   "filters": {
     "industry": "Industry",
@@ -2817,7 +2828,8 @@
     "investorInterest": "Investor interest",
     "profileViewers": "Profile viewers",
     "targetInvestors": "Target investors",
-    "documentAnalytics": "Document analytics"
+    "documentAnalytics": "Document analytics",
+    "needsAttention": "Needs your attention"
   },
   "adminUsers": {
     "tabAll": "All",
@@ -3350,7 +3362,16 @@
     "successFee": "CapitalReach charges 2% of a round when it closes. It is paid by the startup receiving the investment — never by the investor.",
     "dueDiligence": "The investigation an investor runs before committing money: reading the financials, talking to customers, checking the claims on the listing against evidence. Expect document requests and questions — a diligence that finds nothing to ask about has not started.",
     "termSheet": "The document that fixes the terms of the investment — amount, valuation, rights — before the final contracts. Usually not legally binding on the money itself, but signing one means the negotiation is over and the lawyers begin.",
-    "assistant": "An AI helper that answers questions about the page you are viewing — a listing's terms, an investor's thesis, what a metric means. It only sees what your plan lets you see."
+    "assistant": "An AI helper that answers questions about the page you are viewing — a listing's terms, an investor's thesis, what a metric means. It only sees what your plan lets you see.",
+    "filterIndustry": "Shows only the sectors founders filed their companies under; picking several widens the selection. The count beside each sector is how many live listings it holds.",
+    "filterStage": "The funding round the company says it is raising, from pre-seed to Series B and beyond. Declared by the founder, not assessed by the platform.",
+    "filterTraction": "Threshold filters over what founders report: monthly revenue, growth, runway, round size and the AI consistency score. They read the listing as filed, so figures your plan hides cannot be filtered on.",
+    "filterRegion": "Shows companies based in one country, as reported on the listing. Spellings are normalized, so each country appears once, with its listing count.",
+    "filterBusinessModel": "How the company says it earns: subscription, marketplace, licensing and so on, taken from the listing as filed.",
+    "filterSort": "Changes the order of the results; nothing is added or removed. Newest first is the default, and sorting by score, revenue or closing date reads the figures founders filed.",
+    "filterRaising": "Keeps rounds at or above this size. It reads the funding goal the founder set for the round, not the amount already committed.",
+    "filterGrowth": "Month-over-month revenue growth as the founder reported it on the listing. The figure comes from the founder and is not verified by the platform.",
+    "filterClosingSoon": "Rounds whose founder-set closing date falls within the next 60 days or has already arrived. Rolling rounds with no date set are left out."
   },
   "translate": {
     "offer": "This was written in another language.",
@@ -3829,7 +3850,14 @@
   "match": {
     "title": "Who's waiting for you",
     "hint": "Pick your stage and sector.",
-    "result": "of {total} live investors declare appetite for exactly this round"
+    "result": "of {total} live investors declare appetite for exactly this round",
+    "stage": "Stage",
+    "sector": "Sector",
+    "readout": "Live readout",
+    "unavailable": "Live figures are unavailable right now.",
+    "retry": "Try again",
+    "openRounds": "Open rounds",
+    "cta": "See the matching rounds"
   },
   "pipeline": {
     "title": "How a round closes",

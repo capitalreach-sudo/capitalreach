@@ -606,6 +606,64 @@ function SavedSearchManager() {
   );
 }
 
+/**
+ * What is waiting on a decision, above the tabs: offers still open in your
+ * inbox (incoming, pending -- the sender is waiting on YOU) and deals
+ * mid-negotiation (due diligence or a term sheet on the table). Both counts
+ * are answered in the Deal Portal, so both are links there, not dead numbers.
+ * Renders nothing when nothing waits: attention must never be asked for
+ * idly. Saved-search matches reach members through notifications; there is
+ * no per-search count to put on this row.
+ *
+ * Never mounted in view-as -- the proposals API authenticates as the ADMIN,
+ * so this row would show the admin's own inbox under the member's name.
+ */
+function NeedsAttention({ deals }: { deals: Deal[] }) {
+  const { t } = useTranslation();
+  // Renders sensibly before the keys land in messages/; the orchestrated
+  // dictionary pass replaces the fallbacks with localized strings.
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
+  const [awaiting, setAwaiting] = useState(0);
+  useEffect(() => {
+    fetch("/api/deals/proposals")
+      .then((r) => (r.ok ? r.json() : null))
+      // The endpoint returns negotiation chains: ancestors arrive with their
+      // closed statuses, so only pending incoming rounds count as waiting.
+      .then((j) => setAwaiting(((j?.incoming ?? []) as Array<{ status?: string }>).filter((p) => p.status === "pending").length))
+      .catch(() => setAwaiting(0));
+  }, []);
+  const negotiating = deals.filter((d) => d.status === "due_diligence" || d.status === "term_sheet").length;
+  if (awaiting === 0 && negotiating === 0) return null;
+
+  const item: React.CSSProperties = { display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair, textDecoration: "none", minHeight: "40px" };
+  const figure: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", fontVariantNumeric: "tabular-nums" };
+  const label: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" };
+  return (
+    <div style={{ borderBottom: "1px solid var(--cr-rule)", paddingBottom: RHYTHM.inner, marginBottom: RHYTHM.block, display: "flex", alignItems: "baseline", gap: RHYTHM.block, flexWrap: "wrap" }}>
+      <span className="ruled-label">{tf("dashboard.attnTitle", "Needs your attention")}</span>
+      {awaiting > 0 && (
+        <Link href="/deals" style={item}>
+          {/* The one copper figure on this row: an unanswered offer is the
+              single most actionable thing an investor can be shown. */}
+          <span style={{ ...figure, color: "var(--cr-copper)" }}>{awaiting}</span>
+          <span style={label}>{tf("dashboard.attnOffers", "Offers awaiting your reply")}</span>
+          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
+        </Link>
+      )}
+      {negotiating > 0 && (
+        <Link href="/deals" style={item}>
+          <span style={{ ...figure, color: "var(--cr-ink-2)" }}>{negotiating}</span>
+          <span style={label}>{tf("dashboard.attnNegotiating", "Deals mid-negotiation")}</span>
+          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation, portfolio = [], isLaunchMode = false }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
@@ -821,31 +879,44 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           {/* The deal counts were plain divs, so the two most important numbers
               on an investor's home screen -- how many deals are live, how many
               closed -- led nowhere, and the Deal Portal was reachable only
-              through the top nav. They link now; the other two stay inert
-              because their content is on this page already. */}
+              through the top nav. They link now; reports switches to its own
+              tab, since that content lives behind it. Only the watchlist
+              headline stays inert: its list is directly below this strip. */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", marginLeft: "-1px" }}>
             {[
-              { label: t("dashboard.watchlist"),   val: watchlist.length,  href: null,     headline: true,  color: "var(--cr-ink)" },
-              { label: t("dashboard.activeDeals"), val: activeDeals,       href: "/deals", headline: false, color: "var(--cr-ink-2)" },
-              { label: t("dashboard.closedDeals"), val: closedDeals,       href: "/deals", headline: false, color: closedDeals > 0 ? "var(--verdigris)" : "var(--cr-ink-2)" },
-              { label: t("dashboard.aiReports"),   val: reports.length,    href: null,     headline: false, color: "var(--cr-ink-2)" },
-            ].map(({ label, val, href, headline, color }) => {
+              { label: t("dashboard.watchlist"),   val: watchlist.length,  href: null,     go: null,                              headline: true,  color: "var(--cr-ink)" },
+              { label: t("dashboard.activeDeals"), val: activeDeals,       href: "/deals", go: null,                              headline: false, color: "var(--cr-ink-2)" },
+              { label: t("dashboard.closedDeals"), val: closedDeals,       href: "/deals", go: null,                              headline: false, color: closedDeals > 0 ? "var(--verdigris)" : "var(--cr-ink-2)" },
+              { label: t("dashboard.aiReports"),   val: reports.length,    href: null,     go: () => setActiveTab("reports"),     headline: false, color: "var(--cr-ink-2)" },
+            ].map(({ label, val, href, go, headline, color }) => {
               const cell = (
                 <div style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", height: "100%" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: RHYTHM.pair }}>
-                    {label}{href && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
+                    {label}{(href || go) && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
                   </p>
                   {/* Same scale as the founder strip: 40px headline, the rest
                       a size down at 500 -- one obvious number per strip. */}
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: headline ? 700 : 500, fontSize: headline ? "40px" : "22px", lineHeight: 1.05, color, fontVariantNumeric: "tabular-nums" }}>{val}</p>
                 </div>
               );
-              return href
-                ? <Link key={label} href={href} style={{ textDecoration: "none", display: "block" }}>{cell}</Link>
-                : <div key={label}>{cell}</div>;
+              if (href) return <Link key={label} href={href} style={{ textDecoration: "none", display: "block" }}>{cell}</Link>;
+              if (go) {
+                return (
+                  <div key={label} onClick={go} role="link" tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter") go(); }}
+                    style={{ cursor: "pointer" }}>
+                    {cell}
+                  </div>
+                );
+              }
+              return <div key={label}>{cell}</div>;
             })}
           </div>
         </div>
+
+        {/* What waits on a decision, still inside the header cluster: the
+            strip says how big the desk is, this row says what is on it. */}
+        {!viewingAs && <ErrorBoundary labelKey="sections.needsAttention"><NeedsAttention deals={deals} /></ErrorBoundary>}
 
         {/* Tab bar */}
         <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: RHYTHM.section, display: "flex", gap: 0, overflowX: "auto" }}>
@@ -959,9 +1030,12 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               : null;
 
           return positions.length === 0 ? (
+            /* The way a first position happens: pick a company, open a deal,
+               close it -- so the one action is the front door of that path. */
             <EmptyState
               title={t("dashboard.noPortfolio")}
               body={t("dashboard.noPortfolioSub")}
+              action={<Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>}
             />
           ) : (
             <div>
@@ -1057,12 +1131,17 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {activeTab === "reports" && (
           reports.length === 0 ? (
+            /* Reports are generated from a listing page, so the action for a
+               member who CAN run them is the way to a listing; for one who
+               cannot, it is the plan that unlocks them. Never a dead end. */
             <EmptyState
               title={t("dashboard.noAiReportsTitle")}
               body={canAi
                 ? t("dashboard.aiReportsHintPro")
                 : t("dashboard.aiReportsHintUpgrade")}
-              action={!canAi ? <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewPlans")}</Link> : undefined}
+              action={canAi
+                ? <Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>
+                : <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewPlans")}</Link>}
             />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: RHYTHM.block }}>

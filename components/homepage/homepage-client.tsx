@@ -399,7 +399,9 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
       </section>
 
       {/* ── 4. WHO'S WAITING ────────────────────────────────── */}
-      <MarketMatcher viewerRole={viewerRole} />
+      {/* Role-agnostic on purpose: its one action carries the dialed-in
+          stage and sector into /startups as applied filters. */}
+      <MarketMatcher />
 
       {/* ── 6. TOP LISTINGS (only when there is something to show) ── */}
       {canSeeMarket && listings.length > 0 && (

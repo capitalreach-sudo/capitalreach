@@ -159,19 +159,27 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  * rounded, bordered tile per number would be four boxes inside the page's
  * own frame, which the house reads as card-in-card.
  */
-function MetricCell({ label, value, copper, termKey }: { label: string; value: string | null; copper?: boolean; termKey?: string }) {
+function MetricCell({ label, value, copper, termKey, note }: { label: string; value: string | null; copper?: boolean; termKey?: string; note?: string }) {
   return (
     <div style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0 }}>
       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "6px" }}>
         {label}
         {termKey && <InfoTip termKey={termKey} />}
       </div>
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "20px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: "20px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {value ?? "—"}
       </div>
+      {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
     </div>
   );
 }
+
+/** The closed-strip container MetricCell is written for: it supplies the top
+ *  and left hairlines the cells do not carry, so any grid of cells closes
+ *  into one ruled block instead of floating half-bordered tiles. */
+const METRIC_STRIP: CSSProperties = {
+  borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)",
+};
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -721,13 +729,13 @@ export function StartupDetailClient({
 
       {/* ── Editorial hero ── */}
       <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "40px", paddingBottom: "36px" }}>
+        <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "48px", paddingBottom: "32px" }}>
 
           {/* Back link */}
           <Link href="/startups" style={{
             display: "inline-flex", alignItems: "center", gap: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px",
-            color: "var(--cr-ink-4)", textDecoration: "none", marginBottom: "28px",
+            color: "var(--cr-ink-4)", textDecoration: "none", marginBottom: "24px",
           }}
             onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-2)")}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink-4)")}
@@ -751,7 +759,9 @@ export function StartupDetailClient({
               {/* Name + tagline */}
               <div style={{ flex: 1, minWidth: "200px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "6px" }}>
-                  <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 38px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+                  {/* The one loudest element on the page. Everything else in
+                      the hero sits at least a full step below it. */}
+                  <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 4.5vw, 42px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
                     {startup.name}
                   </h1>
                   {/* What this company has filed with the house, opening onto
@@ -872,8 +882,10 @@ export function StartupDetailClient({
                     does not fit on that line. The breakdown is passed only when
                     this viewer can see the financials: with them stripped, an
                     absent metric is the gate, not the founder, and the rows
-                    would report a gap that is not there. */}
-                <div style={{ marginTop: "14px" }}>
+                    would report a gap that is not there. The hairline above
+                    seats it as its own block: the caption cannot detach from
+                    the figure, and the figure cannot read as one more chip. */}
+                <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
                   <ScoreWithDisclaimer
                     score={score}
                     dimensions={canFinancials ? scoreDimensionsFromListing({
@@ -1109,7 +1121,7 @@ export function StartupDetailClient({
               if (startup.previous_funding) facts.push({ label: t("startupDetail.previousFunding"), value: formatCurrency(startup.previous_funding, true) });
               if (facts.length === 0) return null;
               return (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 28px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px 32px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
                   {facts.map((f) => (
                     <div key={f.label}>
                       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{f.label}</div>
@@ -1175,7 +1187,7 @@ export function StartupDetailClient({
             strip widened the PAGE, and the whole listing scrolled sideways.
             The strip scrolls; the page does not — same fix as every other
             tab bar on the site. */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", gap: "0", overflowX: "auto", whiteSpace: "nowrap" }}>
+        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "32px", display: "flex", gap: "0", overflowX: "auto", whiteSpace: "nowrap" }}>
           {TABS.map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               style={{
@@ -1193,27 +1205,23 @@ export function StartupDetailClient({
 
         {/* ── Tab: Overview ── */}
         {activeTab === "overview" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
             {/* The prose sections read from the translation when one is
                 showing, and from the founder's own text otherwise. */}
             {startup.problem             && <Section title={t("startupDetail.problem")}><T field="problem">{startup.problem}</T></Section>}
             {startup.solution            && <Section title={t("startupDetail.solution")}><T field="solution">{startup.solution}</T></Section>}
             {startup.market              && <Section title={t("startupDetail.market")}><T field="market">{startup.market}</T></Section>}
             {/* Market sizing — only when at least one figure exists (never an empty card). */}
+            {/* One closed ruled strip, same idiom as the header metrics: the
+                register reads three tinted tiles inside the page frame as
+                card-in-card, and three copper figures as three loud things. */}
             {(startup.tam || startup.sam || startup.som) ? (
               <div>
                 <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("startupDetail.marketOpportunity")}</h3>
-                <div className="grid grid-cols-3" style={{ gap: "10px" }}>
-                  {([
-                    ["tam", t("startupDetail.marketTotal"), startup.tam],
-                    ["sam", t("startupDetail.marketServiceable"), startup.sam],
-                    ["som", t("startupDetail.marketObtainable"), startup.som],
-                  ] as Array<[string, string, number | null | undefined]>).map(([id, label, v]) => (
-                    <div key={id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
-                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(16px, 2.6vw, 22px)", color: "var(--cr-copper)" }}>{safeFormatCurrencyAmount(v ?? null)}</div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>{label}</div>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-3" style={METRIC_STRIP}>
+                  <MetricCell label={t("startupDetail.marketTotal")}       value={startup.tam ? safeFormatCurrencyAmount(startup.tam) : null} />
+                  <MetricCell label={t("startupDetail.marketServiceable")} value={startup.sam ? safeFormatCurrencyAmount(startup.sam) : null} />
+                  <MetricCell label={t("startupDetail.marketObtainable")}  value={startup.som ? safeFormatCurrencyAmount(startup.som) : null} />
                 </div>
               </div>
             ) : null}
@@ -1386,25 +1394,18 @@ export function StartupDetailClient({
               const own = post !== null ? ownershipForCheque(cheque, { ...inputs, valuation: post, valuationType: "post" }) : null;
               const gap = equityValuationMismatch(inputs);
               const cur = roundCurrency;
-              const cell = (label: string, value: string, note?: string, termKey?: string) => (
-                <div key={label} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "12px 14px" }}>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "clamp(15px, 2.4vw, 20px)", color: "var(--cr-copper)" }}>{value}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "4px" }}>
-                    {label}
-                    {termKey && <InfoTip termKey={termKey} />}
-                  </div>
-                  {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
-                </div>
-              );
+              // The same closed ruled strip as every other metric block on
+              // this page, in ink: five copper figures in a row was five
+              // loudest things, and in the business register five green ones.
               return (
                 <div>
                   <h3 className="ruled-label" style={{ marginBottom: "12px" }}>{t("round.title")}</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "10px" }}>
-                    {post !== null && cell(isImplied ? t("round.impliedPost") : t("round.postMoney"), formatMoney(post, cur, { compact: true }), isImplied ? t("round.impliedNote") : undefined, "glossary.preMoney")}
-                    {pre !== null && cell(t("round.preMoney"), formatMoney(pre, cur, { compact: true }), undefined, "glossary.preMoney")}
-                    {dil != null && cell(t("round.dilution"), `${dil.toFixed(1)}%`)}
-                    {own != null && cell(t("round.perCheque"), `${own.toFixed(2)}%`, t("round.perChequeNote", { amount: formatMoney(cheque, cur, { compact: true }) }))}
-                    {st.safe_cap ? cell(t("round.cap"), formatMoney(st.safe_cap, cur, { compact: true }), st.safe_discount ? `${st.safe_discount}% ${t("round.discountShort")}` : undefined, "glossary.safe") : null}
+                  <div className="grid grid-cols-2 md:grid-cols-4" style={METRIC_STRIP}>
+                    {post !== null && <MetricCell label={isImplied ? t("round.impliedPost") : t("round.postMoney")} value={formatMoney(post, cur, { compact: true })} note={isImplied ? t("round.impliedNote") : undefined} termKey="glossary.preMoney" />}
+                    {pre !== null && <MetricCell label={t("round.preMoney")} value={formatMoney(pre, cur, { compact: true })} termKey="glossary.preMoney" />}
+                    {dil != null && <MetricCell label={t("round.dilution")} value={`${dil.toFixed(1)}%`} />}
+                    {own != null && <MetricCell label={t("round.perCheque")} value={`${own.toFixed(2)}%`} note={t("round.perChequeNote", { amount: formatMoney(cheque, cur, { compact: true }) })} />}
+                    {st.safe_cap ? <MetricCell label={t("round.cap")} value={formatMoney(st.safe_cap, cur, { compact: true })} note={st.safe_discount ? `${st.safe_discount}% ${t("round.discountShort")}` : undefined} termKey="glossary.safe" /> : null}
                   </div>
                   {st.instrument && (
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
@@ -1529,7 +1530,7 @@ export function StartupDetailClient({
               ctaLabel={t("startupDetail.signNdaAccess")}
               onCta={() => setNdaModalOpen(true)}
             >
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", ...METRIC_STRIP }}>
                 <MetricCell label={t("startupDetail.mrr")} value={null} />
                 <MetricCell label={t("startupDetail.arr")} value={null} />
                 <MetricCell label={t("startupDetail.totalUsers")} value={null} />
@@ -1537,7 +1538,7 @@ export function StartupDetailClient({
               </div>
             </GateBlur>
           ) : canFinancials ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", ...METRIC_STRIP }}>
               <MetricCell label={t("startupDetail.mrr")}    value={startup.mrr         ? safeFormatMRR(startup.mrr)        : null} termKey="glossary.mrr" />
               <MetricCell label={t("startupDetail.arr")}    value={startup.arr         ? safeFormatMRR(startup.arr)        : null} termKey="glossary.arr" />
               <MetricCell label={t("startupDetail.totalUsers")} value={startup.user_count  ? formatNumber(startup.user_count)   : null} />
@@ -1549,7 +1550,7 @@ export function StartupDetailClient({
               description={t("startupDetail.upgradeFinancialsDesc")}
               ctaLabel={t("dashboard.viewPlans")}
             >
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", ...METRIC_STRIP }}>
                 <MetricCell label={t("startupDetail.mrr")} value={null} />
                 <MetricCell label={t("startupDetail.arr")} value={null} />
                 <MetricCell label={t("startupDetail.totalUsers")} value={null} />
@@ -1660,8 +1661,11 @@ export function StartupDetailClient({
         {/* ── Tab: Traction ── */}
         {activeTab === "traction" && (
           canFinancials ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
-              <MetricCell label={t("startupDetail.monthlyRevenue")} value={startup.mrr        ? safeFormatMRR(startup.mrr)        : null} copper />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", ...METRIC_STRIP }}>
+              {/* Ink, not copper: the financials tab shows the same figure in
+                  ink, and in the business register a copper revenue figure
+                  reads green, which this house reserves for direction. */}
+              <MetricCell label={t("startupDetail.monthlyRevenue")} value={startup.mrr        ? safeFormatMRR(startup.mrr)        : null} />
               <MetricCell label={t("startupDetail.annualRevenue")}  value={startup.arr        ? safeFormatMRR(startup.arr)        : null} />
               <MetricCell label={t("startupDetail.totalUsers")}     value={startup.user_count ? formatNumber(startup.user_count)   : null} />
               <MetricCell label={t("startupDetail.momGrowth")}      value={startup.growth_rate ? formatPercent(startup.growth_rate) : null} />
@@ -1672,8 +1676,8 @@ export function StartupDetailClient({
               description={t("startupDetail.upgradeTractionDesc")}
               ctaLabel={t("dashboard.viewPlans")}
             >
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
-                <MetricCell label={t("startupDetail.monthlyRevenue")} value={null} copper />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", ...METRIC_STRIP }}>
+                <MetricCell label={t("startupDetail.monthlyRevenue")} value={null} />
                 <MetricCell label={t("startupDetail.annualRevenue")} value={null} />
                 <MetricCell label={t("startupDetail.totalUsers")} value={null} />
                 <MetricCell label={t("startupDetail.momGrowth")} value={null} />

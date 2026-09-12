@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Compass, Handshake, MessageSquare, Bell } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
 
@@ -16,13 +15,17 @@ import { useProfile } from "@/hooks/useProfile";
  * product hidden behind a menu button. These five destinations are now one
  * thumb-reach tap from anywhere.
  *
+ * No glyph set: the label already says what each tab is, so the marker above
+ * it only says where you are -- the product's own devices, a mono index per
+ * tab and the diamond on the current one, the same rail language as the
+ * listing rows and the how-it-works steps.
+ *
  * Signed-out visitors get nothing: their job is to read the pitch and sign up,
  * and a tab bar over marketing pages would only cover copy.
  */
 type Tab = {
   href: string;
   label: string;
-  Icon: typeof LayoutDashboard;
   badge?: number;
 };
 
@@ -74,11 +77,11 @@ export function BottomNav() {
   const browseHref = profile.role === "startup" ? "/investors" : "/startups";
 
   const tabs: Tab[] = [
-    { href: dashboardPath, label: t("nav.home"), Icon: LayoutDashboard },
-    { href: browseHref, label: t("nav.browse"), Icon: Compass },
-    { href: "/deals", label: t("nav.deals"), Icon: Handshake },
-    { href: "/dashboard/messages", label: t("nav.messages"), Icon: MessageSquare, badge: unreadMessages },
-    { href: "/dashboard/notifications", label: t("nav.alerts"), Icon: Bell, badge: unreadAlerts },
+    { href: dashboardPath, label: t("nav.home") },
+    { href: browseHref, label: t("nav.browse") },
+    { href: "/deals", label: t("nav.deals") },
+    { href: "/dashboard/messages", label: t("nav.messages"), badge: unreadMessages },
+    { href: "/dashboard/notifications", label: t("nav.alerts"), badge: unreadAlerts },
   ];
 
   return (
@@ -89,7 +92,7 @@ export function BottomNav() {
         className="cr-bottom-nav lg:hidden"
         aria-label={t("nav.primaryMobile")}
       >
-      {tabs.map(({ href, label, Icon, badge }) => {
+      {tabs.map(({ href, label, badge }, i) => {
         // Exact match for the dashboards: /dashboard/startup must not light up
         // while the user is on /dashboard/messages.
         const active = href.startsWith("/dashboard/") || href === "/admin"
@@ -106,28 +109,37 @@ export function BottomNav() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: "3px",
+              gap: "4px",
               minHeight: "52px",
               textDecoration: "none",
               color: active ? "var(--cr-copper)" : "var(--cr-ink-4)",
               position: "relative",
             }}
           >
-            <span style={{ position: "relative", display: "inline-flex" }}>
-              <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+            {/* Fixed-height marker slot, so the label row cannot shift when
+                a tab flips between its index and the diamond. */}
+            <span aria-hidden style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", width: "16px", height: "12px" }}>
+              {active ? (
+                <svg width="8" height="8" viewBox="0 0 8 8">
+                  <path d="M4 0L8 4L4 8L0 4Z" fill="currentColor" />
+                </svg>
+              ) : (
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.08em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              )}
               {!!badge && badge > 0 && (
                 <span
-                  aria-hidden
                   style={{
                     position: "absolute",
-                    top: "-4px",
-                    insetInlineEnd: "-7px",
+                    top: "-6px",
+                    insetInlineEnd: "-10px",
                     minWidth: "15px",
                     height: "15px",
                     padding: "0 4px",
                     borderRadius: "999px",
                     background: "var(--cr-copper)",
-                    color: "#fff",
+                    color: "var(--cr-band-ink)",
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: "9px",
@@ -143,7 +155,7 @@ export function BottomNav() {
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontWeight: active ? 600 : 400,
-                fontSize: "10px",
+                fontSize: "11px",
                 letterSpacing: "0.01em",
               }}
             >

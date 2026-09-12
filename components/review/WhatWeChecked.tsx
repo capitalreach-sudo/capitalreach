@@ -126,6 +126,11 @@ export default async function WhatWeChecked({
     const out = t(key, vars);
     return out === key ? fallback : out;
   };
+  // The negative disclosure is written for the subject it covers. "This
+  // listing" and founder-figures wording is untrue about an investor profile,
+  // whose self-reported claims are the track record and the cheque, not the
+  // MRR -- so each sentence that names the subject resolves per subject type.
+  const forInvestor = subjectType === "investor";
 
   let state: ModuleState = "none";
   let version: string | null = null;
@@ -202,19 +207,29 @@ export default async function WhatWeChecked({
 
       {state === "unavailable" && (
         <p style={{ ...bodyStyle, color: "var(--cr-ink-2)" }}>
-          {tf(
-            "reviewLedger.unavailable",
-            "The review record for this listing could not be loaded. This does not mean the listing was reviewed and it does not mean it was not. Nothing about what was or was not checked can be shown here right now.",
-          )}
+          {forInvestor
+            ? tf(
+                "reviewLedger.unavailableInvestor",
+                "The review record for this profile could not be loaded. This does not mean the profile was reviewed and it does not mean it was not. Nothing about what was or was not checked can be shown here right now.",
+              )
+            : tf(
+                "reviewLedger.unavailable",
+                "The review record for this listing could not be loaded. This does not mean the listing was reviewed and it does not mean it was not. Nothing about what was or was not checked can be shown here right now.",
+              )}
         </p>
       )}
 
       {state === "none" && (
         <p style={{ ...bodyStyle, color: "var(--cr-ink-2)" }}>
-          {tf(
-            "reviewLedger.none",
-            "No review is recorded for this listing. Nothing on it has been checked by us.",
-          )}
+          {forInvestor
+            ? tf(
+                "reviewLedger.noneInvestor",
+                "No review is recorded for this investor profile. Nothing on it has been checked by us.",
+              )
+            : tf(
+                "reviewLedger.none",
+                "No review is recorded for this listing. Nothing on it has been checked by us.",
+              )}
         </p>
       )}
 
@@ -230,10 +245,15 @@ export default async function WhatWeChecked({
 
           {items.length === 0 ? (
             <p style={{ ...bodyStyle, color: "var(--cr-ink-2)" }}>
-              {tf(
-                "reviewLedger.emptyItems",
-                "A review was recorded for this listing, but it carries no items. Nothing can be shown about what was checked.",
-              )}
+              {forInvestor
+                ? tf(
+                    "reviewLedger.emptyItemsInvestor",
+                    "A review was recorded for this profile, but it carries no items. Nothing can be shown about what was checked.",
+                  )
+                : tf(
+                    "reviewLedger.emptyItems",
+                    "A review was recorded for this listing, but it carries no items. Nothing can be shown about what was checked.",
+                  )}
             </p>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -276,10 +296,15 @@ export default async function WhatWeChecked({
           borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "14px",
         }}
       >
-        {tf(
-          "reviewLedger.selfReported",
-          "Revenue, traction, and financial figures are self-reported by the founder and have not been audited or independently confirmed. Conduct your own due diligence before investing.",
-        )}
+        {forInvestor
+          ? tf(
+              "reviewLedger.selfReportedInvestor",
+              "Track record, portfolio, check sizes, and assets under management are self-reported by the investor and have not been audited or independently confirmed. Conduct your own due diligence before engaging or sharing confidential material.",
+            )
+          : tf(
+              "reviewLedger.selfReported",
+              "Revenue, traction, and financial figures are self-reported by the founder and have not been audited or independently confirmed. Conduct your own due diligence before investing.",
+            )}
       </p>
     </section>
   );

@@ -11,19 +11,21 @@ export interface Slice { key: string; label: string; value: number }
  *
  * A donut earns its place only when the question is genuinely "what
  * proportion of the total" and the categories are few. Anything past six
- * slices is unreadable, so the tail is folded into "Other" — in grey, because
+ * slices is unreadable, so the tail is folded into "Other" -- in grey, because
  * "everything else" is not a category and should not look like one.
  *
  * Every slice is labelled with its share, so nothing depends on telling two
  * colours apart.
  */
-export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total: totalOverride, hrefFor }: {
+export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total: totalOverride, hrefFor, format }: {
   slices: Slice[];
   maxSlices?: number;
   otherLabel?: string;
   total?: number;
   /** Where a slice leads. A share of a whole is a question; the list behind it is the answer. */
   hrefFor?: (key: string) => string | null;
+  /** Formats a slice value in the centre readout; defaults to the raw count. */
+  format?: (n: number) => string;
 }) {
   const [hover, setHover] = useState<string | null>(null);
 
@@ -53,22 +55,46 @@ export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total:
     return `M${p(R, a0)} A${R},${R} 0 ${large} 1 ${p(R, a1)} L${p(r, a1)} A${r},${r} 0 ${large} 0 ${p(r, a0)} Z`;
   };
 
+  const pctOf = (v: number) => Math.round((v / total) * 1000) / 10;
+  const held = shown.find(s => s.key === hover) ?? null;
+
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
-      <svg viewBox="0 0 140 140" width={140} height={140} role="img" aria-label={shown.map(s => `${s.label} ${Math.round((s.value / total) * 100)}%`).join(", ")}>
+      <svg viewBox="0 0 140 140" width={140} height={140} role="img"
+        aria-label={shown.map(s => `${s.label} ${Math.round((s.value / total) * 100)}%`).join(", ")}
+        style={{ touchAction: "manipulation" }}>
         {shown.map((s, i) => (
           <path key={s.key} d={arc(s.value / total)}
             fill={s.key === "__other" ? OTHER : seriesColor(i)}
             stroke="var(--cr-paper)" strokeWidth={hover === s.key ? 2 : 0}
             opacity={hover && hover !== s.key ? 0.45 : 1}
-            onMouseEnter={() => setHover(s.key)} onMouseLeave={() => setHover(null)}
+            onPointerEnter={(e) => { if (e.pointerType !== "touch") setHover(s.key); }}
+            onPointerLeave={(e) => { if (e.pointerType !== "touch") setHover(null); }}
+            // A tap holds the slice; tapping it again lets go. The readout in
+            // the hole never needs hover.
+            onPointerDown={(e) => { if (e.pointerType === "touch") setHover(hover === s.key ? null : s.key); }}
             style={{ transition: "opacity 120ms" }} />
         ))}
+        {/* The hole earns its keep: the held slice's figure and share, in the
+            mono voice. Empty when nothing is held -- a permanent number here
+            would compete with the page's lead figure. */}
+        {held && (
+          <g pointerEvents="none">
+            <text x={C} y={C - 1} textAnchor="middle"
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, fontVariantNumeric: "tabular-nums", fill: "var(--cr-ink)" }}>
+              {format ? format(held.value) : String(held.value)}
+            </text>
+            <text x={C} y={C + 13} textAnchor="middle"
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, fontVariantNumeric: "tabular-nums", fill: "var(--cr-ink-4)" }}>
+              {pctOf(held.value)}%
+            </text>
+          </g>
+        )}
       </svg>
 
       <ul style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 150 }}>
         {shown.map((s, i) => {
-          const pct = Math.round((s.value / total) * 1000) / 10;
+          const pct = pctOf(s.value);
           // "DeepTech is 8% of the platform" invites exactly one follow-up
           // question, and the answer is a list of companies. The row is that
           // link. "Other" is not a category, so it does not lead anywhere.
@@ -78,7 +104,7 @@ export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total:
               <span style={{ width: 9, height: 9, borderRadius: 2, flexShrink: 0,
                 background: s.key === "__other" ? OTHER : seriesColor(i) }} />
               <span style={{ flex: 1, textDecoration: href ? "underline" : "none", textUnderlineOffset: 3, textDecorationColor: "var(--cr-rule-dark)" }}>{s.label}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink)" }}>{pct}%</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", color: "var(--cr-ink)" }}>{pct}%</span>
             </>
           );
           const style: React.CSSProperties = {

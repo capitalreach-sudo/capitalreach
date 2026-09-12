@@ -13,10 +13,13 @@ import { useTranslation } from "@/hooks/useTranslation";
  * founder who does not know what the number is or who computed it, and
  * nobody clicks a filter they do not understand.
  *
- * Click, not hover: hover tooltips do not exist on touch, and this is most
- * needed on the phone. It closes on Escape, on outside click, and it is a
- * real <button> with aria-describedby so a screen reader gets the definition
- * rather than an unlabelled icon.
+ * Tap is the primary gesture -- hover tooltips do not exist on touch, and
+ * this is most needed on the phone -- but a mouse also gets plain hover and
+ * a keyboard gets focus, so no input method needs to know the icon is a
+ * button. Hover and focus openings close themselves on leave/blur; a click
+ * pins the tip so it survives the pointer wandering. It closes on Escape, on
+ * outside click, and it is a real <button> with aria-describedby so a screen
+ * reader gets the definition rather than an unlabelled icon.
  */
 export function InfoTip({ termKey, label }: {
   /** i18n key holding the explanation, e.g. "glossary.aiScore". */
@@ -26,6 +29,11 @@ export function InfoTip({ termKey, label }: {
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  // How the tip was opened decides how it closes: "hover"/"focus" retract on
+  // their own, "click" stays until dismissed. Without this, tapping fights
+  // hovering -- on touch the synthetic mouseenter would open the tip an
+  // instant before click toggled it shut again.
+  const openedBy = useRef<null | "hover" | "focus" | "click">(null);
   // Fixed-position and clamped to the viewport. The first version anchored
   // the panel absolutely to the icon's left edge, which shoved a 288px panel
   // off-screen whenever the icon sat in the right half of a phone — the
@@ -45,9 +53,9 @@ export function InfoTip({ termKey, label }: {
     };
     place();
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) { openedBy.current = null; setOpen(false); }
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { openedBy.current = null; setOpen(false); } };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
     window.addEventListener("scroll", place, true);
@@ -63,13 +71,48 @@ export function InfoTip({ termKey, label }: {
   const text = t(termKey);
 
   return (
-    <span ref={ref} style={{ position: "relative", display: "inline-flex", verticalAlign: "middle" }}>
+    <span
+      ref={ref}
+      style={{ position: "relative", display: "inline-flex", verticalAlign: "middle" }}
+      // On the wrapper, not the button: the panel is a DOM child of this
+      // span, so moving the pointer down into the tip's own text does not
+      // count as leaving -- a hover tip you cannot read is no tip.
+      // pointerType gates hover to a real mouse: touch fires a synthetic
+      // mouseenter right before click, which would open-then-toggle-shut.
+      onPointerEnter={(e) => {
+        if (e.pointerType !== "mouse" || open) return;
+        openedBy.current = "hover"; setOpen(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        if (openedBy.current === "hover") { openedBy.current = null; setOpen(false); }
+      }}
+    >
       <button
         type="button"
         // Sits inline beside a label, so the mobile 40px floor would push the
         // label's line box open around it.
         data-tap-exempt=""
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(o => !o); }}
+        onClick={(e) => {
+          e.preventDefault(); e.stopPropagation();
+          // A click on a tip already open from hover/focus pins it rather
+          // than shutting the thing the reader is looking at.
+          if (open && openedBy.current !== "click") { openedBy.current = "click"; return; }
+          openedBy.current = open ? null : "click";
+          setOpen(o => !o);
+        }}
+        // :focus-visible, not focus: opening on every programmatic or
+        // click-granted focus would double up with the click handler.
+        onFocus={(e) => {
+          let keyboard = false;
+          try { keyboard = e.currentTarget.matches(":focus-visible"); } catch { /* old engines: click/tap still work */ }
+          if (keyboard && !open) { openedBy.current = "focus"; setOpen(true); }
+        }}
+        onBlur={() => {
+          if (openedBy.current === "focus" || openedBy.current === "hover") {
+            openedBy.current = null; setOpen(false);
+          }
+        }}
         aria-label={label ?? t("glossary.whatIsThis")}
         aria-expanded={open}
         aria-describedby={open ? id : undefined}

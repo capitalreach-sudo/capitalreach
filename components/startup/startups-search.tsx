@@ -100,6 +100,15 @@ const QUIET_ACTION: React.CSSProperties = {
   color: "var(--cr-ink-3)", textDecoration: "none", textAlign: "left",
 };
 
+/**
+ * A chip cluster and the small "i" that explains it, kept as one wrapping
+ * unit so the tip visibly belongs to its own chips and not to whichever
+ * neighbour the flex row happened to break beside.
+ */
+const TIPPED_CLUSTER: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: RHYTHM.pair,
+};
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Startup {
@@ -278,8 +287,10 @@ function SavedSearches({ filters, onApply, isDefault }: {
  * always-visible chip soup: fifteen chips in a scrolling strip read as
  * noise, three labelled groups with counts read as a system.
  */
-function FilterGroup({ label, count, open, onToggle, children }: {
+function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
   label: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode;
+  /** glossary.* key explaining what this group filters on and how. */
+  tipKey?: string;
 }) {
   const { t } = useTranslation();
   const doneLabel = t("common.done");
@@ -309,6 +320,10 @@ function FilterGroup({ label, count, open, onToggle, children }: {
         {label}{count > 0 ? ` · ${count}` : ""}
         <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
       </button>
+      {/* Beside the trigger, never inside it: a button cannot nest a button,
+          and the tip must stay reachable while the panel is closed -- the
+          reader deciding whether to open a group is exactly who needs it. */}
+      {tipKey && <InfoTip termKey={tipKey} />}
       {/* Desktop: a panel anchored under its chip. */}
       {open && (
         <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
@@ -348,6 +363,9 @@ function FilterGroup({ label, count, open, onToggle, children }: {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: RHYTHM.inner, borderBottom: "1px solid var(--cr-rule)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
                 {label}
+                {/* Repeated in the sheet header because the 12px trigger
+                    beside the chip is a poor tap target; here there is room. */}
+                {tipKey && <InfoTip termKey={tipKey} />}
               </span>
               <button
                 onClick={onToggle}
@@ -1206,6 +1224,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 >
                   {sortLabel} <ChevronDown style={{ width: 12, height: 12 }} />
                 </button>
+                {/* Beside the control, not in it (button-in-button): what each
+                    ordering reads, and that sorting never removes a listing. */}
+                <InfoTip termKey="glossary.filterSort" />
                 {sortOpen && (
                   <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
                     {sortOptions.map((o) => (
@@ -1322,7 +1343,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           {/* Grouped filters: labelled dropdowns instead of fifteen
               always-visible chips. Full industry list too -- the strip only
               ever had room for the first six. */}
-          <FilterGroup label={t("startups.industry")} count={filters.industries.length}
+          <FilterGroup label={t("startups.industry")} count={filters.industries.length} tipKey="glossary.filterIndustry"
             open={openGroup === "industry"} onToggle={() => setOpenGroup(openGroup === "industry" ? null : "industry")}>
             {INDUSTRIES.filter((ind) => facets.industry[ind] || filters.industries.includes(ind)).map((ind) => (
               <FilterChip key={ind}
@@ -1332,7 +1353,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </FilterChip>
             ))}
           </FilterGroup>
-          <FilterGroup label={t("startups.stageGroup")} count={filters.stages.length}
+          <FilterGroup label={t("startups.stageGroup")} count={filters.stages.length} tipKey="glossary.filterStage"
             open={openGroup === "stage"} onToggle={() => setOpenGroup(openGroup === "stage" ? null : "stage")}>
             {STAGES.map((s) => (
               <FilterChip key={s.value}
@@ -1391,52 +1412,76 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         {moreOpen && (
           <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
-            <FilterGroup label={t("startups.traction")}
+            <FilterGroup label={t("startups.traction")} tipKey="glossary.filterTraction"
               count={tractionActive(filters)}
               open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
-              {MRR_PRESETS.map((m) => (
-                <FilterChip key={m.value}
-                  active={filters.mrrMin === m.value}
-                  disabled={!tractionData.mrr}
-                  title={tractionData.mrr ? undefined : tractionNote ?? undefined}
-                  onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
-                  {m.label}
-                </FilterChip>
-              ))}
-              {SCORE_PRESETS.map((sc) => (
-                <FilterChip key={sc.value}
-                  active={filters.aiScoreMin === sc.value}
-                  onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
-                  {sc.label}
-                </FilterChip>
-              ))}
+              {/* Each jargon cluster carries its own tip -- a chip is a
+                  button, so the "i" sits beside the cluster, not inside it.
+                  Plain-word chips (new this week, has demo) stay bare: an
+                  icon per chip would out-shout the chips. The score tip is
+                  glossary.aiScore, the same definition every other surface
+                  shows, never a rival wording. */}
+              <span style={TIPPED_CLUSTER}>
+                {MRR_PRESETS.map((m) => (
+                  <FilterChip key={m.value}
+                    active={filters.mrrMin === m.value}
+                    disabled={!tractionData.mrr}
+                    title={tractionData.mrr ? undefined : tractionNote ?? undefined}
+                    onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
+                    {m.label}
+                  </FilterChip>
+                ))}
+                <InfoTip termKey="glossary.mrr" />
+              </span>
+              <span style={TIPPED_CLUSTER}>
+                {SCORE_PRESETS.map((sc) => (
+                  <FilterChip key={sc.value}
+                    active={filters.aiScoreMin === sc.value}
+                    onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
+                    {sc.label}
+                  </FilterChip>
+                ))}
+                <InfoTip termKey="glossary.aiScore" />
+              </span>
               <FilterChip active={!!filters.newOnly}
                 onClick={() => patch({ newOnly: !filters.newOnly })}>
                 {t("startups.newThisWeek")}
               </FilterChip>
-              {RAISING_PRESETS.map((r) => (
-                <FilterChip key={r.value}
-                  active={filters.raisingMin === r.value}
-                  onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>
-                  {r.label}
+              <span style={TIPPED_CLUSTER}>
+                {RAISING_PRESETS.map((r) => (
+                  <FilterChip key={r.value}
+                    active={filters.raisingMin === r.value}
+                    onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>
+                    {r.label}
+                  </FilterChip>
+                ))}
+                <InfoTip termKey="glossary.filterRaising" />
+              </span>
+              <span style={TIPPED_CLUSTER}>
+                <FilterChip active={(filters.runwayMin ?? 0) > 0}
+                  disabled={!tractionData.runway}
+                  title={tractionData.runway ? undefined : tractionNote ?? undefined}
+                  onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
+                  {t("startups.runway12")}
                 </FilterChip>
-              ))}
-              <FilterChip active={(filters.runwayMin ?? 0) > 0}
-                disabled={!tractionData.runway}
-                title={tractionData.runway ? undefined : tractionNote ?? undefined}
-                onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
-                {t("startups.runway12")}
-              </FilterChip>
-              <FilterChip active={(filters.growthMin ?? 0) > 0}
-                disabled={!tractionData.growth}
-                title={tractionData.growth ? undefined : tractionNote ?? undefined}
-                onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
-                {t("startups.growth20")}
-              </FilterChip>
-              <FilterChip active={!!filters.closingSoon}
-                onClick={() => patch({ closingSoon: !filters.closingSoon })}>
-                {t("startups.closingSoon")}
-              </FilterChip>
+                <InfoTip termKey="glossary.runway" />
+              </span>
+              <span style={TIPPED_CLUSTER}>
+                <FilterChip active={(filters.growthMin ?? 0) > 0}
+                  disabled={!tractionData.growth}
+                  title={tractionData.growth ? undefined : tractionNote ?? undefined}
+                  onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
+                  {t("startups.growth20")}
+                </FilterChip>
+                <InfoTip termKey="glossary.filterGrowth" />
+              </span>
+              <span style={TIPPED_CLUSTER}>
+                <FilterChip active={!!filters.closingSoon}
+                  onClick={() => patch({ closingSoon: !filters.closingSoon })}>
+                  {t("startups.closingSoon")}
+                </FilterChip>
+                <InfoTip termKey="glossary.filterClosingSoon" />
+              </span>
               <FilterChip active={!!filters.hasDemo}
                 onClick={() => patch({ hasDemo: !filters.hasDemo })}>
                 {t("startups.hasDemo")}
@@ -1449,7 +1494,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </p>
               )}
             </FilterGroup>
-            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0}
+            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0} tipKey="glossary.filterRegion"
               open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
               {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
                 <FilterChip key={c}
@@ -1460,7 +1505,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               ))}
             </FilterGroup>
             {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).length > 0 && (
-              <FilterGroup label={t("startups.businessModelGroup")} count={filters.businessModel ? 1 : 0}
+              <FilterGroup label={t("startups.businessModelGroup")} count={filters.businessModel ? 1 : 0} tipKey="glossary.filterBusinessModel"
                 open={openGroup === "bmodel"} onToggle={() => setOpenGroup(openGroup === "bmodel" ? null : "bmodel")}>
                 {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).sort().map((m) => (
                   <FilterChip key={m}
@@ -1792,7 +1837,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
 
             <div style={{ overflowY: "auto", flex: 1, padding: "24px 24px 8px", display: "grid", gap: RHYTHM.block }}>
               <div>
-                <p style={SECTION}>{t("filters.industry")}</p>
+                <p style={SECTION}>{t("filters.industry")}<InfoTip termKey="glossary.filterIndustry" /></p>
                 <div style={ROW}>
                   {INDUSTRIES.map((ind) => (
                     <FilterChip key={ind} active={filters.industries.includes(ind)}
@@ -1803,7 +1848,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </div>
               </div>
               <div>
-                <p style={SECTION}>{t("filters.stage")}</p>
+                <p style={SECTION}>{t("filters.stage")}<InfoTip termKey="glossary.filterStage" /></p>
                 <div style={ROW}>
                   {STAGES.map((st) => (
                     <FilterChip key={st.value} active={filters.stages.includes(st.value)}
@@ -1817,25 +1862,47 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 {/* Jargon carries an explanation. "AI score ≥ 70" is
                     meaningless to a founder who does not know what the number
                     is or who produced it, and nobody clicks a filter they do
-                    not understand. */}
+                    not understand. The group tip covers the section; the
+                    score's own definition (glossary.aiScore) moved down to
+                    sit beside the score chips it describes. */}
                 <p style={SECTION}>
                   {t("filters.thresholds")}
-                  <InfoTip termKey="glossary.aiScore" label={t("glossary.whatIsThis")} />
+                  <InfoTip termKey="glossary.filterTraction" label={t("glossary.whatIsThis")} />
                 </p>
                 <div style={ROW}>
-                  {MRR_PRESETS.map((m) => (
-                    <FilterChip key={m.value} active={filters.mrrMin === m.value} disabled={!tractionData.mrr} title={tractionData.mrr ? undefined : tractionNote ?? undefined} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>
-                  ))}
-                  {SCORE_PRESETS.map((sc) => (
-                    <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
-                  ))}
-                  {RAISING_PRESETS.map((r) => (
-                    <FilterChip key={r.value} active={filters.raisingMin === r.value} onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>{r.label}</FilterChip>
-                  ))}
-                  <FilterChip active={(filters.runwayMin ?? 0) > 0} disabled={!tractionData.runway} title={tractionData.runway ? undefined : tractionNote ?? undefined} onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>{t("startups.runway12")}</FilterChip>
-                  <FilterChip active={(filters.growthMin ?? 0) > 0} disabled={!tractionData.growth} title={tractionData.growth ? undefined : tractionNote ?? undefined} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
+                  {/* Same cluster tips as the desktop traction panel, so the
+                      two surfaces explain one filter with one string. */}
+                  <span style={TIPPED_CLUSTER}>
+                    {MRR_PRESETS.map((m) => (
+                      <FilterChip key={m.value} active={filters.mrrMin === m.value} disabled={!tractionData.mrr} title={tractionData.mrr ? undefined : tractionNote ?? undefined} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>
+                    ))}
+                    <InfoTip termKey="glossary.mrr" />
+                  </span>
+                  <span style={TIPPED_CLUSTER}>
+                    {SCORE_PRESETS.map((sc) => (
+                      <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
+                    ))}
+                    <InfoTip termKey="glossary.aiScore" />
+                  </span>
+                  <span style={TIPPED_CLUSTER}>
+                    {RAISING_PRESETS.map((r) => (
+                      <FilterChip key={r.value} active={filters.raisingMin === r.value} onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>{r.label}</FilterChip>
+                    ))}
+                    <InfoTip termKey="glossary.filterRaising" />
+                  </span>
+                  <span style={TIPPED_CLUSTER}>
+                    <FilterChip active={(filters.runwayMin ?? 0) > 0} disabled={!tractionData.runway} title={tractionData.runway ? undefined : tractionNote ?? undefined} onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>{t("startups.runway12")}</FilterChip>
+                    <InfoTip termKey="glossary.runway" />
+                  </span>
+                  <span style={TIPPED_CLUSTER}>
+                    <FilterChip active={(filters.growthMin ?? 0) > 0} disabled={!tractionData.growth} title={tractionData.growth ? undefined : tractionNote ?? undefined} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
+                    <InfoTip termKey="glossary.filterGrowth" />
+                  </span>
                   <FilterChip active={!!filters.newOnly} onClick={() => patch({ newOnly: !filters.newOnly })}>{t("startups.newThisWeek")}</FilterChip>
-                  <FilterChip active={!!filters.closingSoon} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
+                  <span style={TIPPED_CLUSTER}>
+                    <FilterChip active={!!filters.closingSoon} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
+                    <InfoTip termKey="glossary.filterClosingSoon" />
+                  </span>
                   <FilterChip active={!!filters.hasDemo} onClick={() => patch({ hasDemo: !filters.hasDemo })}>{t("startups.hasDemo")}</FilterChip>
                 </div>
                 {tractionNote && (
@@ -1846,7 +1913,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
               {countries.length > 0 && (
                 <div>
-                  <p style={SECTION}>{t("startups.region")}</p>
+                  <p style={SECTION}>{t("startups.region")}<InfoTip termKey="glossary.filterRegion" /></p>
                   <div style={ROW}>
                     {countries.map((c) => (
                       <FilterChip key={c} active={filters.country === c} onClick={() => patch({ country: filters.country === c ? "" : c })}>
@@ -1858,7 +1925,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               )}
               {bmodels.length > 0 && (
                 <div>
-                  <p style={SECTION}>{t("startups.businessModelGroup")}</p>
+                  <p style={SECTION}>{t("startups.businessModelGroup")}<InfoTip termKey="glossary.filterBusinessModel" /></p>
                   <div style={ROW}>
                     {bmodels.map((m) => (
                       <FilterChip key={m} active={filters.businessModel === m} onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>{m}</FilterChip>
@@ -1867,7 +1934,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </div>
               )}
               <div>
-                <p style={SECTION}>{t("filters.sort")}</p>
+                <p style={SECTION}>{t("filters.sort")}<InfoTip termKey="glossary.filterSort" /></p>
                 <div style={ROW}>
                   {SORT_OPTIONS.map((o) => (
                     <FilterChip key={o.value} active={filters.sort === o.value} onClick={() => patch({ sort: o.value })}>{t(o.labelKey)}</FilterChip>

@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { seriesColor, AXIS_TEXT } from "./palette";
+import { seriesColor } from "./palette";
 
 export interface Bar { key: string; label: string; value: number; colorIndex?: number }
 
 /**
- * Magnitude across categories — the workhorse, and the right answer far more
+ * Magnitude across categories -- the workhorse, and the right answer far more
  * often than a pie.
  *
  * Horizontal because the labels are words: a category name reads left to
  * right, and rotating it 45° to fit under a vertical bar makes a chart nobody
  * reads. Values sit at the end of each bar rather than on an axis, so the
- * number is where the eye already is.
+ * number is where the eye already is -- which is also why nothing here is
+ * gated on hover: a touch reader sees every figure without asking.
  */
 export function BarChart({ bars, format, hrefFor }: {
   bars: Bar[];
@@ -23,6 +24,7 @@ export function BarChart({ bars, format, hrefFor }: {
 }) {
   const [hover, setHover] = useState<string | null>(null);
   const max = Math.max(1, ...bars.map(b => b.value));
+  const total = bars.reduce((s, b) => s + b.value, 0);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -39,7 +41,10 @@ export function BarChart({ bars, format, hrefFor }: {
         );
         return (
           <div key={b.key}
-            onMouseEnter={() => setHover(b.key)} onMouseLeave={() => setHover(null)}
+            // Mouse only: on touch, pointerenter fires on tap and there is no
+            // matching leave, which left every other bar dimmed for good.
+            onPointerEnter={(e) => { if (e.pointerType !== "touch") setHover(b.key); }}
+            onPointerLeave={(e) => { if (e.pointerType !== "touch") setHover(null); }}
             style={{ display: "contents" }}>
           <div style={rowStyle}>
             {href ? <Link href={href} style={{ textDecoration: "none" }}>{label}</Link> : label}
@@ -54,14 +59,24 @@ export function BarChart({ bars, format, hrefFor }: {
                 transition: "width 260ms ease, opacity 120ms",
               }} />
             </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, color: "var(--cr-ink)", minWidth: 34, textAlign: "right" }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: 11.5, color: "var(--cr-ink)", minWidth: 34, textAlign: "right" }}>
               {format ? format(b.value) : b.value}
+              {/* Share of the whole surfaces on hover. Rendered always and
+                  faded in, so the column never resizes under the pointer;
+                  hover-only because the figure itself is never hidden. */}
+              {total > 0 && (
+                <span aria-hidden={hover !== b.key} style={{
+                  fontSize: 10, fontWeight: 400, color: "var(--cr-ink-4)", marginLeft: 6,
+                  opacity: hover === b.key ? 1 : 0, transition: "opacity 120ms",
+                }}>
+                  {Math.round((b.value / total) * 100)}%
+                </span>
+              )}
             </span>
           </div>
           </div>
         );
       })}
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, color: AXIS_TEXT }} aria-hidden />
     </div>
   );
 }

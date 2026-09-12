@@ -1031,7 +1031,15 @@
     "investorTabNote": "Quem guardou o anúncio, quem o abriu, o que clicou, as perguntas que fez e os investidores que está a acompanhar. Os painéis surgem aqui à medida que a atividade chega.",
     "errAttachContactsWithheld": "Os contactos indicados na sua legenda ficaram retidos até ao registo do negócio.",
     "offersInbox": "Ofertas recebidas",
-    "offersInboxNote": "Uma oferta é o único sinal aqui que já está à espera da sua resposta. Aceitar uma coloca o negócio no registo, e a conversa segue a partir daí."
+    "offersInboxNote": "Uma oferta é o único sinal aqui que já está à espera da sua resposta. Aceitar uma coloca o negócio no registo, e a conversa segue a partir daí.",
+    "raiseEmptyTitle": "Ainda nada no contador",
+    "raiseEmptyBody": "Aqui lerá {target} angariados à medida que as ofertas forem aceites e os negócios tiverem montantes.",
+    "raiseGlanceEmpty": "Move-se quando uma oferta é aceite, a primeira inicia a contagem.",
+    "attnTitle": "Precisa da sua atenção",
+    "attnOffers": "Ofertas à espera da sua resposta",
+    "attnNegotiating": "Negócios em negociação",
+    "noDocsBody": "O seu deck, as finanças e os ficheiros da data room aparecem aqui, cada um com quantos investidores o abriram.",
+    "uploadFirstDoc": "Carregue o seu primeiro documento"
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -1573,7 +1581,10 @@
     "stageDistributionNote": "Negócios que se encontram atualmente em cada fase. Fechados e recusados são totais acumulados, pelo que se trata de um instantâneo e não de um grupo que avança da esquerda para a direita.",
     "closeRateBasis": "dos negócios terminados",
     "consistencyLead": "Listagens ordenadas por pontuação de coerência de IA.",
-    "consistencyCaption": "Mede a integralidade e a coerência interna da submissão. Não é uma previsão de retorno, nem aconselhamento de investimento, nem uma verificação de qualquer valor."
+    "consistencyCaption": "Mede a integralidade e a coerência interna da submissão. Não é uma previsão de retorno, nem aconselhamento de investimento, nem uma verificação de qualquer valor.",
+    "soFar": "até agora",
+    "quietBefore": "Nada foi listado ou fechado antes de {month}, por isso o gráfico começa aí.",
+    "monthInProgress": "{month} ainda está a decorrer; o seu último ponto vazio conta o mês até agora."
   },
   "onboarding": {
     "welcomeTitle": "Bem-vindo ao CapitalReach",
@@ -2817,7 +2828,8 @@
     "investorInterest": "Interesse de investidores",
     "profileViewers": "Visitantes do perfil",
     "targetInvestors": "Investidores-alvo",
-    "documentAnalytics": "Análise de documentos"
+    "documentAnalytics": "Análise de documentos",
+    "needsAttention": "Precisa da sua atenção"
   },
   "adminUsers": {
     "tabAll": "Todos",
@@ -3350,7 +3362,16 @@
     "successFee": "A CapitalReach cobra 2% de uma ronda quando fecha. É paga pela startup que recebe o investimento — nunca pelo investidor.",
     "dueDiligence": "A investigação que um investidor faz antes de comprometer dinheiro: ler as finanças, falar com clientes, confrontar as afirmações do anúncio com provas. Conte com pedidos de documentos e perguntas — uma diligência sem perguntas não começou.",
     "termSheet": "O documento que fixa os termos do investimento — montante, avaliação, direitos — antes dos contratos finais. Normalmente não vincula o dinheiro em si, mas assiná-lo encerra a negociação e passa a bola aos advogados.",
-    "assistant": "Um assistente de IA que responde a perguntas sobre a página que está a ver — os termos de um anúncio, a tese de um investidor, o significado de uma métrica. Só vê o que o seu plano lhe mostra."
+    "assistant": "Um assistente de IA que responde a perguntas sobre a página que está a ver — os termos de um anúncio, a tese de um investidor, o significado de uma métrica. Só vê o que o seu plano lhe mostra.",
+    "filterIndustry": "Mostra apenas os setores em que os fundadores registaram a sua empresa; escolher vários alarga a seleção. O número junto a cada setor indica quantas listagens ativas contém.",
+    "filterStage": "A ronda que a empresa diz estar a levantar, do pre-seed à série B e além. Declarada pelo fundador, não avaliada pela plataforma.",
+    "filterTraction": "Filtros de limiar sobre o que os fundadores declaram: receita mensal, crescimento, runway, dimensão da ronda e pontuação de coerência IA. Leem a listagem tal como foi submetida, pelo que não é possível filtrar por valores que o seu plano oculta.",
+    "filterRegion": "Mostra empresas sediadas num país, conforme indicado na listagem. As grafias são normalizadas, pelo que cada país aparece uma só vez, com o seu número de listagens.",
+    "filterBusinessModel": "Como a empresa diz ganhar dinheiro: subscrição, marketplace, licenças e assim por diante, retirado da listagem tal como foi submetida.",
+    "filterSort": "Muda a ordem dos resultados; nada é acrescentado nem retirado. O mais recente primeiro é a ordem por omissão, e ordenar por pontuação, receita ou data de fecho lê os valores submetidos pelos fundadores.",
+    "filterRaising": "Mantém rondas a partir desta dimensão. Lê o objetivo de financiamento que o fundador definiu para a ronda, não o montante já comprometido.",
+    "filterGrowth": "O crescimento mensal da receita tal como o fundador o declarou na listagem. O valor vem do fundador; a plataforma não o verifica.",
+    "filterClosingSoon": "Rondas cuja data de fecho, definida pelo fundador, cai nos próximos 60 dias ou já chegou. Rondas contínuas sem data ficam de fora."
   },
   "translate": {
     "offer": "Isto foi escrito noutro idioma.",
@@ -3829,7 +3850,14 @@
   "match": {
     "title": "Quem espera por si",
     "hint": "Escolha a sua fase e setor.",
-    "result": "de {total} investidores ativos declaram apetite por exatamente esta ronda"
+    "result": "de {total} investidores ativos declaram apetite por exatamente esta ronda",
+    "stage": "Fase",
+    "sector": "Setor",
+    "readout": "Leitura ao vivo",
+    "unavailable": "Os números ao vivo estão indisponíveis neste momento.",
+    "retry": "Tentar novamente",
+    "openRounds": "Rondas abertas",
+    "cta": "Ver as rondas correspondentes"
   },
   "pipeline": {
     "title": "Como uma rodada fecha",
