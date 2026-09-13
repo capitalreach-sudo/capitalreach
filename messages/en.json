@@ -63,8 +63,7 @@
     "proofVetted": "of data rooms behind an NDA",
     "whoPays": "The 2% success fee is paid by the startup that receives the investment — invoiced only after the round closes. Investors never pay it.",
     "ctaDashboard": "Open your dashboard",
-    "proofAria": "CapitalReach in three numbers",
-    "ctaDemo": "Explore the live demo"
+    "proofAria": "CapitalReach in three numbers"
   },
   "feeStrip": {
     "tagline": "success fee, paid by the startup — only after it closes. Industry average: 5–7% upfront.",
@@ -2924,7 +2923,10 @@
     "doneBody": "You won't receive email from CapitalReach anymore. In-app notifications continue, and you can change per-type preferences in Settings.",
     "invalidTitle": "This link isn't valid",
     "invalidBody": "The unsubscribe link is missing or has expired. You can manage email preferences from your account settings instead.",
-    "manage": "Manage notification settings"
+    "manage": "Manage notification settings",
+    "confirmTitle": "Unsubscribe from CapitalReach emails?",
+    "confirmBody": "This stops all email from us. In-app notifications are unaffected, and you can turn email back on in Settings.",
+    "confirmButton": "Unsubscribe"
   },
   "circumvention": {
     "eyebrow": "Before you connect",

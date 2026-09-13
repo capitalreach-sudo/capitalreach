@@ -56,8 +56,7 @@
     "proofVetted": "av datarummen ligger bakom ett NDA",
     "whoPays": "Framgångsavgiften på 2% betalas av startupen som tar emot investeringen — faktureras först efter att rundan stängts. Investerare betalar den aldrig.",
     "ctaDashboard": "Öppna instrumentpanelen",
-    "proofAria": "CapitalReach i tre siffror",
-    "ctaDemo": "Utforska livedemon"
+    "proofAria": "CapitalReach i tre siffror"
   },
   "trustIndicators": {
     "startupsListed": "startups listade",
@@ -2924,7 +2923,10 @@
     "doneBody": "Du får inte längre e-post från CapitalReach. Aviseringar i appen fortsätter och du kan ändra inställningar per typ i Inställningar.",
     "invalidTitle": "Länken är ogiltig",
     "invalidBody": "Avregistreringslänken saknas eller har gått ut. Du kan hantera e-postinställningar via kontoinställningarna.",
-    "manage": "Hantera aviseringar"
+    "manage": "Hantera aviseringar",
+    "confirmTitle": "Avsluta prenumerationen på CapitalReach-mejl?",
+    "confirmBody": "Du får då inga fler mejl från oss. Aviseringar i appen påverkas inte och du kan slå på mejl igen i Inställningar.",
+    "confirmButton": "Avsluta prenumeration"
   },
   "circumvention": {
     "eyebrow": "Innan du tar kontakt",

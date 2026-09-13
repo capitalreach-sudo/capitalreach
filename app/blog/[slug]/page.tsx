@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/shared/navbar";
@@ -26,7 +26,10 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function BlogPostPage({ params }: Props) {
   const post = postBySlug(params.slug);
-  if (!post) notFound();
+  // Not notFound(): the page streams a 200 shell before the boundary throws,
+  // and the visitor got a BLANK page titled "Blog". An unknown or retired
+  // post lands on the index, which can actually help them.
+  if (!post) redirect("/blog");
 
   return (
     <>

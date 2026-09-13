@@ -56,8 +56,7 @@
     "proofVetted": "das data rooms protegidas por um NDA",
     "whoPays": "A comissão de sucesso de 2% é paga pela startup que recebe o investimento — faturada apenas após o fecho da ronda. Os investidores nunca a pagam.",
     "ctaDashboard": "Abrir o painel",
-    "proofAria": "CapitalReach em três números",
-    "ctaDemo": "Explore a demonstração ao vivo"
+    "proofAria": "CapitalReach em três números"
   },
   "trustIndicators": {
     "startupsListed": "startups listadas",
@@ -2924,7 +2923,10 @@
     "doneBody": "Você não receberá mais e-mails da CapitalReach. As notificações no app continuam, e você pode alterar as preferências por tipo em Configurações.",
     "invalidTitle": "Este link não é válido",
     "invalidBody": "O link de cancelamento está ausente ou expirou. Você pode gerenciar as preferências de e-mail nas configurações da conta.",
-    "manage": "Gerenciar notificações"
+    "manage": "Gerenciar notificações",
+    "confirmTitle": "Cancelar a subscrição dos e-mails da CapitalReach?",
+    "confirmBody": "Deixará de receber todos os nossos e-mails. As notificações na aplicação não mudam e pode reativar o e-mail nas Definições.",
+    "confirmButton": "Cancelar subscrição"
   },
   "circumvention": {
     "eyebrow": "Antes de entrar em contacto",

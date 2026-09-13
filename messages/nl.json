@@ -56,8 +56,7 @@
     "proofVetted": "van de datarooms achter een NDA",
     "whoPays": "De succesfee van 2% wordt betaald door de startup die de investering ontvangt — pas gefactureerd na sluiting van de ronde. Investeerders betalen die nooit.",
     "ctaDashboard": "Naar je dashboard",
-    "proofAria": "CapitalReach in drie cijfers",
-    "ctaDemo": "Bekijk de live demo"
+    "proofAria": "CapitalReach in drie cijfers"
   },
   "trustIndicators": {
     "startupsListed": "startups geplaatst",
@@ -2924,7 +2923,10 @@
     "doneBody": "Je ontvangt geen e-mail meer van CapitalReach. In-app meldingen gaan door en per-type voorkeuren pas je aan in Instellingen.",
     "invalidTitle": "Deze link is niet geldig",
     "invalidBody": "De uitschrijflink ontbreekt of is verlopen. Je kunt e-mailvoorkeuren beheren via je accountinstellingen.",
-    "manage": "Meldingsinstellingen beheren"
+    "manage": "Meldingsinstellingen beheren",
+    "confirmTitle": "Afmelden voor CapitalReach-e-mails?",
+    "confirmBody": "U ontvangt dan geen e-mail meer van ons. In-app-meldingen blijven werken; in Instellingen kunt u e-mail weer inschakelen.",
+    "confirmButton": "Afmelden"
   },
   "circumvention": {
     "eyebrow": "Voordat u contact opneemt",

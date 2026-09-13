@@ -63,8 +63,7 @@
     "proofVetted": "der Datenräume hinter einem NDA",
     "whoPays": "Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält — in Rechnung gestellt erst nach Abschluss der Runde. Investoren zahlen sie nie.",
     "ctaDashboard": "Zum Dashboard",
-    "proofAria": "CapitalReach in drei Zahlen",
-    "ctaDemo": "Live-Demo ansehen"
+    "proofAria": "CapitalReach in drei Zahlen"
   },
   "feeStrip": {
     "tagline": "Erfolgsgebühr, zahlt das Startup — erst nach dem Abschluss. Branchenschnitt: 5–7% vorab.",
@@ -2924,7 +2923,10 @@
     "doneBody": "Du erhältst keine E-Mails mehr von CapitalReach. In-App-Benachrichtigungen bleiben, und Präferenzen pro Typ änderst du in den Einstellungen.",
     "invalidTitle": "Dieser Link ist ungültig",
     "invalidBody": "Der Abmeldelink fehlt oder ist abgelaufen. Du kannst E-Mail-Präferenzen stattdessen in deinen Kontoeinstellungen verwalten.",
-    "manage": "Benachrichtigungseinstellungen verwalten"
+    "manage": "Benachrichtigungseinstellungen verwalten",
+    "confirmTitle": "Von CapitalReach-E-Mails abmelden?",
+    "confirmBody": "Damit erhalten Sie keine E-Mails mehr von uns. In-App-Benachrichtigungen bleiben aktiv; in den Einstellungen können Sie E-Mails wieder aktivieren.",
+    "confirmButton": "Abmelden"
   },
   "circumvention": {
     "eyebrow": "Bevor Sie Kontakt aufnehmen",

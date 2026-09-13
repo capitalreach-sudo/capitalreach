@@ -23,12 +23,19 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   // Tints the browser chrome on Android and the status bar in the installed
   // app, so the shell reads as part of the product rather than a web view.
-  themeColor: "var(--cr-copper)", // --cr-copper
+  // A meta tag cannot resolve a CSS variable -- the old value shipped the
+  // literal string "var(--cr-copper)" and browsers silently ignored it. The
+  // page grounds per scheme (light business paper, dark business paper);
+  // media-matched so the chrome follows the visitor's scheme.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0A0A" },
+  ],
 };
 
 export const metadata: Metadata = {
   title: {
-    default: "CapitalReach — Startup Investment Marketplace",
+    default: "CapitalReach — Private Capital Marketplace",
     template: "%s | CapitalReach",
   },
   description:

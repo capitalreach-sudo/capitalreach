@@ -32,7 +32,10 @@ export async function POST(req: NextRequest) {
     // an open relay. Refuse rather than relay when the limiter isn't real.
     if (!isRedisConfigured) {
       return NextResponse.json(
-        { error: "Contact form is temporarily unavailable. Please email us directly." },
+        // Never promise an email path that may not exist: with no domain
+        // configured there IS no address, and this copy sent people hunting
+        // for one.
+        { error: "Contact form is temporarily unavailable. Please try again later." },
         { status: 503 }
       );
     }

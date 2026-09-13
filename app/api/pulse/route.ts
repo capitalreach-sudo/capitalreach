@@ -59,14 +59,19 @@ export async function GET() {
       .eq("is_external", false).eq("is_demo", false)
       .gte("created_at", since)
       .order("created_at", { ascending: false }).limit(6),
+    // Joined through the startup for the SAME is_demo filter the two queries
+    // above already apply: the feed was announcing seeded deal closures and
+    // NDA signings to every visitor as genuine platform activity.
     admin.from("nda_records")
-      .select("signed_at")
+      .select("signed_at, startup:startups!inner(is_demo)")
       .not("signed_at", "is", null)
+      .eq("startup.is_demo", false)
       .gte("signed_at", since)
       .order("signed_at", { ascending: false }).limit(4),
     admin.from("deals")
-      .select("closed_at")
+      .select("closed_at, startup:startups!inner(is_demo)")
       .eq("status", "closed").not("closed_at", "is", null)
+      .eq("startup.is_demo", false)
       .gte("closed_at", since)
       .order("closed_at", { ascending: false }).limit(4),
   ]);

@@ -56,8 +56,7 @@
     "proofVetted": "のデータルームがNDAの内側にあります",
     "whoPays": "2% の成功報酬は投資を受けるスタートアップが支払います — 請求はラウンド成約後のみ。投資家が支払うことはありません。",
     "ctaDashboard": "ダッシュボードを開く",
-    "proofAria": "3つの数字で見るCapitalReach",
-    "ctaDemo": "ライブデモを見る"
+    "proofAria": "3つの数字で見るCapitalReach"
   },
   "feeStrip": {
     "tagline": "成功報酬、スタートアップが支払い — 成約後のみ。業界平均：前払い 5〜7%。",
@@ -2924,7 +2923,10 @@
     "doneBody": "CapitalReach からのメールは今後届きません。アプリ内通知は継続され、種類ごとの設定は設定画面で変更できます。",
     "invalidTitle": "このリンクは無効です",
     "invalidBody": "配信停止リンクがないか期限切れです。メール設定はアカウント設定から管理できます。",
-    "manage": "通知設定を管理"
+    "manage": "通知設定を管理",
+    "confirmTitle": "CapitalReachのメール配信を停止しますか?",
+    "confirmBody": "当社からのメール配信をすべて停止します。アプリ内通知には影響せず、設定からいつでも再開できます。",
+    "confirmButton": "配信停止"
   },
   "circumvention": {
     "eyebrow": "連絡の前に",

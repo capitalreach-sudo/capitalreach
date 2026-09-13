@@ -56,8 +56,7 @@
     "proofVetted": "delle data room dietro un NDA",
     "whoPays": "La success fee del 2% è pagata dalla startup che riceve l'investimento — fatturata solo dopo la chiusura del round. Gli investitori non la pagano mai.",
     "ctaDashboard": "Apri la dashboard",
-    "proofAria": "CapitalReach in tre numeri",
-    "ctaDemo": "Esplora la demo dal vivo"
+    "proofAria": "CapitalReach in tre numeri"
   },
   "trustIndicators": {
     "startupsListed": "startup elencate",
@@ -2924,7 +2923,10 @@
     "doneBody": "Non riceverai più email da CapitalReach. Le notifiche in-app continuano e puoi cambiare le preferenze per tipo nelle Impostazioni.",
     "invalidTitle": "Questo link non è valido",
     "invalidBody": "Il link di annullamento manca o è scaduto. Puoi gestire le preferenze email dalle impostazioni dell'account.",
-    "manage": "Gestisci le notifiche"
+    "manage": "Gestisci le notifiche",
+    "confirmTitle": "Annullare l'iscrizione alle e-mail di CapitalReach?",
+    "confirmBody": "Non riceverai più le nostre e-mail. Le notifiche in-app restano attive; puoi riattivare le e-mail nelle Impostazioni.",
+    "confirmButton": "Annulla iscrizione"
   },
   "circumvention": {
     "eyebrow": "Prima di contattare",

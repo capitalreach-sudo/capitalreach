@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
+import { brand } from "@/lib/brand";
 
 /**
- * The demo walk-in: the staging environment carries a fully seeded market
- * (20k accounts, 10k listings, 500 deals) and is safe to wander -- nothing
- * in it is real. A route rather than a raw link so the destination can
- * change without touching every CTA that points here.
+ * /demo used to 302 to the STAGING deployment -- which renders
+ * pixel-identical to prod with no sandbox banner, no demo credentials, an
+ * anonymous market gate that demonstrates nothing, and a live signup form
+ * writing real accounts into the staging database. Until an actual guided
+ * sandbox exists, the honest public showcase is the Data Centre: live
+ * numbers, real charts, no impersonation risk. Kept as a route so old links
+ * keep resolving.
  */
 export function GET() {
-  return NextResponse.redirect("https://capitalreach-staging.vercel.app/?demo=1", 302);
+  return NextResponse.redirect(new URL("/data", brand.url), 302);
 }

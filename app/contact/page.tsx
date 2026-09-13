@@ -64,7 +64,7 @@ export default function ContactPage() {
       if (!res.ok) {
         toast({
           title: t("contact.toastFailedTitle"),
-          description: data.error || t("contact.toastFailedDescFallback", { email: brand.support }),
+          description: data.error || (brand.support ? t("contact.toastFailedDescFallback", { email: brand.support }) : t("errors.generic")),
           variant: "destructive",
         });
       } else {
@@ -73,7 +73,7 @@ export default function ContactPage() {
     } catch {
       toast({
         title: t("contact.toastNetworkErrorTitle"),
-        description: t("contact.toastNetworkErrorDesc", { email: brand.support }),
+        description: brand.support ? t("contact.toastNetworkErrorDesc", { email: brand.support }) : t("errors.generic"),
         variant: "destructive",
       });
     }
@@ -110,16 +110,21 @@ export default function ContactPage() {
 
             {/* Contact facts as ledger rows -- rules, not chips. */}
             <div style={{ marginTop: "32px", borderBottom: "1px solid var(--cr-rule)" }}>
-              <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
-                <p style={ROW_LABEL}>{t("contact.emailUs")}</p>
-                <a
-                  href={`mailto:${brand.support}`}
-                  className="text-cr-copper hover:text-cr-cu-l transition-colors"
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", textDecoration: "none" }}
-                >
-                  {brand.support}
-                </a>
-              </div>
+              {/* Only when an address exists: with no BRAND_DOMAIN this row
+                  rendered "Email us" over an empty mailto -- a dead link
+                  advertising a channel that does not exist. */}
+              {brand.support && (
+                <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
+                  <p style={ROW_LABEL}>{t("contact.emailUs")}</p>
+                  <a
+                    href={`mailto:${brand.support}`}
+                    className="text-cr-copper hover:text-cr-cu-l transition-colors"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", textDecoration: "none" }}
+                  >
+                    {brand.support}
+                  </a>
+                </div>
+              )}
 
               <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
                 <p style={ROW_LABEL}>{t("contact.responseTime")}</p>

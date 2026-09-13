@@ -208,7 +208,7 @@ export function Navbar() {
 
                   {/* Dropdown */}
                   <div
-                    className={`absolute right-0 mt-1 w-52 py-1 transition-all duration-150 z-50 ${menuOpen ? "opacity-100 visible" : "opacity-0 invisible"} group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible`}
+                    className={`absolute end-0 mt-1 w-52 py-1 transition-all duration-150 z-50 ${menuOpen ? "opacity-100 visible" : "opacity-0 invisible"} group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible`}
                     style={{
                       background:   "var(--cr-paper-2)",
                       border:       "1px solid var(--cr-rule-dark)",

@@ -56,8 +56,7 @@
     "proofVetted": "的资料室受保密协议保护",
     "whoPays": "2% 成功费由获得投资的创业公司支付 — 仅在融资完成后开票。投资者从不支付。",
     "ctaDashboard": "打开仪表盘",
-    "proofAria": "三个数字看懂 CapitalReach",
-    "ctaDemo": "体验在线演示"
+    "proofAria": "三个数字看懂 CapitalReach"
   },
   "feeStrip": {
     "tagline": "成功费，由创业公司支付 — 仅在成交后。行业平均：预付 5–7%。",
@@ -2924,7 +2923,10 @@
     "doneBody": "您将不再收到 CapitalReach 的邮件。应用内通知将继续，您可以在设置中按类型调整偏好。",
     "invalidTitle": "此链接无效",
     "invalidBody": "退订链接缺失或已过期。您可以在账户设置中管理邮件偏好。",
-    "manage": "管理通知设置"
+    "manage": "管理通知设置",
+    "confirmTitle": "取消订阅 CapitalReach 邮件?",
+    "confirmBody": "将停止接收我们的所有邮件。应用内通知不受影响,可在设置中重新开启邮件。",
+    "confirmButton": "取消订阅"
   },
   "circumvention": {
     "eyebrow": "联系前须知",

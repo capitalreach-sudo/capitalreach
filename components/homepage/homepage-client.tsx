@@ -75,7 +75,7 @@ interface Props {
  * a bad test value renders "—", never "$100000000B". Counts are shown only
  * when they are greater than zero -- "0 startups listed" is not a trust signal.
  */
-export function HomepageClient({ stats, listings, tickerListings, launch, viewerRole = null, canSeeMarket = false }: Props & { viewerRole?: string | null; canSeeMarket?: boolean }) {
+export function HomepageClient({ stats, listings, tickerListings, launch, viewerRole = null, canSeeMarket = false, raisingTotal = null }: Props & { viewerRole?: string | null; canSeeMarket?: boolean; raisingTotal?: number | null }) {
   const laneAll = (tickerListings && tickerListings.length ? tickerListings : listings);
   // The marquee renders the lane TWICE for the seamless loop, so DOM cost is
   // 2x lane length. 150 rounds is minutes of unrepeated tape; more is payload.
@@ -212,11 +212,6 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
             </Link>
           </div>
 
-          {!viewerRole && (
-            <Link href="/demo" className="animate-fade-up-3" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-4)", textDecoration: "underline", textUnderlineOffset: "4px", textDecorationColor: "var(--cr-paper-4)", marginTop: "16px" }}>
-              {t("hero.ctaDemo")} {"→"}
-            </Link>
-          )}
 
           {/* Footnotes, grouped under one hairline instead of two floating
               rows: the counts (data) then the terms (fine print). The eye
@@ -272,7 +267,15 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
               {/* Money and outcomes only -- the account counts came out
                   (Jack's call): capital sought, capital raised, deals done. */}
               {([
-                [safeFormatTotal(sumFundingTargets(laneAll.map(l => l.funding_target))), t("listings.raising")],
+                // Server aggregate first: the gated listings arrays are EMPTY
+                // for anonymous visitors, and summing them rendered "$0
+                // Raising" as a live market fact. No figure -> no tile row,
+                // never a zero pretending to be data.
+                ...(raisingTotal !== null
+                  ? [[safeFormatTotal(raisingTotal), t("listings.raising")] as [string, string]]
+                  : canSeeMarket
+                    ? [[safeFormatTotal(sumFundingTargets(laneAll.map(l => l.funding_target))), t("listings.raising")] as [string, string]]
+                    : []),
                 [safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")],
                 [String(stats.dealsClosedCount), t("stats.dealsClosed")],
               ] as Array<[string, string]>).map(([v, label]) => (

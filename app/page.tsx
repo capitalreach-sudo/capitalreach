@@ -42,6 +42,7 @@ export type TickerSnippet = Pick<ListingSnippet, "id" | "name" | "slug" | "stage
 export default async function HomePage() {
   let listings: ListingSnippet[] = [];
   let tickerListings: TickerSnippet[] = [];
+  let raisingTotal: number | null = null;
   let stats = EMPTY_STATS;
   let launch = NO_LAUNCH;
 
@@ -66,6 +67,7 @@ export default async function HomePage() {
         .from("startups")
         .select("id,name,slug,industry,stage,funding_target,vaultrise_score")
         .eq("status", "active")
+        .eq("is_demo", false)
         .order("created_at", { ascending: false })
         .limit(8),
       // The ticker is the whole market moving, not a shortlist: EVERY active
@@ -83,6 +85,23 @@ export default async function HomePage() {
     launch   = launchRes;
     listings = (listingsRes.data ?? []) as ListingSnippet[];
     tickerListings = (tickerRes.data ?? []) as TickerSnippet[];
+    // The hero's "Raising" figure, as a bare server aggregate that names
+    // nobody. It used to be summed CLIENT-side from the listings arrays,
+    // which the gate below empties for anonymous visitors -- so the LIVE
+    // panel asserted "$0 Raising" as a market fact beside real capital
+    // figures. Withheld data must vanish, never render as zero; a bare sum
+    // is not withheld data. Demo rows excluded, matching the stats.
+    try {
+      const { data: raiseRows } = await supabase
+        .from("startups")
+        .select("funding_target")
+        .eq("status", "active")
+        .eq("is_demo", false)
+        .neq("round_state", "paused")
+        .limit(2000);
+      raisingTotal = (raiseRows ?? []).reduce(
+        (sum: number, r: { funding_target: number | null }) => sum + (Number(r.funding_target) || 0), 0);
+    } catch { /* tile falls back to hiding itself */ }
   } catch {
     /* DB not configured — render the shell with zero counts */
   }
@@ -131,6 +150,7 @@ export default async function HomePage() {
         stats={stats}
         listings={canSeeMarket ? listings : []}
         tickerListings={canSeeMarket ? tickerListings : []}
+        raisingTotal={raisingTotal}
         launch={launch}
         viewerRole={viewerRole}
         canSeeMarket={canSeeMarket}
