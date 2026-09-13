@@ -18,6 +18,14 @@
     {
       "path": "/api/cron/digest",
       "schedule": "30 7 * * *"
+    },
+    {
+      "path": "/api/cron/trust-sweep",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/circumvention-watch",
+      "schedule": "30 9 * * *"
     }
   ],
   "headers": [

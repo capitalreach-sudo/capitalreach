@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { buildAccessContext, founderCan } from "@/lib/access";
+import { getLaunchStatus } from "@/lib/launchMode";
 import { resolveEntity } from "@/lib/membership";
 
 /**
@@ -26,9 +28,27 @@ export async function GET() {
   if (!mine) return NextResponse.json({ error: "Founders only" }, { status: 403 });
 
   const admin = createAdminClient();
+
+  // The house rule its three siblings (viewers, savers, doc-views) already
+  // follow, applied here too: a private or off-platform investor is COUNTED,
+  // never NAMED, and naming at all is the paid seeInvestorIdentity signal.
+  // This list was the one engagement surface that named everyone to every
+  // tier. The dispute ledger is untouched -- document_downloads keeps the full
+  // identity, watermark id and address server-side for the day a leaked file
+  // needs resolving; what changes is only what the founder's analytics render.
+  const [{ data: startupRow }, { isLaunch }] = await Promise.all([
+    admin.from("startups").select("subscription_tier").eq("id", mine.entityId).maybeSingle(),
+    getLaunchStatus(),
+  ]);
+  const ctx = buildAccessContext(
+    { id: user.id, role: "startup", subscription_tier: startupRow?.subscription_tier ?? null },
+    isLaunch,
+  );
+  const canSeeWho = founderCan(ctx).seeInvestorIdentity;
+
   const { data, error } = await admin
     .from("document_downloads")
-    .select("document_id, downloaded_at, investor:investors(display_name, firm_name)")
+    .select("document_id, downloaded_at, investor:investors(display_name, firm_name, is_public, is_external)")
     .eq("startup_id", mine.entityId)
     .order("downloaded_at", { ascending: false })
     .limit(MAX_ROWS);
@@ -38,11 +58,15 @@ export async function GET() {
   }
 
   const downloads = (data ?? []).map((row) => {
-    const investor = row.investor as unknown as { display_name: string | null; firm_name: string | null } | null;
+    const investor = row.investor as unknown as
+      { display_name: string | null; firm_name: string | null; is_public: boolean | null; is_external: boolean | null } | null;
+    const namable = !!investor?.is_public && !investor?.is_external;
     return {
       documentId: row.document_id,
       at: row.downloaded_at,
-      investorName: investor?.display_name?.trim() || investor?.firm_name?.trim() || null,
+      investorName: canSeeWho && namable
+        ? (investor?.display_name?.trim() || investor?.firm_name?.trim() || null)
+        : null,
     };
   });
   return NextResponse.json({ downloads });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { sendProfileUnderReviewEmail } from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
@@ -7,10 +8,18 @@ export async function POST(req: NextRequest) {
   // POST here repeatedly and use it as a mailer aimed at that startup's owner,
   // and fire the internal webhook while they were at it. It is called from the
   // startup onboarding flow, so require a session and require the caller to own
-  // the startup being announced (admins may announce any).
+  // the startup being announced (admins may announce any). Deliberately NOT
+  // requireAdmin: the caller is the founder submitting their own listing.
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // A submission announcement happens about once per listing, ever. Every call
+  // emails the owner and pings the internal webhook, so the residual abuse --
+  // a founder looping their OWN announcement to spam the review channel -- gets
+  // the always-counting Postgres ceiling.
+  { const rl = await dbRateLimit(user.id, "notify_review", ...Object.values(RATE.perHour(3)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "Already announced. The review team has it." }, { status: 429 }); }
 
   const { startupId } = await req.json().catch(() => ({}));
   if (typeof startupId !== "string" || !startupId) {

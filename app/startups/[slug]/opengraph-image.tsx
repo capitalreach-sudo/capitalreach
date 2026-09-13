@@ -1,16 +1,23 @@
 import { ImageResponse } from "next/og";
 import { createAdminClient } from "@/lib/supabase-server";
+import { listingDetailPublic } from "@/lib/listing-visibility";
 import { STAGE_LABELS } from "@/lib/utils";
 
 /**
- * Per-startup share card: a profile link pasted into LinkedIn/X/WhatsApp
- * shows that startup's name, tagline and sector -- the strongest referral
- * surface a marketplace has. Same design-A tokens as the site-wide card in
- * app/opengraph-image.tsx.
+ * Per-startup share card, governed by the SAME flag as the page it previews.
  *
- * Only fields the anonymous profile page itself renders are used (name,
- * tagline, industry, stage). Financials stay off the card -- they are
- * tier-gated in the app and og images are served to anyone.
+ * While public_listing_detail is "members" (the current setting), an OG image
+ * is an anonymous response, and the platform's rule for anonymous responses is
+ * that they carry no company identity -- the sector teaser, pulse, sitemap and
+ * the detail page itself all withhold the name, and this card rendering it
+ * anyway was the one hole in that surface (and a slug-existence oracle, since
+ * a real slug drew a different card from a fake one). Everyone now gets the
+ * generic CapitalReach card; the founder-consented share path is the share
+ * link, whose guest is admitted to the page itself.
+ *
+ * Flip the config row to "open" and the named referral card comes back with
+ * the page, automatically. Demo listings never get a named card either way --
+ * a fictional sample company must not unfurl as a real one.
  */
 
 export const runtime = "edge";
@@ -39,15 +46,20 @@ async function playfair(): Promise<ArrayBuffer | null> {
 }
 
 export default async function StartupOgImage({ params }: { params: { slug: string } }) {
+  const open = await listingDetailPublic();
   const supabase = createAdminClient();
-  const { data: startup } = await supabase
-    .from("startups")
-    .select("name, tagline, industry, stage, status")
-    .eq("slug", params.slug)
-    .maybeSingle();
+  const { data: startup } = open
+    ? await supabase
+        .from("startups")
+        .select("name, tagline, industry, stage, status, is_demo")
+        .eq("slug", params.slug)
+        .maybeSingle()
+    // Members-only: the row is not even read, so the card cannot differ by
+    // slug and the response carries nothing to leak.
+    : { data: null };
 
   const serif = await playfair();
-  const active = startup && startup.status === "active";
+  const active = startup && startup.status === "active" && !startup.is_demo;
   const name = active ? startup.name : "CapitalReach";
   const tagline = active
     ? startup.tagline

@@ -13,6 +13,13 @@ import { getStageStatus, resolveStagePriceId } from "@/lib/pricing-stage";
 /** Platform is free until this many users have joined */
 
 export async function GET(req: NextRequest) {
+  // A GET that writes (the launch-mode free grant below) must not be
+  // triggerable from another site: Sec-Fetch-Site catches the top-level
+  // cross-site navigation that SameSite=Lax still sends the cookie on.
+  // See checkout/investor for the full note.
+  if (req.headers.get("sec-fetch-site") === "cross-site") {
+    return NextResponse.redirect(new URL("/pricing", req.url));
+  }
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(new URL("/auth/login", req.url));

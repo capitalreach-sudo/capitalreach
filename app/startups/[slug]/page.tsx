@@ -31,41 +31,49 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
-  const { data: startup } = await supabase
-    .from("startups")
-    .select("name, tagline, industry, stage, funding_target, is_demo")
-    .eq("slug", params.slug)
-    .single();
-
-  if (!startup) return {};
 
   // Metadata is rendered BEFORE the page body, so the body's redirect cannot
   // protect it -- this codebase has already been bitten by exactly that, when
-  // an investor's name leaked through the <title> of a redirect shell. When
-  // the detail page is members-only and the caller is signed out, the tags
-  // carry the company NAME and its TAGLINE and nothing else: a shared link
-  // still previews as something rather than a bare URL, while the problem,
-  // solution, market and every financial figure stay behind the gate.
+  // an investor's name leaked through the <title> of a redirect shell. While
+  // the detail page is members-only, an anonymous caller's tags are GENERIC:
+  // this used to carry the company name and tagline as a share-preview
+  // courtesy, but an anonymous response naming a company was the one
+  // exception to the masking rule every other anonymous surface follows
+  // (sector teaser, pulse, sitemap, the page itself), and it doubled as a
+  // slug-existence oracle. The row is not read at all on this branch, so a
+  // real slug and a fake one answer identically. Founder-consented sharing is
+  // the share-token link; flipping public_listing_detail to "open" restores
+  // named previews with the page.
   //
-  // Marked noindex because this URL answers an anonymous crawler with a
-  // redirect to sign-in; indexing it would put a login screen in the results
-  // under the company's name. The browse index and the sector pages carry the
-  // public SEO instead.
+  // noindex because this URL answers an anonymous crawler with a redirect to
+  // sign-in; the browse index and sector pages carry the public SEO instead.
   const { data: { user } } = await supabase.auth.getUser();
   if (!user && !(await listingDetailPublic())) {
     return {
       robots: { index: false, follow: false },
-      title: `${startup.name}: ${startup.tagline}`,
-      description: startup.tagline,
+      title: "A company raising on CapitalReach",
+      description: "Sign in to view this listing.",
       openGraph: {
-        title: `${startup.name} | CapitalReach`,
-        description: startup.tagline,
+        title: "CapitalReach",
+        description: "Founders raising. Investors deploying. Deals that close in one place.",
         type: "website",
         url: `/startups/${params.slug}`,
       },
       alternates: { canonical: `/startups/${params.slug}` },
     };
   }
+
+  // Admin client: the members-only case returned above, so whoever reaches
+  // this read is entitled to named metadata -- a member, or anyone once the
+  // flag is "open". The 129 policies stop the anon session key from reading
+  // startups at all, which would silently blank this branch in open mode.
+  const { data: startup } = await createAdminClient()
+    .from("startups")
+    .select("name, tagline, industry, stage, funding_target, is_demo")
+    .eq("slug", params.slug)
+    .single();
+
+  if (!startup) return {};
 
   return {
     // A fictional sample company must never appear in a search result.
@@ -98,6 +106,26 @@ export async function generateStaticParams() {
 
 export default async function StartupDetailPage({ params, searchParams }: Props) {
   const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // MEMBERS-ONLY DETAIL (platform_config.public_listing_detail). The browse
+  // index stays public -- name, sector, stage, raise, score -- but this page is
+  // where the idea lives, and an anonymous reader does not get it. This gate
+  // sits in FRONT of everything, including the row read: an anonymous visitor
+  // with no share token is bounced BEFORE the slug is resolved, so a live
+  // listing and a fake slug answer identically (the old order -- notFound
+  // first, redirect second -- let a signed-out caller confirm which slugs were
+  // real listings by the shape of the refusal).
+  //
+  // The one anonymous door that stays open is a share link the founder minted
+  // themselves. The token is validated against the startup the row names,
+  // never trusted as a bare parameter, and an invalid token gets the same
+  // login redirect as no token -- not a 404 -- for the same oracle reason.
+  const detailPublic = await listingDetailPublic();
+  const gateToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
+  if (!user && !detailPublic && !gateToken) {
+    redirect(`/auth/login?redirect=/startups/${params.slug}`);
+  }
 
   // The service role reads the full row (column grants hide financials from
   // user-bound clients since 109); this page is the strip point -- what
@@ -115,24 +143,18 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     // Union narrowings below are licensed by the DB CHECK constraints.
     .returns<Startup>();
 
-  if (!startup || startup.status !== "active") notFound();
+  if (!startup || startup.status !== "active") {
+    // A guest holding a token gets the redirect, not the 404, when the slug is
+    // dead -- an anonymous caller must not learn existence from the refusal.
+    if (!user && !detailPublic) redirect(`/auth/login?redirect=/startups/${params.slug}`);
+    notFound();
+  }
 
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // MEMBERS-ONLY DETAIL (platform_config.public_listing_detail). The browse
-  // index stays public -- name, sector, stage, raise, score -- but this page is
-  // where the idea lives, and an anonymous reader does not get it. This gate
-  // sits in FRONT of every entitlement gate below: nothing about the viewer is
-  // resolved and no pageview is recorded until it passes.
-  //
-  // The one anonymous door that stays open is a share link the founder minted
-  // themselves. The token is re-checked against THIS startup here rather than
-  // trusted as a query parameter, exactly as the document grant re-checks it
-  // further down -- ?share=anything would otherwise be a universal key. That
-  // later check is the stricter one (it also requires grants_documents); this
-  // one only decides whether the room is open.
-  if (!user && !(await listingDetailPublic())) {
-    const gateToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
+  // Token re-checked against THIS startup, exactly as the document grant
+  // re-checks it further down -- ?share=anything would otherwise be a
+  // universal key. That later check is the stricter one (it also requires
+  // grants_documents); this one only decides whether the room is open.
+  if (!user && !detailPublic) {
     let sharedWithGuest = false;
     if (gateToken) {
       const { data: gateShare } = await createAdminClient()
