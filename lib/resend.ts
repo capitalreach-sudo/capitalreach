@@ -82,6 +82,14 @@ async function send(
   }
 }
 
+/** The daily digest. Routed through send() so email_opt_out and the
+ * List-Unsubscribe headers apply -- the cron used to call the raw client and
+ * would have mailed opted-out users daily, with no way out in the message,
+ * the day the domain went live. */
+export async function sendDigestEmail(to: string, subject: string, html: string) {
+  return send(to, subject, html, [{ name: "type", value: "digest" }]);
+}
+
 export async function sendWelcomeEmail(to: string, name: string, role: string) {
   const isStartup = role === "startup";
   return send(

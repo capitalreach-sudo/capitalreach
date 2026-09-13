@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
-import { resend } from "@/lib/resend";
+import { resend, sendDigestEmail} from "@/lib/resend";
 import { logSystemEvent } from "@/lib/system-events";
 
 export const dynamic = "force-dynamic";
@@ -106,12 +106,14 @@ export async function GET(req: NextRequest) {
     if (u) parts.push(`<li><strong>${u}</strong> unread message${u > 1 ? "s" : ""}</li>`);
     if (v) parts.push(`<li><strong>${v}</strong> view${v > 1 ? "s" : ""} on your listing yesterday</li>`);
     if (!parts.length) continue;
-    await resend.emails.send({
-      from: "CapitalReach <digest@capitalreach.app>",
-      to: prof.email,
-      subject: "Waiting for you on CapitalReach",
-      html: `<p>Hi ${prof.full_name ?? "there"},</p><ul>${parts.join("")}</ul><p><a href="${base}/dashboard">Open your dashboard →</a></p>`,
-    }).catch(() => {});
+    // Through the opt-out-aware helper: the raw client bypassed
+    // email_opt_out, the unsubscribe footer, AND hardcoded a from-domain the
+    // project does not own.
+    await sendDigestEmail(
+      prof.email,
+      "Waiting for you on CapitalReach",
+      `<p>Hi ${prof.full_name ?? "there"},</p><ul>${parts.join("")}</ul><p><a href="${base}/dashboard">Open your dashboard →</a></p>`,
+    ).catch(() => {});
     sent++;
   }
 

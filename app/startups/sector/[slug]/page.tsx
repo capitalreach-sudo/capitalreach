@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { browseIndexPublic } from "@/lib/listing-visibility";
-import { stripCardFinancials } from "@/lib/browse-data";
+import { stripCardFinancials, STARTUP_LIST_COLUMNS} from "@/lib/browse-data";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase-server";
@@ -111,7 +111,10 @@ export default async function SectorPage({ params }: Props) {
     // than the whole market being loaded and sliced down to one sector.
     const { data: startups, error } = await admin
       .from("startups")
-      .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score, round_close_date")
+      // The browse projection, shared so it cannot drift: this page's private
+      // copy lacked is_demo (Sample badges never rendered here -- seven demo
+      // FinTech cards presented as real companies) and the logo fields.
+      .select(STARTUP_LIST_COLUMNS)
       .eq("status", "active")
       // B16: a founder-paused round is off the market until they resume it.
       .neq("round_state", "paused")

@@ -43,7 +43,11 @@ export interface MatchableStartup {
 
 export function matchesSavedSearch(f: SavedSearchFilters, s: MatchableStartup): boolean {
   const q = (f.query ?? "").trim().toLowerCase();
-  if (q && !s.name.toLowerCase().includes(q) && !(s.tagline ?? "").toLowerCase().includes(q)) return false;
+  // Industry joins the text clause so the browser filter agrees with the
+  // server search (browse-data matches industry.ilike): typing "fintech"
+  // used to show "No listings match" over seven live FinTech rounds.
+  if (q && !s.name.toLowerCase().includes(q) && !(s.tagline ?? "").toLowerCase().includes(q)
+        && !(s.industry ?? "").toLowerCase().includes(q)) return false;
   if (f.industries?.length && !f.industries.includes(s.industry)) return false;
   if (f.stages?.length && !f.stages.includes(s.stage)) return false;
   if (f.country && !sameCountry(f.country, s.country ?? null)) return false;

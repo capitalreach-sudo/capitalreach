@@ -15,7 +15,10 @@ import { getLaunchStatus } from "@/lib/launchMode";
  */
 
 export const STARTUP_LIST_COLUMNS =
-  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state,logo_url,logo_color,is_demo";
+  // team_size / equity_offered / min_check_size feed the compare modal's
+// Terms-and-team rows, which rendered a permanent em-dash without them; none
+// of the three is part of the gated-financials strip.
+  "id,slug,name,tagline,industry,stage,funding_target,mrr,arr,growth_rate,runway_months,created_at,updated_at,vaultrise_score,country,business_model,round_close_date,demo_video_url,founded_year,verified_at,round_state,logo_url,logo_color,is_demo,team_size,equity_offered,min_check_size";
 
 export type BrowseStartup = {
   id: string; slug: string; name: string; tagline: string;

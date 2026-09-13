@@ -27,12 +27,11 @@ import { ScoreBadge } from "@/components/ui/score-badge";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const INDUSTRIES = [
-  "AI / Machine Learning", "B2B SaaS", "Consumer", "Crypto / Web3",
-  "EdTech", "FinTech", "HealthTech", "HRTech", "LegalTech", "PropTech",
-  "Climate / CleanTech", "E-commerce", "Gaming", "Marketplace",
-  "DeepTech", "Biotech", "Cybersecurity", "Other",
-];
+// The CANONICAL list -- a local copy drifted (no AgriTech, no SpaceTech), so
+// the filter could never offer sectors founders actually pick at onboarding
+// while six live AgriTech listings sat unfilterable.
+import { INDUSTRIES as CANONICAL_INDUSTRIES } from "@/types";
+const INDUSTRIES = CANONICAL_INDUSTRIES;
 
 const STAGES = [
   { value: "pre-seed",      label: "Pre-Seed"  },
@@ -1145,6 +1144,11 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     setDismissedIds((prev) => {
       const next = new Set(prev);
       if (hidden) next.delete(id); else next.add(id);
+      // Unhiding the LAST hidden listing while viewing hidden used to strand
+      // the page: the toggle (gated on size > 0) vanished with showHidden
+      // still true, and the filter then rejected every listing -- "0 of 0"
+      // on a live market, recoverable only by reload.
+      if (next.size === 0) setShowHidden(false);
       return next;
     });
     if (!hidden) {
