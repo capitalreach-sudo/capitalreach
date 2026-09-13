@@ -40,7 +40,8 @@ export interface FounderPlan {
   envKey:   string | null;
   envKeyAnnual: string | null;
   features: FounderFeatures;
-  highlight?: string;
+  /** i18n key for the ribbon (e.g. onboarding.su.mostPopular). */
+  highlightKey?: string;
 }
 
 export type FounderPlanId = "free" | "starter" | "growth";
@@ -77,7 +78,7 @@ export const FOUNDER_PLANS: Record<FounderPlanId, FounderPlan> = {
     interval: "month",
     envKey:   "STRIPE_PRICE_FOUNDER_STARTER_MONTHLY",
     envKeyAnnual: "STRIPE_PRICE_FOUNDER_STARTER_ANNUAL",
-    highlight: "Most popular",
+    highlightKey: "onboarding.su.mostPopular",
     features: {
       listed:          true,
       analytics:       true,
@@ -153,7 +154,8 @@ export interface InvestorPlan {
   envKey:   string | null;
   envKeyAnnual: string | null;
   features: InvestorFeatures;
-  highlight?: string;
+  /** i18n key for the ribbon (e.g. onboarding.su.mostPopular). */
+  highlightKey?: string;
 }
 
 export type InvestorPlanId = "free" | "angel" | "pro" | "institution";
@@ -192,7 +194,7 @@ export const INVESTOR_PLANS: Record<InvestorPlanId, InvestorPlan> = {
     interval: "month",
     envKey:   "STRIPE_PRICE_INVESTOR_ANGEL_MONTHLY",
     envKeyAnnual: "STRIPE_PRICE_INVESTOR_ANGEL_ANNUAL",
-    highlight: "Most popular",
+    highlightKey: "onboarding.su.mostPopular",
     features: {
       browseStartups:     true,
       viewFinancials:     true,

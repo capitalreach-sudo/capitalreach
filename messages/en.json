@@ -4759,5 +4759,9 @@
     "count": "{count} downloads",
     "count_one": "{count} download",
     "hint": "Every copy an investor opens is stamped with their name and the moment they took it."
+  },
+  "instrument": {
+    "notifyTitle": "Instrument amount does not match the declared close",
+    "notifyBody": "Declared {declared}, document reads {extracted}. An operator will review it."
   }
 }

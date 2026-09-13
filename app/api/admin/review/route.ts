@@ -381,6 +381,10 @@ export async function POST(req: NextRequest) {
     // The outcomes only, never the reviewer's item notes.
     items: Object.fromEntries(checklist.items.map((i) => [i.key, answers[i.key]])),
     previous_status: currentStatus,
+    // The founder-facing sentence rides in details so the dashboard's
+    // standing rejection banner can quote it -- bench rejections used to
+    // leave the founder with the cheerful generic draft banner and no reason.
+    note_to_subject: noteToSubject || null,
   });
 
   // ── Telling the subject ─────────────────────────────────────────────────

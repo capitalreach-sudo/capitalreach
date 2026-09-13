@@ -4759,5 +4759,9 @@
     "count": "{count} 次下载",
     "count_one": "{count} 次下载",
     "hint": "投资者打开的每一份副本都会标记其姓名和取用时间。"
+  },
+  "instrument": {
+    "notifyTitle": "文件金额与申报的关闭金额不符",
+    "notifyBody": "申报 {declared},文件载明 {extracted}。运营人员将进行核查。"
   }
 }

@@ -4759,5 +4759,9 @@
     "count": "{count} téléchargements",
     "count_one": "{count} téléchargement",
     "hint": "Chaque copie ouverte par un investisseur porte son nom et l'instant où il l'a récupérée."
+  },
+  "instrument": {
+    "notifyTitle": "Le montant de l'instrument ne correspond pas à la clôture déclarée",
+    "notifyBody": "Déclaré {declared}, le document indique {extracted}. Un opérateur va vérifier."
   }
 }

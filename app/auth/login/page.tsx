@@ -105,6 +105,15 @@ function LoginForm() {
     // Fire-and-forget is safe here: this is the browser, not a lambda, and a
     // lost history row must never block a sign-in.
     fetch("/api/account/logins", { method: "POST" }).catch(() => {});
+    // Restore the saved language: only the OAuth/confirm callback did this,
+    // so a German user signing in with a password on a new browser got
+    // English until they found the switcher again.
+    try {
+      const { data: pref } = await supabase.from("profiles").select("preferred_locale").eq("id", userId).maybeSingle();
+      if (pref?.preferred_locale) {
+        document.cookie = `cr_locale=${pref.preferred_locale}; path=/; max-age=31536000; samesite=lax`;
+      }
+    } catch { /* a lost preference must never block a sign-in */ }
     notify.success(t("auth.welcomeRedirect"));
     if (redirect && redirect !== "/") {
       router.push(redirect); router.refresh();

@@ -4759,5 +4759,9 @@
     "count": "{count} Downloads",
     "count_one": "{count} Download",
     "hint": "Jede Kopie, die ein Investor öffnet, trägt seinen Namen und den Zeitpunkt des Abrufs."
+  },
+  "instrument": {
+    "notifyTitle": "Der Betrag im Dokument weicht vom gemeldeten Abschluss ab",
+    "notifyBody": "Gemeldet {declared}, im Dokument {extracted}. Ein Operator prüft den Fall."
   }
 }

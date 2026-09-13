@@ -320,7 +320,6 @@ function MatchingTab() {
   const [industry, setIndustry]       = useState("B2B SaaS");
   const [stage, setStage]             = useState("Seed");
   const [mrr, setMrr]                 = useState("$0–10K");
-  const [description, setDescription] = useState("");
   const [loading, setLoading]         = useState(false);
   const [matches, setMatches]         = useState<MatchResult[] | null>(null);
   const [message, setMessage]         = useState("");
@@ -332,7 +331,7 @@ function MatchingTab() {
     try {
       const res  = await fetch("/api/ai/smart-match", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ industry, stage, mrr, description }),
+        body: JSON.stringify({ industry, stage, mrr }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t("ai.matching.matchingFailedErr"));
@@ -382,28 +381,6 @@ function MatchingTab() {
         </div>
       </div>
 
-      <div>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
-          {t("ai.matching.descLabel")}
-          <span style={{ textTransform: "none", fontWeight: 300, color: "var(--cr-ink-4)", marginLeft: "6px" }}>— {t("common.optional")}, improves match quality</span>
-        </p>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          onFocus={() => setDescFocused(true)}
-          onBlur={() => setDescFocused(false)}
-          placeholder={t("ai.matching.descPlaceholder")}
-          rows={3}
-          style={{
-            width: "100%", borderRadius: "4px",
-            border: `1px solid ${descFocused ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`,
-            background: "var(--cr-paper-2)", padding: "12px 14px",
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
-            color: "var(--cr-ink)", resize: "none", outline: "none",
-            lineHeight: 1.5, transition: "border-color 150ms ease", boxSizing: "border-box",
-          }}
-        />
-      </div>
 
       <button onClick={findMatches} disabled={loading}
         style={{

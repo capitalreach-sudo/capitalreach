@@ -19,6 +19,8 @@ export async function GET(req: NextRequest) {
     .select("id, slug, name, industry, stage")
     .ilike("name", `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`)
     .eq("status", "active")
+    // Paused = "hidden from browse and search" per the founder-facing copy.
+    .neq("round_state", "paused")
     .order("name", { ascending: true })
     .limit(limit);
 

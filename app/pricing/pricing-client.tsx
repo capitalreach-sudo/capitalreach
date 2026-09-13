@@ -169,7 +169,7 @@ function PlanCard({
   isCurrent?: boolean;
 }) {
   const { t } = useTranslation();
-  const hi = plan.highlight !== undefined;
+  const hi = plan.highlightKey !== undefined;
   // Every figure on the card is the STAGE price, never plan.price: lib/plans.ts
   // stays the source of truth for what a tier can do, lib/pricing-stage.ts for
   // what it costs a new subscriber today.
@@ -239,7 +239,7 @@ function PlanCard({
       {hi && !isCurrent && (
         <div style={{ position: "absolute", top: "18px", right: "18px" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            <Zap style={{ width: 10, height: 10 }} /> {plan.highlight}
+            <Zap style={{ width: 10, height: 10 }} /> {t(plan.highlightKey!)}
           </span>
         </div>
       )}

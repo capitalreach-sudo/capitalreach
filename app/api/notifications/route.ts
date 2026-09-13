@@ -26,6 +26,11 @@ export async function GET(req: NextRequest) {
     "listing_approved", "listing_rejected", "team_added",
     "tier_changed", "search_match", "listing_saved", "listing_update",
     "doc_request", "deal_shared", "question_asked", "question_answered", "verified",
+    // The six that were MISSING: their tabs intersected to empty, and an
+    // empty intersection means "no filter" -- so the admin Platform tab
+    // silently showed the entire feed and sealed-deal alerts were
+    // unreachable in the Deals tab.
+    "interest", "fee_due", "complaint_update", "admin_alert", "deal_sealed", "deal_seal_pending",
   ]);
   const types = (req.nextUrl.searchParams.get("types") ?? "")
     .split(",").map((t) => t.trim()).filter((t) => KNOWN_TYPES.has(t));

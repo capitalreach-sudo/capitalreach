@@ -40,8 +40,12 @@ export function mayOpenDocument(
   // Tier gate: viewDocuments is a paid capability. It arrives pre-resolved by
   // the ctx builders, so launch mode and admin overrides already applied.
   if (!ctx.canViewDocuments) return false;
-  // NDA-gated documents still require an accepted NDA -- that gate is real.
-  if (doc.requires_nda && ctx.startupRequiresNda && !ctx.ndaSigned) return false;
+  // NDA-gated documents require an accepted NDA. The per-document switch
+  // stands ON ITS OWN: it used to bind only when the separate listing-level
+  // NDA switch was also on, so a founder who flagged one sensitive document
+  // shipped it unlocked with no warning. The NDA accept flow exists per
+  // pair regardless of the listing-level flag, so the lock is honourable.
+  if (doc.requires_nda && !ctx.ndaSigned) return false;
   return true;
 }
 

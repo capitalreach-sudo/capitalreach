@@ -4759,5 +4759,9 @@
     "count": "{count} 件のダウンロード",
     "count_one": "{count} 件のダウンロード",
     "hint": "投資家が開いた各コピーには、その氏名と取得した時刻が記録されます。"
+  },
+  "instrument": {
+    "notifyTitle": "書類の金額が申告されたクローズ額と一致しません",
+    "notifyBody": "申告額 {declared}、書類記載額 {extracted}。担当者が確認します。"
   }
 }

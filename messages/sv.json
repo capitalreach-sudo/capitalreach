@@ -4759,5 +4759,9 @@
     "count": "{count} nedladdningar",
     "count_one": "{count} nedladdning",
     "hint": "Varje kopia som en investerare öppnar märks med namnet och tidpunkten då den hämtades."
+  },
+  "instrument": {
+    "notifyTitle": "Instrumentbeloppet stämmer inte med den deklarerade stängningen",
+    "notifyBody": "Deklarerat {declared}, dokumentet anger {extracted}. En operatör granskar det."
   }
 }

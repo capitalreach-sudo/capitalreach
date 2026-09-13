@@ -62,6 +62,7 @@ export async function GET(req: NextRequest) {
             .from("startups")
             .select("name, slug, tagline, industry")
             .eq("status", "active")
+            .neq("round_state", "paused")
             .textSearch("search_vector", ftsQuery, { type: "websearch", config: "simple" })
             .limit(5)
         : Promise.resolve({ data: [] as Array<{ name: string; slug: string; tagline: string; industry: string }> }),
@@ -69,6 +70,7 @@ export async function GET(req: NextRequest) {
         .from("startups")
         .select("name, slug, tagline, industry")
         .eq("status", "active")
+            .neq("round_state", "paused")
         .or(`name.ilike.${term},tagline.ilike.${term}`)
         .limit(5),
       ftsQuery

@@ -4759,5 +4759,9 @@
     "count": "{count} downloads",
     "count_one": "{count} download",
     "hint": "Elke kopie die een investeerder opent, draagt zijn naam en het moment waarop hij hem ophaalde."
+  },
+  "instrument": {
+    "notifyTitle": "Het instrumentbedrag komt niet overeen met de gemelde afsluiting",
+    "notifyBody": "Gemeld {declared}, document vermeldt {extracted}. Een operator bekijkt het."
   }
 }

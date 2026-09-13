@@ -3,6 +3,7 @@ import { protectFounders } from "@/lib/identity";
 import { extractDocuments } from "@/lib/doc-text";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { checkAiAllowance, logAiUsage } from "@/lib/ai-limits";
+import { checkAiAccess } from "@/lib/ai-access";
 import { generateDueDiligenceReport, webScreenCompany, isOpenAIConfigured } from "@/lib/openai";
 import { aiRatelimit } from "@/lib/redis";
 import { getLaunchStatus } from "@/lib/launchMode";
@@ -29,8 +30,15 @@ export async function POST(req: NextRequest) {
     // even where the Upstash limiter is unconfigured. Tier read is cheap and
     // the profile is fetched by every one of these routes anyway.
     {
-      const { data: prof } = await supabase.from("profiles").select("subscription_tier").eq("id", user.id).maybeSingle();
-      const allowance = await checkAiAllowance(user.id, "due-diligence", prof?.subscription_tier);
+      // The LAUNCH-EFFECTIVE tier, not the raw column: launch mode grants the
+      // top tier, the page renders the CTA accordingly, and this route was
+      // the one gate still reading 'free' and answering 402 to the button it
+      // had just been shown.
+      const ai = await checkAiAccess(user.id);
+      if (!ai.allowed) {
+        return NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 });
+      }
+      const allowance = await checkAiAllowance(user.id, "due-diligence", ai.tier);
       if (!allowance.ok) {
         return allowance.limit === 0
           ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })

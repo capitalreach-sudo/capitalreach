@@ -4759,5 +4759,9 @@
     "count": "{count}회 다운로드",
     "count_one": "{count}회 다운로드",
     "hint": "투자자가 여는 모든 사본에는 그 이름과 가져간 시각이 새겨집니다."
+  },
+  "instrument": {
+    "notifyTitle": "문서 금액이 신고된 마감 금액과 일치하지 않습니다",
+    "notifyBody": "신고 {declared}, 문서 기재 {extracted}. 운영자가 검토합니다."
   }
 }

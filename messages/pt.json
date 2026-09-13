@@ -4759,5 +4759,9 @@
     "count": "{count} descarregamentos",
     "count_one": "{count} descarregamento",
     "hint": "Cada cópia que um investidor abre fica marcada com o seu nome e o momento em que a obteve."
+  },
+  "instrument": {
+    "notifyTitle": "O montante do instrumento não corresponde ao fecho declarado",
+    "notifyBody": "Declarado {declared}, o documento indica {extracted}. Um operador irá rever."
   }
 }

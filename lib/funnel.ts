@@ -48,8 +48,14 @@ export function summariseFunnel(input: FunnelInput): FunnelStep[] {
   // Listings that reached each deal stage, counted as listings rather than
   // deals: a listing with six interested investors is one listing that got
   // interest, not six.
+  // Only listings whose OWNER is a counted founder: the deal steps used to
+  // admit listings whose owners are not in step one's population (seeded
+  // rows), so "got interest" could exceed "went live" and the funnel printed
+  // percentages over 100.
   const liveListingIds = new Set(
-    input.listings.filter(l => l.status === "active" || !!l.listed_at).map(l => (l as { id?: string }).id).filter(Boolean) as string[]
+    input.listings
+      .filter(l => (l.status === "active" || !!l.listed_at) && !!l.owner_id && founders.has(l.owner_id))
+      .map(l => (l as { id?: string }).id).filter(Boolean) as string[]
   );
   const byStage = (test: (d: FunnelInput["deals"][number]) => boolean) =>
     new Set(input.deals.filter(test).map(d => d.startup_id).filter((id): id is string => !!id &&

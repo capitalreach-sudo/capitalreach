@@ -4759,5 +4759,9 @@
     "count": "{count} download",
     "count_one": "{count} download",
     "hint": "Ogni copia aperta da un investitore riporta il suo nome e il momento in cui l'ha presa."
+  },
+  "instrument": {
+    "notifyTitle": "L'importo dello strumento non corrisponde alla chiusura dichiarata",
+    "notifyBody": "Dichiarato {declared}, il documento riporta {extracted}. Un operatore verificherà."
   }
 }

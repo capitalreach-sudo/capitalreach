@@ -70,12 +70,12 @@ export default function NotificationsPage() {
   const role = profile?.role ?? "investor";
   const TAB_TYPES: Record<string, string> = role === "admin" ? {
     all: "",
-    deals: "deal_opened,deal_stage,deal_closed,deal_passed,follow_up_due,contract_status,nda_signed",
+    deals: "deal_opened,deal_stage,deal_closed,deal_passed,deal_sealed,deal_seal_pending,follow_up_due,contract_status,nda_signed",
     platform: "admin_alert,complaint_update,fee_due",
     account: "team_added,tier_changed,message,interest",
   } : {
     all: "",
-    deals: "deal_opened,deal_stage,deal_closed,deal_passed,follow_up_due,contract_status,nda_signed",
+    deals: "deal_opened,deal_stage,deal_closed,deal_passed,deal_sealed,deal_seal_pending,follow_up_due,contract_status,nda_signed",
     interest: "listing_saved,listing_update,search_match,interest,doc_request",
     account: "listing_approved,listing_rejected,team_added,tier_changed,message,verified,complaint_update,fee_due",
   };

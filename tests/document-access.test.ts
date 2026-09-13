@@ -16,11 +16,14 @@ describe("mayOpenDocument", () => {
     expect(mayOpenDocument(ndaDoc, { ...base, isInvestor: false })).toBe(false);
   });
 
-  it("NDA gate needs all three: doc flagged, listing requires, not signed", () => {
+  it("the per-document NDA flag locks on its own until the NDA is signed", () => {
     expect(mayOpenDocument(ndaDoc, base)).toBe(false);
     expect(mayOpenDocument(ndaDoc, { ...base, ndaSigned: true })).toBe(true);
-    // Listing doesn't demand an NDA: the per-doc flag alone doesn't lock.
-    expect(mayOpenDocument(ndaDoc, { ...base, startupRequiresNda: false })).toBe(true);
+    // The per-doc switch means what it says even when the listing-level NDA
+    // switch is off: a founder who flags one sensitive document must not
+    // ship it unlocked because a different page's toggle was never touched.
+    expect(mayOpenDocument(ndaDoc, { ...base, startupRequiresNda: false })).toBe(false);
+    expect(mayOpenDocument(ndaDoc, { ...base, startupRequiresNda: false, ndaSigned: true })).toBe(true);
     expect(mayOpenDocument(openDoc, base)).toBe(true);
   });
 

@@ -18,9 +18,20 @@ import { isAccountSuspended } from "@/lib/suspension-guard";
 
 const CAP = 500; // roster bound; well above any near-term investor count
 
+/** A typical FIRST CHEQUE for each revenue band the form offers. Rough on
+ * purpose: it exists to score check-size FIT, which is what the form's MRR
+ * question was collecting and then throwing away. */
+const CHEQUE_BY_MRR: Record<string, number> = {
+  "pre-revenue": 100_000,
+  "$0–10k": 250_000,
+  "$10–50k": 500_000,
+  "$50–200k": 1_000_000,
+  "$200k+": 2_000_000,
+};
+
 function scoreInvestor(
   inv: { industries: string[]; stages: string[]; minCheck: number | null; maxCheck: number | null; geography: string[] },
-  startup: { industry?: string | null; stage?: string | null },
+  startup: { industry?: string | null; stage?: string | null; cheque?: number | null },
 ): { score: number; reasons: string[] } {
   let score = 0;
   const reasons: string[] = [];
@@ -33,8 +44,18 @@ function scoreInvestor(
     score += 30;
     reasons.push(`backs ${startup.stage.replace(/_/g, " ")} companies`);
   }
-  // A filled-in thesis is itself a signal the profile is real and active.
-  if (inv.minCheck != null || inv.maxCheck != null) {
+  // Check-size FIT against the revenue band, when given: the investor's
+  // stated range brackets a typical first cheque for a company this size.
+  // (The old +10 for merely HAVING a range measured profile completeness,
+  // not fit -- and the form's MRR answer was ignored entirely.)
+  if (startup.cheque && (inv.minCheck != null || inv.maxCheck != null)) {
+    const min = inv.minCheck ?? 0;
+    const max = inv.maxCheck ?? Number.POSITIVE_INFINITY;
+    if (min <= startup.cheque && startup.cheque <= max * 10) {
+      score += 10;
+      reasons.push("writes cheques in your range");
+    }
+  } else if (inv.minCheck != null || inv.maxCheck != null) {
     score += 10;
     reasons.push("has a stated check size");
   }
@@ -62,7 +83,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 });
     }
 
-    const { industry, stage: rawStage } = await req.json().catch(() => ({}));
+    const { industry, stage: rawStage, mrr } = await req.json().catch(() => ({}));
+    const cheque = typeof mrr === "string" ? (CHEQUE_BY_MRR[mrr.trim().toLowerCase()] ?? null) : null;
     // The UI sends display labels ("Seed", "Series B+") while investors.stages
     // stores DB values ("seed", "series_b_plus"). Unnormalised, the stage
     // weight in scoreInvestor could never fire -- every result capped at 70%
@@ -104,7 +126,7 @@ export async function POST(req: NextRequest) {
           maxCheck: (inv.max_check as number | null) ?? null,
           geography: (inv.geography as string[] | null) || [],
         };
-        const { score, reasons } = scoreInvestor(shaped, { industry, stage });
+        const { score, reasons } = scoreInvestor(shaped, { industry, stage, cheque });
         return { ...shaped, matchScore: score, matchReason: reasons.length ? `This investor ${reasons.join(", ")}.` : "" };
       })
       // At least one real overlap — a list of 10-point "filled profile" rows

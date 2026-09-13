@@ -148,15 +148,22 @@ export default async function StartupDashboardPage() {
   // that is newer than the last edit is the one still in force.
   let rejectionReason: string | null = null;
   if (startup && startup.status === "draft") {
+    // BOTH rejection paths: the quick reject writes `note`, the checklist
+    // review bench logs review_rejected / review_changes_requested with the
+    // founder-facing sentence in details.note_to_subject.
     const { data: rej } = await createAdminClient()
       .from("admin_actions")
-      .select("note, created_at")
-      .eq("target_type", "startup").eq("target_id", startup.id).eq("action", "reject")
+      .select("note, details, created_at")
+      .eq("target_type", "startup").eq("target_id", startup.id)
+      .in("action", ["reject", "review_rejected", "review_changes_requested"])
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (rej?.note && (!startup.updated_at || new Date(rej.created_at) >= new Date(startup.updated_at))) {
-      rejectionReason = rej.note;
+    const rejNote = rej?.note
+      ?? (rej?.details as { note_to_subject?: string | null } | null)?.note_to_subject
+      ?? null;
+    if (rejNote && (!startup.updated_at || new Date(rej!.created_at) >= new Date(startup.updated_at))) {
+      rejectionReason = rejNote;
     }
   }
 

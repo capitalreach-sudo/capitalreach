@@ -4759,5 +4759,9 @@
     "count": "{count} descargas",
     "count_one": "{count} descarga",
     "hint": "Cada copia que abre un inversor lleva grabado su nombre y el momento en que la obtuvo."
+  },
+  "instrument": {
+    "notifyTitle": "El importe del instrumento no coincide con el cierre declarado",
+    "notifyBody": "Declarado {declared}, el documento indica {extracted}. Un operador lo revisará."
   }
 }

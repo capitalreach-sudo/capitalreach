@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
           ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })
           : NextResponse.json({ error: `Daily limit of ${allowance.limit} reached. Upgrade for more.` }, { status: 429 });
       }
-      await logAiUsage(user.id, "pitch-score");
     }
     if (!user.email_confirmed_at) {
       return NextResponse.json(
@@ -110,6 +109,12 @@ Return ONLY valid JSON with these EXACT keys — no commentary outside the JSON:
     const clamp = (v: unknown) =>
       Math.min(100, Math.max(0, Math.round(Number(v) || 50)));
 
+    // Charged HERE, after the model answered and parsed -- the allowance was
+    // being burned before email-verification, rate limit, config check and
+    // the call itself, so every failure (and with a creditless key, EVERY
+    // attempt) consumed one of the day's runs. Matches due-diligence and
+    // pitch-feedback, which charge only on success.
+    await logAiUsage(user.id, "pitch-score");
     return NextResponse.json({
       overall_score: clamp(result.overall_score),
       clarity_score: clamp(result.clarity_score),

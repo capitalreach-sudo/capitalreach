@@ -4759,5 +4759,9 @@
     "count": "Pobrania: {count}",
     "count_one": "Pobranie: {count}",
     "hint": "Każda kopia otwarta przez inwestora jest oznaczona jego nazwiskiem i momentem pobrania."
+  },
+  "instrument": {
+    "notifyTitle": "Kwota w dokumencie różni się od zadeklarowanego zamknięcia",
+    "notifyBody": "Zadeklarowano {declared}, dokument wskazuje {extracted}. Operator to sprawdzi."
   }
 }

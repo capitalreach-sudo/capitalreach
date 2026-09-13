@@ -64,25 +64,33 @@ export async function GET(req: NextRequest) {
       .select("id, status, amount, currency, commitment_type, closed_at, funded_at, success_fee_amount, success_fee_invoiced, success_fee_paid_at, fee_billing_status, updated_at, startup:startups(name, slug), investor:investors(slug, display_name)", { count: "exact" })
       .order("updated_at", { ascending: false });
     if (status) query = query.eq("status", status);
+    // Deal search resolves SERVER-side now: match the query against startup
+    // and investor names first, then filter deals by those ids -- so `total`
+    // and the pager describe the matches, not the unfiltered book. The old
+    // approach filtered ONE fetched page in JS while count/paging ignored
+    // the query entirely (a search could "find nothing" that page 2 held).
+    if (q) {
+      const [{ data: sIds }, { data: iIds }] = await Promise.all([
+        admin.from("startups").select("id").ilike("name", `%${q}%`).limit(200),
+        admin.from("investors").select("id").or(`display_name.ilike.%${q}%,firm_name.ilike.%${q}%,slug.ilike.%${q}%`).limit(200),
+      ]);
+      const sl = (sIds ?? []).map((r) => r.id as string);
+      const il = (iIds ?? []).map((r) => r.id as string);
+      if (sl.length === 0 && il.length === 0) {
+        query = query.eq("id", "00000000-0000-0000-0000-000000000000");
+      } else {
+        const parts: string[] = [];
+        if (sl.length) parts.push(`startup_id.in.(${sl.join(",")})`);
+        if (il.length) parts.push(`investor_id.in.(${il.join(",")})`);
+        query = query.or(parts.join(","));
+      }
+    }
   }
 
   const { data, count, error } = await query.range(from, from + pageSize - 1);
   if (error) return NextResponse.json({ error: "Query failed" }, { status: 500 });
 
-  // A deal search matches on the startup's name, which is on the embed rather
-  // than the row — filtering it in SQL would need a view. Filtering here is
-  // honest as long as the caller can see it only narrowed the current page,
-  // which is why deals search is applied AFTER paging and the count is not
-  // adjusted; the UI labels it accordingly.
-  let rows = (data ?? []) as unknown as Record<string, unknown>[];
-  if (entity === "deals" && q) {
-    const needle = q.toLowerCase();
-    rows = rows.filter(r => {
-      const s = r.startup as { name?: string } | null;
-      const i = r.investor as { display_name?: string; slug?: string } | null;
-      return `${s?.name ?? ""} ${i?.display_name ?? ""} ${i?.slug ?? ""}`.toLowerCase().includes(needle);
-    });
-  }
+  const rows = (data ?? []) as unknown as Record<string, unknown>[];
 
   if (csv) {
     const flat = rows.map(r => {
