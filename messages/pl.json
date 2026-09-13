@@ -4605,7 +4605,8 @@
     "version": "Wersja {version}",
     "waitingOnThem": "Twój podpis został zapisany. Rozmowa otworzy się, gdy tylko podpisze druga strona.",
     "yourName": "Twoje pełne imię i nazwisko",
-    "opensMessaging": "Rozmowa między Wami otwiera się w chwili, gdy pod tym zapisem znajdą się oba podpisy, a platforma przestaje ukrywać między Wami dane kontaktowe. Do tego czasu nadal działają oferty, kontroferty, pytania i prośby o dokumenty."
+    "opensMessaging": "Rozmowa między Wami otwiera się w chwili, gdy pod tym zapisem znajdą się oba podpisy, a platforma przestaje ukrywać między Wami dane kontaktowe. Do tego czasu nadal działają oferty, kontroferty, pytania i prośby o dokumenty.",
+    "recordChanged": "Dokument zmienił się od jego otwarcia. Sprawdź go i podpisz ponownie."
   },
   "founderContact": {
     "dealRequired": "Do inwestora możesz napisać, gdy łączy Was transakcja. Otwórz ją z jego profilu: inwestor ją przyjmuje, obie strony podpisują zapis transakcji i ta rozmowa się otwiera.",

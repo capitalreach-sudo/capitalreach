@@ -2,14 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUser } from "@/lib/notify-user";
 import { buildAccessContext, founderCan } from "@/lib/access";
+import { mayOpenDocument } from "@/lib/document-access";
+import { investorGate } from "@/lib/plan-gate";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { isUuid } from "@/lib/utils";
 
 /**
  * Record that the signed-in investor opened a document (migration 039).
- * Fire-and-forget from the client; RLS's WITH CHECK pins investor_id to the
- * caller's own entity, so nobody can log views as someone else. Non-investors
- * simply record nothing.
+ * Fire-and-forget from the client. RLS's WITH CHECK pins investor_id to the
+ * caller's own entity, but that only stops logging views AS someone else -- it
+ * never checked the caller could actually OPEN this document, so any investor
+ * could POST an arbitrary documentId and forge an "opened your deck" event and
+ * a founder alert for a document (incl. NDA-gated ones on listings they have no
+ * access to) they never opened. So this now runs the same entitlement gate as
+ * /api/documents/open BEFORE recording, and answers {tracked:false} identically
+ * for not-found and not-entitled so the response is not an existence oracle.
  */
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -21,6 +28,40 @@ export async function POST(req: NextRequest) {
 
   const { data: inv } = await supabase.from("investors").select("id").eq("owner_id", user.id).maybeSingle();
   if (!inv) return NextResponse.json({ tracked: false });
+
+  // Resolve the document and its listing with the service role, then gate
+  // exactly as the real open path does: active listing, paid tier, and an NDA
+  // where the listing demands one. A document that does not exist, sits on a
+  // non-active listing, or the investor may not open, all return the same
+  // {tracked:false} -- no view recorded, no founder alerted, no oracle.
+  const admin = createAdminClient();
+  const { data: doc } = await admin
+    .from("startup_documents")
+    .select("id, requires_nda, startup:startups(id, status, require_nda)")
+    .eq("id", documentId)
+    .maybeSingle();
+  const st = doc?.startup as unknown as { id: string; status: string; require_nda: boolean | null } | null;
+  if (!doc || !st || st.status !== "active") return NextResponse.json({ tracked: false });
+
+  const canViewDocuments = (await investorGate(user.id)).viewDocuments;
+  let ndaSigned = false;
+  if (st.require_nda) {
+    const { data: nda } = await admin
+      .from("nda_records").select("signed_at")
+      .match({ startup_id: st.id, investor_id: inv.id }).maybeSingle();
+    ndaSigned = !!nda?.signed_at;
+  }
+  const allowed = mayOpenDocument(
+    { requires_nda: doc.requires_nda },
+    {
+      isOwnerOrAdmin: false,
+      isInvestor: true,
+      canViewDocuments,
+      startupRequiresNda: !!st.require_nda,
+      ndaSigned,
+    },
+  );
+  if (!allowed) return NextResponse.json({ tracked: false });
 
   const { error } = await supabase.from("document_views").insert({ document_id: documentId, investor_id: inv.id });
   if (!error) await alertFounder(documentId, inv.id);

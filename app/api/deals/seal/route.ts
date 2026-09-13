@@ -122,6 +122,10 @@ export async function POST(req: NextRequest) {
   const dealId = typeof body.dealId === "string" ? body.dealId : "";
   const signedName = typeof body.signedName === "string" ? body.signedName.trim().slice(0, 120) : "";
   const agreed = body.agreed === true;
+  // The hash of the bytes the signer actually saw on screen. Optional for
+  // backward compatibility, but when present it is checked below so a signer
+  // can never be recorded as signing a document other than the one displayed.
+  const clientHash = typeof body.agreedSha256 === "string" ? body.agreedSha256 : null;
 
   if (!isUuid(dealId)) return NextResponse.json({ error: "dealId required" }, { status: 400 });
   if (signedName.length < 2) {
@@ -138,11 +142,28 @@ export async function POST(req: NextRequest) {
   if (!party) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const hash = sealHash(loaded.text);
+  // Bind the signer to what they saw. If the record changed after the client
+  // rendered it (a party edited their name/terms), the client's hash no longer
+  // matches -- refuse and make them reload, exactly as /api/nda/accept does,
+  // rather than record a signature over bytes they never read.
+  if (clientHash && clientHash !== hash) {
+    return NextResponse.json(
+      { error: "record_changed", messageKey: "seal.recordChanged" },
+      { status: 409 },
+    );
+  }
+
   const admin = createAdminClient();
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || null;
   const ua = (req.headers.get("user-agent") ?? "").slice(0, 400) || null;
 
-  const { error } = await admin.from("deal_seals").insert({
+  // Upsert on (deal_id, party), not insert. A party re-signing is how an honest
+  // mid-seal edit is resolved: if one side signed the old bytes and the record
+  // then changed, the other side signs the new bytes (hashes disagree, not
+  // sealed), and the first side reloads and re-signs the current record, which
+  // updates their row to the current hash and completes the seal. A plain
+  // insert made that unrecoverable (23505 "already signed" forever).
+  const { error } = await admin.from("deal_seals").upsert({
     deal_id: dealId,
     party,
     signer_user_id: user.id,
@@ -151,43 +172,45 @@ export async function POST(req: NextRequest) {
     seal_sha256: hash,
     ip_address: ip,
     user_agent: ua,
-  });
+    signed_at: new Date().toISOString(),
+  }, { onConflict: "deal_id,party" });
   if (error) {
-    // The unique on (deal_id, party) is the only expected failure: they have
-    // already signed, which is not an error worth alarming anyone about.
-    if (error.code === "23505") {
-      return NextResponse.json({ signed: true, alreadySigned: true, ...(await sealState(dealId)) });
-    }
     return NextResponse.json({ error: "Could not record the signature" }, { status: 500 });
   }
 
   let state = await sealState(dealId);
 
   if (state.startup && state.investor) {
-    // Both hashes must match, or the two signed different documents. Storing
-    // the deal's hash only when they agree keeps deals.seal_sha256 honest.
+    // Both parties have a signature. It is a completed seal ONLY if both signed
+    // the SAME document -- one shared, non-null hash. sealState() computes
+    // exactly that (sealed / conflict); mirror its decision into deals so
+    // sealed_at and seal_sha256 stay honest and never claim a seal that the
+    // signatures do not support.
     const { data: rows } = await admin.from("deal_seals").select("seal_sha256").eq("deal_id", dealId);
-    const hashes = new Set((rows ?? []).map((r) => r.seal_sha256));
-    const agreedHash = hashes.size === 1 ? Array.from(hashes)[0] : null;
+    const hashes = new Set((rows ?? []).map((r) => r.seal_sha256).filter(Boolean));
+    const agreedHash = hashes.size === 1 ? (Array.from(hashes)[0] as string) : null;
 
     await admin.from("deals").update({
-      sealed_at: new Date().toISOString(),
+      // A conflict (hashes disagree) is not a seal: leave sealed_at null so the
+      // channel stays closed and the fee is not treated as executed.
+      sealed_at: agreedHash ? new Date().toISOString() : null,
       seal_sha256: agreedHash,
       seal_version: DEAL_SEAL_VERSION,
     }).eq("id", dealId);
 
-    // Re-read so the caller is told the sealed_at it will see on reload,
-    // rather than the null this request started with.
+    // Re-read so the caller is told the sealed_at it will see on reload.
     state = await sealState(dealId);
 
-    await admin.from("deal_activity").insert({
-      deal_id: dealId,
-      startup_id: loaded.deal.startup_id,
-      investor_id: loaded.deal.investor_id,
-      actor_id: user.id,
-      type: "note",
-      body: `Deal sealed by both parties. Document ${(agreedHash ?? "").slice(0, 12)}.`,
-    }).then(undefined, () => {});
+    if (agreedHash) {
+      await admin.from("deal_activity").insert({
+        deal_id: dealId,
+        startup_id: loaded.deal.startup_id,
+        investor_id: loaded.deal.investor_id,
+        actor_id: user.id,
+        type: "note",
+        body: `Deal sealed by both parties. Document ${agreedHash.slice(0, 12)}.`,
+      }).then(undefined, () => {});
+    }
   }
 
   // Tell the other side, whichever way round it went: they are either owed a
@@ -201,7 +224,10 @@ export async function POST(req: NextRequest) {
     ? (st?.name ?? "The company")
     : (inv?.firm_name || inv?.display_name || "The investor");
   if (otherOwner && otherOwner !== user.id) {
-    const complete = !!(state.startup && state.investor);
+    // Complete means SEALED (both signed the same bytes), not merely both
+    // present -- a hash conflict signs each party over different documents and
+    // is not a completed seal, so the counterpart still owes a matching sig.
+    const complete = state.sealed;
     await notifyUser({
       userId: otherOwner,
       type: complete ? "deal_sealed" : "deal_seal_pending",

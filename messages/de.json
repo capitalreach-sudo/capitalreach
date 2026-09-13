@@ -4605,7 +4605,8 @@
     "version": "Fassung {version}",
     "waitingOnThem": "Ihre Unterschrift ist erfasst. Das Gespräch wird eröffnet, sobald die andere Seite unterzeichnet.",
     "yourName": "Ihr vollständiger Name",
-    "opensMessaging": "Der Nachrichtenaustausch zwischen Ihnen beiden wird in dem Moment eröffnet, in dem beide Unterschriften auf dieser Urkunde stehen, und die Plattform hält Ihre Kontaktdaten dann nicht mehr voreinander zurück. Bis dahin funktionieren Angebote, Gegenangebote, Fragen und Dokumentenanfragen weiterhin."
+    "opensMessaging": "Der Nachrichtenaustausch zwischen Ihnen beiden wird in dem Moment eröffnet, in dem beide Unterschriften auf dieser Urkunde stehen, und die Plattform hält Ihre Kontaktdaten dann nicht mehr voreinander zurück. Bis dahin funktionieren Angebote, Gegenangebote, Fragen und Dokumentenanfragen weiterhin.",
+    "recordChanged": "Der Eintrag hat sich geändert, seit du ihn geöffnet hast. Bitte prüfe ihn und unterschreibe erneut."
   },
   "founderContact": {
     "dealRequired": "Sie können einem Investor schreiben, sobald ein Deal mit ihm besteht. Eröffnen Sie einen über sein Profil: Er nimmt ihn an, Sie unterzeichnen beide die Urkunde, und dieses Gespräch wird eröffnet.",

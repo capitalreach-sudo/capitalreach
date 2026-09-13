@@ -4605,7 +4605,8 @@
     "version": "Versión {version}",
     "waitingOnThem": "Su firma queda registrada. La conversación se abrirá en cuanto firme la otra parte.",
     "yourName": "Su nombre completo",
-    "opensMessaging": "La mensajería entre ustedes se abre en el momento en que ambas firmas constan en esta acta, y la plataforma deja de ocultarles mutuamente sus datos de contacto. Hasta entonces, las ofertas, las contraofertas, las preguntas y las solicitudes de documentos siguen funcionando."
+    "opensMessaging": "La mensajería entre ustedes se abre en el momento en que ambas firmas constan en esta acta, y la plataforma deja de ocultarles mutuamente sus datos de contacto. Hasta entonces, las ofertas, las contraofertas, las preguntas y las solicitudes de documentos siguen funcionando.",
+    "recordChanged": "El registro cambió desde que lo abriste. Revísalo y firma de nuevo."
   },
   "founderContact": {
     "dealRequired": "Puede escribir a un inversor cuando tenga una operación con él. Ábrala desde su perfil: el inversor la acepta, ambas partes firman el acta y esta conversación se abre.",

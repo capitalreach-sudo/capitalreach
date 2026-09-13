@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { LISTING_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
+import { sanitizeUrlFields } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
 
 /**
@@ -45,6 +46,21 @@ export async function POST(req: NextRequest) {
   const patch: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(fields as Record<string, unknown>)) {
     if (!NOT_FROM_THE_FORM.has(key)) patch[key] = value;
+  }
+
+  // User URLs land in an anchor href on the public page. Keep only http(s);
+  // a scheme-less "example.com" is normalised to https, javascript:/data: etc
+  // become null. Covers the listing's own URLs and each founder's socials.
+  sanitizeUrlFields(patch);
+  if (Array.isArray(patch.founders)) {
+    patch.founders = (patch.founders as unknown[]).map((f) => {
+      if (f && typeof f === "object" && !Array.isArray(f)) {
+        const founder = { ...(f as Record<string, unknown>) };
+        sanitizeUrlFields(founder, ["linkedin_url", "twitter_url"]);
+        return founder;
+      }
+      return f;
+    });
   }
 
   // ONE listing per founder, oldest first -- the same row the onboarding flow
@@ -111,9 +127,16 @@ export async function POST(req: NextRequest) {
     .select("id")
     .single();
   if (error || !created) {
-    // Postgres messages are for logs, not founders -- but the constraint
-    // messages the tier caps raise are written for them, so they pass.
-    return NextResponse.json({ error: error?.message || "Could not create" }, { status: 400 });
+    // Only the messages RAISEd for the founder pass through: the tier-cap
+    // triggers (P0001, "... requires a paid plan") and the contact-in-prose
+    // CHECK (23514). Any other Postgres error (a unique/FK/not-null violation)
+    // is a raw internal message for the logs, not the founder -- the old
+    // `error?.message` handed all of them straight to the client.
+    if (error && (error.code === "P0001" || error.code === "23514")) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    console.error("[startups/save:create]", error);
+    return NextResponse.json({ error: "Could not create the listing." }, { status: 400 });
   }
   return NextResponse.json({ id: (created as { id: string }).id, created: true, ...withheld });
 }

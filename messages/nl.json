@@ -4605,7 +4605,8 @@
     "version": "Versie {version}",
     "waitingOnThem": "Uw handtekening is vastgelegd. Het gesprek gaat open zodra de andere partij ondertekent.",
     "yourName": "Uw volledige naam",
-    "opensMessaging": "Het gesprek tussen u beiden gaat open zodra beide handtekeningen onder deze vastlegging staan, en het platform schermt uw contactgegevens dan niet langer onderling af. Tot die tijd werken biedingen, tegenboden, vragen en documentverzoeken gewoon."
+    "opensMessaging": "Het gesprek tussen u beiden gaat open zodra beide handtekeningen onder deze vastlegging staan, en het platform schermt uw contactgegevens dan niet langer onderling af. Tot die tijd werken biedingen, tegenboden, vragen en documentverzoeken gewoon.",
+    "recordChanged": "Het document is gewijzigd sinds je het opende. Controleer het en onderteken opnieuw."
   },
   "founderContact": {
     "dealRequired": "U kunt een investeerder een bericht sturen zodra u samen een deal hebt. Open er een vanaf het profiel: de investeerder aanvaardt, u ondertekent allebei de vastlegging en dit gesprek gaat open.",

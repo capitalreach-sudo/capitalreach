@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
 import { contactRatelimit, isRedisConfigured } from "@/lib/redis";
 import { env, isResendConfigured } from "@/lib/env";
+import { clientIp } from "@/lib/client-ip";
 
 // Every value below is attacker-controlled and lands in an HTML email body.
 // Without escaping, a message containing markup is rendered as markup in the
@@ -22,10 +23,10 @@ export async function POST(req: NextRequest) {
     // Unauthenticated, and it sends two emails per call. Cap it per IP.
     // Note: this degrades to a no-op when Upstash is not configured -- see the
     // MOCK_LIMITER in lib/redis.ts.
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      req.headers.get("x-real-ip") ||
-      "unknown";
+    // x-real-ip first: the leftmost x-forwarded-for token is client-spoofable,
+    // so keying on it let an attacker rotate it for a fresh limiter bucket per
+    // request. clientIp() prefers the platform-set x-real-ip.
+    const ip = clientIp(req.headers);
     // This is the one unauthenticated route that sends email on every call.
     // Everywhere else the limiter failing open is a degradation; here it is
     // an open relay. Refuse rather than relay when the limiter isn't real.

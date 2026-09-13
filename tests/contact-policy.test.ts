@@ -86,9 +86,13 @@ const asInvestor = () => mayInvestorContact({ startupId: S, investorId: I });
 const bothEnds = async () => [await asFounder(), await asInvestor()] as const;
 
 const unsealedDeal = [{ id: DEAL, startup_id: S, investor_id: I, sealed_at: null, seal_version: null }];
-const signature = (party: "startup" | "investor") => ({
+// Both parties carry the SAME seal hash: a completed seal is both signatures
+// over one document, which is what sealState now requires (a mismatch is a
+// conflict, not a seal). Pass a distinct hash to `signature` to model a party
+// that signed different bytes.
+const signature = (party: "startup" | "investor", sha = "sha-of-the-agreed-record") => ({
   deal_id: DEAL, party, signed_name: party === "startup" ? "A Founder" : "An Investor",
-  signed_at: "2026-09-10T12:00:00.000Z",
+  signed_at: "2026-09-10T12:00:00.000Z", seal_sha256: sha,
 });
 
 beforeEach(() => {
@@ -183,6 +187,17 @@ describe("a sealed deal", () => {
       expect(v.allowed).toBe(true);
       expect(v.allowed && v.reason).toBe("deal_sealed");
     }
+  });
+
+  it("does NOT seal when the two signatures cover different documents", async () => {
+    // A name or term edited between the two signatures gives them different
+    // hashes. Both parties have signed, but not the same record -- the fee
+    // rests on one agreed document, so the channel must stay closed.
+    seed({
+      deals: unsealedDeal,
+      deal_seals: [signature("startup", "hash-A"), signature("investor", "hash-B")],
+    });
+    for (const v of await bothEnds()) expect(v.allowed).toBe(false);
   });
 
   it("honours a deal grandfathered by the seal migration, with no signatures at all", async () => {

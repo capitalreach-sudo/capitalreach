@@ -36,6 +36,14 @@ const h = vi.hoisted(() => {
           data: { user: state.userId ? { id: state.userId } : null },
           error: null,
         }),
+        // No MFA enrolled -> currentLevel and nextLevel both aal1, which the
+        // admin guard treats as a satisfied second factor (nothing to complete).
+        mfa: {
+          getAuthenticatorAssuranceLevel: async () => ({
+            data: { currentLevel: "aal1", nextLevel: "aal1" },
+            error: null,
+          }),
+        },
       },
       from(table: string) {
         let rows = (state.db[table] ?? []).slice();

@@ -4605,7 +4605,8 @@
     "version": "Versione {version}",
     "waitingOnThem": "La tua firma è registrata. La conversazione si apre non appena firma anche l'altra parte.",
     "yourName": "Il tuo nome completo",
-    "opensMessaging": "Potrete scrivervi nel momento in cui entrambe le firme saranno su questo atto, e la piattaforma smetterà di trattenere i vostri recapiti reciproci. Fino ad allora restano attive offerte, controfferte, domande e richieste di documenti."
+    "opensMessaging": "Potrete scrivervi nel momento in cui entrambe le firme saranno su questo atto, e la piattaforma smetterà di trattenere i vostri recapiti reciproci. Fino ad allora restano attive offerte, controfferte, domande e richieste di documenti.",
+    "recordChanged": "Il documento è cambiato da quando l'hai aperto. Ricontrollalo e firma di nuovo."
   },
   "founderContact": {
     "dealRequired": "Puoi scrivere a un investitore quando tra voi c'è un deal. Aprine uno dal suo profilo: l'investitore accetta, firmate entrambi l'atto e questa conversazione si apre.",

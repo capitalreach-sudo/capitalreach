@@ -4605,7 +4605,8 @@
     "version": "Version {version}",
     "waitingOnThem": "Din underskrift är registrerad. Konversationen öppnas så snart motparten undertecknar.",
     "yourName": "Ditt fullständiga namn",
-    "opensMessaging": "Konversationen mellan er öppnas i samma stund som båda underskrifterna finns på det här dokumentet, och plattformen slutar då dölja era kontaktuppgifter för varandra. Fram till dess fungerar bud, motbud, frågor och dokumentförfrågningar som vanligt."
+    "opensMessaging": "Konversationen mellan er öppnas i samma stund som båda underskrifterna finns på det här dokumentet, och plattformen slutar då dölja era kontaktuppgifter för varandra. Fram till dess fungerar bud, motbud, frågor och dokumentförfrågningar som vanligt.",
+    "recordChanged": "Dokumentet har ändrats sedan du öppnade det. Granska det och signera igen."
   },
   "founderContact": {
     "dealRequired": "Du kan skicka meddelanden till en investerare när ni har en affär tillsammans. Öppna en från investerarens profil: de accepterar den, ni undertecknar båda dokumentet, och den här konversationen öppnas.",

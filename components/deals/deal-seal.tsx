@@ -87,16 +87,25 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
   useEffect(() => { void load(); }, [load]);
 
   async function sign() {
+    if (!data) return;
     if (!agreed) { notify.error(t("seal.mustAgree")); return; }
     if (name.trim().length < 2) { notify.error(t("seal.nameRequired")); return; }
     setBusy(true);
     try {
       const res = await fetch("/api/deals/seal", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dealId, signedName: name.trim(), agreed: true }),
+        // Send the hash of the exact record shown, so the server refuses to
+        // record a signature over bytes that changed since it was rendered.
+        body: JSON.stringify({ dealId, signedName: name.trim(), agreed: true, agreedSha256: data.sha256 }),
       });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) { notify.error(j.messageKey ? t(j.messageKey) : (j.error || t("seal.failed"))); return; }
+      if (!res.ok) {
+        // The record changed under us (a party edited a name/terms). Reload so
+        // the current document is on screen before they sign it.
+        if (j.messageKey === "seal.recordChanged") await load();
+        notify.error(j.messageKey ? t(j.messageKey) : (j.error || t("seal.failed")));
+        return;
+      }
       if (j.sealed) {
         // Let the form leave before the seal lands on top of it. The wait is
         // the exit's own length, and it is the only deliberately slow moment

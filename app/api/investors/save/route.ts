@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { PROFILE_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
+import { sanitizeUrlFields } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
 
 /**
@@ -41,6 +42,10 @@ export async function POST(req: NextRequest) {
   for (const [key, value] of Object.entries(fields as Record<string, unknown>)) {
     if (!NOT_FROM_THE_FORM.has(key)) patch[key] = value;
   }
+
+  // User URLs render into an anchor href on the public profile: keep only
+  // http(s), normalise a scheme-less domain to https, drop javascript:/data:.
+  sanitizeUrlFields(patch);
 
   // One profile per account, oldest first -- the plan buttons in onboarding
   // call this on every press and each one used to insert a twin.
@@ -97,7 +102,13 @@ export async function POST(req: NextRequest) {
     .select("id")
     .single();
   if (error || !created) {
-    return NextResponse.json({ error: error?.message || "Could not create" }, { status: 400 });
+    // Founder-facing RAISEd messages pass (tier caps P0001, contact CHECK
+    // 23514); any other raw Postgres message is for the logs, not the user.
+    if (error && (error.code === "P0001" || error.code === "23514")) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    console.error("[investors/save:create]", error);
+    return NextResponse.json({ error: "Could not create the profile." }, { status: 400 });
   }
   return NextResponse.json({ id: (created as { id: string }).id, created: true, ...withheld });
 }

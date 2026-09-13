@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireCatalogueAccess } from "@/lib/catalogue-guard";
 import { createAdminClient } from "@/lib/supabase-server";
 import { searchRatelimit } from "@/lib/redis";
+import { clientIp } from "@/lib/client-ip";
 
 export const revalidate = 0;
 
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
   // Public endpoint over the whole directory -- without this it is the
   // cheapest way to scrape both listings. Degrades open when Redis is
   // unconfigured, like every other limiter here.
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIp(req.headers);
   // The mock limiter (no Redis) always succeeds, but a configured-but-transiently
   // -down Upstash makes .limit() REJECT, which would 500 this public path. Fail
   // open on error, consistent with the "degrades open" contract above.
@@ -36,10 +37,16 @@ export async function GET(req: NextRequest) {
     // Redis unreachable: allow the request rather than failing a public read.
   }
 
-  // Escape the LIKE metacharacters so a query of "50%" matches the text
-  // "50%" rather than acting as a wildcard. Still used for the prefix pass:
-  // full-text matches whole lexemes, so "sch" would never find "Schokoheini".
-  const term = `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
+  // PostgREST `.or()` is a comma/paren mini-language, and this query runs under
+  // the SERVICE ROLE, so an unescaped comma or paren does not just change the
+  // search terms -- it injects top-level conditions that reference columns the
+  // client can never read (vaultrise_score, trust_level, owner_id...), turning
+  // the search box into a boolean oracle over hidden values. The sibling `.or()`
+  // routes (messages/accounts, admin/list) strip exactly these; this one is the
+  // one that didn't. Strip the grammar chars first, then escape LIKE wildcards.
+  const safeQ = q.replace(/[,()*\\%_]/g, " ").trim();
+  if (safeQ.length < 2) return NextResponse.json({ startups: [], investors: [] });
+  const term = `%${safeQ}%`;
 
   // websearch_to_tsquery accepts what people actually type (quotes, OR, -)
   // without throwing on syntax the way plainto/to_tsquery can.
@@ -68,9 +75,13 @@ export async function GET(req: NextRequest) {
         ? admin
             .from("investors")
             .select("slug, display_name, firm_name, type")
-            // B18: off-platform contacts are a founder's private list. This
-            // route runs as the service role, so RLS does not exclude them.
+            // Service role, so RLS does not apply: reproduce the directory's own
+            // visibility qual (migration 131: is_external=false AND is_public=
+            // true). B18: off-platform contacts (is_external) are a founder's
+            // private list; an unlisted profile (is_public=false, e.g. one an
+            // admin removed) must not reappear by name through search.
             .eq("is_external", false)
+            .eq("is_public", true)
             .textSearch("search_vector", ftsQuery, { type: "websearch", config: "simple" })
             .limit(5)
         : Promise.resolve({ data: [] as Array<{ slug: string; display_name: string | null; firm_name: string | null; type: string }> }),
@@ -78,6 +89,7 @@ export async function GET(req: NextRequest) {
         .from("investors")
         .select("slug, display_name, firm_name, type")
         .eq("is_external", false)
+        .eq("is_public", true)
         .or(`display_name.ilike.${term},firm_name.ilike.${term}`)
         .limit(5),
     ]);

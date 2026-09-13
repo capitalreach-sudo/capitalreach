@@ -172,6 +172,12 @@ export interface SealState {
   investor: { signedAt: string; name: string } | null;
   /** Which side the viewer still owes, when the viewer is a party. */
   awaiting: SealParty[];
+  /**
+   * Both parties have signed, but over DIFFERENT documents (the terms or a
+   * party's name changed between the two signatures). The deal is NOT sealed in
+   * this state -- the later signer must reload and re-sign the current record.
+   */
+  conflict: boolean;
 }
 
 /**
@@ -186,7 +192,7 @@ export async function sealState(dealId: string): Promise<SealState> {
   const admin = createAdminClient();
 
   const [{ data: rows }, { data: deal }] = await Promise.all([
-    admin.from("deal_seals").select("party, signed_name, signed_at").eq("deal_id", dealId),
+    admin.from("deal_seals").select("party, signed_name, signed_at, seal_sha256").eq("deal_id", dealId),
     admin.from("deals").select("sealed_at, seal_version").eq("id", dealId).maybeSingle(),
   ]);
 
@@ -198,7 +204,17 @@ export async function sealState(dealId: string): Promise<SealState> {
   const investor = find("investor");
 
   const grandfathered = deal?.seal_version === "grandfathered" && !!deal?.sealed_at;
-  const sealed = grandfathered || (!!startup && !!investor);
+  const bothSigned = !!startup && !!investor;
+
+  // The whole evidentiary point of the seal (migration 120, and the route's own
+  // header): if the record wording changed between the two signatures the
+  // hashes differ and the seal does NOT complete. Row-presence alone is not
+  // enough -- the fee rests on a single document both parties signed, so both
+  // signatures must carry the same non-null hash.
+  const hashes = new Set((rows ?? []).map((r) => r.seal_sha256 as string | null).filter(Boolean));
+  const hashesAgree = bothSigned && hashes.size === 1;
+  const conflict = bothSigned && !hashesAgree;
+  const sealed = grandfathered || hashesAgree;
 
   const awaiting: SealParty[] = [];
   if (!grandfathered) {
@@ -213,6 +229,7 @@ export async function sealState(dealId: string): Promise<SealState> {
     startup,
     investor,
     awaiting,
+    conflict,
   };
 }
 

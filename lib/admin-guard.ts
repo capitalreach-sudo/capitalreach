@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
+import { secondFactorPending } from "@/lib/auth-assurance";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Shared admin authorisation for admin-only route handlers.
@@ -22,7 +23,7 @@ export interface AdminGuardFail {
 
 export type AdminGuardResult = AdminGuardOk | AdminGuardFail;
 
-export type AdminDenial = "unauthenticated" | "forbidden" | "suspended" | "insufficient";
+export type AdminDenial = "unauthenticated" | "forbidden" | "suspended" | "insufficient" | "mfa_required";
 
 /**
  * E51: `role = 'admin'` used to be all-or-nothing — anyone who could approve a
@@ -76,6 +77,11 @@ export async function resolveAdmin(required: AdminLevel = "support"): Promise<Ad
   if (profile.suspended || profile.account_status === "suspended" || profile.account_status === "banned") {
     return { ok: false, reason: "suspended" };
   }
+  // A password-only session on an admin who enrolled a second factor is AAL1.
+  // The page middleware turns that away from /admin, but admin API routes
+  // authorise here, so the second factor is enforced here too -- otherwise
+  // set-tier, suspend-all and mfa-reset were reachable with the password alone.
+  if (await secondFactorPending(supabase)) return { ok: false, reason: "mfa_required" };
   const level = (profile.admin_level ?? "support") as AdminLevel;
   if (!atLeast(level, required)) return { ok: false, reason: "insufficient" };
   return { ok: true, adminId: user.id, admin, level };
@@ -84,9 +90,10 @@ export async function resolveAdmin(required: AdminLevel = "support"): Promise<Ad
 export async function requireAdmin(required: AdminLevel = "support"): Promise<AdminGuardResult> {
   const resolved = await resolveAdmin(required);
   if (resolved.ok) return resolved;
-  const status = resolved.reason === "unauthenticated" ? 401 : 403;
+  const status = (resolved.reason === "unauthenticated" || resolved.reason === "mfa_required") ? 401 : 403;
   const error =
     resolved.reason === "unauthenticated" ? "Unauthorized" :
+    resolved.reason === "mfa_required" ? "Two-factor authentication required." :
     resolved.reason === "suspended" ? "Account suspended" :
     resolved.reason === "insufficient" ? `This needs ${required} access.` : "Forbidden";
   return { ok: false, response: NextResponse.json({ error }, { status }) };

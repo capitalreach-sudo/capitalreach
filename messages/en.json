@@ -4605,7 +4605,8 @@
     "mustAgree": "Tick the box to confirm you have read the record.",
     "required": "You can message each other once the deal record is signed by both sides.",
     "cardSealed": "Sealed {date}",
-    "opensMessaging": "Messaging between the two of you opens the moment both signatures are on this record, and the platform stops withholding your contact details from each other. Until then, offers, counters, questions and document requests all still work."
+    "opensMessaging": "Messaging between the two of you opens the moment both signatures are on this record, and the platform stops withholding your contact details from each other. Until then, offers, counters, questions and document requests all still work.",
+    "recordChanged": "The record changed since you opened it. Review it and sign again."
   },
   "founderContact": {
     "dealRequired": "You can message an investor once you have a deal with them. Open one from their profile: they accept it, you both sign the record, and this conversation opens.",

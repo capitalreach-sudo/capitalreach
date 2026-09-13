@@ -4605,7 +4605,8 @@
     "version": "Versão {version}",
     "waitingOnThem": "A sua assinatura ficou registada. A conversa abre assim que a outra parte assinar.",
     "yourName": "O seu nome completo",
-    "opensMessaging": "A conversa entre os dois abre no momento em que as duas assinaturas estiverem neste registo, e a plataforma deixa de reservar os vossos dados de contacto. Até lá, ofertas, contrapropostas, perguntas e pedidos de documentos continuam a funcionar."
+    "opensMessaging": "A conversa entre os dois abre no momento em que as duas assinaturas estiverem neste registo, e a plataforma deixa de reservar os vossos dados de contacto. Até lá, ofertas, contrapropostas, perguntas e pedidos de documentos continuam a funcionar.",
+    "recordChanged": "O registo mudou desde que o abriu. Reveja-o e assine novamente."
   },
   "founderContact": {
     "dealRequired": "Pode escrever a um investidor assim que tiver um negócio com ele. Abra um a partir do perfil dele: ele aceita, ambos assinam o registo e esta conversa abre.",

@@ -4605,7 +4605,8 @@
     "version": "Version {version}",
     "waitingOnThem": "Votre signature est enregistrée. La conversation s'ouvrira dès que l'autre partie aura signé.",
     "yourName": "Votre nom complet",
-    "opensMessaging": "La messagerie s'ouvre entre vous dès que les deux signatures figurent sur ce relevé, et la plateforme cesse de retenir vos coordonnées respectives. Jusque-là, les offres, les contre-offres, les questions et les demandes de documents restent possibles."
+    "opensMessaging": "La messagerie s'ouvre entre vous dès que les deux signatures figurent sur ce relevé, et la plateforme cesse de retenir vos coordonnées respectives. Jusque-là, les offres, les contre-offres, les questions et les demandes de documents restent possibles.",
+    "recordChanged": "Le document a changé depuis son ouverture. Vérifiez-le et signez à nouveau."
   },
   "founderContact": {
     "dealRequired": "Vous pouvez écrire à un investisseur une fois qu'une opération est ouverte avec lui. Ouvrez-en une depuis son profil : il l'accepte, vous signez tous les deux le relevé, et cette conversation s'ouvre.",
