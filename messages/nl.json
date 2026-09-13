@@ -2110,7 +2110,9 @@
     "colProposal": "Voorstel",
     "colNegotiation": "Onderhandeling",
     "scopeAll": "Alle deals",
-    "scopeMine": "Mijn deals"
+    "scopeMine": "Mijn deals",
+    "editAmountAria": "Bedrag bewerken",
+    "amountSaved": "Bedrag bijgewerkt"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Alleen uw handtekening ontbreekt nog.",
     "dealSealPendingTitle": "{name} heeft de vastlegging van de deal ondertekend",
     "dealSealedBody": "Het gesprek is open.",
-    "dealSealedTitle": "{name} heeft ondertekend. De deal is bekrachtigd."
+    "dealSealedTitle": "{name} heeft ondertekend. De deal is bekrachtigd.",
+    "dealMovedIntro": "Een deal staat nu op Gesprek",
+    "dealMovedDueDiligence": "Een deal staat nu op Onderhandeling",
+    "dealMovedTermSheet": "Een deal staat nu op Term sheet",
+    "dealPassedTitle": "Een deal is gemarkeerd als afgewezen"
   },
   "match": {
     "title": "Wie er op je wacht",

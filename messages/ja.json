@@ -2110,7 +2110,9 @@
     "colProposal": "提案",
     "colNegotiation": "交渉",
     "scopeAll": "すべてのディール",
-    "scopeMine": "自分のディール"
+    "scopeMine": "自分のディール",
+    "editAmountAria": "金額を編集",
+    "amountSaved": "金額を更新しました"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "残るのはあなたの署名だけです。",
     "dealSealPendingTitle": "{name} がディール記録に署名しました",
     "dealSealedBody": "会話が可能になりました。",
-    "dealSealedTitle": "{name} が署名しました。ディールが成立しました。"
+    "dealSealedTitle": "{name} が署名しました。ディールが成立しました。",
+    "dealMovedIntro": "ディールが「対話」に移動しました",
+    "dealMovedDueDiligence": "ディールが「交渉」に移動しました",
+    "dealMovedTermSheet": "ディールが「タームシート」に移動しました",
+    "dealPassedTitle": "ディールが「見送り」となりました"
   },
   "match": {
     "title": "あなたを待つ投資家",

@@ -2110,7 +2110,9 @@
     "colProposal": "Förslag",
     "colNegotiation": "Förhandling",
     "scopeAll": "Alla affärer",
-    "scopeMine": "Mina affärer"
+    "scopeMine": "Mina affärer",
+    "editAmountAria": "Redigera beloppet",
+    "amountSaved": "Beloppet uppdaterat"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Din underskrift är den som återstår.",
     "dealSealPendingTitle": "{name} har undertecknat affärsdokumentet",
     "dealSealedBody": "Konversationen är öppen.",
-    "dealSealedTitle": "{name} har undertecknat. Affären är beseglad."
+    "dealSealedTitle": "{name} har undertecknat. Affären är beseglad.",
+    "dealMovedIntro": "En affär flyttades till Samtal",
+    "dealMovedDueDiligence": "En affär flyttades till Förhandling",
+    "dealMovedTermSheet": "En affär flyttades till Term sheet",
+    "dealPassedTitle": "En affär markerades som avböjd"
   },
   "match": {
     "title": "Vem som väntar på dig",

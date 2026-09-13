@@ -2110,7 +2110,9 @@
     "colProposal": "Propozycja",
     "colNegotiation": "Negocjacje",
     "scopeAll": "Wszystkie transakcje",
-    "scopeMine": "Moje transakcje"
+    "scopeMine": "Moje transakcje",
+    "editAmountAria": "Edytuj kwotę",
+    "amountSaved": "Kwota zaktualizowana"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Brakuje już tylko Twojego podpisu.",
     "dealSealPendingTitle": "{name} podpisał zapis transakcji",
     "dealSealedBody": "Rozmowa jest otwarta.",
-    "dealSealedTitle": "{name} podpisał. Transakcja jest przypieczętowana."
+    "dealSealedTitle": "{name} podpisał. Transakcja jest przypieczętowana.",
+    "dealMovedIntro": "Transakcja przeszła do etapu Rozmowy",
+    "dealMovedDueDiligence": "Transakcja przeszła do etapu Negocjacje",
+    "dealMovedTermSheet": "Transakcja przeszła do etapu Term sheet",
+    "dealPassedTitle": "Transakcję oznaczono jako odrzuconą"
   },
   "match": {
     "title": "Kto na Ciebie czeka",

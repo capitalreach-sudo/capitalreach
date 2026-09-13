@@ -2110,7 +2110,9 @@
     "colProposal": "Предложение",
     "colNegotiation": "Согласование",
     "scopeAll": "Все сделки",
-    "scopeMine": "Мои сделки"
+    "scopeMine": "Мои сделки",
+    "editAmountAria": "Изменить сумму",
+    "amountSaved": "Сумма обновлена"
   },
   "investorProfile": {
     "back": "Назад к инвесторам",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Осталась только ваша подпись.",
     "dealSealPendingTitle": "Запись сделки подписана: {name}",
     "dealSealedBody": "Диалог открыт.",
-    "dealSealedTitle": "Подпись {name} получена. Сделка скреплена."
+    "dealSealedTitle": "Подпись {name} получена. Сделка скреплена.",
+    "dealMovedIntro": "Сделка перешла на этап «Переговоры»",
+    "dealMovedDueDiligence": "Сделка перешла на этап «Обсуждение условий»",
+    "dealMovedTermSheet": "Сделка перешла на этап Term sheet",
+    "dealPassedTitle": "Сделка помечена как отклонённая"
   },
   "match": {
     "title": "Кто вас ждёт",

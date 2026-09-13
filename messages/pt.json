@@ -2110,7 +2110,9 @@
     "colProposal": "Proposta",
     "colNegotiation": "Negociação",
     "scopeAll": "Todos os negócios",
-    "scopeMine": "Os meus negócios"
+    "scopeMine": "Os meus negócios",
+    "editAmountAria": "Editar o montante",
+    "amountSaved": "Montante atualizado"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "A sua assinatura é a única que ainda falta.",
     "dealSealPendingTitle": "{name} assinou o registo do negócio",
     "dealSealedBody": "A conversa está aberta.",
-    "dealSealedTitle": "{name} assinou. O negócio está formalizado."
+    "dealSealedTitle": "{name} assinou. O negócio está formalizado.",
+    "dealMovedIntro": "Um negócio passou para Conversa",
+    "dealMovedDueDiligence": "Um negócio passou para Negociação",
+    "dealMovedTermSheet": "Um negócio passou para Term sheet",
+    "dealPassedTitle": "Um negócio foi marcado como recusado"
   },
   "match": {
     "title": "Quem espera por si",

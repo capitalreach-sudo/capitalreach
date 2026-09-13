@@ -2110,7 +2110,9 @@
     "colProposal": "提案",
     "colNegotiation": "谈判",
     "scopeAll": "全部交易",
-    "scopeMine": "我的交易"
+    "scopeMine": "我的交易",
+    "editAmountAria": "编辑金额",
+    "amountSaved": "金额已更新"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "目前仅差您的签名。",
     "dealSealPendingTitle": "{name} 已签署交易记录",
     "dealSealedBody": "对话已开启。",
-    "dealSealedTitle": "{name} 已签署。交易记录已完成签署。"
+    "dealSealedTitle": "{name} 已签署。交易记录已完成签署。",
+    "dealMovedIntro": "交易已进入“洽谈”阶段",
+    "dealMovedDueDiligence": "交易已进入“谈判”阶段",
+    "dealMovedTermSheet": "交易已进入“条款书”阶段",
+    "dealPassedTitle": "交易已标记为放弃"
   },
   "match": {
     "title": "谁在等你",

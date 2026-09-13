@@ -9,11 +9,21 @@ import { maskIp } from "@/lib/identity";
 // Human-readable stage names for notification copy. Kept here rather than
 // imported from the kanban because that is a client component and this is a
 // route handler.
+// Aligned with the BOARD's vocabulary (deals.col* -- Talking / Negotiation /
+// Term sheet): the old Intro/Due Diligence labels named columns that no
+// longer exist, so "A deal moved to Due Diligence" pointed at nothing the
+// recipient could find. These are the English fallbacks; the notification
+// itself ships a titleKey so every locale renders its own board words.
 const STAGE_LABEL: Record<string, string> = {
-  intro:         "Intro",
-  due_diligence: "Due Diligence",
-  term_sheet:    "Term Sheet",
+  intro:         "Talking",
+  due_diligence: "Negotiation",
+  term_sheet:    "Term sheet",
   passed:        "Passed",
+};
+const STAGE_TITLE_KEY: Record<string, string> = {
+  intro:         "notif.dealMovedIntro",
+  due_diligence: "notif.dealMovedDueDiligence",
+  term_sheet:    "notif.dealMovedTermSheet",
 };
 
 export async function POST(req: NextRequest) {
@@ -141,10 +151,11 @@ export async function POST(req: NextRequest) {
   const updates: import("@/types/supabase").Database["public"]["Tables"]["deals"]["Update"] = {};
   if (status) {
     updates.status = status;
-    // Only a genuine stage move resets the clock. updated_at can't stand in for
-    // this -- notes and contracts bump that without the stage changing, so a
-    // deal stuck in Diligence for months looks freshly touched.
-    updates.stage_entered_at = new Date().toISOString();
+    // Only a GENUINE stage move resets the clock -- the same guard the
+    // timeline entry and the notification already carry. Without it, any
+    // client retry or double-send POSTing the current status silently zeroed
+    // the "{n}d in stage" SLA badge this column exists to keep honest.
+    if (status !== deal.status) updates.stage_entered_at = new Date().toISOString();
   }
   if (nextFollowUp !== undefined) updates.next_follow_up = nextFollowUp;
 
@@ -229,6 +240,11 @@ export async function POST(req: NextRequest) {
     await notifyUsers(other, {
       type:  status === "passed" ? "deal_passed" : "deal_stage",
       title: status === "passed" ? "A deal was marked passed" : `A deal moved to ${label}`,
+      // The catalog key renders the recipient's own board vocabulary in
+      // their own locale; the English title above is the legacy fallback.
+      ...(status !== "passed" && STAGE_TITLE_KEY[status as string]
+        ? { titleKey: STAGE_TITLE_KEY[status as string] }
+        : status === "passed" ? { titleKey: "notif.dealPassedTitle" } : {}),
       body:  status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
       href:  `/deals?deal=${dealId}`,
     });

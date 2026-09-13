@@ -2110,7 +2110,9 @@
     "colProposal": "Proposta",
     "colNegotiation": "Negoziazione",
     "scopeAll": "Tutti i deal",
-    "scopeMine": "I miei deal"
+    "scopeMine": "I miei deal",
+    "editAmountAria": "Modifica l'importo",
+    "amountSaved": "Importo aggiornato"
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Manca soltanto la tua firma.",
     "dealSealPendingTitle": "{name} ha firmato l'atto dell'operazione",
     "dealSealedBody": "La conversazione è aperta.",
-    "dealSealedTitle": "{name} ha firmato. L'operazione è perfezionata."
+    "dealSealedTitle": "{name} ha firmato. L'operazione è perfezionata.",
+    "dealMovedIntro": "Un accordo è passato a Colloquio",
+    "dealMovedDueDiligence": "Un accordo è passato a Trattativa",
+    "dealMovedTermSheet": "Un accordo è passato al Term sheet",
+    "dealPassedTitle": "Un accordo è stato segnato come scartato"
   },
   "match": {
     "title": "Chi ti sta aspettando",

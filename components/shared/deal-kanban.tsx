@@ -123,7 +123,8 @@ interface DealKanbanProps {
   // compatibility context in the New Deal modal.
   ownProfile?: OwnProfile;
   // Whether to show the CSV export button — computed server-side (admin
-  // always, investors gated by canExportData(), never shown for startups).
+  // always, investors gated by canExportData(); startups export too, with
+  // the identity paywall applied to the CSV exactly as to the board).
   canExport?: boolean;
   /** Answers false when the record refused, so the control can put the old value back. */
   onSetFollowUp?: (dealId: string, date: string | null) => void | Promise<boolean>;
@@ -1102,9 +1103,13 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
         {fundedAt ? t("funding.fundedTitle") : t("funding.title")}
       </p>
-      {row(t("funding.sent"), sentAt, viewAs === "investor" || (isExternalInv && viewAs === "startup"), "sent")}
-      {row(t("funding.received"), recvAt, viewAs === "startup", "received")}
-      {!fundedAt && (viewAs === "startup" || viewAs === "investor") && (
+      {/* Money confirmations are a POST-CLOSE act. This block now also
+          mounts at term_sheet (so the schedule below is plannable while
+          negotiating), and "funds sent" on an unclosed deal is a claim
+          about money that has not moved. */}
+      {deal.status === "closed" && row(t("funding.sent"), sentAt, viewAs === "investor" || (isExternalInv && viewAs === "startup"), "sent")}
+      {deal.status === "closed" && row(t("funding.received"), recvAt, viewAs === "startup", "received")}
+      {deal.status === "closed" && !fundedAt && (viewAs === "startup" || viewAs === "investor") && (
         <>
           <input value={ref} onChange={(e) => setRef(e.target.value.slice(0, 120))} placeholder={t("funding.refPh")}
             style={{ width: "100%", boxSizing: "border-box", marginTop: 8, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
@@ -1777,6 +1782,22 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   const [editingFollowUp, setEditingFollowUp] = useState(false);
   const [followUpDraft, setFollowUpDraft] = useState(deal.next_follow_up || "");
   const [closeAmount, setCloseAmount]     = useState(deal.close_proposed_amount != null ? String(deal.close_proposed_amount) : deal.amount ? String(deal.amount) : "");
+  // Inline amount edit (B: "rounds resize mid-negotiation"). The API took
+  // {amount} from day one; no client ever sent it, so the feature the route
+  // documents existed only as dead code.
+  const [editingAmount, setEditingAmount] = useState(false);
+  const [amountDraft, setAmountDraft]     = useState("");
+  const [localAmount, setLocalAmount]     = useState<number | null | undefined>(undefined);
+  const shownAmount = localAmount !== undefined ? localAmount : deal.amount;
+  async function saveAmount() {
+    const n = Number(amountDraft);
+    if (!Number.isFinite(n) || n <= 0) { setEditingAmount(false); return; }
+    const res = await fetch("/api/deals/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dealId: deal.id, amount: Math.round(n) }) }).catch(() => null);
+    if (!res || !res.ok) { notify.error(t("dashboard.dealUpdateFailed")); setEditingAmount(false); return; }
+    setLocalAmount(Math.round(n));
+    setEditingAmount(false);
+    notify.success(t("deals.amountSaved"));
+  }
   const [closeCurrency, setCloseCurrency] = useState(deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY);
   const [closing, setClosing]             = useState(false);
   const [showPassedPicker, setShowPassedPicker] = useState(false);
@@ -1905,10 +1926,28 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           {t("deals.upgradeSeeWho")} →
         </a>
       )}
-      {deal.amount != null && (
+      {shownAmount != null && !editingAmount && (
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginTop: "4px", display: "flex", alignItems: "baseline", gap: "4px" }}>
-          {formatMoney(deal.amount, deal.currency, { compact: true })}
+          {formatMoney(shownAmount, deal.currency, { compact: true })}
           <span style={{ fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
+          {(deal.status === "intro" || deal.status === "due_diligence" || deal.status === "term_sheet") && (
+            <button onClick={(e) => { e.stopPropagation(); setAmountDraft(String(shownAmount ?? "")); setEditingAmount(true); }}
+              aria-label={t("deals.editAmountAria")} title={t("deals.editAmountAria")}
+              style={{ background: "none", border: "none", padding: "0 2px", cursor: "pointer", color: "var(--cr-ink-4)", fontSize: "10px", lineHeight: 1 }}>
+              ✎
+            </button>
+          )}
+        </p>
+      )}
+      {editingAmount && (
+        <p style={{ marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }} onClick={(e) => e.stopPropagation()}>
+          <input type="number" value={amountDraft} min={1} autoFocus
+            onChange={(e) => setAmountDraft(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") void saveAmount(); if (e.key === "Escape") setEditingAmount(false); }}
+            style={{ width: "110px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", padding: "3px 6px", outline: "none" }} />
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
+          <button onClick={() => void saveAmount()}
+            style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)" }}>{t("common.save")}</button>
         </p>
       )}
       <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
@@ -2219,8 +2258,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       <Collapse open={expanded}>
         {detailMounted && (
         <>
-      {/* D37: closed → funded. */}
-      {deal.status === "closed" && <FundingBlock deal={deal} viewAs={viewAs} />}
+      {/* D37: closed → funded. Mounted from TERM SHEET on: the API always
+          allowed saving the instalment schedule at term_sheet ("agree the
+          schedule while negotiating"), but the only editor lived inside this
+          block, which mounted post-close only -- the feature's first half
+          didn't exist in the product. The funding confirmations inside gate
+          themselves on funded state, and the editor renders pre-funding. */}
+      {(deal.status === "closed" || deal.status === "term_sheet") && <FundingBlock deal={deal} viewAs={viewAs} />}
 
       {deal.success_fee_invoiced && (
         <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px" }}>
@@ -2275,6 +2319,15 @@ function csvEscape(v: unknown): string {
 }
 
 export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, onSetFollowUp, onSetCommitment, movingDeal = null, onProposalsChanged }: DealKanbanProps) {
+  // ONE naming rule for every surface. The card masked the investor behind
+  // the identity paywall while the list view, the CSV export and the search
+  // box all used the real name -- the paywall only papered over the kanban.
+  const nameFor = (d: Deal, t2: (k: string) => string): { investorName: string; startupName: string } => {
+    const raw = dealNames(d, t2);
+    return viewAs === "startup" && !revealIdentity
+      ? { ...raw, investorName: t2("deals.interestedInvestor") }
+      : raw;
+  };
   const { t } = useTranslation();
   const router = useRouter();
   const columns = useColumns();
@@ -2405,7 +2458,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       list = list.filter(d => {
-        const { investorName, startupName } = dealNames(d, t);
+        const { investorName, startupName } = nameFor(d, t);
         const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} ${investorName}`;
         return String(name).toLowerCase().includes(q);
       });
@@ -2451,7 +2504,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   function handleExportCsv() {
     const header = [t("deals.csvCounterpart"), t("deals.csvAmount"), t("deals.csvCurrency"), t("deals.csvStatus"), t("deals.csvUpdated")];
     const rows = filteredDeals.map(d => {
-      const { investorName, startupName } = dealNames(d, t);
+      const { investorName, startupName } = nameFor(d, t);
       const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} x ${investorName}`;
       return [name, d.amount ?? "", d.currency ?? "", d.status, d.updated_at];
     });
@@ -2716,7 +2769,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
             </thead>
             <tbody>
               {filteredDeals.map(d => {
-                const { investorName, startupName } = dealNames(d, t);
+                const { investorName, startupName } = nameFor(d, t);
                 const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} × ${investorName}`;
                 const stageOrType = viewAs === "startup" ? d.investor?.type : d.startup?.stage;
                 return (

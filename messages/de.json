@@ -2117,7 +2117,9 @@
     "colProposal": "Vorschlag",
     "colNegotiation": "Verhandlung",
     "scopeAll": "Alle Deals",
-    "scopeMine": "Meine Deals"
+    "scopeMine": "Meine Deals",
+    "editAmountAria": "Betrag bearbeiten",
+    "amountSaved": "Betrag aktualisiert"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Ihre Unterschrift fehlt als einzige noch.",
     "dealSealPendingTitle": "{name} hat die Deal-Urkunde unterzeichnet",
     "dealSealedBody": "Das Gespräch ist eröffnet.",
-    "dealSealedTitle": "{name} hat unterzeichnet. Der Deal ist besiegelt."
+    "dealSealedTitle": "{name} hat unterzeichnet. Der Deal ist besiegelt.",
+    "dealMovedIntro": "Ein Deal ist jetzt in „Gespräch“",
+    "dealMovedDueDiligence": "Ein Deal ist jetzt in „Verhandlung“",
+    "dealMovedTermSheet": "Ein Deal ist jetzt beim Term Sheet",
+    "dealPassedTitle": "Ein Deal wurde als „abgelehnt“ markiert"
   },
   "match": {
     "title": "Wer auf dich wartet",

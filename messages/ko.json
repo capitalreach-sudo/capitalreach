@@ -2110,7 +2110,9 @@
     "colProposal": "제안",
     "colNegotiation": "협상",
     "scopeAll": "모든 딜",
-    "scopeMine": "내 딜"
+    "scopeMine": "내 딜",
+    "editAmountAria": "금액 수정",
+    "amountSaved": "금액이 업데이트되었습니다"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "이제 귀하의 서명만 남았습니다.",
     "dealSealPendingTitle": "{name}님이 딜 기록에 서명했습니다",
     "dealSealedBody": "대화가 열렸습니다.",
-    "dealSealedTitle": "{name}님이 서명했습니다. 딜이 체결되었습니다."
+    "dealSealedTitle": "{name}님이 서명했습니다. 딜이 체결되었습니다.",
+    "dealMovedIntro": "딜이 '대화' 단계로 이동했습니다",
+    "dealMovedDueDiligence": "딜이 '협상' 단계로 이동했습니다",
+    "dealMovedTermSheet": "딜이 '텀시트' 단계로 이동했습니다",
+    "dealPassedTitle": "딜이 '패스'로 표시되었습니다"
   },
   "match": {
     "title": "당신을 기다리는 투자자",

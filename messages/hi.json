@@ -2110,7 +2110,9 @@
     "colProposal": "प्रस्ताव",
     "colNegotiation": "मोल-भाव",
     "scopeAll": "सभी डील",
-    "scopeMine": "मेरी डील"
+    "scopeMine": "मेरी डील",
+    "editAmountAria": "राशि संपादित करें",
+    "amountSaved": "राशि अपडेट की गई"
   },
   "investorProfile": {
     "back": "निवेशकों पर वापस जाएं",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "अब केवल आपके हस्ताक्षर बाकी हैं।",
     "dealSealPendingTitle": "{name} ने डील अभिलेख पर हस्ताक्षर किए",
     "dealSealedBody": "बातचीत खुल गई है।",
-    "dealSealedTitle": "{name} ने हस्ताक्षर कर दिए। डील निष्पादित हो गई।"
+    "dealSealedTitle": "{name} ने हस्ताक्षर कर दिए। डील निष्पादित हो गई।",
+    "dealMovedIntro": "डील 'बातचीत' चरण में चली गई",
+    "dealMovedDueDiligence": "डील 'वार्ता' चरण में चली गई",
+    "dealMovedTermSheet": "डील 'टर्म शीट' चरण में चली गई",
+    "dealPassedTitle": "डील 'पास' के रूप में चिह्नित की गई"
   },
   "match": {
     "title": "आपका इंतज़ार कौन कर रहा है",

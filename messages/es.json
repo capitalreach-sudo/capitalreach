@@ -2110,7 +2110,9 @@
     "colProposal": "Propuesta",
     "colNegotiation": "Negociación",
     "scopeAll": "Todos los deals",
-    "scopeMine": "Mis deals"
+    "scopeMine": "Mis deals",
+    "editAmountAria": "Editar el importe",
+    "amountSaved": "Importe actualizado"
   },
   "investorProfile": {
     "back": "Volver a inversores",
@@ -3854,7 +3856,11 @@
     "dealSealPendingBody": "Su firma es la única que falta.",
     "dealSealPendingTitle": "{name} ha firmado el acta del acuerdo",
     "dealSealedBody": "La conversación está abierta.",
-    "dealSealedTitle": "{name} ha firmado. El acuerdo queda formalizado."
+    "dealSealedTitle": "{name} ha firmado. El acuerdo queda formalizado.",
+    "dealMovedIntro": "Un acuerdo pasó a Conversación",
+    "dealMovedDueDiligence": "Un acuerdo pasó a Negociación",
+    "dealMovedTermSheet": "Un acuerdo pasó a Term sheet",
+    "dealPassedTitle": "Un acuerdo se marcó como descartado"
   },
   "match": {
     "title": "Quién te espera",

@@ -2117,7 +2117,9 @@
     "colProposal": "Proposal",
     "colNegotiation": "Negotiation",
     "scopeAll": "All deals",
-    "scopeMine": "My deals"
+    "scopeMine": "My deals",
+    "editAmountAria": "Edit the amount",
+    "amountSaved": "Amount updated"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -3854,7 +3856,11 @@
     "dealSealedTitle": "{name} signed. The deal is sealed.",
     "dealSealedBody": "The conversation is open.",
     "dealSealPendingTitle": "{name} signed the deal record",
-    "dealSealPendingBody": "Your signature is the one still outstanding."
+    "dealSealPendingBody": "Your signature is the one still outstanding.",
+    "dealMovedIntro": "A deal moved to Talking",
+    "dealMovedDueDiligence": "A deal moved to Negotiation",
+    "dealMovedTermSheet": "A deal moved to Term sheet",
+    "dealPassedTitle": "A deal was marked passed"
   },
   "match": {
     "title": "Who's waiting for you",
