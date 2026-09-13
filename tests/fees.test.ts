@@ -143,7 +143,7 @@ describe("retry", () => {
 });
 
 describe("ledger totals", () => {
-  it("keeps the four buckets apart", () => {
+  it("keeps the four buckets apart, per currency", () => {
     const totals = ledgerTotals([
       { ...base, success_fee_paid_at: "2026-08-01" },
       { ...base },
@@ -151,6 +151,27 @@ describe("ledger totals", () => {
       { ...base, fee_waived_at: "2026-08-02" },
       { ...base, success_fee_amount: null },
     ]);
-    expect(totals).toEqual({ collected: 1000, outstanding: 1000, unbillable: 1000, waived: 1000, disputed: 0, reversed: 0 });
+    // No currency on the fixture rows -> the USD fallback bucket. The shape is
+    // per-currency by design: summing EUR into USD produced a unitless total.
+    expect(totals).toEqual({
+      collected:   [{ currency: "USD", amount: 1000 }],
+      outstanding: [{ currency: "USD", amount: 1000 }],
+      unbillable:  [{ currency: "USD", amount: 1000 }],
+      waived:      [{ currency: "USD", amount: 1000 }],
+      disputed:    [],
+      reversed:    [],
+    });
+  });
+
+  it("never adds one currency into another", () => {
+    const totals = ledgerTotals([
+      { ...base, currency: "EUR" } as never,
+      { ...base, currency: "USD" } as never,
+      { ...base, currency: "EUR" } as never,
+    ]);
+    expect(totals.outstanding).toEqual([
+      { currency: "EUR", amount: 2000 },
+      { currency: "USD", amount: 1000 },
+    ]);
   });
 });
