@@ -3,6 +3,7 @@ import { getLaunchStatus } from "@/lib/launchMode";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 import { getInvestorPlan } from "@/lib/plans";
+import { getStageStatus, resolveStagePriceId } from "@/lib/pricing-stage";
 
 // Prices come from the plan definitions rather than a second set of env vars.
 // This route used to read STRIPE_INVESTOR_*_PRICE_ID while /api/checkout read
@@ -73,11 +74,18 @@ export async function GET(req: NextRequest) {
   }
   // ─────────────────────────────────────────────────────────────────────
 
-  const priceId = process.env[plan.envKey];
+  // Resolve the price for the LIVE stage, not the standard monthly one. The
+  // pricing page (POST /api/checkout) is stage-aware; this onboarding path read
+  // process.env[plan.envKey] directly, so once the stage advanced to 'early' it
+  // sent the buyer to the standard EUR 99 session while the pricing page
+  // advertised the early EUR 39 for the same plan. resolveStagePriceId falls
+  // back to the base key, so nothing breaks before the _EARLY prices exist.
+  const { stage } = await getStageStatus();
+  const priceId = resolveStagePriceId(plan.envKey, stage);
   if (!priceId) {
     // Previously this passed undefined straight to Stripe, which failed with
     // an opaque API error. Say what is actually wrong instead.
-    console.error(`Stripe price not configured: ${plan.envKey}`);
+    console.error(`Stripe price not configured: ${plan.envKey} (stage ${stage})`);
     // From onboarding, land in the dashboard with the profile intact — the
     // /pricing bounce is what turned plan clicks into duplicate profiles.
     return NextResponse.redirect(new URL(

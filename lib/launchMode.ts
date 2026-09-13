@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase-server";
+import { grandfatherFoundingCohort } from "@/lib/pricing-stage";
 
 export interface LaunchStatus {
   isLaunch:    boolean;
@@ -79,17 +80,57 @@ export async function incrementMemberCount(): Promise<void> {
     if (targetError) console.error("[launchMode] founding_target read failed:", targetError.message);
     const closeAt = parseInt(targetRow?.value ?? "", 10) || LAUNCH_TARGET_FALLBACK;
     if (next >= closeAt) {
-      await admin
-        .from("platform_config")
-        .update({ value: "false" })
-        .eq("key", "launch_mode");
-      await announceLaunchEnd("member_target");
+      await endFoundingAtCap();
     }
     return;
   }
   // Four straight collisions means heavy signup concurrency; the next signup's
   // increment will land, and the count self-corrects. Not worth failing the
   // caller (a webhook) over.
+}
+
+/**
+ * The founding cohort just filled. Ending founding is not one write but three
+ * that must agree, and the old auto-path did only the first:
+ *
+ *   - flip launch_mode off  (access.ts reads this: paywalls now bind)
+ *   - advance pricing_stage off 'founding'  (checkout reads this)
+ *   - grandfather the cohort onto the tier they were using
+ *
+ * Doing only the first left the platform incoherent: access.ts stripped every
+ * founding member to their stored 'free' tier while checkout still read stage
+ * 'founding' and answered 409 "everything is free" to every attempt to buy a
+ * plan -- members told "paid features now need a plan" and then unable to buy
+ * one, and the founding cohort silently stripped of the data rooms/NDA/
+ * analytics the manual advance is careful to grandfather. This does the whole
+ * ceremony the admin route does, with its safe defaults (advance to 'early',
+ * grandfather on).
+ */
+async function endFoundingAtCap(): Promise<void> {
+  const admin = createAdminClient();
+
+  // If an operator already advanced the ladder by hand, their choice stands --
+  // do not clobber a 'standard' back to 'early' or re-grandfather.
+  const { data: stageRow } = await admin
+    .from("platform_config").select("value").eq("key", "pricing_stage").maybeSingle();
+  if (stageRow?.value && stageRow.value !== "founding") return;
+
+  // pricing_stage and launch_mode in one upsert so the two rows the rest of the
+  // platform reads can never be seen disagreeing.
+  await admin.from("platform_config").upsert(
+    [
+      { key: "pricing_stage", value: "early" },
+      { key: "launch_mode", value: "false" },
+    ],
+    { onConflict: "key" },
+  );
+
+  // Keep the promise: everything the founding cohort has, they keep.
+  await grandfatherFoundingCohort().catch((e) =>
+    console.error("[launchMode] grandfathering at cap failed:", e));
+
+  // The free period expiring is announced (idempotent).
+  await announceLaunchEnd("member_target");
 }
 
 /**

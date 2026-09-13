@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   const isParticipant = startup?.owner_id === user.id || investorRow?.owner_id === user.id
     || await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
   const isAdmin = profile?.role === "admin";
-  if (!isParticipant && !isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!isParticipant && !isAdmin) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const [{ data: reports }, { data: startupWithDocs }, { data: nda }] = await Promise.all([
     admin

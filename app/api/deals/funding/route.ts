@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   const isTeam = await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
   if (!isFounderSide && !isInvestorSide && !isTeam) {
     const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    if (prof?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (prof?.role !== "admin") return NextResponse.json({ error: "Deal not found" }, { status: 404 });
   }
 
   // Each side confirms only its own leg. The investor says money left; the

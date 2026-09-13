@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST } from "@/lib/plans";
+import { STAGE_ORDER, stagePriceEnvKeys } from "@/lib/pricing-stage";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
@@ -197,10 +198,28 @@ export function constructWebhookEvent(payload: Buffer, sig: string) {
  * key and the last one won -- with nothing configured, TIER_MAP[""] was "pro".
  * The webhook guards on `priceId ?` before looking up, so that never granted
  * anyone a tier; it was a trap waiting for a second caller, not a live bug.
+ *
+ * Every price a NEW subscription for a plan can be created under must resolve
+ * here: monthly AND annual, at every stage. checkout.session.completed reads
+ * the tier from session metadata, but customer.subscription.created/updated
+ * (a Stripe billing-portal plan switch, a past_due -> active recovery) carries
+ * only the price id, so a price missing from this map made those events find
+ * tier undefined and break before writing anything -- annual and early-stage
+ * subscribers got no plan sync and no dunning. Building from only plan.envKey
+ * (standard monthly) left every other sellable price invisible.
  */
-export const TIER_MAP: Record<string, string> = Object.fromEntries(
-  [...FOUNDER_PLANS_LIST, ...INVESTOR_PLANS_LIST]
-    .filter((plan) => plan.envKey !== null)
-    .map((plan) => [process.env[plan.envKey!], plan.id as string] as const)
-    .filter((entry): entry is readonly [string, string] => Boolean(entry[0]))
-);
+export const TIER_MAP: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  for (const plan of [...FOUNDER_PLANS_LIST, ...INVESTOR_PLANS_LIST]) {
+    const baseKeys = [plan.envKey, plan.envKeyAnnual].filter((k): k is string => k !== null);
+    const envKeys = new Set<string>();
+    for (const base of baseKeys)
+      for (const stage of STAGE_ORDER)
+        for (const k of stagePriceEnvKeys(base, stage)) envKeys.add(k);
+    for (const k of Array.from(envKeys)) {
+      const priceId = process.env[k];
+      if (priceId) map[priceId] = plan.id as string;
+    }
+  }
+  return map;
+})();

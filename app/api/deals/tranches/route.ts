@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   const investorOwner = (deal.investor as unknown as { owner_id: string | null } | null)?.owner_id ?? null;
   if (user.id !== startupOwner && user.id !== investorOwner) {
     const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    if (prof?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (prof?.role !== "admin") return NextResponse.json({ error: "Deal not found" }, { status: 404 });
   }
 
   const { data } = await admin.from("deal_tranches").select("*").eq("deal_id", dealId).order("position");
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
   if (user.id !== startupOwner && user.id !== investorOwner) {
     const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
     isAdmin = prof?.role === "admin";
-    if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!isAdmin) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
   }
   const party: Party = {
     startupOwner, investorOwner,

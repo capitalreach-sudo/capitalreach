@@ -50,8 +50,12 @@ export async function POST(req: NextRequest) {
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
 
-  // Verify participant (or admin, who can manage any deal for oversight)
-  const { data: deal } = await supabase
+  // Verify participant (or admin, who can manage any deal for oversight).
+  // Read with the service role: the session read answered to RLS, so an
+  // admin who is not a party got a 404 here before their bypass below was
+  // ever consulted.
+  const admin = createAdminClient();
+  const { data: deal } = await admin
     .from("deals")
     .select("startup_id, investor_id, status, startup:startups(owner_id), investor:investors(owner_id)")
     .eq("id", dealId)
@@ -64,7 +68,9 @@ export async function POST(req: NextRequest) {
     deal.investor?.owner_id === user.id ||
     await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
 
-  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // 404, not 403: a refusal that differs from "no such deal" confirms the
+  // deal exists to someone who is not a party to it.
+  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   // A deal is a PROCESS: Talking → Negotiation → Final proposal, one step
   // at a time (either direction — negotiations do regress). Passing is
@@ -115,7 +121,6 @@ export async function POST(req: NextRequest) {
       );
     }
     // Link the ack to the deal (once) and put it on the timeline.
-    const admin = createAdminClient();
     const { data: dealRow } = await admin.from("deals").select("circumvention_ack_id").eq("id", dealId).maybeSingle();
     if (dealRow && !dealRow.circumvention_ack_id) {
       await admin.from("deals").update({ circumvention_ack_id: ack.id }).eq("id", dealId).then(undefined, () => {});
@@ -165,7 +170,11 @@ export async function POST(req: NextRequest) {
   if (typeof currency === "string" && isCurrencyCode(currency)) updates.currency = currency;
 
   if (Object.keys(updates).length > 0) {
-    const { error } = await supabase.from("deals").update(updates).eq("id", dealId);
+    // Service-role write: the participant/ladder/ack checks above are the
+    // authorization. The 129 trigger rejects client-key writes to status,
+    // amount, currency and commitment columns, so a session-client write
+    // here 500s for every legitimate stage move.
+    const { error } = await admin.from("deals").update(updates).eq("id", dealId);
 
     // Every stage move joins the timeline. The body is machine-readable
     // ("intro>due_diligence"); the client renders it in the viewer's
@@ -186,7 +195,6 @@ export async function POST(req: NextRequest) {
 
   if (commitmentType !== undefined) {
     const LABEL: Record<string, string> = { interest: "Interested", soft_circle: "Soft-circled", verbal: "Verbal commitment", committed: "Committed" };
-    const admin = createAdminClient();
     await admin.from("deal_activity").insert({
       deal_id: dealId, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: user.id,
       type: "note",

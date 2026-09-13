@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   const membership = await loadDealMembership(admin, dealId, user.id);
   if (!membership) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
   const isAdmin = !membership.side && (await supabase.from("profiles").select("role").eq("id", user.id).single()).data?.role === "admin";
-  if (!membership.side && !isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!membership.side && !isAdmin) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const { data } = await admin
     .from("deal_documents")
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
   const membership = await loadDealMembership(admin, dealId, user.id);
-  if (!membership || !membership.side) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!membership || !membership.side) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const safeName = file.name.slice(0, 200);
   const path = `${dealId}/${crypto.randomUUID()}`;

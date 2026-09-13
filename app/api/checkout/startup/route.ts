@@ -3,6 +3,7 @@ import { getLaunchStatus } from "@/lib/launchMode";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 import { getFounderPlan } from "@/lib/plans";
+import { getStageStatus, resolveStagePriceId } from "@/lib/pricing-stage";
 
 // Prices come from the plan definitions rather than a second set of env vars.
 // This route used to read STRIPE_STARTUP_*_PRICE_ID while /api/checkout read
@@ -66,11 +67,15 @@ export async function GET(req: NextRequest) {
   }
   // ─────────────────────────────────────────────────────────────────────
 
-  const priceId = process.env[plan.envKey];
+  // Resolve the price for the LIVE stage (see checkout/investor for the full
+  // note): this path read the standard monthly key directly and would undercut
+  // the stage-aware pricing page once the stage advanced. Falls back to base.
+  const { stage } = await getStageStatus();
+  const priceId = resolveStagePriceId(plan.envKey, stage);
   if (!priceId) {
     // Previously this passed undefined straight to Stripe, which failed with
     // an opaque API error. Say what is actually wrong instead.
-    console.error(`Stripe price not configured: ${plan.envKey}`);
+    console.error(`Stripe price not configured: ${plan.envKey} (stage ${stage})`);
     // From onboarding this used to bounce to /pricing — the founder, whose
     // listing had just saved, pressed "select plan" again and every press
     // created another pending-review listing. Land them in their dashboard

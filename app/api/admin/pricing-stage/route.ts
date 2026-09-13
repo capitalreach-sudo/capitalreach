@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, logAdminAction } from "@/lib/admin-guard";
 import { createAdminClient } from "@/lib/supabase-server";
 import { announceLaunchEnd } from "@/lib/launchMode";
-import { getStageStatus, STAGE_ORDER, type PricingStage } from "@/lib/pricing-stage";
+import { getStageStatus, grandfatherFoundingCohort, STAGE_ORDER, type PricingStage } from "@/lib/pricing-stage";
 
 /**
  * The price ladder, moved by hand: founding -> early -> standard.
@@ -106,25 +106,7 @@ export async function POST(req: NextRequest) {
     // unaffected -- grandfathered members still pay it when they raise,
     // which is where the revenue actually comes from.
     if (before.stage === "founding" && grandfatherFounding) {
-      // Anyone who already holds a Stripe subscription is left alone: their
-      // price is whatever they signed up at, and overwriting the tier here
-      // would decouple it from what they are actually being billed for.
-      const [founders, investors] = await Promise.all([
-        admin.from("profiles").update({ subscription_tier: "growth" })
-          .eq("signup_stage", "founding").eq("role", "startup")
-          .is("stripe_subscription_id", null).select("id"),
-        admin.from("profiles").update({ subscription_tier: "pro_investor" })
-          .eq("signup_stage", "founding").eq("role", "investor")
-          .is("stripe_subscription_id", null).select("id"),
-      ]);
-      const founderIds = (founders.data ?? []).map((r) => r.id);
-      grandfathered = founderIds.length + (investors.data ?? []).length;
-      // The startups table carries its own tier for listing-level gates.
-      if (founderIds.length) {
-        await admin.from("startups")
-          .update({ subscription_tier: "growth" })
-          .in("owner_id", founderIds);
-      }
+      grandfathered = await grandfatherFoundingCohort();
     }
 
     await logAdminAction(guard.admin, guard.adminId, "pricing_stage_set", "platform", null, {

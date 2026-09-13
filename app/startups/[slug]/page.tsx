@@ -463,7 +463,12 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     register_type: null,
     register_number: null,
     last_review_id: null,
-    ...(showFinancials ? {} : { mrr: null, arr: null, user_count: null, growth_rate: null, valuation: null, paying_customers: null, runway_months: null, churn_rate: null }),
+    // For a SAFE round the cap IS the valuation and the discount sets the
+    // entry price, so they belong in the same strip as `valuation` -- the
+    // client's round-arithmetic block renders safe_cap/safe_discount with no
+    // financials guard of its own, which leaked the SAFE valuation to a paid
+    // investor who had not signed the NDA.
+    ...(showFinancials ? {} : { mrr: null, arr: null, user_count: null, growth_rate: null, valuation: null, paying_customers: null, runway_months: null, churn_rate: null, safe_cap: null, safe_discount: null, valuation_type: null, instrument: null }),
     founders: protectFounders(startup.founders, identityRevealed),
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx, previewing ? null : shareToken)),
   };

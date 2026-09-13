@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     const isMember = await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
     if (!isMember) {
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-      if (profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      if (profile?.role !== "admin") return NextResponse.json({ error: "Deal not found" }, { status: 404 });
       isAdmin = true;
     }
   }
@@ -103,7 +103,27 @@ export async function POST(req: NextRequest) {
   // fresh counter-proposal rather than an acceptance.
   const startupOwnerId = deal.startup?.owner_id as string | undefined;
   const investorOwnerId = deal.investor?.owner_id as string | undefined;
-  const proposalFromOther = !!deal.close_proposed_by && deal.close_proposed_by !== user.id;
+
+  // "Side" = which market side a user belongs to (owner OR team member), the
+  // same rule contracts/sign settled on. The confirmation must come from the
+  // side OPPOSITE the proposer, never merely a different user id: without this
+  // a proposer plus a sockpuppet added to their OWN team self-confirms a close
+  // and raises the founder's 2% fee with no counterparty agreement -- the
+  // exact attack the contract-signing route was hardened against.
+  const sideOf = async (uid: string | undefined | null): Promise<"startup" | "investor" | null> => {
+    if (!uid) return null;
+    if (uid === startupOwnerId) return "startup";
+    if (uid === investorOwnerId) return "investor";
+    if (await isTeamMemberOfEither(uid, deal.startup_id, null)) return "startup";
+    if (await isTeamMemberOfEither(uid, null, deal.investor_id)) return "investor";
+    return null;
+  };
+  const confirmerSide = await sideOf(user.id);
+  const proposerSide = deal.close_proposed_by ? await sideOf(deal.close_proposed_by) : null;
+  const proposalFromOther =
+    !!deal.close_proposed_by &&
+    !!proposerSide && !!confirmerSide &&
+    proposerSide !== confirmerSide;
   const proposedAmt = deal.close_proposed_amount != null ? Number(deal.close_proposed_amount) : null;
   const confirming =
     isAdmin ||
@@ -118,7 +138,13 @@ export async function POST(req: NextRequest) {
       close_proposed_at: new Date().toISOString(),
     }).eq("id", dealId);
 
-    const counterpart = user.id === startupOwnerId ? investorOwnerId : startupOwnerId;
+    // Notify the OTHER side's owner, resolved by the proposer's side. A team
+    // member is neither owner, so the old "am I the startup owner?" ternary
+    // sent every team-member proposal to the startup owner -- the counterparty
+    // was never told a close was pending.
+    const counterpart = confirmerSide === "startup" ? investorOwnerId
+      : confirmerSide === "investor" ? startupOwnerId
+      : (user.id === startupOwnerId ? investorOwnerId : startupOwnerId);
     if (counterpart) {
       await notifyUsers([counterpart], {
         type: "deal_stage",

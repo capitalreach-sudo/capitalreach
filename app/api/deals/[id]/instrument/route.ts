@@ -133,7 +133,7 @@ async function loadDeal(
   }
 
   if (!party && !isAdmin) {
-    return { ok: false, response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+    return { ok: false, response: NextResponse.json({ error: "Deal not found" }, { status: 404 }) };
   }
 
   return { ok: true, deal, party };

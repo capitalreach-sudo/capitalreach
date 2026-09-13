@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   ]);
   const isParticipant = startup?.owner_id === user.id || investor?.owner_id === user.id
     || await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
-  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const { data: activity, error } = await admin
     .from("deal_activity")
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
   ]);
   const isParticipant = startup?.owner_id === user.id || investor?.owner_id === user.id
     || await isTeamMemberOfEither(user.id, deal.startup_id, deal.investor_id);
-  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!isParticipant && profile?.role !== "admin") return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const { data: entry, error } = await admin
     .from("deal_activity")

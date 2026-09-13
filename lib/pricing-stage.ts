@@ -165,3 +165,37 @@ export const STAGE_LABEL_KEY: Record<PricingStage, string> = {
   early:    "stage.early",
   standard: "stage.standard",
 };
+
+/**
+ * Grandfather the founding cohort onto the tier they have been using, so that
+ * ending the free stage does not strip data rooms, NDAs, investor identity and
+ * analytics from the members who joined when free access WAS the offer. Anyone
+ * already holding a Stripe subscription is left alone -- their price is what
+ * they signed up at, and overwriting the tier would decouple it from what they
+ * are actually billed for. Returns the number of accounts moved.
+ *
+ * Shared by the manual admin advance (app/api/admin/pricing-stage) and the
+ * automatic member-cap end (lib/launchMode.incrementMemberCount) so the two
+ * paths that end founding can never drift. The writes go through the service
+ * role, so the 127/129 privilege-lockdown triggers pass them.
+ */
+export async function grandfatherFoundingCohort(): Promise<number> {
+  const admin = createAdminClient();
+  const [founders, investors] = await Promise.all([
+    admin.from("profiles").update({ subscription_tier: "growth" })
+      .eq("signup_stage", "founding").eq("role", "startup")
+      .is("stripe_subscription_id", null).select("id"),
+    admin.from("profiles").update({ subscription_tier: "pro_investor" })
+      .eq("signup_stage", "founding").eq("role", "investor")
+      .is("stripe_subscription_id", null).select("id"),
+  ]);
+  const founderIds = (founders.data ?? []).map((r) => r.id as string);
+  const count = founderIds.length + (investors.data ?? []).length;
+  // The startups table carries its own tier for listing-level gates.
+  if (founderIds.length) {
+    await admin.from("startups")
+      .update({ subscription_tier: "growth" })
+      .in("owner_id", founderIds);
+  }
+  return count;
+}

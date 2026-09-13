@@ -145,7 +145,7 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
     }
     isAdmin = profile?.role === "admin";
   }
-  if (!isParty && !isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!isParty && !isAdmin) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const declaredAmount = deal.amount === null ? null : Number(deal.amount);
   const declaredCurrency = deal.currency;
