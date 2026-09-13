@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
-import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell , Flag } from "lucide-react";
+import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell, Flag, Bookmark } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -226,6 +226,11 @@ export function Navbar() {
                     </div>
                     {[
                       { href: dashboardPath,         Icon: LayoutDashboard, label: t("nav.dashboard") },
+                      // An admin's own saves live on the investor dashboard,
+                      // which their Dashboard link (-> /admin) never reaches.
+                      ...(profile?.role === "admin"
+                        ? [{ href: "/dashboard/investor", Icon: Bookmark, label: t("dashboard.watchlist") }]
+                        : []),
                       { href: "/dashboard/messages", Icon: MessageSquare,   label: t("nav.messages")  },
                       { href: "/dashboard/complaints", Icon: Flag,          label: t("complaints.title") },
                       { href: "/dashboard/settings", Icon: Settings,        label: t("nav.settings")  },
@@ -403,6 +408,9 @@ export function Navbar() {
                 ] },
                 ...(profile ? [{ header: t("nav.secWorkspace"), items: [
                   { href: dashboardPath,              label: t("nav.dashboard"),       Icon: LayoutDashboard },
+                  ...(profile?.role === "admin"
+                    ? [{ href: "/dashboard/investor", label: t("dashboard.watchlist"), Icon: Bookmark }]
+                    : []),
                   { href: "/deals",                   label: t("nav.deals"),           Icon: Handshake       },
                   { href: "/dashboard/messages",      label: t("nav.messages"),        Icon: MessageSquare   },
                   { href: "/dashboard/notifications", label: t("notifications.title"), Icon: Bell            },

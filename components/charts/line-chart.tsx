@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { SERIES } from "./palette";
 import { plotCeiling } from "@/lib/validators";
 
@@ -25,6 +25,15 @@ interface Pt { i: number; v: number }
  * most common way a chart lies -- any pair of lines can be made to cross
  * wherever you like by choosing the axes. Series with different units get
  * their own chart.
+ *
+ * The interactive layer ENHANCES and never gates (every tooltip value is also
+ * on the end labels, the axis, or the table the caller keeps): a continuous
+ * scrub (pointer, touch-drag, or arrow keys) drives one crosshair whose
+ * readout lists every visible series; hovering a series' name emphasises it
+ * and quiets the others; clicking a name folds that series away and the scale
+ * re-fits what remains -- colour stays with the entity, so survivors are never
+ * repainted. The first time the chart scrolls into view, each line draws
+ * itself in; prefers-reduced-motion gets the finished frame immediately.
  */
 export function LineChart({ labels, series, height = 200, valueLabel, formatTick, inProgressLast = false, inProgressLabel }: {
   labels: string[];
@@ -45,13 +54,39 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
   // useId can contain ":", which a url(#…) reference will not survive.
   const gid = id.replace(/[^a-zA-Z0-9_-]/g, "");
   const [active, setActive] = useState<number | null>(null);
+  const [pinned, setPinned] = useState(false);
+
+  // Identity interactions. `hidden` folds a series away (never the last one);
+  // `focusKey` is the hover emphasis. Both key on s.key so colour -- assigned
+  // by ORIGINAL index -- follows the entity through every toggle.
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+
+  // Motion: the draw-in runs once, when the frame first becomes visible.
+  // Reduced-motion readers get the finished chart with no interlude, and an
+  // environment without IntersectionObserver just starts drawn.
+  const reduced = useMemo(
+    () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+    [],
+  );
+  const [drawn, setDrawn] = useState(reduced);
+  const frameRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (drawn) return;
+    const el = frameRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setDrawn(true); return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { setDrawn(true); io.disconnect(); }
+    }, { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [drawn]);
 
   // The viewBox width tracks the container's real pixel width. A fixed 720
   // frame at width:100% scales every stroke and glyph with the container:
   // hairlines go soft, 9px axis text renders at 6px on a phone, and the
   // flag's percentage position drifts inside the letterbox gutters the
   // fixed ratio leaves at desktop widths. At 1:1 the 2px line is 2px.
-  const frameRef = useRef<HTMLDivElement>(null);
   const [measured, setMeasured] = useState<number | null>(null);
   useEffect(() => {
     const el = frameRef.current;
@@ -67,11 +102,17 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
   const W = measured ?? 720;
   const H = height;
 
+  // Colour is assigned on the ORIGINAL roster; folding a series away must
+  // never repaint the survivors.
+  const roster = series.map((s, origIdx) => ({ s, origIdx }));
+  const visible = roster.filter(({ s }) => !hidden.has(s.key));
+
   // Direct labels at the line ends replace the legend row, but only once the
   // frame is measured and wide enough to give the words a gutter without
   // starving the plot. Width is estimated from glyph count because SVG text
   // cannot be measured before it renders; the cap keeps a long translation
-  // from eating the chart.
+  // from eating the chart. Estimated from the FULL roster so toggling a
+  // series never reflows the plot.
   const endLabels = series.length > 1 && measured !== null && W >= 560;
   const endGutter = endLabels
     ? Math.min(132, 16 + Math.max(...series.map(s => s.label.length)) * 5.8)
@@ -83,8 +124,9 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
   const plotW = W - PAD.left - PAD.right;
   const plotH = H - PAD.top - PAD.bottom;
 
-  // Every series shares one scale, so one bad value is everyone's problem.
-  const max = plotCeiling(series.flatMap(s => s.values));
+  // Every VISIBLE series shares one scale, so folding the big one away lets
+  // the small ones breathe -- which is the whole point of folding.
+  const max = plotCeiling(visible.flatMap(({ s }) => s.values));
 
   const n = Math.max(labels.length, 1);
   const x = (i: number) => PAD.left + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
@@ -111,7 +153,7 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
 
   // Geometry first, drawing second: the end-of-line labels need every
   // series' final point before any series renders.
-  const geom = series.map((s) => {
+  const geom = visible.map(({ s, origIdx }) => {
     // One NaN coordinate voids the whole path element, so a point that
     // isn't a number becomes a break in the line instead of an erased
     // series. Adjacent points join; a gap stays a gap, because a segment
@@ -158,7 +200,7 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
         + ` L${x(seg[seg.length - 1].i)},${baseY} Z`;
     }).filter(Boolean).join(" ");
 
-    return { s, runs, partial, lastReal, solidD, dashedD, areaD, endPt: lastPt };
+    return { s, origIdx, runs, partial, lastReal, solidD, dashedD, areaD, endPt: lastPt };
   });
 
   // The label sits level with the line's true end, dashed tail included.
@@ -168,21 +210,74 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
   if (endLabels) {
     const GAP = 14;
     const anchors = geom
-      .flatMap((g, si) => (g.endPt ? [{ si, ly: y(g.endPt.v) }] : []))
+      .flatMap((g, gi) => (g.endPt ? [{ gi, ly: y(g.endPt.v) }] : []))
       .sort((a, b) => a.ly - b.ly);
     for (let k = 1; k < anchors.length; k++)
       anchors[k].ly = Math.max(anchors[k].ly, anchors[k - 1].ly + GAP);
     for (let k = anchors.length - 1; k >= 0; k--)
       anchors[k].ly = Math.min(anchors[k].ly, k === anchors.length - 1 ? baseY : anchors[k + 1].ly - GAP);
-    for (const a of anchors) labelY.set(a.si, a.ly);
+    for (const a of anchors) labelY.set(a.gi, a.ly);
   }
+
+  // ── Interaction plumbing ──────────────────────────────────────────────────
+  const svgRef = useRef<SVGSVGElement>(null);
+  const indexFromClientX = (clientX: number): number => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return 0;
+    const px = ((clientX - rect.left) / rect.width) * W;
+    if (n === 1) return 0;
+    const t = (px - PAD.left) / plotW;
+    return Math.min(n - 1, Math.max(0, Math.round(t * (n - 1))));
+  };
+
+  const toggleSeries = (key: string) => {
+    // The clicked label can unmount with the fold, so its mouseleave never
+    // fires -- a stranded focusKey would leave the survivors dimmed forever.
+    setFocusKey(null);
+    setHidden(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else {
+        next.add(key);
+        // Never fold the last visible series -- an empty chart answers nothing.
+        if (next.size >= series.length) return prev;
+      }
+      return next;
+    });
+  };
+
+  const dimFor = (key: string) => (focusKey && focusKey !== key ? 0.22 : 1);
+
+  // Draw-in styling: pathLength=1 makes the dash math trivial. The dash
+  // survives after the reveal (a single dash the length of the whole path is
+  // invisible), so nothing needs cleaning up.
+  const drawStyle = (gi: number): React.CSSProperties => reduced ? {} : {
+    strokeDasharray: 1,
+    strokeDashoffset: drawn ? 0 : 1,
+    transition: `stroke-dashoffset 900ms cubic-bezier(0.4, 0, 0.2, 1) ${gi * 140}ms`,
+  };
+  const fadeStyle = (gi: number, base = 1): React.CSSProperties => reduced ? { opacity: base } : {
+    opacity: drawn ? base : 0,
+    transition: `opacity 600ms ease ${420 + gi * 140}ms`,
+  };
 
   return (
     <div ref={frameRef} style={{ position: "relative" }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img"
+      <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img"
         aria-label={valueLabel ?? series.map(s => s.label).join(", ")}
-        style={{ touchAction: "manipulation", display: "block" }}
-        onPointerLeave={(e) => { if (e.pointerType !== "touch") setActive(null); }}>
+        className="cr-chart"
+        tabIndex={0}
+        style={{ touchAction: "pan-y", display: "block", outline: "none" }}
+        onKeyDown={(e) => {
+          // The keyboard scrub: the same crosshair the pointer drives.
+          if (e.key === "ArrowRight") { setActive(a => Math.min(n - 1, (a ?? -1) + 1)); e.preventDefault(); }
+          else if (e.key === "ArrowLeft") { setActive(a => Math.max(0, (a ?? n) - 1)); e.preventDefault(); }
+          else if (e.key === "Home") { setActive(0); e.preventDefault(); }
+          else if (e.key === "End") { setActive(n - 1); e.preventDefault(); }
+          else if (e.key === "Escape") { setActive(null); setPinned(false); }
+        }}
+        onBlur={() => { if (!pinned) setActive(null); }}
+        onPointerLeave={(e) => { if (e.pointerType !== "touch" && !pinned) setActive(null); }}>
         {/* Recessive grid: the baseline is a solid hairline the data stands
             on; the upper rules are true dots, present enough to read a value
             against and quiet enough that the line is the loudest thing in
@@ -212,56 +307,73 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
           ) : null
         ))}
 
-        {geom.map((g, si) => {
-          const colour = SERIES[si % SERIES.length];
-          const ly = labelY.get(si);
+        {geom.map((g, gi) => {
+          const colour = SERIES[g.origIdx % SERIES.length];
+          const ly = labelY.get(gi);
           return (
-            <g key={g.s.key}>
+            <g key={g.s.key} style={{ opacity: dimFor(g.s.key), transition: "opacity 200ms ease" }}>
               <defs>
                 {/* Accent at low opacity via color-mix so the wash follows
                     the series colour through every theme without a second
                     hue. Three stops ease it out instead of cutting it off:
                     the fill reads as the line's own shadow on the paper. */}
-                <linearGradient id={`${gid}-f${si}`} x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={`${gid}-f${g.origIdx}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={`color-mix(in srgb, ${colour} 14%, transparent)`} />
                   <stop offset="55%" stopColor={`color-mix(in srgb, ${colour} 5%, transparent)`} />
                   <stop offset="100%" stopColor={`color-mix(in srgb, ${colour} 0%, transparent)`} />
                 </linearGradient>
               </defs>
-              {g.areaD && <path d={g.areaD} fill={`url(#${gid}-f${si})`} />}
-              <path d={g.solidD} fill="none" stroke={colour} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+              {g.areaD && <path d={g.areaD} fill={`url(#${gid}-f${g.origIdx})`} style={fadeStyle(gi)} />}
+              <path d={g.solidD} fill="none" stroke={colour} strokeWidth={2}
+                strokeLinecap="round" strokeLinejoin="round"
+                pathLength={1} style={drawStyle(gi)} />
               {g.dashedD && (
                 <path d={g.dashedD} fill="none" stroke={colour} strokeWidth={2}
-                  strokeLinecap="round" strokeDasharray="2 5" />
+                  strokeLinecap="round" strokeDasharray="2 5" style={fadeStyle(gi)} />
               )}
               {/* A point with a gap on both sides has no segment to appear in,
                   and a measurement that renders as nothing is the failure this
                   guard exists to prevent. */}
               {g.runs.filter(r => r.length === 1 && !(g.partial && r[0].i === g.partial.i)).map(r => (
-                <circle key={r[0].i} cx={x(r[0].i)} cy={y(r[0].v)} r={2.5} fill={colour} />
+                <circle key={r[0].i} cx={x(r[0].i)} cy={y(r[0].v)} r={2.5} fill={colour} style={fadeStyle(gi)} />
               ))}
               {/* The last COMPLETE point: a filled dot inside a quiet ring,
                   so the line ends with a full stop rather than trailing off. */}
               {g.lastReal && (
-                <g>
+                <g style={fadeStyle(gi)}>
                   <circle cx={x(g.lastReal.i)} cy={y(g.lastReal.v)} r={7}
                     fill="none" stroke={colour} strokeOpacity={0.25} strokeWidth={1} />
                   <circle cx={x(g.lastReal.i)} cy={y(g.lastReal.v)} r={3.5}
                     fill={colour} stroke="var(--cr-paper)" strokeWidth={1.5} />
                 </g>
               )}
-              {/* Hollow: the period is still being written. */}
+              {/* Hollow: the period is still being written -- and it breathes,
+                  gently, because it is the one point on the chart that is
+                  still moving. Reduced motion pins it still. */}
               {g.partial && (
-                <circle cx={x(g.partial.i)} cy={y(g.partial.v)} r={4}
-                  fill="var(--cr-paper)" stroke={colour} strokeWidth={1.5} />
+                <g style={fadeStyle(gi)}>
+                  {!reduced && (
+                    <circle cx={x(g.partial.i)} cy={y(g.partial.v)} r={4}
+                      fill="none" stroke={colour} strokeWidth={1} opacity={0.5}>
+                      <animate attributeName="r" values="4;8;4" dur="2.8s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.5;0;0.5" dur="2.8s" repeatCount="indefinite" />
+                    </circle>
+                  )}
+                  <circle cx={x(g.partial.i)} cy={y(g.partial.v)} r={4}
+                    fill="var(--cr-paper)" stroke={colour} strokeWidth={1.5} />
+                </g>
               )}
               {/* The name sits where the reader's eye already is when the
                   line runs out, in the series' own ink. Colour is not the
                   identifier here, position is; narrow frames fall back to
-                  the legend row below. */}
+                  the legend row below. Hover emphasises; click folds. */}
               {endLabels && ly !== undefined && (
                 <text x={W - PAD.right + 10} y={ly + 3.5} textAnchor="start"
-                  style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 500, fill: colour }}>
+                  role="button" aria-pressed={false}
+                  onMouseEnter={() => setFocusKey(g.s.key)}
+                  onMouseLeave={() => setFocusKey(null)}
+                  onClick={() => toggleSeries(g.s.key)}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 500, fill: colour, cursor: "pointer", ...fadeStyle(gi) }}>
                   {g.s.label}
                 </text>
               )}
@@ -269,25 +381,39 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
           );
         })}
 
-        {/* Hit targets are the full column height, not the 8px marker. Hover
-            tracks the pointer; on touch, a tap pins the same flag and a
-            second tap on the column releases it -- nothing here needs hover. */}
-        {labels.map((_, i) => (
-          <rect key={i} x={x(i) - plotW / (2 * Math.max(n - 1, 1))} y={PAD.top}
-            width={plotW / Math.max(n - 1, 1)} height={plotH}
-            fill="transparent"
-            onPointerEnter={(e) => { if (e.pointerType !== "touch") setActive(i); }}
-            onPointerDown={(e) => { if (e.pointerType === "touch") setActive(active === i ? null : i); }} />
-        ))}
+        {/* The scrub layer: one surface over the whole plot. The pointer aims
+            at a date, never at a 2px line -- position snaps to the nearest x.
+            Touch drags to scrub; a tap pins the flag and a second tap lets go. */}
+        <rect x={PAD.left} y={PAD.top} width={Math.max(plotW, 0)} height={Math.max(plotH, 0)}
+          fill="transparent"
+          onPointerMove={(e) => {
+            if (e.pointerType === "touch" && !e.buttons) return;
+            setActive(indexFromClientX(e.clientX));
+          }}
+          onPointerDown={(e) => {
+            const i = indexFromClientX(e.clientX);
+            if (e.pointerType === "touch") {
+              if (pinned && active === i) { setPinned(false); setActive(null); }
+              else { setPinned(true); setActive(i); }
+            } else {
+              setPinned(p => !p && active === i ? true : false);
+              setActive(i);
+            }
+          }} />
 
         {active !== null && (
           <g pointerEvents="none">
-            <line x1={x(active)} x2={x(active)} y1={PAD.top} y2={PAD.top + plotH}
-              stroke="var(--cr-ink-4)" strokeWidth={1} strokeDasharray="3 3" />
-            {series.map((s, si) => (
-              Number.isFinite(s.values[active]) ? (
-                <circle key={s.key} cx={x(active)} cy={y(s.values[active])} r={4.5}
-                  fill={SERIES[si % SERIES.length]} stroke="var(--cr-paper)" strokeWidth={2} />
+            {/* The hairline glides between positions instead of teleporting --
+                one group transform carries it, so the dots ride along. */}
+            <g style={{ transform: `translateX(${x(active)}px)`, transition: reduced ? undefined : "transform 110ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
+              <line x1={0} x2={0} y1={PAD.top} y2={PAD.top + plotH}
+                stroke="var(--cr-ink-4)" strokeWidth={1} strokeDasharray="3 3" />
+            </g>
+            {geom.map((g) => (
+              Number.isFinite(g.s.values[active]) ? (
+                <circle key={g.s.key} cx={x(active)} cy={y(g.s.values[active])} r={4.5}
+                  fill={SERIES[g.origIdx % SERIES.length]} stroke="var(--cr-paper)" strokeWidth={2}
+                  style={{ opacity: dimFor(g.s.key) }} />
               ) : null
             ))}
           </g>
@@ -303,6 +429,7 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
           // literal rgba here would be the one colour that ignores the theme.
           borderRadius: 4, padding: "8px 12px", pointerEvents: "none", zIndex: 2,
           whiteSpace: "nowrap", minWidth: 132,
+          transition: reduced ? undefined : "left 110ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 10.5, color: "var(--cr-ink)", marginBottom: 4 }}>
             {labels[active]}
@@ -316,15 +443,15 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
               break in its line. Reading it as zero would invent a measurement.
               Ledger alignment: names left, figures flush right in the mono
               voice, so two rows compare down the column. */}
-          {series.map((s, si) => (
-            Number.isFinite(s.values[active]) ? (
-              <p key={s.key} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: 12, marginTop: 2 }}>
+          {geom.map((g) => (
+            Number.isFinite(g.s.values[active]) ? (
+              <p key={g.s.key} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: 12, marginTop: 2, opacity: dimFor(g.s.key) }}>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ width: 10, height: 2, borderRadius: 1, background: SERIES[si % SERIES.length], display: "inline-block" }} />
-                  {s.label}
+                  <span style={{ width: 10, height: 2, borderRadius: 1, background: SERIES[g.origIdx % SERIES.length], display: "inline-block" }} />
+                  {g.s.label}
                 </span>
                 <span style={{ marginLeft: "auto", fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", textAlign: "right", color: "var(--cr-ink)" }}>
-                  {s.format ? s.format(s.values[active]) : String(s.values[active])}
+                  {g.s.format ? g.s.format(g.s.values[active]) : String(g.s.values[active])}
                 </span>
               </p>
             ) : null
@@ -333,15 +460,37 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
       )}
 
       {/* The legend survives only where the end labels cannot fit -- identity
-          is never carried by colour alone, and never by nothing at all. */}
-      {!endLabels && series.length > 1 && (
+          is never carried by colour alone, and never by nothing at all. It is
+          also the folding control everywhere the end labels are not: click
+          folds a series away, click again brings it back; a folded chip keeps
+          its colour key but drops to the quiet ink, struck through.
+
+          It ALSO appears, even beside end labels, the moment anything is
+          folded: a folded series' end label unmounts with its line, and a
+          control that removes itself when used would strand the reader with
+          no way back. */}
+      {((!endLabels && series.length > 1) || hidden.size > 0) && (
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 8 }}>
-          {series.map((s, si) => (
-            <span key={s.key} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "var(--cr-ink-3)" }}>
-              <span style={{ width: 12, height: 2, borderRadius: 1, background: SERIES[si % SERIES.length], display: "inline-block" }} />
-              {s.label}
-            </span>
-          ))}
+          {roster.map(({ s, origIdx }) => {
+            const off = hidden.has(s.key);
+            return (
+              <button key={s.key} type="button"
+                onClick={() => toggleSeries(s.key)}
+                onMouseEnter={() => setFocusKey(s.key)}
+                onMouseLeave={() => setFocusKey(null)}
+                aria-pressed={!off}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 11,
+                  color: off ? "var(--cr-ink-4)" : "var(--cr-ink-3)",
+                  textDecoration: off ? "line-through" : "none",
+                  background: "none", border: "none", padding: 0, cursor: "pointer",
+                }}>
+                <span style={{ width: 12, height: 2, borderRadius: 1, background: SERIES[origIdx % SERIES.length], display: "inline-block", opacity: off ? 0.35 : 1 }} />
+                {s.label}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

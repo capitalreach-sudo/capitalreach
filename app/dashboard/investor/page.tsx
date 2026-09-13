@@ -19,7 +19,14 @@ export default async function InvestorDashboardPage() {
     // Union narrowings below are licensed by the DB CHECK constraints.
     .returns<Profile>();
 
-  if (profile?.role !== "investor") redirect("/dashboard/startup");
+  // Investors belong here; so does an ADMIN who OWNS an investor entity --
+  // the owner's account saves listings like any member, and this page's
+  // watchlist tab is the only place those saves surface. The old
+  // role!=='investor' bounce meant an entity-owning admin could not reach
+  // their own watchlist by any path (the /dashboard router already sends
+  // admins to /admin). A pure-role admin with no entity still lands in /admin.
+  if (profile?.role === "startup") redirect("/dashboard/startup");
+  if (profile?.role !== "investor" && profile?.role !== "admin") redirect("/dashboard/startup");
 
   const { data: investor } = await supabase
     .from("investors")
@@ -28,7 +35,7 @@ export default async function InvestorDashboardPage() {
     .single()
     .returns<Investor>();
 
-  if (!investor) redirect("/onboarding/investor");
+  if (!investor) redirect(profile?.role === "admin" ? "/admin" : "/onboarding/investor");
 
   // Watchlist
   const { data: watchlist } = await supabase

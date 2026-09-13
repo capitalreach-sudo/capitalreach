@@ -391,6 +391,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           {canOperate && (
             <Link href="/admin/register-checks" className={BENCH_LINK}>{t("admin.tabRegisterChecks")}</Link>
           )}
+          {/* The operator's own member-side saves: /admin has no personal
+              watchlist, and an admin who owns an investor entity keeps theirs
+              on the investor dashboard (which now admits entity-owning
+              admins). Admins without an entity bounce straight back here. */}
+          <Link href="/dashboard/investor" className={BENCH_LINK}>{t("dashboard.watchlist")}</Link>
         </div>
 
         {/* Pending */}

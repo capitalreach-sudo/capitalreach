@@ -96,6 +96,18 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={rtl ? "rtl" : "ltr"} data-theme={theme} data-style={style} className={fontVariables} suppressHydrationWarning>
       <head>
+        {/* Theme correction, BEFORE first paint. The server stamps the theme
+            from the cr_theme cookie, but two visitors used to get dark
+            wrongly: anyone with no cookie whose OS asks for light (the
+            server cannot see prefers-color-scheme, so it defaulted hard to
+            dark), and any statically-rendered shell (no cookies at build).
+            This runs before CSS applies, so there is no flash: an explicit
+            cookie choice ALWAYS wins; with no cookie, the visitor's system
+            preference decides; dark stays the fallback when neither exists.
+            html carries suppressHydrationWarning for exactly this. */}
+        <script dangerouslySetInnerHTML={{ __html:
+          `(function(){try{var d=document.documentElement,m=document.cookie.match(/(?:^|; )cr_theme=([^;]*)/),t;if(m){t=m[1]==="light"?"light":"dark"}else{t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}if(d.getAttribute("data-theme")!==t)d.setAttribute("data-theme",t);var s=document.cookie.match(/(?:^|; )cr_style=([^;]*)/),st=s&&s[1]==="editorial"?"editorial":"business";if(d.getAttribute("data-style")!==st)d.setAttribute("data-style",st)}catch(e){}})()`,
+        }} />
         {/* First in head so the handshake overlaps the rest of the document.
             The client talks to Supabase from the first interactive moment
             (session, saved lists, sparklines), so pay the TLS setup early. */}
