@@ -85,9 +85,15 @@ export async function loadActiveStartups(opts: { offset?: number; limit?: number
       .eq("status", "active")
       // B16: a founder-paused round is off the market until they resume it.
       .neq("round_state", "paused");
-    if (q.length >= 2) {
-      // Escape LIKE metacharacters so "50%" matches the text "50%".
-      const term = `%${q.replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
+    // PostgREST `.or()` is a comma/paren mini-language and this query runs
+    // under the SERVICE ROLE: an unescaped comma in q injects standalone
+    // top-level predicates over ANY startups column (owner_id, safe_cap...),
+    // a boolean oracle over values the projection deliberately withholds --
+    // the exact bug fixed on /api/search. Strip the grammar chars first, then
+    // escape the LIKE metacharacters so "50%" matches the text "50%".
+    const safeQ = q.replace(/[,()*]/g, " ").trim();
+    if (safeQ.length >= 2) {
+      const term = `%${safeQ.replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
       query = query.or(`name.ilike.${term},tagline.ilike.${term},industry.ilike.${term}`);
     }
     const [{ data, error, count }, hot] = await Promise.all([

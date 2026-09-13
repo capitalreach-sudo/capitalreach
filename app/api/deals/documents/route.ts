@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { uploadRatelimit } from "@/lib/redis";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { notifyUsers } from "@/lib/notify-user";
 
@@ -65,6 +66,11 @@ export async function POST(req: NextRequest) {
 
   const { success: withinRate } = await uploadRatelimit.limit(`upload:${user.id}`);
   if (!withinRate) return NextResponse.json({ error: "Too many uploads. Try again shortly." }, { status: 429 });
+  // Every upload notifies the counterparty and stores an object, and the
+  // Upstash check above fails open without Redis (prod). The Postgres bucket
+  // is the ceiling that always counts.
+  { const rl = await dbRateLimit(user.id, "deal_doc_upload", ...Object.values(RATE.perHour(30)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "Too many uploads. Try again shortly." }, { status: 429 }); }
 
   let formData: FormData;
   try { formData = await req.formData(); }

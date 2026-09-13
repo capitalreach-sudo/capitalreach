@@ -8,6 +8,7 @@ import { mayInvestorContact, contactRefusal, contactsUnlocked, mayPairContact } 
 import { notifyUser } from "@/lib/notify-user";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { uploadRatelimit } from "@/lib/redis";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { myThreadIds } from "@/lib/threads";
 
 /**
@@ -46,6 +47,14 @@ export async function POST(req: NextRequest) {
   if (!withinRate) {
     return NextResponse.json({ error: "Too many uploads. Try again shortly." }, { status: 429 });
   }
+  // An attachment with a caption IS a message: it inserts a messages row,
+  // rings the counterparty's bell and can email them -- reply's exact side
+  // effects. So it draws from reply's own Postgres bucket ("msg_reply"),
+  // which counts without Redis; the Upstash check above fails open in prod,
+  // and without this an attachment loop was an unmetered bypass of the
+  // 60/hour message ceiling.
+  { const rl = await dbRateLimit(user.id, "msg_reply", ...Object.values(RATE.perHour(60)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "You're sending messages too fast. Try again in a bit." }, { status: 429 }); }
 
   let formData: FormData;
   try {

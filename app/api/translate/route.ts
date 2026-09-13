@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase-server";
-import { aiRatelimit } from "@/lib/redis";
+import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
+import { aiRatelimit, isRedisConfigured } from "@/lib/redis";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { isUuid } from "@/lib/utils";
 import { LOCALES, type Locale } from "@/lib/locale";
 import {
@@ -69,6 +70,20 @@ export async function POST(req: NextRequest) {
   // costs money rather than on reading a translation somebody already paid for.
   const { success } = await aiRatelimit.limit(`translate:${entityId}:${target}`);
   if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+
+  // The Upstash limiter above fails open without Redis (prod), and past this
+  // point the route buys a model call. Members get the always-counting
+  // Postgres bucket as the backstop; an ANONYMOUS caller (this route serves
+  // the public teaser pages) has no user to count against, so with no real
+  // limiter the uncached call is refused rather than left unmetered -- cached
+  // translations, the common case, still serve above.
+  const { data: { user } } = await (await createServerSupabaseClient()).auth.getUser();
+  if (user) {
+    const rl = await dbRateLimit(user.id, "translate_ai", ...Object.values(RATE.perHour(20)) as [number, number]);
+    if (!rl.ok) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  } else if (!isRedisConfigured) {
+    return NextResponse.json({ error: "Could not translate this right now." }, { status: 503 });
+  }
 
   const translated = await translateFields(fields, target);
   if (!translated) {

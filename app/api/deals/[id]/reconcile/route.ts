@@ -6,6 +6,7 @@ import { isAccountSuspended } from "@/lib/suspension-guard";
 import { isTeamMemberOfEither } from "@/lib/membership";
 import { notifyUsers } from "@/lib/notify-user";
 import { aiRatelimit } from "@/lib/redis";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 import { isUuid } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -100,6 +101,14 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
       { status: 429 },
     );
   }
+  // The Upstash limiter above fails open without Redis (prod), and this route
+  // can buy a model call. The Postgres bucket always counts -- the same
+  // backstop pattern every /api/ai route gets from checkAiAllowance.
+  { const rl = await dbRateLimit(user.id, "reconcile_ai", ...Object.values(RATE.perHour(10)) as [number, number]);
+    if (!rl.ok) return NextResponse.json(
+      { error: "That was just checked. Try again in a minute.", messageKey: "instrument.tooMany" },
+      { status: 429 },
+    ); }
 
   const admin = createAdminClient();
 
