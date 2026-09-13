@@ -28,14 +28,14 @@ export const BLOG_POSTS: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "CapitalReach charges startups a 2% success fee on capital raised through the platform, invoiced when a deal closes. There are no retainers, no listing fees outside of subscription plans, and investors are never charged transaction fees. During the launch period, subscriptions themselves are free for the first hundred members — the success fee is the part of the model that applies regardless.",
+          "CapitalReach charges startups a 2% success fee on capital raised through the platform, invoiced when a deal closes. There are no retainers, no listing fees outside of subscription plans, and investors are never charged transaction fees. During the launch period, subscriptions themselves are free for the founding cohort — the success fee is the part of the model that applies regardless.",
         ],
       },
       {
         heading: "When the fee applies",
         paragraphs: [
           "The fee applies to deals closed with investors you were connected to through the platform. \"Connected through the platform\" has a precise meaning in our Terms: an investor who viewed your listing while signed in, contacted you through the platform, or was introduced to you via a CapitalReach deal record — in each case within 24 months before the round closed.",
-          "That definition includes deals finalized elsewhere. If you meet an investor here and complete the round over email and a notary appointment, the fee still applies. This is the non-circumvention clause in Section 6 of the Terms, and it is the entire business model: the platform is free until it works.",
+          "That definition includes deals finalized elsewhere. If you meet an investor here and complete the round over email and a notary appointment, the fee still applies. This is the non-circumvention clause in Section 4.2 of the Terms, and it is the entire business model: the platform is free until it works.",
         ],
       },
       {

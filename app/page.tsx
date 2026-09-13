@@ -41,7 +41,6 @@ export type TickerSnippet = Pick<ListingSnippet, "id" | "name" | "slug" | "stage
 
 export default async function HomePage() {
   let listings: ListingSnippet[] = [];
-  let tickerListings: TickerSnippet[] = [];
   let raisingTotal: number | null = null;
   let stats = EMPTY_STATS;
   let launch = NO_LAUNCH;
@@ -55,7 +54,7 @@ export default async function HomePage() {
       () => getPlatformStats(createAdminClient()),
       ["home-stats"], { revalidate: 60 },
     );
-    const [statsRes, launchRes, listingsRes, tickerRes] = await Promise.all([
+    const [statsRes, launchRes, listingsRes] = await Promise.all([
       cachedStats(),
       getLaunchStatus(),
       // Newest, not highest-scoring. The homepage is the most prominent
@@ -70,21 +69,10 @@ export default async function HomePage() {
         .eq("is_demo", false)
         .order("created_at", { ascending: false })
         .limit(8),
-      // The ticker is the whole market moving, not a shortlist: EVERY active
-      // round rides the lane (Jack's call). Light projection, cached with the
-      // stats, so the full market costs a few KB.
-      supabase
-        .from("startups")
-        .select("id,name,slug,stage,funding_target")
-        .eq("status", "active")
-        .neq("round_state", "paused")
-        .order("created_at", { ascending: false })
-        .limit(500),
     ]);
     stats    = statsRes;
     launch   = launchRes;
     listings = (listingsRes.data ?? []) as ListingSnippet[];
-    tickerListings = (tickerRes.data ?? []) as TickerSnippet[];
     // The hero's "Raising" figure, as a bare server aggregate that names
     // nobody. It used to be summed CLIENT-side from the listings arrays,
     // which the gate below empties for anonymous visitors -- so the LIVE
@@ -149,7 +137,6 @@ export default async function HomePage() {
       <HomepageClient
         stats={stats}
         listings={canSeeMarket ? listings : []}
-        tickerListings={canSeeMarket ? tickerListings : []}
         raisingTotal={raisingTotal}
         launch={launch}
         viewerRole={viewerRole}

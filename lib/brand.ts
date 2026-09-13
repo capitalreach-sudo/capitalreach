@@ -36,6 +36,25 @@ export const brand = {
   noreply: at("noreply"),
 } as const;
 
+/** The deployment host, for prose that names where the Service runs when no
+ * brand domain is configured yet ("operates the platform at ___"). */
+export const brandHost: string = (() => {
+  try { return new URL(brand.url).host; } catch { return "capitalreach.vercel.app"; }
+})();
+
+/**
+ * A contact reference that is ALWAYS grammatical. With no BRAND_DOMAIN the
+ * legal pages used to render zero-text anchors and empty mailto links --
+ * "dispute it in writing to  within 30 days" on a page in a sale process.
+ * Configured: the mailbox address. Not yet: the contact page, named by host
+ * so the sentence still parses.
+ */
+export function contactRef(mailbox: string): { href: string; label: string } {
+  return mailbox
+    ? { href: `mailto:${mailbox}`, label: mailbox }
+    : { href: "/contact", label: `${brandHost}/contact` };
+}
+
 /**
  * Registered-entity details for the Impressum / legal notice. All optional and
  * env-driven — the /imprint page shows a "not yet published" state until the

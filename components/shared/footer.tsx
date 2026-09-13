@@ -1,5 +1,6 @@
 "use client";
 
+import { legalEntity } from "@/lib/brand";
 import Link from "next/link";
 import { SECTOR_SLUGS } from "@/lib/industry-slugs";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -160,7 +161,7 @@ export function Footer() {
             color:      "var(--cr-ink-4)",
             flexShrink: 0,
           }}>
-            © <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{new Date().getFullYear()}</span> CapitalReach Ltd.
+            © <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{new Date().getFullYear()}</span> {legalEntity.name || "CapitalReach"}
           </p>
 
           <p style={{

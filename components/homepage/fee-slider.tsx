@@ -60,8 +60,10 @@ const LABEL = {
 /** Rounds to the nearest thousand before choosing the unit, so a value passing
  *  through 999,600 mid-roll reads "$1M" and never "$1000k". */
 function money(n: number): string {
+  // EUR, matching PLAN_CURRENCY and the fee calculator below it on /pricing --
+  // the slider spoke dollars a scroll away from the same fee quoted in euros.
   const k = Math.round(n / 1000);
-  return k >= 1000 ? `$${(k / 1000).toFixed(k % 1000 ? 1 : 0)}M` : `$${k}k`;
+  return k >= 1000 ? `€${(k / 1000).toFixed(k % 1000 ? 1 : 0)}M` : `€${k}k`;
 }
 
 /**

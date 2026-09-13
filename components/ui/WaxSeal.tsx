@@ -13,7 +13,7 @@ export function WaxSeal({ size = 96, date, stamp = false }: { size?: number; dat
     const r = 46 + 2.4 * Math.sin(bumps * rad);
     return `${(50 + r * Math.cos(rad)).toFixed(2)},${(50 + r * Math.sin(rad)).toFixed(2)}`;
   });
-  const ring = date ? `CLOSED · ${date} · §6 · ` : "CLOSED · CAPITALREACH · §6 · ";
+  const ring = date ? `CLOSED · ${date} · §4.2 · ` : "CLOSED · CAPITALREACH · §4.2 · ";
   return (
     <span style={{ display: "inline-block", width: size, height: size, animation: stamp ? "sealStamp 260ms cubic-bezier(.34,1.56,.64,1) both" : undefined }}>
       <svg viewBox="0 0 100 100" width={size} height={size} role="img" aria-label={ring.trim()}>

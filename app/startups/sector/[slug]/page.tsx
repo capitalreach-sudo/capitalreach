@@ -9,6 +9,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupCard, type StartupCardData } from "@/components/startup/startup-card";
 import { SECTOR_SLUGS, industryFromSlug } from "@/lib/industry-slugs";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import { loadSectorTeaser } from "@/lib/sector-teaser";
 import { STAGE_LABELS } from "@/lib/utils";
 import { safeFormatCurrency } from "@/lib/format";
@@ -66,9 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Google files as thin content. The anonymous branch now renders real
   // sector aggregates and identity-masked cards in that config state, so the
   // crawler gets substantive content either way and the guard came out.
+  const t = await getTranslator(getLocale());
   return {
-    title: `${industry} startups raising capital`,
-    description: `${industry} startups raising on CapitalReach: funding targets, traction and stage, with a 2% success fee paid by the startup only at close.`,
+    title: t("sector.title", { industry }),
+    description: t("sector.metaDescription", { industry }),
   };
 }
 
@@ -78,15 +80,15 @@ const TEASER_LABEL: React.CSSProperties = {
   color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
 };
 
-// i18n note: deliberately English-only. These are SEO landing pages written
-// for a crawler rather than for a signed-in member, and the reason no longer
-// has anything to do with rendering mode -- the page is dynamic now. Same
-// policy as /blog.
+// Copy follows the visitor's locale cookie like every other page; a crawler
+// carries no cookie and gets English, so the SEO story is unchanged.
 export default async function SectorPage({ params }: Props) {
   const industry = industryFromSlug(params.slug);
   // 404 before the auth gate: an invalid sector is not a page, so it should
   // never answer a crawler (or anyone) with a login redirect.
   if (!industry) notFound();
+
+  const t = await getTranslator(getLocale());
 
   // Same rule as the index: a sector page is the catalogue, filtered. While
   // the catalogue is members-only, an anonymous visitor gets the teaser
@@ -141,15 +143,14 @@ export default async function SectorPage({ params }: Props) {
   const emptyState = (
     <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "8px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
       <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "17px", color: "var(--cr-ink)", marginBottom: "8px" }}>
-        No {industry} rounds are open right now
+        {t("sector.emptyTitle", { industry })}
       </p>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", maxWidth: "44ch", margin: "0 auto 16px", lineHeight: 1.7 }}>
-        Raising in {industry}? Listing is free during launch and every listing is
-        reviewed before it goes live.
+        {t("sector.emptyBody", { industry })}
       </p>
       <Link href="/auth/signup?role=startup"
         style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
-        List your startup
+        {t("nav.listStartup")}
       </Link>
     </div>
   );
@@ -163,29 +164,24 @@ export default async function SectorPage({ params }: Props) {
             {industry}
           </p>
           <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "clamp(28px, 4vw, 40px)", color: "var(--cr-ink)", marginBottom: "10px" }}>
-            {industry} startups raising capital
+            {t("sector.title", { industry })}
           </h1>
           {anonymous ? (
             // The anonymous intro describes what this visitor actually gets:
             // live figures with the identities held for members. Claiming
             // "shown up front" over masked cards would be a lie.
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "60ch", lineHeight: 1.7, marginBottom: "36px" }}>
-              Live figures from the {industry} rounds currently raising on CapitalReach.
-              Every listing was reviewed before going live; company identities are shown
-              to members. The platform charges the startup a 2% success fee at close
-              (investors pay nothing) and nothing before it.
+              {t("sector.introAnon", { industry })}
             </p>
           ) : (
             <>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "60ch", lineHeight: 1.7, marginBottom: "10px" }}>
-                Every listing below was reviewed by CapitalReach before going live. Funding target,
-                stage and traction are shown up front; the platform charges the startup a 2% success fee at close (investors pay nothing)
-                and nothing before it.
+                {t("sector.introMember")}
               </p>
               <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "36px" }}>
                 <Link href={`/startups?industries=${encodeURIComponent(industry)}`}
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
-                  Filter and compare in the full directory →
+                  {t("sector.filterCta")} →
                 </Link>
               </div>
             </>
@@ -201,9 +197,9 @@ export default async function SectorPage({ params }: Props) {
               <section aria-label={`${industry} sector snapshot`} style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", marginBottom: "24px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "var(--cr-rule)" }}>
                   {([
-                    [String(teaser.activeCount), teaser.activeCount === 1 ? "Active round" : "Active rounds"],
-                    [safeFormatTotal(teaser.totalRaise), "Being raised"],
-                    [safeFormatCurrency(teaser.medianRaise), "Median raise"],
+                    [String(teaser.activeCount), teaser.activeCount === 1 ? t("sector.activeRound") : t("sector.activeRounds")],
+                    [safeFormatTotal(teaser.totalRaise), t("sector.beingRaised")],
+                    [safeFormatCurrency(teaser.medianRaise), t("sector.medianRaise")],
                   ] as Array<[string, string]>).map(([value, label]) => (
                     <div key={label} style={{ background: "var(--cr-paper-2)", padding: "16px" }}>
                       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "18px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
@@ -215,7 +211,7 @@ export default async function SectorPage({ params }: Props) {
                 </div>
                 {teaser.stages.length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "20px", rowGap: "8px", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", padding: "12px 16px" }}>
-                    <span style={TEASER_LABEL}>By stage</span>
+                    <span style={TEASER_LABEL}>{t("sector.byStage")}</span>
                     {teaser.stages.map(({ stage, count }) => (
                       <span key={stage} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px" }}>
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
@@ -253,13 +249,13 @@ export default async function SectorPage({ params }: Props) {
                       </p>
                       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
                         <div>
-                          <div style={{ ...TEASER_LABEL, fontSize: "9px", letterSpacing: "0.07em", marginBottom: "3px" }}>Raising</div>
+                          <div style={{ ...TEASER_LABEL, fontSize: "9px", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("sector.raisingLabel")}</div>
                           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
                             {safeFormatCurrency(e.funding_target)}
                           </div>
                         </div>
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "right" }}>
-                          Identity shown to members
+                          {t("sector.identityMembers")}
                         </span>
                       </div>
                     </div>
@@ -271,15 +267,14 @@ export default async function SectorPage({ params }: Props) {
                   door the masked cards can honestly point at. */}
               <div style={{ marginTop: "48px", borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "32px", textAlign: "center" }}>
                 <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)", marginBottom: "8px" }}>
-                  See the {industry} companies behind these rounds
+                  {t("sector.seeCompanies", { industry })}
                 </p>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", maxWidth: "48ch", margin: "0 auto 16px", lineHeight: 1.7 }}>
-                  A free account opens the live directory: company names, reviewed
-                  profiles and every {industry} round on the platform.
+                  {t("sector.accountOpens", { industry })}
                 </p>
                 <Link href="/auth/signup"
                   style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
-                  Create a free account
+                  {t("sector.createAccount")}
                 </Link>
               </div>
             </>
@@ -295,7 +290,7 @@ export default async function SectorPage({ params }: Props) {
               find the whole set from any one of them. */}
           <div style={{ marginTop: "56px", borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "20px" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
-              Browse by sector
+              {t("sector.browseBySector")}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {SECTOR_SLUGS.map(({ slug, industry: name }) => (

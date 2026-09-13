@@ -15,7 +15,7 @@ import { safeFormatCurrency } from "@/lib/format";
 import { safeFormatTotal, sumFundingTargets } from "@/lib/validators";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
-import type { ListingSnippet, TickerSnippet } from "@/app/page";
+import type { ListingSnippet } from "@/app/page";
 
 // ── Primitives ────────────────────────────────────────────────
 
@@ -51,7 +51,6 @@ interface Props {
   stats:    PlatformStats;
   listings: ListingSnippet[];
   /** Every active round, light projection -- the ticker shows the whole market. */
-  tickerListings?: TickerSnippet[];
   launch:   LaunchStatus;
 }
 
@@ -75,11 +74,11 @@ interface Props {
  * a bad test value renders "—", never "$100000000B". Counts are shown only
  * when they are greater than zero -- "0 startups listed" is not a trust signal.
  */
-export function HomepageClient({ stats, listings, tickerListings, launch, viewerRole = null, canSeeMarket = false, raisingTotal = null }: Props & { viewerRole?: string | null; canSeeMarket?: boolean; raisingTotal?: number | null }) {
-  const laneAll = (tickerListings && tickerListings.length ? tickerListings : listings);
-  // The marquee renders the lane TWICE for the seamless loop, so DOM cost is
-  // 2x lane length. 150 rounds is minutes of unrepeated tape; more is payload.
-  const lane = laneAll.slice(0, 150);
+export function HomepageClient({ stats, listings, launch, viewerRole = null, canSeeMarket = false, raisingTotal = null }: Props & { viewerRole?: string | null; canSeeMarket?: boolean; raisingTotal?: number | null }) {
+  // The marquee ticker was removed (65d47b2); this file used to keep its
+  // 150-row lane computation alive, and the page kept fetching 500 rows to
+  // feed it. Gone with the feature -- the raising figure is a server
+  // aggregate, with the visible listings as its only fallback.
   const { t } = useTranslation();
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   // How-it-works is two four-step journeys. Showing both at once was eight
@@ -274,7 +273,7 @@ export function HomepageClient({ stats, listings, tickerListings, launch, viewer
                 ...(raisingTotal !== null
                   ? [[safeFormatTotal(raisingTotal), t("listings.raising")] as [string, string]]
                   : canSeeMarket
-                    ? [[safeFormatTotal(sumFundingTargets(laneAll.map(l => l.funding_target))), t("listings.raising")] as [string, string]]
+                    ? [[safeFormatTotal(sumFundingTargets(listings.map(l => l.funding_target))), t("listings.raising")] as [string, string]]
                     : []),
                 [safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")],
                 [String(stats.dealsClosedCount), t("stats.dealsClosed")],

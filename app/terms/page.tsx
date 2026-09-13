@@ -4,7 +4,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { ServerT } from "@/lib/locale-server";
-import { brand } from "@/lib/brand";
+import { brand, contactRef} from "@/lib/brand";
 
 // The whole body is rendered on the SERVER with getTranslator(getLocale()),
 // and the locale comes from a cookie. force-static prerendered it once at
@@ -126,7 +126,7 @@ export default async function TermsPage() {
 
           <Section title={t("terms.s3Title")}>
             <p>
-              <InlineLink t={t} k="s3p1" href={`mailto:${brand.support}`} label={brand.support} />
+              <InlineLink t={t} k="s3p1" href={contactRef(brand.support).href} label={contactRef(brand.support).label} />
             </p>
             <p className="mt-3">{t("terms.s3p2")}</p>
           </Section>
@@ -146,7 +146,7 @@ export default async function TermsPage() {
 
             <h3 className="mt-4 mb-2" style={SUBHEAD}>{t("terms.s4h3")}</h3>
             <p>
-              <InlineLink t={t} k="s4h3p1" href={`mailto:${brand.billing}`} label={brand.billing} />
+              <InlineLink t={t} k="s4h3p1" href={contactRef(brand.billing).href} label={contactRef(brand.billing).label} />
             </p>
           </Section>
 
@@ -223,7 +223,7 @@ export default async function TermsPage() {
           <Section title={t("terms.s14Title")}>
             <p>{t("terms.s14p1")}</p>
             <p className="mt-3">
-              <InlineLink t={t} k="s14p2" href={`mailto:${brand.support}`} label={brand.support} />
+              <InlineLink t={t} k="s14p2" href={contactRef(brand.support).href} label={contactRef(brand.support).label} />
             </p>
           </Section>
 
@@ -243,11 +243,11 @@ export default async function TermsPage() {
               <p style={{ ...SUBHEAD, marginBottom: "4px" }}>{t("terms.contactBrand")}</p>
               <p style={BODY}>
                 {t("terms.emailLabel")}{" "}
-                <a href={`mailto:${brand.legal}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{brand.legal}</a>
+                <a href={contactRef(brand.legal).href} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{contactRef(brand.legal).label}</a>
               </p>
               <p style={{ ...BODY, marginTop: "4px" }}>
                 {t("terms.supportLabel")}{" "}
-                <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{brand.support}</a>
+                <a href={contactRef(brand.support).href} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{contactRef(brand.support).label}</a>
               </p>
             </div>
           </Section>

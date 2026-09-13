@@ -4,7 +4,7 @@ import { Footer } from "@/components/shared/footer";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import type { Metadata } from "next";
 import type { ServerT } from "@/lib/locale-server";
-import { brand } from "@/lib/brand";
+import { brand, contactRef, brandHost} from "@/lib/brand";
 
 // The whole body is rendered on the SERVER with getTranslator(getLocale()),
 // and the locale comes from a cookie. force-static prerendered it once at
@@ -103,7 +103,7 @@ export default async function PrivacyPage() {
 
           <section style={{ paddingBottom: "24px" }}>
             <p style={BODY}>
-              <InlineLink t={t} k="introP1" href={brand.url} label={brand.domain} />
+              <InlineLink t={t} k="introP1" href={brand.url} label={brand.domain || brandHost} />
             </p>
           </section>
 
@@ -176,13 +176,13 @@ export default async function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-2">
               <Bullet t={t} k="s5l1" />
               <Bullet t={t} k="s5l2" />
-              <li><InlineLink t={t} k="s5l3" href={`mailto:${brand.support}`} label={brand.support} /></li>
+              <li><InlineLink t={t} k="s5l3" href={contactRef(brand.support).href} label={contactRef(brand.support).label} /></li>
               <Bullet t={t} k="s5l4" />
               <Bullet t={t} k="s5l5" />
               <Bullet t={t} k="s5l6" />
             </ul>
             <p style={{ marginTop: "12px" }}>
-              <InlineLink t={t} k="s5Footer" href={`mailto:${brand.support}`} label={brand.support} />
+              <InlineLink t={t} k="s5Footer" href={contactRef(brand.support).href} label={contactRef(brand.support).label} />
             </p>
           </LegalSection>
 
@@ -206,7 +206,7 @@ export default async function PrivacyPage() {
 
           <LegalSection title={t("privacy.s8Title")}>
             <p>
-              <InlineLink t={t} k="s8Text" href={`mailto:${brand.support}`} label={brand.support} />
+              <InlineLink t={t} k="s8Text" href={contactRef(brand.support).href} label={contactRef(brand.support).label} />
             </p>
           </LegalSection>
 
@@ -237,8 +237,8 @@ export default async function PrivacyPage() {
               <p style={{ ...SUBHEAD, marginBottom: "4px" }}>CapitalReach</p>
               <p style={BODY}>
                 {t("privacy.contactBoxEmailLabel")}{" "}
-                <a href={`mailto:${brand.support}`} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>
-                  {brand.support}
+                <a href={contactRef(brand.support).href} className="text-cr-copper hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>
+                  {contactRef(brand.support).label}
                 </a>
               </p>
               <p style={{ ...BODY, marginTop: "4px" }}>

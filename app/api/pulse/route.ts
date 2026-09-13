@@ -46,7 +46,10 @@ export async function GET() {
       }
     }
   } catch { /* anonymous is the safe default */ }
-  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  // Seven days: the section is titled "Live on CapitalReach", and a 30-day
+  // window headlined three-week-old events under that banner. When the week
+  // is quiet the section renders nothing, which is the honest quiet.
+  const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
 
   const [startups, investors, ndas, closed] = await Promise.all([
     admin.from("startups")
