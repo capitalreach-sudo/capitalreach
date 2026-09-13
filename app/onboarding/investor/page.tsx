@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
@@ -152,6 +152,31 @@ export default function InvestorOnboardingPage() {
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
+  // GUARD: onboarding over an EXISTING profile is a wipe, not an edit. The
+  // founder flow refuses to render for exactly this reason; this flow had no
+  // guard, so an investor revisiting /onboarding/investor (bookmark, back
+  // button) got the blank six-step form, and completing it UPDATEd their
+  // live profile with blanks. A row on file means the edit surface, never
+  // this form.
+  const [ownershipChecked, setOwnershipChecked] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr && authErr.name !== "AuthSessionMissingError") {
+        console.error("[onboarding/investor] session read failed:", authErr.message);
+        router.replace("/dashboard/investor");
+        return;
+      }
+      if (user) {
+        const { data: existing } = await supabase
+          .from("investors").select("id").eq("owner_id", user.id).maybeSingle();
+        if (existing) { router.replace("/dashboard/investor/settings"); return; }
+      }
+      setOwnershipChecked(true);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Step 1
   const [investorType, setInvestorType] = useState("");
 
@@ -269,6 +294,12 @@ export default function InvestorOnboardingPage() {
   };
 
   const progress = Math.round((step / STEPS.length) * 100);
+
+  // Nothing renders until ownership is known: painting the blank form first
+  // and swapping it away would invite exactly the overwrite this guards.
+  if (!ownershipChecked) {
+    return <div style={{ minHeight: "100vh", background: "var(--cr-paper)" }} aria-busy="true" />;
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--cr-paper)" }}>

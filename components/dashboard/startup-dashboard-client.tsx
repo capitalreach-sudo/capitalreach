@@ -1095,7 +1095,12 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   // rather than wired into a submit gate so that an unsigned listing is
   // visible without a half-finished edit becoming unsubmittable.
   const [attestOpen, setAttestOpen] = useState(false);
-  const [attestedAt, setAttestedAt] = useState<string | null>(null);
+  // Initialised from the row: it started at null unconditionally, so a
+  // founder who signed saw the standing "Read and sign" ask on every visit,
+  // with only the modal's small print admitting they already had.
+  const [attestedAt, setAttestedAt] = useState<string | null>(
+    (startup as unknown as { founder_attestation_at?: string | null })?.founder_attestation_at ?? null,
+  );
 
   // Arrival notices from onboarding/checkout. Read once from the URL --
   // welcome=1 greets, billing=soon explains why a paid pick landed on Free

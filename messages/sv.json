@@ -2637,7 +2637,7 @@
     "title": "Team",
     "navLabel": "Team",
     "accessTitle": "Alla i teamet delar kontot",
-    "accessBody": "Medlemmar ser samma affärer, avtal, dokument och aktivitet som du och kan arbeta med dem tillsammans med dig. De ser inte din fakturering, och bara ägare och administratörer kan ändra vilka som är med i teamet.",
+    "accessBody": "Medlemmar kan arbeta med kontots affärer, avtal och dokument via direktlänkar. Delade medlemsvyer är på väg.",
     "inviteHeading": "Lägg till någon i teamet",
     "emailLabel": "Deras e-postadress",
     "emailHint": "De måste redan ha ett CapitalReach-konto — vi kan inte mejla en inbjudan än.",

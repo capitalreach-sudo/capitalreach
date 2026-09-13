@@ -45,7 +45,11 @@ export async function POST(req: NextRequest) {
   // a pile. `note` is optional, and only written when the caller sends the key
   // -- so re-saving without a note doesn't wipe one already there.
   const row: import("@/types/supabase").Database["public"]["Tables"]["watchlists"]["Insert"] =
-    { investor_id: investorId, startup_id: startupId };
+    // changes_seen_at from the first moment: the column has no default, and a
+    // NULL is read as epoch by /api/watchlist/changes -- so a fresh save
+    // presented the startup's entire pre-save history as "what changed since
+    // you last looked" (exactly the failure migration 088's backfill names).
+    { investor_id: investorId, startup_id: startupId, changes_seen_at: new Date().toISOString() };
   if (note !== undefined) {
     row.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
   }

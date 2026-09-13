@@ -123,8 +123,19 @@ export async function POST(req: NextRequest) {
   // Plan gate: seats. A founder on Free works alone; Starter is three, Growth
   // is ten. Counted before the invitee is resolved so the answer does not
   // depend on whether the person they typed happens to have an account.
+  // The seat cap belongs to the ENTITY's plan, not the caller's: a team
+  // admin who does not own the startup used to be gated on their own
+  // profile tier (founderGate resolves the listing by owner_id), so an
+  // admin on Free saw "your plan includes 1 seat" on a Growth listing.
+  let entityOwnerId: string | null = null;
+  {
+    const { data: ent } = await admin
+      .from(type === "startup" ? "startups" : "investors")
+      .select("owner_id").eq("id", me.entityId).maybeSingle();
+    entityOwnerId = (ent?.owner_id as string | null) ?? null;
+  }
   if (type === "startup") {
-    const caps = await founderGate(user.id);
+    const caps = await founderGate(entityOwnerId ?? user.id);
     const { count } = await admin
       .from("team_members")
       .select("id", { count: "exact", head: true })
@@ -145,7 +156,7 @@ export async function POST(req: NextRequest) {
   // than silently creating an invite nobody ever hears about, say so.
   const { data: invitee } = await admin
     .from("profiles")
-    .select("id, full_name")
+    .select("id, full_name, role")
     .eq("email", email.toLowerCase().trim())
     .maybeSingle();
 
@@ -153,6 +164,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "No CapitalReach account with that email. Ask them to sign up first." },
       { status: 404 }
+    );
+  }
+
+  // A cross-role add used to succeed SILENTLY: the investor got a "you were
+  // added to a startup team" notification whose link immediately bounced
+  // them to their own dashboard, and the team page (which picks its entity
+  // from profile.role) could never show them the membership. Refuse with
+  // the reason instead of accepting a seat nobody can sit in.
+  if ((type === "startup" && invitee.role === "investor") || (type === "investor" && invitee.role === "startup")) {
+    return NextResponse.json(
+      { error: type === "startup"
+          ? "That account is registered as an investor and cannot join a startup team."
+          : "That account is registered as a founder and cannot join an investor team." },
+      { status: 409 },
     );
   }
 
@@ -191,7 +216,7 @@ export async function POST(req: NextRequest) {
   // so both land, overshooting the plan cap. Re-count AFTER the write and roll
   // this row back if the team is now over; exactly one of the racers survives.
   if (type === "startup" && !alreadyMember) {
-    const caps = await founderGate(user.id);
+    const caps = await founderGate(entityOwnerId ?? user.id);
     const { count: after } = await admin
       .from("team_members")
       .select("id", { count: "exact", head: true })

@@ -97,7 +97,11 @@ export default async function StartupDashboardPage() {
       .select("status, amount, created_at, commitment_type")
       .eq("startup_id", startup.id)
       .neq("status", "passed");
-    dealsCount = dealRows?.length || 0;
+    // The strip's label is "Active Deals" and its tooltip promises "not yet
+    // finalised": closed deals stay in dealRows for the funnel and the raise
+    // tracker, but the STRIP figure excludes them -- matching the investor
+    // dashboard's definition, which this number used to contradict.
+    dealsCount = (dealRows ?? []).filter((d) => d.status !== "closed").length;
     for (const d of dealRows ?? []) {
       const idx = 29 - Math.floor((today.getTime() - new Date(d.created_at).setHours(0, 0, 0, 0)) / DAY);
       if (idx >= 0 && idx < 30) dealSeries[idx] += 1;

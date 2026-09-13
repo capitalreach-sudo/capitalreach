@@ -2637,7 +2637,7 @@
     "title": "Equipo",
     "navLabel": "Equipo",
     "accessTitle": "Todo el equipo comparte la cuenta",
-    "accessBody": "Los miembros ven las mismas operaciones, contratos, documentos y actividad que tú, y pueden trabajarlos contigo. No ven tu facturación, y solo los propietarios y administradores pueden cambiar quién está en el equipo.",
+    "accessBody": "Los miembros pueden trabajar en los acuerdos, contratos y documentos de esta cuenta mediante enlaces directos. Los paneles compartidos para miembros están en camino.",
     "inviteHeading": "Añadir a alguien al equipo",
     "emailLabel": "Su dirección de correo",
     "emailHint": "Ya necesitan tener una cuenta de CapitalReach: todavía no podemos enviar invitaciones por correo.",

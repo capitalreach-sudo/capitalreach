@@ -287,6 +287,11 @@ export default function StartupOnboardingPage() {
 
     const fields = {
       name,
+      // Both inputs existed on this form and were silently DISCARDED -- the
+      // fields object never carried them, so every new listing launched
+      // logo-less and undated no matter what the founder typed.
+      logo_url: logoUrl || null,
+      founded_date: foundedDate || null,
       website: website || null, tagline,
       description: description || null, industry, stage, country,
       funding_target: parseInt(fundingTarget) || 0,

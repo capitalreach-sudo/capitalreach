@@ -2637,7 +2637,7 @@
     "title": "Team",
     "navLabel": "Team",
     "accessTitle": "Tutti nel team condividono l'account",
-    "accessBody": "I membri vedono le stesse operazioni, contratti, documenti e attività che vedi tu, e possono lavorarci insieme a te. Non vedono la tua fatturazione, e solo proprietari e amministratori possono modificare il team.",
+    "accessBody": "I membri possono lavorare su accordi, contratti e documenti di questo account tramite link diretti. Le dashboard condivise per i membri sono in arrivo.",
     "inviteHeading": "Aggiungi qualcuno al team",
     "emailLabel": "Il suo indirizzo email",
     "emailHint": "Devono già avere un account CapitalReach: non possiamo ancora inviare inviti via email.",

@@ -2542,7 +2542,7 @@
     "title": "Team",
     "navLabel": "Team",
     "accessTitle": "Alle in diesem Team teilen sich das Konto",
-    "accessBody": "Mitglieder sehen dieselben Deals, Verträge, Dokumente und Aktivitäten wie Sie und können daran mitarbeiten. Ihre Abrechnungsdaten sehen sie nicht, und nur Inhaber und Admins können die Teamzusammensetzung ändern.",
+    "accessBody": "Mitglieder können die Deals, Verträge und Dokumente dieses Kontos über direkte Links bearbeiten. Gemeinsame Mitglieder-Dashboards folgen.",
     "inviteHeading": "Jemanden zum Team hinzufügen",
     "emailLabel": "E-Mail-Adresse der Person",
     "emailHint": "Die Person benötigt bereits ein CapitalReach-Konto — Einladungen per E-Mail sind noch nicht möglich.",

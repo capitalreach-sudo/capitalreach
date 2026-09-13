@@ -17,10 +17,13 @@ interface Props {
   };
 }
 
-export function LanguageSettingsSelector({ initialLocale = "en", translations }: Props) {
-  const { t } = useTranslation();
+export function LanguageSettingsSelector({ initialLocale, translations }: Props) {
+  const { t, locale } = useTranslation();
   const router = useRouter();
-  const [selected, setSelected] = useState<Locale>(initialLocale);
+  // The ACTIVE locale, not a hardcoded "en": neither settings page passed
+  // initialLocale, so the selector told every non-English user their
+  // interface was English.
+  const [selected, setSelected] = useState<Locale>(initialLocale ?? locale);
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
 

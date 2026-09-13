@@ -2637,7 +2637,7 @@
     "title": "Team",
     "navLabel": "Team",
     "accessTitle": "Iedereen in dit team deelt het account",
-    "accessBody": "Leden zien dezelfde deals, contracten, documenten en activiteit als jij en kunnen er samen aan werken. Ze zien je facturatie niet, en alleen eigenaren en beheerders kunnen de teamsamenstelling wijzigen.",
+    "accessBody": "Leden kunnen via directe links aan de deals, contracten en documenten van dit account werken. Gedeelde dashboards voor leden zijn onderweg.",
     "inviteHeading": "Iemand aan het team toevoegen",
     "emailLabel": "Hun e-mailadres",
     "emailHint": "Ze moeten al een CapitalReach-account hebben — we kunnen nog geen uitnodiging mailen.",
