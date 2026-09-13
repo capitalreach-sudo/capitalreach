@@ -19,7 +19,8 @@ const INVESTOR_TYPE_KEYS: Record<string, string> = {
   corporate: "investors.typeCorporate",
 };
 import { formatMoney, CURRENCIES, getCurrency, isCurrencyCode, DEFAULT_CURRENCY } from "@/lib/currency";
-import { X, CheckCircle2, Lock, Plus, FileText, ChevronDown, Loader2, LayoutGrid, List, Circle } from "lucide-react";
+import { X, CheckCircle2, Lock, Plus, FileText, ChevronDown, Handshake, Loader2, LayoutGrid, List, Circle } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { InfoTip } from "@/components/shared/info-tip";
@@ -535,7 +536,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
         <div style={{ display: "flex", gap: "8px" }}>
           <button onClick={handleCreate} disabled={!canSubmit || creating}
-            style={{ flex: 1, height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+            style={{ flex: 1, height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: !canSubmit || creating ? "default" : "pointer", opacity: !canSubmit || creating ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
             {creating && <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" />}
             {creating ? t("deals.creating") : t("deals.createDeal")}
           </button>
@@ -849,7 +850,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                 style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box", marginBottom: "8px", resize: "vertical" }} />
               <div style={{ display: "flex", gap: "8px" }}>
                 <button onClick={handleCreate} disabled={!title.trim() || creating}
-                  style={{ flex: 1, height: "30px", background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", cursor: !title.trim() || creating ? "default" : "pointer", opacity: !title.trim() || creating ? 0.5 : 1 }}>
+                  style={{ flex: 1, height: "30px", background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-on-accent)", cursor: !title.trim() || creating ? "default" : "pointer", opacity: !title.trim() || creating ? 0.5 : 1 }}>
                   {creating ? t("deals.creating") : t("deals.createContract")}
                 </button>
                 <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", alignItems: "center" }}>
@@ -887,7 +888,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
             <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", padding: "16px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
               <button onClick={() => setSigning(null)} style={{ height: "40px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
               <button onClick={signContract} disabled={signBusy || signerName.trim().length < 2}
-                style={{ height: "40px", padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
+                style={{ height: "40px", padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
                 {signBusy ? t("common.saving") : t("deals.signConfirm")}
               </button>
             </div>
@@ -1422,7 +1423,7 @@ function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; on
         <div className="flex flex-col-reverse sm:flex-row" style={{ gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
           <button onClick={onClose} style={{ height: 40, padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: 999, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 13, color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
           <button onClick={submit} disabled={!name.trim() || busy} className="btn-copper-shimmer"
-            style={{ height: 40, padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: 999, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-band-ink)", cursor: "pointer", opacity: !name.trim() || busy ? 0.5 : 1 }}>
+            style={{ height: 40, padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: 999, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-on-accent)", cursor: "pointer", opacity: !name.trim() || busy ? 0.5 : 1 }}>
             {busy ? t("common.saving") : t("external.add")}
           </button>
         </div>
@@ -1776,7 +1777,7 @@ function ActivitySection({ dealId }: { dealId: string }) {
               onKeyDown={e => { if (e.key === "Enter") handleAddNote(); }}
               style={{ flex: 1, background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", padding: "8px", outline: "none", boxSizing: "border-box" }} />
             <button onClick={handleAddNote} disabled={!note.trim() || posting}
-              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", padding: "0 12px", cursor: !note.trim() || posting ? "default" : "pointer", opacity: !note.trim() || posting ? 0.5 : 1 }}>
+              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-on-accent)", padding: "0 12px", cursor: !note.trim() || posting ? "default" : "pointer", opacity: !note.trim() || posting ? 0.5 : 1 }}>
               {posting ? t("deals.posting") : t("deals.addNote")}
             </button>
           </div>
@@ -2293,7 +2294,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           </p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.closeProposedHint")}</p>
           <button onClick={() => setShowCloseForm(true)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "8px 0", cursor: "pointer" }}>
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "8px 0", cursor: "pointer" }}>
             <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.reviewClose")}
           </button>
         </div>
@@ -2351,7 +2352,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           </p>
           <div style={{ display: "flex", gap: "8px" }}>
             <button onClick={handleClose} disabled={closing}
-              style={{ flex: 1, height: "32px", background: "var(--cr-up)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", cursor: "pointer", opacity: closing ? 0.6 : 1 }}>
+              style={{ flex: 1, height: "32px", background: "var(--cr-up)", border: "none", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", cursor: "pointer", opacity: closing ? 0.6 : 1 }}>
               {closing ? t("deals.closing") : t("deals.confirm")}
             </button>
             <button onClick={() => setShowCloseForm(false)}
@@ -2637,7 +2638,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const newDealButton = (
     <div style={{ display: "inline-flex", gap: "8px", flexWrap: "wrap" }}>
       <button onClick={() => setShowNewDeal(true)}
-        style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "0 16px", cursor: "pointer" }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "40px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "0 16px", cursor: "pointer" }}>
         <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
       </button>
       {/* B18: founders only — an off-platform contact belongs to a startup. */}
@@ -2658,26 +2659,43 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   );
 
   if (deals.length === 0) {
-    // The empty state must still carry the PROPOSAL column: a founder's
-    // FIRST contact with the pipeline is an incoming request, and hiding
-    // the whole board behind "No deals yet" hid the Accept button from
-    // exactly the person it was for (found live, twice).
+    // Incoming proposals must stay reachable on an empty board: a founder's
+    // FIRST contact with the pipeline is a request, and "No deals yet" must
+    // not hide the Accept button (found live, twice). The strip variant
+    // renders nothing when there are no proposals, so a truly empty pipeline
+    // shows exactly one empty state and no bare wells or controls.
+    const browseHref = viewAs === "startup" ? "/investors" : "/startups";
+    const browseLabel = viewAs === "startup"
+      ? tOr(t, "deals.browseInvestors", "Browse investors")
+      : t("dashboard.browseStartups");
+    const body = viewAs === "startup"
+      ? tOr(t, "deals.emptyDescFounder", "Deals appear here when an investor responds to your listing, or when you start one.")
+      : viewAs === "investor"
+        ? t("deals.emptyDesc")
+        : tOr(t, "deals.emptyDescAdmin", "Deals appear here as soon as a startup and an investor open one.");
     return (
       <div>
-        <div style={{ overflowX: "auto", marginBottom: 8 }}>
-          <div style={{ display: "flex", gap: "16px", minWidth: "max-content", paddingBottom: "8px" }}>
-            <DealProposals variant="column" onChanged={onProposalsChanged} />
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 24px 64px", textAlign: "center" }}>
-          <span aria-hidden style={{ fontSize: "24px", lineHeight: 1, color: "var(--cr-copper)", marginBottom: "16px" }}>✦</span>
-          <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("deals.emptyTitle")}</p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "24px" }}>
-            {t("deals.emptyDesc")}
-          </p>
-          {newDealButton}
-          {modal}
-        </div>
+        <DealProposals onChanged={onProposalsChanged} />
+        <EmptyState
+          Icon={Handshake}
+          title={t("deals.emptyTitle")}
+          body={body}
+          action={
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px" }}>
+              {/* With nothing in the pipeline, browsing counterparts is the
+                  way forward, so it carries the accent; New Deal stays, quiet. */}
+              <Link href={browseHref}
+                style={{ display: "inline-flex", alignItems: "center", height: "40px", background: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "0 20px", textDecoration: "none" }}>
+                {browseLabel}
+              </Link>
+              <button onClick={() => setShowNewDeal(true)}
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", height: "40px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "0 16px", cursor: "pointer" }}>
+                <Plus style={{ width: 14, height: 14 }} /> {t("deals.newDeal")}
+              </button>
+            </div>
+          }
+        />
+        {modal}
       </div>
     );
   }
@@ -2686,10 +2704,12 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
     <div>
       {/* Pipeline stats.
           One hairline-divided strip -- Label over Data, mono numbers, no
-          boxes. A metric with nothing to measure is omitted entirely:
-          absence is absence, not a dash. */}
+          boxes. A ratio whose denominator is empty keeps its place with a
+          dash and a caption saying what would fill it: a metric must never
+          read as a confident zero it has no data for, and must not vanish
+          and reappear as the pipeline breathes. */}
       {(() => {
-        const metrics: { key: string; label: string; value: string; accent?: boolean; hint?: string; tip?: string }[] = [];
+        const metrics: { key: string; label: string; value: string; accent?: boolean; hint?: string; tip?: string; caption?: string }[] = [];
         if (stats.byCurrency.size > 0) metrics.push({
           key: "pipeline", label: t("deals.statActivePipeline"), accent: true,
           value: Array.from(stats.byCurrency.entries()).map(([cur, amt]) => formatMoney(amt, cur, { compact: true })).join(" + "),
@@ -2701,15 +2721,25 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
         // list view for. Cycle and age reuse the hint keys that already
         // define them; close rate shares the glossary entry the Data Centre
         // uses for the same ratio.
-        if (stats.closeRate != null) metrics.push({ key: "closeRate", label: t("deals.statCloseRate"), value: `${Math.round(stats.closeRate * 100)}%`, tip: tipKey(t, "glossary.closeRate", "Of the deals that have ended, the share that closed rather than passed. Deals still in progress count toward neither side, so this is not the share of all deals that succeed.") });
-        if (stats.medianCycle != null) metrics.push({ key: "cycle", label: t("deals.statCycle"), value: t("deals.days", { n: stats.medianCycle }), hint: t("deals.statCycleHint"), tip: "deals.statCycleHint" });
-        if (stats.medianAge != null) metrics.push({ key: "age", label: t("deals.statAge"), value: t("deals.days", { n: stats.medianAge }), hint: t("deals.statAgeHint"), accent: stats.medianAge > 30, tip: "deals.statAgeHint" });
+        const noConcluded = tOr(t, "deals.statNoConcluded", "No concluded deals yet");
+        metrics.push(stats.closeRate != null
+          ? { key: "closeRate", label: t("deals.statCloseRate"), value: `${Math.round(stats.closeRate * 100)}%`, tip: tipKey(t, "glossary.closeRate", "Of the deals that have ended, the share that closed rather than passed. Deals still in progress count toward neither side, so this is not the share of all deals that succeed.") }
+          : { key: "closeRate", label: t("deals.statCloseRate"), value: "–", caption: noConcluded });
+        metrics.push(stats.medianCycle != null
+          ? { key: "cycle", label: t("deals.statCycle"), value: t("deals.days", { n: stats.medianCycle }), hint: t("deals.statCycleHint"), tip: "deals.statCycleHint" }
+          : { key: "cycle", label: t("deals.statCycle"), value: "–", caption: noConcluded });
+        metrics.push(stats.medianAge != null
+          ? { key: "age", label: t("deals.statAge"), value: t("deals.days", { n: stats.medianAge }), hint: t("deals.statAgeHint"), accent: stats.medianAge > 30, tip: "deals.statAgeHint" }
+          : { key: "age", label: t("deals.statAge"), value: "–", caption: tOr(t, "deals.statNoOpen", "No open deals") });
         return (
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>
             {metrics.map((m, i) => (
               <div key={m.key} title={m.hint} style={{ padding: i === 0 ? "12px 24px 12px 0" : "12px 24px", borderLeft: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{m.label}{m.tip && <InfoTip termKey={m.tip} />}</p>
-                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: m.accent ? "var(--cr-copper)" : "var(--cr-ink)", marginTop: "4px" }}>{m.value}</p>
+                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: m.caption ? "var(--cr-ink-4)" : m.accent ? "var(--cr-copper)" : "var(--cr-ink)", marginTop: "4px" }}>
+                  {m.value}
+                  {m.caption && <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", letterSpacing: 0, marginLeft: "8px" }}>{m.caption}</span>}
+                </p>
               </div>
             ))}
           </div>
@@ -2734,7 +2764,9 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", height: "40px", padding: "0 12px", outline: "none", cursor: "pointer" }}>
           {SORT_OPTIONS.map(o => <option key={o.key} value={o.key}>{t(o.labelKey)}</option>)}
         </select>
-        {canExport && (
+        {/* A CSV of only a header row is not an export: the button needs at
+            least one row behind it. */}
+        {canExport && filteredDeals.length > 0 && (
           <button onClick={handleExportCsv}
             style={{ height: "40px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", padding: "0 16px", cursor: "pointer", whiteSpace: "nowrap" }}>
             {t("deals.exportCsv")}

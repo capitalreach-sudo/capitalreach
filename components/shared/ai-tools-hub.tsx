@@ -121,7 +121,7 @@ function PitchTab() {
           <button onClick={analyze} disabled={pitch.trim().length < 30 || loading}
             style={{
               flex: "1 1 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-              background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+              background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
               fontSize: "14px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
               cursor: pitch.trim().length < 30 || loading ? "not-allowed" : "pointer",
               opacity: pitch.trim().length < 30 || loading ? 0.5 : 1, transition: "opacity 150ms",
@@ -244,7 +244,7 @@ function PitchTab() {
             <Link href="/auth/signup?role=startup"
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                width: "100%", height: "42px", background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+                width: "100%", height: "42px", background: "var(--cr-copper)", color: "var(--cr-on-accent)",
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
                 borderRadius: "4px", textDecoration: "none", transition: "opacity 150ms",
               }}
@@ -385,7 +385,7 @@ function MatchingTab() {
       <button onClick={findMatches} disabled={loading}
         style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
-          background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+          background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
           fontSize: "14px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
           cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.5 : 1, transition: "opacity 150ms",
         }}>
@@ -457,7 +457,7 @@ function MatchingTab() {
             <Link href="/auth/signup?role=startup"
               style={{
                 flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "6px",
-                background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif",
+                background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif",
                 fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px",
                 borderRadius: "4px", textDecoration: "none", transition: "opacity 150ms",
               }}
@@ -596,7 +596,7 @@ function DiligenceTab() {
       <button onClick={generateReport} disabled={loading || !selected}
         style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
-          background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+          background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
           fontSize: "14px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
           cursor: loading || !selected ? "not-allowed" : "pointer",
           opacity: loading || !selected ? 0.5 : 1, transition: "opacity 150ms",
@@ -618,7 +618,7 @@ function DiligenceTab() {
               {t("auth.signIn")}
             </Link>
             <Link href="/auth/signup?role=investor"
-              style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+              style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
               {t("auth.register")}
             </Link>
           </div>
@@ -630,7 +630,7 @@ function DiligenceTab() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "16px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("ai.diligence.upgradeTitle")}</p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>{t("ai.diligence.signInSub")}</p>
           <Link href="/pricing"
-            style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+            style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
             {t("ai.diligence.viewPlans")}
           </Link>
         </div>
@@ -671,7 +671,7 @@ function DiligenceTab() {
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{t("ai.diligence.unlimitedIncluded")}</p>
             </div>
             <Link href="/auth/signup?role=investor"
-              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", textDecoration: "none", flexShrink: 0 }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", textDecoration: "none", flexShrink: 0 }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
               {t("pricing.getStartedFree")} <ArrowRight style={{ width: 13, height: 13 }} />
@@ -934,7 +934,7 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
 
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "32px", flexWrap: "wrap" }}>
             <Link href="/auth/signup?role=investor"
-              style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
               <Users style={{ width: 15, height: 15 }} /> {t("ai.hub.startInvestor")}

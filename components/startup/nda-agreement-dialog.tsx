@@ -266,7 +266,7 @@ export function NdaAgreementDialog({ open, startupId, startupName, onCancel, onA
           </button>
           {!alreadySigned && (
             <button onClick={accept} disabled={!agreement || busy}
-              style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: !agreement || busy ? "default" : "pointer", opacity: !agreement || busy ? 0.5 : 1 }}>
+              style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: !agreement || busy ? "default" : "pointer", opacity: !agreement || busy ? 0.5 : 1 }}>
               {busy ? t("common.saving") : t("startupDetail.ndaAcceptBtn")}
             </button>
           )}

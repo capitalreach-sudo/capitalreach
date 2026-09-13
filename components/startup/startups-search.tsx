@@ -1737,7 +1737,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
           </span>
           <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
-            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "8px 16px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
+            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
             {t("startups.compare")} ({compareIds.length})
           </button>
           <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
@@ -1969,8 +1969,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 {t("filters.reset")}
               </button>
               <button onClick={() => setSidebarOpen(false)}
-                className="btn-copper-shimmer"
-                style={{ flex: 1.4, height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)", cursor: "pointer" }}>
+                style={{ flex: 1.4, height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
                 {t("filters.applyCount", { count: filtered.length })}
               </button>
             </div>

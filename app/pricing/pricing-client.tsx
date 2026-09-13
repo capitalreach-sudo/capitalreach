@@ -238,7 +238,7 @@ function PlanCard({
       )}
       {hi && !isCurrent && (
         <div style={{ position: "absolute", top: "18px", right: "18px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
             <Zap style={{ width: 10, height: 10 }} /> {t(plan.highlightKey!)}
           </span>
         </div>
@@ -736,7 +736,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               <Link href="/auth/signup"
                 className="btn-copper-shimmer"
-                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                 onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
                 {t("hero.ctaPrimary")} <ArrowRight style={{ width: 14, height: 14 }} />
@@ -811,7 +811,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 </p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
                   <Link href="/auth/signup"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                     onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
                     {t("pricing.listStartupFree")} <ArrowRight style={{ width: 14, height: 14 }} />

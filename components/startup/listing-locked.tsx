@@ -98,7 +98,7 @@ export async function ListingLocked({ startup }: {
             <Link href="/pricing" className="btn-copper-shimmer" style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
               minHeight: "40px", padding: "0 28px", borderRadius: "999px",
-              background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+              background: "var(--cr-copper)", color: "var(--cr-on-accent)",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
               textDecoration: "none",
             }}>

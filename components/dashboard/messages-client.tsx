@@ -857,7 +857,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </p>
           </div>
           <button onClick={() => setShowNewModal(true)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "12px 24px", cursor: "pointer" }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "12px 24px", cursor: "pointer" }}>
             <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
           </button>
         </div>
@@ -1304,7 +1304,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       {notice.sentence || (bodyKey ? t(bodyKey) : "")}
                     </p>
                     <Link href={href}
-                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 24px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 24px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
                       {t(ctaKey)}
                     </Link>
                   </div>
@@ -1336,7 +1336,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     disabled={registering}
                     style={{
                       minHeight: "40px", padding: "0 24px", borderRadius: "999px", border: "none",
-                      background: "var(--cr-copper)", color: "var(--cr-band-ink)", cursor: registering ? "wait" : "pointer",
+                      background: "var(--cr-copper)", color: "var(--cr-on-accent)", cursor: registering ? "wait" : "pointer",
                       fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
                     }}
                   >
@@ -1383,7 +1383,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 />
                 <button type="submit" disabled={(!newMessage.trim() && !attachedFile) || sending}
                   style={{ width: 40, height: 40, background: "var(--cr-copper)", border: "none", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, opacity: (!newMessage.trim() && !attachedFile) || sending ? 0.5 : 1 }}>
-                  {sending ? <Loader2 className="animate-spin" style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} /> : <Send style={{ width: 15, height: 15, color: "var(--cr-band-ink)" }} />}
+                  {sending ? <Loader2 className="animate-spin" style={{ width: 15, height: 15, color: "var(--cr-on-accent)" }} /> : <Send style={{ width: 15, height: 15, color: "var(--cr-on-accent)" }} />}
                 </button>
               </form>
               {/* Character budget only when it matters (>1500 of 2000). */}
@@ -1583,7 +1583,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   {t("dashboard.cancel")}
                 </button>
                 <button onClick={sendNewMessage} disabled={!selectedAccount || !newBody.trim() || sendingNew}
-                  style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
+                  style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
                   {sendingNew ? <><Loader2 className="animate-spin" style={{ width: 14, height: 14 }} /> {t("dashboard.sending2")}</> : <><Send style={{ width: 14, height: 14 }} /> {t("dashboard.sendMessageBtn")}</>}
                 </button>
               </div>

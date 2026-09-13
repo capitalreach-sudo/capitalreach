@@ -3,6 +3,7 @@ import { JsonLdScript } from "@/components/shared/json-ld";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { getPlatformStats }  from "@/lib/stats";
+import { sumFundingTargets } from "@/lib/validators";
 import { getLaunchStatus }   from "@/lib/launchMode";
 import { Navbar }            from "@/components/shared/navbar";
 import { Footer }            from "@/components/shared/footer";
@@ -39,7 +40,7 @@ const NO_LAUNCH   = { isLaunch: false, memberCount: 0, target: 100 };
 /**
  * Homepage. Four sections only: navbar, hero, proof strip (+ top listings
  * when any exist), footer. Everything the server needs is fetched in one
- * Promise.all — never serial awaits — and a database outage renders the
+ * Promise.all -- never serial awaits -- and a database outage renders the
  * shell rather than an error page.
  */
 export type TickerSnippet = Pick<ListingSnippet, "id" | "name" | "slug" | "stage" | "funding_target">;
@@ -56,7 +57,7 @@ export default async function HomePage() {
     // 60s of staleness is invisible on a marketing page, and the cache is
     // what keeps a cold lambda's TTFB from stacking four table scans.
     const cachedStats = unstable_cache(
-      () => getPlatformStats(createAdminClient()),
+      () => getPlatformStats(),
       ["home-stats"], { revalidate: 60 },
     );
     const [statsRes, launchRes, listingsRes] = await Promise.all([
@@ -83,20 +84,26 @@ export default async function HomePage() {
     // which the gate below empties for anonymous visitors -- so the LIVE
     // panel asserted "$0 Raising" as a market fact beside real capital
     // figures. Withheld data must vanish, never render as zero; a bare sum
-    // is not withheld data. Demo rows excluded, matching the stats.
+    // is not withheld data. Demo rows included: the stats above count them
+    // and /data footnotes them, so every figure in the panel speaks in the
+    // same register until the demo purge lands.
     try {
       const { data: raiseRows } = await supabase
         .from("startups")
         .select("funding_target")
         .eq("status", "active")
-        .eq("is_demo", false)
         .neq("round_state", "paused")
         .limit(2000);
-      raisingTotal = (raiseRows ?? []).reduce(
-        (sum: number, r: { funding_target: number | null }) => sum + (Number(r.funding_target) || 0), 0);
+      // Each row is bounded before it lands in the sum (lib/validators): one
+      // junk 10^17 target must not carry the whole total past
+      // safeFormatTotal's ceiling and blank the tile for everyone.
+      raisingTotal = sumFundingTargets(
+        (raiseRows ?? []).map((r: { funding_target: number | null }) =>
+          r.funding_target == null ? null : Number(r.funding_target)),
+      );
     } catch { /* tile falls back to hiding itself */ }
   } catch {
-    /* DB not configured — render the shell with zero counts */
+    /* DB not configured -- render the shell with zero counts */
   }
   // The hero should never sell "List your startup" to someone who already
   // did. Runs as ONE awaited chain in parallel-friendly position: for the

@@ -19,6 +19,10 @@ export interface PlatformMonth {
 }
 
 export interface PlatformData {
+  /** Active listings flagged is_demo. The sample-data disclosure renders
+   *  only while this is positive: after the seed data is purged, a footnote
+   *  claiming the figures include samples would itself be the false claim. */
+  sampleCount: number;
   startupCount: number;
   investorCount: number;
   totalRaised: number;
@@ -42,7 +46,7 @@ export interface PlatformData {
 }
 
 export const EMPTY_PLATFORM_DATA: PlatformData = {
-  startupCount: 0, investorCount: 0, totalRaised: 0, dealsCount: 0,
+  sampleCount: 0, startupCount: 0, investorCount: 0, totalRaised: 0, dealsCount: 0,
   byDealStage: { intro: 0, due_diligence: 0, term_sheet: 0, closed: 0, passed: 0 },
   activeDeals: 0, closeRate: null, closedCurrencies: [],
   byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [], monthly: [],
@@ -146,7 +150,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       fetchAll((from, to) =>
         supabase
           .from("startups")
-          .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at")
+          .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at, is_demo")
           .eq("status", "active")
           .order("id", { ascending: true })
           .range(from, to),
@@ -262,6 +266,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
     const newThisMonth = startupData.filter((st) => new Date(st.created_at) >= monthStart).length;
 
     return {
+      sampleCount: startupData.filter((st) => (st as { is_demo?: boolean }).is_demo).length,
       startupCount: startupData.length,
       investorCount: investors.count ?? 0,
       totalRaised,

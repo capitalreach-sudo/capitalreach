@@ -91,7 +91,7 @@ const FIELD: CSSProperties = {
 
 const PRIMARY: CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-  color: "var(--cr-band-ink)", background: "var(--cr-copper)",
+  color: "var(--cr-on-accent)", background: "var(--cr-copper)",
   border: "none", borderRadius: "999px", padding: "0 20px",
   minHeight: "40px", cursor: "pointer",
 };

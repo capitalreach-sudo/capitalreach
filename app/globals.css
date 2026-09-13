@@ -54,6 +54,11 @@
     --cr-band-bg:      #1A1612;
     --cr-band-ink:     #F5F0E8;
     --cr-band-ink-dim: rgba(245,240,232,0.5);
+    /* Ink for text sitting ON an accent fill (copper button, mint chip).
+       A separate token from band-ink: the band is a dark slab in every
+       combo, but the accent flips from deep (light themes, white ink) to
+       bright (dark themes, dark ink). */
+    --cr-on-accent:    #FFFFFF;
     --cr-scrim:        rgba(20,16,12,0.55);
 
     /* Depth system: paper gets soft graphite shadows; dark gets true black
@@ -139,12 +144,13 @@
     --cr-rule-dark: rgba(237,230,218,0.16);
 
     --cr-band-bg:      #16130F;
-    /* On-accent ink. The dark registers BRIGHTEN the accent (copper #D98C33,
-       mint #34D399), so near-white text on it was illegible -- primary CTAs
-       unreadable in both dark themes. On a light accent the ink is the dark
-       page ground. */
-    --cr-band-ink:     #1C1610;
-    --cr-band-ink-dim: rgba(28,22,16,0.55);
+    /* The band is still a dark slab here, so its ink stays light paper.
+       The dark register BRIGHTENS the accent (copper #D98C33), so the ink
+       on an accent fill is the dark page ground, not near-white -- that is
+       on-accent's job, never band-ink's. */
+    --cr-band-ink:     #F0EAE0;
+    --cr-band-ink-dim: rgba(240,234,224,0.5);
+    --cr-on-accent:    #1C1610;
     --cr-scrim:        rgba(0,0,0,0.6);
 
     --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
@@ -228,6 +234,8 @@
     --cr-band-bg:      #0A0A0A;
     --cr-band-ink:     #FAFAFA;
     --cr-band-ink-dim: rgba(250,250,250,0.5);
+    /* Deep emerald #047857 carries white at 5.5:1. */
+    --cr-on-accent:    #FFFFFF;
     --cr-scrim:        rgba(10,10,10,0.55);
 
     /* Swiss register: hairline rules carry the structure, shadows nearly
@@ -295,10 +303,12 @@
     --cr-rule-dark: rgba(244,244,245,0.16);
 
     --cr-band-bg:      #111113;
-    /* Same rule as editorial dark: mint #34D399 is a LIGHT accent; the ink
-       on it is the dark ground, not near-white. */
-    --cr-band-ink:     #062018;
-    --cr-band-ink-dim: rgba(6,32,24,0.55);
+    /* Same split as editorial dark: the band slab keeps light ink, while
+       mint #34D399 is a LIGHT accent whose on-accent ink is the dark
+       ground, not near-white. */
+    --cr-band-ink:     #F4F4F5;
+    --cr-band-ink-dim: rgba(244,244,245,0.5);
+    --cr-on-accent:    #062018;
     --cr-scrim:        rgba(0,0,0,0.65);
 
     --cr-card-shadow:       0 1px 2px rgba(0,0,0,0.5);
@@ -355,7 +365,7 @@
 
   /* The theme flip fades instead of snapping — surfaces inherit the body's
      paint, so one transition covers the page without per-element cost. */
-  body { transition: background-color 240ms ease, color 240ms ease; }
+  body { transition: background-color 240ms var(--ease-out), color 240ms var(--ease-out); }
 }
 
 /* ── Typography utilities ─────────────────────────────────── */
@@ -475,7 +485,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
 .reveal {
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 600ms ease, transform 600ms ease;
+  transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: 100ms; }
@@ -509,7 +519,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   background: var(--cr-paper-2);
   border: 1px solid var(--cr-rule);
   border-radius: 6px;
-  transition: border-color 150ms ease, background 150ms ease;
+  transition: border-color 150ms var(--ease-out), background 150ms var(--ease-out);
 }
 .cr-card:hover {
   border-color: var(--cr-rule-dark);
@@ -527,7 +537,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  transition: background 120ms ease, transform 120ms ease;
+  transition: background 120ms var(--ease-out), transform 120ms var(--ease-out);
 }
 .btn-primary:hover  { background: var(--cr-ink-2); }
 .btn-primary:active { transform: scale(0.99); }
@@ -542,7 +552,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  transition: background 120ms ease, transform 120ms ease;
+  transition: background 120ms var(--ease-out), transform 120ms var(--ease-out);
 }
 .btn-copper:hover  { background: var(--cr-copper-l); }
 .btn-copper:active { transform: scale(0.99); }
@@ -559,7 +569,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   border-radius: 4px;
   border: 1px solid var(--cr-paper-4);
   cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  transition: background 120ms var(--ease-out), border-color 120ms var(--ease-out), color 120ms var(--ease-out);
 }
 .btn-ghost:hover  { background: var(--cr-paper-3); border-color: var(--cr-ink-4); }
 
@@ -581,7 +591,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
 .table-zebra tr:nth-child(odd) { background: var(--cr-paper-3); }
 
 /* ── Pricing comparison table row hover ───────────────────────  */
-.pricing-row { transition: background 120ms ease; }
+.pricing-row { transition: background 120ms var(--ease-out); }
 .pricing-row:hover { background: var(--cr-paper-3) !important; }
 
 /* ── PDF embed ───────────────────────────────────────────────  */
@@ -687,80 +697,16 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
    DESIGN FEATURES
    ═══════════════════════════════════════════════════════════ */
 
-/* ── FEATURE 1: Paper grain texture overlay ─────────────── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.025;
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 256px 256px;
-  mix-blend-mode: multiply;
-}
-
-/* ── FEATURE 2: Copper shimmer on CTA buttons ───────────── */
-@keyframes copperShimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
-
-.btn-copper-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-.btn-copper-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(255,255,255,0.18) 50%,
-    transparent 60%
-  );
-  background-size: 200% 100%;
-  opacity: 0;
-  transition: opacity 200ms;
-  pointer-events: none;
-}
-.btn-copper-shimmer:hover::after {
-  opacity: 1;
-  animation: copperShimmer 600ms ease forwards;
-}
-
-/* ── FEATURE 3: Floating ambient orb ────────────────────── */
-@keyframes driftOrb {
-  0%   { transform: translate(0px, 0px) scale(1); }
-  33%  { transform: translate(20px, -15px) scale(1.03); }
-  66%  { transform: translate(-10px, 10px) scale(0.98); }
-  100% { transform: translate(0px, 0px) scale(1); }
-}
-
-.hero-orb {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--cr-copper) 6%, transparent) 0%,
-    color-mix(in srgb, var(--cr-copper) 2%, transparent) 50%,
-    transparent 70%
-  );
-  pointer-events: none;
-  animation: driftOrb 12s ease-in-out infinite;
-  filter: blur(40px);
-}
+/* ── FEATURE 1: Paper grain ── one body::before only, near the end of the
+   file (SVG filter from layout.tsx); a second definition here would stack
+   two fixed overlays on every page. */
 
 /* ── FEATURE 4: Listing row numbers ─────────────────────── */
 .listing-row-num {
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 11px;
   color: var(--cr-ink-4);
-  transition: color 150ms ease;
+  transition: color 150ms var(--ease-out);
   min-width: 32px;
   flex-shrink: 0;
   text-align: right;
@@ -769,22 +715,13 @@ body::before {
   color: var(--cr-ink);
 }
 
-/* ── FEATURE 6: Stat counter glow ───────────────────────── */
-@keyframes statGlow {
-  0%   { color: var(--cr-copper); }
-  100% { color: var(--cr-ink); }
-}
-.stat-glow {
-  animation: statGlow 800ms ease 100ms forwards;
-}
-
 /* ── FEATURE 7: Ink left-border slide on listing rows ─────
    Was copper, which the business register resolves to emerald: a green
    tick lighting up on every hovered row on every page. The slide stays,
    in ink, so the row is still marked without the accent. */
 .listing-row {
   position: relative;
-  transition: background 150ms ease, padding-left 200ms ease;
+  transition: background 150ms var(--ease-out), padding-left 200ms var(--ease-out);
 }
 .listing-row::before {
   content: '';
@@ -795,7 +732,7 @@ body::before {
   width: 2px;
   background: var(--cr-ink-3);
   clip-path: inset(100% 0 0 0);
-  transition: clip-path 250ms cubic-bezier(.16,1,.3,1);
+  transition: clip-path 250ms var(--ease-out);
 }
 .listing-row:hover {
   background: var(--cr-paper-3);
@@ -809,7 +746,7 @@ body::before {
 .reveal-child {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 500ms ease, transform 500ms ease;
+  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
 }
 .reveal-child.visible {
   opacity: 1;
@@ -822,24 +759,6 @@ body::before {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
-}
-
-/* ── FEATURE 11: Count-up glow → ink transition ─────────── */
-@keyframes countGlow {
-  0%   { color: var(--cr-copper); text-shadow: 0 0 20px color-mix(in srgb, var(--cr-copper) 35%, transparent); }
-  100% { color: var(--cr-ink);    text-shadow: none; }
-}
-.count-glow-done {
-  animation: countGlow 1.2s ease forwards;
-}
-
-/* ── FEATURE 12: Grid paper background (data page) ──────── */
-.data-page-bg {
-  background-color: var(--cr-paper);
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--cr-copper) 5.5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--cr-copper) 5.5%, transparent) 1px, transparent 1px);
-  background-size: 40px 40px;
 }
 
 /* ── FEATURE 13: Copper drawLine (fee strip) ─────────────── */
@@ -877,20 +796,6 @@ body::before {
   animation: inkReveal 800ms cubic-bezier(.16,1,.3,1) forwards;
 }
 
-/* ── FEATURE 11: Hero noise texture ─────────────────────── */
-@keyframes noiseShift {
-  0%   { transform: translate(0,    0);    }
-  10%  { transform: translate(-1%, -1%);  }
-  20%  { transform: translate( 1%,  0%);  }
-  30%  { transform: translate( 0%,  1%);  }
-  40%  { transform: translate(-1%,  0%);  }
-  50%  { transform: translate( 1%,  1%);  }
-  60%  { transform: translate( 0%, -1%);  }
-  70%  { transform: translate(-1%,  1%);  }
-  80%  { transform: translate( 1%, -1%);  }
-  90%  { transform: translate( 0%,  0%);  }
-  100% { transform: translate( 0,   0);   }
-}
 /* Theme flip as a circular reveal from the toggle button (View
    Transitions API; browsers without it keep the body crossfade). The old
    frame holds still while the new theme sweeps over it. */
@@ -925,7 +830,7 @@ body::before {
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .cr-tilt {
     transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-    transition: transform 160ms ease, box-shadow 180ms ease, border-color 120ms ease;
+    transition: transform 160ms var(--ease-out), box-shadow 180ms var(--ease-out), border-color 120ms var(--ease-out);
     will-change: transform;
   }
   .cr-tilt:hover {
@@ -962,23 +867,8 @@ body::before {
   background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
   transform: translateX(-110%);
 }
-.cr-foil-badge:hover::before { transition: transform 600ms ease; transform: translateX(110%); }
+.cr-foil-badge:hover::before { transition: transform 600ms var(--ease-out); transform: translateX(110%); }
 @media (prefers-reduced-motion: reduce) { .cr-foil-badge::before { display: none; } }
-
-/* The market pulse: one slow heartbeat drawn behind the Data Centre title.
-   Dash-animated stroke; ink-alpha so both themes read it as their own. */
-.cr-pulse path {
-  fill: none; stroke: var(--cr-copper); stroke-width: 1.5; opacity: 0.35;
-  stroke-dasharray: 480; stroke-dashoffset: 480;
-  animation: cr-pulse-draw 5s ease-in-out infinite;
-}
-@keyframes cr-pulse-draw {
-  0% { stroke-dashoffset: 480; opacity: 0; }
-  25% { opacity: 0.35; }
-  60% { stroke-dashoffset: 0; opacity: 0.35; }
-  100% { stroke-dashoffset: -480; opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) { .cr-pulse { display: none; } }
 
 /* The chart is keyboard-operable (arrow keys scrub the crosshair), so its
    focus must be visible -- but only for keyboard focus; a pointer click on
@@ -993,12 +883,12 @@ body::before {
    upright before turning, and snapped again on the way out. With rest and
    hover both declared here (the attribute stays as a no-CSS fallback and is
    simply overridden), the transition owns the whole journey. */
-.cr-diamond-live { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 400ms ease; }
+.cr-diamond-live { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 400ms var(--ease-out); }
 .cr-diamond-live .cr-mark-outer,
 .cr-diamond-live .cr-mark-inner {
   transform-origin: 5px 5px;
   transform-box: view-box;
-  transition: transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 320ms ease;
+  transition: transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 320ms var(--ease-out);
 }
 .cr-diamond-live .cr-mark-outer { transform: rotate(45deg); }
 .cr-diamond-live .cr-mark-inner { opacity: 0; transform: rotate(45deg) scale(0.5); }
@@ -1028,7 +918,7 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
    nothing shifts that didn't ask to. */
 .cr-lift {
   box-shadow: var(--cr-card-shadow), var(--cr-card-edge);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
 }
 .cr-lift:hover {
   transform: translateY(-2px);
@@ -1057,7 +947,6 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
-  animation: noiseShift 8s steps(1) infinite;
   z-index: 0;
 }
 
@@ -1296,53 +1185,11 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
   color: var(--cr-ink-4);
 }
 
-/* ── FEATURE 24: Animated trace border ───────────────────── */
-@property --trace-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes traceRotate {
-  from { --trace-angle: 0deg; }
-  to   { --trace-angle: 360deg; }
-}
-.trace-border {
-  position: relative;
-  z-index: 0;
-  transition: box-shadow 250ms ease;
-}
-.trace-border:hover {
-  box-shadow: 0 0 0 1.5px var(--cr-copper-l), 0 10px 32px color-mix(in srgb, var(--cr-copper) 16%, transparent);
-}
-.trace-border::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  padding: 2px;
-  background: conic-gradient(from var(--trace-angle), transparent 0%, var(--cr-copper-l) 12%, transparent 26%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 250ms ease;
-  pointer-events: none;
-  z-index: -1;
-}
-.trace-border:hover::before {
-  opacity: 1;
-  animation: traceRotate 2.4s linear infinite;
-}
-
 /* ── Reduced motion — disable all new animations ────────── */
 @media (prefers-reduced-motion: reduce) {
   body::before { display: none; }
-  .btn-copper-shimmer::after { display: none; }
-  .hero-orb { animation: none; }
   .reveal-child { opacity: 1; transform: none; transition: none; }
   .listing-row::before { transition: none; }
-  .count-glow-done { animation: none; }
   .fee-strip-line::after { animation: none; width: 100%; opacity: 0.2; }
   .ink-reveal { opacity: 1; animation: none; }
   .ink-reveal.visible { animation: none; clip-path: none; opacity: 1; }
@@ -1359,11 +1206,9 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
    work. */
 
 @media (prefers-reduced-motion: reduce) {
-.hero-noise { animation: none; }
   .ruled-label::before { height: 16px; opacity: 1; animation: none; }
   .ruled-label.visible::before, .ruled-label[data-cr-visible]::before { animation: none; height: 16px; opacity: 1; }
   .word-reveal-word { opacity: 1 !important; transform: none !important; }
-  .trace-border::before { animation: none; }
 }
 
 /* Anchor navigation glides instead of teleporting -- the footer's section
@@ -1437,7 +1282,7 @@ html { scroll-behavior: smooth; }
   font-size: 13px;
   text-decoration: none;
   transform: translateY(-250%);
-  transition: transform 120ms ease;
+  transition: transform 120ms var(--ease-out);
 }
 .cr-skip:focus { transform: translateY(0); }
 
@@ -1478,7 +1323,7 @@ html { scroll-behavior: smooth; }
   opacity: 0;
   pointer-events: none;
   transform: translateY(4px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity 0.15s var(--ease-out), transform 0.15s var(--ease-out);
 }
 [data-tip]::before {
   content: "";
@@ -1490,7 +1335,7 @@ html { scroll-behavior: smooth; }
   border-top-color: var(--cr-band-bg);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s var(--ease-out);
 }
 [data-tip]:hover::after, [data-tip]:focus-visible::after,
 [data-tip]:hover::before, [data-tip]:focus-visible::before {
@@ -1783,12 +1628,12 @@ input[type="button"],
      not on a pressable. */
   transition:
     scale 140ms var(--ease-out),
-    border-color 150ms ease,
-    color 150ms ease,
-    background-color 150ms ease,
-    background 150ms ease,
-    opacity 150ms ease,
-    box-shadow 150ms ease,
+    border-color 150ms var(--ease-out),
+    color 150ms var(--ease-out),
+    background-color 150ms var(--ease-out),
+    background 150ms var(--ease-out),
+    opacity 150ms var(--ease-out),
+    box-shadow 150ms var(--ease-out),
     transform 150ms var(--ease-out) !important;
 }
 

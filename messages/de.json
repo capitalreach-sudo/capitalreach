@@ -1480,7 +1480,10 @@
     "consistencyCaption": "Misst Vollständigkeit und interne Konsistenz der Angaben. Keine Renditeprognose, keine Anlageberatung und keine Überprüfung einzelner Zahlen.",
     "soFar": "bisher",
     "quietBefore": "Vor {month} wurde nichts gelistet oder abgeschlossen, daher beginnt das Diagramm dort.",
-    "monthInProgress": "{month} läuft noch; der hohle letzte Punkt zählt den bisherigen Monat."
+    "monthInProgress": "{month} läuft noch; der hohle letzte Punkt zählt den bisherigen Monat.",
+    "monthSoFar": "{month} bisher: {listings} neue Listings, {closed} abgeschlossene Deals.",
+    "monthSoFarCapital": "{month} bisher: {sought} von neuen Listings gesucht.",
+    "sampleDataLabel": "Beispieldaten"
   },
   "filters": {
     "industry": "Branche",
@@ -2127,7 +2130,12 @@
     "contractYouSigned": "Sie haben unterschrieben - die Gegenseite steht noch aus",
     "ndaClickwrapHint": "E-Signatur ist in dieser Umgebung nicht angebunden. Der Investor kann das NDA direkt auf dem Listing des Startups akzeptieren; das öffnet den Datenraum sofort.",
     "commitCleared": "Zusage zurückgesetzt",
-    "commitClear": "Zurücksetzen"
+    "commitClear": "Zurücksetzen",
+    "browseInvestors": "Investoren durchsuchen",
+    "emptyDescFounder": "Deals erscheinen hier, wenn ein Investor auf Ihr Listing reagiert oder Sie selbst einen starten.",
+    "emptyDescAdmin": "Deals erscheinen hier, sobald ein Startup und ein Investor einen eröffnen.",
+    "statNoConcluded": "Noch keine abgeschlossenen Deals",
+    "statNoOpen": "Keine offenen Deals"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",

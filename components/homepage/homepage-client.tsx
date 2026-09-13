@@ -11,8 +11,8 @@ import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
 import { MarketMatcher } from "@/components/homepage/market-matcher";
-import { safeFormatCurrency } from "@/lib/format";
-import { safeFormatTotal, sumFundingTargets } from "@/lib/validators";
+import { MAX_PLAUSIBLE_AMOUNT, safeFormatCurrency } from "@/lib/format";
+import { MAX_PLAUSIBLE_TOTAL, safeFormatTotal, sumFundingTargets } from "@/lib/validators";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
 import type { ListingSnippet } from "@/app/page";
@@ -22,7 +22,9 @@ import type { ListingSnippet } from "@/app/page";
 function DiamondDot() {
   return (
     <svg width="6" height="6" viewBox="0 0 6 6" fill="none" style={{ flexShrink: 0 }} aria-hidden>
-      <path d="M3 0L6 3L3 6L0 3L3 0Z" fill="var(--cr-copper)" />
+      {/* Ink, not accent: this marks fine print, and the hero's one accent
+          moment is the CTA. */}
+      <path d="M3 0L6 3L3 6L0 3L3 0Z" fill="var(--cr-ink-4)" />
     </svg>
   );
 }
@@ -102,6 +104,29 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
     ["100%", t("hero.proofVetted"), 100],
   ];
 
+  // The LIVE panel's tiles: money and outcomes only, the account counts came
+  // out (Jack's call). Every figure hides when it is zero or implausible: a
+  // zero is a claim about the market, and absence is the only honest way to
+  // withhold one. Server aggregate first for the raising figure: the gated
+  // listings arrays are EMPTY for anonymous visitors, and summing them would
+  // assert "$0 Raising" as a live market fact.
+  const raisingSum =
+    raisingTotal !== null
+      ? raisingTotal
+      : canSeeMarket
+        ? sumFundingTargets(listings.map((l) => l.funding_target))
+        : null;
+  const liveTiles: [string, string][] = [];
+  if (raisingSum !== null && raisingSum > 0 && raisingSum <= MAX_PLAUSIBLE_TOTAL) {
+    liveTiles.push([safeFormatTotal(raisingSum), t("listings.raising")]);
+  }
+  if (stats.totalRaised > 0 && stats.totalRaised <= MAX_PLAUSIBLE_AMOUNT) {
+    liveTiles.push([safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")]);
+  }
+  if (stats.dealsClosedCount > 0) {
+    liveTiles.push([String(stats.dealsClosedCount), t("stats.dealsClosed")]);
+  }
+
   // Same sixteen strings the two-column bento used; all fifteen locales
   // already carry them, so the tabs cost nothing new to localise.
   const tracks = [
@@ -133,8 +158,8 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
         >
         <div className="lg:col-span-7 flex flex-col items-center text-center lg:items-start lg:text-left">
           {launch.isLaunch ? (
-            /* Quiet pill: it is a status, not the offer. The only copper in it
-               is the diamond, so it cannot compete with the headline. */
+            /* Quiet pill: it is a status, not the offer. All ink, no copper:
+               the hero's one accent moment belongs to the CTA. */
             <Link
               href="/pricing"
               className="animate-fade-up"
@@ -146,7 +171,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                 letterSpacing: "0.02em",
               }}
             >
-              <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>
+              <span aria-hidden style={{ color: "var(--cr-ink-3)" }}>✦</span>
               {t("hero.launchPill", { count: launch.memberCount, target: launch.target })}
             </Link>
           ) : (
@@ -173,10 +198,11 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               marginBottom:  "24px",
             }}
           >
+            {/* All ink, no foiled phrase: one accent moment per viewport, and
+                the hero's is the filled CTA below. */}
             {t("hero.headline1")}
             <br />
-            {t("hero.headline2")}{" "}
-            <span className="copper-foil">{t("hero.headline3")}</span>
+            {t("hero.headline2")}{" "}{t("hero.headline3")}
           </h1>
 
           <p
@@ -198,7 +224,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
             <Link
               href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : viewerRole === "admin" ? "/admin" : "/auth/signup?role=startup"}
               className="btn-copper-shimmer w-full sm:w-auto"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
             >
               {viewerRole ? t("hero.ctaDashboard") : t("hero.ctaPrimary")}
             </Link>
@@ -248,7 +274,9 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
         {/* Live market panel: real figures, ticking, desktop only. Stepped all
             the way down from the card it was -- no shadow, no copper, 15px
             data -- so it reads as the ledger beside the claim, not a second
-            headline arguing with the first. */}
+            headline arguing with the first. When every figure hides itself
+            the whole panel goes: an empty LIVE ledger is also a claim. */}
+        {liveTiles.length > 0 && (
         <aside className="hidden lg:block lg:col-span-5 animate-fade-up-2" aria-label={t("stats.capitalRaised")}>
           <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
@@ -257,27 +285,14 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               </span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)" }}>
                 {/* Not green: green and red mean money direction on this
-                    product, and a heartbeat is not a direction. */}
-                <span className="animate-pulse" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-copper)", display: "inline-block" }} />
+                    product, and a heartbeat is not a direction. Not accent
+                    either: the CTA holds the hero's one accent moment. */}
+                <span className="animate-pulse" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-ink-4)", display: "inline-block" }} />
                 LIVE
               </span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "var(--cr-rule)" }}>
-              {/* Money and outcomes only -- the account counts came out
-                  (Jack's call): capital sought, capital raised, deals done. */}
-              {([
-                // Server aggregate first: the gated listings arrays are EMPTY
-                // for anonymous visitors, and summing them rendered "$0
-                // Raising" as a live market fact. No figure -> no tile row,
-                // never a zero pretending to be data.
-                ...(raisingTotal !== null
-                  ? [[safeFormatTotal(raisingTotal), t("listings.raising")] as [string, string]]
-                  : canSeeMarket
-                    ? [[safeFormatTotal(sumFundingTargets(listings.map(l => l.funding_target))), t("listings.raising")] as [string, string]]
-                    : []),
-                [safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")],
-                [String(stats.dealsClosedCount), t("stats.dealsClosed")],
-              ] as Array<[string, string]>).map(([v, label]) => (
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(${liveTiles.length}, 1fr)`, gap: "1px", background: "var(--cr-rule)" }}>
+              {liveTiles.map(([v, label]) => (
                 <div key={label} style={{ background: "var(--cr-paper-2)", padding: "16px" }}>
                   <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</div>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>{label}</div>
@@ -292,6 +307,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                 what its order actually is. */}
           </div>
         </aside>
+        )}
         </div>
       </section>
 
@@ -529,7 +545,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               <Link
                 href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : "/admin"}
                 className="btn-copper-shimmer w-full sm:w-auto"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
               >
                 {t("hero.ctaDashboard")}
               </Link>
@@ -538,7 +554,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                 <Link
                   href="/auth/signup?role=startup"
                   className="btn-copper-shimmer w-full sm:w-auto"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
                 >
                   {t("cta.listStartup")}
                 </Link>

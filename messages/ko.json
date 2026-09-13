@@ -1591,7 +1591,10 @@
     "consistencyCaption": "제출 내용의 완전성과 내부 일관성을 측정합니다. 수익 예측도, 투자 자문도, 수치 검증도 아닙니다.",
     "soFar": "현재까지",
     "quietBefore": "{month} 이전에는 등록도 성사도 없었기 때문에 차트는 거기서 시작합니다.",
-    "monthInProgress": "{month}은 아직 진행 중입니다. 마지막 빈 점은 이달 현재까지의 값입니다."
+    "monthInProgress": "{month}은 아직 진행 중입니다. 마지막 빈 점은 이달 현재까지의 값입니다.",
+    "monthSoFar": "{month} 현재: 신규 리스팅 {listings}건, 성사된 딜 {closed}건.",
+    "monthSoFarCapital": "{month} 현재: 신규 리스팅 목표액 {sought}.",
+    "sampleDataLabel": "샘플 데이터"
   },
   "onboarding": {
     "welcomeTitle": "CapitalReach에 오신 것을 환영합니다",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "서명 완료, 상대측 대기 중",
     "ndaClickwrapHint": "이 배포에는 전자 서명이 연결되어 있지 않습니다. 투자자는 스타트업 상장 페이지에서 직접 NDA를 수락할 수 있으며, 데이터룸이 즉시 열립니다.",
     "commitCleared": "약정 해제됨",
-    "commitClear": "해제"
+    "commitClear": "해제",
+    "browseInvestors": "투자자 둘러보기",
+    "emptyDescFounder": "투자자가 리스팅에 응답하거나 직접 딜을 시작하면 여기에 표시됩니다.",
+    "emptyDescAdmin": "스타트업과 투자자가 딜을 열면 여기에 표시됩니다.",
+    "statNoConcluded": "아직 종결된 딜이 없습니다",
+    "statNoOpen": "진행 중인 딜이 없습니다"
   },
   "investorProfile": {
     "back": "투자자 목록으로 돌아가기",

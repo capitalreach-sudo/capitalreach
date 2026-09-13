@@ -42,7 +42,7 @@ const hintSt: React.CSSProperties = {
 // which is light in every register, so no hex ever enters the component.
 const primaryBtn: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
-  background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+  background: "var(--cr-copper)", color: "var(--cr-on-accent)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
   fontSize: "13px", height: "42px", padding: "0 24px",
   borderRadius: "999px", border: "none", cursor: "pointer", flexShrink: 0,
@@ -445,7 +445,7 @@ export default function InvestorOnboardingPage() {
         <div style={{ maxWidth: "960px", margin: "0 auto", padding: "0 24px", height: "56px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
             <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <TrendingUp style={{ width: 14, height: 14, color: "var(--cr-band-ink)" }} />
+              <TrendingUp style={{ width: 14, height: 14, color: "var(--cr-on-accent)" }} />
             </div>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>CapitalReach</span>
             <span className="hidden sm:inline" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginLeft: "4px" }}>{t("onboarding.inv.forInvestors")}</span>

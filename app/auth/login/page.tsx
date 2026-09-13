@@ -25,7 +25,7 @@ const labelSt: React.CSSProperties = {
 };
 const primaryBtn: React.CSSProperties = {
   width: "100%", height: "44px", borderRadius: "999px",
-  background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+  background: "var(--cr-copper)", color: "var(--cr-on-accent)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
   fontSize: "14px", border: "none", cursor: "pointer",
   transition: "opacity 120ms",

@@ -69,7 +69,7 @@ export function GateBlur({
           {...(onCta ? { onClick: onCta, type: "button" } : { href: ctaHref })}
           style={{
             display: "inline-flex", alignItems: "center", gap: "6px",
-            background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+            background: "var(--cr-copper)", color: "var(--cr-on-accent)",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
             padding: "9px 20px", borderRadius: "4px", textDecoration: "none",
             // The element is a <button> on the contractual path, which brings

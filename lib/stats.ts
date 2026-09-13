@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase-server";
+import { computePlatformData } from "@/lib/platform-data";
 
 export type PlatformStats = {
   startupCount:     number;
@@ -14,55 +14,31 @@ const FLOOR: PlatformStats = {
   dealsClosedCount: 0,
 };
 
-// supabase param is optional — caller can pass its own client to avoid
-// duplicate instantiation; falls back to creating a fresh server client.
-export async function getPlatformStats(supabase?: any): Promise<PlatformStats> {
+/**
+ * The homepage's headline numbers, read from the SAME aggregate the Data
+ * Centre renders (lib/platform-data). Two public surfaces quoting different
+ * counts for one platform make at least one of them a lie, so the homepage
+ * must not keep aggregate queries of its own beside /data's.
+ *
+ * The shared aggregate includes sample listings, and /data footnotes that.
+ * The planned demo purge removes those rows at the source, at which point
+ * both surfaces drop to the real numbers together with no change here.
+ *
+ * The optional client param is accepted for existing call sites but unused:
+ * the aggregate builds its own admin client so both surfaces read through
+ * one code path.
+ */
+export async function getPlatformStats(_supabase?: unknown): Promise<PlatformStats> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   if (!supabaseUrl || supabaseUrl.includes("placeholder")) return FLOOR;
 
-  try {
-    const db = supabase ?? createAdminClient();
+  const data = await computePlatformData();
+  if (!data) return FLOOR;
 
-    // Sample rows stay OUT of every public headline. The browse page labels
-    // them, /data footnotes them, the sector pages exclude them -- but these
-    // numbers counted the whole seed, so the homepage claimed 103 startups
-    // and $1.7M raised beside a "4/150 members" launch pill. Honest small
-    // numbers plus the launch pill is one coherent story; inflated ones next
-    // to it are two contradictory ones.
-    const [startups, investors, deals] = await Promise.all([
-      db
-        .from("startups")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "active")
-        .eq("is_demo", false),
-      // Count investor ENTITIES, not profiles-by-role: profiles carry no
-      // is_demo flag, investors do (and external contacts are a founder's
-      // private list, not members).
-      db
-        .from("investors")
-        .select("*", { count: "exact", head: true })
-        .eq("is_external", false)
-        .eq("is_demo", false),
-      // Deals carry no flag of their own; a deal is sample iff its startup is.
-      db
-        .from("deals")
-        .select("amount, startup:startups!inner(is_demo)")
-        .eq("status", "closed")
-        .eq("startup.is_demo", false),
-    ]);
-
-    const totalRaised = (deals.data ?? []).reduce(
-      (sum: number, d: { amount?: number }) => sum + (d.amount ?? 0),
-      0
-    );
-
-    return {
-      startupCount:     startups.count  ?? 0,
-      investorCount:    investors.count ?? 0,
-      totalRaised,
-      dealsClosedCount: deals.data?.length ?? 0,
-    };
-  } catch {
-    return FLOOR;
-  }
+  return {
+    startupCount:     data.startupCount,
+    investorCount:    data.investorCount,
+    totalRaised:      data.totalRaised,
+    dealsClosedCount: data.dealsCount,
+  };
 }

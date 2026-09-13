@@ -61,7 +61,7 @@ const NAME: CSSProperties = {
 
 const PRIMARY: CSSProperties = {
   display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-  background: "var(--cr-copper)", color: "var(--cr-band-ink)", border: "none",
+  background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "none",
   borderRadius: 999, minHeight: 40, padding: "0 16px", cursor: "pointer",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13,
 };

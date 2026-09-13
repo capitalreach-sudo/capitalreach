@@ -252,7 +252,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
             background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)",
             borderRadius: "999px", padding: "0 24px", minHeight: "40px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-            color: "var(--cr-band-ink)", textDecoration: "none",
+            color: "var(--cr-on-accent)", textDecoration: "none",
           }}>{t("seal.openConversation")}</Link>
         </div>
       ) : data.mine && !data.conflict ? (
@@ -309,7 +309,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
               borderRadius: "999px", padding: "0 28px", minHeight: "44px",
               cursor: busy ? "wait" : "pointer",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
-              color: "var(--cr-band-ink)",
+              color: "var(--cr-on-accent)",
               opacity: busy || !agreed || name.trim().length < 2 ? 0.6 : 1,
             }}>
             {busy ? t("seal.signing") : t("seal.sign")}

@@ -71,7 +71,7 @@ const primaryBtn: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: "8px",
   background: "var(--cr-copper)", border: "none",
   borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 16px", cursor: "pointer",
+  fontSize: "13px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: "pointer",
   textDecoration: "none",
 };
 

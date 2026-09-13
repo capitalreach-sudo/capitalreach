@@ -458,7 +458,7 @@ export function OfferComposer({
               background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)",
               borderRadius: "999px", padding: "0 24px", minHeight: "40px", cursor: busy ? "wait" : "pointer",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-              color: "var(--cr-band-ink)", opacity: busy || amountNum === null ? 0.6 : 1,
+              color: "var(--cr-on-accent)", opacity: busy || amountNum === null ? 0.6 : 1,
             }}>
             {busy
               ? t("offerComposer.sending")

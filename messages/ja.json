@@ -1473,7 +1473,10 @@
     "consistencyCaption": "提出内容の充足度と内部整合性を測ります。収益の予測でも、投資助言でも、数値の検証でもありません。",
     "soFar": "現時点まで",
     "quietBefore": "{month} より前には掲載も成約もなかったため、グラフはそこから始まります。",
-    "monthInProgress": "{month} はまだ進行中です。最後の白抜きの点は月初から現時点までの値です。"
+    "monthInProgress": "{month} はまだ進行中です。最後の白抜きの点は月初から現時点までの値です。",
+    "monthSoFar": "{month}の実績: 新規リスティング{listings}件、成約{closed}件。",
+    "monthSoFarCapital": "{month}の実績: 新規リスティングの調達目標{sought}。",
+    "sampleDataLabel": "サンプルデータ"
   },
   "filters": {
     "industry": "業界",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "署名済み（相手側の署名待ち）",
     "ndaClickwrapHint": "この環境では電子署名が接続されていません。投資家はスタートアップの掲載ページで直接NDAを承諾でき、データルームはすぐに開きます。",
     "commitCleared": "コミットメントを解除",
-    "commitClear": "解除"
+    "commitClear": "解除",
+    "browseInvestors": "投資家を見る",
+    "emptyDescFounder": "投資家がリスティングに反応するか、自分でディールを開始するとここに表示されます。",
+    "emptyDescAdmin": "スタートアップと投資家がディールを開くとここに表示されます。",
+    "statNoConcluded": "完了したディールはまだありません",
+    "statNoOpen": "進行中のディールはありません"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",

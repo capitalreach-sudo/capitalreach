@@ -257,7 +257,7 @@ export function MarketMatcher() {
             <Link
               href={directoryHref}
               className="btn-copper-shimmer"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", minHeight: "48px" }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", minHeight: "48px" }}
             >
               {tf("match.cta", "See the matching rounds")} →
             </Link>

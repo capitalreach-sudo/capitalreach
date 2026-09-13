@@ -1591,7 +1591,10 @@
     "consistencyCaption": "Meet de volledigheid en interne consistentie van de aanmelding. Geen rendementsvoorspelling, geen beleggingsadvies en geen verificatie van enig cijfer.",
     "soFar": "tot nu toe",
     "quietBefore": "Vóór {month} is niets vermeld of gesloten, dus de grafiek begint daar.",
-    "monthInProgress": "{month} loopt nog; het holle laatste punt telt de maand tot nu toe."
+    "monthInProgress": "{month} loopt nog; het holle laatste punt telt de maand tot nu toe.",
+    "monthSoFar": "{month} tot nu: {listings} nieuwe vermeldingen, {closed} gesloten deals.",
+    "monthSoFarCapital": "{month} tot nu: {sought} gezocht door nieuwe vermeldingen.",
+    "sampleDataLabel": "Voorbeelddata"
   },
   "onboarding": {
     "welcomeTitle": "Welkom bij CapitalReach",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "U heeft getekend; wachten op de andere kant",
     "ndaClickwrapHint": "E-handtekening is op deze omgeving niet gekoppeld. De investeerder kan de NDA direct op de vermelding van de startup accepteren, waarmee de data room meteen opent.",
     "commitCleared": "Toezegging gewist",
-    "commitClear": "Wissen"
+    "commitClear": "Wissen",
+    "browseInvestors": "Investeerders bekijken",
+    "emptyDescFounder": "Deals verschijnen hier wanneer een investeerder op uw vermelding reageert of wanneer u er een start.",
+    "emptyDescAdmin": "Deals verschijnen hier zodra een startup en een investeerder er een openen.",
+    "statNoConcluded": "Nog geen afgeronde deals",
+    "statNoOpen": "Geen open deals"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",

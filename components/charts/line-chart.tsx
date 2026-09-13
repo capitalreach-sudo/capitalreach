@@ -14,6 +14,12 @@ export interface LineSeries {
 
 interface Pt { i: number; v: number }
 
+// The draw-in is a first-impression flourish: once per page load, not once
+// per remount. Tab strips unmount and remount their panels, and a chart that
+// redraws itself on every tab switch turns a courtesy into a tic. Module
+// scope survives remounts; a full reload starts clean.
+let hasDrawnOnce = false;
+
 /**
  * Change over time.
  *
@@ -32,23 +38,22 @@ interface Pt { i: number; v: number }
  * readout lists every visible series; hovering a series' name emphasises it
  * and quiets the others; clicking a name folds that series away and the scale
  * re-fits what remains -- colour stays with the entity, so survivors are never
- * repainted. The first time the chart scrolls into view, each line draws
- * itself in; prefers-reduced-motion gets the finished frame immediately.
+ * repainted. The first time a chart scrolls into view, each line draws
+ * itself in -- once per page load, never again on a remount;
+ * prefers-reduced-motion gets the finished frame immediately.
  */
-export function LineChart({ labels, series, height = 200, valueLabel, formatTick, inProgressLast = false, inProgressLabel }: {
+export function LineChart({ labels, series, height = 200, valueLabel, formatTick, annotation }: {
   labels: string[];
   series: LineSeries[];
   height?: number;
   valueLabel?: string;
   /** Axis tick text. Without it a currency axis reads "100000000". */
   formatTick?: (n: number) => string;
-  /** The final x-position is a period still being written (this month, this
-      quarter). Its value is a partial count, not a collapse, so its leading
-      segment draws dashed, its point renders hollow, and the flag appends
-      inProgressLabel. The last COMPLETE point keeps the solid endpoint. */
-  inProgressLast?: boolean;
-  /** "so far", translated by the caller. */
-  inProgressLabel?: string;
+  /** One caption line under the frame for what the plotted domain cannot say
+      for itself -- a period still in progress, a quiet run-up before the
+      first point. Prose, not geometry: the plotted series carries only
+      complete periods. */
+  annotation?: string;
 }) {
   const id = useId();
   // useId can contain ":", which a url(#…) reference will not survive.
@@ -69,14 +74,14 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
     () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
     [],
   );
-  const [drawn, setDrawn] = useState(reduced);
+  const [drawn, setDrawn] = useState(reduced || hasDrawnOnce);
   const frameRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (drawn) return;
     const el = frameRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") { setDrawn(true); return; }
+    if (!el || typeof IntersectionObserver === "undefined") { hasDrawnOnce = true; setDrawn(true); return; }
     const io = new IntersectionObserver((entries) => {
-      if (entries.some(e => e.isIntersecting)) { setDrawn(true); io.disconnect(); }
+      if (entries.some(e => e.isIntersecting)) { hasDrawnOnce = true; setDrawn(true); io.disconnect(); }
     }, { threshold: 0.25 });
     io.observe(el);
     return () => io.disconnect();
@@ -144,15 +149,22 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
 
   const axisText: React.CSSProperties = {
     // The mono voice for anything on an axis: figures and month marks line
-    // up because every glyph is the same width. Faded a step past ink-4 so
-    // the scale is available without competing with the drawn line.
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+    // up because every glyph is the same width. 10px ink-3 -- charts are the
+    // one licensed exception to the 11px floor.
+    fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
     fontVariantNumeric: "tabular-nums",
-    fill: "color-mix(in srgb, var(--cr-ink-4) 78%, transparent)",
+    fill: "var(--cr-ink-3)",
   };
 
+  // The wash under a line is a single-series privilege: with two or more
+  // lines visible the fills overlap into a claim about the space between
+  // them, so the wash stands down and the lines carry the frame alone.
+  const washed = visible.length < 2;
+
   // Geometry first, drawing second: the end-of-line labels need every
-  // series' final point before any series renders.
+  // series' final point before any series renders. Every plotted point is a
+  // COMPLETE period -- the caller truncates an in-progress one and owns it
+  // in the annotation line instead.
   const geom = visible.map(({ s, origIdx }) => {
     // One NaN coordinate voids the whole path element, so a point that
     // isn't a number becomes a break in the line instead of an erased
@@ -166,41 +178,19 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
       else runs.push([p]);
     }
 
-    const lastPt = pts.length ? pts[pts.length - 1] : null;
-    // The in-progress point exists only when the series actually reaches
-    // the final x -- a series that ends earlier has no partial period to
-    // disclose.
-    const partial = inProgressLast && lastPt && lastPt.i === n - 1 ? lastPt : null;
-    const lastReal = partial ? (pts.length > 1 ? pts[pts.length - 2] : null) : lastPt;
+    const endPt = pts.length ? pts[pts.length - 1] : null;
 
-    // The solid line stops at the last complete point; the segment into
-    // the in-progress period is drawn separately, dashed.
-    const solidD = runs.map(run => {
-      const seg = partial && run[run.length - 1].i === partial.i ? run.slice(0, -1) : run;
-      if (seg.length === 0) return "";
-      return seg.map((p, k) => `${k ? "L" : "M"}${x(p.i)},${y(p.v)}`).join(" ");
-    }).filter(Boolean).join(" ");
+    const solidD = runs.map(run =>
+      run.map((p, k) => `${k ? "L" : "M"}${x(p.i)},${y(p.v)}`).join(" "),
+    ).filter(Boolean).join(" ");
 
-    let dashedD = "";
-    if (partial) {
-      const run = runs[runs.length - 1];
-      if (run.length >= 2 && run[run.length - 1].i === partial.i) {
-        const a = run[run.length - 2];
-        dashedD = `M${x(a.i)},${y(a.v)} L${x(partial.i)},${y(partial.v)}`;
-      }
-    }
-
-    // The wash under the line also stops at the last complete point:
-    // filling under a partial count would claim area the period has not
-    // earned yet.
     const areaD = runs.map(run => {
-      const seg = partial && run[run.length - 1].i === partial.i ? run.slice(0, -1) : run;
-      if (seg.length < 2) return "";
-      return `M${x(seg[0].i)},${baseY} ` + seg.map(p => `L${x(p.i)},${y(p.v)}`).join(" ")
-        + ` L${x(seg[seg.length - 1].i)},${baseY} Z`;
+      if (run.length < 2) return "";
+      return `M${x(run[0].i)},${baseY} ` + run.map(p => `L${x(p.i)},${y(p.v)}`).join(" ")
+        + ` L${x(run[run.length - 1].i)},${baseY} Z`;
     }).filter(Boolean).join(" ");
 
-    return { s, origIdx, runs, partial, lastReal, solidD, dashedD, areaD, endPt: lastPt };
+    return { s, origIdx, runs, solidD, areaD, endPt };
   });
 
   // The label sits level with the line's true end, dashed tail included.
@@ -267,7 +257,9 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
         aria-label={valueLabel ?? series.map(s => s.label).join(", ")}
         className="cr-chart"
         tabIndex={0}
-        style={{ touchAction: "pan-y", display: "block", outline: "none" }}
+        // No inline outline: none -- it outranks .cr-chart:focus-visible and
+        // hid the ring from the keyboard scrub this chart advertises.
+        style={{ touchAction: "pan-y", display: "block" }}
         onKeyDown={(e) => {
           // The keyboard scrub: the same crosshair the pointer drives.
           if (e.key === "ArrowRight") { setActive(a => Math.min(n - 1, (a ?? -1) + 1)); e.preventDefault(); }
@@ -298,10 +290,11 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
           );
         })}
 
-        {/* First, last, and middle only -- twelve rotated month labels is a
-            worse chart than three readable ones. */}
+        {/* A short series names every month; a long one keeps first, last,
+            and middle -- twelve rotated month labels is a worse chart than
+            three readable ones. */}
         {labels.map((l, i) => (
-          (i === 0 || i === n - 1 || i === Math.floor((n - 1) / 2)) ? (
+          (n <= 8 || i === 0 || i === n - 1 || i === Math.floor((n - 1) / 2)) ? (
             <text key={i} x={x(i)} y={H - 8} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
               style={axisText}>{l}</text>
           ) : null
@@ -323,44 +316,24 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
                   <stop offset="100%" stopColor={`color-mix(in srgb, ${colour} 0%, transparent)`} />
                 </linearGradient>
               </defs>
-              {g.areaD && <path d={g.areaD} fill={`url(#${gid}-f${g.origIdx})`} style={fadeStyle(gi)} />}
+              {washed && g.areaD && <path d={g.areaD} fill={`url(#${gid}-f${g.origIdx})`} style={fadeStyle(gi)} />}
               <path d={g.solidD} fill="none" stroke={colour} strokeWidth={2}
                 strokeLinecap="round" strokeLinejoin="round"
                 pathLength={1} style={drawStyle(gi)} />
-              {g.dashedD && (
-                <path d={g.dashedD} fill="none" stroke={colour} strokeWidth={2}
-                  strokeLinecap="round" strokeDasharray="2 5" style={fadeStyle(gi)} />
-              )}
               {/* A point with a gap on both sides has no segment to appear in,
                   and a measurement that renders as nothing is the failure this
                   guard exists to prevent. */}
-              {g.runs.filter(r => r.length === 1 && !(g.partial && r[0].i === g.partial.i)).map(r => (
+              {g.runs.filter(r => r.length === 1).map(r => (
                 <circle key={r[0].i} cx={x(r[0].i)} cy={y(r[0].v)} r={2.5} fill={colour} style={fadeStyle(gi)} />
               ))}
-              {/* The last COMPLETE point: a filled dot inside a quiet ring,
-                  so the line ends with a full stop rather than trailing off. */}
-              {g.lastReal && (
+              {/* The last point: a filled dot inside a quiet ring, so the
+                  line ends with a full stop rather than trailing off. */}
+              {g.endPt && (
                 <g style={fadeStyle(gi)}>
-                  <circle cx={x(g.lastReal.i)} cy={y(g.lastReal.v)} r={7}
+                  <circle cx={x(g.endPt.i)} cy={y(g.endPt.v)} r={7}
                     fill="none" stroke={colour} strokeOpacity={0.25} strokeWidth={1} />
-                  <circle cx={x(g.lastReal.i)} cy={y(g.lastReal.v)} r={3.5}
+                  <circle cx={x(g.endPt.i)} cy={y(g.endPt.v)} r={3.5}
                     fill={colour} stroke="var(--cr-paper)" strokeWidth={1.5} />
-                </g>
-              )}
-              {/* Hollow: the period is still being written -- and it breathes,
-                  gently, because it is the one point on the chart that is
-                  still moving. Reduced motion pins it still. */}
-              {g.partial && (
-                <g style={fadeStyle(gi)}>
-                  {!reduced && (
-                    <circle cx={x(g.partial.i)} cy={y(g.partial.v)} r={4}
-                      fill="none" stroke={colour} strokeWidth={1} opacity={0.5}>
-                      <animate attributeName="r" values="4;8;4" dur="2.8s" repeatCount="indefinite" />
-                      <animate attributeName="opacity" values="0.5;0;0.5" dur="2.8s" repeatCount="indefinite" />
-                    </circle>
-                  )}
-                  <circle cx={x(g.partial.i)} cy={y(g.partial.v)} r={4}
-                    fill="var(--cr-paper)" stroke={colour} strokeWidth={1.5} />
                 </g>
               )}
               {/* The name sits where the reader's eye already is when the
@@ -433,11 +406,6 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
         }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 10.5, color: "var(--cr-ink)", marginBottom: 4 }}>
             {labels[active]}
-            {/* The flag says the number is provisional in the same breath as
-                the number -- a partial month must never read as a collapse. */}
-            {inProgressLast && active === n - 1 && inProgressLabel && (
-              <span style={{ fontWeight: 400, color: "var(--cr-ink-4)" }}> · {inProgressLabel}</span>
-            )}
           </p>
           {/* A series with nothing at this point gets no row, matching the
               break in its line. Reading it as zero would invent a measurement.
@@ -492,6 +460,14 @@ export function LineChart({ labels, series, height = 200, valueLabel, formatTick
             );
           })}
         </div>
+      )}
+
+      {/* One caption line owns what the frame cannot say for itself; it is
+          prose, so it never bends the scale or dangles a provisional point. */}
+      {annotation && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", marginTop: 12, maxWidth: 560, lineHeight: 1.6 }}>
+          {annotation}
+        </p>
       )}
     </div>
   );

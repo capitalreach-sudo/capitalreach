@@ -149,7 +149,7 @@ export default async function SectorPage({ params }: Props) {
         {t("sector.emptyBody", { industry })}
       </p>
       <Link href="/auth/signup?role=startup"
-        style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
+        style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
         {t("nav.listStartup")}
       </Link>
     </div>
@@ -273,7 +273,7 @@ export default async function SectorPage({ params }: Props) {
                   {t("sector.accountOpens", { industry })}
                 </p>
                 <Link href="/auth/signup"
-                  style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
+                  style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
                   {t("sector.createAccount")}
                 </Link>
               </div>

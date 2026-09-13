@@ -119,7 +119,7 @@ export default function UpdatePasswordPage() {
             <div style={{ textAlign: "center", padding: "16px 0" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, color: "var(--cr-ink)", marginBottom: 8 }}>{t("auth.resetLinkDeadTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: 16 }}>{t("auth.resetLinkDeadBody")}</p>
-              <Link href="/auth/reset-password" style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: 4, padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, textDecoration: "none" }}>
+              <Link href="/auth/reset-password" style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", borderRadius: 4, padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, textDecoration: "none" }}>
                 {t("auth.requestNewLink")}
               </Link>
             </div>
@@ -187,7 +187,7 @@ export default function UpdatePasswordPage() {
                 </div>
 
                 <button type="submit" disabled={loading || password !== confirm || password.length < 8}
-                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
+                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
                   {loading ? t("auth.updating") : t("auth.updatePassword")}
                 </button>
               </form>

@@ -1473,7 +1473,10 @@
     "consistencyCaption": "Mide la exhaustividad y la coherencia interna de la información presentada. No es una previsión de rentabilidad, ni asesoramiento de inversión, ni una verificación de ninguna cifra.",
     "soFar": "hasta ahora",
     "quietBefore": "Nada se listó ni se cerró antes de {month}, así que el gráfico empieza ahí.",
-    "monthInProgress": "{month} sigue en curso; su último punto hueco cuenta el mes hasta ahora."
+    "monthInProgress": "{month} sigue en curso; su último punto hueco cuenta el mes hasta ahora.",
+    "monthSoFar": "{month} hasta ahora: {listings} nuevos listados, {closed} deals cerrados.",
+    "monthSoFarCapital": "{month} hasta ahora: {sought} buscados por nuevos listados.",
+    "sampleDataLabel": "Datos de muestra"
   },
   "filters": {
     "industry": "Industria",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "Firmaste; falta la otra parte",
     "ndaClickwrapHint": "La firma electrónica no está conectada en este despliegue. El inversor puede aceptar el NDA directamente en la ficha de la startup, lo que abre la sala de datos al instante.",
     "commitCleared": "Compromiso retirado",
-    "commitClear": "Quitar"
+    "commitClear": "Quitar",
+    "browseInvestors": "Explorar inversores",
+    "emptyDescFounder": "Los deals aparecen aquí cuando un inversor responde a tu listado o cuando inicias uno.",
+    "emptyDescAdmin": "Los deals aparecen aquí en cuanto una startup y un inversor abren uno.",
+    "statNoConcluded": "Aún no hay deals concluidos",
+    "statNoOpen": "No hay deals abiertos"
   },
   "investorProfile": {
     "back": "Volver a inversores",

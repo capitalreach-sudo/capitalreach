@@ -641,7 +641,7 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
               // band-ink, not paper: paper is dark in the dark registers, and a
               // primary action that vanishes into its own fill is not one.
-              color: "var(--cr-band-ink)",
+              color: "var(--cr-on-accent)",
               background: "var(--cr-copper)",
               // Dimmed whole, not recoloured: fading the fill alone would drag
               // the label's contrast down with it in the light registers.

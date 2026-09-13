@@ -104,7 +104,7 @@ const primaryBtn: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   background: "var(--cr-copper)", border: "none",
   borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "13px", color: "var(--cr-band-ink)", padding: "0 16px", minHeight: "40px",
+  fontSize: "13px", color: "var(--cr-on-accent)", padding: "0 16px", minHeight: "40px",
   cursor: "pointer", textDecoration: "none",
 };
 
@@ -719,7 +719,7 @@ function QuestionQueue() {
                 <textarea value={d.a} onChange={(e) => setDrafts((p) => ({ ...p, [q.id]: { ...d, a: e.target.value } }))} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
                   style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
                 <button disabled={!!d.busy || !d.a.trim()} onClick={() => answer(q.id)}
-                  style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+                  style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: "pointer", opacity: !d.a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
                   {d.busy ? "…" : t("startupDetail.answerSend")}
                 </button>
               </div>
@@ -1002,7 +1002,7 @@ function UpdateComposer() {
               {t("common.cancel")}
             </button>
             <button onClick={publish} disabled={busy || !title.trim() || !body.trim()}
-              style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
+              style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: busy ? "wait" : "pointer", opacity: !title.trim() || !body.trim() ? 0.5 : 1 }}>
               {busy ? t("common.saving") : t("dashboard.updPost")}
             </button>
           </div>
@@ -1025,7 +1025,7 @@ function UpdateComposer() {
                       style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
                     <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
                       <button onClick={() => setEditing(null)} style={{ background: "none", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>{t("common.cancel")}</button>
-                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-band-ink)", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>{t("common.save")}</button>
+                      <button onClick={saveEdit} style={{ background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-on-accent)", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>{t("common.save")}</button>
                     </div>
                   </div>
                 ) : (

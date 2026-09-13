@@ -135,7 +135,7 @@ export function BottomNav() {
                     padding: "0 4px",
                     borderRadius: "999px",
                     background: "var(--cr-copper)",
-                    color: "var(--cr-band-ink)",
+                    color: "var(--cr-on-accent)",
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: "9px",

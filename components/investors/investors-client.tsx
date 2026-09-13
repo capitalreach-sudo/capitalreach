@@ -672,8 +672,8 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                     style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                     {t("filters.reset")}
                   </button>
-                  <button onClick={() => setSidebarOpen(false)} className="btn-copper-shimmer text-white"
-                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", cursor: "pointer" }}>
+                  <button onClick={() => setSidebarOpen(false)}
+                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
                     {t("filters.applyCount", { count: results.length })}
                   </button>
                 </div>
@@ -1030,8 +1030,8 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-band-ink-dim)", lineHeight: 1.6 }}>{t("investors.readyFundedSub")}</p>
               </div>
               <Link href="/auth/signup?role=startup"
-                className="btn-copper-shimmer text-white whitespace-nowrap flex-shrink-0"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "13px 28px", borderRadius: "999px", border: "none", textDecoration: "none" }}>
+                className="whitespace-nowrap flex-shrink-0"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "13px 28px", borderRadius: "999px", border: "none", textDecoration: "none" }}>
                 {t("investors.listYourStartup")} →
               </Link>
             </div>

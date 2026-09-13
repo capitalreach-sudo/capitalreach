@@ -513,7 +513,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
           if (res.ok) { setDone(true); notify.success(t("startupDetail.answered")); }
           else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
-        style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-band-ink)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+        style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.answerSend")}
       </button>
     </div>
@@ -1164,7 +1164,7 @@ export function StartupDetailClient({
               </div>
             </div>
             <button onClick={generateAiReport} disabled={generatingReport}
-              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-band-ink)", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
+              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
               {generatingReport ? t("startupDetail.generating") : t("startupDetail.generateReport")}
             </button>
             {/* C29: your own questions, answered in their own section. The
@@ -1606,7 +1606,7 @@ export function StartupDetailClient({
                 </div>
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, color-mix(in srgb, var(--cr-paper) 95%, transparent) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "20px" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("startupDetail.signUpPitchDeck")}</p>
-                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "9px 22px", borderRadius: "4px", textDecoration: "none" }}>
+                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "9px 22px", borderRadius: "4px", textDecoration: "none" }}>
                     {t("startupDetail.createFreeAccount")} →
                   </Link>
                 </div>
@@ -1646,12 +1646,12 @@ export function StartupDetailClient({
                       ) : (
                         (doc.is_pdf ?? /\.pdf(\?|$)/i.test(doc.file_url)) ? (
                           <button onClick={() => { trackDoc(doc.id); setViewerDoc({ url: doc.file_url, label: doc.label }); }}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "7px 14px", cursor: "pointer" }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "7px 14px", cursor: "pointer" }}>
                             <Eye style={{ width: 11, height: 11 }} /> {t("common.view")}
                           </button>
                         ) : (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer" onClick={() => trackDoc(doc.id)}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-band-ink)", padding: "7px 14px", textDecoration: "none" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "7px 14px", textDecoration: "none" }}>
                           <ExternalLink style={{ width: 11, height: 11 }} /> {t("common.view")}
                         </a>
                         )
@@ -1787,7 +1787,7 @@ export function StartupDetailClient({
               flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
               height: "44px", minWidth: 0, textDecoration: "none",
               background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-band-ink)",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-on-accent)",
             }}
           >
             <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />

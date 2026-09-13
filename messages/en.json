@@ -1480,7 +1480,10 @@
     "consistencyCaption": "Measures completeness and internal consistency of the submission. Not a prediction of returns, not investment advice, and not a verification of any figure.",
     "soFar": "so far",
     "quietBefore": "Nothing was listed or closed before {month}, so the chart starts there.",
-    "monthInProgress": "{month} is still in progress; its hollow last point counts the month so far."
+    "monthInProgress": "{month} is still in progress; its hollow last point counts the month so far.",
+    "monthSoFar": "{month} so far: {listings} new listings, {closed} deals closed.",
+    "monthSoFarCapital": "{month} so far: {sought} sought by new listings.",
+    "sampleDataLabel": "Sample data"
   },
   "filters": {
     "industry": "Industry",
@@ -2127,7 +2130,12 @@
     "contractYouSigned": "You signed - awaiting the other side",
     "ndaClickwrapHint": "E-signature is not connected on this deployment. The investor can accept the NDA directly on the startup's listing, which opens the data room immediately.",
     "commitCleared": "Commitment cleared",
-    "commitClear": "Clear"
+    "commitClear": "Clear",
+    "browseInvestors": "Browse investors",
+    "emptyDescFounder": "Deals appear here when an investor responds to your listing, or when you start one.",
+    "emptyDescAdmin": "Deals appear here as soon as a startup and an investor open one.",
+    "statNoConcluded": "No concluded deals yet",
+    "statNoOpen": "No open deals"
   },
   "investorProfile": {
     "back": "Back to investors",

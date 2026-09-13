@@ -1591,7 +1591,10 @@
     "consistencyCaption": "Misura la completezza e la coerenza interna dei dati inviati. Non è una previsione di rendimento, né consulenza sugli investimenti, né una verifica di alcun dato.",
     "soFar": "finora",
     "quietBefore": "Nulla è stato pubblicato o chiuso prima di {month}, quindi il grafico parte da lì.",
-    "monthInProgress": "{month} è ancora in corso; il suo ultimo punto vuoto conta il mese finora."
+    "monthInProgress": "{month} è ancora in corso; il suo ultimo punto vuoto conta il mese finora.",
+    "monthSoFar": "{month} finora: {listings} nuovi listing, {closed} deal chiusi.",
+    "monthSoFarCapital": "{month} finora: {sought} richiesti dai nuovi listing.",
+    "sampleDataLabel": "Dati di esempio"
   },
   "onboarding": {
     "welcomeTitle": "Benvenuto su CapitalReach",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "Hai firmato; in attesa dell'altra parte",
     "ndaClickwrapHint": "La firma elettronica non è collegata su questa installazione. L'investitore può accettare l'NDA direttamente sull'annuncio della startup, aprendo subito la data room.",
     "commitCleared": "Impegno rimosso",
-    "commitClear": "Rimuovi"
+    "commitClear": "Rimuovi",
+    "browseInvestors": "Sfoglia gli investitori",
+    "emptyDescFounder": "I deal compaiono qui quando un investitore risponde al tuo listing o quando ne avvii uno.",
+    "emptyDescAdmin": "I deal compaiono qui non appena una startup e un investitore ne aprono uno.",
+    "statNoConcluded": "Nessun deal concluso finora",
+    "statNoOpen": "Nessun deal aperto"
   },
   "investorProfile": {
     "back": "Torna agli investitori",

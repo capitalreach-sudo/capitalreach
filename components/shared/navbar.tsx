@@ -474,7 +474,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
               <div className="px-6 py-4 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)", paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    height: "44px", background: "var(--cr-copper)", color: "var(--cr-band-ink)",
+                    height: "44px", background: "var(--cr-copper)", color: "var(--cr-on-accent)",
                     fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
                     borderRadius: "4px", border: "none", cursor: "pointer", textDecoration: "none",
                   }}>

@@ -22,7 +22,12 @@ import type { Startup, SubscriptionTier } from "@/types";
 import type { Metadata } from "next";
 import type { StartupCardData } from "@/components/startup/startup-card";
 
-export const revalidate = 120; // ISR — revalidate every 2 minutes
+// Dynamic per request, declared honestly: the page reads cookies()
+// (createServerSupabaseClient) before anything else, so ISR never engaged
+// and the old `revalidate = 120` export was inert. Making it explicit also
+// protects the per-request pageview increment below from a future refactor
+// that removes the cookie read and would silently re-enable a stale cache.
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: { slug: string };
@@ -115,17 +120,6 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-export async function generateStaticParams() {
-  // Use admin client (no cookies) since this runs at build time outside request scope
-  const supabase = createAdminClient();
-  const { data } = await supabase
-    .from("startups")
-    .select("slug")
-    .eq("status", "active")
-    .limit(200);
-  return (data || []).map(s => ({ slug: s.slug }));
-}
-
 export default async function StartupDetailPage({ params, searchParams }: Props) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -200,8 +194,12 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
 
   // Track pageview (server-side increment). After the gate: a visitor who was
   // bounced to sign-in never saw the listing, and this counter is what the
-  // trending badge on the browse index is computed from.
-  try { await supabase.rpc("increment_pageview", { startup_id: startup.id }); } catch { /* ok */ }
+  // trending badge on the browse index is computed from. Service role, not
+  // the viewer's client: migration 130 revoked anon EXECUTE, so a share-link
+  // guest (and every anonymous visitor if detail ever goes public) counted
+  // nothing when the RPC ran as the viewer. Counting follows page access,
+  // which the gate above has already decided.
+  try { await createAdminClient().rpc("increment_pageview", { startup_id: startup.id }); } catch { /* ok */ }
 
   // Get current user tier
   const { isLaunch } = await getLaunchStatus();

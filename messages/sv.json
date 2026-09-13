@@ -1591,7 +1591,10 @@
     "consistencyCaption": "Mäter hur fullständig och internt konsekvent ansökan är. Ingen avkastningsprognos, ingen investeringsrådgivning och ingen verifiering av någon siffra.",
     "soFar": "hittills",
     "quietBefore": "Inget listades eller stängdes före {month}, så diagrammet börjar där.",
-    "monthInProgress": "{month} pågår fortfarande; dess ihåliga sista punkt räknar månaden hittills."
+    "monthInProgress": "{month} pågår fortfarande; dess ihåliga sista punkt räknar månaden hittills.",
+    "monthSoFar": "{month} hittills: {listings} nya noteringar, {closed} avslutade affärer.",
+    "monthSoFarCapital": "{month} hittills: {sought} sökt av nya noteringar.",
+    "sampleDataLabel": "Exempeldata"
   },
   "onboarding": {
     "welcomeTitle": "Välkommen till CapitalReach",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "Du har signerat; väntar på motparten",
     "ndaClickwrapHint": "E-signering är inte kopplad i denna miljö. Investeraren kan acceptera NDA:t direkt på startupens notering, vilket öppnar datarummet omedelbart.",
     "commitCleared": "Åtagande rensat",
-    "commitClear": "Rensa"
+    "commitClear": "Rensa",
+    "browseInvestors": "Bläddra bland investerare",
+    "emptyDescFounder": "Affärer visas här när en investerare svarar på din notering eller när du startar en.",
+    "emptyDescAdmin": "Affärer visas här så snart en startup och en investerare öppnar en.",
+    "statNoConcluded": "Inga avslutade affärer ännu",
+    "statNoOpen": "Inga öppna affärer"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",

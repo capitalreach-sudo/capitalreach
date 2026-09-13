@@ -1473,7 +1473,10 @@
     "consistencyCaption": "Mesure l'exhaustivité et la cohérence interne du dossier. Ni prévision de rendement, ni conseil en investissement, ni vérification d'un quelconque chiffre.",
     "soFar": "à ce jour",
     "quietBefore": "Rien n'a été listé ni clôturé avant {month}, le graphique commence donc là.",
-    "monthInProgress": "{month} est encore en cours ; son dernier point creux compte le mois à ce jour."
+    "monthInProgress": "{month} est encore en cours ; son dernier point creux compte le mois à ce jour.",
+    "monthSoFar": "{month} à ce jour : {listings} nouvelles fiches, {closed} deals clos.",
+    "monthSoFarCapital": "{month} à ce jour : {sought} recherchés par les nouvelles fiches.",
+    "sampleDataLabel": "Données d'exemple"
   },
   "filters": {
     "industry": "Secteur",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "Vous avez signé ; en attente de l'autre partie",
     "ndaClickwrapHint": "La signature électronique n'est pas connectée sur ce déploiement. L'investisseur peut accepter le NDA directement sur l'annonce de la startup, ce qui ouvre la data room immédiatement.",
     "commitCleared": "Engagement retiré",
-    "commitClear": "Retirer"
+    "commitClear": "Retirer",
+    "browseInvestors": "Parcourir les investisseurs",
+    "emptyDescFounder": "Les deals apparaissent ici quand un investisseur répond à votre fiche, ou quand vous en ouvrez un.",
+    "emptyDescAdmin": "Les deals apparaissent ici dès qu'une startup et un investisseur en ouvrent un.",
+    "statNoConcluded": "Aucun deal conclu pour l'instant",
+    "statNoOpen": "Aucun deal ouvert"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",

@@ -1473,7 +1473,10 @@
     "consistencyCaption": "衡量所提交材料的完整性与内部一致性。既不是收益预测，也不是投资建议，更不是对任何数字的核实。",
     "soFar": "截至目前",
     "quietBefore": "{month} 之前没有任何上架或成交，因此图表从该月开始。",
-    "monthInProgress": "{month} 仍在进行中；最后的空心点计入本月截至目前的数据。"
+    "monthInProgress": "{month} 仍在进行中；最后的空心点计入本月截至目前的数据。",
+    "monthSoFar": "{month}至今:新增列表{listings}个,成交{closed}笔。",
+    "monthSoFarCapital": "{month}至今:新列表寻求{sought}。",
+    "sampleDataLabel": "示例数据"
   },
   "filters": {
     "industry": "行业",
@@ -2120,7 +2123,12 @@
     "contractYouSigned": "你已签署，等待对方",
     "ndaClickwrapHint": "此部署未接入电子签名。投资者可以直接在创业公司的挂牌页接受 NDA，数据室随即开放。",
     "commitCleared": "承诺已清除",
-    "commitClear": "清除"
+    "commitClear": "清除",
+    "browseInvestors": "浏览投资者",
+    "emptyDescFounder": "当投资者回应您的列表或您主动发起时,交易将显示在此处。",
+    "emptyDescAdmin": "初创公司与投资者开启交易后即显示在此处。",
+    "statNoConcluded": "暂无已结束的交易",
+    "statNoOpen": "无进行中的交易"
   },
   "investorProfile": {
     "back": "返回投资者列表",

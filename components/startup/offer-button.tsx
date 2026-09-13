@@ -55,7 +55,7 @@ const PRIMARY: CSSProperties = {
   background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)",
   borderRadius: "999px", padding: "0 24px", minHeight: "40px", cursor: "pointer",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-  color: "var(--cr-band-ink)", textDecoration: "none",
+  color: "var(--cr-on-accent)", textDecoration: "none",
 };
 
 const QUIET: CSSProperties = {

@@ -82,7 +82,7 @@ export default function ResetPasswordPage() {
                     style={iStyle} />
                 </div>
                 <button type="submit" disabled={loading} className="btn-copper-shimmer"
-                  style={{ width: "100%", height: "44px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-band-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, transition: "opacity 120ms" }}>
+                  style={{ width: "100%", height: "44px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, transition: "opacity 120ms" }}>
                   {loading ? t("auth.sending") : t("auth.sendReset")}
                 </button>
               </form>
