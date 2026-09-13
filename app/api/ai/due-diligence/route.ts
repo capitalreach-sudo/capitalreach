@@ -82,7 +82,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Startup not available" }, { status: 404 });
   }
 
-  const ctx = buildAccessContext(profile, isLaunch);
+  // isLaunch deliberately FALSE here: launch mode elevates everyone to the
+  // top tier for product features, but lib/ai-access's policy is that a
+  // metered model feature is never launch-granted -- and the /ai tier table
+  // shows due diligence excluded for Angel. Passing isLaunch opened the
+  // Pro-only feature to every signed-in member.
+  const ctx = buildAccessContext(profile, false);
   if (!canAiDueDiligence(ctx)) {
     return NextResponse.json(
       { error: "Upgrade to Pro Investor for AI due diligence reports." },

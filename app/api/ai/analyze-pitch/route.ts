@@ -1,3 +1,4 @@
+import { checkAiAccess } from "@/lib/ai-access";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { isOpenAIConfigured } from "@/lib/openai";
@@ -25,8 +26,14 @@ export async function POST(req: NextRequest) {
     // even where the Upstash limiter is unconfigured. Tier read is cheap and
     // the profile is fetched by every one of these routes anyway.
     {
-      const { data: prof } = await supabase.from("profiles").select("subscription_tier").eq("id", user.id).maybeSingle();
-      const allowance = await checkAiAllowance(user.id, "pitch-score", prof?.subscription_tier);
+      // Entity tier via checkAiAccess, the same authority as every AI gate
+      // (the profile tier diverges after admin grants -- the split answered
+      // "Unlimited" and "upgrade" to one account on one page).
+      const ai = await checkAiAccess(user.id);
+      if (!ai.allowed) {
+        return NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 });
+      }
+      const allowance = await checkAiAllowance(user.id, "pitch-score", ai.tier);
       if (!allowance.ok) {
         return allowance.limit === 0
           ? NextResponse.json({ error: "AI tools are a paid feature. Upgrade your plan to use them.", upgrade: true }, { status: 402 })

@@ -1,3 +1,4 @@
+import { checkAiAccess } from "@/lib/ai-access";
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { aiDailyLimit } from "@/lib/ai-limits";
@@ -14,12 +15,14 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ signedIn: false });
 
-  const { data: profile } = await supabase
-    .from("profiles").select("subscription_tier").eq("id", user.id).maybeSingle();
-  const limit = aiDailyLimit(profile?.subscription_tier);
+  // The ENTITY tier via checkAiAccess -- the authority every AI gate uses.
+  // This meter read profiles.subscription_tier instead, so an account whose
+  // two tiers diverged saw "Unlimited" here and 402 on the very next tab.
+  const ai = await checkAiAccess(user.id);
+  const limit = aiDailyLimit(ai.tier ?? undefined);
 
   if (limit === -1) {
-    return NextResponse.json({ signedIn: true, unlimited: true, tier: profile?.subscription_tier ?? null });
+    return NextResponse.json({ signedIn: true, unlimited: true, tier: ai.tier ?? null });
   }
 
   const admin = createAdminClient();
@@ -34,7 +37,7 @@ export async function GET() {
   return NextResponse.json({
     signedIn: true,
     unlimited: false,
-    tier: profile?.subscription_tier ?? null,
+    tier: ai.tier ?? null,
     used,
     limit,
     remaining: Math.max(0, limit - used),

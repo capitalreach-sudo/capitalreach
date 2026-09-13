@@ -192,14 +192,8 @@ export default function InvestorSettingsPage() {
         data.portfolio_json = Array.isArray(data.portfolio_json) ? data.portfolio_json : [];
         setAccredited(!!profile?.accreditation_certified);
         // Merge profile fields
-        if (profile) {
-          data.investor_type  = profile.investor_type;
-          data.portfolio_count = profile.portfolio_count;
-          data.lead_investor  = profile.lead_investor;
-          data.check_size_min = profile.check_size_min;
-          data.check_size_max = profile.check_size_max;
-          data.languages      = profile.languages || [];
-        }
+        // type and languages come from the investors row itself now; the
+        // old merge overlaid five dead profiles columns on top of it.
       }
       setInvestor(data);
       setLoading(false);
@@ -248,6 +242,8 @@ export default function InvestorSettingsPage() {
         stages: investor.stages,
         min_check: investor.min_check ? parseInt(investor.min_check) : null,
         max_check: investor.max_check ? parseInt(investor.max_check) : null,
+        type: investor.type || null,
+        languages: investor.languages?.length ? investor.languages : null,
         geography: investor.geography,
       } }),
     }).catch(() => null);
@@ -259,12 +255,6 @@ export default function InvestorSettingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("profiles").update({
-          investor_type:    investor.investor_type || null,
-          portfolio_count:  investor.portfolio_count ? parseInt(investor.portfolio_count) : null,
-          lead_investor:    !!investor.lead_investor,
-          check_size_min:   investor.check_size_min ? parseFloat(investor.check_size_min) : null,
-          check_size_max:   investor.check_size_max ? parseFloat(investor.check_size_max) : null,
-          languages:        investor.languages?.length ? investor.languages : null,
           accreditation_certified: accredited,
         }).eq("id", user.id);
       }
@@ -596,74 +586,36 @@ export default function InvestorSettingsPage() {
             </div>
           </div>
 
-          {/* ── Richer Profile Fields (Feature 3) ─────────────────────── */}
+          {/* ── Profile details. Only fields with a REAL home: this section
+              used to write investor_type, portfolio_count, lead_investor,
+              check_size_min/max and languages to orphaned profiles columns
+              nothing on the platform reads -- the public page, matching and
+              deal filters all read the investors table, where three of those
+              five already have inputs elsewhere on this page. What remains
+              here saves to the columns that actually render. ────────────── */}
           <div className="p-4 sm:p-6" style={CARD}>
             <h2 className="ruled-label" style={{ marginBottom: "6px" }}>{t("dashboard.secProfileDetail")}</h2>
             <p className="mb-4 text-xs text-cr-i3">{t("dashboard.profileDetailSub")}</p>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <Label className={FIELD_LABEL}>{t("onboarding.inv.step1")}</Label>
-                  <select
-                    value={investor.investor_type || ""}
-                    onChange={e => set("investor_type", e.target.value)}
-                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-                  >
-                    <option value="">{t("dashboard.selectDots")}</option>
-                    {[
-                      { value: "angel",         labelKey: "dashboard.itAngel" },
-                      { value: "vc",            labelKey: "dashboard.itVc"    },
-                      { value: "family_office", labelKey: "dashboard.itFo"    },
-                      { value: "corporate",     labelKey: "dashboard.itCorp"  },
-                      { value: "syndicate",     labelKey: "dashboard.itSynd"  },
-                    ].map(it => (
-                      <option key={it.value} value={it.value}>{t(it.labelKey)}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label className={FIELD_LABEL}>{t("dashboard.portfolioCount")}</Label>
-                  <Input
-                    type="number"
-                    value={investor.portfolio_count ?? ""}
-                    onChange={e => set("portfolio_count", e.target.value)}
-                    className="font-mono"
-                    placeholder="e.g. 12"
-                  />
-                </div>
-              </div>
-              {/* Same treatment as the lead-rounds toggle: rule, not box. */}
-              <div className="flex items-center justify-between gap-4 pt-4" style={{ borderTop: "1px solid var(--cr-rule)" }}>
-                <div>
-                  <p className="text-sm font-medium text-cr-ink">{t("dashboard.willingLead")}</p>
-                  <p className="text-xs text-cr-i3">{t("dashboard.willingLeadSub")}</p>
-                </div>
-                <Switch
-                  checked={!!investor.lead_investor}
-                  onCheckedChange={v => set("lead_investor", v)}
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <Label className={FIELD_LABEL}>{t("onboarding.inv.minCheck")}</Label>
-                  <Input
-                    type="number"
-                    value={investor.check_size_min ?? ""}
-                    onChange={e => set("check_size_min", e.target.value)}
-                    className="font-mono"
-                    placeholder="10000"
-                  />
-                </div>
-                <div>
-                  <Label className={FIELD_LABEL}>{t("onboarding.inv.maxCheck")}</Label>
-                  <Input
-                    type="number"
-                    value={investor.check_size_max ?? ""}
-                    onChange={e => set("check_size_max", e.target.value)}
-                    className="font-mono"
-                    placeholder="500000"
-                  />
-                </div>
+              <div>
+                <Label className={FIELD_LABEL}>{t("onboarding.inv.step1")}</Label>
+                <select
+                  value={investor.type || ""}
+                  onChange={e => set("type", e.target.value)}
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                >
+                  <option value="">{t("dashboard.selectDots")}</option>
+                  {/* The DB CHECK on investors.type accepts exactly these
+                      four; the old "syndicate" option could never save. */}
+                  {[
+                    { value: "angel",         labelKey: "dashboard.itAngel" },
+                    { value: "vc",            labelKey: "dashboard.itVc"    },
+                    { value: "family_office", labelKey: "dashboard.itFo"    },
+                    { value: "corporate",     labelKey: "dashboard.itCorp"  },
+                  ].map(it => (
+                    <option key={it.value} value={it.value}>{t(it.labelKey)}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <Label className={cn(FIELD_LABEL, "mb-1.5 block")}>{t("dashboard.languagesSpoken")}</Label>
