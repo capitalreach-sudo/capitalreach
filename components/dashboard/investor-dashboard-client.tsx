@@ -750,7 +750,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
       industry: w.startup?.industry, stage: w.startup?.stage,
       funding_target: w.startup?.funding_target, mrr: w.startup?.mrr,
     }));
-    const csv = [Object.keys(rows[0]).join(","), ...rows.map((r) => Object.values(r).join(","))].join("\n");
+    // Every cell quoted: a tagline is free text, and one comma in it shifts
+    // every later column of that row. Same escaping as the NDA roster export.
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = [
+      Object.keys(rows[0]).map(esc).join(","),
+      ...rows.map((r) => Object.values(r).map(esc).join(",")),
+    ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");

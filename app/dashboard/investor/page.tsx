@@ -133,7 +133,10 @@ export default async function InvestorDashboardPage() {
       const amt = Number((d as unknown as { amount?: number | null }).amount ?? 0) || 0;
       const dd = d as unknown as { status: string; commitment_type?: string | null; funded_at?: string | null };
       if (dd.status === "closed") deployed += amt;
-      else if (dd.commitment_type === "committed" || dd.commitment_type === "soft_circle" || dd.commitment_type === "verbal") committed += amt;
+      // A term sheet with no recorded commitment level still counts as
+      // committed: the founder's raise tracker reads that deal as
+      // soft-circled, and the two sides must agree on an open term sheet.
+      else if (dd.commitment_type === "committed" || dd.commitment_type === "soft_circle" || dd.commitment_type === "verbal" || dd.status === "term_sheet") committed += amt;
     }
     return { committed, deployed };
   })();

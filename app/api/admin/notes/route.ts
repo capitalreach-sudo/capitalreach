@@ -46,7 +46,9 @@ export async function GET(req: NextRequest) {
 
   const notes = (data ?? []).map(n => {
     const a = authors.find(x => x.id === n.admin_id);
-    return { ...n, authorName: a?.full_name || a?.email || null };
+    // isMine so the client can offer delete only where DELETE below would
+    // allow it: the panel never learns the viewer's own admin id otherwise.
+    return { ...n, authorName: a?.full_name || a?.email || null, isMine: n.admin_id === guard.adminId };
   });
   return NextResponse.json({ notes });
 }

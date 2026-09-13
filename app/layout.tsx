@@ -16,7 +16,8 @@ import { brand } from "@/lib/brand";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximumScale: capping it at 1 disables pinch-zoom on Android (iOS
+  // ignores the cap), and zoom is an accessibility floor, not a layout choice.
   // Lets the page paint into the notch and home-indicator areas, which is what
   // makes env(safe-area-inset-*) report real values -- the mobile tab bar pads
   // itself with the bottom inset so its labels clear the home indicator.

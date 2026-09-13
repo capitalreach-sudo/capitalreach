@@ -1,0 +1,28 @@
+-- 133_safe_terms_column_lockdown.sql
+-- safe_cap, safe_discount, valuation_type and verification_checks are secrets
+-- the listing page strips server-side: the round-terms trio is nulled for any
+-- viewer without viewFinancials (the same entitlement that hides mrr/arr/
+-- valuation), and verification_checks never leaves the page at all (the trust
+-- panel is served its own masked shape). 109's column grant list still hands
+-- all four to every holder of a session:
+--
+--   GET /rest/v1/startups?select=safe_cap,safe_discount,valuation_type,
+--       verification_checks&status=eq.active
+--     -> 200, the gated round terms and raw verification evidence of the
+--        whole market, for any authenticated member (129 already closed anon).
+--
+-- Same mechanism as 109: the SELECT surface stays a column-level grant list,
+-- and these four leave it. A targeted column revoke subtracts exactly these
+-- privileges from that list -- re-granting the full 109 list here would
+-- silently drop every column granted since (the trust columns from 112, and
+-- the class of outage 129 documents). A column revoke works against a
+-- column-level grant; it is only against a TABLE-level grant that it is a
+-- no-op (the 123 caveat), and startups has had no table-level grant since 109.
+--
+-- SELECT only, deliberately: the founder's edit form saves these columns
+-- through the founder's own session (/api/startups/save), so the UPDATE
+-- grants are untouched. Every read of the four is already service-role
+-- (exempt from grants) or the owner's get_my_startup (SECURITY DEFINER,
+-- exempt) -- verified per file before this revoke, so no surface loses data.
+revoke select (safe_cap, safe_discount, valuation_type, verification_checks)
+  on public.startups from anon, authenticated;

@@ -91,8 +91,12 @@ export function InfoTip({ termKey, label }: {
       <button
         type="button"
         // Sits inline beside a label, so the mobile 40px floor would push the
-        // label's line box open around it.
+        // label's line box open around it. The floor still applies to the
+        // TARGET, just not the layout: .info-tip-hit (globals.css) extends an
+        // invisible hit area to 40x40 around the 12px glyph, because a 12px
+        // square is not a thing a thumb can reliably press.
         data-tap-exempt=""
+        className="info-tip-hit"
         onClick={(e) => {
           e.preventDefault(); e.stopPropagation();
           // A click on a tip already open from hover/focus pins it rather

@@ -94,8 +94,10 @@ export async function POST(req: NextRequest) {
     await notifyUsers([startup?.owner_id, investor?.owner_id], {
       type:  "contract_status",
       title: status === "sent"
-        ? `Contract sent for signature — ${contract.title}`
-        : `Contract signed — ${contract.title}`,
+        ? `Contract sent for signature: ${contract.title}`
+        : `Contract signed: ${contract.title}`,
+      titleKey: status === "sent" ? "notif.contractSentTitle" : "notif.contractSignedTitle",
+      params: { title: contract.title },
       href:  `/deals?deal=${contract.deal_id}`,
     });
 

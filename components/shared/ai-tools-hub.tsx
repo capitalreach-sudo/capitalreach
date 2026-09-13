@@ -739,7 +739,10 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
 
   const TIER_ROWS = [
     { feature: t("ai.tier.pitchAnalyzer"),    free: false,       angel: "20/" + tf("ai.tier.day", "day"), pro: t("common.unlimited") },
-    { feature: t("ai.tier.investorMatching"), free: false,       angel: "20/" + tf("ai.tier.day", "day"), pro: t("common.unlimited") },
+    // Matching is deterministic thesis-matching with no daily meter
+    // (app/api/ai/smart-match has no allowance check), so the row says
+    // included rather than claiming a 20/day cap nothing enforces.
+    { feature: t("ai.tier.investorMatching"), free: false,       angel: true,         pro: true                  },
     { feature: t("ai.tier.dueDiligence"),     free: false,       angel: false,        pro: t("common.unlimited") },
     { feature: t("ai.tier.aiScore"),          free: t("ai.tier.viewOnly"), angel: true, pro: true                },
     { feature: t("ai.tier.savedReports"),     free: false,       angel: false,        pro: true                  },
@@ -821,14 +824,31 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>
               {usage.unlimited
                 ? t("ai.usageUnlimited")
-                : t("ai.usageRemaining", { remaining: usage.remaining, limit: usage.limit })}
+                // A zero limit is a plan with no AI allowance, not an
+                // exhausted one -- "0 of 0 left" reads as a bug, and the
+                // meter beside it would divide by zero.
+                : usage.limit === 0
+                  ? tf("ai.usagePaidOnly", "AI tools are part of paid plans")
+                  : t("ai.usageRemaining", { remaining: usage.remaining, limit: usage.limit })}
+              {!usage.unlimited && usage.limit > 0 && (
+                // The API reports the busiest tool because the limiter counts
+                // each tool separately; without this note "N left" reads as
+                // one shared pool.
+                <span style={{ display: "block", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                  {tf("ai.usagePerTool", "Each tool has its own daily limit; this shows the one you have used most.")}
+                </span>
+              )}
             </span>
             {!usage.unlimited && (
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                {/* Exhausted is a state, not a loss -- ink, never red. */}
-                <div style={{ width: "120px", height: "4px", background: "var(--cr-paper-4)", borderRadius: "2px", overflow: "hidden" }}>
-                  <div style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100)}%`, height: "100%", background: usage.remaining === 0 ? "var(--cr-ink-3)" : "var(--cr-copper)" }} />
-                </div>
+                {/* Exhausted is a state, not a loss -- ink, never red. No
+                    meter at all on a zero-allowance plan: there is nothing
+                    for it to measure. */}
+                {usage.limit > 0 && (
+                  <div style={{ width: "120px", height: "4px", background: "var(--cr-paper-4)", borderRadius: "2px", overflow: "hidden" }}>
+                    <div style={{ width: `${Math.min(100, (usage.used / Math.max(1, usage.limit)) * 100)}%`, height: "100%", background: usage.remaining === 0 ? "var(--cr-ink-3)" : "var(--cr-copper)" }} />
+                  </div>
+                )}
                 <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>
                   {t("ai.usageUpgrade")}
                 </Link>

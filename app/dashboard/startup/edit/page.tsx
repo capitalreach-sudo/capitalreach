@@ -332,10 +332,13 @@ export default function EditStartupPage() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const dirty = useRef(false);
   const lastSaved = useRef<string>("");
+  // The last refusal shown as a toast. Autosave re-fires on every pause in
+  // typing, so an unchanged refusal must not toast once a second.
+  const lastErrorShown = useRef<string>("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const backupKey = startup?.id ? `cr_edit_backup_${startup.id}` : null;
 
-  const persist = useCallback(async (st: any, opts: { retry?: boolean } = {}): Promise<boolean> => {
+  const persist = useCallback(async (st: any, opts: { retry?: boolean; explicit?: boolean } = {}): Promise<boolean> => {
     const payload = buildPayload(st);
     const sig = JSON.stringify(payload);
     if (sig === lastSaved.current) { setSaveState("saved"); return true; }
@@ -347,13 +350,28 @@ export default function EditStartupPage() {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fields: payload }),
     }).catch(() => null);
-    if (!res || !res.ok) {
-      if (!opts.retry) return persist(st, { retry: true });
+    if (res && !res.ok && res.status < 500) {
+      // The route REFUSED this payload; the same bytes fail identically on a
+      // resend, so no retry -- surface the reason the route crafted instead
+      // (contact_in_prose names the field and the remedy, a tier-cap P0001
+      // says which plan is needed). An explicit Save always toasts; autosave
+      // only when the reason changed.
+      const json = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
+      const msg = typeof json?.error === "string" && json.error ? json.error : t("errors.generic");
+      if (opts.explicit || msg !== lastErrorShown.current) notify.error(msg);
+      lastErrorShown.current = msg;
       setSaveState("error");
+      return false;
+    }
+    if (!res || !res.ok) {
+      if (!opts.retry) return persist(st, { ...opts, retry: true });
+      setSaveState("error");
+      if (opts.explicit) notify.error(t("errors.generic"));
       return false;
     }
     const saved = await res.json().catch(() => ({}));
     lastSaved.current = sig;
+    lastErrorShown.current = "";
     dirty.current = false;
     if (saved?.contactsWithheld?.length) {
       // The masked text goes back into the form. Without it the next autosave
@@ -381,9 +399,10 @@ export default function EditStartupPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const ok = await persist(startup);
-    if (!ok) { notify.error(t("errors.generic")); }
-    else { notify.success(startup.status === "active" ? t("dashboard.editSavedLive") : t("dashboard.editSaved")); router.push("/dashboard/startup"); }
+    // persist owns the failure toasts on an explicit save: the route's own
+    // reason for a refusal, the generic one for a network or server failure.
+    const ok = await persist(startup, { explicit: true });
+    if (ok) { notify.success(startup.status === "active" ? t("dashboard.editSavedLive") : t("dashboard.editSaved")); router.push("/dashboard/startup"); }
     setSaving(false);
   }
 
@@ -424,7 +443,12 @@ export default function EditStartupPage() {
             <span aria-live="polite" style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: saveState === "error" ? "var(--cr-down)" : "var(--cr-ink-4)", minHeight: 18 }}>
               {saveState === "saving" && (<><Loader2 style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} /> {t("common.saving")}</>)}
               {saveState === "saved"  && (<><Check style={{ width: 12, height: 12, color: "var(--cr-up)" }} /> {t("dashboard.savedTick")}</>)}
-              {saveState === "error"  && t("dashboard.saveFailedRetrying")}
+              {/* Nothing retries on its own from here -- the next edit
+                  re-arms the autosave -- so the label must not claim
+                  otherwise. English fallback until the key lands. */}
+              {saveState === "error"  && (t("dashboard.saveFailedEditToRetry") === "dashboard.saveFailedEditToRetry"
+                ? "Save failed, edit to retry"
+                : t("dashboard.saveFailedEditToRetry"))}
             </span>
           </div>
 

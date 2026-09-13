@@ -111,7 +111,21 @@ describe("dealSealText", () => {
   it("falls back to described dates when no introduction is on record", () => {
     const t = dealSealText({ companyName: "X", investorName: "Y", amount: 1, currency: "GBP" });
     expect(t).toContain("the date of first contact recorded by CapitalReach");
-    expect(t).toContain(`${NON_CIRCUMVENTION_MONTHS} months after that date`);
+    expect(flat(t)).toContain(`within ${NON_CIRCUMVENTION_MONTHS} months of the recorded introduction date`);
+    // The old fallback interpolated a phrase into the date slot and rendered
+    // "on or before N months after that date, being N months from ..." into
+    // signed documents.
+    expect(flat(t)).not.toContain("months after that date, being");
+  });
+
+  it("keeps the dated fee window byte-for-byte when a tail end is on record", () => {
+    // Signatures hash this text: a mid-seal deal with a recorded tail must
+    // produce the same bytes before and after the undated branch was fixed.
+    const t = dealSealText(BASE);
+    expect(t).toContain(
+      "where the round closes on or before 2028-09-01,\n" +
+      `   being ${NON_CIRCUMVENTION_MONTHS} months from the recorded introduction date. The fee is charged`,
+    );
   });
 });
 

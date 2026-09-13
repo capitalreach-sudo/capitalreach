@@ -28,7 +28,7 @@ import { FounderAttestationModal } from "@/components/review/FounderAttestationM
 interface Props {
   profile:      Profile;
   startup:      Startup | null;
-  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number }; funnel?: { termSheets: number; closed: number } };
+  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number }; funnel?: { views: number; termSheets: number; closed: number } };
   isLaunchMode: boolean;
   /**
    * Set when an admin is looking at someone else's dashboard. Carries the
@@ -647,7 +647,13 @@ function RaiseFunnel({ views, saves, deals, termSheets, closed }: { views: numbe
   if (views === 0 && deals === 0) return null;
   return (
     <div style={panel}>
-      <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.funnelTitle")}</h3>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.funnelTitle")}</h3>
+        {/* The window, stated: every step counts from the listing's first
+            day, unlike the 30-day strip above. Pending i18n key
+            dashboard.funnelWindow. */}
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("dashboard.funnelWindow")}</span>
+      </div>
       <div style={{ display: "grid", gap: "12px" }}>
         {steps.map(([label, v], i) => {
           const prev = i > 0 ? steps[i - 1][1] : null;
@@ -1616,7 +1622,10 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             {startup && <ErrorBoundary labelKey="sections.raiseProgress"><RoundControls startup={startup} /></ErrorBoundary>}
             {startup && analytics.funnel && (
               <ErrorBoundary labelKey="sections.raiseProgress">
-                <RaiseFunnel views={analytics.views} saves={analytics.saves} deals={analytics.deals} termSheets={analytics.funnel.termSheets} closed={analytics.funnel.closed} />
+                {/* funnel.views, not the strip's views: the strip is a 30-day
+                    window, every other funnel step is all-time, and one mixed
+                    window makes a conversion step read over 100%. */}
+                <RaiseFunnel views={analytics.funnel.views} saves={analytics.saves} deals={analytics.deals} termSheets={analytics.funnel.termSheets} closed={analytics.funnel.closed} />
               </ErrorBoundary>
             )}
             {benchmarks && benchmarks.entries.length > 0 && (

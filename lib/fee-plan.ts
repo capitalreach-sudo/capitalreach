@@ -11,10 +11,25 @@
  * the instalments sum to the fee EXACTLY, and no month is zero.
  */
 
+import { getCurrency } from "@/lib/currency";
+
 export const MIN_PLAN_MONTHS = 2;
 export const MAX_PLAN_MONTHS = 6;
 /** Below this there is nothing to spread — a plan on €40 is administrative noise. */
 export const MIN_PLAN_FEE_MINOR = 50_000; // 500.00 in major units
+
+/**
+ * Instalment amounts are MINOR units throughout this module. A flat /100 at
+ * the display layer understates zero-decimal currencies 100x -- the same trap
+ * feeMajor in lib/fees.ts documents -- so the factor lives beside the schedule
+ * and every renderer divides by this one.
+ */
+export function instalmentMajor(amountMinor: number, currency: string | null | undefined): number {
+  // Currency may arrive lowercase (Stripe convention); the catalog is keyed
+  // uppercase, so normalise or JPY falls through to the two-decimal default.
+  const factor = getCurrency(currency?.toUpperCase()).zeroDecimal ? 1 : 100;
+  return (Number(amountMinor) || 0) / factor;
+}
 
 export interface PlannedInstalment {
   seq: number;

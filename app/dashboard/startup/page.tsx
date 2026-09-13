@@ -47,7 +47,7 @@ export default async function StartupDashboardPage() {
   const dealSeries: number[] = Array(30).fill(0);
   const raise = { softCircled: 0, committed: 0 };
   // B25: funnel — views → saves → deals → term sheets → closed.
-  const funnel = { termSheets: 0, closed: 0 };
+  const funnel = { views: 0, termSheets: 0, closed: 0 };
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -68,6 +68,15 @@ export default async function StartupDashboardPage() {
       .gte("created_at", thirtyDaysAgo)
       .limit(10000);
     viewsCount = viewRows?.length || 0;
+    // The strip's Views tile is a 30-day figure, but every later funnel step
+    // is all-time -- feeding the 30-day number in let Saves "convert" at over
+    // 100%. The funnel reads an all-time head count instead (also immune to
+    // the 10k row cap above); the strip and sparkline keep their window.
+    const { count: allTimeViews } = await metrics
+      .from("pageviews")
+      .select("id", { count: "exact", head: true })
+      .eq("startup_id", startup.id);
+    funnel.views = allTimeViews ?? 0;
     const DAY = 24 * 60 * 60 * 1000;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (const r of viewRows ?? []) {

@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
         type: "fee_due",
         title: "Your fee dispute was reviewed",
         body: note.slice(0, 140),
+        titleKey: "notif.feeDisputeReviewedTitle",
         href: "/dashboard/startup/billing",
       }).catch(() => {});
     }
@@ -146,7 +147,9 @@ export async function POST(req: NextRequest) {
       userId: startup.owner_id,
       type: "fee_due",
       title: "Success fee invoice",
-      body: `The 2% success fee on your closed round has been invoiced.`,
+      body: "The 2% success fee on your closed round has been invoiced.",
+      titleKey: "notif.feeInvoicedTitle",
+      bodyKey: "notif.feeInvoicedBody",
       href: "/dashboard/startup/billing",
     }).catch(() => {});
     return NextResponse.json({ success: true, state: "outstanding", invoiceUrl: invoice.hosted_invoice_url ?? null });

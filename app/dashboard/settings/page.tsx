@@ -340,26 +340,40 @@ export default function AccountSettingsPage() {
                 className="h-10 rounded-full border-cr-down px-5 text-[13px] text-cr-down hover:bg-[var(--cr-down-bg)] hover:text-cr-down"
                 onClick={async () => {
                   setDeletingAccount(true);
+                  setDeleteVerdict(null);
                   // E49: ask the server what deleting would actually do before
                   // the user confirms it. For an account with closed deals the
                   // answer is "anonymised, not erased", and that is not a
                   // detail to discover afterwards.
-                  const res = await fetch("/api/account/delete");
-                  if (res.ok) setDeleteVerdict(await res.json());
+                  const res = await fetch("/api/account/delete").catch(() => null);
+                  if (res?.ok) setDeleteVerdict(await res.json());
+                  else notify.error(t("errors.generic"));
                 }}
               >
                 {t("settings.deleteAccount")}
               </Button>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm font-medium text-cr-down">
-                  {t("settings.deleteConfirm")}
-                </p>
+                {/* The confirm line follows the verdict: "permanently removed"
+                    is untrue for an account the server will anonymise, so the
+                    erase phrasing waits until the server has said erase, and
+                    an anonymise account gets only the anonymise explanation. */}
+                {!deleteVerdict ? (
+                  <p className="text-sm font-light text-cr-i3">{t("common.loading")}</p>
+                ) : deleteVerdict.mode === "erase" ? (
+                  <p className="text-sm font-medium text-cr-down">
+                    {t("settings.deleteConfirm")}
+                  </p>
+                ) : null}
                 {deleteVerdict && (
                   // A rule, not a nested box: the verdict separates from the
-                  // confirm line with a hairline. The deal/fee counts are
-                  // data, so the line renders in mono.
-                  <div className="space-y-1 pt-3" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+                  // confirm line with a hairline -- only where that line is
+                  // above it. The deal/fee counts are data, so the line
+                  // renders in mono.
+                  <div
+                    className={deleteVerdict.mode === "erase" ? "space-y-1 pt-3" : "space-y-1"}
+                    style={deleteVerdict.mode === "erase" ? { borderTop: "1px solid var(--cr-rule)" } : undefined}
+                  >
                     <p className="text-sm font-light text-cr-i3">{deleteVerdict.mode === "anonymise" ? t("deleteAccount.willAnonymise") : t("deleteAccount.willErase")}</p>
                     {deleteVerdict.mode === "anonymise" && (
                       <p className="font-mono text-xs font-medium text-cr-i4">
@@ -374,7 +388,10 @@ export default function AccountSettingsPage() {
                   <Button
                     variant="outline"
                     className="h-10 rounded-full border-cr-down px-5 text-[13px] text-cr-down hover:bg-[var(--cr-down-bg)] hover:text-cr-down"
-                    disabled={deleteLoading}
+                    // Not before the verdict is on screen: the button must
+                    // never commit to "permanently delete" while what will
+                    // actually happen is still in flight.
+                    disabled={deleteLoading || !deleteVerdict}
                     onClick={async () => {
                       setDeleteLoading(true);
                       try {
@@ -397,7 +414,7 @@ export default function AccountSettingsPage() {
                   >
                     {deleteLoading ? t("settings.deletingAccount") : t("settings.deletePermanently")}
                   </Button>
-                  <Button variant="ghost" className="h-10 rounded-full px-4 text-[13px]" onClick={() => setDeletingAccount(false)} disabled={deleteLoading}>{t("common.cancel")}</Button>
+                  <Button variant="ghost" className="h-10 rounded-full px-4 text-[13px]" onClick={() => { setDeletingAccount(false); setDeleteVerdict(null); }} disabled={deleteLoading}>{t("common.cancel")}</Button>
                 </div>
               </div>
             )}

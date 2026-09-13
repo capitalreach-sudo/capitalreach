@@ -162,7 +162,7 @@
   "ai": {
     "title": "AI 驱动分析",
     "pageTitle": "资本智能。",
-    "pageSub": "评分路演，匹配投资者，生成尽调报告——基于 GPT-4。",
+    "pageSub": "评分路演，匹配投资者，生成尽调报告，基于 GPT-4o mini。",
     "tool1Name": "AI 路演评分器",
     "tool1Desc": "上传您的材料和财务数据。模型评估团队、牵引力、市场和叙事，返回 0–100 分。",
     "tool1Cta": "评估您的路演",
@@ -205,11 +205,11 @@
       "analyzing": "分析中…",
       "clear": "清除",
       "resultsEmpty": "AI分析结果将显示在这里",
-      "resultsEmptySub": "真实GPT-4o输出——无模板，无虚假数据。",
+      "resultsEmptySub": "真实 GPT-4o mini 输出，无模板，无虚假数据。每次分析都专属于你的路演。",
       "evaluating": "正在评估您的路演…",
-      "evaluatingSub": "GPT-4o正在评分清晰度、市场机会、竞争壁垒、团队实力和牵引力",
+      "evaluatingSub": "GPT-4o mini正在评分清晰度、市场机会、竞争壁垒、团队实力和牵引力",
       "reportTitle": "路演分析报告",
-      "generatedBy": "由GPT-4o生成",
+      "generatedBy": "由GPT-4o mini生成",
       "outOf100": "满分100",
       "whatsWorking": "优势所在",
       "improveThis": "改进方向",
@@ -220,10 +220,10 @@
       "dimMoat": "竞争壁垒",
       "dimTeam": "团队实力",
       "dimTraction": "牵引力证据",
-      "descLong": "描述您的初创公司 — 问题、解决方案、市场规模、团队背景和业务进展。GPT-4o 将从5个投资维度打分并提供可操作的反馈。",
+      "descLong": "描述您的初创公司：问题、解决方案、市场规模、团队背景和业务进展。GPT-4o mini 将从5个投资维度打分并提供可操作的反馈。",
       "proTipLabel": "专业提示：",
       "proTipBody": "写明市场规模、月收入与增长率、以往退出经历、团队简介，以及支撑这些内容的关键指标，评分会最为准确。",
-      "footerInfo": "由 GPT-4o 提供支持 · 约3秒 · 不存储数据",
+      "footerInfo": "由 GPT-4o mini 提供支持 · 约3秒 · 不存储数据",
       "analysisFailedErr": "分析失败",
       "analysisFailedFull": "路演分析失败。请检查您的网络连接并重试。",
       "placeholderExample": "示例：\n\n我们正在打造能够实时转录临床问诊的 AI，为农村医疗机构减少 70% 的文书工作。\n\n问题：医生每天花费 3 小时以上处理行政事务，造成 180 亿美元的生产力损失。\n\n业务进展：月收入 4.2 万美元，月环比增长 18%，3 份医院意向书。团队包括 Epic 前员工和斯坦福临床 AI 博士。"
@@ -286,10 +286,10 @@
       "searchPlaceholder": "例如 Vaultrise、HealthAI、ClimateOS…"
     },
     "hub": {
-      "heroPowered": "由GPT-4o驱动",
+      "heroPowered": "由GPT-4o mini驱动",
       "heroLine1": "AI交易",
       "heroLine2": "智能分析",
-      "heroSub": "三款强大AI工具合而为一——分析路演、匹配合适投资者、生成尽职调查报告。",
+      "heroSub": "三款 AI 工具集于一处：分析路演、匹配合适的投资者、生成尽职调查报告。路演分析与尽调由 GPT-4o mini 运行；匹配基于投资主题。",
       "statPitchLabel": "路演分析",
       "statMatchLabel": "投资者匹配",
       "statDDLabel": "尽职调查",
@@ -299,8 +299,8 @@
       "startInvestor": "以投资者身份开始",
       "listStartup": "发布您的初创公司",
       "viewPricing": "查看所有定价",
-      "statPitchVal": "真实GPT",
-      "statMatchVal": "AI驱动",
+      "statPitchVal": "GPT-4o mini",
+      "statMatchVal": "基于投资主题",
       "statDDVal": "500字备忘录",
       "statSpeedVal": "约3秒",
       "tierFreeSub": "永久免费",
@@ -324,7 +324,9 @@
     "usageRemaining": "今日 AI 运行剩余 {remaining}/{limit} 次",
     "usageUnlimited": "你的方案包含无限次 AI 运行",
     "usageUpgrade": "获取更多 →",
-    "disclosureStrip": "AI 生成的分析仅供参考，不构成投资建议。由 OpenAI 模型驱动。声明：本内容由 AI 生成。"
+    "disclosureStrip": "AI 生成的分析仅供参考，不构成投资建议。由 OpenAI 模型驱动。声明：本内容由 AI 生成。",
+    "usagePaidOnly": "AI 工具属于付费套餐",
+    "usagePerTool": "每个工具都有各自的每日限额；这里显示你使用最多的那个。"
   },
   "pricing": {
     "sectionLabel": "方案与定价",
@@ -1051,7 +1053,9 @@
     "uploadFirstDoc": "上传第一份文件",
     "submitting": "提交中…",
     "closureDeclarationDue": "您的轮次已标记为关闭。请申报募集金额以完善记录。",
-    "declareClosure": "申报关闭"
+    "declareClosure": "申报关闭",
+    "funnelWindow": "全部时间",
+    "saveFailedEditToRetry": "保存失败，编辑后重试"
   },
   "settings": {
     "pageTitle": "账号设置",
@@ -1218,7 +1222,7 @@
     "financials": "财务",
     "team": "团队",
     "documents": "文件",
-    "backToListings": "← 返回项目列表",
+    "backToListings": "返回项目列表",
     "viewDeal": "查看交易",
     "requestIntro": "申请介绍",
     "raising": "融资",
@@ -1453,7 +1457,7 @@
     "showTable": "显示数字",
     "showChart": "显示图表",
     "otherIndustries": "其他行业",
-    "sampleNote": "数据包含启动期间展示的示例挂牌。",
+    "sampleNote": "数据包含启动期间展示的示例挂牌、示例账户和示例交易活动。",
     "breakdowns": "分项",
     "viewActivity": "动态",
     "viewNumbers": "数据",
@@ -2112,7 +2116,9 @@
     "scopeAll": "全部交易",
     "scopeMine": "我的交易",
     "editAmountAria": "编辑金额",
-    "amountSaved": "金额已更新"
+    "amountSaved": "金额已更新",
+    "contractYouSigned": "你已签署，等待对方",
+    "ndaClickwrapHint": "此部署未接入电子签名。投资者可以直接在创业公司的挂牌页接受 NDA，数据室随即开放。"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -2906,7 +2912,7 @@
     "noMfa": "该账户未设置第二因素。"
   },
   "imprint": {
-    "metaTitle": "法律声明 — CapitalReach",
+    "metaTitle": "法律声明",
     "metaDesc": "CapitalReach 的法律声明与提供者信息。",
     "title": "法律声明",
     "subtitle": "提供者信息（§ 5 TMG）",
@@ -2967,7 +2973,8 @@
     "footnote": "陌生拓展与中介的法律成本通常在融资开始前就达 5,000–20,000 欧元。",
     "detailNote": "2% 成功费仅在通过 CapitalReach 完成融资后向创业公司开具。投资者无需支付任何费用。",
     "keepShare": "融资额的 {pct}% 留在公司。",
-    "setRaise": "将融资金额设为 {amount}"
+    "setRaise": "将融资金额设为 {amount}",
+    "titleCompare": "用你自己的数字比较佣金"
   },
   "welcome": {
     "eyebrow": "欢迎来到 CapitalReach",
@@ -3151,7 +3158,9 @@
     "due": "到期",
     "sentAwaiting": "已汇出，等待到账",
     "receivedOf": "已收到 {received} / {total}",
-    "fullyFunded": "已全额到账 —— 所有批次均已收到"
+    "fullyFunded": "已全额到账 —— 所有批次均已收到",
+    "timelineSet": "付款计划已设定：{count} 期付款",
+    "cleared": "付款计划已清除"
   },
   "fees": {
     "tab": "费用",
@@ -3177,7 +3186,8 @@
       "reversed": "已撤回"
     },
     "resolve": "处理",
-    "resolvePrompt": "这项争议是如何处理的？"
+    "resolvePrompt": "这项争议是如何处理的？",
+    "operatorOnly": "处理佣金需要运营级管理员。"
   },
   "myFees": {
     "title": "成功费",
@@ -3248,7 +3258,8 @@
     },
     "medianTarget": "轮次目标中位数",
     "newThisMonth": "本月新增轮次",
-    "anonNote": "无需账户即可提交。"
+    "anonNote": "无需账户即可提交。",
+    "operatorOnly": "处理举报需要运营级管理员。"
   },
   "deleteAccount": {
     "willAnonymise": "你的账户在平台上有已交割的交易，因此不能直接删除 —— 对方同样保有记录，未付费用也不会随账户消失。取而代之的是：你的姓名、邮箱、照片和资料文本被永久删除，项目页下线。留下的是一条不含任何个人信息的交易记录。",
@@ -3382,7 +3393,18 @@
     "filterSort": "只改变结果的排列顺序，不增也不减。默认最新在前；按评分、收入或截止日期排序时，读取的是创始人提交的数字。",
     "filterRaising": "只保留达到该规模的轮次。读取的是创始人为本轮设定的募资目标，而非已承诺的金额。",
     "filterGrowth": "创始人在项目信息中申报的月度收入增长率。数字来自创始人，平台不作核实。",
-    "filterClosingSoon": "创始人设定的截止日期在未来 60 天内或已到期的轮次。未设日期的滚动轮次不在其中。"
+    "filterClosingSoon": "创始人设定的截止日期在未来 60 天内或已到期的轮次。未设日期的滚动轮次不在其中。",
+    "stageProposal": "一方发给另一方的交易请求。在接收方接受之前，不会进入任何一方的管道，因此这个看板上的每笔交易都经过双方同意。",
+    "stageIntro": "第一个实际推进阶段：双方已建立联系并在沟通。目前尚无任何承诺，随着沟通逐步落实，交易每次向前推进一个阶段。",
+    "stageClosed": "双方按商定金额确认了这笔投资。完成交割需要已签署的合同和双方确认；交割会生成 2% 成功佣金的账单，且无法重新打开。",
+    "stagePassed": "交易在没有投资的情况下结束，原因已记录。放弃只是结束交易，并不结束关系：如果洽谈重启，已放弃的交易可以重新打开。",
+    "followUpDue": "你在交易上设置的日期，作为自己跟进的提醒。日期一过，标签就会变红，按跟进排序会把到期的交易排到前面。",
+    "totalRaised": "此处每笔交易交割时确认的金额，累计至今。仍在洽谈或仅口头认购的资金不计入，已放弃的交易也永远不会计入。",
+    "activeStartups": "当前拥有有效挂牌的公司。草稿、仍在审核中的挂牌和已暂停的挂牌不计入。",
+    "investorCount": "在平台注册的投资者账户，不论其套餐。注册只是开户，并不代表对任何人资金的核实。",
+    "dealsClosed": "双方确认已完成投资的交易，自平台开放以来累计。以放弃告终的交易另行记录，永远不计入这里。",
+    "closeRate": "在已结束的交易中，交割而非放弃的占比。仍在进行中的交易两边都不计，因此这不是全部交易的成功率。",
+    "medianTarget": "该阶段挂牌中处于中间位置的融资目标：一半要得更多，一半要得更少。是中位数而非平均数，因此一笔超大轮次无法拉动该数字。"
   },
   "translate": {
     "offer": "这段内容是用另一种语言写的。",
@@ -3421,7 +3443,9 @@
     "title": "自你上次查看以来",
     "watching": "关注中的公司：{n}",
     "markSeen": "全部标为已读",
-    "quiet": "你关注的公司没有新动态。"
+    "quiet": "你关注的公司没有新动态。",
+    "docsInRoom": "数据室中有 {count} 份文件",
+    "docsInRoomOne": "数据室中有 1 份文件"
   },
   "share": {
     "title": "分享你的融资",
@@ -3860,7 +3884,70 @@
     "dealMovedIntro": "交易已进入“洽谈”阶段",
     "dealMovedDueDiligence": "交易已进入“谈判”阶段",
     "dealMovedTermSheet": "交易已进入“条款书”阶段",
-    "dealPassedTitle": "交易已标记为放弃"
+    "dealPassedTitle": "交易已标记为放弃",
+    "dealRequestTitle": "{name} 想开启一笔交易",
+    "dealRequestBody": "接受后将加入双方管道，也可以拒绝。",
+    "dealOpenedTitle": "{name} 与你开启了一笔交易",
+    "ndaAcceptedTitle": "NDA 已接受，数据室已开放",
+    "ndaAcceptedBody": "一位投资者接受了你的 NDA，现在可以查看你的受保护文件。",
+    "listingApprovedTitle": "{name} 已上线",
+    "listingApprovedBody": "你的挂牌现在对投资者可见。",
+    "listingRejectedTitle": "{name} 需要修改后才能上线",
+    "listingRejectedBody": "你的挂牌已完成审核，尚未上线。打开仪表盘查看下一步。",
+    "docRequestTitle": "{name} 请求了你的{doc}",
+    "docRequestBody": "请在文档管理器中上传；在你上传之前，请求会一直保留在那里。",
+    "docSharedTitle": "{name} 分享了你请求的{doc}",
+    "docDeclinedTitle": "{name} 拒绝了你的{doc}请求",
+    "requestAcceptedTitle": "{name} 已接受，交易已开启",
+    "requestAcceptedBody": "现已进入双方的管道。",
+    "requestDeclinedTitle": "{name} 拒绝了你的请求",
+    "requestDeclinedBody": "不必介怀；也许只是眼下不合适。",
+    "teamAddedTitle": "你已被添加到 CapitalReach 的一个团队",
+    "teamAddedBodyStartup": "你现在可以访问一个创业公司账户。",
+    "teamAddedBodyInvestor": "你现在可以访问一个投资者账户。",
+    "feeActionRequiredTitle": "你的银行需要授权此笔付款",
+    "feeActionRequiredBody": "付款处于待处理状态，直到你在银行确认。",
+    "adminInfoRequestTitle": "我们需要你提供一些信息",
+    "adminListingReviewTitle": "你的挂牌正在审核中",
+    "reportClosedTitle": "我们已查看你的举报",
+    "reportClosedBody": "感谢你的反馈。审查已结束。",
+    "feeDisputeReviewedTitle": "你的佣金异议已审查",
+    "feeInvoicedTitle": "成功佣金账单",
+    "feeInvoicedBody": "已就你交割的轮次开具 2% 成功佣金账单。",
+    "feeSupplementaryTitle": "补充成功佣金",
+    "feeSupplementaryBody": "已就你交割的轮次与公司登记备案金额之间的差额收取佣金。",
+    "recordNoteTitle": "你的档案中新增了一条备注",
+    "recordNoteBody": "一笔已交割的轮次与公司登记备案不符。",
+    "feeReminderTitle": "成功佣金尚未支付",
+    "feeFinalReminderTitle": "最后提醒：成功佣金未支付",
+    "feeReminderBody": "你交割轮次的 {amount}。佣金由获得投资的创业公司支付。",
+    "feeInstalmentTitle": "成功佣金第 {seq} 期",
+    "feeInstalmentBody": "你的成功佣金下一期已开具账单。",
+    "commitTitleInterest": "交易更新：有意向",
+    "commitTitleSoft": "交易更新：软承诺",
+    "commitTitleVerbal": "交易更新：口头同意",
+    "commitTitleCommitted": "交易更新：已承诺",
+    "closeProposedTitle": "交割提议：{name}",
+    "closeProposedBody": "确认以按 {amount} 交割（收取 2% 佣金）。",
+    "closeProposedBodyNoAmount": "确认以交割这笔交易。",
+    "dealClosedTitle": "交易已交割：{name}",
+    "dealClosedBodyFee": "{amount} · 已开具 2% 成功佣金账单",
+    "fundedTitle": "已到账：{name}",
+    "fundedBody": "双方已确认转账。",
+    "fundsSentTitle": "投资者已确认资金汇出",
+    "fundsReceivedTitle": "创始人已确认资金到账",
+    "confirmSideBody": "请确认你这一方，以完成本轮融资。",
+    "scheduleProposedTitle": "有人提议了一份付款计划",
+    "scheduleProposedBody": "{name}：{count} 期付款。",
+    "fullyFundedTitle": "已全额到账：{name}",
+    "fullyFundedBody": "所有期款均已收到。",
+    "trancheSentTitle": "{label}：投资者已确认资金汇出",
+    "trancheReceivedTitle": "{label}：创始人已确认资金到账",
+    "confirmTrancheBody": "请确认你这一方，以完成这期付款。",
+    "dealDocTitle": "新的交易文件：{name}",
+    "dealDocBody": "对方在你们的共享数据室中添加了一份文件。",
+    "contractSentTitle": "合同已发送待签署：{title}",
+    "contractSignedTitle": "合同已签署：{title}"
   },
   "match": {
     "title": "谁在等你",
@@ -4735,7 +4822,9 @@
       "differentiation": "已说明差异化",
       "teamInfo": "已提供团队信息",
       "metrics": "指标已提供且一致"
-    }
+    },
+    "scoredAt": "评分于 {date}",
+    "stale": "挂牌在此评分后已有变动；将在下次运行时刷新。"
   },
   "attest": {
     "eyebrow": "您的声明",
@@ -4783,5 +4872,25 @@
     "emptyBody": "正在{industry}领域融资?上线期间发布免费,每个列表上线前均经审核。",
     "browseBySector": "按行业浏览",
     "metaDescription": "CapitalReach 上的{industry}初创公司:融资目标、增长与阶段。2% 成功费仅在关闭时由初创公司支付。"
+  },
+  "meta": {
+    "startupsTitle": "寻找创业公司",
+    "startupsDesc": "按阶段、行业和业务进展浏览经审核的创业公司融资轮。公司身份向会员展示。",
+    "investorsTitle": "投资者名录",
+    "investorsDesc": "活跃于 CapitalReach 的天使投资人、家族办公室和基金，可按投资主题、单笔规模和行业检索。",
+    "aiTitle": "AI 交易智能",
+    "aiDesc": "基于 GPT-4o mini 的路演分析、投资者匹配和尽调草稿。",
+    "dataTitle": "数据中心",
+    "dataDesc": "平台实时数据：融资中的轮次、寻求的资本、交易漏斗和交割率。",
+    "dealsTitle": "交易门户",
+    "dealsDesc": "跟踪从引荐到交割的每一次沟通：阶段、笔记、合同和交易印章。",
+    "pricingTitle": "定价",
+    "pricingDesc": "2% 成功佣金，仅在交割时由创业公司支付。投资者无需付费。",
+    "contactTitle": "联系我们",
+    "contactDesc": "关于挂牌、投资或平台的问题：写信给 CapitalReach 团队。",
+    "loginTitle": "登录",
+    "signupTitle": "创建账户",
+    "homeTitle": "CapitalReach - 私募资本市场",
+    "homeDesc": "经审核的市场：创业公司在这里融资，投资者在这里找到下一轮。交割时收取 2% 成功佣金，此前分文不取。"
   }
 }

@@ -9,17 +9,22 @@ import { Footer }            from "@/components/shared/footer";
 import { HomepageClient }    from "@/components/homepage/homepage-client";
 import { buildAccessContext, investorCan } from "@/lib/access";
 import type { Metadata }     from "next";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  // Canonical: the app answers on more than one hostname (vercel.app plus
-  // whatever domain it ends up on), and duplicate URLs split their own ranking.
-  alternates: { canonical: "/" },
-  title: "CapitalReach — Private Capital Marketplace",
-  description:
-    "The private marketplace for founders raising capital and investors deploying it. Listings on the record. AI-powered analysis. 2% success fee, paid by the startup only after it closes a round — investors pay nothing.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    // Canonical: the app answers on more than one hostname (vercel.app plus
+    // whatever domain it ends up on), and duplicate URLs split their own ranking.
+    alternates: { canonical: "/" },
+    // Absolute: the root template appends "| CapitalReach", and this title
+    // already leads with the brand.
+    title: { absolute: t("meta.homeTitle") },
+    description: t("meta.homeDesc"),
+  };
+}
 
 export type ListingSnippet = {
   id: string; name: string; slug: string;

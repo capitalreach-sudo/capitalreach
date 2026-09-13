@@ -280,6 +280,8 @@ export async function POST(req: NextRequest) {
           type: "fee_due",
           title: "Your bank needs to authorise this payment",
           body: "The payment is on hold until you confirm it with your bank.",
+          titleKey: "notif.feeActionRequiredTitle",
+          bodyKey: "notif.feeActionRequiredBody",
           href: invoice.hosted_invoice_url || "/dashboard/startup/billing",
         }).catch(() => {});
         await logSystemEvent("webhook/stripe", "info", "Payment action required", { invoice: invoice.id }).catch(() => {});

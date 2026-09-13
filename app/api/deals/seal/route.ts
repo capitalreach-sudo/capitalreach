@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isAccountSuspended } from "@/lib/suspension-guard";
-import { resolveEntity } from "@/lib/membership";
+import { isTeamMemberOfEither } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
 import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
@@ -24,14 +24,24 @@ import {
  */
 
 async function partyFor(userId: string, deal: { startup_id: string; investor_id: string }): Promise<SealParty | null> {
-  const [st, inv] = await Promise.all([
-    resolveEntity(userId, "startup"),
-    resolveEntity(userId, "investor"),
+  // Checked against THIS deal's entities, never against whichever entity
+  // resolveEntity lands on first: that resolver returns a user's first owned
+  // row, so a founder's second startup 404'd its own seal.
+  const admin = createAdminClient();
+  const [{ data: ownsStartup }, { data: ownsInvestor }] = await Promise.all([
+    admin.from("startups").select("id").eq("id", deal.startup_id).eq("owner_id", userId).maybeSingle(),
+    admin.from("investors").select("id").eq("id", deal.investor_id).eq("owner_id", userId).maybeSingle(),
   ]);
   // A startup seat wins a tie, the same way it does in the message routes: a
   // founder who also holds an investor profile is still the company here.
-  if (st?.entityId === deal.startup_id) return "startup";
-  if (inv?.entityId === deal.investor_id) return "investor";
+  if (ownsStartup) return "startup";
+  if (ownsInvestor) return "investor";
+  const [startupTeam, investorTeam] = await Promise.all([
+    isTeamMemberOfEither(userId, deal.startup_id, null),
+    isTeamMemberOfEither(userId, null, deal.investor_id),
+  ]);
+  if (startupTeam) return "startup";
+  if (investorTeam) return "investor";
   return null;
 }
 
@@ -146,6 +156,14 @@ export async function POST(req: NextRequest) {
 
   const party = await partyFor(user.id, loaded.deal);
   if (!party) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // A sealed deal is a finished record. Without this, a repeat POST re-ran
+  // the completion block below and re-stamped sealed_at, moving the date the
+  // fee window and the evidence trail both hang off.
+  const existing = await sealState(dealId);
+  if (existing.sealed) {
+    return NextResponse.json({ signed: false, alreadySealed: true, ...existing });
+  }
 
   const hash = sealHash(loaded.text);
   // Bind the signer to what they saw. If the record changed after the client

@@ -249,6 +249,8 @@ export async function POST(req: NextRequest) {
         userId: r,
         type: "message",
         title: `New message from ${senderName}`,
+        titleKey: "notif.messageTitle",
+        params: { name: senderName },
         body: preview,
         href: `/dashboard/messages?thread=${threadId}`,
       }).catch(() => {});

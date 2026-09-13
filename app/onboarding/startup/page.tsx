@@ -149,6 +149,15 @@ export default function StartupOnboardingPage() {
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
+  // Draft plumbing: seven steps of typing lived only in React state, so a
+  // reload, a back navigation, or a closed tab discarded all of it. The draft
+  // sits in sessionStorage, keyed per user so one browser profile cannot leak
+  // answers across accounts; the refs let the unload handler and the submit
+  // path read dirtiness without re-subscribing.
+  const draftKeyRef = useRef<string | null>(null);
+  const dirtyRef = useRef(false);
+  const submittedRef = useRef(false);
+
   // This form always posts create:true, and the save route answers that with an
   // UPDATE once the founder owns a row. Reaching onboarding a second time --
   // a bookmark, the back button, a typed URL -- would therefore write these
@@ -188,6 +197,12 @@ export default function StartupOnboardingPage() {
         // updates whatever the founder owns.
         if (existing) { router.replace("/dashboard/startup/edit"); return; }
       }
+      // Restored only once ownership is known: a founder with a listing never
+      // reaches this form, so their draft can never overwrite anything. A
+      // signed-out visitor gets the shared "anon" key; handleSubmit sends them
+      // to login before anything is written.
+      draftKeyRef.current = `cr_onboarding_draft_startup_${user?.id ?? "anon"}`;
+      try { restoreDraft(sessionStorage.getItem(draftKeyRef.current)); } catch {}
       setChecking(false);
     })();
   }, []);
@@ -243,6 +258,97 @@ export default function StartupOnboardingPage() {
   const [pitchDeckUrl, setPitchDeckUrl]       = useState("");
   const [productHuntUrl, setProductHuntUrl]   = useState("");
   const [twitterUrl, setTwitterUrl]           = useState("");
+
+  // Every scalar answer on the form, one object: the draft payload and the
+  // dirtiness check both read it, so a field added here is covered by both.
+  // All values are strings, so emptiness reduces to Boolean.
+  const draftFields = {
+    name, logoUrl, website, tagline, description, foundedDate, city, country,
+    industry, stage, businessModel, revenueModel, teamSize, companyType,
+    problem, solution, market, advantage,
+    mrr, arr, userCount, payingCustomers, growthRate, churnRate,
+    fundingTarget, equity, minCheck, useOfFunds, runway,
+    demoVideoUrl, pitchDeckUrl, productHuntUrl, twitterUrl,
+  };
+
+  // The stored value is browser data, not trusted state: every field is
+  // type-checked before it reaches a setter, and an unrecognized shape is
+  // ignored rather than partially applied.
+  function restoreDraft(raw: string | null) {
+    if (!raw) return;
+    let d: any;
+    try { d = JSON.parse(raw); } catch { return; }
+    if (!d || d.v !== 1) return;
+    const s = (v: unknown) => (typeof v === "string" ? v : "");
+    const f = d.fields ?? {};
+    setName(s(f.name)); setLogoUrl(s(f.logoUrl)); setWebsite(s(f.website));
+    setTagline(s(f.tagline)); setDescription(s(f.description)); setFoundedDate(s(f.foundedDate));
+    setCity(s(f.city)); setCountry(s(f.country)); setIndustry(s(f.industry)); setStage(s(f.stage));
+    setBusinessModel(s(f.businessModel)); setRevenueModel(s(f.revenueModel));
+    setTeamSize(s(f.teamSize)); setCompanyType(s(f.companyType));
+    setProblem(s(f.problem)); setSolution(s(f.solution)); setMarket(s(f.market)); setAdvantage(s(f.advantage));
+    setMrr(s(f.mrr)); setArr(s(f.arr)); setUserCount(s(f.userCount)); setPayingCustomers(s(f.payingCustomers));
+    setGrowthRate(s(f.growthRate)); setChurnRate(s(f.churnRate));
+    setFundingTarget(s(f.fundingTarget)); setEquity(s(f.equity)); setMinCheck(s(f.minCheck));
+    setUseOfFunds(s(f.useOfFunds)); setRunway(s(f.runway));
+    setDemoVideoUrl(s(f.demoVideoUrl)); setPitchDeckUrl(s(f.pitchDeckUrl));
+    setProductHuntUrl(s(f.productHuntUrl)); setTwitterUrl(s(f.twitterUrl));
+    if (Array.isArray(d.founders) && d.founders.length) {
+      setFounders(d.founders.map((x: any): Founder => ({
+        name: s(x?.name), role: s(x?.role), linkedin_url: s(x?.linkedin_url),
+        twitter_url: s(x?.twitter_url), bio: s(x?.bio),
+      })));
+    }
+    if (Array.isArray(d.milestones) && d.milestones.length) {
+      setMilestones(d.milestones.map((x: any): Milestone => ({
+        date: s(x?.date), description: s(x?.description),
+      })));
+    }
+    if (Array.isArray(d.competitors) && d.competitors.length) {
+      setCompetitors(d.competitors.map((x: any): Competitor => ({
+        name: s(x?.name), differentiator: s(x?.differentiator),
+      })));
+    }
+    // Step rides along so a reload resumes where the founder left off.
+    if (typeof d.step === "number" && d.step >= 1 && d.step <= STEPS.length) setStep(Math.floor(d.step));
+  }
+
+  const dirty =
+    Object.values(draftFields).some(Boolean) ||
+    founders.some(f => f.name || f.role || f.linkedin_url || f.twitter_url || f.bio) ||
+    milestones.some(m => m.date || m.description) ||
+    competitors.some(c => c.name || c.differentiator);
+
+  // No dependency array on purpose: the draft must follow every field above,
+  // and a 40-entry list would silently drift the first time a field is added.
+  // The write is a few hundred bytes of JSON per keystroke. Nothing runs
+  // before the ownership check sets the key, so the initial blank render can
+  // never clobber a stored draft.
+  useEffect(() => {
+    const key = draftKeyRef.current;
+    if (!key || submittedRef.current) return;
+    dirtyRef.current = dirty;
+    try {
+      if (dirty) {
+        sessionStorage.setItem(key, JSON.stringify({ v: 1, step, fields: draftFields, founders, milestones, competitors }));
+      } else {
+        sessionStorage.removeItem(key);
+      }
+    } catch {}
+  });
+
+  // sessionStorage does not survive the tab closing, so the draft alone
+  // cannot cover close/quit: the native prompt is the only guard there.
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => {
+      if (!dirtyRef.current) return;
+      e.preventDefault();
+      // Chrome still requires a returnValue for the prompt to appear.
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
 
   // Founders
   function addFounder() { setFounders(f => [...f, { name: "", role: "", linkedin_url: "", twitter_url: "", bio: "" }]); }
@@ -416,6 +522,13 @@ export default function StartupOnboardingPage() {
       return false;
     }
 
+    // Submitted: the draft has served its purpose, and neither the persist
+    // effect nor the unload prompt may fire on the way out (checkout can be a
+    // full-page navigation).
+    submittedRef.current = true;
+    dirtyRef.current = false;
+    try { if (draftKeyRef.current) sessionStorage.removeItem(draftKeyRef.current); } catch {}
+
     notify.success(t("onboarding.su.submitted"));
     router.push("/dashboard/startup?welcome=1");
     setLoading(false);
@@ -423,7 +536,9 @@ export default function StartupOnboardingPage() {
   }
 
   const canNext = () => {
-    if (step === 1) return !!(name && country && industry && stage);
+    // Tagline carries the required asterisk on step 1, so it gates like the
+    // other four; the save route also expects it non-null.
+    if (step === 1) return !!(name && tagline && country && industry && stage);
     if (step === 2) return founders.some(f => f.name && f.role);
     if (step === 3) return !!(problem && solution);
     if (step === 5) return !!fundingTarget;

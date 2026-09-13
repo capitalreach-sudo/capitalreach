@@ -104,6 +104,7 @@ export async function GET(req: NextRequest) {
       .filter(s => s.updated_at && s.scored_at && s.updated_at > s.scored_at)
       .sort((a, b) => (a.scored_at! < b.scored_at! ? -1 : 1))
       .slice(0, 10);
+    let lastRescoreError: string | null = null;
     for (const s of drifted) {
       try {
         const score = await scoreStartup({
@@ -119,7 +120,21 @@ export async function GET(req: NextRequest) {
           .update({ vaultrise_score: score, scored_at: new Date().toISOString() })
           .eq("id", s.id);
         rescored++;
-      } catch { /* one refusal must not stop the queue */ }
+      } catch (e) {
+        // One refusal must not stop the queue, but the refusal itself is
+        // kept: a batch where EVERY call failed is reported below.
+        lastRescoreError = e instanceof Error ? e.message : String(e);
+      }
+    }
+    // Zero-for-N is a dead pipeline, not a quiet night: every stale score on
+    // the platform stays stale and nothing on any surface says so. Logged at
+    // error level (this table has no warn) so /admin and the alert bell see
+    // it -- the exact visibility the "Run completed" heartbeat below cannot
+    // give, since it reports rescored: 0 for an idle batch too.
+    if (drifted.length > 0 && rescored === 0) {
+      await logSystemEvent("cron/follow-ups", "error", "Rescore batch failed for every listing", {
+        attempted: drifted.length, lastError: lastRescoreError,
+      });
     }
   }
 

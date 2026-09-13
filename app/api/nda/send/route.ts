@@ -29,8 +29,20 @@ export async function POST(req: NextRequest) {
     .eq("id", startupId)
     .single();
 
-  if (!startup || !startup.require_nda) {
-    return NextResponse.json({ error: "NDA not required for this startup" }, { status: 400 });
+  if (!startup) {
+    return NextResponse.json({ error: "Startup not found" }, { status: 404 });
+  }
+  // The send flow only exists for listings whose data room is NDA-gated.
+  // "NDA not required" alone read as a baffling refusal; state what the
+  // setting means and where it is changed.
+  if (!startup.require_nda) {
+    return NextResponse.json(
+      {
+        error: "This startup's data room is not NDA-gated, so there is no NDA to send. Investors already see the documents; switch on Require NDA under Documents to gate them first.",
+        code: "NDA_NOT_REQUIRED",
+      },
+      { status: 400 },
+    );
   }
 
   // Get investor + owner details

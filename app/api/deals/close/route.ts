@@ -148,8 +148,11 @@ export async function POST(req: NextRequest) {
     if (counterpart) {
       await notifyUsers([counterpart], {
         type: "deal_stage",
-        title: `Close proposed — ${deal.startup?.name ?? "a deal"}`,
-        body: propAmount ? `Confirm to close at ${dealCurrency} ${propAmount.toLocaleString()} (2% fee applies).` : `Confirm to close this deal.`,
+        title: `Close proposed: ${deal.startup?.name ?? "a deal"}`,
+        body: propAmount ? `Confirm to close at ${dealCurrency} ${propAmount.toLocaleString()} (2% fee applies).` : "Confirm to close this deal.",
+        titleKey: "notif.closeProposedTitle",
+        bodyKey: propAmount ? "notif.closeProposedBody" : "notif.closeProposedBodyNoAmount",
+        params: { name: deal.startup?.name ?? "a deal", amount: propAmount ? `${dealCurrency} ${propAmount.toLocaleString()}` : "" },
         href: `/deals?deal=${dealId}`,
       }).catch(() => {});
     }
@@ -405,8 +408,11 @@ export async function POST(req: NextRequest) {
   // seeing confirmed rather than assumed.
   await notifyUsers([deal.startup?.owner_id, deal.investor?.owner_id], {
     type:  "deal_closed",
-    title: `Deal closed — ${deal.startup?.name ?? "a startup"}`,
+    title: `Deal closed: ${deal.startup?.name ?? "a startup"}`,
     body:  finalAmount ? `${finalCurrency} ${finalAmount.toLocaleString()}${feeNotBilled ? "" : " · 2% success fee invoiced"}` : null,
+    titleKey: "notif.dealClosedTitle",
+    ...(finalAmount && !feeNotBilled ? { bodyKey: "notif.dealClosedBodyFee" } : {}),
+    params: { name: deal.startup?.name ?? "a startup", amount: finalAmount ? `${finalCurrency} ${finalAmount.toLocaleString()}` : "" },
     href:  `/deals?deal=${dealId}`,
   });
 

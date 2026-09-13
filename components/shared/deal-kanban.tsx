@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { DealProposals } from "@/components/shared/deal-proposals";
 import { DealSealPanel } from "@/components/deals/deal-seal";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -35,6 +35,13 @@ import { scheduleTotal, scheduleReconciles, receivedTotal, allReceived } from "@
 // plain labels elsewhere.
 const tipKey = (t: (k: string) => string, key: string, fallback: string) =>
   t(key) === key ? fallback : key;
+
+// The same contract for plain labels: t() echoes an unknown key back raw, so
+// until the dictionaries carry the key the English wording here renders.
+const tOr = (t: (k: string) => string, key: string, fallback: string) => {
+  const v = t(key);
+  return v === key ? fallback : v;
+};
 
 // What each stage means ON THIS BOARD, tied to what it unlocks: shown beside
 // the stage filter chips, which exist in both the kanban and the list view.
@@ -544,6 +551,11 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
 
 // ── Contracts section (inside a deal card) ────────────────────────────────────
 
+// What /api/contracts/list attaches to each row: the contract's status only
+// flips to "signed" once BOTH sides have signed, so the viewer's own landed
+// signature is visible only through this.
+type ContractWithSigs = Contract & { signatures?: { mine: boolean; count: number } };
+
 function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, startupId, investorId }: {
   dealId: string;
   dealAmount?: number | null;
@@ -556,7 +568,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
   const [open, setOpen]           = useState(false);
   const [loaded, setLoaded]       = useState(false);
   const [loading, setLoading]     = useState(false);
-  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [contracts, setContracts] = useState<ContractWithSigs[]>([]);
   const [showForm, setShowForm]   = useState(false);
   const [title, setTitle]         = useState("");
   const [type, setType]           = useState<ContractType>("term_sheet");
@@ -568,6 +580,10 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [ndaStatus, setNdaStatus] = useState<"none" | "pending" | "signed" | null>(null);
   const [ndaSending, setNdaSending] = useState(false);
+  // Whether this deployment can actually send a DocuSign envelope; comes with
+  // the contracts payload. False until told otherwise, so the send button is
+  // never offered on the strength of a guess.
+  const [docusignConfigured, setDocusignConfigured] = useState(false);
   const [signing, setSigning] = useState<Contract | null>(null);
   const [signerName, setSignerName] = useState("");
   const [signBusy, setSignBusy] = useState(false);
@@ -578,8 +594,9 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
     try {
       const res = await fetch(`/api/contracts/list?dealId=${dealId}`);
       const data = await res.json();
-      const list: Contract[] = res.ok ? (data.contracts || []) : [];
+      const list: ContractWithSigs[] = res.ok ? (data.contracts || []) : [];
       setContracts(list);
+      if (res.ok) setDocusignConfigured(data.docusignConfigured === true);
       if (list.some(c => c.contract_type === "nda")) loadNdaStatus();
     } catch { setContracts([]); } finally {
       setLoading(false);
@@ -674,7 +691,13 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { notify.error(data.error || t("errors.generic")); return; }
       notify.success(t("deals.contractSigned"));
-      if (data.contract) setContracts(prev => prev.map(c => (c.id === signing.id ? data.contract : c)));
+      // Merge rather than replace: the sign payload carries no signature
+      // meta, and the row must say "you signed" without a reload.
+      if (data.contract) setContracts(prev => prev.map(c => {
+        if (c.id !== signing.id) return c;
+        const count = (c.signatures?.count ?? 0) + (c.signatures?.mine ? 0 : 1);
+        return { ...c, ...data.contract, signatures: { mine: true, count } };
+      }));
       setSigning(null);
       setSignerName("");
     } catch {
@@ -734,6 +757,15 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                 {c.amount != null && ` · ${formatMoney(c.amount, c.currency, { compact: true })}`}
                 {c.equity_percent != null && ` · ${c.equity_percent}%`}
               </p>
+              {/* Signing flips the row's status only when BOTH sides have a
+                  signature, so without this line the viewer's own signature
+                  produced no visible result at all. */}
+              {c.status !== "signed" && c.status !== "void" && c.signatures?.mine && (
+                <p style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-up)", marginTop: "4px" }}>
+                  <CheckCircle2 style={{ width: 10, height: 10, flexShrink: 0 }} />
+                  {tOr(t, "deals.contractYouSigned", "You signed - awaiting the other side")}
+                </p>
+              )}
               {/* D38: the executed document plus its signature certificate —
                   the artefact a lawyer asks for, printable to PDF. */}
               <a href={`/contracts/${c.id}`} target="_blank" rel="noopener noreferrer"
@@ -742,22 +774,37 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               </a>
 
               {c.contract_type === "nda" && (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: ndaStatus === "signed" ? "var(--cr-up)" : "var(--cr-ink-4)" }}>
-                    {ndaStatusLabel[ndaStatus || "none"]}
-                  </span>
-                  {ndaStatus !== "signed" && (
-                    <button onClick={sendNda} disabled={ndaSending}
-                      style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline", opacity: ndaSending ? 0.6 : 1 }}>
-                      {ndaSending ? t("deals.sending") : ndaStatus === "pending" ? t("deals.ndaResend") : t("deals.ndaSendForSignature")}
-                    </button>
+                <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: ndaStatus === "signed" ? "var(--cr-up)" : "var(--cr-ink-4)" }}>
+                      {ndaStatusLabel[ndaStatus || "none"]}
+                    </span>
+                    {/* Only offered where an envelope can actually go out:
+                        while DocuSign is unconfigured the send can only 503,
+                        and a button whose every click fails is a trap. */}
+                    {ndaStatus !== "signed" && docusignConfigured && (
+                      <button onClick={sendNda} disabled={ndaSending}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline", opacity: ndaSending ? 0.6 : 1 }}>
+                        {ndaSending ? t("deals.sending") : ndaStatus === "pending" ? t("deals.ndaResend") : t("deals.ndaSendForSignature")}
+                      </button>
+                    )}
+                  </div>
+                  {/* The path that works on this deployment instead: the
+                      clickwrap NDA on the listing itself. */}
+                  {ndaStatus !== "signed" && !docusignConfigured && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "4px", lineHeight: 1.5 }}>
+                      {tOr(t, "deals.ndaClickwrapHint", "E-signature is not connected on this deployment. The investor can accept the NDA directly on the startup's listing, which opens the data room immediately.")}
+                    </p>
                   )}
                 </div>
               )}
 
               {NEXT_CONTRACT_STATUSES[c.status].length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
-                  {NEXT_CONTRACT_STATUSES[c.status].map(next => (
+                  {/* Once the viewer's signature is on file the "awaiting the
+                      other side" line above replaces the sign action; offering
+                      it again reads as the first one not counting. */}
+                  {NEXT_CONTRACT_STATUSES[c.status].filter(next => !(next === "signed" && c.signatures?.mine)).map(next => (
                     next === "signed" ? (
                       <button key={next} onClick={() => { setSigning(c); setSignerName(""); }}
                         style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline" }}>
@@ -1656,6 +1703,10 @@ function ActivitySection({ dealId }: { dealId: string }) {
                 };
                 // Stage moves store machine ids ("intro>due_diligence"); render
                 // them in the viewer's language with the board's own labels.
+                // The same goes for the other machine bodies the deal routes
+                // write (pass-reason keys, commitment:, funding:, tranche:,
+                // tranches:, contract statuses); free-text rows fall through
+                // untouched, as do rows written before the machine formats.
                 let body: string | null = a.body;
                 if (a.type === "status_change" && a.body?.includes(">")) {
                   const [movePart, notePart] = a.body.split(" · ");
@@ -1664,7 +1715,35 @@ function ActivitySection({ dealId }: { dealId: string }) {
                     intro: t("deals.colIntro"), due_diligence: t("deals.colNegotiation"),
                     term_sheet: t("deals.colTermSheet"), closed: t("deals.colClosed"), passed: t("deals.colPassed"),
                   };
-                  body = `${LBL[from] ?? from} → ${LBL[to] ?? to}${notePart ? ` · ${notePart}` : ""}`;
+                  const REASON_LBL: Record<string, string> = {
+                    stage_mismatch: "deals.passedReasonStage", valuation: "deals.passedReasonValuation",
+                    timing: "deals.passedReasonTiming", no_response: "deals.passedReasonNoResponse",
+                  };
+                  const note = notePart ? (REASON_LBL[notePart] ? t(REASON_LBL[notePart]) : notePart) : null;
+                  body = `${LBL[from] ?? from} → ${LBL[to] ?? to}${note ? ` · ${note}` : ""}`;
+                } else if (a.type === "contract_status" && a.body) {
+                  const CS: Record<string, string> = {
+                    draft: "deals.contractStatusDraft", sent: "deals.contractStatusSent",
+                    signed: "deals.contractStatusSigned", void: "deals.contractStatusVoid",
+                  };
+                  body = CS[a.body] ? t(CS[a.body]) : a.body;
+                } else if (a.type === "note" && a.body) {
+                  const CM: Record<string, string> = {
+                    interest: "deals.commitInterest", soft_circle: "deals.commitSoft",
+                    verbal: "deals.commitVerbal", committed: "deals.commitCommitted",
+                  };
+                  let m: RegExpMatchArray | null;
+                  if ((m = a.body.match(/^commitment:([a-z_]+)(?: · (.+))?$/))) {
+                    body = `${CM[m[1]] ? t(CM[m[1]]) : m[1]}${m[2] ? ` · ${m[2]}` : ""}`;
+                  } else if ((m = a.body.match(/^funding:(sent|received)(?: · (.+))?$/))) {
+                    body = `${t(m[1] === "sent" ? "funding.sent" : "funding.received")}${m[2] ? ` · ${m[2]}` : ""}`;
+                  } else if ((m = a.body.match(/^tranche:(sent|received) · ([^]+)$/))) {
+                    body = `${m[2]}: ${t(m[1] === "sent" ? "funding.sent" : "funding.received")}`;
+                  } else if ((m = a.body.match(/^tranches:set:(\d+)$/))) {
+                    body = t("tranches.timelineSet", { count: m[1] });
+                  } else if (a.body === "tranches:cleared") {
+                    body = t("tranches.cleared");
+                  }
                 }
                 return (
                   <div key={a.id} style={{ position: "relative", padding: "8px 0" }}>
@@ -1721,8 +1800,10 @@ function PassedReasonPicker({ onConfirm, onCancel }: { onConfirm: (reason: strin
 
   function handleConfirm() {
     if (!canConfirm || !selected) return;
-    const label = t(PASSED_REASONS.find(r => r.key === selected)!.labelKey);
-    onConfirm(selected === "other" ? detail.trim() : label);
+    // The machine key travels to the API, not the actor's localized label:
+    // the timeline and the counterpart's notification render it in the
+    // VIEWER's language. Free text (the "other" case) has no key to send.
+    onConfirm(selected === "other" ? detail.trim() : selected);
   }
 
   return (
@@ -2342,6 +2423,10 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   const [sortKey, setSortKey]         = useState<SortKey>("updated_desc");
   const [viewMode, setViewMode]       = useState<"kanban" | "list">("kanban");
   const [expandedCols, setExpandedCols] = useState<Set<string>>(new Set());
+  // The list row whose full DealCard is unfolded beneath it. The list is the
+  // phone's default view, and a row without the card under it carries none of
+  // the deal's actions -- no seal, no contracts, no stage moves.
+  const [openListDeal, setOpenListDeal] = useState<string | null>(null);
 
   // On a phone the kanban is ~1400px of horizontal scroll for five columns;
   // the list view was built for exactly this shape. Default narrow screens to
@@ -2371,6 +2456,13 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
   // threading because the same element id exists in both the kanban and the
   // list rendering.
   const focusDealId = useSearchParams().get("deal");
+  // The deep link must land on an actionable card in EITHER view. Kanban
+  // mounts DealCard anyway; in list view the focused row's card is unfolded
+  // here, and DealCard's own deep-link effect then opens its detail sections
+  // (the signing panel included -- the thing most ?deal= links point at).
+  useEffect(() => {
+    if (focusDealId) setOpenListDeal(focusDealId);
+  }, [focusDealId]);
   useEffect(() => {
     if (!focusDealId) return;
     // The deals arrive from an async fetch after mount, so a one-shot delay
@@ -2772,15 +2864,41 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                 const { investorName, startupName } = nameFor(d, t);
                 const name = viewAs === "startup" ? investorName : viewAs === "investor" ? startupName : `${startupName} × ${investorName}`;
                 const stageOrType = viewAs === "startup" ? d.investor?.type : d.startup?.stage;
+                const openHere = openListDeal === d.id;
                 return (
-                  <tr key={d.id} id={`deal-${d.id}`} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                    <td style={{ padding: "8px 12px", color: "var(--cr-ink)" }}>{name}</td>
-                    <td style={{ padding: "8px 12px", color: "var(--cr-ink-3)" }}>{stageOrType ? chipLabel(String(stageOrType)) : "—"}</td>
-                    <td style={{ padding: "8px 12px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>
-                    <td style={{ padding: "8px 12px" }}><span style={colBadgeStyle(d.status, 0)}>{columns.find(c => c.status === d.status)?.label}</span></td>
-                    <td style={{ padding: "8px 12px", color: "var(--cr-ink-3)", fontFamily: "'JetBrains Mono', monospace" }}>{d.next_follow_up ? formatDate(d.next_follow_up) : "—"}</td>
-                    <td style={{ padding: "8px 12px", color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(d.updated_at)}</td>
-                  </tr>
+                  <Fragment key={d.id}>
+                    {/* The whole row is the handle. When open, the id moves to
+                        the DealCard below (ids must stay unique, and the
+                        deep-link scroll should land on the card itself); the
+                        button in the first cell is the same toggle for the
+                        keyboard. */}
+                    <tr id={openHere ? undefined : `deal-${d.id}`}
+                      onClick={() => setOpenListDeal(openHere ? null : d.id)}
+                      style={{ borderBottom: openHere ? "none" : "1px solid var(--cr-rule)", cursor: "pointer" }}>
+                      <td style={{ padding: "8px 12px", color: "var(--cr-ink)" }}>
+                        <button onClick={e => { e.stopPropagation(); setOpenListDeal(openHere ? null : d.id); }}
+                          aria-expanded={openHere}
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit", color: "inherit", display: "inline-flex", alignItems: "center", gap: "4px", textAlign: "left" }}>
+                          <ChevronDown style={{ width: 12, height: 12, flexShrink: 0, color: "var(--cr-ink-4)", transform: openHere ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-out)" }} />
+                          {name}
+                        </button>
+                      </td>
+                      <td style={{ padding: "8px 12px", color: "var(--cr-ink-3)" }}>{stageOrType ? chipLabel(String(stageOrType)) : "—"}</td>
+                      <td style={{ padding: "8px 12px", color: "var(--cr-copper)", fontFamily: "'JetBrains Mono', monospace" }}>{d.amount != null ? formatMoney(d.amount, d.currency, { compact: true }) : "—"}</td>
+                      <td style={{ padding: "8px 12px" }}><span style={colBadgeStyle(d.status, 0)}>{columns.find(c => c.status === d.status)?.label}</span></td>
+                      <td style={{ padding: "8px 12px", color: "var(--cr-ink-3)", fontFamily: "'JetBrains Mono', monospace" }}>{d.next_follow_up ? formatDate(d.next_follow_up) : "—"}</td>
+                      <td style={{ padding: "8px 12px", color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(d.updated_at)}</td>
+                    </tr>
+                    {openHere && (
+                      <tr style={{ borderBottom: "1px solid var(--cr-rule)" }}>
+                        <td colSpan={6} style={{ padding: "0 0 16px" }}>
+                          <DealCard deal={d} viewAs={viewAs} revealIdentity={revealIdentity} equityOffered={equityOffered}
+                            onStatusChange={onStatusChange} onDealClose={onDealClose} onSetFollowUp={onSetFollowUp} onSetCommitment={onSetCommitment}
+                            movingTo={movingDeal?.id === d.id ? movingDeal.status : null} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>

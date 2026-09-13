@@ -44,7 +44,10 @@ export async function GET(req: NextRequest) {
   // the search box into a boolean oracle over hidden values. The sibling `.or()`
   // routes (messages/accounts, admin/list) strip exactly these; this one is the
   // one that didn't. Strip the grammar chars first, then escape LIKE wildcards.
-  const safeQ = q.replace(/[,()*\\%_]/g, " ").trim();
+  // Each stripped char leaves a space behind, and LIKE matches spaces
+  // literally: without the collapse "baba, bank" becomes "%baba  bank%"
+  // (double space) and matches nothing.
+  const safeQ = q.replace(/[,()*\\%_]/g, " ").replace(/\s+/g, " ").trim();
   if (safeQ.length < 2) return NextResponse.json({ startups: [], investors: [] });
   const term = `%${safeQ}%`;
 

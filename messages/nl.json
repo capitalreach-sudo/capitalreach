@@ -177,11 +177,11 @@
       "analyzeBtn": "Mijn pitch analyseren",
       "clear": "Wissen",
       "resultsEmpty": "Uw AI-analyse verschijnt hier",
-      "resultsEmptySub": "Echte GPT-4o-uitvoer — geen sjablonen, geen nep-data.",
+      "resultsEmptySub": "Echte GPT-4o mini-uitvoer, geen sjablonen, geen nepdata. Elke analyse is uniek voor uw pitch.",
       "evaluating": "Uw pitch wordt geëvalueerd…",
-      "evaluatingSub": "GPT-4o beoordeelt duidelijkheid, marktopportuniteit, concurrentievoordeel, teamkracht & tractie",
+      "evaluatingSub": "GPT-4o mini beoordeelt duidelijkheid, marktopportuniteit, concurrentievoordeel, teamkracht & tractie",
       "reportTitle": "Pitch-analyserapport",
-      "generatedBy": "Gegenereerd door GPT-4o",
+      "generatedBy": "Gegenereerd door GPT-4o mini",
       "outOf100": "van 100",
       "whatsWorking": "Wat werkt",
       "improveThis": "Verbeteren",
@@ -192,10 +192,10 @@
       "dimMoat": "Concurrentievoordeel",
       "dimTeam": "Teamkracht",
       "dimTraction": "Tractiebewijs",
-      "descLong": "Beschrijf uw startup — probleem, oplossing, marktomvang, teamachtergrond en tractie. GPT-4o beoordeelt het op 5 investeringsdimensies en geeft bruikbare feedback.",
+      "descLong": "Beschrijf uw startup: probleem, oplossing, marktomvang, teamachtergrond en tractie. GPT-4o mini beoordeelt het op 5 investeringsdimensies en geeft bruikbare feedback.",
       "proTipLabel": "Pro-tip:",
       "proTipBody": "Neem marktomvang, maandelijkse omzet en groeipercentage, eerdere exits, teambio's en de belangrijkste cijfers daarachter op voor de meest nauwkeurige score.",
-      "footerInfo": "Aangedreven door GPT-4o · ~3 seconden · Geen data opgeslagen",
+      "footerInfo": "Aangedreven door GPT-4o mini · ~3 seconden · Geen data opgeslagen",
       "analysisFailedErr": "Analyse mislukt",
       "analysisFailedFull": "Pitchanalyse mislukt. Controleer uw verbinding en probeer het opnieuw.",
       "placeholder": "Plak hier uw pitch — probleem, oplossing, tractie, team en vraag...",
@@ -277,10 +277,10 @@
       "searchPlaceholder": "bijv. Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
-      "heroPowered": "Aangedreven door GPT-4o",
+      "heroPowered": "Aangedreven door GPT-4o mini",
       "heroLine1": "AI Deal",
       "heroLine2": "Intelligentie",
-      "heroSub": "Drie krachtige AI-tools op één plek — analyseer pitches, match met de juiste investeerders en genereer due diligence-rapporten.",
+      "heroSub": "Drie AI-tools op één plek: analyseer pitches, match met de juiste investeerders en genereer due diligence-rapporten. Pitchanalyse en due diligence draaien op GPT-4o mini; matching is gebaseerd op de investeringsthesis.",
       "statPitchLabel": "Pitch-analyses",
       "statMatchLabel": "Investeerdersmatching",
       "statDDLabel": "Due Diligence",
@@ -290,8 +290,8 @@
       "startInvestor": "Starten als investeerder",
       "listStartup": "Startup plaatsen",
       "viewPricing": "Alle prijzen bekijken",
-      "statPitchVal": "Echte GPT",
-      "statMatchVal": "AI-gedreven",
+      "statPitchVal": "GPT-4o mini",
+      "statMatchVal": "Op thesis gebaseerd",
       "statDDVal": "500-woorden memo's",
       "statSpeedVal": "~3 seconden",
       "tierFreeSub": "Altijd gratis",
@@ -315,7 +315,9 @@
     "usageRemaining": "Nog {remaining} van {limit} AI-runs vandaag",
     "usageUnlimited": "Onbeperkte AI-runs in jouw plan",
     "usageUpgrade": "Meer krijgen →",
-    "disclosureStrip": "AI-analyses zijn uitsluitend informatief en vormen geen beleggingsadvies. Aangedreven door OpenAI-modellen. Vermelding: deze inhoud is met AI gegenereerd."
+    "disclosureStrip": "AI-analyses zijn uitsluitend informatief en vormen geen beleggingsadvies. Aangedreven door OpenAI-modellen. Vermelding: deze inhoud is met AI gegenereerd.",
+    "usagePaidOnly": "AI-tools horen bij de betaalde abonnementen",
+    "usagePerTool": "Elke tool heeft een eigen daglimiet; hier ziet u de tool die u het meest heeft gebruikt."
   },
   "pricing": {
     "sectionLabel": "Plannen en prijzen",
@@ -1042,7 +1044,9 @@
     "uploadFirstDoc": "Upload je eerste document",
     "submitting": "Versturen…",
     "closureDeclarationDue": "Uw ronde is gemarkeerd als gesloten. Geef op wat is opgehaald zodat het dossier compleet is.",
-    "declareClosure": "Sluiting opgeven"
+    "declareClosure": "Sluiting opgeven",
+    "funnelWindow": "Sinds de start",
+    "saveFailedEditToRetry": "Opslaan mislukt; bewerk om opnieuw te proberen"
   },
   "settings": {
     "pageTitle": "Instellingen",
@@ -1175,7 +1179,7 @@
     "financials": "Financiën",
     "team": "Team",
     "documents": "Documenten",
-    "backToListings": "← Terug naar listings",
+    "backToListings": "Terug naar listings",
     "viewDeal": "Deal bekijken",
     "requestIntro": "Intro aanvragen",
     "raising": "Haalt op",
@@ -1571,7 +1575,7 @@
     "showTable": "Toon de cijfers",
     "showChart": "Toon de grafiek",
     "otherIndustries": "Andere sectoren",
-    "sampleNote": "De cijfers bevatten voorbeeldvermeldingen uit de lanceerperiode.",
+    "sampleNote": "De cijfers bevatten voorbeeldvermeldingen, voorbeeldaccounts en voorbeeld-dealactiviteit uit de lanceerperiode.",
     "breakdowns": "Uitsplitsingen",
     "viewActivity": "Activiteit",
     "viewNumbers": "Cijfers",
@@ -2112,7 +2116,9 @@
     "scopeAll": "Alle deals",
     "scopeMine": "Mijn deals",
     "editAmountAria": "Bedrag bewerken",
-    "amountSaved": "Bedrag bijgewerkt"
+    "amountSaved": "Bedrag bijgewerkt",
+    "contractYouSigned": "U heeft getekend; wachten op de andere kant",
+    "ndaClickwrapHint": "E-handtekening is op deze omgeving niet gekoppeld. De investeerder kan de NDA direct op de vermelding van de startup accepteren, waarmee de data room meteen opent."
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -2906,7 +2912,7 @@
     "noMfa": "Dat account heeft geen tweede factor."
   },
   "imprint": {
-    "metaTitle": "Colofon — CapitalReach",
+    "metaTitle": "Colofon",
     "metaDesc": "Wettelijke informatie en aanbiederidentificatie voor CapitalReach.",
     "title": "Colofon",
     "subtitle": "Aanbiederidentificatie (§ 5 TMG)",
@@ -2967,7 +2973,8 @@
     "footnote": "Juridische kosten voor koude acquisitie en tussenpersonen lopen doorgaans op tot € 5.000–20.000 voordat een ronde zelfs maar opent.",
     "detailNote": "De succesfee van 2% wordt pas aan de startup gefactureerd nadat een ronde via CapitalReach is gesloten. Investeerders betalen niets.",
     "keepShare": "{pct}% van het opgehaalde bedrag blijft in het bedrijf.",
-    "setRaise": "Rondebedrag instellen op {amount}"
+    "setRaise": "Rondebedrag instellen op {amount}",
+    "titleCompare": "Vergelijk de fee met uw eigen bedrag"
   },
   "welcome": {
     "eyebrow": "Welkom bij CapitalReach",
@@ -3151,7 +3158,9 @@
     "due": "Vervalt",
     "sentAwaiting": "verzonden, ontvangst in afwachting",
     "receivedOf": "{received} van {total} ontvangen",
-    "fullyFunded": "Volledig uitbetaald — alle tranches ontvangen"
+    "fullyFunded": "Volledig uitbetaald — alle tranches ontvangen",
+    "timelineSet": "Uitbetalingsschema ingesteld: {count} tranches",
+    "cleared": "Uitbetalingsschema verwijderd"
   },
   "fees": {
     "tab": "Fees",
@@ -3177,7 +3186,8 @@
       "reversed": "Teruggedraaid"
     },
     "resolve": "Afhandelen",
-    "resolvePrompt": "Hoe is dit geschil afgehandeld?"
+    "resolvePrompt": "Hoe is dit geschil afgehandeld?",
+    "operatorOnly": "Handelen op een fee vereist een admin op operatorniveau."
   },
   "myFees": {
     "title": "Succesfees",
@@ -3248,7 +3258,8 @@
     },
     "medianTarget": "Mediaan rondedoel",
     "newThisMonth": "Nieuwe rondes deze maand",
-    "anonNote": "Je hebt geen account nodig om dit te versturen."
+    "anonNote": "Je hebt geen account nodig om dit te versturen.",
+    "operatorOnly": "Handelen op een melding vereist een admin op operatorniveau."
   },
   "deleteAccount": {
     "willAnonymise": "Je account heeft afgeronde deals op het platform en kan dus niet zomaar worden gewist — de tegenpartij heeft er ook vastlegging van, en een openstaande fee verdwijnt niet met het account. In plaats daarvan worden je naam, e-mail, foto en profielteksten permanent verwijderd en gaat de listing offline. Wat overblijft is een transactievastlegging zonder persoonsgegevens.",
@@ -3382,7 +3393,18 @@
     "filterSort": "Verandert alleen de volgorde van de resultaten; er komt niets bij en er valt niets af. Nieuwste eerst is de standaard, en sorteren op score, omzet of sluitingsdatum leest de cijfers die oprichters indienden.",
     "filterRaising": "Houdt rondes vanaf deze omvang over. Het filter leest het financieringsdoel dat de oprichter voor de ronde stelde, niet het bedrag dat al is toegezegd.",
     "filterGrowth": "De maandelijkse omzetgroei zoals de oprichter die in de vermelding opgaf. Het cijfer komt van de oprichter; het platform controleert het niet.",
-    "filterClosingSoon": "Rondes waarvan de door de oprichter gezette sluitingsdatum binnen 60 dagen valt of al is bereikt. Doorlopende rondes zonder datum vallen erbuiten."
+    "filterClosingSoon": "Rondes waarvan de door de oprichter gezette sluitingsdatum binnen 60 dagen valt of al is bereikt. Doorlopende rondes zonder datum vallen erbuiten.",
+    "stageProposal": "Een dealverzoek dat de ene kant naar de andere stuurde. Er belandt niets in een pipeline totdat de ontvangende kant accepteert; elke deal op dit bord is dus door beide partijen overeengekomen.",
+    "stageIntro": "De eerste werkfase: de twee kanten zijn verbonden en in gesprek. Er is nog niets toegezegd, en een deal schuift fase voor fase op naarmate het gesprek concreter wordt.",
+    "stageClosed": "Beide kanten hebben de investering voor een afgesproken bedrag bevestigd. Sluiten vereist een ondertekend contract en de bevestiging van beide partijen; het genereert de factuur voor de succesfee van 2% en kan niet worden heropend.",
+    "stagePassed": "De deal eindigde zonder investering, met de reden vastgelegd. Passen sluit de deal af maar niet de relatie: een gepasseerde deal kan worden heropend als de gesprekken hervatten.",
+    "followUpDue": "Een datum die u op een deal instelt als eigen herinnering om op te volgen. Het label kleurt rood zodra de datum is verstreken, en de follow-upsortering tilt de deals omhoog waarvan de datum is aangebroken.",
+    "totalRaised": "Elk bedrag dat hier bij het sluiten van een deal is bevestigd, opgeteld tot vandaag. Geld dat nog in onderhandeling is of alleen is toegezegd telt niet mee, en gepasseerde deals komen nooit in het cijfer.",
+    "activeStartups": "Bedrijven met op dit moment een actieve vermelding. Concepten, vermeldingen nog in review en geschorste vermeldingen tellen niet mee.",
+    "investorCount": "Investeerdersaccounts geregistreerd op het platform, ongeacht het abonnement. Registratie is een aanmelding, geen verificatie van iemands vermogen.",
+    "dealsClosed": "Deals die beide kanten als gedane investering hebben bevestigd, geteld sinds de opening van het platform. Een deal die eindigde in een pass wordt apart geregistreerd en telt hier nooit mee.",
+    "closeRate": "Van de afgeronde deals het aandeel dat sloot in plaats van paste. Deals die nog lopen tellen aan geen van beide kanten mee; dit is dus niet het aandeel van alle deals dat slaagt.",
+    "medianTarget": "Het middelste rondedoel onder de vermeldingen in die fase: de helft vraagt meer, de helft vraagt minder. Een mediaan in plaats van een gemiddelde, zodat één uitschieter het cijfer niet kan verschuiven."
   },
   "translate": {
     "offer": "Dit is in een andere taal geschreven.",
@@ -3421,7 +3443,9 @@
     "title": "Sinds je laatste bezoek",
     "watching": "{n} bedrijven gevolgd",
     "markSeen": "Alles als gezien markeren",
-    "quiet": "Niets nieuws bij de bedrijven die je volgt."
+    "quiet": "Niets nieuws bij de bedrijven die je volgt.",
+    "docsInRoom": "{count} documenten in de data room",
+    "docsInRoomOne": "1 document in de data room"
   },
   "share": {
     "title": "Deel je ronde",
@@ -3860,7 +3884,70 @@
     "dealMovedIntro": "Een deal staat nu op Gesprek",
     "dealMovedDueDiligence": "Een deal staat nu op Onderhandeling",
     "dealMovedTermSheet": "Een deal staat nu op Term sheet",
-    "dealPassedTitle": "Een deal is gemarkeerd als afgewezen"
+    "dealPassedTitle": "Een deal is gemarkeerd als afgewezen",
+    "dealRequestTitle": "{name} wil een deal openen",
+    "dealRequestBody": "Accepteer om hem aan beide pipelines toe te voegen, of wijs af.",
+    "dealOpenedTitle": "{name} heeft een deal met u geopend",
+    "ndaAcceptedTitle": "NDA geaccepteerd, data room geopend",
+    "ndaAcceptedBody": "Een investeerder heeft uw NDA geaccepteerd en kan nu uw beschermde documenten zien.",
+    "listingApprovedTitle": "{name} is live",
+    "listingApprovedBody": "Uw vermelding is nu zichtbaar voor investeerders.",
+    "listingRejectedTitle": "{name} heeft wijzigingen nodig voordat het live kan",
+    "listingRejectedBody": "Uw vermelding is beoordeeld en is nog niet live. Open uw dashboard om te zien wat u kunt doen.",
+    "docRequestTitle": "{name} heeft uw {doc} opgevraagd",
+    "docRequestBody": "Upload het via uw documentenbeheer; het verzoek blijft daar zichtbaar tot u dat doet.",
+    "docSharedTitle": "{name} heeft het gevraagde {doc} gedeeld",
+    "docDeclinedTitle": "{name} heeft uw {doc}-verzoek afgewezen",
+    "requestAcceptedTitle": "{name} heeft geaccepteerd, de deal is open",
+    "requestAcceptedBody": "Hij staat nu in beide pipelines.",
+    "requestDeclinedTitle": "{name} heeft uw verzoek afgewezen",
+    "requestDeclinedBody": "Niets persoonlijks; misschien past het nu gewoon niet.",
+    "teamAddedTitle": "U bent toegevoegd aan een team op CapitalReach",
+    "teamAddedBodyStartup": "U heeft nu toegang tot een startup-account.",
+    "teamAddedBodyInvestor": "U heeft nu toegang tot een investeerdersaccount.",
+    "feeActionRequiredTitle": "Uw bank moet deze betaling autoriseren",
+    "feeActionRequiredBody": "De betaling staat in de wacht totdat u haar bij uw bank bevestigt.",
+    "adminInfoRequestTitle": "We hebben iets van u nodig",
+    "adminListingReviewTitle": "Uw vermelding wordt beoordeeld",
+    "reportClosedTitle": "We hebben uw melding bekeken",
+    "reportClosedBody": "Bedankt voor het melden. De beoordeling is afgerond.",
+    "feeDisputeReviewedTitle": "Uw bezwaar tegen de fee is beoordeeld",
+    "feeInvoicedTitle": "Factuur succesfee",
+    "feeInvoicedBody": "De succesfee van 2% over uw gesloten ronde is gefactureerd.",
+    "feeSupplementaryTitle": "Aanvullende succesfee",
+    "feeSupplementaryBody": "Er is een fee opgelegd over het verschil tussen uw gesloten ronde en het bij het handelsregister gedeponeerde bedrag.",
+    "recordNoteTitle": "Er is een notitie aan uw dossier toegevoegd",
+    "recordNoteBody": "Een gesloten ronde kwam niet overeen met de deponering bij het handelsregister.",
+    "feeReminderTitle": "Succesfee nog niet betaald",
+    "feeFinalReminderTitle": "Laatste herinnering: succesfee onbetaald",
+    "feeReminderBody": "{amount} over uw gesloten ronde. De fee wordt in rekening gebracht bij de startup die de investering ontvangt.",
+    "feeInstalmentTitle": "Succesfee, termijn {seq}",
+    "feeInstalmentBody": "De volgende termijn van uw succesfee is gefactureerd.",
+    "commitTitleInterest": "Deal-update: Geïnteresseerd",
+    "commitTitleSoft": "Deal-update: Soft-circle",
+    "commitTitleVerbal": "Deal-update: Mondeling ja",
+    "commitTitleCommitted": "Deal-update: Toegezegd",
+    "closeProposedTitle": "Sluiting voorgesteld: {name}",
+    "closeProposedBody": "Bevestig om te sluiten op {amount} (2% fee van toepassing).",
+    "closeProposedBodyNoAmount": "Bevestig om deze deal te sluiten.",
+    "dealClosedTitle": "Deal gesloten: {name}",
+    "dealClosedBodyFee": "{amount} · 2% succesfee gefactureerd",
+    "fundedTitle": "Gefinancierd: {name}",
+    "fundedBody": "Beide partijen hebben de overboeking bevestigd.",
+    "fundsSentTitle": "De investeerder heeft de verzending van de middelen bevestigd",
+    "fundsReceivedTitle": "De oprichter heeft de ontvangst van de middelen bevestigd",
+    "confirmSideBody": "Bevestig uw kant om de ronde af te ronden.",
+    "scheduleProposedTitle": "Er is een uitbetalingsschema voorgesteld",
+    "scheduleProposedBody": "{count} tranches op {name}.",
+    "fullyFundedTitle": "Volledig gefinancierd: {name}",
+    "fullyFundedBody": "Alle tranches zijn ontvangen.",
+    "trancheSentTitle": "{label}: de investeerder heeft de verzending van de middelen bevestigd",
+    "trancheReceivedTitle": "{label}: de oprichter heeft de ontvangst van de middelen bevestigd",
+    "confirmTrancheBody": "Bevestig uw kant om deze tranche af te ronden.",
+    "dealDocTitle": "Nieuw dealdocument: {name}",
+    "dealDocBody": "De andere kant heeft een document aan uw gedeelde data room toegevoegd.",
+    "contractSentTitle": "Contract verzonden ter ondertekening: {title}",
+    "contractSignedTitle": "Contract ondertekend: {title}"
   },
   "match": {
     "title": "Wie er op je wacht",
@@ -4735,7 +4822,9 @@
       "differentiation": "Onderscheidend vermogen benoemd",
       "teamInfo": "Teamgegevens opgegeven",
       "metrics": "Cijfers opgegeven en consistent"
-    }
+    },
+    "scoredAt": "Beoordeeld op {date}",
+    "stale": "De vermelding is gewijzigd sinds deze score; hij wordt bij de volgende ronde ververst."
   },
   "attest": {
     "eyebrow": "Jouw verklaring",
@@ -4783,5 +4872,25 @@
     "emptyBody": "Haalt u kapitaal op in {industry}? Vermelden is gratis tijdens de lancering en elke vermelding wordt vooraf beoordeeld.",
     "browseBySector": "Bladeren per sector",
     "metaDescription": "{industry}-startups op CapitalReach: doelen, tractie en fase, met 2 % succesfee die de startup pas bij closing betaalt."
+  },
+  "meta": {
+    "startupsTitle": "Startups vinden",
+    "startupsDesc": "Blader door beoordeelde startup-rondes op fase, sector en tractie. Bedrijfsnamen zijn zichtbaar voor leden.",
+    "investorsTitle": "Investeerdersgids",
+    "investorsDesc": "Angels, family offices en fondsen actief op CapitalReach, doorzoekbaar op thesis, ticketgrootte en sector.",
+    "aiTitle": "AI Deal Intelligence",
+    "aiDesc": "Pitchanalyse, investeerdersmatching en due diligence-concepten op GPT-4o mini.",
+    "dataTitle": "Datacentrum",
+    "dataDesc": "Live platformcijfers: lopende rondes, gezocht kapitaal, dealfunnel en sluitingspercentage.",
+    "dealsTitle": "Dealportaal",
+    "dealsDesc": "Volg elk gesprek van intro tot sluiting: fases, notities, contracten en het dealzegel.",
+    "pricingTitle": "Prijzen",
+    "pricingDesc": "Een succesfee van 2%, alleen bij sluiting betaald door de startup. Investeerders betalen niets.",
+    "contactTitle": "Contact",
+    "contactDesc": "Vragen over listen, investeren of het platform: schrijf het CapitalReach-team.",
+    "loginTitle": "Inloggen",
+    "signupTitle": "Account aanmaken",
+    "homeTitle": "CapitalReach - Private kapitaalmarktplaats",
+    "homeDesc": "De beoordeelde marktplaats waar startups kapitaal ophalen en investeerders hun volgende ronde vinden. 2% succesfee bij sluiting, daarvoor niets."
   }
 }

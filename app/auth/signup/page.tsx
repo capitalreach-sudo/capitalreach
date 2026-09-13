@@ -260,9 +260,17 @@ function SignupForm() {
   const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH === "1";
   async function handleGoogleSignup() {
     if (!role) return;
+    // options.queryParams goes to Google's authorize endpoint and never comes
+    // back, so the chosen role and the invite must ride on the redirect URL
+    // itself. The callback writes the role into the new profile and stashes
+    // the invite in user metadata, where the same redemption path the
+    // password flow uses (/api/auth/welcome) picks it up.
+    const cb = new URL("/auth/callback", window.location.origin);
+    cb.searchParams.set("role", role);
+    if (invite?.valid && inviteParam) cb.searchParams.set("invite", inviteParam);
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback`, queryParams: { role } },
+      options: { redirectTo: cb.toString() },
     });
   }
 
@@ -316,6 +324,39 @@ function SignupForm() {
       {t("auth.continueGoogle")}
     </button>
   );
+
+  // F: an invite is a person vouching for the platform. Saying who, by name,
+  // is the whole reason the link converts better than an ad -- and it has to
+  // say so on the FIRST screen too, where the role decision the code carries
+  // is made, not only after the visitor guessed their way past it.
+  // Welcome, not profit: copper, never green -- green is money direction.
+  const inviteNotice = inviteParam && invite ? (
+    invite.valid ? (
+      <div style={noticeBlock("var(--cr-copper)")}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
+          {invite.inviterName
+            ? t("invite.bannerNamed", { name: invite.inviterName })
+            : t("invite.banner")}
+        </p>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+          {t(invite.role === "investor" ? "invite.asInvestor" : "invite.asFounder")}
+        </p>
+      </div>
+    ) : (
+      <div style={noticeBlock("var(--cr-rule-dark)")}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("invite.expired")}</p>
+      </div>
+    )
+  ) : null;
+
+  // The role the invite opens, once the lookup has confirmed it. Non-null
+  // locks the picker: the code decides the role, so the other row must not
+  // be selectable -- a link edited to ?role=startup on an investor invite
+  // would otherwise contradict what redemption enforces.
+  const inviteRole: Role | null =
+    invite?.valid && invite.role === "startup" ? "startup"
+    : invite?.valid && invite.role === "investor" ? "investor"
+    : null;
 
   // ── Confirm step ─────────────────────────────────────────────
   if (step === "confirm") {
@@ -397,17 +438,22 @@ function SignupForm() {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.joiningAs")}</p>
           </div>
 
+          {inviteNotice}
+
           {/* Rule-separated rows with mono rails -- the ledger, not icon cards.
-              The diamond marks the chosen row. */}
+              The diamond marks the chosen row. A valid invite pre-selects its
+              role and disables the other row: the banner above says which
+              account the code opens, and the picker must not contradict it. */}
           <div style={{ borderTop: "1px solid var(--cr-rule)", marginBottom: "24px" }}>
             {([
               { value: "startup",  label: t("auth.startupFounder"), desc: t("auth.startupDesc") },
               { value: "investor", label: t("auth.investor"),        desc: t("auth.investorDesc") },
             ] as { value: Role; label: string; desc: string }[]).map((opt, i) => {
               const active = role === opt.value;
+              const lockedOut = inviteRole !== null && opt.value !== inviteRole;
               return (
-                <button key={opt.value} onClick={() => setRole(opt.value)} aria-pressed={active}
-                  style={{ display: "flex", alignItems: "center", gap: "16px", width: "100%", minHeight: "56px", padding: "12px 8px", textAlign: "left", background: active ? "var(--cr-copper-bg)" : "transparent", border: "none", borderBottom: "1px solid var(--cr-rule)", cursor: "pointer", transition: "background 120ms" }}>
+                <button key={opt.value} onClick={() => setRole(opt.value)} aria-pressed={active} disabled={lockedOut}
+                  style={{ display: "flex", alignItems: "center", gap: "16px", width: "100%", minHeight: "56px", padding: "12px 8px", textAlign: "left", background: active ? "var(--cr-copper-bg)" : "transparent", border: "none", borderBottom: "1px solid var(--cr-rule)", cursor: lockedOut ? "not-allowed" : "pointer", opacity: lockedOut ? 0.45 : 1, transition: "background 120ms" }}>
                   <span aria-hidden style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -455,27 +501,7 @@ function SignupForm() {
           </p>
         </div>
 
-        {/* F: an invite is a person vouching for the platform. Saying who,
-            by name, is the whole reason the link converts better than an ad. */}
-        {/* Welcome, not profit: copper, never green -- green is money direction. */}
-        {inviteParam && invite && (
-          invite.valid ? (
-            <div style={noticeBlock("var(--cr-copper)")}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
-                {invite.inviterName
-                  ? t("invite.bannerNamed", { name: invite.inviterName })
-                  : t("invite.banner")}
-              </p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                {t(invite.role === "investor" ? "invite.asInvestor" : "invite.asFounder")}
-              </p>
-            </div>
-          ) : (
-            <div style={noticeBlock("var(--cr-rule-dark)")}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>{t("invite.expired")}</p>
-            </div>
-          )
-        )}
+        {inviteNotice}
 
         {/* Confirms the plan click actually registered. Without this the form
             is identical whether you picked a plan or not. */}

@@ -11,6 +11,10 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
  * PATCH marks read: one id, or all of them.
  */
 
+// Notification ids are uuids; anything else is rejected before it reaches a
+// query. Shared by GET's cursor, DELETE and PATCH so the three cannot drift.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -43,10 +47,7 @@ export async function GET(req: NextRequest) {
   const before = req.nextUrl.searchParams.get("before");
   const beforeId = req.nextUrl.searchParams.get("beforeId");
   const validBefore = before && !Number.isNaN(Date.parse(before)) ? before : null;
-  const validBeforeId =
-    beforeId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(beforeId)
-      ? beforeId
-      : null;
+  const validBeforeId = beforeId && UUID_RE.test(beforeId) ? beforeId : null;
 
   let query = supabase
     .from("notifications")
@@ -94,7 +95,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ cleared: true });
   }
 
-  if (typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+  if (typeof id !== "string" || !UUID_RE.test(id)) {
     return NextResponse.json({ error: "id required" }, { status: 400 });
   }
   const { error } = await supabase
@@ -120,14 +121,16 @@ export async function PATCH(req: NextRequest) {
     .is("read_at", null);
 
   if (!all) {
-    if (typeof id !== "string" || !id) {
+    // Same shape gate as DELETE: a malformed id must be a 400, not a 500 out
+    // of PostgREST when the uuid cast fails.
+    if (typeof id !== "string" || !UUID_RE.test(id)) {
       return NextResponse.json({ error: "id or all required" }, { status: 400 });
     }
     q = q.eq("id", id);
   }
 
   const { error } = await q;
-  if (error) return NextResponse.json({ error: "Could not load notifications" }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Could not mark read" }, { status: 500 });
 
   return NextResponse.json({ ok: true });
 }

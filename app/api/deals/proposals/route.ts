@@ -745,8 +745,11 @@ async function notifyResolution(
     await notifyUser({
       userId: p.proposed_by,
       type: accepted ? "deal_opened" : "deal_passed",
-      title: accepted ? `${accepterName} accepted — the deal is open` : `${accepterName} declined your request`,
-      body: accepted ? "It is on both pipelines now." : "No hard feelings — they may not be a fit right now.",
+      title: accepted ? `${accepterName} accepted, the deal is open` : `${accepterName} declined your request`,
+      body: accepted ? "It is on both pipelines now." : "No hard feelings, they may not be a fit right now.",
+      titleKey: accepted ? "notif.requestAcceptedTitle" : "notif.requestDeclinedTitle",
+      bodyKey: accepted ? "notif.requestAcceptedBody" : "notif.requestDeclinedBody",
+      params: { name: accepterName },
       href: accepted && dealId ? `/deals?deal=${dealId}` : "/deals",
     });
   } catch { /* a lost notification must not fail the action */ }

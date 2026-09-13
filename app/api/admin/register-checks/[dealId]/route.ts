@@ -232,7 +232,9 @@ export async function POST(req: NextRequest, { params }: { params: { dealId: str
             userId: startup.owner_id,
             type: "fee_due",
             title: "Supplementary success fee",
-            body: `A fee has been raised on the difference between your closed round and the amount filed at your company register.`,
+            body: "A fee has been raised on the difference between your closed round and the amount filed at your company register.",
+            titleKey: "notif.feeSupplementaryTitle",
+            bodyKey: "notif.feeSupplementaryBody",
             href: "/dashboard/startup/billing",
           });
         }
@@ -290,6 +292,8 @@ export async function POST(req: NextRequest, { params }: { params: { dealId: str
             type: "admin_alert",
             title: "A note was added to your record",
             body: note || "A closed round did not match what was filed at the company register.",
+            titleKey: "notif.recordNoteTitle",
+            bodyKey: note ? undefined : "notif.recordNoteBody",
             href: "/dashboard",
           });
         }

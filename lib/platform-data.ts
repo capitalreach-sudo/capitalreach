@@ -106,22 +106,51 @@ export function buildMonthlySeries(
 }
 
 /**
+ * Every row of a query, paged past PostgREST's silent 1000-row cap.
+ *
+ * An un-ranged select stops at the server's default page and reports no
+ * truncation, so past a thousand startups or deals every aggregate on this
+ * page would quietly undercount -- and these numbers are the page's whole
+ * job. The caller supplies an explicitly ordered query so pages stay stable
+ * while rows are inserted mid-walk. Errors throw, so computePlatformData's
+ * catch resolves to null (the retry state) rather than presenting a partial
+ * platform as the whole one.
+ */
+async function fetchAll<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
+): Promise<T[]> {
+  const SIZE = 1000;
+  const rows: T[] = [];
+  for (let from = 0; ; from += SIZE) {
+    const { data, error } = await page(from, from + SIZE - 1);
+    if (error) throw new Error(error.message);
+    const batch = data ?? [];
+    rows.push(...batch);
+    if (batch.length < SIZE) return rows;
+  }
+}
+
+/**
  * Public aggregate statistics for the Data Centre. Used by the server page
  * (first paint) and by /api/platform-data (client refresh) so both surfaces
  * are guaranteed to compute the same numbers. Never throws: on any failure
  * it resolves to `null` and callers decide between "zeros" and "retry".
  *
- * Deliberately selects nothing that identifies a deal party — deals are
+ * Deliberately selects nothing that identifies a deal party -- deals are
  * private between their two participants; only aggregates leave here.
  */
 export async function computePlatformData(): Promise<PlatformData | null> {
   try {
     const supabase = createAdminClient();
-    const [startups, investors, deals] = await Promise.all([
-      supabase
-        .from("startups")
-        .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at")
-        .eq("status", "active"),
+    const [startupData, investors, allDeals] = await Promise.all([
+      fetchAll((from, to) =>
+        supabase
+          .from("startups")
+          .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at")
+          .eq("status", "active")
+          .order("id", { ascending: true })
+          .range(from, to),
+      ),
       supabase
         .from("profiles")
         .select("id", { count: "exact", head: true })
@@ -131,13 +160,15 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       // party: no startup_id, no investor_id, no names. Deals are private
       // between their two participants and this is a public endpoint; only
       // aggregate counts leave here.
-      supabase
-        .from("deals")
-        .select("status, amount, currency, closed_at"),
+      fetchAll((from, to) =>
+        supabase
+          .from("deals")
+          .select("status, amount, currency, closed_at")
+          .order("id", { ascending: true })
+          .range(from, to),
+      ),
     ]);
 
-    const startupData = startups.data ?? [];
-    const allDeals = deals.data ?? [];
     const closedDeals = allDeals.filter((d) => d.status === "closed");
     const totalRaised = closedDeals.reduce((sum, d) => sum + (d.amount ?? 0), 0);
 

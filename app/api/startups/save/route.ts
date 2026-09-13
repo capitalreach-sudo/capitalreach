@@ -108,6 +108,13 @@ export async function POST(req: NextRequest) {
     if (error?.code === "23514") {
       return NextResponse.json({ error: error.message, code: "contact_in_prose" }, { status: 400 });
     }
+    // P0001 is a tier-cap RAISE whose message is written for the founder,
+    // same as on the create path below. It fires on update too -- the NDA
+    // toggle is not tier-gated client-side -- and a bare 500 here would turn
+    // every autosave of the whole form into "Could not save" with no cause.
+    if (error?.code === "P0001") {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     if (error) return NextResponse.json({ error: "Could not save" }, { status: 500 });
     return NextResponse.json({ id: existing.id, ...withheld });
   }

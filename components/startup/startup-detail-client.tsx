@@ -896,6 +896,8 @@ export function StartupDetailClient({
                 <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
                   <ScoreWithDisclaimer
                     score={score}
+                    scoredAt={startup.scored_at}
+                    updatedAt={startup.updated_at}
                     dimensions={canFinancials ? scoreDimensionsFromListing({
                       problem: startup.problem,
                       solution: startup.solution,
@@ -1586,8 +1588,14 @@ export function StartupDetailClient({
         {/* ── Tab: Documents ── */}
         {activeTab === "documents" && (
           <>
-            {/* Unauthenticated teaser */}
-            {!investorId && startup.documents && startup.documents.length > 0 && (
+            {/* Unauthenticated teaser. A guest can hold real access without an
+                investor row: a founder-minted share link with a document grant
+                (089). That grant reaches the client only as unlocked rows
+                (stripLockedUrl), so any openable document means "sign up to
+                view the deck" would sit above a deck the viewer can open --
+                the teaser is for viewers with nothing openable at all. */}
+            {!investorId && startup.documents && startup.documents.length > 0
+              && !startup.documents.some((d) => !d.locked) && (
               <div style={{ position: "relative", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--cr-rule-dark)", marginBottom: "16px", minHeight: "120px" }}>
                 <div style={{ position: "absolute", inset: 0, filter: "blur(4px)", background: "var(--cr-paper-3)", display: "flex", alignItems: "center", padding: "24px" }}>
                   <div style={{ width: "100%" }}>

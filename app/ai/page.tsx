@@ -4,14 +4,17 @@ import { AiToolsHub } from "@/components/shared/ai-tools-hub";
 import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import type { Metadata } from "next";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "AI Deal Intelligence",
-  description:
-    "Analyze startup pitches with GPT-4o-mini, find your best-fit investors instantly, and generate 500-word due diligence reports in seconds. Powered by real AI.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    title: t("meta.aiTitle"),
+    description: t("meta.aiDesc"),
+  };
+}
 
 export default async function AiPage() {
   // Auth is decided on the server so the HTML a signed-out visitor receives

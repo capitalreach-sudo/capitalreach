@@ -177,11 +177,11 @@
       "analyzeBtn": "Analisar meu pitch",
       "clear": "Limpar",
       "resultsEmpty": "Sua análise de IA aparece aqui",
-      "resultsEmptySub": "Saída real do GPT-4o — sem modelos, sem dados falsos.",
+      "resultsEmptySub": "Saída real do GPT-4o mini, sem modelos, sem dados falsos. Cada análise é única para o seu pitch.",
       "evaluating": "Avaliando seu pitch…",
-      "evaluatingSub": "GPT-4o está pontuando clareza, oportunidade de mercado, fosso competitivo, força da equipe e tração",
+      "evaluatingSub": "GPT-4o mini está pontuando clareza, oportunidade de mercado, fosso competitivo, força da equipe e tração",
       "reportTitle": "Relatório de análise de pitch",
-      "generatedBy": "Gerado pelo GPT-4o",
+      "generatedBy": "Gerado pelo GPT-4o mini",
       "outOf100": "de 100",
       "whatsWorking": "O que está funcionando",
       "improveThis": "Melhorar isso",
@@ -192,10 +192,10 @@
       "dimMoat": "Fosso competitivo",
       "dimTeam": "Força da equipe",
       "dimTraction": "Evidência de tração",
-      "descLong": "Descreva a sua startup — problema, solução, tamanho de mercado, histórico da equipa e tração. O GPT-4o irá pontuá-la em 5 dimensões de investimento e dar feedback acionável.",
+      "descLong": "Descreva a sua startup: problema, solução, tamanho de mercado, histórico da equipa e tração. O GPT-4o mini irá pontuá-la em 5 dimensões de investimento e dar feedback acionável.",
       "proTipLabel": "Dica pro:",
       "proTipBody": "Inclua a dimensão do mercado, a receita mensal e a taxa de crescimento, saídas anteriores, bios da equipa e as métricas-chave por detrás delas para obter a pontuação mais precisa.",
-      "footerInfo": "Com tecnologia GPT-4o · ~3 segundos · Nenhum dado armazenado",
+      "footerInfo": "Com tecnologia GPT-4o mini · ~3 segundos · Nenhum dado armazenado",
       "analysisFailedErr": "Análise falhou",
       "analysisFailedFull": "A análise do pitch falhou. Verifique a sua ligação e tente novamente.",
       "placeholder": "Cole o seu pitch aqui — problema, solução, tração, equipa e pedido...",
@@ -277,10 +277,10 @@
       "searchPlaceholder": "ex.: Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
-      "heroPowered": "Desenvolvido com GPT-4o",
+      "heroPowered": "Desenvolvido com GPT-4o mini",
       "heroLine1": "Inteligência",
       "heroLine2": "de Deals com IA",
-      "heroSub": "Três poderosas ferramentas de IA num só lugar — analise pitches, encontre os investidores certos e gere relatórios de due diligence.",
+      "heroSub": "Três ferramentas de IA num só lugar: analise pitches, encontre os investidores certos e gere relatórios de due diligence. A análise de pitch e a due diligence funcionam com GPT-4o mini; o matching baseia-se na tese de investimento.",
       "statPitchLabel": "Análises de pitch",
       "statMatchLabel": "Matching de investidores",
       "statDDLabel": "Due Diligence",
@@ -290,8 +290,8 @@
       "startInvestor": "Começar como investidor",
       "listStartup": "Listar a sua startup",
       "viewPricing": "Ver todos os preços",
-      "statPitchVal": "GPT real",
-      "statMatchVal": "Alimentado por IA",
+      "statPitchVal": "GPT-4o mini",
+      "statMatchVal": "Baseado em tese",
       "statDDVal": "Memorandos de 500 palavras",
       "statSpeedVal": "~3 segundos",
       "tierFreeSub": "Sempre grátis",
@@ -315,7 +315,9 @@
     "usageRemaining": "Restam {remaining} de {limit} execuções de IA hoje",
     "usageUnlimited": "Execuções de IA ilimitadas no teu plano",
     "usageUpgrade": "Obter mais →",
-    "disclosureStrip": "A análise gerada por IA é apenas informativa e não constitui aconselhamento de investimento. Baseada em modelos OpenAI. Aviso: este conteúdo foi gerado com IA."
+    "disclosureStrip": "A análise gerada por IA é apenas informativa e não constitui aconselhamento de investimento. Baseada em modelos OpenAI. Aviso: este conteúdo foi gerado com IA.",
+    "usagePaidOnly": "As ferramentas de IA fazem parte dos planos pagos",
+    "usagePerTool": "Cada ferramenta tem o seu limite diário; aqui vê a que mais utilizou."
   },
   "pricing": {
     "sectionLabel": "Planos e preços",
@@ -1042,7 +1044,9 @@
     "uploadFirstDoc": "Carregue o seu primeiro documento",
     "submitting": "A enviar…",
     "closureDeclarationDue": "A sua ronda está marcada como encerrada. Declare o valor angariado para completar o registo.",
-    "declareClosure": "Declarar o encerramento"
+    "declareClosure": "Declarar o encerramento",
+    "funnelWindow": "Desde o início",
+    "saveFailedEditToRetry": "Falha ao guardar; edite para tentar de novo"
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -1175,7 +1179,7 @@
     "financials": "Finanças",
     "team": "Equipe",
     "documents": "Documentos",
-    "backToListings": "← Voltar aos listings",
+    "backToListings": "Voltar aos listings",
     "viewDeal": "Ver deal",
     "requestIntro": "Solicitar intro",
     "raising": "Captando",
@@ -1571,7 +1575,7 @@
     "showTable": "Ver os números",
     "showChart": "Ver o gráfico",
     "otherIndustries": "Outros setores",
-    "sampleNote": "Os números incluem anúncios de exemplo apresentados durante o lançamento.",
+    "sampleNote": "Os números incluem anúncios, contas e atividade de deals de exemplo apresentados durante o período de lançamento.",
     "breakdowns": "Repartições",
     "viewActivity": "Atividade",
     "viewNumbers": "Números",
@@ -2112,7 +2116,9 @@
     "scopeAll": "Todos os negócios",
     "scopeMine": "Os meus negócios",
     "editAmountAria": "Editar o montante",
-    "amountSaved": "Montante atualizado"
+    "amountSaved": "Montante atualizado",
+    "contractYouSigned": "Assinou; falta a outra parte",
+    "ndaClickwrapHint": "A assinatura eletrónica não está ligada nesta instalação. O investidor pode aceitar o NDA diretamente no anúncio da startup, o que abre a data room de imediato."
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -2906,7 +2912,7 @@
     "noMfa": "Essa conta não tem segundo fator."
   },
   "imprint": {
-    "metaTitle": "Informações legais — CapitalReach",
+    "metaTitle": "Informações legais",
     "metaDesc": "Informações legais e identificação do prestador da CapitalReach.",
     "title": "Informações legais",
     "subtitle": "Identificação do prestador (§ 5 TMG)",
@@ -2967,7 +2973,8 @@
     "footnote": "Os custos legais de prospeção e intermediários rondam normalmente 5.000–20.000 € antes de uma ronda sequer abrir.",
     "detailNote": "A comissão de sucesso de 2% é faturada à startup apenas após o fecho de uma ronda através da CapitalReach. Os investidores não pagam nada.",
     "keepShare": "{pct}% do montante angariado fica na empresa.",
-    "setRaise": "Definir o montante da ronda para {amount}"
+    "setRaise": "Definir o montante da ronda para {amount}",
+    "titleCompare": "Compare a comissão com o seu próprio número"
   },
   "welcome": {
     "eyebrow": "Bem-vindo à CapitalReach",
@@ -3151,7 +3158,9 @@
     "due": "Vencimento",
     "sentAwaiting": "enviada, receção pendente",
     "receivedOf": "{received} de {total} recebidos",
-    "fullyFunded": "Totalmente desembolsado — todas as tranches recebidas"
+    "fullyFunded": "Totalmente desembolsado — todas as tranches recebidas",
+    "timelineSet": "Calendário de desembolso definido: {count} tranches",
+    "cleared": "Calendário de desembolso removido"
   },
   "fees": {
     "tab": "Comissões",
@@ -3177,7 +3186,8 @@
       "reversed": "Revertida"
     },
     "resolve": "Resolver",
-    "resolvePrompt": "Como foi resolvida esta contestação?"
+    "resolvePrompt": "Como foi resolvida esta contestação?",
+    "operatorOnly": "Agir sobre uma comissão requer um administrador de nível operador."
   },
   "myFees": {
     "title": "Comissões de sucesso",
@@ -3248,7 +3258,8 @@
     },
     "medianTarget": "Objetivo mediano da ronda",
     "newThisMonth": "Novas rondas este mês",
-    "anonNote": "Não precisa de uma conta para enviar isto."
+    "anonNote": "Não precisa de uma conta para enviar isto.",
+    "operatorOnly": "Agir sobre uma denúncia requer um administrador de nível operador."
   },
   "deleteAccount": {
     "willAnonymise": "A sua conta tem negócios fechados na plataforma, por isso não pode ser simplesmente apagada — a contraparte também tem registo e uma comissão em dívida não desaparece com a conta. Em vez disso, o seu nome, email, foto e textos de perfil são removidos definitivamente e o anúncio é retirado. Fica um registo de transação sem dados pessoais.",
@@ -3382,7 +3393,18 @@
     "filterSort": "Muda a ordem dos resultados; nada é acrescentado nem retirado. O mais recente primeiro é a ordem por omissão, e ordenar por pontuação, receita ou data de fecho lê os valores submetidos pelos fundadores.",
     "filterRaising": "Mantém rondas a partir desta dimensão. Lê o objetivo de financiamento que o fundador definiu para a ronda, não o montante já comprometido.",
     "filterGrowth": "O crescimento mensal da receita tal como o fundador o declarou na listagem. O valor vem do fundador; a plataforma não o verifica.",
-    "filterClosingSoon": "Rondas cuja data de fecho, definida pelo fundador, cai nos próximos 60 dias ou já chegou. Rondas contínuas sem data ficam de fora."
+    "filterClosingSoon": "Rondas cuja data de fecho, definida pelo fundador, cai nos próximos 60 dias ou já chegou. Rondas contínuas sem data ficam de fora.",
+    "stageProposal": "Um pedido de deal que uma parte enviou à outra. Nada entra em nenhuma pipeline até a parte recetora aceitar, pelo que cada deal neste quadro foi acordado por ambas as partes.",
+    "stageIntro": "A primeira fase de trabalho: as duas partes estão ligadas e em conversa. Nada está ainda comprometido, e um deal avança uma fase de cada vez à medida que a conversa se concretiza.",
+    "stageClosed": "Ambas as partes confirmaram o investimento por um montante acordado. O fecho exige um contrato assinado e a confirmação de ambas; emite a fatura da comissão de sucesso de 2% e não pode ser reaberto.",
+    "stagePassed": "O deal terminou sem investimento, com o motivo registado. O pass encerra o deal mas não a relação: um deal passado pode ser reaberto se as conversas recomeçarem.",
+    "followUpDue": "Uma data que define num deal como lembrete próprio para dar seguimento. A etiqueta fica vermelha quando a data passa, e a ordenação por follow-up sobe os deals cuja data chegou.",
+    "totalRaised": "Cada montante confirmado no fecho de um deal aqui, somado até à data. Dinheiro ainda em negociação ou apenas prometido não conta, e os deals passados nunca entram no valor.",
+    "activeStartups": "Empresas com um anúncio ativo neste momento. Rascunhos, anúncios ainda em revisão e anúncios suspensos não são contados.",
+    "investorCount": "Contas de investidor registadas na plataforma, seja qual for o plano. O registo é uma inscrição, não uma verificação dos fundos de ninguém.",
+    "dealsClosed": "Deals que ambas as partes confirmaram como investimento realizado, contados desde a abertura da plataforma. Um deal que terminou em pass é registado à parte e nunca é contado aqui.",
+    "closeRate": "Dos deals que terminaram, a fração que fechou em vez de passar. Os deals ainda em curso não contam para nenhum dos lados; não é, portanto, a fração de todos os deals que têm êxito.",
+    "medianTarget": "O objetivo de ronda mediano entre os anúncios nessa fase: metade pede mais, metade pede menos. Uma mediana em vez de uma média, para que uma ronda fora de escala não mova o valor."
   },
   "translate": {
     "offer": "Isto foi escrito noutro idioma.",
@@ -3421,7 +3443,9 @@
     "title": "Desde a última vez",
     "watching": "{n} empresas seguidas",
     "markSeen": "Marcar tudo como visto",
-    "quiet": "Nada de novo nas empresas que segue."
+    "quiet": "Nada de novo nas empresas que segue.",
+    "docsInRoom": "{count} documentos na data room",
+    "docsInRoomOne": "1 documento na data room"
   },
   "share": {
     "title": "Partilhe a sua ronda",
@@ -3860,7 +3884,70 @@
     "dealMovedIntro": "Um negócio passou para Conversa",
     "dealMovedDueDiligence": "Um negócio passou para Negociação",
     "dealMovedTermSheet": "Um negócio passou para Term sheet",
-    "dealPassedTitle": "Um negócio foi marcado como recusado"
+    "dealPassedTitle": "Um negócio foi marcado como recusado",
+    "dealRequestTitle": "{name} quer abrir um deal",
+    "dealRequestBody": "Aceite para o adicionar a ambas as pipelines, ou recuse.",
+    "dealOpenedTitle": "{name} abriu um deal consigo",
+    "ndaAcceptedTitle": "NDA aceite, data room aberta",
+    "ndaAcceptedBody": "Um investidor aceitou o seu NDA e já pode ver os seus documentos protegidos.",
+    "listingApprovedTitle": "{name} está no ar",
+    "listingApprovedBody": "O seu anúncio já está visível para os investidores.",
+    "listingRejectedTitle": "{name} precisa de alterações antes de ir para o ar",
+    "listingRejectedBody": "O seu anúncio foi revisto e ainda não está publicado. Abra o seu dashboard para ver o que fazer.",
+    "docRequestTitle": "{name} pediu o seu {doc}",
+    "docRequestBody": "Carregue-o no gestor de documentos; o pedido fica registado lá até o fazer.",
+    "docSharedTitle": "{name} partilhou o {doc} que pediu",
+    "docDeclinedTitle": "{name} recusou o seu pedido de {doc}",
+    "requestAcceptedTitle": "{name} aceitou, o deal está aberto",
+    "requestAcceptedBody": "Já está em ambas as pipelines.",
+    "requestDeclinedTitle": "{name} recusou o seu pedido",
+    "requestDeclinedBody": "Sem ressentimentos; talvez não seja o momento certo.",
+    "teamAddedTitle": "Foi adicionado a uma equipa na CapitalReach",
+    "teamAddedBodyStartup": "Tem agora acesso a uma conta de startup.",
+    "teamAddedBodyInvestor": "Tem agora acesso a uma conta de investidor.",
+    "feeActionRequiredTitle": "O seu banco precisa de autorizar este pagamento",
+    "feeActionRequiredBody": "O pagamento fica em espera até o confirmar junto do seu banco.",
+    "adminInfoRequestTitle": "Precisamos de algo de si",
+    "adminListingReviewTitle": "O seu anúncio está em revisão",
+    "reportClosedTitle": "Analisámos a sua denúncia",
+    "reportClosedBody": "Obrigado por nos avisar. A análise está encerrada.",
+    "feeDisputeReviewedTitle": "A sua contestação da comissão foi analisada",
+    "feeInvoicedTitle": "Fatura da comissão de sucesso",
+    "feeInvoicedBody": "A comissão de sucesso de 2% sobre a sua ronda fechada foi faturada.",
+    "feeSupplementaryTitle": "Comissão de sucesso complementar",
+    "feeSupplementaryBody": "Foi emitida uma comissão sobre a diferença entre a sua ronda fechada e o montante registado na conservatória.",
+    "recordNoteTitle": "Foi adicionada uma nota ao seu registo",
+    "recordNoteBody": "Uma ronda fechada não correspondia ao que foi registado na conservatória.",
+    "feeReminderTitle": "Comissão de sucesso ainda por pagar",
+    "feeFinalReminderTitle": "Último aviso: comissão de sucesso por pagar",
+    "feeReminderBody": "{amount} sobre a sua ronda fechada. A comissão é cobrada à startup que recebe o investimento.",
+    "feeInstalmentTitle": "Prestação {seq} da comissão de sucesso",
+    "feeInstalmentBody": "A próxima prestação da sua comissão de sucesso foi faturada.",
+    "commitTitleInterest": "Atualização do deal: Interessado",
+    "commitTitleSoft": "Atualização do deal: Soft-circle",
+    "commitTitleVerbal": "Atualização do deal: Sim verbal",
+    "commitTitleCommitted": "Atualização do deal: Comprometido",
+    "closeProposedTitle": "Fecho proposto: {name}",
+    "closeProposedBody": "Confirme para fechar em {amount} (aplica-se a comissão de 2%).",
+    "closeProposedBodyNoAmount": "Confirme para fechar este deal.",
+    "dealClosedTitle": "Deal fechado: {name}",
+    "dealClosedBodyFee": "{amount} · comissão de sucesso de 2% faturada",
+    "fundedTitle": "Financiado: {name}",
+    "fundedBody": "Ambas as partes confirmaram a transferência.",
+    "fundsSentTitle": "O investidor confirmou o envio dos fundos",
+    "fundsReceivedTitle": "O fundador confirmou a receção dos fundos",
+    "confirmSideBody": "Confirme o seu lado para concluir a ronda.",
+    "scheduleProposedTitle": "Foi proposto um calendário de desembolso",
+    "scheduleProposedBody": "{count} tranches em {name}.",
+    "fullyFundedTitle": "Totalmente financiado: {name}",
+    "fullyFundedBody": "Todas as tranches foram recebidas.",
+    "trancheSentTitle": "{label}: o investidor confirmou o envio dos fundos",
+    "trancheReceivedTitle": "{label}: o fundador confirmou a receção dos fundos",
+    "confirmTrancheBody": "Confirme o seu lado para concluir esta tranche.",
+    "dealDocTitle": "Novo documento do deal: {name}",
+    "dealDocBody": "A outra parte adicionou um documento à data room partilhada.",
+    "contractSentTitle": "Contrato enviado para assinatura: {title}",
+    "contractSignedTitle": "Contrato assinado: {title}"
   },
   "match": {
     "title": "Quem espera por si",
@@ -4735,7 +4822,9 @@
       "differentiation": "Diferenciação indicada",
       "teamInfo": "Informação da equipa fornecida",
       "metrics": "Métricas fornecidas e coerentes"
-    }
+    },
+    "scoredAt": "Pontuado a {date}",
+    "stale": "O anúncio mudou desde esta pontuação; será atualizada na próxima passagem."
   },
   "attest": {
     "eyebrow": "A sua declaração",
@@ -4783,5 +4872,25 @@
     "emptyBody": "A angariar em {industry}? Publicar é grátis durante o lançamento e cada listagem é revista antes de ficar ativa.",
     "browseBySector": "Explorar por setor",
     "metaDescription": "Startups de {industry} na CapitalReach: metas, tração e fase, com comissão de 2 % paga pela startup apenas no fecho."
+  },
+  "meta": {
+    "startupsTitle": "Encontrar startups",
+    "startupsDesc": "Explore rondas de startups revistas por fase, setor e tração. A identidade das empresas é mostrada aos membros.",
+    "investorsTitle": "Diretório de investidores",
+    "investorsDesc": "Angels, family offices e fundos ativos na CapitalReach, pesquisáveis por tese, tamanho de ticket e setor.",
+    "aiTitle": "Inteligência de deals com IA",
+    "aiDesc": "Análise de pitch, matching de investidores e rascunhos de due diligence em GPT-4o mini.",
+    "dataTitle": "Centro de dados",
+    "dataDesc": "Números da plataforma em direto: rondas abertas, capital procurado, funil de deals e taxa de fecho.",
+    "dealsTitle": "Portal de deals",
+    "dealsDesc": "Acompanhe cada conversa da introdução ao fecho: fases, notas, contratos e o selo do deal.",
+    "pricingTitle": "Preços",
+    "pricingDesc": "Uma comissão de sucesso de 2% paga pela startup apenas no fecho. Os investidores não pagam nada.",
+    "contactTitle": "Contacto",
+    "contactDesc": "Dúvidas sobre listar, investir ou a plataforma: escreva à equipa da CapitalReach.",
+    "loginTitle": "Iniciar sessão",
+    "signupTitle": "Criar conta",
+    "homeTitle": "CapitalReach - Mercado de capital privado",
+    "homeDesc": "O mercado revisto onde as startups angariam e os investidores encontram a próxima ronda. 2% de comissão de sucesso no fecho, nada antes."
   }
 }

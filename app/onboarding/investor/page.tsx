@@ -125,6 +125,27 @@ const BOARD_OPTIONS = [
 
 interface PortfolioCompany { name: string; stage: string; year: string; }
 
+/**
+ * The two calls that used to sit behind `if (data.session)` on the signup
+ * form. Both need a session, and with email confirmation on there is none
+ * until the link in the mail is clicked, so they run on the first
+ * authenticated load instead of at signup. Same pair the founder flow runs;
+ * without them an investor account carries no terms-acceptance record and
+ * never receives the welcome mail.
+ *
+ * Safe to reach more than once: the acceptance route's own GET says whether
+ * there is anything to record, and the welcome hook claims a once-only marker
+ * server-side.
+ */
+async function runPostSignupHooks() {
+  try {
+    const res = await fetch("/api/account/accept-terms");
+    const state = res.ok ? await res.json().catch(() => null) : null;
+    if (state?.current === false) await fetch("/api/account/accept-terms", { method: "POST" });
+  } catch {}
+  fetch("/api/auth/welcome", { method: "POST" }).catch(() => {});
+}
+
 // Every step opens the house way: ruled label carrying the mono 01/06
 // counter, then the serif italic step title.
 function StepHead({ n, label, title, sub }: { n: number; label: string; title: string; sub: string }) {
@@ -152,6 +173,15 @@ export default function InvestorOnboardingPage() {
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
+  // Draft plumbing: six steps of answers lived only in React state, so a
+  // reload, a back navigation, or a closed tab discarded all of it. The draft
+  // sits in sessionStorage, keyed per user so one browser profile cannot leak
+  // answers across accounts; the refs let the unload handler and the submit
+  // path read dirtiness without re-subscribing.
+  const draftKeyRef = useRef<string | null>(null);
+  const dirtyRef = useRef(false);
+  const submittedRef = useRef(false);
+
   // GUARD: onboarding over an EXISTING profile is a wipe, not an edit. The
   // founder flow refuses to render for exactly this reason; this flow had no
   // guard, so an investor revisiting /onboarding/investor (bookmark, back
@@ -172,10 +202,20 @@ export default function InvestorOnboardingPage() {
           .from("investors").select("id").eq("owner_id", user.id).maybeSingle();
         if (existing) { router.replace("/dashboard/investor/settings"); return; }
       }
+      // Restored only once ownership is known: an investor with a profile
+      // never reaches this form, so their draft can never overwrite anything.
+      // A signed-out visitor gets the shared "anon" key; handleSubmit sends
+      // them to login before anything is written.
+      draftKeyRef.current = `cr_onboarding_draft_investor_${user?.id ?? "anon"}`;
+      try { restoreDraft(sessionStorage.getItem(draftKeyRef.current)); } catch {}
       setOwnershipChecked(true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // A confirmed investor lands here straight from the mail link, which is the
+  // earliest point in the flow that carries a session.
+  useEffect(() => { runPostSignupHooks(); }, []);
 
   // Step 1
   const [investorType, setInvestorType] = useState("");
@@ -224,6 +264,96 @@ export default function InvestorOnboardingPage() {
   function updatePortfolioCompany(i: number, field: keyof PortfolioCompany, val: string) {
     setPortfolioCompanies(p => p.map((co, idx) => idx === i ? { ...co, [field]: val } : co));
   }
+
+  // Every scalar answer on the form, one object per value kind: the draft
+  // payload and the dirtiness check both read them, so a field added here is
+  // covered by both. draftFields holds only strings, draftFlags only booleans.
+  const draftFields = {
+    investorType, minCheck, maxCheck, geography,
+    displayName, firmName, bio, investmentThesis, website, linkedin, twitter,
+    aum, numberOfInvestments, followOnPolicy, boardSeatPref, avgHoldPeriod,
+  };
+  const draftFlags = { leadRounds, accredited, accreditedDeclaration, ageConfirmed, riskAcknowledged };
+
+  // The stored value is browser data, not trusted state: every field is
+  // type-checked before it reaches a setter, and an unrecognized shape is
+  // ignored rather than partially applied.
+  function restoreDraft(raw: string | null) {
+    if (!raw) return;
+    let d: any;
+    try { d = JSON.parse(raw); } catch { return; }
+    if (!d || d.v !== 1) return;
+    const s = (v: unknown) => (typeof v === "string" ? v : "");
+    const f = d.fields ?? {};
+    const g = d.flags ?? {};
+    // Step 1 renders selection by comparing against the known type values,
+    // so an unknown stored value restores as "none chosen".
+    const ty = s(f.investorType);
+    setInvestorType(INVESTOR_TYPES.some(o => o.value === ty) ? ty : "");
+    setMinCheck(s(f.minCheck)); setMaxCheck(s(f.maxCheck)); setGeography(s(f.geography));
+    setDisplayName(s(f.displayName)); setFirmName(s(f.firmName)); setBio(s(f.bio));
+    setInvestmentThesis(s(f.investmentThesis)); setWebsite(s(f.website));
+    setLinkedin(s(f.linkedin)); setTwitter(s(f.twitter)); setAum(s(f.aum));
+    setNumberOfInvestments(s(f.numberOfInvestments)); setFollowOnPolicy(s(f.followOnPolicy));
+    setBoardSeatPref(s(f.boardSeatPref)); setAvgHoldPeriod(s(f.avgHoldPeriod));
+    setLeadRounds(g.leadRounds === true);
+    setAccredited(g.accredited === true);
+    setAccreditedDeclaration(g.accreditedDeclaration === true);
+    setAgeConfirmed(g.ageConfirmed === true);
+    setRiskAcknowledged(g.riskAcknowledged === true);
+    if (Array.isArray(d.industries)) {
+      setIndustries(d.industries.filter((x: unknown): x is string => typeof x === "string"));
+    }
+    if (Array.isArray(d.stages)) {
+      setStagesPref(d.stages.filter((x: unknown): x is string => typeof x === "string"));
+    }
+    if (Array.isArray(d.portfolioCompanies) && d.portfolioCompanies.length) {
+      setPortfolioCompanies(d.portfolioCompanies.map((x: any): PortfolioCompany => ({
+        name: s(x?.name), stage: s(x?.stage), year: s(x?.year),
+      })));
+    }
+    // Step rides along so a reload resumes where the investor left off.
+    if (typeof d.step === "number" && d.step >= 1 && d.step <= STEPS.length) setStep(Math.floor(d.step));
+  }
+
+  const dirty =
+    Object.values(draftFields).some(Boolean) ||
+    Object.values(draftFlags).some(Boolean) ||
+    industries.length > 0 || stages.length > 0 ||
+    portfolioCompanies.some(c => c.name || c.stage || c.year);
+
+  // No dependency array on purpose: the draft must follow every field above,
+  // and a long hand-kept list would silently drift the first time a field is
+  // added. The write is a few hundred bytes of JSON per keystroke. Nothing
+  // runs before the ownership check sets the key, so the initial blank render
+  // can never clobber a stored draft.
+  useEffect(() => {
+    const key = draftKeyRef.current;
+    if (!key || submittedRef.current) return;
+    dirtyRef.current = dirty;
+    try {
+      if (dirty) {
+        sessionStorage.setItem(key, JSON.stringify({
+          v: 1, step, fields: draftFields, flags: draftFlags, industries, stages, portfolioCompanies,
+        }));
+      } else {
+        sessionStorage.removeItem(key);
+      }
+    } catch {}
+  });
+
+  // sessionStorage does not survive the tab closing, so the draft alone
+  // cannot cover close/quit: the native prompt is the only guard there.
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => {
+      if (!dirtyRef.current) return;
+      e.preventDefault();
+      // Chrome still requires a returnValue for the prompt to appear.
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
 
   async function handleSubmit(tier: string) {
     setLoading(true);
@@ -276,6 +406,13 @@ export default function InvestorOnboardingPage() {
       },
       ...(displayName ? { full_name: displayName } : {}),
     }).eq("id", user.id);
+
+    // Submitted: the draft has served its purpose, and neither the persist
+    // effect nor the unload prompt may fire on the way out (checkout can be a
+    // full-page navigation).
+    submittedRef.current = true;
+    dirtyRef.current = false;
+    try { if (draftKeyRef.current) sessionStorage.removeItem(draftKeyRef.current); } catch {}
 
     if (tier !== "free") {
       router.push(`/api/checkout/investor?tier=${tier}&from=onboarding`);

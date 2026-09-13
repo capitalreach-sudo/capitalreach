@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { planInstalments, planProgress, planAllowed, MAX_PLAN_MONTHS } from "@/lib/fee-plan";
+import { planInstalments, planProgress, planAllowed, instalmentMajor, MAX_PLAN_MONTHS } from "@/lib/fee-plan";
 
 describe("instalment schedules", () => {
   it("adds up to the fee exactly", () => {
@@ -42,6 +42,14 @@ describe("instalment schedules", () => {
     expect(planAllowed(49_999)).toBe(false);
     expect(planAllowed(50_000)).toBe(true);
     expect(planAllowed(null)).toBe(false);
+  });
+
+  it("converts minor units by the currency's own factor, not a flat 100", () => {
+    // A ¥50,000 instalment is 50,000 minor units; dividing by 100 shows ¥500.
+    expect(instalmentMajor(50_000, "JPY")).toBe(50_000);
+    expect(instalmentMajor(50_000, "jpy")).toBe(50_000); // Stripe stores lowercase
+    expect(instalmentMajor(50_000, "EUR")).toBe(500);
+    expect(instalmentMajor(50_000, null)).toBe(500); // unknown falls back to two-decimal
   });
 });
 

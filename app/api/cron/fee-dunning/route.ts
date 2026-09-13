@@ -112,7 +112,9 @@ export async function GET(req: NextRequest) {
           userId: startup.owner_id,
           type: "fee_due",
           title: "Success fee invoiced",
-          body: `The 2% fee on your closed round is now on your billing account.`,
+          body: "The 2% success fee on your closed round has been invoiced.",
+          titleKey: "notif.feeInvoicedTitle",
+          bodyKey: "notif.feeInvoicedBody",
           href: "/dashboard/startup/billing",
         });
         rescued++;
@@ -136,8 +138,11 @@ export async function GET(req: NextRequest) {
     await notifyUser({
       userId: startup.owner_id,
       type: "fee_due",
-      title: last ? "Final reminder — success fee unpaid" : "Success fee still unpaid",
+      title: last ? "Final reminder: success fee unpaid" : "Success fee still unpaid",
       body: `${amount} on your closed round. The fee is charged to the startup receiving the investment.`,
+      titleKey: last ? "notif.feeFinalReminderTitle" : "notif.feeReminderTitle",
+      bodyKey: "notif.feeReminderBody",
+      params: { amount },
       href: "/dashboard/startup/billing",
     });
     await admin.from("deals").update({
@@ -209,8 +214,11 @@ export async function GET(req: NextRequest) {
       await notifyUser({
         userId: owner,
         type: "fee_due",
-        title: `Success fee — instalment ${inst.seq}`,
+        title: `Success fee instalment ${inst.seq}`,
         body: "The next instalment of your success fee has been invoiced.",
+        titleKey: "notif.feeInstalmentTitle",
+        bodyKey: "notif.feeInstalmentBody",
+        params: { seq: inst.seq },
         href: "/dashboard/startup/billing",
       });
       instalmentsBilled++;

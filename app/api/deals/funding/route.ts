@@ -100,7 +100,9 @@ export async function POST(req: NextRequest) {
     investor_id: deal.investor_id,
     actor_id: user.id,
     type: "note",
-    body: step === "sent" ? `Funds sent${ref ? ` · ref ${ref}` : ""}` : `Funds received${ref ? ` · ref ${ref}` : ""}`,
+    // Machine body: the timeline renders funding.sent/received in the
+    // viewer's language; the reference rides along verbatim.
+    body: `funding:${step === "sent" ? "sent" : "received"}${ref ? ` · ref ${ref}` : ""}`,
   }).then(undefined, () => {});
 
   const bothConfirmed = !!fresh?.funds_sent_at && !!fresh?.funds_received_at;
@@ -109,9 +111,12 @@ export async function POST(req: NextRequest) {
     await notifyUsers(recipients, {
       type: "deal_closed",
       title: bothConfirmed
-        ? `Funded — ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}`
+        ? `Funded: ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}`
         : step === "sent" ? "The investor confirmed funds sent" : "The founder confirmed funds received",
       body: bothConfirmed ? "Both sides confirmed the transfer." : "Confirm your side to complete the round.",
+      titleKey: bothConfirmed ? "notif.fundedTitle" : step === "sent" ? "notif.fundsSentTitle" : "notif.fundsReceivedTitle",
+      bodyKey: bothConfirmed ? "notif.fundedBody" : "notif.confirmSideBody",
+      params: { name: (deal.startup as unknown as { name: string } | null)?.name ?? "your deal" },
       href: `/deals?deal=${dealId}`,
     }).catch(() => {});
   }

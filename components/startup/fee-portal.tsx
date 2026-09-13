@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
+import { instalmentMajor } from "@/lib/fee-plan";
 import { DUNNING_DAYS } from "@/lib/fees";
 
 /**
@@ -446,7 +447,7 @@ function FeeRow({ fee, first, primary, onChanged }: { fee: Fee; first: boolean; 
       )}
 
       {/* The second door: the objection to a fee is usually timing, not amount. */}
-      <FeePlan dealId={fee.id} state={fee.state} onChanged={onChanged} />
+      <FeePlan dealId={fee.id} state={fee.state} currency={fee.currency} onChanged={onChanged} />
 
       {/* The third door. A founder who thinks the number is wrong needs a way to
           say so that is not simply not paying. */}
@@ -486,7 +487,7 @@ type Instalment = { seq: number; amount: number; due_date: string; paid_at: stri
  * The instalment schedule for one fee, and the offer to start one. The existing
  * /api/fees/plan machinery -- same schedule, same total, no new payment path.
  */
-function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; onChanged: () => void }) {
+function FeePlan({ dealId, state, currency, onChanged }: { dealId: string; state: string; currency: string | null; onChanged: () => void }) {
   const { t } = useTranslation();
   const [data, setData] = useState<{ instalments: Instalment[]; eligible: boolean; minMonths: number; maxMonths: number } | null>(null);
   const [months, setMonths] = useState(3);
@@ -535,7 +536,10 @@ function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; 
                 <span style={{ ...MONO, fontWeight: 400, fontSize: "11px" }}>{day(i.due_date)}</span>
               </span>
               <span style={{ ...MONO, fontWeight: 600, fontSize: "12px", color: i.paid_at ? "var(--verdigris)" : "var(--cr-ink)" }}>
-                {(i.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {/* Instalments are stored in minor units; a bare /100 shows a
+                    unitless figure and understates JPY 100x. Same formatter as
+                    the fee above it, so the schedule visibly sums to the fee. */}
+                {formatMoney(instalmentMajor(i.amount, currency), currency)}
                 {i.paid_at ? ` ${t("feePlan.paidMark")}` : ""}
               </span>
             </li>

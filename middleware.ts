@@ -1,7 +1,31 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { SECTOR_SLUGS } from "@/lib/industry-slugs";
+
+// Known sector slugs, resolved once per isolate. industry-slugs derives them
+// from the shared INDUSTRIES list, and its import chain (types, lib/utils,
+// lib/display-locale) is pure string work with no node builtins, so it is
+// safe in the edge runtime.
+const VALID_SECTOR_SLUGS = new Set(SECTOR_SLUGS.map((s) => s.slug));
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Unknown sector URLs must answer a REAL 404. The page's notFound() fires
+  // only after the streamed shell has committed a 200, so crawlers filed
+  // /startups/sector/anything-invalid as a soft 404. Rewriting to a path no
+  // route serves makes Next render the not-found page with status 404 before
+  // anything streams. Needs no auth, so it runs before the Supabase gate.
+  const sectorMatch = pathname.match(/^\/startups\/sector\/([^/]+)\/?$/);
+  if (sectorMatch) {
+    let slug = sectorMatch[1];
+    // The route param arrives decoded; the raw pathname may not be.
+    try { slug = decodeURIComponent(slug); } catch {}
+    if (!VALID_SECTOR_SLUGS.has(slug)) {
+      return NextResponse.rewrite(new URL("/not-found", request.url), { status: 404 });
+    }
+  }
+
   // If Supabase isn't configured yet (or is using placeholder values), allow all requests through
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -11,7 +35,6 @@ export async function middleware(request: NextRequest) {
 
   let supabaseResponse = NextResponse.next({ request });
 
-  const pathname = request.nextUrl.pathname;
   // Prefixes middleware actually gates: the protected areas, /deals (its
   // suspension + AAL gate lives only here), and authenticated API traffic (so
   // the second factor is enforced for API calls, not just page navigation).
@@ -25,6 +48,11 @@ export async function middleware(request: NextRequest) {
     .getAll()
     .some((c) => c.name.startsWith("sb-") && c.name.includes("auth-token"));
   const apiWithSession = isApi && hasSession;
+  // The login and signup pages must reach the signed-in redirect below, which
+  // the fast lane would otherwise skip. Only a request carrying a session
+  // cookie can need that redirect, so anonymous visitors (the common case on
+  // these pages) still pay no auth round trip.
+  const isAuthEntryPage = pathname === "/auth/login" || pathname === "/auth/signup";
 
   const loginRedirect = () => {
     const loginUrl = new URL("/auth/login", request.url);
@@ -64,7 +92,7 @@ export async function middleware(request: NextRequest) {
     // Public pages and anonymous/webhook API calls skip it entirely: the
     // browser client refreshes tokens itself and server pages read the cookies
     // directly.
-    if (!isGatedPage && !apiWithSession) {
+    if (!isGatedPage && !apiWithSession && !(isAuthEntryPage && hasSession)) {
       return supabaseResponse;
     }
 

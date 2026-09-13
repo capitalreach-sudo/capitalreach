@@ -25,21 +25,50 @@ export async function GET() {
     return NextResponse.json({ signedIn: true, unlimited: true, tier: ai.tier ?? null });
   }
 
+  // A zero limit means the plan has no AI allowance at all -- there is
+  // nothing to count and no meter to fill. Said plainly here so the hub can
+  // render dedicated copy instead of "0 of 0 left" over a 0/0-width bar.
+  if (limit === 0) {
+    return NextResponse.json({
+      signedIn: true,
+      unlimited: false,
+      tier: ai.tier ?? null,
+      used: 0,
+      limit: 0,
+      remaining: 0,
+      perAction: {},
+    });
+  }
+
+  // checkAiAllowance meters PER ACTION; a single count summed across every
+  // action here showed "0 left" to a user who had merely spread their runs
+  // across the tools. The rows are grouped client-side and the meter reports
+  // the busiest tool -- the one closest to its own limit. The 1000-row page
+  // cap is far above what a metered tier can log in a day (limit per action
+  // times a handful of actions), so no paging is needed.
   const admin = createAdminClient();
   const today = new Date(); today.setUTCHours(0, 0, 0, 0);
-  const { count } = await admin
+  const { data: rows } = await admin
     .from("ai_usage")
-    .select("*", { count: "exact", head: true })
+    .select("action")
     .eq("user_id", user.id)
-    .gte("created_at", today.toISOString());
+    .gte("created_at", today.toISOString())
+    .limit(1000);
 
-  const used = count ?? 0;
+  const perAction: Record<string, number> = {};
+  for (const r of rows ?? []) {
+    perAction[r.action] = (perAction[r.action] ?? 0) + 1;
+  }
+  const used = Object.values(perAction).reduce((max, n) => Math.max(max, n), 0);
   return NextResponse.json({
     signedIn: true,
     unlimited: false,
     tier: ai.tier ?? null,
+    // The max across actions, so "N of M" is true of the tool nearest its
+    // cap; every other tool has at least this much left.
     used,
     limit,
     remaining: Math.max(0, limit - used),
+    perAction,
   });
 }

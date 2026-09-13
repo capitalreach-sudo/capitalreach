@@ -14,6 +14,16 @@ type Change = {
   summary: string;
 };
 
+// Data-room size per company. A count with no timestamp -- documents carry
+// none in the schema -- so it renders as current state, never as an entry on
+// the "since you last looked" timeline.
+type DocRoom = {
+  startupId: string;
+  startupName: string;
+  startupSlug: string;
+  count: number;
+};
+
 const ICON = {
   update: Activity,
   document: FileText,
@@ -35,6 +45,7 @@ const ICON = {
 export function WatchlistChanges() {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<Change[] | null>(null);
+  const [docRooms, setDocRooms] = useState<DocRoom[]>([]);
   const [watching, setWatching] = useState(0);
   const [busy, setBusy] = useState(false);
 
@@ -43,6 +54,7 @@ export function WatchlistChanges() {
     if (!res.ok) { setChanges([]); return; }
     const j = await res.json();
     setChanges(j.changes ?? []);
+    setDocRooms(Array.isArray(j.documents) ? j.documents : []);
     setWatching(j.watching ?? 0);
   }, []);
   useEffect(() => { void load(); }, [load]);
@@ -60,7 +72,7 @@ export function WatchlistChanges() {
 
   return (
     <section style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: changes.length ? 14 : 0 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: changes.length || docRooms.length ? 14 : 0 }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
           <Bell style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
           <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
@@ -102,6 +114,27 @@ export function WatchlistChanges() {
               </li>
             );
           })}
+        </ul>
+      )}
+
+      {/* Data rooms, below a rule: current state, deliberately outside the
+          timeline above -- the schema has no per-document timestamps, and a
+          made-up "added on" date would be a lie in a panel investors act on. */}
+      {docRooms.length > 0 && (
+        <ul style={{ display: "flex", flexDirection: "column", gap: 9, borderTop: "1px solid var(--cr-rule)", marginTop: changes.length ? 14 : 12, paddingTop: 12 }}>
+          {docRooms.map((d) => (
+            <li key={d.startupId} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
+              <FileText style={{ width: 12, height: 12, color: "var(--cr-ink-4)", marginTop: 3, flexShrink: 0 }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
+                <Link href={`/startups/${d.startupSlug}`}
+                  style={{ color: "var(--cr-ink)", fontWeight: 600, textDecoration: "none", borderBottom: "1px dotted var(--cr-ink-4)" }}>
+                  {d.startupName}
+                </Link>
+                {" - "}
+                {d.count === 1 ? t("watchChanges.docsInRoomOne") : t("watchChanges.docsInRoom", { count: d.count })}
+              </span>
+            </li>
+          ))}
         </ul>
       )}
     </section>

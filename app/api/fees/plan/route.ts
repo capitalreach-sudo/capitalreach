@@ -145,7 +145,12 @@ export async function POST(req: NextRequest) {
  * something you set on your own debt.
  */
 async function ownFeeDeal(admin: ReturnType<typeof createAdminClient>, userId: string, dealId: string) {
-  const { data: startup, error: startupError } = await admin.from("startups").select("id, name").eq("owner_id", userId).maybeSingle();
+  // A founder can own more than one listing, and maybeSingle() on two rows is
+  // an error, not a choice. Same order+limit as the fees page and
+  // /api/fees/mine (oldest listing wins), so every fee surface agrees on
+  // which company is "mine".
+  const { data: startup, error: startupError } = await admin.from("startups").select("id, name").eq("owner_id", userId)
+    .order("created_at", { ascending: true }).limit(1).maybeSingle();
   // `failed` rides alongside the deal so the handlers can tell a broken read
   // from a fee that is genuinely not this founder's. Answering both with "Deal
   // not found" makes a statement about their debt out of a database being down.

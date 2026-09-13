@@ -177,11 +177,11 @@
       "analyzeBtn": "Analysera min pitch",
       "clear": "Rensa",
       "resultsEmpty": "Din AI-analys visas här",
-      "resultsEmptySub": "Riktig GPT-4o-output — inga mallar, ingen falsk data.",
+      "resultsEmptySub": "Riktig output från GPT-4o mini, inga mallar, ingen falsk data. Varje analys är unik för din pitch.",
       "evaluating": "Utvärderar din pitch…",
-      "evaluatingSub": "GPT-4o bedömer tydlighet, marknadsmöjlighet, konkurrensfördel, teamstyrka & dragkraft",
+      "evaluatingSub": "GPT-4o mini bedömer tydlighet, marknadsmöjlighet, konkurrensfördel, teamstyrka & dragkraft",
       "reportTitle": "Pitchanalysrapport",
-      "generatedBy": "Genererad av GPT-4o",
+      "generatedBy": "Genererad av GPT-4o mini",
       "outOf100": "av 100",
       "whatsWorking": "Vad som fungerar",
       "improveThis": "Förbättra detta",
@@ -192,10 +192,10 @@
       "dimMoat": "Konkurrensfördel",
       "dimTeam": "Teamstyrka",
       "dimTraction": "Dragkraftbevis",
-      "descLong": "Beskriv din startup — problem, lösning, marknadsstorlek, teambakgrund och traktion. GPT-4o poängsätter den över 5 investeringsdimensioner och ger handlingsbar feedback.",
+      "descLong": "Beskriv din startup: problem, lösning, marknadsstorlek, teambakgrund och traktion. GPT-4o mini poängsätter den över 5 investeringsdimensioner och ger handlingsbar feedback.",
       "proTipLabel": "Proffstips:",
       "proTipBody": "Inkludera marknadsstorlek, månadsintäkter och tillväxttakt, tidigare exits, teambios och nyckeltalen bakom dem för den mest exakta poängen.",
-      "footerInfo": "Drivs av GPT-4o · ~3 sekunder · Ingen data lagras",
+      "footerInfo": "Drivs av GPT-4o mini · ~3 sekunder · Ingen data lagras",
       "analysisFailedErr": "Analysen misslyckades",
       "analysisFailedFull": "Pitchanalysen misslyckades. Kontrollera din anslutning och försök igen.",
       "placeholder": "Klistra in din pitch här — problem, lösning, traktion, team och önskemål...",
@@ -277,10 +277,10 @@
       "searchPlaceholder": "t.ex. Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
-      "heroPowered": "Drivs av GPT-4o",
+      "heroPowered": "Drivs av GPT-4o mini",
       "heroLine1": "AI-deal",
       "heroLine2": "Intelligens",
-      "heroSub": "Tre kraftfulla AI-verktyg på ett ställe — analysera pitchar, matcha med rätt investerare och generera due diligence-rapporter.",
+      "heroSub": "Tre AI-verktyg på ett ställe: analysera pitchar, matcha med rätt investerare och generera due diligence-rapporter. Pitchanalys och due diligence körs på GPT-4o mini; matchningen bygger på investeringstesen.",
       "statPitchLabel": "Pitchanalyser",
       "statMatchLabel": "Investerarmatchning",
       "statDDLabel": "Due Diligence",
@@ -290,8 +290,8 @@
       "startInvestor": "Börja som investerare",
       "listStartup": "Lista din startup",
       "viewPricing": "Se alla priser",
-      "statPitchVal": "Riktig GPT",
-      "statMatchVal": "AI-driven",
+      "statPitchVal": "GPT-4o mini",
+      "statMatchVal": "Tesbaserad",
       "statDDVal": "500-ords PM",
       "statSpeedVal": "~3 sekunder",
       "tierFreeSub": "Alltid gratis",
@@ -315,7 +315,9 @@
     "usageRemaining": "{remaining} av {limit} AI-körningar kvar i dag",
     "usageUnlimited": "Obegränsade AI-körningar i din plan",
     "usageUpgrade": "Få fler →",
-    "disclosureStrip": "AI-genererad analys är endast informativ och utgör inte investeringsrådgivning. Drivs av OpenAI-modeller. Upplysning: detta innehåll har skapats med AI."
+    "disclosureStrip": "AI-genererad analys är endast informativ och utgör inte investeringsrådgivning. Drivs av OpenAI-modeller. Upplysning: detta innehåll har skapats med AI.",
+    "usagePaidOnly": "AI-verktygen ingår i betalplanerna",
+    "usagePerTool": "Varje verktyg har sin egen dagsgräns; här visas det du använt mest."
   },
   "pricing": {
     "sectionLabel": "Planer och priser",
@@ -1042,7 +1044,9 @@
     "uploadFirstDoc": "Ladda upp ditt första dokument",
     "submitting": "Skickar…",
     "closureDeclarationDue": "Din runda är markerad som stängd. Uppge vad som togs in så att registret blir komplett.",
-    "declareClosure": "Anmäl stängningen"
+    "declareClosure": "Anmäl stängningen",
+    "funnelWindow": "Sedan start",
+    "saveFailedEditToRetry": "Det gick inte att spara; redigera för att försöka igen"
   },
   "settings": {
     "pageTitle": "Inställningar",
@@ -1175,7 +1179,7 @@
     "financials": "Ekonomi",
     "team": "Team",
     "documents": "Dokument",
-    "backToListings": "← Tillbaka till listings",
+    "backToListings": "Tillbaka till listings",
     "viewDeal": "Visa affär",
     "requestIntro": "Begär intro",
     "raising": "Söker",
@@ -1571,7 +1575,7 @@
     "showTable": "Visa siffrorna",
     "showChart": "Visa diagrammet",
     "otherIndustries": "Övriga branscher",
-    "sampleNote": "Siffrorna inkluderar exempelnoteringar från lanseringsperioden.",
+    "sampleNote": "Siffrorna inkluderar exempelnoteringar, exempelkonton och exempel på dealaktivitet från lanseringsperioden.",
     "breakdowns": "Fördelningar",
     "viewActivity": "Aktivitet",
     "viewNumbers": "Siffror",
@@ -2112,7 +2116,9 @@
     "scopeAll": "Alla affärer",
     "scopeMine": "Mina affärer",
     "editAmountAria": "Redigera beloppet",
-    "amountSaved": "Beloppet uppdaterat"
+    "amountSaved": "Beloppet uppdaterat",
+    "contractYouSigned": "Du har signerat; väntar på motparten",
+    "ndaClickwrapHint": "E-signering är inte kopplad i denna miljö. Investeraren kan acceptera NDA:t direkt på startupens notering, vilket öppnar datarummet omedelbart."
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -2906,7 +2912,7 @@
     "noMfa": "Det kontot har ingen andra faktor."
   },
   "imprint": {
-    "metaTitle": "Impressum — CapitalReach",
+    "metaTitle": "Impressum",
     "metaDesc": "Rättslig information och leverantörsidentifiering för CapitalReach.",
     "title": "Impressum",
     "subtitle": "Leverantörsidentifiering (§ 5 TMG)",
@@ -2967,7 +2973,8 @@
     "footnote": "Juridiska kostnader för kall kontakt och mellanhänder brukar landa på 5 000–20 000 € innan en runda ens öppnar.",
     "detailNote": "Framgångsavgiften på 2% faktureras startupen först efter att en runda stängts via CapitalReach. Investerare betalar ingenting.",
     "keepShare": "{pct}% av kapitalet stannar i bolaget.",
-    "setRaise": "Ange rundans storlek till {amount}"
+    "setRaise": "Ange rundans storlek till {amount}",
+    "titleCompare": "Jämför avgiften med din egen siffra"
   },
   "welcome": {
     "eyebrow": "Välkommen till CapitalReach",
@@ -3151,7 +3158,9 @@
     "due": "Förfaller",
     "sentAwaiting": "skickad, väntar på mottagande",
     "receivedOf": "{received} av {total} mottagna",
-    "fullyFunded": "Fullt utbetald — alla trancher mottagna"
+    "fullyFunded": "Fullt utbetald — alla trancher mottagna",
+    "timelineSet": "Utbetalningsplan satt: {count} trancher",
+    "cleared": "Utbetalningsplan borttagen"
   },
   "fees": {
     "tab": "Avgifter",
@@ -3177,7 +3186,8 @@
       "reversed": "Återförd"
     },
     "resolve": "Avsluta",
-    "resolvePrompt": "Hur löstes tvisten?"
+    "resolvePrompt": "Hur löstes tvisten?",
+    "operatorOnly": "Åtgärder på en avgift kräver en admin på operatörsnivå."
   },
   "myFees": {
     "title": "Framgångsavgifter",
@@ -3248,7 +3258,8 @@
     },
     "medianTarget": "Medianmål för runda",
     "newThisMonth": "Nya rundor denna månad",
-    "anonNote": "Du behöver inget konto för att skicka detta."
+    "anonNote": "Du behöver inget konto för att skicka detta.",
+    "operatorOnly": "Åtgärder på en anmälan kräver en admin på operatörsnivå."
   },
   "deleteAccount": {
     "willAnonymise": "Ditt konto har avslutade affärer på plattformen och kan därför inte bara raderas — motparten har också en notering, och en obetald avgift försvinner inte med kontot. I stället tas namn, e-post, foto och profiltexter bort permanent och annonsen plockas ned. Kvar blir en transaktionsnotering utan personuppgifter.",
@@ -3382,7 +3393,18 @@
     "filterSort": "Ändrar bara ordningen på resultaten; inget läggs till eller tas bort. Nyast först är standard, och sortering efter poäng, intäkter eller stängningsdatum läser de siffror grundarna lämnat in.",
     "filterRaising": "Behåller rundor från den här storleken och uppåt. Filtret läser det mål grundaren satt för rundan, inte beloppet som redan utlovats.",
     "filterGrowth": "Månatlig intäktstillväxt så som grundaren uppgett den i annonsen. Siffran kommer från grundaren; plattformen kontrollerar den inte.",
-    "filterClosingSoon": "Rundor vars stängningsdatum, satt av grundaren, infaller inom 60 dagar eller redan har passerats. Löpande rundor utan datum tas inte med."
+    "filterClosingSoon": "Rundor vars stängningsdatum, satt av grundaren, infaller inom 60 dagar eller redan har passerats. Löpande rundor utan datum tas inte med.",
+    "stageProposal": "En dealförfrågan som ena sidan skickat till den andra. Inget hamnar i någon pipeline förrän den mottagande sidan accepterar, så varje deal på den här tavlan har godkänts av båda parter.",
+    "stageIntro": "Det första arbetssteget: de två sidorna är sammankopplade och i samtal. Inget är ännu utfäst, och en deal flyttas ett steg i taget allteftersom samtalet tar form.",
+    "stageClosed": "Båda sidor har bekräftat investeringen till ett överenskommet belopp. Stängning kräver ett signerat avtal och båda parters bekräftelse; den utlöser fakturan på 2% framgångsavgift och kan inte öppnas igen.",
+    "stagePassed": "Dealen avslutades utan investering, med skälet noterat. Ett pass avslutar dealen men inte relationen: en passad deal kan öppnas igen om samtalen återupptas.",
+    "followUpDue": "Ett datum du sätter på en deal som din egen påminnelse att följa upp. Etiketten blir röd när datumet passerat, och uppföljningssorteringen lyfter de deals vars datum är inne.",
+    "totalRaised": "Varje belopp som bekräftats vid stängningen av en deal här, summerat till idag. Pengar som fortfarande förhandlas eller bara utlovats räknas inte, och passade deals ingår aldrig i siffran.",
+    "activeStartups": "Företag med en aktiv notering just nu. Utkast, noteringar under granskning och avstängda noteringar räknas inte.",
+    "investorCount": "Investerarkonton registrerade på plattformen, oavsett plan. Registrering är en anmälan, inte en verifiering av någons kapital.",
+    "dealsClosed": "Deals som båda sidor bekräftat som genomförd investering, räknade sedan plattformen öppnade. En deal som slutade med ett pass registreras separat och räknas aldrig här.",
+    "closeRate": "Av de deals som avslutats, andelen som stängdes i stället för passades. Deals som fortfarande pågår räknas inte på någon sida, så detta är inte andelen av alla deals som lyckas.",
+    "medianTarget": "Det mittersta rundmålet bland noteringarna i det skedet: hälften begär mer, hälften mindre. En median i stället för ett medelvärde, så att en enskild jätterunda inte kan flytta siffran."
   },
   "translate": {
     "offer": "Det här skrevs på ett annat språk.",
@@ -3421,7 +3443,9 @@
     "title": "Sedan du senast tittade",
     "watching": "{n} bolag bevakade",
     "markSeen": "Markera allt som sett",
-    "quiet": "Inget nytt hos bolagen du bevakar."
+    "quiet": "Inget nytt hos bolagen du bevakar.",
+    "docsInRoom": "{count} dokument i datarummet",
+    "docsInRoomOne": "1 dokument i datarummet"
   },
   "share": {
     "title": "Dela din runda",
@@ -3860,7 +3884,70 @@
     "dealMovedIntro": "En affär flyttades till Samtal",
     "dealMovedDueDiligence": "En affär flyttades till Förhandling",
     "dealMovedTermSheet": "En affär flyttades till Term sheet",
-    "dealPassedTitle": "En affär markerades som avböjd"
+    "dealPassedTitle": "En affär markerades som avböjd",
+    "dealRequestTitle": "{name} vill öppna en deal",
+    "dealRequestBody": "Acceptera för att lägga till den i båda pipelines, eller avböj.",
+    "dealOpenedTitle": "{name} öppnade en deal med dig",
+    "ndaAcceptedTitle": "NDA accepterat, datarum öppnat",
+    "ndaAcceptedBody": "En investerare accepterade ditt NDA och kan nu se dina skyddade dokument.",
+    "listingApprovedTitle": "{name} är live",
+    "listingApprovedBody": "Din notering är nu synlig för investerare.",
+    "listingRejectedTitle": "{name} behöver ändringar innan den kan gå live",
+    "listingRejectedBody": "Din notering har granskats och är inte live ännu. Öppna din dashboard för att se nästa steg.",
+    "docRequestTitle": "{name} begärde ditt {doc}",
+    "docRequestBody": "Ladda upp det via din dokumenthanterare; begäran syns där tills du gör det.",
+    "docSharedTitle": "{name} delade det {doc} du bad om",
+    "docDeclinedTitle": "{name} avböjde din begäran om {doc}",
+    "requestAcceptedTitle": "{name} accepterade, dealen är öppen",
+    "requestAcceptedBody": "Den ligger nu i båda pipelines.",
+    "requestDeclinedTitle": "{name} avböjde din förfrågan",
+    "requestDeclinedBody": "Inget illa ment; det kanske inte passar just nu.",
+    "teamAddedTitle": "Du lades till i ett team på CapitalReach",
+    "teamAddedBodyStartup": "Du har nu tillgång till ett startup-konto.",
+    "teamAddedBodyInvestor": "Du har nu tillgång till ett investerarkonto.",
+    "feeActionRequiredTitle": "Din bank behöver godkänna denna betalning",
+    "feeActionRequiredBody": "Betalningen är pausad tills du bekräftar den hos din bank.",
+    "adminInfoRequestTitle": "Vi behöver något från dig",
+    "adminListingReviewTitle": "Din notering granskas",
+    "reportClosedTitle": "Vi har tittat på din anmälan",
+    "reportClosedBody": "Tack för att du berättade. Granskningen är avslutad.",
+    "feeDisputeReviewedTitle": "Din invändning mot avgiften har granskats",
+    "feeInvoicedTitle": "Faktura för framgångsavgift",
+    "feeInvoicedBody": "Framgångsavgiften på 2% för din stängda runda har fakturerats.",
+    "feeSupplementaryTitle": "Kompletterande framgångsavgift",
+    "feeSupplementaryBody": "En avgift har tagits ut på skillnaden mellan din stängda runda och beloppet som registrerats hos bolagsregistret.",
+    "recordNoteTitle": "En notering lades till i din akt",
+    "recordNoteBody": "En stängd runda stämde inte med det som registrerats hos bolagsregistret.",
+    "feeReminderTitle": "Framgångsavgiften är fortfarande obetald",
+    "feeFinalReminderTitle": "Sista påminnelsen: framgångsavgift obetald",
+    "feeReminderBody": "{amount} på din stängda runda. Avgiften debiteras startupen som tar emot investeringen.",
+    "feeInstalmentTitle": "Framgångsavgift, delbetalning {seq}",
+    "feeInstalmentBody": "Nästa delbetalning av din framgångsavgift har fakturerats.",
+    "commitTitleInterest": "Deal-uppdatering: Intresserad",
+    "commitTitleSoft": "Deal-uppdatering: Soft-circle",
+    "commitTitleVerbal": "Deal-uppdatering: Muntligt ja",
+    "commitTitleCommitted": "Deal-uppdatering: Åtagit sig",
+    "closeProposedTitle": "Stängning föreslagen: {name}",
+    "closeProposedBody": "Bekräfta för att stänga på {amount} (2% avgift tillkommer).",
+    "closeProposedBodyNoAmount": "Bekräfta för att stänga denna deal.",
+    "dealClosedTitle": "Deal stängd: {name}",
+    "dealClosedBodyFee": "{amount} · 2% framgångsavgift fakturerad",
+    "fundedTitle": "Finansierad: {name}",
+    "fundedBody": "Båda sidor bekräftade överföringen.",
+    "fundsSentTitle": "Investeraren bekräftade att medlen skickats",
+    "fundsReceivedTitle": "Grundaren bekräftade att medlen tagits emot",
+    "confirmSideBody": "Bekräfta din sida för att slutföra rundan.",
+    "scheduleProposedTitle": "En utbetalningsplan föreslogs",
+    "scheduleProposedBody": "{count} trancher på {name}.",
+    "fullyFundedTitle": "Fullt finansierad: {name}",
+    "fullyFundedBody": "Alla trancher har tagits emot.",
+    "trancheSentTitle": "{label}: investeraren bekräftade att medlen skickats",
+    "trancheReceivedTitle": "{label}: grundaren bekräftade att medlen tagits emot",
+    "confirmTrancheBody": "Bekräfta din sida för att slutföra denna tranch.",
+    "dealDocTitle": "Nytt dealdokument: {name}",
+    "dealDocBody": "Motparten lade till ett dokument i ert delade datarum.",
+    "contractSentTitle": "Avtal skickat för signering: {title}",
+    "contractSignedTitle": "Avtal signerat: {title}"
   },
   "match": {
     "title": "Vem som väntar på dig",
@@ -4735,7 +4822,9 @@
       "differentiation": "Differentiering angiven",
       "teamInfo": "Teaminformation angiven",
       "metrics": "Nyckeltal angivna och konsekventa"
-    }
+    },
+    "scoredAt": "Poängsatt {date}",
+    "stale": "Noteringen har ändrats sedan denna poäng; den uppdateras vid nästa körning."
   },
   "attest": {
     "eyebrow": "Ditt intygande",
@@ -4783,5 +4872,25 @@
     "emptyBody": "Reser du kapital inom {industry}? Notering är gratis under lanseringen och varje notering granskas före publicering.",
     "browseBySector": "Bläddra per sektor",
     "metaDescription": "{industry}-startups på CapitalReach: mål, traktion och fas, med 2 % succéavgift som startupen betalar först vid stängning."
+  },
+  "meta": {
+    "startupsTitle": "Hitta startups",
+    "startupsDesc": "Bläddra bland granskade startup-rundor efter skede, sektor och traktion. Företagens identitet visas för medlemmar.",
+    "investorsTitle": "Investerarkatalog",
+    "investorsDesc": "Änglar, family offices och fonder aktiva på CapitalReach, sökbara efter tes, checkstorlek och sektor.",
+    "aiTitle": "AI-dealintelligens",
+    "aiDesc": "Pitchanalys, investerarmatchning och due diligence-utkast på GPT-4o mini.",
+    "dataTitle": "Datacenter",
+    "dataDesc": "Plattformens siffror i realtid: öppna rundor, sökt kapital, dealtratt och stängningsgrad.",
+    "dealsTitle": "Dealportal",
+    "dealsDesc": "Följ varje samtal från intro till stängning: steg, anteckningar, avtal och dealsigillet.",
+    "pricingTitle": "Priser",
+    "pricingDesc": "En framgångsavgift på 2% som betalas av startupen först vid stängning. Investerare betalar inget.",
+    "contactTitle": "Kontakt",
+    "contactDesc": "Frågor om notering, investering eller plattformen: skriv till CapitalReach-teamet.",
+    "loginTitle": "Logga in",
+    "signupTitle": "Skapa konto",
+    "homeTitle": "CapitalReach - Privat kapitalmarknadsplats",
+    "homeDesc": "Den granskade marknadsplatsen där startups reser kapital och investerare hittar sin nästa runda. 2% framgångsavgift vid stängning, inget innan."
   }
 }

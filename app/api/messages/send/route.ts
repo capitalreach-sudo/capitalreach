@@ -221,6 +221,8 @@ export async function POST(req: NextRequest) {
       userId: startup.owner_id,
       type:   "message",
       title:  `New message from ${senderProfile?.full_name || "an investor"}`,
+      titleKey: "notif.messageTitle",
+      params: { name: senderProfile?.full_name || "an investor" },
       body:   safe.body.slice(0, 140),
       href:   "/dashboard/messages",
     });

@@ -94,7 +94,10 @@ export async function loadActiveStartups(opts: { offset?: number; limit?: number
     // a boolean oracle over values the projection deliberately withholds --
     // the exact bug fixed on /api/search. Strip the grammar chars first, then
     // escape the LIKE metacharacters so "50%" matches the text "50%".
-    const safeQ = q.replace(/[,()*]/g, " ").trim();
+    // Each stripped char leaves a space behind, and LIKE matches spaces
+    // literally: without the collapse "baba, bank" becomes "%baba  bank%"
+    // (double space) and matches nothing.
+    const safeQ = q.replace(/[,()*]/g, " ").replace(/\s+/g, " ").trim();
     if (safeQ.length >= 2) {
       const term = `%${safeQ.replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
       query = query.or(`name.ilike.${term},tagline.ilike.${term},industry.ilike.${term}`);

@@ -1887,3 +1887,38 @@ input:disabled:active {
    a scroll container, which breaks position: sticky in descendants, and the
    sticky filter bar on the browse page depends on it. */
 html, body { overflow-x: clip; }
+
+/* ── Messages frame ───────────────────────────────────────────────────────
+   The list/chat frame was a fixed inline 620px, which is taller than a phone
+   viewport once the navbar, page header and tab bar are on screen -- the
+   composer sat below the fold. Inline styles cannot carry a media query
+   (same reason .grid-third-stack exists), so the height lives here: 620px
+   from md up, viewport-derived below it. 230px covers the navbar plus the
+   page's own header and margins; the tab bar variable is 0 when no tab bar
+   is mounted. Browsers without dvh drop the override and keep 620px. */
+.messages-frame {
+  height: 620px;
+}
+@media (max-width: 767px) {
+  .messages-frame {
+    height: clamp(420px, calc(100dvh - 230px - var(--cr-tabbar-h, 0px)), 620px);
+  }
+}
+
+/* ── Appended block (mobile chrome / theme registers pass) ────────────────
+   Kept as one block at the end: other passes may append their own below. */
+
+/* The InfoTip trigger is a 12px glyph exempted from the 40px tap floor
+   because it sits inline in a label's line box, where a padded button would
+   push the line open. The floor still applies to the TARGET: an invisible
+   pseudo-element extends the hit area to 40x40 around the glyph without
+   moving a pixel of layout. */
+.info-tip-hit { position: relative; }
+.info-tip-hit::before { content: ""; position: absolute; inset: -14px; }
+
+/* Editorial dark never got a --verdigris step, so success/passed marks kept
+   the light-paper #3E7C6A on near-black, where it barely reads. Lightened
+   and slightly desaturated -- the same move copper and --cr-up make in that
+   theme. Scoped away from the business register: this rule sits outside
+   @layer base and would otherwise beat business dark's own #6FB5BF. */
+:root[data-theme="dark"]:not([data-style="business"]) { --verdigris: #72B49E; }

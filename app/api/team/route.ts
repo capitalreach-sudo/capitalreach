@@ -238,6 +238,8 @@ export async function POST(req: NextRequest) {
     type:   "team_added",
     title:  "You were added to a team on CapitalReach",
     body:   `You now have access to a ${type === "startup" ? "startup" : "investor"} account.`,
+    titleKey: "notif.teamAddedTitle",
+    bodyKey: type === "startup" ? "notif.teamAddedBodyStartup" : "notif.teamAddedBodyInvestor",
     href:   type === "startup" ? "/dashboard/startup" : "/dashboard/investor",
   });
 

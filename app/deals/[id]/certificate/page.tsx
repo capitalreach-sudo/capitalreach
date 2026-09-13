@@ -40,7 +40,10 @@ export default async function CertificatePage({ params }: { params: { id: string
   const startupName = (Array.isArray(startupRel) ? startupRel[0]?.name : startupRel?.name) ?? "—";
   const inv = Array.isArray(investorRel) ? investorRel[0] : investorRel;
   const investorName = inv?.display_name || inv?.firm_name || "—";
-  const ref = "CR–INTRO–" + String(parseInt(deal.id.replace(/-/g, "").slice(0, 6), 16) % 10000).padStart(4, "0");
+  // Derived from the deal's own uuid rather than stored, so uniqueness has to
+  // come from the digits kept: ten hex chars are effectively unique, where the
+  // old 4-digit modulo collided within a few hundred certificates.
+  const ref = "CR-INTRO-" + deal.id.replace(/-/g, "").slice(0, 10).toUpperCase();
   const closedDate = deal.closed_at ? new Date(deal.closed_at).toISOString().slice(0, 10) : "—";
   const amount = deal.amount ? formatMoney(Number(deal.amount), deal.currency || DEFAULT_CURRENCY) : "—";
 

@@ -6,7 +6,7 @@ import { StickyNote, Trash2 } from "lucide-react";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 
-type Note = { id: string; body: string; created_at: string; admin_id: string | null; authorName: string | null };
+type Note = { id: string; body: string; created_at: string; admin_id: string | null; authorName: string | null; isMine?: boolean };
 
 /**
  * E53: the operator's memory of an account.
@@ -80,8 +80,12 @@ export function AdminNotes({ targetType, targetId }: {
                   {n.authorName ?? t("adminNotes.unknownAuthor")} · <span className="font-mono">{new Date(n.created_at).toLocaleString()}</span>
                 </p>
               </div>
-              <button onClick={() => remove(n.id)} title={t("adminNotes.deleteOwn")}
-                className="text-cr-i4 hover:text-cr-down shrink-0"><Trash2 className="h-3.5 w-3.5" /></button>
+              {/* DELETE is author-only server-side, so the control appears
+                  only where it can act. */}
+              {n.isMine && (
+                <button onClick={() => remove(n.id)} title={t("adminNotes.deleteOwn")}
+                  className="text-cr-i4 hover:text-cr-down shrink-0"><Trash2 className="h-3.5 w-3.5" /></button>
+              )}
             </li>
           ))}
         </ul>

@@ -79,7 +79,12 @@ export async function POST(req: NextRequest) {
     userId: startup.owner_id,
     type: "doc_request",
     title: `${inv.display_name ?? inv.firm_name ?? "An investor"} requested your ${LABEL[docType]}`,
-    body: msg ?? "Upload it from your documents manager — the request is tracked there until you do.",
+    // The investor's message is free text, so the keyed body only covers the
+    // no-message case; the doc label rides as a param and stays English.
+    body: msg ?? "Upload it from your documents manager, the request is tracked there until you do.",
+    titleKey: "notif.docRequestTitle",
+    bodyKey: msg ? undefined : "notif.docRequestBody",
+    params: { name: inv.display_name ?? inv.firm_name ?? "An investor", doc: LABEL[docType] },
     href: "/dashboard/startup/documents",
   });
   return NextResponse.json({ requested: true, id: requestId, repeat: !!existing });
@@ -134,6 +139,8 @@ export async function PATCH(req: NextRequest) {
       userId: inv.owner_id,
       type: "doc_request",
       title: status === "fulfilled" ? `${st?.name ?? "The founder"} shared the ${LABEL[row.doc_type] ?? "document"} you asked for` : `${st?.name ?? "The founder"} declined your ${LABEL[row.doc_type] ?? "document"} request`,
+      titleKey: status === "fulfilled" ? "notif.docSharedTitle" : "notif.docDeclinedTitle",
+      params: { name: st?.name ?? "The founder", doc: LABEL[row.doc_type] ?? "document" },
       href: st ? `/startups/${st.slug}` : "/dashboard/investor",
     }).catch(() => {});
   }

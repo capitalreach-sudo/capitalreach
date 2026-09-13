@@ -999,14 +999,26 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       mrr:    !known || allStartups.some((s) => s.mrr != null),
       runway: !known || allStartups.some((s) => s.runway_months != null),
       growth: !known || allStartups.some((s) => s.growth_rate != null),
+      // The date chips are the same dead end through a different door: no
+      // column is gated, but a market where nothing listed this week (the
+      // newOnly cutoff below) or no round carries an in-window close date
+      // (roundCloseState, the closingSoon matcher's own test) makes either
+      // chip a one-click route to an empty grid.
+      newWeek: !known || allStartups.some((s) => (Date.now() - new Date(s.created_at).getTime()) / 86400000 <= 7),
+      closing: !known || allStartups.some((s) => roundCloseState(s.round_close_date) !== null),
     };
   }, [allStartups]);
   const financialsLocked = tractionData.known && !tractionData.mrr && !tractionData.runway && !tractionData.growth;
+  // The date chips are never plan-gated, so their disabled title is always
+  // the no-data wording, even while the financial chips are plan-locked.
+  const dateNote = !tractionData.newWeek || !tractionData.closing
+    ? t("startups.tractionFilterNoData")
+    : null;
   const tractionNote = financialsLocked
     ? t("startups.financialsFilterLocked")
     : !tractionData.mrr || !tractionData.runway || !tractionData.growth
       ? t("startups.tractionFilterNoData")
-      : null;
+      : dateNote;
 
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
@@ -1448,6 +1460,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 <InfoTip termKey="glossary.aiScore" />
               </span>
               <FilterChip active={!!filters.newOnly}
+                disabled={!tractionData.newWeek}
+                title={tractionData.newWeek ? undefined : dateNote ?? undefined}
                 onClick={() => patch({ newOnly: !filters.newOnly })}>
                 {t("startups.newThisWeek")}
               </FilterChip>
@@ -1481,6 +1495,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </span>
               <span style={TIPPED_CLUSTER}>
                 <FilterChip active={!!filters.closingSoon}
+                  disabled={!tractionData.closing}
+                  title={tractionData.closing ? undefined : dateNote ?? undefined}
                   onClick={() => patch({ closingSoon: !filters.closingSoon })}>
                   {t("startups.closingSoon")}
                 </FilterChip>
@@ -1902,9 +1918,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                     <FilterChip active={(filters.growthMin ?? 0) > 0} disabled={!tractionData.growth} title={tractionData.growth ? undefined : tractionNote ?? undefined} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
                     <InfoTip termKey="glossary.filterGrowth" />
                   </span>
-                  <FilterChip active={!!filters.newOnly} onClick={() => patch({ newOnly: !filters.newOnly })}>{t("startups.newThisWeek")}</FilterChip>
+                  <FilterChip active={!!filters.newOnly} disabled={!tractionData.newWeek} title={tractionData.newWeek ? undefined : dateNote ?? undefined} onClick={() => patch({ newOnly: !filters.newOnly })}>{t("startups.newThisWeek")}</FilterChip>
                   <span style={TIPPED_CLUSTER}>
-                    <FilterChip active={!!filters.closingSoon} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
+                    <FilterChip active={!!filters.closingSoon} disabled={!tractionData.closing} title={tractionData.closing ? undefined : dateNote ?? undefined} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
                     <InfoTip termKey="glossary.filterClosingSoon" />
                   </span>
                   <FilterChip active={!!filters.hasDemo} onClick={() => patch({ hasDemo: !filters.hasDemo })}>{t("startups.hasDemo")}</FilterChip>

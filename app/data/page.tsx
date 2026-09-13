@@ -7,16 +7,20 @@ import { Footer } from "@/components/shared/footer";
 import { DataCentre } from "@/components/shared/data-centre";
 import { computePlatformData } from "@/lib/platform-data";
 import type { Metadata } from "next";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  // Canonical: the app answers on more than one hostname (vercel.app plus
-  // whatever domain it ends up on), and duplicate URLs split their own ranking.
-  alternates: { canonical: "/data" },
-  title: "Data Centre",
-  description: "Platform-wide analytics, industry breakdown, funding activity, and trending startups on CapitalReach.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    // Canonical: the app answers on more than one hostname (vercel.app plus
+    // whatever domain it ends up on), and duplicate URLs split their own ranking.
+    alternates: { canonical: "/data" },
+    title: t("meta.dataTitle"),
+    description: t("meta.dataDesc"),
+  };
+}
 
 export default async function DataPage() {
   // Signed in or nothing. A logged-out visitor gets the home page and no more,

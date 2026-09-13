@@ -165,8 +165,10 @@ export async function POST(req: NextRequest) {
   await notifyUser({
     userId: startup.owner_id,
     type: "nda_signed",
-    title: `NDA accepted — data room opened`,
-    body: `An investor accepted your NDA and can now see your protected documents.`,
+    title: "NDA accepted, data room opened",
+    body: "An investor accepted your NDA and can now see your protected documents.",
+    titleKey: "notif.ndaAcceptedTitle",
+    bodyKey: "notif.ndaAcceptedBody",
     // The listing route resolves a slug, never an id: /startups/<uuid> is a
     // 404, which is where this notification used to land the founder.
     href: startup.slug ? `/startups/${startup.slug}` : "/dashboard/startup/nda",

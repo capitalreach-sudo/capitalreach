@@ -177,11 +177,11 @@
       "analyzeBtn": "Analizza il mio pitch",
       "clear": "Cancella",
       "resultsEmpty": "La tua analisi IA appare qui",
-      "resultsEmptySub": "Output reale di GPT-4o — nessun template, nessun dato falso.",
+      "resultsEmptySub": "Output reale di GPT-4o mini, nessun template, nessun dato falso. Ogni analisi è unica per il tuo pitch.",
       "evaluating": "Valutazione del tuo pitch…",
-      "evaluatingSub": "GPT-4o sta valutando chiarezza, opportunità di mercato, fossato competitivo, forza del team e trazione",
+      "evaluatingSub": "GPT-4o mini sta valutando chiarezza, opportunità di mercato, fossato competitivo, forza del team e trazione",
       "reportTitle": "Report di analisi del pitch",
-      "generatedBy": "Generato da GPT-4o",
+      "generatedBy": "Generato da GPT-4o mini",
       "outOf100": "su 100",
       "whatsWorking": "Cosa funziona",
       "improveThis": "Da migliorare",
@@ -192,10 +192,10 @@
       "dimMoat": "Fossato competitivo",
       "dimTeam": "Forza del team",
       "dimTraction": "Evidenza di trazione",
-      "descLong": "Descrivi la tua startup — problema, soluzione, dimensione del mercato, background del team e trazione. GPT-4o la valuterà su 5 dimensioni di investimento e fornirà feedback pratici.",
+      "descLong": "Descrivi la tua startup: problema, soluzione, dimensione del mercato, background del team e trazione. GPT-4o mini la valuterà su 5 dimensioni di investimento e fornirà feedback pratici.",
       "proTipLabel": "Consiglio pro:",
       "proTipBody": "Includi la dimensione del mercato, i ricavi mensili e il tasso di crescita, le exit precedenti, le bio del team e le metriche chiave che li sostengono, per il punteggio più accurato.",
-      "footerInfo": "Basato su GPT-4o · ~3 secondi · Nessun dato memorizzato",
+      "footerInfo": "Basato su GPT-4o mini · ~3 secondi · Nessun dato memorizzato",
       "analysisFailedErr": "Analisi non riuscita",
       "analysisFailedFull": "Analisi del pitch non riuscita. Controlla la connessione e riprova.",
       "placeholder": "Incolla qui il tuo pitch — problema, soluzione, trazione, team e richiesta...",
@@ -277,10 +277,10 @@
       "searchPlaceholder": "es. Vaultrise, HealthAI, ClimateOS…"
     },
     "hub": {
-      "heroPowered": "Alimentato da GPT-4o",
+      "heroPowered": "Alimentato da GPT-4o mini",
       "heroLine1": "Intelligenza",
       "heroLine2": "Deal con IA",
-      "heroSub": "Tre potenti strumenti IA in un unico posto — analizza i pitch, abbina gli investitori giusti e genera report di due diligence.",
+      "heroSub": "Tre strumenti IA in un unico posto: analizza i pitch, trova gli investitori giusti e genera report di due diligence. Analisi dei pitch e due diligence usano GPT-4o mini; il matching si basa sulla tesi di investimento.",
       "statPitchLabel": "Analisi pitch",
       "statMatchLabel": "Matching investitori",
       "statDDLabel": "Due Diligence",
@@ -290,8 +290,8 @@
       "startInvestor": "Inizia come investitore",
       "listStartup": "Elenca la tua startup",
       "viewPricing": "Vedi tutti i prezzi",
-      "statPitchVal": "GPT reale",
-      "statMatchVal": "Basato su IA",
+      "statPitchVal": "GPT-4o mini",
+      "statMatchVal": "Basato su tesi",
       "statDDVal": "Memo di 500 parole",
       "statSpeedVal": "~3 secondi",
       "tierFreeSub": "Sempre gratis",
@@ -315,7 +315,9 @@
     "usageRemaining": "Ti restano {remaining} di {limit} esecuzioni IA oggi",
     "usageUnlimited": "Esecuzioni IA illimitate nel tuo piano",
     "usageUpgrade": "Ottieni di più →",
-    "disclosureStrip": "L'analisi generata dall'IA è solo informativa e non costituisce consulenza finanziaria. Basata su modelli OpenAI. Avviso: questo contenuto è stato generato con l'IA."
+    "disclosureStrip": "L'analisi generata dall'IA è solo informativa e non costituisce consulenza finanziaria. Basata su modelli OpenAI. Avviso: questo contenuto è stato generato con l'IA.",
+    "usagePaidOnly": "Gli strumenti IA fanno parte dei piani a pagamento",
+    "usagePerTool": "Ogni strumento ha il proprio limite giornaliero; qui vedi quello che hai usato di più."
   },
   "pricing": {
     "sectionLabel": "Piani e prezzi",
@@ -1042,7 +1044,9 @@
     "uploadFirstDoc": "Carica il tuo primo documento",
     "submitting": "Invio…",
     "closureDeclarationDue": "Il round risulta chiuso. Dichiara quanto raccolto per completare il registro.",
-    "declareClosure": "Dichiara la chiusura"
+    "declareClosure": "Dichiara la chiusura",
+    "funnelWindow": "Da sempre",
+    "saveFailedEditToRetry": "Salvataggio non riuscito; modifica per riprovare"
   },
   "settings": {
     "pageTitle": "Impostazioni",
@@ -1175,7 +1179,7 @@
     "financials": "Finanze",
     "team": "Team",
     "documents": "Documenti",
-    "backToListings": "← Torna ai listing",
+    "backToListings": "Torna ai listing",
     "viewDeal": "Vedi deal",
     "requestIntro": "Richiedi intro",
     "raising": "Raccoglie",
@@ -1571,7 +1575,7 @@
     "showTable": "Mostra i numeri",
     "showChart": "Mostra il grafico",
     "otherIndustries": "Altri settori",
-    "sampleNote": "I dati includono annunci di esempio mostrati durante il periodo di lancio.",
+    "sampleNote": "I dati includono annunci, account e attività sui deal di esempio mostrati durante il periodo di lancio.",
     "breakdowns": "Dettagli",
     "viewActivity": "Attività",
     "viewNumbers": "Numeri",
@@ -2112,7 +2116,9 @@
     "scopeAll": "Tutti i deal",
     "scopeMine": "I miei deal",
     "editAmountAria": "Modifica l'importo",
-    "amountSaved": "Importo aggiornato"
+    "amountSaved": "Importo aggiornato",
+    "contractYouSigned": "Hai firmato; in attesa dell'altra parte",
+    "ndaClickwrapHint": "La firma elettronica non è collegata su questa installazione. L'investitore può accettare l'NDA direttamente sull'annuncio della startup, aprendo subito la data room."
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -2906,7 +2912,7 @@
     "noMfa": "Quell'account non ha un secondo fattore."
   },
   "imprint": {
-    "metaTitle": "Note legali — CapitalReach",
+    "metaTitle": "Note legali",
     "metaDesc": "Note legali e identificazione del fornitore di CapitalReach.",
     "title": "Note legali",
     "subtitle": "Identificazione del fornitore (§ 5 TMG)",
@@ -2967,7 +2973,8 @@
     "footnote": "I costi legali per outreach a freddo e intermediari sono in genere di 5.000–20.000 € prima ancora che un round si apra.",
     "detailNote": "La success fee del 2% viene fatturata alla startup solo dopo la chiusura di un round tramite CapitalReach. Gli investitori non pagano nulla.",
     "keepShare": "Il {pct}% del round resta in azienda.",
-    "setRaise": "Imposta l'importo del round a {amount}"
+    "setRaise": "Imposta l'importo del round a {amount}",
+    "titleCompare": "Confronta la fee sul tuo numero"
   },
   "welcome": {
     "eyebrow": "Benvenuto su CapitalReach",
@@ -3151,7 +3158,9 @@
     "due": "Scadenza",
     "sentAwaiting": "inviata, ricezione in attesa",
     "receivedOf": "{received} di {total} ricevuti",
-    "fullyFunded": "Interamente erogato — tutte le tranche ricevute"
+    "fullyFunded": "Interamente erogato — tutte le tranche ricevute",
+    "timelineSet": "Piano di erogazione impostato: {count} tranche",
+    "cleared": "Piano di erogazione rimosso"
   },
   "fees": {
     "tab": "Fee",
@@ -3177,7 +3186,8 @@
       "reversed": "Stornata"
     },
     "resolve": "Chiudi il caso",
-    "resolvePrompt": "Come è stata risolta la contestazione?"
+    "resolvePrompt": "Come è stata risolta la contestazione?",
+    "operatorOnly": "Per agire su una fee serve un admin di livello operatore."
   },
   "myFees": {
     "title": "Success fee",
@@ -3248,7 +3258,8 @@
     },
     "medianTarget": "Obiettivo mediano del round",
     "newThisMonth": "Nuovi round questo mese",
-    "anonNote": "Non serve un account per inviare questa segnalazione."
+    "anonNote": "Non serve un account per inviare questa segnalazione.",
+    "operatorOnly": "Per agire su una segnalazione serve un admin di livello operatore."
   },
   "deleteAccount": {
     "willAnonymise": "Il tuo account ha operazioni chiuse sulla piattaforma, quindi non può essere semplicemente cancellato: anche la controparte ne ha traccia e una fee dovuta non sparisce con l'account. Vengono invece rimossi definitivamente nome, email, foto e testi del profilo e l'annuncio viene ritirato. Resta un record di transazione privo di dati personali.",
@@ -3382,7 +3393,18 @@
     "filterSort": "Cambia l'ordine dei risultati; nulla viene aggiunto o tolto. Il più recente prima è l'ordine predefinito, e ordinare per punteggio, ricavi o data di chiusura legge le cifre presentate dai fondatori.",
     "filterRaising": "Mantiene i round a partire da questa dimensione. Legge l'obiettivo di raccolta fissato dal fondatore per il round, non l'importo già impegnato.",
     "filterGrowth": "La crescita mensile dei ricavi come dichiarata dal fondatore nell'annuncio. La cifra viene dal fondatore; la piattaforma non la verifica.",
-    "filterClosingSoon": "Round la cui data di chiusura, fissata dal fondatore, cade nei prossimi 60 giorni o è già arrivata. I round continui senza data restano esclusi."
+    "filterClosingSoon": "Round la cui data di chiusura, fissata dal fondatore, cade nei prossimi 60 giorni o è già arrivata. I round continui senza data restano esclusi.",
+    "stageProposal": "Una richiesta di deal che una parte ha inviato all'altra. Nulla entra in alcuna pipeline finché la parte ricevente non accetta: ogni deal su questa board è quindi stato accettato da entrambe le parti.",
+    "stageIntro": "La prima fase operativa: le due parti sono in contatto e si stanno parlando. Nulla è ancora impegnato, e un deal avanza una fase alla volta man mano che la conversazione si concretizza.",
+    "stageClosed": "Entrambe le parti hanno confermato l'investimento per un importo concordato. La chiusura richiede un contratto firmato e la conferma di entrambe; genera la fattura della success fee del 2% e non può essere riaperta.",
+    "stagePassed": "Il deal si è concluso senza investimento, con il motivo registrato. Il pass chiude il deal ma non il rapporto: un deal passato può essere riaperto se i colloqui riprendono.",
+    "followUpDue": "Una data che imposti su un deal come promemoria personale per il follow-up. L'etichetta diventa rossa una volta superata la data, e l'ordinamento per follow-up porta in alto i deal la cui data è arrivata.",
+    "totalRaised": "Ogni importo confermato alla chiusura di un deal qui, sommato a oggi. Il denaro ancora in trattativa o solo promesso non viene contato, e i deal passati non entrano mai nella cifra.",
+    "activeStartups": "Aziende con un annuncio attivo in questo momento. Bozze, annunci ancora in revisione e annunci sospesi non vengono contati.",
+    "investorCount": "Account investitore registrati sulla piattaforma, qualunque sia il piano. La registrazione è un'iscrizione, non una verifica dei fondi di nessuno.",
+    "dealsClosed": "Deal che entrambe le parti hanno confermato come investimento effettuato, contati dall'apertura della piattaforma. Un deal finito con un pass viene registrato a parte e non viene mai contato qui.",
+    "closeRate": "Dei deal conclusi, la quota che ha chiuso invece di passare. I deal ancora in corso non contano da nessuna parte: non è quindi la quota di tutti i deal che vanno a buon fine.",
+    "medianTarget": "L'obiettivo di round mediano tra gli annunci in quella fase: metà chiede di più, metà chiede di meno. Una mediana anziché una media, così un round fuori scala non può spostare la cifra."
   },
   "translate": {
     "offer": "Questo testo è stato scritto in un'altra lingua.",
@@ -3421,7 +3443,9 @@
     "title": "Dall'ultima volta",
     "watching": "{n} aziende seguite",
     "markSeen": "Segna tutto come visto",
-    "quiet": "Niente di nuovo sulle aziende che segui."
+    "quiet": "Niente di nuovo sulle aziende che segui.",
+    "docsInRoom": "{count} documenti nella data room",
+    "docsInRoomOne": "1 documento nella data room"
   },
   "share": {
     "title": "Condividi il tuo round",
@@ -3860,7 +3884,70 @@
     "dealMovedIntro": "Un accordo è passato a Colloquio",
     "dealMovedDueDiligence": "Un accordo è passato a Trattativa",
     "dealMovedTermSheet": "Un accordo è passato al Term sheet",
-    "dealPassedTitle": "Un accordo è stato segnato come scartato"
+    "dealPassedTitle": "Un accordo è stato segnato come scartato",
+    "dealRequestTitle": "{name} vuole aprire un deal",
+    "dealRequestBody": "Accetta per aggiungerlo a entrambe le pipeline, oppure rifiuta.",
+    "dealOpenedTitle": "{name} ha aperto un deal con te",
+    "ndaAcceptedTitle": "NDA accettato, data room aperta",
+    "ndaAcceptedBody": "Un investitore ha accettato il tuo NDA e ora può vedere i tuoi documenti protetti.",
+    "listingApprovedTitle": "{name} è online",
+    "listingApprovedBody": "Il tuo annuncio è ora visibile agli investitori.",
+    "listingRejectedTitle": "{name} richiede modifiche prima di andare online",
+    "listingRejectedBody": "Il tuo annuncio è stato esaminato e non è ancora online. Apri la dashboard per vedere cosa fare.",
+    "docRequestTitle": "{name} ha richiesto il tuo {doc}",
+    "docRequestBody": "Caricalo dal gestore documenti; la richiesta resta tracciata lì finché non lo fai.",
+    "docSharedTitle": "{name} ha condiviso il {doc} che avevi chiesto",
+    "docDeclinedTitle": "{name} ha rifiutato la tua richiesta di {doc}",
+    "requestAcceptedTitle": "{name} ha accettato, il deal è aperto",
+    "requestAcceptedBody": "Ora è in entrambe le pipeline.",
+    "requestDeclinedTitle": "{name} ha rifiutato la tua richiesta",
+    "requestDeclinedBody": "Nessun rancore; forse in questo momento non è la scelta giusta.",
+    "teamAddedTitle": "Sei stato aggiunto a un team su CapitalReach",
+    "teamAddedBodyStartup": "Ora hai accesso a un account startup.",
+    "teamAddedBodyInvestor": "Ora hai accesso a un account investitore.",
+    "feeActionRequiredTitle": "La tua banca deve autorizzare questo pagamento",
+    "feeActionRequiredBody": "Il pagamento è in sospeso finché non lo confermi con la tua banca.",
+    "adminInfoRequestTitle": "Ci serve qualcosa da te",
+    "adminListingReviewTitle": "Il tuo annuncio è in revisione",
+    "reportClosedTitle": "Abbiamo esaminato la tua segnalazione",
+    "reportClosedBody": "Grazie per avercelo segnalato. La verifica è chiusa.",
+    "feeDisputeReviewedTitle": "La tua contestazione della fee è stata esaminata",
+    "feeInvoicedTitle": "Fattura della success fee",
+    "feeInvoicedBody": "La success fee del 2% sul tuo round chiuso è stata fatturata.",
+    "feeSupplementaryTitle": "Success fee integrativa",
+    "feeSupplementaryBody": "È stata emessa una fee sulla differenza tra il tuo round chiuso e l'importo depositato al registro delle imprese.",
+    "recordNoteTitle": "È stata aggiunta una nota al tuo fascicolo",
+    "recordNoteBody": "Un round chiuso non corrispondeva a quanto depositato al registro delle imprese.",
+    "feeReminderTitle": "Success fee ancora da pagare",
+    "feeFinalReminderTitle": "Ultimo promemoria: success fee non pagata",
+    "feeReminderBody": "{amount} sul tuo round chiuso. La fee è a carico della startup che riceve l'investimento.",
+    "feeInstalmentTitle": "Rata {seq} della success fee",
+    "feeInstalmentBody": "È stata fatturata la prossima rata della tua success fee.",
+    "commitTitleInterest": "Aggiornamento deal: Interessato",
+    "commitTitleSoft": "Aggiornamento deal: Soft-circle",
+    "commitTitleVerbal": "Aggiornamento deal: Sì verbale",
+    "commitTitleCommitted": "Aggiornamento deal: Impegnato",
+    "closeProposedTitle": "Chiusura proposta: {name}",
+    "closeProposedBody": "Conferma per chiudere a {amount} (si applica la fee del 2%).",
+    "closeProposedBodyNoAmount": "Conferma per chiudere questo deal.",
+    "dealClosedTitle": "Deal chiuso: {name}",
+    "dealClosedBodyFee": "{amount} · success fee del 2% fatturata",
+    "fundedTitle": "Finanziato: {name}",
+    "fundedBody": "Entrambe le parti hanno confermato il bonifico.",
+    "fundsSentTitle": "L'investitore ha confermato l'invio dei fondi",
+    "fundsReceivedTitle": "Il founder ha confermato la ricezione dei fondi",
+    "confirmSideBody": "Conferma la tua parte per completare il round.",
+    "scheduleProposedTitle": "È stato proposto un piano di erogazione",
+    "scheduleProposedBody": "{count} tranche su {name}.",
+    "fullyFundedTitle": "Interamente finanziato: {name}",
+    "fullyFundedBody": "Tutte le tranche sono state ricevute.",
+    "trancheSentTitle": "{label}: l'investitore ha confermato l'invio dei fondi",
+    "trancheReceivedTitle": "{label}: il founder ha confermato la ricezione dei fondi",
+    "confirmTrancheBody": "Conferma la tua parte per completare questa tranche.",
+    "dealDocTitle": "Nuovo documento del deal: {name}",
+    "dealDocBody": "L'altra parte ha aggiunto un documento alla data room condivisa.",
+    "contractSentTitle": "Contratto inviato per la firma: {title}",
+    "contractSignedTitle": "Contratto firmato: {title}"
   },
   "match": {
     "title": "Chi ti sta aspettando",
@@ -4735,7 +4822,9 @@
       "differentiation": "Differenziazione indicata",
       "teamInfo": "Informazioni sul team fornite",
       "metrics": "Metriche fornite e coerenti"
-    }
+    },
+    "scoredAt": "Valutato il {date}",
+    "stale": "L'annuncio è cambiato dopo questa valutazione; verrà aggiornata al prossimo passaggio."
   },
   "attest": {
     "eyebrow": "La tua dichiarazione",
@@ -4783,5 +4872,25 @@
     "emptyBody": "Raccogli capitale in {industry}? La pubblicazione è gratuita durante il lancio e ogni scheda è verificata prima di andare online.",
     "browseBySector": "Sfoglia per settore",
     "metaDescription": "Startup {industry} su CapitalReach: obiettivi, trazione e fase, con success fee del 2 % pagata dalla startup solo alla chiusura."
+  },
+  "meta": {
+    "startupsTitle": "Trova startup",
+    "startupsDesc": "Sfoglia round di startup verificati per fase, settore e trazione. L'identità delle aziende è visibile ai membri.",
+    "investorsTitle": "Directory degli investitori",
+    "investorsDesc": "Angel, family office e fondi attivi su CapitalReach, ricercabili per tesi, taglio del ticket e settore.",
+    "aiTitle": "Deal Intelligence con IA",
+    "aiDesc": "Analisi dei pitch, matching degli investitori e bozze di due diligence su GPT-4o mini.",
+    "dataTitle": "Centro dati",
+    "dataDesc": "Numeri della piattaforma in tempo reale: round aperti, capitale richiesto, funnel dei deal e tasso di chiusura.",
+    "dealsTitle": "Portale deal",
+    "dealsDesc": "Segui ogni conversazione dall'intro alla chiusura: fasi, note, contratti e sigillo del deal.",
+    "pricingTitle": "Prezzi",
+    "pricingDesc": "Una success fee del 2% pagata dalla startup solo alla chiusura. Gli investitori non pagano nulla.",
+    "contactTitle": "Contatti",
+    "contactDesc": "Domande su listing, investimenti o piattaforma: scrivi al team di CapitalReach.",
+    "loginTitle": "Accedi",
+    "signupTitle": "Crea account",
+    "homeTitle": "CapitalReach - Marketplace del capitale privato",
+    "homeDesc": "Il marketplace verificato dove le startup raccolgono capitale e gli investitori trovano il prossimo round. Success fee del 2% alla chiusura, nulla prima."
   }
 }

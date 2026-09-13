@@ -303,6 +303,9 @@ async function notifyProposal(
     type: "deal_opened",
     title: `${proposerName} wants to open a deal`,
     body: "Accept to add it to both pipelines, or decline.",
+    titleKey: "notif.dealRequestTitle",
+    bodyKey: "notif.dealRequestBody",
+    params: { name: proposerName },
     href: "/deals",
   });
 }
@@ -344,6 +347,8 @@ async function notifyCounterpart(
       userId: p.id,
       type:   "deal_opened",
       title:  `${otherName} opened a deal with you`,
+      titleKey: "notif.dealOpenedTitle",
+      params: { name: otherName },
       href:   `/deals?deal=${dealId}`,
     });
 

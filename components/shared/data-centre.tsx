@@ -253,12 +253,22 @@ function timeAgo(iso: string) {
 // ── Animated count-up ─────────────────────────────────────────────────────────
 
 function useCountUp(target: number, duration = 900) {
-  const [value, setValue] = useState(0);
+  // Starts AT the target, not at 0: this component is server-rendered with
+  // real aggregates, and a hook starting at 0 wrote $0 and 0 startups into
+  // the very HTML the page promises carries the figures. The 0-to-target
+  // sweep is a post-hydration flourish kicked off by the effect below, and
+  // skipped entirely for anyone who asked their system for less motion.
+  const [value, setValue] = useState(target);
   const [done, setDone] = useState(false);
   const raf = useRef<number | null>(null);
 
   useEffect(() => {
-    if (target === 0) { setValue(0); setDone(true); return; }
+    if (
+      target === 0 ||
+      (typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+    ) {
+      setValue(target); setDone(true); return;
+    }
     const start = performance.now();
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);

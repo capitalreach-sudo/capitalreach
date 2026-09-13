@@ -120,8 +120,11 @@ export async function POST(req: NextRequest) {
   if (other) {
     await notifyUsers([other], {
       type: "doc_request",
-      title: `New deal document — ${safeName}`,
-      body: `The other side added a document to your shared data room.`,
+      title: `New deal document: ${safeName}`,
+      body: "The other side added a document to your shared data room.",
+      titleKey: "notif.dealDocTitle",
+      bodyKey: "notif.dealDocBody",
+      params: { name: safeName },
       href: `/deals?deal=${dealId}`,
     }).catch(() => {});
   }

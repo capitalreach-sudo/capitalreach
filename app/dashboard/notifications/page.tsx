@@ -84,10 +84,20 @@ export default function NotificationsPage() {
   const [sound, setSound] = useState(true);
   useEffect(() => { setSound(soundEnabled()); }, []);
 
+  // The unread toggle is a server-side filter like the tabs: filtering only
+  // the fetched page client-side would show a page of read rows as "no unread"
+  // while the badge counts unread rows further down the feed.
+  function filterQuery(forTab: string, unread: boolean) {
+    const params = new URLSearchParams();
+    if (TAB_TYPES[forTab]) params.set("types", TAB_TYPES[forTab]);
+    if (unread) params.set("unread", "1");
+    return params.toString();
+  }
+
   async function load(forTab: string = tab) {
-    const typesQ = TAB_TYPES[forTab] ? `?types=${TAB_TYPES[forTab]}` : "";
+    const q = filterQuery(forTab, unreadOnly);
     try {
-      const res = await fetch(`/api/notifications${typesQ}`);
+      const res = await fetch(`/api/notifications${q ? `?${q}` : ""}`);
       if (!res.ok) throw new Error();
       const d = await res.json();
       setLoadError(false);
@@ -100,15 +110,17 @@ export default function NotificationsPage() {
       setRows([]);
     }
   }
-  useEffect(() => { setRows(null); load(tab); }, [tab]);
+  useEffect(() => { setRows(null); load(tab); }, [tab, unreadOnly]);
 
   async function loadMore() {
     if (!rows?.length) return;
     setLoadingMore(true);
     const last = rows[rows.length - 1];
-    const typesQ = TAB_TYPES[tab] ? `&types=${TAB_TYPES[tab]}` : "";
+    // The cursor pages within the active filters, unread included, so "show
+    // older" under the unread toggle keeps returning unread rows.
+    const filterQ = filterQuery(tab, unreadOnly);
     const res = await fetch(
-      `/api/notifications?before=${encodeURIComponent(last.created_at)}&beforeId=${encodeURIComponent(last.id)}${typesQ}`
+      `/api/notifications?before=${encodeURIComponent(last.created_at)}&beforeId=${encodeURIComponent(last.id)}${filterQ ? `&${filterQ}` : ""}`
     );
     setLoadingMore(false);
     if (!res.ok) return;
@@ -248,7 +260,7 @@ export default function NotificationsPage() {
               {t("errorPage.retry")}
             </button>
           </div>
-        ) : (unreadOnly ? rows.filter((r) => !r.read_at) : rows).length === 0 ? (
+        ) : rows.length === 0 ? (
           // Empty state, house grammar: one diamond, one sentence, one quiet action.
           <div className="text-center" style={{ ...CARD, padding: "48px 24px" }}>
             <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "16px", lineHeight: 1, marginBottom: "16px" }}>✦</span>
@@ -263,7 +275,7 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <div className="overflow-hidden" style={CARD}>
-            {(unreadOnly ? rows.filter((r) => !r.read_at) : rows).map((n, idx, view) => {
+            {rows.map((n, idx, view) => {
               // A date rule whenever the day changes: a long feed reads as
               // "today / yesterday / last week", not one undifferentiated wall.
               const dayOf = (iso: string) => new Date(iso).toDateString();

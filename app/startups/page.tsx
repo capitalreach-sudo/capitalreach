@@ -9,17 +9,20 @@ import { StartupsSearch } from "@/components/startup/startups-search";
 import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
 import { loadActiveStartups, stripBrowseFinancials, viewerCanSeeFinancials } from "@/lib/browse-data";
 import type { Metadata } from "next";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  // Canonical: the app answers on more than one hostname (vercel.app plus
-  // whatever domain it ends up on), and duplicate URLs split their own ranking.
-  alternates: { canonical: "/startups" },
-  title: "Find Startups",
-  description:
-    "Browse startups currently raising capital. Filter by industry, stage, monthly revenue, AI consistency score and more.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    // Canonical: the app answers on more than one hostname (vercel.app plus
+    // whatever domain it ends up on), and duplicate URLs split their own ranking.
+    alternates: { canonical: "/startups" },
+    title: t("meta.startupsTitle"),
+    description: t("meta.startupsDesc"),
+  };
+}
 
 export default async function StartupsPage() {
   // Signed out, the product is the home page, the pricing page and the data

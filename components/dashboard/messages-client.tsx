@@ -79,6 +79,10 @@ const STATUS_KEYS: Record<string, { labelKey: string; bg: string; color: string;
 
 interface SearchAccount {
   id: string;
+  /** The listing/investor row itself, straight from /api/messages/accounts:
+   *  what /api/messages/start takes. Re-deriving it here by owner_id broke
+   *  for owners with more than one listing (maybeSingle errors on two rows). */
+  entity_id: string;
   full_name: string | null;
   role: string;
   avatar_url: string | null;
@@ -163,7 +167,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [showNewModal, setShowNewModal]     = useState(false);
   useEscapeKey(showNewModal, () => setShowNewModal(false));
   const [newBody, setNewBody]               = useState("");
-  const [targetKind, setTargetKind]         = useState<"investor" | "startup">("startup");
+  // Each role's OPEN channel is the other side of the table: a founder
+  // reaches investors (via a sealed deal), an investor reaches startups (via
+  // an accepted offer). The peer tab is closed by the seal rule either way,
+  // so defaulting a founder into "startups" opened the modal on a tab where
+  // every send is refused.
+  const defaultTargetKind: "investor" | "startup" = profile.role === "investor" ? "startup" : "investor";
+  const [targetKind, setTargetKind]         = useState<"investor" | "startup">(defaultTargetKind);
   const [accountSearch, setAccountSearch]   = useState("");
   const [accountResults, setAccountResults] = useState<SearchAccount[]>([]);
   const [accountSearching, setAccountSearching] = useState(false);
@@ -400,14 +410,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   };
   const getSubLabel = (th: Thread) => {
     if (otherInvestor(th)) return th.startup?.name || "";
+    // Slugs are storage keys, not copy: "Demo-kestrel-2" under a thread name
+    // reads as a bug. Spaced like getLabel does; the rendering element's
+    // textTransform supplies the capitals.
     if (th.recipient_startup_id) {
-      return otherStartup(th)?.slug || "";
+      return (otherStartup(th)?.slug || "").replace(/-/g, " ");
     }
     if (profile.role === "startup") {
       const type = th.investor?.type || "";
       return type.replace(/_/g," ").replace(/\b\w/g,(c:string)=>c.toUpperCase());
     }
-    return th.startup?.slug || "";
+    return (th.startup?.slug || "").replace(/-/g, " ");
   };
 
   // Declared ABOVE filteredThreads on purpose: the sort below reads
@@ -602,7 +615,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
    * which is the same one click.
    */
   function showGateRefusal(th: Thread, json: {
-    error?: string; errorCode?: string; dealId?: string; awaiting?: unknown;
+    error?: string; errorCode?: string; messageKey?: string; dealId?: string; awaiting?: unknown;
     openProposalId?: string | null; href?: string; ctaKey?: string;
   }): boolean {
     // A founder refusal puts the SENTENCE in `error` and the machine-readable
@@ -611,6 +624,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
     // left the founder's principal blocked state with no panel and no link.
     const code = json.errorCode ?? json.error;
     if (code !== "seal_required" && code !== "offer_required" && code !== "deal_required") return false;
+    // The refusal also names its sentence as a KEY, and every locale carries
+    // the founderContact.* set -- the server's `error` string is English no
+    // matter who is reading. Prefer the reader's locale and keep the sentence
+    // only for a key the dictionary cannot resolve, same as the new-message
+    // modal path.
+    const localizedSentence = json.messageKey && t(json.messageKey) !== json.messageKey
+      ? t(json.messageKey)
+      : (json.error ?? null);
     const awaiting = Array.isArray(json.awaiting) ? (json.awaiting as string[]) : [];
     const side = mySideOf(th);
     setRegistrationPrompt(null);
@@ -621,12 +642,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       dealId: typeof json.dealId === "string" ? json.dealId : null,
       awaiting,
       offerPending: !!json.openProposalId,
-      sentence: code === "deal_required" ? (json.error ?? null) : null,
+      sentence: code === "deal_required" ? localizedSentence : null,
       href: typeof json.href === "string" ? json.href : null,
       ctaKey: typeof json.ctaKey === "string" ? json.ctaKey : null,
     });
     if (code === "deal_required") {
-      notify.info(json.error || t("founderContact.dealRequired"));
+      notify.info(localizedSentence || t("founderContact.dealRequired"));
       return true;
     }
     if (code === "seal_required") {
@@ -778,7 +799,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
   function closeNewModal() {
     setShowNewModal(false); setSelectedAccount(null); setAccountSearch("");
-    setNewBody(""); setAccountResults([]); setSendNewError(""); setTargetKind("investor");
+    setNewBody(""); setAccountResults([]); setSendNewError(""); setTargetKind(defaultTargetKind);
   }
 
   async function sendNewMessage() {
@@ -789,14 +810,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       // the CALLER is by entity ownership and builds the right thread shape
       // (founder↔investor, founder↔founder, investor↔investor). The four
       // hand-rolled role branches this replaces each assumed an older world.
-      const table = selectedAccount.kind === "startup" ? "startups" : "investors";
-      const { data: target } = await supabase.from(table).select("id").eq("owner_id", selectedAccount.id).maybeSingle();
-      if (!target) { setSendNewError(t("dashboard.errStartConvo")); setSendingNew(false); return; }
+      // The entity id comes from /api/messages/accounts with the row itself:
+      // re-deriving it here by owner_id errored for any owner holding two
+      // listings (maybeSingle refuses two rows), killing the send.
       const res = await fetch("/api/messages/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          [selectedAccount.kind === "startup" ? "startupId" : "investorId"]: target.id,
+          [selectedAccount.kind === "startup" ? "startupId" : "investorId"]: selectedAccount.entity_id,
           body: newBody.trim(),
         }),
       });
@@ -864,8 +885,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
         {/* Main 2-col layout */}
         {/* `position` is the anchor for the narrow-layout push: the chat pane
             rides over the list on its way in and out, so the list is never
-            replaced by an empty frame mid-slide. */}
-        <div style={{ display: "flex", position: "relative", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", height: "620px" }}>
+            replaced by an empty frame mid-slide. Height lives in the class:
+            a fixed 620px is taller than a phone viewport once the chrome is
+            on screen, and an inline style cannot carry the media query. */}
+        <div className="messages-frame" style={{ display: "flex", position: "relative", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
 
           {/* ── Sidebar ── */}
           {/* `display` stays in the class, never the inline style: an inline
@@ -1273,8 +1296,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       </button>
                     </div>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, margin: "8px 0 16px", maxWidth: "62ch" }}>
-                      {/* The founder refusal ships a full sentence written for
-                          its exact case; a key would be a worse copy of it. */}
+                      {/* The founder refusal names its exact case; sentence is
+                          that case in the reader's locale, or the server's
+                          English only when the key did not resolve. */}
                       {notice.sentence || (bodyKey ? t(bodyKey) : "")}
                     </p>
                     <Link href={href}
@@ -1410,9 +1434,10 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {/* Recipient type toggle: every role talks to both sides now —
-                  founders to investors and peers, investors to startups and
-                  co-investors, operators to whoever the job needs. */}
+              {/* Recipient type toggle. Both tabs stay: the peer one is
+                  closed by the seal rule, and the note below says so rather
+                  than a removed tab leaving people to wonder where their
+                  counterparts went. */}
               {!selectedAccount && (
                 <div style={{ display: "flex", gap: "6px" }}>
                   {(["investor", "startup"] as const).map(k => (
@@ -1429,6 +1454,21 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     </button>
                   ))}
                 </div>
+              )}
+
+              {/* The chosen tab's gate rule, stated BEFORE anything is
+                  composed: every send out of this modal is metered by the
+                  seal rule, and a picker that lets someone write a message
+                  the route then refuses is a trap. Admins moderate rather
+                  than transact, so no rule applies to them and none is
+                  claimed at them. */}
+              {profile.role !== "admin" && (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, margin: 0 }}>
+                  <span aria-hidden style={{ color: "var(--cr-copper)", marginRight: "6px" }}>✦</span>
+                  {profile.role === "investor"
+                    ? (targetKind === "startup" ? t("gate.offerBody") : t("contactGate.peerClosed"))
+                    : (targetKind === "investor" ? t("founderContact.dealRequired") : t("contactGate.peerClosed"))}
+                </p>
               )}
 
               {/* To field */}
@@ -1481,8 +1521,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                               {t("dashboard.suggestedAccounts")}
                             </p>
                           )}
+                          {/* Keyed by the entity, not the owner: one founder
+                              with two listings is two rows sharing a profile
+                              id. */}
                           {accountResults.map(a => (
-                        <button key={a.id} onClick={() => { setSelectedAccount(a); setAccountDropOpen(false); setAccountSearch(""); }}
+                        <button key={a.entity_id} onClick={() => { setSelectedAccount(a); setAccountDropOpen(false); setAccountSearch(""); }}
                           style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px", textAlign: "left" }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}

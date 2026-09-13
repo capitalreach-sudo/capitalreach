@@ -6,19 +6,20 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { redirect } from "next/navigation";
 import { buildAccessContext, isSuspended } from "@/lib/access";
 import type { Metadata } from "next";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  // Canonical: the app answers on more than one hostname (vercel.app plus
-  // whatever domain it ends up on), and duplicate URLs split their own ranking.
-  alternates: { canonical: "/investors" },
-  title: "Investor Directory",
-  // Professional status here is declared by the member, never checked by the
-  // platform, so the description says declared rather than naming a regulatory
-  // class the platform does not certify anyone into.
-  description: "Browse angels, VCs, and institutional investors who have declared professional status and are actively looking to fund startups on CapitalReach.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    // Canonical: the app answers on more than one hostname (vercel.app plus
+    // whatever domain it ends up on), and duplicate URLs split their own ranking.
+    alternates: { canonical: "/investors" },
+    title: t("meta.investorsTitle"),
+    description: t("meta.investorsDesc"),
+  };
+}
 
 export default async function InvestorsPage() {
   // The directory names real people and their check sizes. Jack's call:

@@ -52,9 +52,11 @@ export async function POST(req: NextRequest) {
   // Participants: startup owner, investor owner, or (startup↔startup peer
   // threads) the recipient startup's owner. Team members of either side too.
   let recipientStartupOwner: string | null = null;
+  let recipientStartupName: string | null = null;
   if (thread.recipient_startup_id) {
     const { data: rs } = await admin.from("startups").select("owner_id, name").eq("id", thread.recipient_startup_id).maybeSingle();
     recipientStartupOwner = rs?.owner_id ?? null;
+    recipientStartupName = rs?.name ?? null;
   }
   const startupOwner = thread.startup?.owner_id ?? null;
   const investorOwner = thread.investor?.owner_id ?? null;
@@ -171,7 +173,18 @@ export async function POST(req: NextRequest) {
       admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
       admin.from("profiles").select("id, email").in("id", recipients),
     ]);
-    const senderName = sender?.full_name || thread.investor?.display_name || "Someone";
+    // The fallback must name the SENDER's side. Falling back to the
+    // investor's display name credited a founder's words to the investor,
+    // and a notification that misattributes its message is worse than one
+    // that says "Someone".
+    const senderEntityName =
+      user.id === investorOwner ? thread.investor?.display_name ?? null
+      : user.id === startupOwner ? thread.startup?.name ?? null
+      : user.id === recipientStartupOwner ? recipientStartupName
+      : user.id === recipientInvestorOwner
+        ? (thread.recipient_investor as unknown as { display_name?: string | null } | null)?.display_name ?? null
+        : null;
+    const senderName = sender?.full_name || senderEntityName || "Someone";
     const preview = safe.body.slice(0, 60) + (body.length > 60 ? "…" : "");
     for (const r of recipients) {
       await notifyUser({

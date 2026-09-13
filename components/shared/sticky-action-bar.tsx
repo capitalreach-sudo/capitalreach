@@ -41,13 +41,18 @@ export function StickyActionBar({
         position: "fixed",
         insetInline: 0,
         // Rides directly on top of the mobile tab bar; --cr-tabbar-h is 0 for
-        // signed-out readers, where the bar simply sits on the viewport floor.
+        // signed-out readers, where the bar sits on the viewport floor.
         bottom: "var(--cr-tabbar-h, 0px)",
         zIndex: 85,
         display: "flex",
         alignItems: "center",
         gap: "8px",
-        padding: "10px 14px",
+        // Exactly one home-indicator inset in both states. --cr-tabbar-h
+        // already contains env(safe-area-inset-bottom) whenever the tab bar
+        // is mounted (globals.css), so the subtraction cancels the inset to
+        // zero there; signed out the variable is 0px and the bar, now on the
+        // viewport floor, takes the whole inset itself.
+        padding: "10px 14px calc(10px + max(0px, env(safe-area-inset-bottom, 0px) - var(--cr-tabbar-h, 0px)))",
         background: "var(--cr-paper-2)",
         borderTop: "1px solid var(--cr-rule-dark)",
         boxShadow: "0 -6px 20px rgba(26,22,18,0.06)",

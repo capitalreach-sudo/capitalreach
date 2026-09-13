@@ -143,7 +143,8 @@ async function saveSchedule(body: Record<string, unknown>, deal: DealRow, party:
   await admin.from("deal_activity").insert({
     deal_id: deal.id, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: userId,
     type: "note",
-    body: rows.length ? `Funding schedule set — ${rows.length} tranches` : "Funding schedule cleared",
+    // Machine body: the timeline renders it in the viewer's language.
+    body: rows.length ? `tranches:set:${rows.length}` : "tranches:cleared",
   }).then(undefined, () => {});
 
   const others = [party.startupOwner, party.investorOwner].filter((id): id is string => !!id && id !== userId);
@@ -152,6 +153,9 @@ async function saveSchedule(body: Record<string, unknown>, deal: DealRow, party:
       type: "deal_closed",
       title: "A funding schedule was proposed",
       body: `${rows.length} tranches on ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}.`,
+      titleKey: "notif.scheduleProposedTitle",
+      bodyKey: "notif.scheduleProposedBody",
+      params: { count: rows.length, name: (deal.startup as unknown as { name: string } | null)?.name ?? "your deal" },
       href: `/deals?deal=${deal.id}`,
     }).catch(() => {});
   }
@@ -206,7 +210,10 @@ async function confirmTranche(body: Record<string, unknown>, deal: DealRow, part
   await admin.from("deal_activity").insert({
     deal_id: deal.id, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: userId,
     type: "note",
-    body: `${label}: funds ${step}${ref ? ` · ref ${ref}` : ""}`,
+    // Machine body: "tranche:<step> · <label>"; the timeline renders the
+    // step in the viewer's language after the label. The wire reference is
+    // folded into the label segment verbatim.
+    body: `tranche:${step === "sent" ? "sent" : "received"} · ${label}${ref ? ` (ref ${ref})` : ""}`,
   }).then(undefined, () => {});
 
   const others = [party.startupOwner, party.investorOwner].filter((id): id is string => !!id && id !== userId);
@@ -214,9 +221,12 @@ async function confirmTranche(body: Record<string, unknown>, deal: DealRow, part
     await notifyUsers(others, {
       type: "deal_closed",
       title: complete
-        ? `Fully funded — ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}`
+        ? `Fully funded: ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}`
         : step === "sent" ? `${label}: the investor confirmed funds sent` : `${label}: the founder confirmed funds received`,
       body: complete ? "Every tranche has been received." : "Confirm your side to complete this tranche.",
+      titleKey: complete ? "notif.fullyFundedTitle" : step === "sent" ? "notif.trancheSentTitle" : "notif.trancheReceivedTitle",
+      bodyKey: complete ? "notif.fullyFundedBody" : "notif.confirmTrancheBody",
+      params: { name: (deal.startup as unknown as { name: string } | null)?.name ?? "your deal", label },
       href: `/deals?deal=${deal.id}`,
     }).catch(() => {});
   }

@@ -19,6 +19,10 @@ interface Props {
    * "compact": raise framing without the label / helper text (for sidebars).
    */
   variant?: "raise" | "check" | "compact";
+  /** Overrides the heading key. /pricing shows this module below the fee
+   *  slider band, which already owns "Calculate your CapitalReach fee" -
+   *  two identically titled calculators on one page read as a mistake. */
+  titleKey?: string;
   /** Controlled mode: pass amount + onChange to drive from a parent form. */
   amount?: number | null;
   onChange?: (amount: number | null) => void;
@@ -30,7 +34,7 @@ interface Props {
  * cheap option: next to a 6% broker and five-figure legal costs, 2% at close
  * reads as small. Pure client math; no network.
  */
-export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", variant = "raise", amount: controlled, onChange, className }: Props) {
+export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", variant = "raise", amount: controlled, onChange, className, titleKey }: Props) {
   const { t } = useTranslation();
   const [internal, setInternal] = useState<string>(defaultAmount ? String(defaultAmount) : "");
   const isControlled = controlled !== undefined && onChange !== undefined;
@@ -65,7 +69,7 @@ export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", varia
     <div className={className} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: variant === "compact" ? "14px 16px" : "20px 22px" }}>
       {variant !== "compact" && (
         <div className="ruled-label" style={{ marginBottom: "12px" }}>
-          {variant === "check" ? t("feeCalc.titleCheck") : t("feeCalc.title")}
+          {t(titleKey ?? (variant === "check" ? "feeCalc.titleCheck" : "feeCalc.title"))}
         </div>
       )}
 

@@ -53,6 +53,32 @@ export async function POST(req: NextRequest) {
     roundState !== undefined &&
     before && before.status === "active" && before.round_state !== roundState
   ) {
+    const reopening =
+      roundState === "open" && (before.round_state === "closed" || before.round_state === "oversubscribed");
+
+    // On a reopen the waitlist owners are collected BEFORE the watchlist
+    // broadcast: an investor who both saved the company and joined the
+    // waitlist gets the first-class waitlist message only, not two rows for
+    // the same event.
+    let waitlistIds: string[] = [];
+    if (reopening) {
+      try {
+        const { data: waiting } = await admin
+          .from("round_waitlist")
+          .select("investor:investors(owner_id)")
+          .eq("startup_id", mine.entityId)
+          .limit(500);
+        waitlistIds = Array.from(new Set(
+          ((waiting ?? []) as Array<{ investor: { owner_id: string | null } | null }>)
+            .map(r => r.investor?.owner_id)
+            .filter((id): id is string => !!id && id !== user.id)
+        ));
+      } catch (e) {
+        console.error("waitlist read failed:", e);
+      }
+    }
+    const waitlisted = new Set(waitlistIds);
+
     try {
       const { data: savers } = await admin
         .from("watchlists")
@@ -62,7 +88,7 @@ export async function POST(req: NextRequest) {
       const ids = Array.from(new Set(
         ((savers ?? []) as Array<{ investor: { owner_id: string | null } | null }>)
           .map(r => r.investor?.owner_id)
-          .filter((id): id is string => !!id && id !== user.id)
+          .filter((id): id is string => !!id && id !== user.id && !waitlisted.has(id))
       ));
       if (ids.length > 0) {
         const titles: Record<RoundState, string> = {
@@ -89,27 +115,15 @@ export async function POST(req: NextRequest) {
     // asked SPECIFICALLY to be told when the door opens. Reopening tells
     // them first-class; their entries stay, because "when you raise again"
     // outlives any single reopening.
-    if (roundState === "open" && (before.round_state === "closed" || before.round_state === "oversubscribed")) {
+    if (reopening && waitlistIds.length > 0) {
       try {
-        const { data: waiting } = await admin
-          .from("round_waitlist")
-          .select("investor:investors(owner_id)")
-          .eq("startup_id", mine.entityId)
-          .limit(500);
-        const ids = Array.from(new Set(
-          ((waiting ?? []) as Array<{ investor: { owner_id: string | null } | null }>)
-            .map(r => r.investor?.owner_id)
-            .filter((id): id is string => !!id && id !== user.id)
-        ));
-        if (ids.length > 0) {
-          await admin.from("notifications").insert(ids.map(uid => ({
-            user_id: uid,
-            type: "listing_update",
-            title: `${before.name} is open again — you are on the waitlist`,
-            body: "The round reopened to new investors. You asked to be told.",
-            href: `/startups/${before.slug}`,
-          })));
-        }
+        await admin.from("notifications").insert(waitlistIds.map(uid => ({
+          user_id: uid,
+          type: "listing_update",
+          title: `${before.name} is open again - you are on the waitlist`,
+          body: "The round reopened to new investors. You asked to be told.",
+          href: `/startups/${before.slug}`,
+        })));
       } catch (e) {
         console.error("waitlist broadcast failed:", e);
       }

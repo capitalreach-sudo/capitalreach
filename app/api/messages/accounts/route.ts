@@ -24,6 +24,10 @@ import { maskName } from "@/lib/identity";
 
 export interface AccountResult {
   id: string;                    // profile id of the recipient
+  /** The listing/investor row itself -- what /api/messages/start takes. The
+   *  browser used to re-derive this by owner_id, which errors the moment an
+   *  owner holds two listings. */
+  entity_id: string;
   /** Display label only: masked founder name or the investor's public
    *  display name -- never the raw profiles.full_name. */
   full_name: string | null;
@@ -55,10 +59,13 @@ export async function GET(req: NextRequest) {
   if (kind === "startup") {
     // Listings only, never the raw profile table: a founder is reachable
     // because they have a listing, not because they have an account.
+    // Active only: /api/messages/start refuses any other status, so a
+    // pending_review row here is a recipient the picker offers and the send
+    // then refuses.
     let query = admin
       .from("startups")
-      .select("owner_id, name, slug")
-      .in("status", ["active", "pending_review"])
+      .select("id, owner_id, name, slug")
+      .eq("status", "active")
       .neq("owner_id", user.id)
       .limit(LIMIT);
     if (q) query = query.ilike("name", `%${q}%`);
@@ -73,6 +80,7 @@ export async function GET(req: NextRequest) {
       const owner = owners.find(o => o.id === s.owner_id);
       return {
         id: s.owner_id,
+        entity_id: s.id,
         // Masked, like everywhere a founder is shown pre-deal: "Sarah K.",
         // never the full profile name.
         full_name: owner?.full_name ? maskName(owner.full_name) : null,
@@ -90,7 +98,7 @@ export async function GET(req: NextRequest) {
   // contact somebody's founder typed into their own pipeline.
   let query = admin
     .from("investors")
-    .select("owner_id, slug, type, display_name, firm_name")
+    .select("id, owner_id, slug, type, display_name, firm_name")
     .eq("is_public", true)
     .eq("is_external", false)
     .not("owner_id", "is", null)
@@ -110,6 +118,7 @@ export async function GET(req: NextRequest) {
     const owner = owners.find(o => o.id === i.owner_id);
     return {
       id: i.owner_id as string,
+      entity_id: i.id,
       full_name: i.display_name || i.firm_name || null,
       role: owner?.role ?? "investor",
       avatar_url: owner?.avatar_url ?? null,

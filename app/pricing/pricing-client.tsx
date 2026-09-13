@@ -729,7 +729,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 comparison as the columns above, but on the reader's own number. */}
             <div className="grid-plans-3" style={{ marginBottom: "40px", alignItems: "start" }}>
               <div style={{ gridColumn: "1 / -1", maxWidth: "560px" }}>
-                <FeeCalculator variant="raise" currency="EUR" defaultAmount={500_000} />
+                <FeeCalculator variant="raise" currency="EUR" defaultAmount={500_000} titleKey="feeCalc.titleCompare" />
               </div>
             </div>
 

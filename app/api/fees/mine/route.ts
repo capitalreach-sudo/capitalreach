@@ -40,8 +40,13 @@ async function myStartup(userId: string) {
   const admin = createAdminClient();
   // Service role: migration 109 revoked the financial columns of `startups`
   // from client keys, and ownership is proven by the owner_id filter itself.
+  // A founder can own more than one listing, and maybeSingle() on two rows is
+  // an error, not a choice -- the whole portal 500s for exactly the founders
+  // with the most fees. Same order+limit as the fees PAGE (oldest listing
+  // wins), so the page and this API describe the same company.
   const { data, error } = await admin
-    .from("startups").select("id, name, round_state").eq("owner_id", userId).maybeSingle();
+    .from("startups").select("id, name, round_state").eq("owner_id", userId)
+    .order("created_at", { ascending: true }).limit(1).maybeSingle();
   // maybeSingle() reports "no row" as data null with no error, so a null here
   // alongside an error is a failed read rather than a founder with no listing.
   // The two must not answer the same, one being a fact and the other a guess.

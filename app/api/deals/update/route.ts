@@ -26,6 +26,22 @@ const STAGE_TITLE_KEY: Record<string, string> = {
   term_sheet:    "notif.dealMovedTermSheet",
 };
 
+// The canned pass reasons travel as machine keys (the picker's own ids).
+// The timeline stores the key; the notification carries the catalog key so
+// the recipient reads it in their language, with English as stored fallback.
+const PASS_REASON_KEY: Record<string, string> = {
+  stage_mismatch: "deals.passedReasonStage",
+  valuation: "deals.passedReasonValuation",
+  timing: "deals.passedReasonTiming",
+  no_response: "deals.passedReasonNoResponse",
+};
+const PASS_REASON_EN: Record<string, string> = {
+  stage_mismatch: "Different stage/thesis fit",
+  valuation: "Valuation mismatch",
+  timing: "Timing",
+  no_response: "No response",
+};
+
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -206,18 +222,28 @@ export async function POST(req: NextRequest) {
 
   if (commitmentType !== undefined) {
     const LABEL: Record<string, string> = { interest: "Interested", soft_circle: "Soft-circled", verbal: "Verbal commitment", committed: "Committed" };
+    const COMMIT_TITLE_KEY: Record<string, string> = {
+      interest: "notif.commitTitleInterest", soft_circle: "notif.commitTitleSoft",
+      verbal: "notif.commitTitleVerbal", committed: "notif.commitTitleCommitted",
+    };
+    const commitAmount = typeof amount === "number" && amount > 0
+      ? `${(isCurrencyCode(currency) ? currency : "USD")} ${Math.round(amount).toLocaleString()}`
+      : null;
+    // Machine body: the timeline renders the commitment label in the
+    // viewer's language; the amount rides along verbatim.
     await admin.from("deal_activity").insert({
       deal_id: dealId, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: user.id,
       type: "note",
-      body: `${LABEL[commitmentType]}${typeof amount === "number" && amount > 0 ? ` · ${(isCurrencyCode(currency) ? currency : "USD")} ${Math.round(amount).toLocaleString()}` : ""}`,
+      body: `commitment:${commitmentType}${commitAmount ? ` · ${commitAmount}` : ""}`,
     }).then(undefined, () => {});
     // The other side learns the commitment moved.
     const counterpart = user.id === deal.startup?.owner_id ? deal.investor?.owner_id : deal.startup?.owner_id;
     if (counterpart && counterpart !== user.id) {
       await notifyUsers([counterpart], {
         type: "deal_stage",
-        title: `${LABEL[commitmentType]} — deal update`,
-        body: typeof amount === "number" && amount > 0 ? `${(isCurrencyCode(currency) ? currency : "USD")} ${Math.round(amount).toLocaleString()}` : null,
+        title: `${LABEL[commitmentType]}, deal update`,
+        titleKey: COMMIT_TITLE_KEY[commitmentType],
+        body: commitAmount,
         href: `/deals?deal=${dealId}`,
       }).catch(() => {});
     }
@@ -245,7 +271,14 @@ export async function POST(req: NextRequest) {
       ...(status !== "passed" && STAGE_TITLE_KEY[status as string]
         ? { titleKey: STAGE_TITLE_KEY[status as string] }
         : status === "passed" ? { titleKey: "notif.dealPassedTitle" } : {}),
-      body:  status === "passed" && typeof reason === "string" && reason.trim() ? reason.trim() : null,
+      // A canned pass reason arrives as its machine key and renders in the
+      // recipient's language; free text passes through as written.
+      body:  status === "passed" && typeof reason === "string" && reason.trim()
+        ? (PASS_REASON_EN[reason.trim()] ?? reason.trim())
+        : null,
+      ...(status === "passed" && typeof reason === "string" && PASS_REASON_KEY[reason.trim()]
+        ? { bodyKey: PASS_REASON_KEY[reason.trim()] }
+        : {}),
       href:  `/deals?deal=${dealId}`,
     });
   }

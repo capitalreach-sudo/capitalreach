@@ -11,6 +11,7 @@ import { useLaunchMode } from "@/hooks/useLaunchMode";
 import { getFounderPlan, FOUNDER_PLANS_LIST, PLAN_CURRENCY } from "@/lib/plans";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
+import { instalmentMajor } from "@/lib/fee-plan";
 import type { Profile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -93,12 +94,16 @@ export default function StartupBillingPage() {
 
   async function handlePortal() {
     setPortalLoading(true);
-    const res = await fetch("/api/billing-portal", { method: "POST" });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
+    // A network failure or a non-JSON error page must not leave the button
+    // stuck on "Opening..." forever; the finally re-arms it either way.
+    try {
+      const res = await fetch("/api/billing-portal", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) { window.location.href = data.url; return; }
       notify.error(data.error || t("dashboard.billingPortalError"));
+    } catch {
+      notify.error(t("dashboard.billingPortalError"));
+    } finally {
       setPortalLoading(false);
     }
   }
@@ -346,7 +351,7 @@ function SuccessFees() {
             )}
 
             {/* 087: the objection to the fee is usually timing, not amount. */}
-            <FeePlan dealId={f.id} state={f.state} onChanged={load} />
+            <FeePlan dealId={f.id} state={f.state} currency={f.currency} onChanged={load} />
 
             {(f.state === "outstanding" || f.state === "unbillable") && (
               openId === f.id ? (
@@ -381,7 +386,7 @@ type Instalment = { seq: number; amount: number; due_date: string; paid_at: stri
  * is looking at a number they were not expecting is the moment the alternative
  * is worth knowing about.
  */
-function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; onChanged: () => void }) {
+function FeePlan({ dealId, state, currency, onChanged }: { dealId: string; state: string; currency: string | null; onChanged: () => void }) {
   const { t } = useTranslation();
   const [data, setData] = useState<{ instalments: Instalment[]; eligible: boolean; minMonths: number; maxMonths: number } | null>(null);
   const [months, setMonths] = useState(3);
@@ -424,7 +429,10 @@ function FeePlan({ dealId, state, onChanged }: { dealId: string; state: string; 
                 {t("feePlan.instalmentN", { n: i.seq })} · <span style={{ ...MONO, fontWeight: 400, fontSize: "11px" }}>{new Date(i.due_date).toLocaleDateString()}</span>
               </span>
               <span style={{ ...MONO, fontWeight: 600, fontSize: "12px", color: i.paid_at ? "var(--cr-up)" : "var(--cr-ink)" }}>
-                {(i.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {/* Instalments are stored in minor units; a bare /100 shows a
+                    unitless figure and understates JPY 100x. Same formatter as
+                    the fee above it, so the schedule visibly sums to the fee. */}
+                {formatMoney(instalmentMajor(i.amount, currency), currency)}
                 {i.paid_at ? ` ${t("feePlan.paidMark")}` : ""}
               </span>
             </li>

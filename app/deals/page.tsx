@@ -22,10 +22,15 @@ const H1: CSSProperties = {
   fontSize: "clamp(30px,4vw,44px)", color: "var(--cr-ink)", letterSpacing: "-0.02em",
 };
 
-export const metadata: Metadata = {
-  title: "Deal Portal — CapitalReach",
-  description: "Start new deals, track them through every stage, and draft contracts against them.",
-};
+// The root template already appends "| CapitalReach", so the title carries
+// no brand of its own.
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator(getLocale());
+  return {
+    title: t("meta.dealsTitle"),
+    description: t("meta.dealsDesc"),
+  };
+}
 
 export default async function DealsPage() {
   const t = await getTranslator(getLocale());

@@ -133,8 +133,12 @@ export async function POST(req: NextRequest) {
   const mine = await resolveEntity(user.id, "startup");
   const admin = createAdminClient();
   // Reset per request: module state outlives a single call on a warm lambda,
-  // and a stale "open" here would unmask a stranger's first message.
+  // and a stale "open" here would unmask a stranger's first message. Same for
+  // lastMasked: the openOnly returns spread it into the response before any
+  // safeBody() call has run this request, so a previous request's withheld
+  // list would otherwise be reported to an unrelated caller.
   contactsOpen = false;
+  lastMasked = [];
 
   // ── Investor sender ─────────────────────────────────────────────────────
   if (!mine) {
@@ -217,6 +221,10 @@ export async function POST(req: NextRequest) {
           threadId = created.id;
         }
       }
+      // Peer threads have no pair to seal, so the reply route treats them as
+      // unlocked; masking only the opening message would strip details from
+      // the one sentence every later reply may carry freely.
+      contactsOpen = true;
       if (openOnly) return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
       const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
       if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
@@ -343,6 +351,9 @@ export async function POST(req: NextRequest) {
       if (error || !created) return NextResponse.json({ error: "Could not start conversation" }, { status: 500 });
       threadId = created.id;
     }
+    // Same rule as the investor peer branch above: no pair, no seal, and
+    // replies in this thread are already unmasked.
+    contactsOpen = true;
     if (openOnly) return NextResponse.json({ success: true, threadId , ...(lastMasked.length ? { contactsWithheld: lastMasked } : {}) });
     const { data: message, error: mErr } = await admin.from("messages").insert({ thread_id: threadId, sender_id: user.id, ...safeBody(body, SAFETY) }).select().single();
     if (mErr || !message) return NextResponse.json({ error: "Failed to send message" }, { status: 500 });

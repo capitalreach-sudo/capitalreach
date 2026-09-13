@@ -7,9 +7,29 @@ import { useEffect } from "react";
  *
  * app/error.tsx cannot catch this, because it renders *inside* the layout that
  * failed. This one replaces the whole document, which is why it has to supply
- * its own <html> and <body> — and why it cannot rely on globals.css having
- * loaded. Every colour here is inline and literal for that reason.
+ * its own <html> and <body>, and why it cannot rely on globals.css having
+ * loaded or on the theme attribute being stamped. Every colour is therefore a
+ * literal, carried in the one <style> tag below: the light palette by
+ * default, the dark palette behind prefers-color-scheme. The app's cookie
+ * theme cannot be honoured here without the scripts that just failed, so the
+ * system preference is the closest truth available.
  */
+const PALETTE = `
+  :root {
+    --ge-paper: #F5F0E8; --ge-paper-4: #D8D0C4;
+    --ge-ink: #1A1612; --ge-ink-3: #6B6056; --ge-ink-4: #9C8E82;
+    --ge-copper: #B5651D; --ge-on-copper: #FFFFFF;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ge-paper: #0F0D0A; --ge-paper-4: #2A241B;
+      --ge-ink: #F0EAE0; --ge-ink-3: #998F81; --ge-ink-4: #6E6558;
+      --ge-copper: #D98C33; --ge-on-copper: #1C1610;
+    }
+  }
+`;
+
 export default function GlobalError({
   error,
   reset,
@@ -23,7 +43,8 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: "var(--cr-paper)" }}>
+      <body style={{ margin: 0, background: "var(--ge-paper)" }}>
+        <style dangerouslySetInnerHTML={{ __html: PALETTE }} />
         <div
           style={{
             minHeight: "100vh", display: "flex", flexDirection: "column",
@@ -32,25 +53,25 @@ export default function GlobalError({
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
           }}
         >
-          <div style={{ fontSize: "40px", color: "var(--cr-paper-4)", marginBottom: "20px", lineHeight: 1 }}>◆</div>
-          <h1 style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)", margin: "0 0 10px" }}>
+          <div style={{ fontSize: "40px", color: "var(--ge-paper-4)", marginBottom: "20px", lineHeight: 1 }}>◆</div>
+          <h1 style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--ge-ink)", margin: "0 0 10px" }}>
             Something went wrong
           </h1>
-          <p style={{ fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "360px", margin: "0 0 28px" }}>
+          <p style={{ fontWeight: 300, fontSize: "14px", color: "var(--ge-ink-3)", lineHeight: 1.6, maxWidth: "360px", margin: "0 0 28px" }}>
             CapitalReach failed to load. Reloading usually fixes it.
           </p>
           <button
             onClick={reset}
             style={{
-              height: "40px", padding: "0 22px", background: "var(--cr-copper)",
+              height: "40px", padding: "0 22px", background: "var(--ge-copper)",
               border: "none", borderRadius: "4px", cursor: "pointer",
-              fontWeight: 600, fontSize: "13px", color: "#fff",
+              fontWeight: 600, fontSize: "13px", color: "var(--ge-on-copper)",
             }}
           >
             Reload
           </button>
           {error.digest && (
-            <p style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "28px" }}>
+            <p style={{ fontFamily: "monospace", fontSize: "10px", color: "var(--ge-ink-4)", marginTop: "28px" }}>
               Reference: {error.digest}
             </p>
           )}

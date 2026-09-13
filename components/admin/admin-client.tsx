@@ -475,8 +475,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
 
         {/* All Startups */}
         <TabsContent value="startups">
+          {/* The status CHECK allows draft/pending_review/active/suspended/
+              archived; a rejection lands the listing back in draft, so
+              "rejected" is not a storable status and cannot be filtered on. */}
           <AdminList entity="startups" initial={allStartups as unknown as Record<string, unknown>[]}
-            statuses={["active", "pending_review", "draft", "suspended", "rejected"]}>
+            statuses={["active", "pending_review", "draft", "suspended", "archived"]}>
             {(rows) => (
           <div className="space-y-2">
             {(rows as unknown as typeof allStartups).map(s => (
@@ -619,17 +622,19 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
 
         {/* E46: the fee ledger. */}
         <TabsContent value="fees">
-          <FeeLedger />
+          <FeeLedger myLevel={adminLevel} />
         </TabsContent>
 
         {/* E50: the report queue. */}
         <TabsContent value="reports">
-          <ReportQueue />
+          <ReportQueue myLevel={adminLevel} />
         </TabsContent>
 
         {/* Complaints: "something went wrong for me" -- distinct lifecycle
             from content reports, same operator discipline: every complaint
-            leaves with a recorded outcome and the filer is told. */}
+            leaves with a recorded outcome and the filer is told. No level
+            threaded here: moving a complaint is a support-level write, so
+            every admin who can see the queue can also work it. */}
         <TabsContent value="complaints">
           <ComplaintQueue />
         </TabsContent>
@@ -654,11 +659,16 @@ type ReportRow = {
  * audits it. The reporter is told either way, because a report that vanishes
  * teaches people not to file the next one.
  */
-function ReportQueue() {
+function ReportQueue({ myLevel }: { myLevel?: string }) {
   const { t } = useTranslation();
   const [reports, setReports] = useState<ReportRow[] | null>(null);
   const [status, setStatus] = useState("open");
   const [busy, setBusy] = useState<string | null>(null);
+  // Reading the queue is support-level; resolving a report is an operator
+  // write (the POST route requires it). Support sees the queue with the
+  // controls greyed, matching the verification bench, rather than buttons
+  // whose only possible answer is a 403.
+  const canAct = myLevel === "operator" || myLevel === "owner";
 
   const load = useCallback(async (st: string) => {
     const res = await fetch(`/api/admin/reports?status=${st}`);
@@ -691,6 +701,9 @@ function ReportQueue() {
           </button>
         ))}
       </div>
+      {!canAct && (
+        <p className="text-xs text-cr-i4 mb-3">{t("report.operatorOnly")}</p>
+      )}
 
       {reports.length === 0 ? (
         <div className="text-center py-12 text-cr-i4">
@@ -713,9 +726,9 @@ function ReportQueue() {
                 </div>
                 {r.status === "open" ? (
                   <div className="flex items-center gap-3">
-                    <button onClick={() => resolve(r, "actioned")} disabled={busy === r.id}
+                    <button onClick={() => resolve(r, "actioned")} disabled={!canAct || busy === r.id}
                       className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("report.action")}</button>
-                    <button onClick={() => resolve(r, "dismissed")} disabled={busy === r.id}
+                    <button onClick={() => resolve(r, "dismissed")} disabled={!canAct || busy === r.id}
                       className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("report.dismiss")}</button>
                   </div>
                 ) : (
@@ -930,12 +943,17 @@ const STATE_STYLE: Record<LedgerRow["state"], string> = {
  * was visible only by opening the deal it belonged to -- which is to say, it
  * was not visible.
  */
-function FeeLedger() {
+function FeeLedger({ myLevel }: { myLevel?: string }) {
   const { t } = useTranslation();
   const [rows, setRows] = useState<LedgerRow[] | null>(null);
   const [totals, setTotals] = useState<LedgerTotals | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [filter, setFilter] = useState<"open" | "all">("open");
+  // Reading the ledger is support-level; retry/waive/mark-paid/resolve are
+  // operator writes (the POST route requires it). Support sees the ledger
+  // with the controls greyed, matching the verification bench, rather than
+  // buttons whose only possible answer is a 403.
+  const canAct = myLevel === "operator" || myLevel === "owner";
 
   const [loadFailed, setLoadFailed] = useState(false);
   const load = useCallback(async () => {
@@ -1010,6 +1028,9 @@ function FeeLedger() {
         </button>
         <span className="font-mono text-xs text-cr-i4">{t("fees.count", { count: shown.length })}</span>
       </div>
+      {!canAct && (
+        <p className="text-xs text-cr-i4 mb-3">{t("fees.operatorOnly")}</p>
+      )}
       {shown.length === 0 ? (
         <div className="text-center py-12 text-cr-i4">
           <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-cr-copper" />
@@ -1033,18 +1054,18 @@ function FeeLedger() {
                     {t(`fees.state.${row.state}`)}
                   </span>
                   {row.state === "disputed" && (
-                    <button onClick={() => act(row, "resolveDispute")} disabled={busy === row.id}
+                    <button onClick={() => act(row, "resolveDispute")} disabled={!canAct || busy === row.id}
                       className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("fees.resolve")}</button>
                   )}
                   {row.state === "unbillable" && (
-                    <button onClick={() => act(row, "retry")} disabled={busy === row.id}
+                    <button onClick={() => act(row, "retry")} disabled={!canAct || busy === row.id}
                       className="text-xs font-semibold text-cr-copper disabled:opacity-50">{t("fees.retry")}</button>
                   )}
                   {(row.state === "unbillable" || row.state === "outstanding") && (
                     <>
-                      <button onClick={() => act(row, "markPaid")} disabled={busy === row.id}
+                      <button onClick={() => act(row, "markPaid")} disabled={!canAct || busy === row.id}
                         className="text-xs font-semibold text-cr-up disabled:opacity-50">{t("fees.markPaid")}</button>
-                      <button onClick={() => act(row, "waive")} disabled={busy === row.id}
+                      <button onClick={() => act(row, "waive")} disabled={!canAct || busy === row.id}
                         className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("fees.waive")}</button>
                     </>
                   )}

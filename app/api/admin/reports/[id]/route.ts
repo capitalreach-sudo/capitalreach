@@ -235,7 +235,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       userId: subject.ownerId,
       type: "admin_alert",
       title: "We need something from you",
+      // The admin's note is free text, so only the title is keyed.
       body: note,
+      titleKey: "notif.adminInfoRequestTitle",
       href: "/dashboard",
     });
   }
@@ -247,6 +249,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         type: "admin_alert",
         title: "Your listing is under review",
         body: note,
+        titleKey: "notif.adminListingReviewTitle",
         href: "/dashboard",
       });
     }
@@ -294,6 +297,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       type: "admin_alert",
       title: "We looked at your report",
       body: "Thank you for telling us. The review is closed.",
+      titleKey: "notif.reportClosedTitle",
+      bodyKey: "notif.reportClosedBody",
       href: "/dashboard",
     });
   }

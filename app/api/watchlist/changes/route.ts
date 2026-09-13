@@ -31,6 +31,16 @@ export interface Change {
   summary: string;
 }
 
+/** Data-room size per watched company. A count, not a change: the documents
+ *  table carries no timestamps, so "what is there" is all that can be said
+ *  honestly -- see the comment at the query site. */
+export interface DocRoom {
+  startupId: string;
+  startupName: string;
+  startupSlug: string;
+  count: number;
+}
+
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -105,12 +115,19 @@ export async function GET(req: NextRequest) {
       caps.viewFinancials ? `Filed ${m.month} metrics` : "Filed new metrics");
   }
 
-  // Documents carry no created_at, so a new one is detected by comparing the
-  // set against what the round-state timestamp can anchor. Rather than invent
-  // a time, they are reported only as a count against the listing, which is
-  // honest about what the schema can actually tell us.
+  // Documents carry no created_at, so there is no "since you last looked" to
+  // compute for them. Rather than invent a timestamp and fake a timeline
+  // entry, they are reported as a per-company count the panel renders as
+  // current state -- honest about what the schema can actually tell us.
   const docCount = new Map<string, number>();
   for (const d of docs ?? []) docCount.set(d.startup_id, (docCount.get(d.startup_id) ?? 0) + 1);
+  const documents: DocRoom[] = Array.from(docCount.entries())
+    .map(([startupId, count]) => {
+      const m = meta.get(startupId);
+      return m ? { startupId, startupName: m.name, startupSlug: m.slug, count } : null;
+    })
+    .filter((d): d is DocRoom => d !== null)
+    .sort((a, b) => a.startupName.localeCompare(b.startupName));
 
   for (const w of rows) {
     const s = w.startup as unknown as { id: string; round_state: string | null; round_state_changed_at: string | null };
@@ -126,7 +143,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     changes: changes.slice(0, MAX_ITEMS),
     watching: rows.length,
-    documents: Object.fromEntries(docCount),
+    documents,
   });
 }
 

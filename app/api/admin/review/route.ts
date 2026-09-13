@@ -396,6 +396,9 @@ export async function POST(req: NextRequest) {
         type: "listing_approved",
         title: `${subjectName} is live`,
         body: "Your listing is now visible to investors.",
+        titleKey: "notif.listingApprovedTitle",
+        bodyKey: "notif.listingApprovedBody",
+        params: { name: subjectName },
         href: subjectSlug ? `/startups/${subjectSlug}` : "/dashboard/startup",
       }).catch(() => {});
 
@@ -413,7 +416,12 @@ export async function POST(req: NextRequest) {
         userId: ownerId,
         type: "listing_rejected",
         title: `${subjectName} needs changes before it can go live`,
+        // The reviewer's note is free text in the reviewer's language, so a
+        // keyed body only covers the no-note case.
         body: noteToSubject || "Your listing was reviewed and is not live yet. Open your dashboard to see what to do next.",
+        titleKey: "notif.listingRejectedTitle",
+        bodyKey: noteToSubject ? undefined : "notif.listingRejectedBody",
+        params: { name: subjectName },
         href: "/dashboard/startup",
       }).catch(() => {});
     }

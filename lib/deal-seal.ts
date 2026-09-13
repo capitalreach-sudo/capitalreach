@@ -30,7 +30,7 @@ import { SUCCESS_FEE_PERCENT, NON_CIRCUMVENTION_MONTHS } from "@/lib/circumventi
  * the version and the hash in force when it was made, so an older seal is
  * never reinterpreted under newer terms.
  */
-export const DEAL_SEAL_VERSION = "2026-09-11";
+export const DEAL_SEAL_VERSION = "2026-09-13";
 
 export type SealParty = "startup" | "investor";
 
@@ -73,7 +73,19 @@ export function dealSealText(input: SealTermsInput): string {
   const company = input.companyName?.trim() || "the Company";
   const investor = input.investorName?.trim() || "the Investor";
   const introduced = asDay(input.introducedAt, "the date of first contact recorded by CapitalReach");
-  const tailEnds = asDay(input.tailEndsAt, `${NON_CIRCUMVENTION_MONTHS} months after that date`);
+  // Empty when no introductions row supplied a tail end (or the value does
+  // not parse). Clause 3 branches on it: interpolating a phrase into the date
+  // slot rendered "on or before 24 months after that date, being 24 months
+  // from the recorded introduction date" into signed documents.
+  const tailEnds = input.tailEndsAt ? asDay(input.tailEndsAt, "") : "";
+  // The dated branch must keep its exact bytes: signatures hash this text,
+  // and a mid-seal deal completes only if both hashes match across this
+  // change. Only the previously garbled undated branch is reworded.
+  const feeWindow = tailEnds
+    ? `on or before ${tailEnds},
+   being ${NON_CIRCUMVENTION_MONTHS} months from the recorded introduction date`
+    : `within ${NON_CIRCUMVENTION_MONTHS} months
+   of the recorded introduction date`;
 
   const terms: string[] = [`   Amount:      ${money(input.amount, input.currency)}`];
   if (input.equityPct !== null && input.equityPct !== undefined) {
@@ -106,8 +118,7 @@ ${terms.join("\n")}
    terms.
 
 3. THE FEE. A ${SUCCESS_FEE_PERCENT}% success fee is due to CapitalReach on capital the Company
-   raises from the Investor where the round closes on or before ${tailEnds},
-   being ${NON_CIRCUMVENTION_MONTHS} months from the recorded introduction date. The fee is charged
+   raises from the Investor where the round closes ${feeWindow}. The fee is charged
    to the Company. It is never charged to the Investor. It is due on the
    capital actually received, not on the amount in clause 1, so a round that
    closes smaller carries a smaller fee and a round that does not close

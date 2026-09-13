@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { displayLocale } from "@/lib/display-locale";
 
 /**
  * The score and what it is, in one component.
@@ -127,6 +128,8 @@ export function ScoreWithDisclaimer({
   dimensions,
   locked = false,
   size = "md",
+  scoredAt,
+  updatedAt,
 }: {
   score: number | null;
   /** Omit to render the figure and its caption alone. */
@@ -135,6 +138,12 @@ export function ScoreWithDisclaimer({
    *  means does not depend on whether this viewer may see it. */
   locked?: boolean;
   size?: keyof typeof SIZES;
+  /** When the model last read the submission. Without it a figure scored six
+   *  months ago carries the same authority as one scored this morning. */
+  scoredAt?: string | null;
+  /** The listing's own last edit. Later than scoredAt means the number
+   *  describes an older submission than the one on screen, and says so. */
+  updatedAt?: string | null;
 }) {
   const { t } = useTranslation();
   const tf = (key: string, fallback: string) => {
@@ -167,6 +176,28 @@ export function ScoreWithDisclaimer({
           </span>
         )}
       </div>
+
+      {/* When the model last looked, and whether the listing has moved since.
+          An undated figure reads as current forever; a listing edited after
+          scoring is a submission the number has not seen. */}
+      {!locked && score !== null && Number.isFinite(score) && scoredAt && (() => {
+        let scoredDate = scoredAt.slice(0, 10);
+        try {
+          scoredDate = new Date(scoredAt).toLocaleDateString(displayLocale(), { year: "numeric", month: "short", day: "numeric" });
+        } catch { /* an unparseable timestamp still shows its date part */ }
+        const stale = !!updatedAt && new Date(updatedAt).getTime() > new Date(scoredAt).getTime();
+        return (
+          <p style={{ fontFamily: UI, fontWeight: 400, fontSize: dims.caption, color: "var(--cr-ink-4)", margin: 0 }}>
+            {tf("listingScore.scoredAt", "Scored {date}").replace("{date}", scoredDate)}
+            {stale && (
+              <span style={{ color: "var(--cr-ink-3)" }}>
+                {" · "}
+                {tf("listingScore.stale", "The listing has changed since this score; it refreshes on the next pass.")}
+              </span>
+            )}
+          </p>
+        );
+      })()}
 
       {dimensions && (
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "3px" }}>

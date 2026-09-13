@@ -162,7 +162,7 @@
   "ai": {
     "title": "AI駆動の分析",
     "pageTitle": "キャピタル・インテリジェンス。",
-    "pageSub": "ピッチをスコアリング、投資家とマッチング、デューデリジェンスを生成 — GPT-4搭載。",
+    "pageSub": "ピッチをスコアリング、投資家とマッチング、デューデリジェンスを生成。GPT-4o mini搭載。",
     "tool1Name": "AIピッチ評価ツール",
     "tool1Desc": "デッキと財務データをアップロードしてください。モデルがチーム、トラクション、市場、ナラティブを評価し、0〜100のスコアを返します。",
     "tool1Cta": "ピッチを評価する",
@@ -205,11 +205,11 @@
       "analyzing": "分析中…",
       "clear": "クリア",
       "resultsEmpty": "AI分析がここに表示されます",
-      "resultsEmptySub": "本物のGPT-4o出力—テンプレートなし、フェイクデータなし。",
+      "resultsEmptySub": "本物のGPT-4o mini出力。テンプレートなし、フェイクデータなし。どの分析もあなたのピッチだけのものです。",
       "evaluating": "ピッチを評価中…",
-      "evaluatingSub": "GPT-4oが明確さ、市場機会、競争の堀、チーム力＆牽引力を評価中",
+      "evaluatingSub": "GPT-4o miniが明確さ、市場機会、競争の堀、チーム力＆牽引力を評価中",
       "reportTitle": "ピッチ分析レポート",
-      "generatedBy": "GPT-4oにより生成",
+      "generatedBy": "GPT-4o miniにより生成",
       "outOf100": "100点満点",
       "whatsWorking": "うまくいっている点",
       "improveThis": "改善すべき点",
@@ -220,10 +220,10 @@
       "dimMoat": "競争の堀",
       "dimTeam": "チームの強さ",
       "dimTraction": "牽引力の証拠",
-      "descLong": "スタートアップについて説明してください — 課題、解決策、市場規模、チーム背景、トラクション。GPT-4oが5つの投資次元でスコアリングし、実用的なフィードバックを提供します。",
+      "descLong": "スタートアップについて説明してください：課題、解決策、市場規模、チーム背景、トラクション。GPT-4o miniが5つの投資次元でスコアリングし、実用的なフィードバックを提供します。",
       "proTipLabel": "プロのヒント：",
       "proTipBody": "最も正確なスコアを得るには、市場規模、月次売上高と成長率、過去のエグジット、チームの経歴、そしてそれらの裏付けとなる主要指標を含めてください。",
-      "footerInfo": "GPT-4o搭載 · 約3秒 · データは保存されません",
+      "footerInfo": "GPT-4o mini搭載 · 約3秒 · データは保存されません",
       "analysisFailedErr": "分析に失敗しました",
       "analysisFailedFull": "ピッチ分析に失敗しました。接続を確認して再試行してください。",
       "placeholderExample": "例：\n\n私たちは臨床診療をリアルタイムで文字起こしするAIを開発しており、地方の医療提供者の文書作成負担を70%削減します。\n\n課題：医師は1日3時間以上を事務作業に費やし、180億ドルの生産性損失を引き起こしています。\n\nトラクション：月次売上高4.2万ドル、前月比成長率18%、病院からの意向書3件。元Epic社員、スタンフォード臨床AI博士号。"
@@ -286,10 +286,10 @@
       "searchPlaceholder": "例：Vaultrise、HealthAI、ClimateOS…"
     },
     "hub": {
-      "heroPowered": "GPT-4o搭載",
+      "heroPowered": "GPT-4o mini搭載",
       "heroLine1": "AIディール",
       "heroLine2": "インテリジェンス",
-      "heroSub": "3つの強力なAIツールが一か所に — ピッチ分析、適切な投資家とのマッチング、デューデリジェンスレポート生成。",
+      "heroSub": "3つのAIツールを一か所に：ピッチ分析、適切な投資家とのマッチング、デューデリジェンスレポート生成。ピッチ分析とデューデリジェンスはGPT-4o miniで動作し、マッチングは投資方針に基づいています。",
       "statPitchLabel": "ピッチ分析",
       "statMatchLabel": "投資家マッチング",
       "statDDLabel": "デューデリジェンス",
@@ -299,8 +299,8 @@
       "startInvestor": "投資家として始める",
       "listStartup": "スタートアップを掲載",
       "viewPricing": "すべての料金を見る",
-      "statPitchVal": "本物のGPT",
-      "statMatchVal": "AI搭載",
+      "statPitchVal": "GPT-4o mini",
+      "statMatchVal": "投資方針ベース",
       "statDDVal": "500語のメモ",
       "statSpeedVal": "約3秒",
       "tierFreeSub": "常に無料",
@@ -324,7 +324,9 @@
     "usageRemaining": "本日のAI実行は残り {remaining}/{limit} 回",
     "usageUnlimited": "ご利用のプランではAI実行は無制限です",
     "usageUpgrade": "もっと使う →",
-    "disclosureStrip": "AI による分析は情報提供のみを目的とし、投資助言ではありません。OpenAI モデルを使用。開示：本コンテンツは AI により生成されています。"
+    "disclosureStrip": "AI による分析は情報提供のみを目的とし、投資助言ではありません。OpenAI モデルを使用。開示：本コンテンツは AI により生成されています。",
+    "usagePaidOnly": "AIツールは有料プランに含まれます",
+    "usagePerTool": "各ツールに1日の上限があります。ここには最も使ったツールが表示されます。"
   },
   "pricing": {
     "sectionLabel": "プランと料金",
@@ -1051,7 +1053,9 @@
     "uploadFirstDoc": "最初の書類をアップロード",
     "submitting": "送信中…",
     "closureDeclarationDue": "ラウンドはクローズ済みです。記録を完成させるため、調達額を申告してください。",
-    "declareClosure": "クローズを申告"
+    "declareClosure": "クローズを申告",
+    "funnelWindow": "全期間",
+    "saveFailedEditToRetry": "保存に失敗しました。編集して再試行してください"
   },
   "settings": {
     "pageTitle": "アカウント設定",
@@ -1218,7 +1222,7 @@
     "financials": "財務",
     "team": "チーム",
     "documents": "ドキュメント",
-    "backToListings": "← 掲載一覧に戻る",
+    "backToListings": "掲載一覧に戻る",
     "viewDeal": "ディールを見る",
     "requestIntro": "紹介をリクエスト",
     "raising": "調達中",
@@ -1453,7 +1457,7 @@
     "showTable": "数値で見る",
     "showChart": "グラフで見る",
     "otherIndustries": "その他の業種",
-    "sampleNote": "数値にはローンチ期間中のサンプル掲載が含まれます。",
+    "sampleNote": "数値にはローンチ期間中に表示されるサンプルの掲載、アカウント、ディール活動が含まれます。",
     "breakdowns": "内訳",
     "viewActivity": "アクティビティ",
     "viewNumbers": "数値",
@@ -2112,7 +2116,9 @@
     "scopeAll": "すべてのディール",
     "scopeMine": "自分のディール",
     "editAmountAria": "金額を編集",
-    "amountSaved": "金額を更新しました"
+    "amountSaved": "金額を更新しました",
+    "contractYouSigned": "署名済み（相手側の署名待ち）",
+    "ndaClickwrapHint": "この環境では電子署名が接続されていません。投資家はスタートアップの掲載ページで直接NDAを承諾でき、データルームはすぐに開きます。"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -2906,7 +2912,7 @@
     "noMfa": "このアカウントに第二要素はありません。"
   },
   "imprint": {
-    "metaTitle": "インプリント — CapitalReach",
+    "metaTitle": "インプリント",
     "metaDesc": "CapitalReach の法的表示と事業者情報。",
     "title": "インプリント",
     "subtitle": "事業者情報（§ 5 TMG）",
@@ -2967,7 +2973,8 @@
     "footnote": "コールドアプローチや仲介業者にかかる法務費用は、ラウンド開始前で通常 5,000〜20,000 ユーロに上ります。",
     "detailNote": "2% の成功報酬は、CapitalReach 経由でラウンドが成立した後にのみスタートアップへ請求されます。投資家の負担はありません。",
     "keepShare": "調達額の {pct}% が会社に残ります。",
-    "setRaise": "調達額を {amount} に設定"
+    "setRaise": "調達額を {amount} に設定",
+    "titleCompare": "ご自身の数字で手数料を試算"
   },
   "welcome": {
     "eyebrow": "CapitalReach へようこそ",
@@ -3151,7 +3158,9 @@
     "due": "期日",
     "sentAwaiting": "送金済み、入金待ち",
     "receivedOf": "{total} のうち {received} 入金済み",
-    "fullyFunded": "全額入金済み — すべてのトランシェを受領"
+    "fullyFunded": "全額入金済み — すべてのトランシェを受領",
+    "timelineSet": "支払スケジュールを設定：{count}回の支払い",
+    "cleared": "支払スケジュールを解除しました"
   },
   "fees": {
     "tab": "手数料",
@@ -3177,7 +3186,8 @@
       "reversed": "取消済み"
     },
     "resolve": "対応する",
-    "resolvePrompt": "この異議はどう解決しましたか？"
+    "resolvePrompt": "この異議はどう解決しましたか？",
+    "operatorOnly": "手数料の操作にはオペレーター権限の管理者が必要です。"
   },
   "myFees": {
     "title": "成功報酬",
@@ -3248,7 +3258,8 @@
     },
     "medianTarget": "ラウンド目標額の中央値",
     "newThisMonth": "今月の新規ラウンド",
-    "anonNote": "送信にアカウントは必要ありません。"
+    "anonNote": "送信にアカウントは必要ありません。",
+    "operatorOnly": "通報の操作にはオペレーター権限の管理者が必要です。"
   },
   "deleteAccount": {
     "willAnonymise": "あなたのアカウントにはクローズ済みのディールがあるため、単純に削除することはできません — 相手方にも記録があり、未払いの手数料はアカウントとともに消えません。代わりに、氏名・メール・写真・プロフィール文は完全に削除され、掲載も取り下げられます。残るのは個人情報を含まない取引記録です。",
@@ -3382,7 +3393,18 @@
     "filterSort": "結果の並び順だけを変えます。何かが増えたり除かれたりはしません。既定は新着順で、スコアや収益、締切日での並び替えは創業者が提出した数値を読みます。",
     "filterRaising": "この規模以上のラウンドに絞ります。読むのは創業者がラウンドに設定した調達目標額で、すでに集まった金額ではありません。",
     "filterGrowth": "創業者が掲載で申告した月次の収益成長率です。数値は創業者によるもので、プラットフォームは検証していません。",
-    "filterClosingSoon": "創業者が設定した締切日が今後60日以内か、すでに到来しているラウンドです。日付のないローリング型のラウンドは含まれません。"
+    "filterClosingSoon": "創業者が設定した締切日が今後60日以内か、すでに到来しているラウンドです。日付のないローリング型のラウンドは含まれません。",
+    "stageProposal": "一方がもう一方に送ったディールのリクエストです。受け取った側が承諾するまでどちらのパイプラインにも入らないため、このボード上のディールはすべて双方が合意したものです。",
+    "stageIntro": "最初の実務ステージです。両者はつながり、対話を始めています。まだ何も確定しておらず、話が固まるにつれてディールは1ステージずつ進みます。",
+    "stageClosed": "双方が合意した金額で投資を確定した状態です。クローズには署名済みの契約書と両者の確認が必要で、2%の成功報酬の請求書が発行され、再オープンはできません。",
+    "stagePassed": "投資に至らずに終了したディールで、理由が記録されています。パスはディールを終えますが関係まで終えるものではなく、話が再開すればパスしたディールも再オープンできます。",
+    "followUpDue": "追いかけるための自分用のリマインダーとしてディールに設定する日付です。期日を過ぎるとラベルが赤くなり、フォローアップ順の並べ替えで期日が来たディールが上に上がります。",
+    "totalRaised": "ここでディールのクローズ時に確定した金額を、現在までに合計したものです。交渉中やソフトサークル段階の資金は含まれず、パスしたディールがこの数字に入ることはありません。",
+    "activeStartups": "現在有効な掲載を持つ企業です。下書き、審査中の掲載、停止中の掲載は数えません。",
+    "investorCount": "プランを問わず、プラットフォームに登録された投資家アカウントの数です。登録はサインアップであり、資金の確認ではありません。",
+    "dealsClosed": "双方が投資の実行を確定したディールの数で、プラットフォーム開設以来の累計です。パスで終わったディールは別に記録され、ここには決して含まれません。",
+    "closeRate": "終了したディールのうち、パスではなくクローズに至った割合です。進行中のディールはどちらにも数えないため、全ディールの成功率ではありません。",
+    "medianTarget": "そのステージの掲載における調達目標の中央値です。半数はこれより多く、半数はこれより少なく求めています。平均ではなく中央値なので、突出した1件のラウンドが数字を動かすことはありません。"
   },
   "translate": {
     "offer": "これは別の言語で書かれています。",
@@ -3421,7 +3443,9 @@
     "title": "前回見たとき以降",
     "watching": "ウォッチ中 {n} 社",
     "markSeen": "すべて既読にする",
-    "quiet": "ウォッチ中の企業に新しい動きはありません。"
+    "quiet": "ウォッチ中の企業に新しい動きはありません。",
+    "docsInRoom": "データルームに{count}件の資料",
+    "docsInRoomOne": "データルームに1件の資料"
   },
   "share": {
     "title": "ラウンドを共有",
@@ -3860,7 +3884,70 @@
     "dealMovedIntro": "ディールが「対話」に移動しました",
     "dealMovedDueDiligence": "ディールが「交渉」に移動しました",
     "dealMovedTermSheet": "ディールが「タームシート」に移動しました",
-    "dealPassedTitle": "ディールが「見送り」となりました"
+    "dealPassedTitle": "ディールが「見送り」となりました",
+    "dealRequestTitle": "{name}がディールの開始を希望しています",
+    "dealRequestBody": "承諾すると両方のパイプラインに追加されます。辞退もできます。",
+    "dealOpenedTitle": "{name}があなたとのディールを開始しました",
+    "ndaAcceptedTitle": "NDAが承諾され、データルームが開きました",
+    "ndaAcceptedBody": "投資家があなたのNDAを承諾し、保護された資料を閲覧できるようになりました。",
+    "listingApprovedTitle": "{name}が公開されました",
+    "listingApprovedBody": "あなたの掲載が投資家に表示されるようになりました。",
+    "listingRejectedTitle": "{name}は公開前に修正が必要です",
+    "listingRejectedBody": "掲載は審査されましたが、まだ公開されていません。ダッシュボードで次の手順をご確認ください。",
+    "docRequestTitle": "{name}が{doc}をリクエストしました",
+    "docRequestBody": "ドキュメントマネージャーからアップロードしてください。対応するまでリクエストはそこに残ります。",
+    "docSharedTitle": "{name}がリクエストされた{doc}を共有しました",
+    "docDeclinedTitle": "{name}が{doc}のリクエストを辞退しました",
+    "requestAcceptedTitle": "{name}が承諾し、ディールが開始されました",
+    "requestAcceptedBody": "両方のパイプラインに追加されました。",
+    "requestDeclinedTitle": "{name}がリクエストを辞退しました",
+    "requestDeclinedBody": "気を落とさずに。今はタイミングが合わないだけかもしれません。",
+    "teamAddedTitle": "CapitalReachのチームに追加されました",
+    "teamAddedBodyStartup": "スタートアップアカウントにアクセスできるようになりました。",
+    "teamAddedBodyInvestor": "投資家アカウントにアクセスできるようになりました。",
+    "feeActionRequiredTitle": "この支払いには銀行の承認が必要です",
+    "feeActionRequiredBody": "銀行で確認が完了するまで、支払いは保留されます。",
+    "adminInfoRequestTitle": "ご対応をお願いします",
+    "adminListingReviewTitle": "掲載を審査中です",
+    "reportClosedTitle": "通報を確認しました",
+    "reportClosedBody": "お知らせいただきありがとうございます。確認は完了しました。",
+    "feeDisputeReviewedTitle": "手数料への異議を確認しました",
+    "feeInvoicedTitle": "成功報酬の請求書",
+    "feeInvoicedBody": "クローズしたラウンドに対する2%の成功報酬が請求されました。",
+    "feeSupplementaryTitle": "追加の成功報酬",
+    "feeSupplementaryBody": "クローズしたラウンドと商業登記に届け出た金額の差額に対して手数料が発生しました。",
+    "recordNoteTitle": "あなたの記録にメモが追加されました",
+    "recordNoteBody": "クローズしたラウンドが商業登記の届出と一致しませんでした。",
+    "feeReminderTitle": "成功報酬が未払いです",
+    "feeFinalReminderTitle": "最終通知：成功報酬が未払いです",
+    "feeReminderBody": "クローズしたラウンドに対する{amount}。手数料は投資を受けるスタートアップに請求されます。",
+    "feeInstalmentTitle": "成功報酬の分割払い（第{seq}回）",
+    "feeInstalmentBody": "成功報酬の次回分が請求されました。",
+    "commitTitleInterest": "ディール更新：関心あり",
+    "commitTitleSoft": "ディール更新：ソフトサークル",
+    "commitTitleVerbal": "ディール更新：口頭合意",
+    "commitTitleCommitted": "ディール更新：コミット済み",
+    "closeProposedTitle": "クローズの提案：{name}",
+    "closeProposedBody": "{amount}でのクローズを確定してください（2%の手数料が適用されます）。",
+    "closeProposedBodyNoAmount": "このディールのクローズを確定してください。",
+    "dealClosedTitle": "ディール成立：{name}",
+    "dealClosedBodyFee": "{amount} · 2%の成功報酬を請求済み",
+    "fundedTitle": "入金完了：{name}",
+    "fundedBody": "双方が送金を確認しました。",
+    "fundsSentTitle": "投資家が資金の送金を確認しました",
+    "fundsReceivedTitle": "創業者が資金の受領を確認しました",
+    "confirmSideBody": "ラウンドを完了するには、あなた側の確認が必要です。",
+    "scheduleProposedTitle": "支払スケジュールが提案されました",
+    "scheduleProposedBody": "{name}で{count}回の支払い。",
+    "fullyFundedTitle": "全額入金完了：{name}",
+    "fullyFundedBody": "すべての支払いを受領しました。",
+    "trancheSentTitle": "{label}：投資家が資金の送金を確認しました",
+    "trancheReceivedTitle": "{label}：創業者が資金の受領を確認しました",
+    "confirmTrancheBody": "この支払いを完了するには、あなた側の確認が必要です。",
+    "dealDocTitle": "新しいディール資料：{name}",
+    "dealDocBody": "相手側が共有データルームに資料を追加しました。",
+    "contractSentTitle": "契約書が署名のため送付されました：{title}",
+    "contractSignedTitle": "契約書が署名されました：{title}"
   },
   "match": {
     "title": "あなたを待つ投資家",
@@ -4735,7 +4822,9 @@
       "differentiation": "差別化の記載",
       "teamInfo": "チーム情報の記載",
       "metrics": "指標の記載と整合性"
-    }
+    },
+    "scoredAt": "{date}に評価",
+    "stale": "この評価の後に掲載が変更されました。次回の実行で更新されます。"
   },
   "attest": {
     "eyebrow": "あなたの表明",
@@ -4783,5 +4872,25 @@
     "emptyBody": "{industry}で資金調達中ですか?ローンチ期間中の掲載は無料、全リスティングは公開前に審査されます。",
     "browseBySector": "セクター別に見る",
     "metaDescription": "CapitalReachの{industry}スタートアップ:目標額・トラクション・ステージ。成功報酬2%はクローズ時にスタートアップのみが支払います。"
+  },
+  "meta": {
+    "startupsTitle": "スタートアップを探す",
+    "startupsDesc": "審査済みのスタートアップのラウンドをステージ、業種、トラクションで閲覧。企業名はメンバーに表示されます。",
+    "investorsTitle": "投資家ディレクトリ",
+    "investorsDesc": "CapitalReachで活動するエンジェル、ファミリーオフィス、ファンド。投資方針、投資額、業種で検索できます。",
+    "aiTitle": "AIディールインテリジェンス",
+    "aiDesc": "GPT-4o miniによるピッチ分析、投資家マッチング、デューデリジェンスの下書き。",
+    "dataTitle": "データセンター",
+    "dataDesc": "プラットフォームのライブ数値：調達中のラウンド、募集中の資金、ディールファネル、クローズ率。",
+    "dealsTitle": "ディールポータル",
+    "dealsDesc": "イントロからクローズまで全ての会話を追跡：ステージ、メモ、契約、ディールシール。",
+    "pricingTitle": "料金",
+    "pricingDesc": "成功報酬2%はクローズ時にスタートアップのみが支払います。投資家の負担はありません。",
+    "contactTitle": "お問い合わせ",
+    "contactDesc": "掲載、投資、プラットフォームについての質問はCapitalReachチームまで。",
+    "loginTitle": "サインイン",
+    "signupTitle": "アカウント作成",
+    "homeTitle": "CapitalReach - プライベートキャピタル・マーケットプレイス",
+    "homeDesc": "審査済みのマーケットプレイス。スタートアップが資金を調達し、投資家が次のラウンドを見つける場所。クローズ時に2%の成功報酬、それまでは一切かかりません。"
   }
 }
