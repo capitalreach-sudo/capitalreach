@@ -774,7 +774,7 @@
     "viewStartup": "स्टार्टअप देखें",
     "membershipBilling": "सदस्यता और बिलिंग",
     "accessLevel": "पहुंच स्तर",
-    "upgradeAngel": "Angel में अपग्रेड करें — $99/माह",
+    "upgradeAngel": "Angel में अपग्रेड करें: €99/माह",
     "upgradeAngelSub": "पूर्ण प्रोफ़ाइल, वित्त, पिच डेक और संस्थापकों के साथ सीधी मैसेजिंग अनलॉक करें।",
     "viewAllPlans": "सभी प्लान देखें",
     "billingPortalError": "बिलिंग पोर्टल नहीं खोल सकते",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "राशि संपादित करें",
     "amountSaved": "राशि अपडेट की गई",
     "contractYouSigned": "आपने हस्ताक्षर कर दिए; दूसरे पक्ष की प्रतीक्षा है",
-    "ndaClickwrapHint": "इस परिनियोजन में ई-हस्ताक्षर जुड़ा नहीं है। निवेशक स्टार्टअप की लिस्टिंग पर सीधे NDA स्वीकार कर सकता है, जिससे डेटा रूम तुरंत खुल जाता है।"
+    "ndaClickwrapHint": "इस परिनियोजन में ई-हस्ताक्षर जुड़ा नहीं है। निवेशक स्टार्टअप की लिस्टिंग पर सीधे NDA स्वीकार कर सकता है, जिससे डेटा रूम तुरंत खुल जाता है।",
+    "commitCleared": "प्रतिबद्धता हटाई गई",
+    "commitClear": "हटाएं"
   },
   "investorProfile": {
     "back": "निवेशकों पर वापस जाएं",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "नया डील दस्तावेज़: {name}",
     "dealDocBody": "दूसरे पक्ष ने आपके साझा डेटा रूम में एक दस्तावेज़ जोड़ा।",
     "contractSentTitle": "हस्ताक्षर के लिए अनुबंध भेजा गया: {title}",
-    "contractSignedTitle": "अनुबंध पर हस्ताक्षर हुए: {title}"
+    "contractSignedTitle": "अनुबंध पर हस्ताक्षर हुए: {title}",
+    "roundReopenedTitle": "{name} ने राउंड फिर खोला",
+    "roundOversubTitle": "{name} ओवरसब्सक्राइब्ड है",
+    "roundPausedTitle": "{name} ने राउंड रोका",
+    "roundClosedTitle": "{name} ने राउंड बंद किया",
+    "roundBodyRoom": "आपने यह कंपनी सहेजी है, अभी जगह हो सकती है।",
+    "roundBodySaved": "आपने यह कंपनी अपनी वॉचलिस्ट में सहेजी है।",
+    "waitlistOpenTitle": "{name} फिर खुला है, आप प्रतीक्षा सूची में हैं",
+    "waitlistOpenBody": "राउंड नए निवेशकों के लिए फिर खुला। आपने सूचित करने को कहा था।"
   },
   "match": {
     "title": "आपका इंतज़ार कौन कर रहा है",

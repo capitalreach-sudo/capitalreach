@@ -84,23 +84,26 @@ export async function POST(req: NextRequest) {
   // the insert so a refusal leaves no half-sent message.
   const pairStartupId = thread.startup_id;
   const pairInvestorId = thread.investor_id;
+  // Ownership answers "which side is this" for almost everyone; the roster
+  // lookup only runs for an associate acting on an entity's behalf, since
+  // an associate at a fund is the investor side just as much as its owner.
+  // A STARTUP seat deliberately wins a tie. Two rules hang on the answer:
+  // the seal refusal below offers the exit for this side (a founder must
+  // never be handed the investor's -- they cannot make an offer; the
+  // proposals route refuses them), and the notification further down masks
+  // the founder side's name pre-seal, so a tie must land on "startup".
+  let investorSide = user.id === investorOwner || user.id === recipientInvestorOwner;
+  let startupSide = user.id === startupOwner || user.id === recipientStartupOwner;
+  if (!investorSide && !startupSide && !coInvestorThread && !isAdmin && pairStartupId && pairInvestorId) {
+    const { data: seats } = await admin
+      .from("team_members").select("entity_type")
+      .eq("user_id", user.id)
+      .in("entity_id", [pairStartupId, pairInvestorId]);
+    const kinds = new Set((seats ?? []).map((s) => s.entity_type));
+    startupSide = kinds.has("startup");
+    investorSide = !startupSide && kinds.has("investor");
+  }
   if (!coInvestorThread && !isAdmin && pairStartupId && pairInvestorId) {
-    // Ownership answers "which side is this" for almost everyone; the roster
-    // lookup only runs for an associate acting on an entity's behalf, since
-    // an associate at a fund is the investor side just as much as its owner.
-    // A STARTUP seat deliberately wins a tie. The side no longer decides
-    // whether the rule applies -- it decides which way out of it the refusal
-    // offers, and a founder must never be handed the investor's (they cannot
-    // make an offer; the proposals route refuses them).
-    let investorSide = user.id === investorOwner;
-    if (!investorSide && user.id !== startupOwner && user.id !== recipientStartupOwner) {
-      const { data: seats } = await admin
-        .from("team_members").select("entity_type")
-        .eq("user_id", user.id)
-        .in("entity_id", [pairStartupId, pairInvestorId]);
-      const kinds = new Set((seats ?? []).map((s) => s.entity_type));
-      investorSide = !kinds.has("startup") && kinds.has("investor");
-    }
     const contact = await mayPairContact({
       startupId: pairStartupId,
       investorId: pairInvestorId,
@@ -184,13 +187,23 @@ export async function POST(req: NextRequest) {
       : user.id === recipientInvestorOwner
         ? (thread.recipient_investor as unknown as { display_name?: string | null } | null)?.display_name ?? null
         : null;
-    const senderName = sender?.full_name || senderEntityName || "Someone";
+    // Identity protection holds in the bell and the inbox, not just the
+    // composer: pre-seal a founder is "Sarah K." everywhere because a full
+    // name costs a deal, not a search -- so the notification announcing
+    // their reply must not hand the profile name over either. The startup's
+    // name is public; use it. Investor display names are public directory
+    // rows, so the investor side is never masked.
+    const senderName = startupSide && !unlocked
+      ? senderEntityName || thread.startup?.name || "Someone"
+      : sender?.full_name || senderEntityName || "Someone";
     const preview = safe.body.slice(0, 60) + (body.length > 60 ? "…" : "");
     for (const r of recipients) {
       await notifyUser({
         userId: r,
         type: "message",
         title: `New message from ${senderName}`,
+        titleKey: "notif.messageTitle",
+        params: { name: senderName },
         body: preview,
         href: `/dashboard/messages?thread=${threadId}`,
       }).catch(() => {});

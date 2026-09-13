@@ -58,9 +58,10 @@ export async function POST(req: NextRequest) {
 
   // B17: commitment level. Either party may record it (the investor says
   // "we're in for 50k", the founder logs a verbal yes from a call); the
-  // timeline shows who set it.
+  // timeline shows who set it. null is the explicit clear -- a commitment
+  // recorded in error, or one the investor walked back, must be removable.
   const COMMITMENTS = ["interest", "soft_circle", "verbal", "committed"] as const;
-  if (commitmentType !== undefined && !COMMITMENTS.includes(commitmentType)) {
+  if (commitmentType !== undefined && commitmentType !== null && !COMMITMENTS.includes(commitmentType)) {
     return NextResponse.json({ error: "Invalid commitment type" }, { status: 400 });
   }
 
@@ -192,7 +193,9 @@ export async function POST(req: NextRequest) {
   if (amount === null) updates.amount = null;
   if (commitmentType !== undefined) {
     updates.commitment_type = commitmentType;
-    updates.commitment_at = new Date().toISOString();
+    // commitment_at means "when the CURRENT level was set". A clear nulls it
+    // too, so a later commitment cannot inherit a stale timestamp.
+    updates.commitment_at = commitmentType === null ? null : new Date().toISOString();
   }
   if (typeof currency === "string" && isCurrencyCode(currency)) updates.currency = currency;
 
@@ -230,15 +233,21 @@ export async function POST(req: NextRequest) {
       ? `${(isCurrencyCode(currency) ? currency : "USD")} ${Math.round(amount).toLocaleString()}`
       : null;
     // Machine body: the timeline renders the commitment label in the
-    // viewer's language; the amount rides along verbatim.
+    // viewer's language; the amount rides along verbatim. A clear stands in
+    // the timeline too -- money that was counted and then wasn't is exactly
+    // the history a founder needs to be able to read back.
     await admin.from("deal_activity").insert({
       deal_id: dealId, startup_id: deal.startup_id, investor_id: deal.investor_id, actor_id: user.id,
       type: "note",
-      body: `commitment:${commitmentType}${commitAmount ? ` · ${commitAmount}` : ""}`,
+      body: commitmentType === null
+        ? "commitment:cleared"
+        : `commitment:${commitmentType}${commitAmount ? ` · ${commitAmount}` : ""}`,
     }).then(undefined, () => {});
-    // The other side learns the commitment moved.
+    // The other side learns the commitment moved. A clear is a retraction of
+    // one's own record, not news for the counterpart, and there is no
+    // catalog key for it -- the timeline row is the notice.
     const counterpart = user.id === deal.startup?.owner_id ? deal.investor?.owner_id : deal.startup?.owner_id;
-    if (counterpart && counterpart !== user.id) {
+    if (commitmentType !== null && counterpart && counterpart !== user.id) {
       await notifyUsers([counterpart], {
         type: "deal_stage",
         title: `${LABEL[commitmentType]}, deal update`,

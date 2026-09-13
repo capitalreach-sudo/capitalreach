@@ -212,7 +212,7 @@
       "analyzing": "Analyzing…",
       "clear": "Clear",
       "resultsEmpty": "Your AI analysis appears here",
-      "resultsEmptySub": "Real GPT-4o mini output, no templates, no fake data. Every analysis is unique to your pitch.",
+      "resultsEmptySub": "Live GPT-4o mini output, no templates, no fake data. Every analysis is unique to your pitch.",
       "evaluating": "Evaluating your pitch…",
       "evaluatingSub": "GPT-4o mini is scoring clarity, market opportunity, competitive moat, team strength & traction",
       "reportTitle": "Pitch Analysis Report",
@@ -790,7 +790,7 @@
     "viewStartup": "View startup",
     "membershipBilling": "Membership & Billing",
     "accessLevel": "Access level",
-    "upgradeAngel": "Upgrade to Angel — $99/month",
+    "upgradeAngel": "Upgrade to Angel: €99/month",
     "upgradeAngelSub": "Unlock full startup profiles, financials, pitch decks, and direct founder messaging.",
     "viewAllPlans": "View all plans",
     "billingPortalError": "Unable to open billing portal",
@@ -2125,7 +2125,9 @@
     "editAmountAria": "Edit the amount",
     "amountSaved": "Amount updated",
     "contractYouSigned": "You signed - awaiting the other side",
-    "ndaClickwrapHint": "E-signature is not connected on this deployment. The investor can accept the NDA directly on the startup's listing, which opens the data room immediately."
+    "ndaClickwrapHint": "E-signature is not connected on this deployment. The investor can accept the NDA directly on the startup's listing, which opens the data room immediately.",
+    "commitCleared": "Commitment cleared",
+    "commitClear": "Clear"
   },
   "investorProfile": {
     "back": "Back to investors",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "New deal document: {name}",
     "dealDocBody": "The other side added a document to your shared data room.",
     "contractSentTitle": "Contract sent for signature: {title}",
-    "contractSignedTitle": "Contract signed: {title}"
+    "contractSignedTitle": "Contract signed: {title}",
+    "roundReopenedTitle": "{name} reopened its round",
+    "roundOversubTitle": "{name} is oversubscribed",
+    "roundPausedTitle": "{name} paused its round",
+    "roundClosedTitle": "{name} closed its round",
+    "roundBodyRoom": "You saved this company, there may still be room.",
+    "roundBodySaved": "You saved this company to your watchlist.",
+    "waitlistOpenTitle": "{name} is open again, you are on the waitlist",
+    "waitlistOpenBody": "The round reopened to new investors. You asked to be told."
   },
   "match": {
     "title": "Who's waiting for you",

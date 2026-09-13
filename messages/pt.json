@@ -774,7 +774,7 @@
     "viewStartup": "Ver startup",
     "membershipBilling": "Adesão e Faturação",
     "accessLevel": "Nível de acesso",
-    "upgradeAngel": "Upgrade para Angel — $99/mês",
+    "upgradeAngel": "Upgrade para Angel: 99 €/mês",
     "upgradeAngelSub": "Desbloqueie perfis completos, finanças, pitch decks e mensagens diretas com fundadores.",
     "viewAllPlans": "Ver todos os planos",
     "billingPortalError": "Não é possível abrir o portal de faturação",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Editar o montante",
     "amountSaved": "Montante atualizado",
     "contractYouSigned": "Assinou; falta a outra parte",
-    "ndaClickwrapHint": "A assinatura eletrónica não está ligada nesta instalação. O investidor pode aceitar o NDA diretamente no anúncio da startup, o que abre a data room de imediato."
+    "ndaClickwrapHint": "A assinatura eletrónica não está ligada nesta instalação. O investidor pode aceitar o NDA diretamente no anúncio da startup, o que abre a data room de imediato.",
+    "commitCleared": "Compromisso retirado",
+    "commitClear": "Retirar"
   },
   "investorProfile": {
     "back": "Voltar aos investidores",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Novo documento do deal: {name}",
     "dealDocBody": "A outra parte adicionou um documento à data room partilhada.",
     "contractSentTitle": "Contrato enviado para assinatura: {title}",
-    "contractSignedTitle": "Contrato assinado: {title}"
+    "contractSignedTitle": "Contrato assinado: {title}",
+    "roundReopenedTitle": "{name} reabriu a ronda",
+    "roundOversubTitle": "{name} está sobresubscrita",
+    "roundPausedTitle": "{name} pausou a ronda",
+    "roundClosedTitle": "{name} fechou a ronda",
+    "roundBodyRoom": "Guardou esta empresa, ainda pode haver espaço.",
+    "roundBodySaved": "Guardou esta empresa na sua watchlist.",
+    "waitlistOpenTitle": "{name} está aberta de novo, está na lista de espera",
+    "waitlistOpenBody": "A ronda reabriu a novos investidores. Pediu para ser avisado."
   },
   "match": {
     "title": "Quem espera por si",

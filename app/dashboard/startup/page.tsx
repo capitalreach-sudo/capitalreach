@@ -47,7 +47,7 @@ export default async function StartupDashboardPage() {
   const dealSeries: number[] = Array(30).fill(0);
   const raise = { softCircled: 0, committed: 0 };
   // B25: funnel — views → saves → deals → term sheets → closed.
-  const funnel = { views: 0, termSheets: 0, closed: 0 };
+  const funnel = { views: 0, deals: 0, termSheets: 0, closed: 0 };
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -111,6 +111,12 @@ export default async function StartupDashboardPage() {
     // tracker, but the STRIP figure excludes them -- matching the investor
     // dashboard's definition, which this number used to contradict.
     dealsCount = (dealRows ?? []).filter((d) => d.status !== "closed").length;
+    // The funnel's Deals step is all-time non-passed, like every step around
+    // it (the funnelWindow label promises all-time): closed deals stay
+    // counted here, otherwise the funnel narrows to zero at Deals and widens
+    // again at Closed. The strip's active-only figure above is a different
+    // definition and keeps its own variable.
+    funnel.deals = (dealRows ?? []).length;
     for (const d of dealRows ?? []) {
       const idx = 29 - Math.floor((today.getTime() - new Date(d.created_at).setHours(0, 0, 0, 0)) / DAY);
       if (idx >= 0 && idx < 30) dealSeries[idx] += 1;
@@ -193,7 +199,9 @@ export default async function StartupDashboardPage() {
 
   return (
     <>
-      <Navbar />
+      {/* Seeded so SSR paints the signed-in bar; this page already proved
+          the session and holds the profile. */}
+      <Navbar initialProfile={profile} />
       <StartupDashboardClient
         profile={profile}
         startup={startup}

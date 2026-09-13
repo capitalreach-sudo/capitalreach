@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (!profile?.stripe_customer_id) {
-    return NextResponse.json({ error: "No billing account found" }, { status: 400 });
+    return NextResponse.json({ error: "No billing account found. Subscribe to a paid plan first." }, { status: 400 });
   }
 
   const returnUrl =
@@ -22,6 +22,12 @@ export async function POST(req: NextRequest) {
       ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/startup`
       : `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/investor`;
 
-  const session = await createCustomerPortalSession(profile.stripe_customer_id, returnUrl);
-  return NextResponse.json({ url: session.url });
+  // Stripe is a remote dependency: an uncaught throw here surfaces as Next's
+  // HTML 500 page, which the client cannot parse as JSON.
+  try {
+    const session = await createCustomerPortalSession(profile.stripe_customer_id, returnUrl);
+    return NextResponse.json({ url: session.url });
+  } catch {
+    return NextResponse.json({ error: "Could not open the billing portal. Try again." }, { status: 502 });
+  }
 }

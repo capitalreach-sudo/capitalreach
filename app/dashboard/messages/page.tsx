@@ -73,7 +73,9 @@ export default async function MessagesPage() {
 
   return (
     <>
-      <Navbar />
+      {/* Seeded so SSR paints the signed-in bar; this page already proved
+          the session and holds the profile. */}
+      <Navbar initialProfile={profile} />
       <MessagesClient profile={profile} threads={threads} myStartupId={myStartupId} myInvestorId={myInvestorId} unreadThreadIds={unreadThreadIds} />
     </>
   );

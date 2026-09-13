@@ -774,7 +774,7 @@
     "viewStartup": "Vedi startup",
     "membershipBilling": "Abbonamento e Fatturazione",
     "accessLevel": "Livello di accesso",
-    "upgradeAngel": "Passa ad Angel — $99/mese",
+    "upgradeAngel": "Passa ad Angel: 99 €/mese",
     "upgradeAngelSub": "Sblocca profili completi, finanze, pitch deck e messaggistica diretta con i fondatori.",
     "viewAllPlans": "Vedi tutti i piani",
     "billingPortalError": "Impossibile aprire il portale di fatturazione",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Modifica l'importo",
     "amountSaved": "Importo aggiornato",
     "contractYouSigned": "Hai firmato; in attesa dell'altra parte",
-    "ndaClickwrapHint": "La firma elettronica non è collegata su questa installazione. L'investitore può accettare l'NDA direttamente sull'annuncio della startup, aprendo subito la data room."
+    "ndaClickwrapHint": "La firma elettronica non è collegata su questa installazione. L'investitore può accettare l'NDA direttamente sull'annuncio della startup, aprendo subito la data room.",
+    "commitCleared": "Impegno rimosso",
+    "commitClear": "Rimuovi"
   },
   "investorProfile": {
     "back": "Torna agli investitori",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Nuovo documento del deal: {name}",
     "dealDocBody": "L'altra parte ha aggiunto un documento alla data room condivisa.",
     "contractSentTitle": "Contratto inviato per la firma: {title}",
-    "contractSignedTitle": "Contratto firmato: {title}"
+    "contractSignedTitle": "Contratto firmato: {title}",
+    "roundReopenedTitle": "{name} ha riaperto il round",
+    "roundOversubTitle": "{name} è in oversubscription",
+    "roundPausedTitle": "{name} ha messo in pausa il round",
+    "roundClosedTitle": "{name} ha chiuso il round",
+    "roundBodyRoom": "Hai salvato questa azienda, potrebbe esserci ancora spazio.",
+    "roundBodySaved": "Hai salvato questa azienda nella tua watchlist.",
+    "waitlistOpenTitle": "{name} è di nuovo aperta, sei in lista d'attesa",
+    "waitlistOpenBody": "Il round è di nuovo aperto a nuovi investitori. Avevi chiesto di essere avvisato."
   },
   "match": {
     "title": "Chi ti sta aspettando",

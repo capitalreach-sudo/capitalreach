@@ -783,7 +783,7 @@
     "viewStartup": "Voir la startup",
     "membershipBilling": "Adhésion & Facturation",
     "accessLevel": "Niveau d'accès",
-    "upgradeAngel": "Passez à Angel — $99/mois",
+    "upgradeAngel": "Passez à Angel : 99 €/mois",
     "upgradeAngelSub": "Débloquez les profils complets, les finances, les pitch decks et la messagerie directe avec les fondateurs.",
     "viewAllPlans": "Voir toutes les formules",
     "billingPortalError": "Impossible d'ouvrir le portail de facturation",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Modifier le montant",
     "amountSaved": "Montant mis à jour",
     "contractYouSigned": "Vous avez signé ; en attente de l'autre partie",
-    "ndaClickwrapHint": "La signature électronique n'est pas connectée sur ce déploiement. L'investisseur peut accepter le NDA directement sur l'annonce de la startup, ce qui ouvre la data room immédiatement."
+    "ndaClickwrapHint": "La signature électronique n'est pas connectée sur ce déploiement. L'investisseur peut accepter le NDA directement sur l'annonce de la startup, ce qui ouvre la data room immédiatement.",
+    "commitCleared": "Engagement retiré",
+    "commitClear": "Retirer"
   },
   "investorProfile": {
     "back": "Retour aux investisseurs",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Nouveau document de deal : {name}",
     "dealDocBody": "L'autre partie a ajouté un document à votre data room partagée.",
     "contractSentTitle": "Contrat envoyé pour signature : {title}",
-    "contractSignedTitle": "Contrat signé : {title}"
+    "contractSignedTitle": "Contrat signé : {title}",
+    "roundReopenedTitle": "{name} a rouvert sa levée",
+    "roundOversubTitle": "{name} est sursouscrite",
+    "roundPausedTitle": "{name} a mis sa levée en pause",
+    "roundClosedTitle": "{name} a clôturé sa levée",
+    "roundBodyRoom": "Vous avez enregistré cette société, il reste peut-être de la place.",
+    "roundBodySaved": "Vous avez enregistré cette société dans votre liste de suivi.",
+    "waitlistOpenTitle": "{name} est de nouveau ouverte, vous êtes sur la liste d'attente",
+    "waitlistOpenBody": "La levée est rouverte aux nouveaux investisseurs. Vous aviez demandé à être prévenu."
   },
   "match": {
     "title": "Qui vous attend",

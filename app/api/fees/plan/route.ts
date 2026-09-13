@@ -35,8 +35,18 @@ export async function GET(req: NextRequest) {
   if (!isUuid(dealId)) return NextResponse.json({ error: "dealId required" }, { status: 400 });
 
   const admin = createAdminClient();
-  const { deal, failed } = await ownFeeDeal(admin, user.id, dealId);
+  const { deal, failed, noFee } = await ownFeeDeal(admin, user.id, dealId);
   if (failed) return NextResponse.json({ error: "Could not read the fee" }, { status: 500 });
+  if (noFee) {
+    return NextResponse.json({
+      instalments: [],
+      progress: null,
+      eligible: false,
+      reason: "no_fee",
+      minMonths: MIN_PLAN_MONTHS,
+      maxMonths: MAX_PLAN_MONTHS,
+    });
+  }
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const { data: rows, error } = await admin
@@ -72,8 +82,9 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
-  const { deal, failed } = await ownFeeDeal(admin, user.id, dealId);
+  const { deal, failed, noFee } = await ownFeeDeal(admin, user.id, dealId);
   if (failed) return NextResponse.json({ error: "Could not read the fee" }, { status: 500 });
+  if (noFee) return NextResponse.json({ error: "This deal has no success fee, so there is nothing to schedule." }, { status: 409 });
   if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
 
   const state = feeState(deal as unknown as FeeDeal);
@@ -154,17 +165,19 @@ async function ownFeeDeal(admin: ReturnType<typeof createAdminClient>, userId: s
   // `failed` rides alongside the deal so the handlers can tell a broken read
   // from a fee that is genuinely not this founder's. Answering both with "Deal
   // not found" makes a statement about their debt out of a database being down.
-  if (startupError) return { deal: null, failed: true as const };
-  if (!startup) return { deal: null, failed: false as const };
+  if (startupError) return { deal: null, failed: true as const, noFee: false as const };
+  if (!startup) return { deal: null, failed: false as const, noFee: false as const };
 
   const { data: deal, error: dealError } = await admin
     .from("deals")
     .select("id, startup_id, success_fee_amount, success_fee_invoiced, success_fee_paid_at, stripe_invoice_id, fee_billing_status, fee_waived_at, fee_disputed_at, fee_dispute_resolved_at, fee_refunded_at, fee_chargeback_at, fee_chargeback_resolved_at, currency, startup:startups(id, name)")
     .eq("id", dealId)
     .maybeSingle();
-  if (dealError) return { deal: null, failed: true as const };
+  if (dealError) return { deal: null, failed: true as const, noFee: false as const };
 
-  if (!deal || deal.startup_id !== startup.id) return { deal: null, failed: false as const };
-  if (deal.success_fee_amount == null) return { deal: null, failed: false as const };
-  return { deal, failed: false as const };
+  if (!deal || deal.startup_id !== startup.id) return { deal: null, failed: false as const, noFee: false as const };
+  // A fee-less deal the founder owns is not a missing one: the ledger shows it
+  // with nothing owed, so "Deal not found" here contradicts what they can see.
+  if (deal.success_fee_amount == null) return { deal: null, failed: false as const, noFee: true as const };
+  return { deal, failed: false as const, noFee: false as const };
 }

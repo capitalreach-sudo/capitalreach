@@ -11,14 +11,25 @@
  * client component, so the hidden fields never reach the browser.
  */
 
+// Any Unicode letter. Built via the constructor because the tsconfig target
+// predates the /u literal syntax; every supported runtime (ES2018+) has it.
+const ANY_LETTER = new RegExp("\\p{L}", "u");
+
 export function maskName(fullName: string | null | undefined): string {
   const name = (fullName ?? "").trim();
   if (!name) return "";
   const parts = name.split(/\s+/);
   if (parts.length === 1) return parts[0];
   const first = parts[0];
-  const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
-  return lastInitial ? `${first} ${lastInitial}.` : first;
+  // The initial must be a LETTER: names arrive decorated ("Testfirma Founder
+  // (demo)", "Jane Doe ★"), and "Testfirma (." is not a masked name. Walk
+  // back to the last token that contains a letter and take its first letter;
+  // a name with no letter past the first token keeps just that token.
+  for (let i = parts.length - 1; i >= 1; i--) {
+    const letter = parts[i].match(ANY_LETTER);
+    if (letter) return `${first} ${letter[0].toUpperCase()}.`;
+  }
+  return first;
 }
 
 export interface FounderLike {

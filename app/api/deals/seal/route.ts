@@ -54,7 +54,7 @@ async function loadDeal(dealId: string) {
     .maybeSingle();
   if (!deal) return null;
 
-  const [{ data: startup }, { data: investor }, { data: proposal }, { data: intro }] = await Promise.all([
+  const [{ data: startup }, { data: investor }, { data: proposal }, introRes] = await Promise.all([
     admin.from("startups").select("name").eq("id", deal.startup_id).maybeSingle(),
     admin.from("investors").select("display_name, firm_name").eq("id", deal.investor_id).maybeSingle(),
     // The accepted offer carries the terms. The deal row keeps only what is
@@ -63,11 +63,20 @@ async function loadDeal(dealId: string) {
       .select("amount, currency, equity_pct, valuation, instrument, conditions")
       .match({ startup_id: deal.startup_id, investor_id: deal.investor_id, status: "accepted" })
       .order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    // Column names must match 113's introductions table (first_contact_at,
+    // tail_ends_at). The dates land in a LEGAL document: a failed lookup has
+    // to be loud, because the created_at fallback below is indistinguishable
+    // from real data once rendered, and schema drift once rewrote the
+    // document's dates silently that way.
     admin.from("introductions")
-      .select("introduced_at, obligations_end_at")
+      .select("first_contact_at, tail_ends_at")
       .match({ startup_id: deal.startup_id, investor_id: deal.investor_id })
       .limit(1).maybeSingle(),
   ]);
+  const intro = introRes.data as { first_contact_at?: string; tail_ends_at?: string } | null;
+  if (introRes.error) {
+    console.error("[deals/seal] introductions lookup failed:", introRes.error);
+  }
 
   const text = dealSealText({
     companyName: startup?.name ?? "the Company",
@@ -78,8 +87,8 @@ async function loadDeal(dealId: string) {
     valuation: proposal?.valuation ?? null,
     instrument: proposal?.instrument ?? null,
     conditions: proposal?.conditions ?? null,
-    introducedAt: (intro as { introduced_at?: string } | null)?.introduced_at ?? deal.created_at,
-    tailEndsAt: (intro as { obligations_end_at?: string } | null)?.obligations_end_at ?? null,
+    introducedAt: intro?.first_contact_at ?? deal.created_at,
+    tailEndsAt: intro?.tail_ends_at ?? null,
   });
 
   return { deal, text, companyName: startup?.name ?? null };

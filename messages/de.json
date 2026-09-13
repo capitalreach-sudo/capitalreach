@@ -790,8 +790,8 @@
     "viewStartup": "Startup ansehen",
     "membershipBilling": "Mitgliedschaft & Abrechnung",
     "accessLevel": "Zugriffsstufe",
-    "upgradeAngel": "Upgrade auf Angel — $99/Monat",
-    "upgradeAngelSub": "Schalte volle Startup-Profile, Finanzen, Pitch-Decks und direkte Gründer-Nachrichten frei.",
+    "upgradeAngel": "Upgrade auf Angel: 99 €/Monat",
+    "upgradeAngelSub": "Schalten Sie volle Startup-Profile, Finanzen, Pitch-Decks und direkte Gründer-Nachrichten frei.",
     "viewAllPlans": "Alle Tarife ansehen",
     "billingPortalError": "Abrechnungsportal kann nicht geöffnet werden",
     "launchFreeBanner": "Während unseres Launch-Zeitraums geht alles aufs Haus — voller Growth-Zugang kostenlos.",
@@ -2125,7 +2125,9 @@
     "editAmountAria": "Betrag bearbeiten",
     "amountSaved": "Betrag aktualisiert",
     "contractYouSigned": "Sie haben unterschrieben - die Gegenseite steht noch aus",
-    "ndaClickwrapHint": "E-Signatur ist in dieser Umgebung nicht angebunden. Der Investor kann das NDA direkt auf dem Listing des Startups akzeptieren; das öffnet den Datenraum sofort."
+    "ndaClickwrapHint": "E-Signatur ist in dieser Umgebung nicht angebunden. Der Investor kann das NDA direkt auf dem Listing des Startups akzeptieren; das öffnet den Datenraum sofort.",
+    "commitCleared": "Zusage zurückgesetzt",
+    "commitClear": "Zurücksetzen"
   },
   "investorProfile": {
     "back": "Zurück zu den Investoren",
@@ -2617,7 +2619,7 @@
     "germany": "Deutschland",
     "highScore": "Score 80+",
     "newThisWeek": "Neu diese Woche",
-    "bigRaise": "Sucht €2M+",
+    "bigRaise": "€2M+ gesucht",
     "leadInvestors": "Lead-Investoren",
     "preseedAngels": "Pre-Seed Angels",
     "verifiedOnly": "Hinterlegte Dokumente",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Neues Deal-Dokument: {name}",
     "dealDocBody": "Die Gegenseite hat ein Dokument in Ihren gemeinsamen Datenraum gelegt.",
     "contractSentTitle": "Vertrag zur Unterschrift gesendet: {title}",
-    "contractSignedTitle": "Vertrag unterschrieben: {title}"
+    "contractSignedTitle": "Vertrag unterschrieben: {title}",
+    "roundReopenedTitle": "{name} hat die Runde wieder geöffnet",
+    "roundOversubTitle": "{name} ist überzeichnet",
+    "roundPausedTitle": "{name} hat die Runde pausiert",
+    "roundClosedTitle": "{name} hat die Runde geschlossen",
+    "roundBodyRoom": "Sie haben dieses Unternehmen gespeichert, es könnte noch Platz geben.",
+    "roundBodySaved": "Sie haben dieses Unternehmen auf Ihrer Watchlist.",
+    "waitlistOpenTitle": "{name} ist wieder offen, Sie stehen auf der Warteliste",
+    "waitlistOpenBody": "Die Runde ist wieder für neue Investoren offen. Sie wollten benachrichtigt werden."
   },
   "match": {
     "title": "Wer auf Sie wartet",

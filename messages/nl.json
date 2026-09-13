@@ -774,7 +774,7 @@
     "viewStartup": "Startup bekijken",
     "membershipBilling": "Lidmaatschap & Facturatie",
     "accessLevel": "Toegangsniveau",
-    "upgradeAngel": "Upgrade naar Angel — $99/maand",
+    "upgradeAngel": "Upgrade naar Angel: €99/maand",
     "upgradeAngelSub": "Ontgrendel volledige profielen, financiën, pitch decks en directe berichten met oprichters.",
     "viewAllPlans": "Alle plannen bekijken",
     "billingPortalError": "Kan facturatieportaal niet openen",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Bedrag bewerken",
     "amountSaved": "Bedrag bijgewerkt",
     "contractYouSigned": "U heeft getekend; wachten op de andere kant",
-    "ndaClickwrapHint": "E-handtekening is op deze omgeving niet gekoppeld. De investeerder kan de NDA direct op de vermelding van de startup accepteren, waarmee de data room meteen opent."
+    "ndaClickwrapHint": "E-handtekening is op deze omgeving niet gekoppeld. De investeerder kan de NDA direct op de vermelding van de startup accepteren, waarmee de data room meteen opent.",
+    "commitCleared": "Toezegging gewist",
+    "commitClear": "Wissen"
   },
   "investorProfile": {
     "back": "Terug naar investeerders",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Nieuw dealdocument: {name}",
     "dealDocBody": "De andere kant heeft een document aan uw gedeelde data room toegevoegd.",
     "contractSentTitle": "Contract verzonden ter ondertekening: {title}",
-    "contractSignedTitle": "Contract ondertekend: {title}"
+    "contractSignedTitle": "Contract ondertekend: {title}",
+    "roundReopenedTitle": "{name} heeft de ronde heropend",
+    "roundOversubTitle": "{name} is overtekend",
+    "roundPausedTitle": "{name} heeft de ronde gepauzeerd",
+    "roundClosedTitle": "{name} heeft de ronde gesloten",
+    "roundBodyRoom": "U heeft dit bedrijf opgeslagen, er is mogelijk nog ruimte.",
+    "roundBodySaved": "U heeft dit bedrijf op uw watchlist staan.",
+    "waitlistOpenTitle": "{name} is weer open, u staat op de wachtlijst",
+    "waitlistOpenBody": "De ronde is weer open voor nieuwe investeerders. U vroeg om bericht."
   },
   "match": {
     "title": "Wie er op je wacht",

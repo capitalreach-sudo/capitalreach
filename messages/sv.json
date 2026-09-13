@@ -774,7 +774,7 @@
     "viewStartup": "Visa startup",
     "membershipBilling": "Medlemskap & Fakturering",
     "accessLevel": "Åtkomstnivå",
-    "upgradeAngel": "Uppgradera till Angel — $99/månad",
+    "upgradeAngel": "Uppgradera till Angel: 99 EUR/månad",
     "upgradeAngelSub": "Lås upp fullständiga profiler, finanser, pitch decks och direktmeddelanden med grundare.",
     "viewAllPlans": "Visa alla planer",
     "billingPortalError": "Kan inte öppna faktureringsportalen",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Redigera beloppet",
     "amountSaved": "Beloppet uppdaterat",
     "contractYouSigned": "Du har signerat; väntar på motparten",
-    "ndaClickwrapHint": "E-signering är inte kopplad i denna miljö. Investeraren kan acceptera NDA:t direkt på startupens notering, vilket öppnar datarummet omedelbart."
+    "ndaClickwrapHint": "E-signering är inte kopplad i denna miljö. Investeraren kan acceptera NDA:t direkt på startupens notering, vilket öppnar datarummet omedelbart.",
+    "commitCleared": "Åtagande rensat",
+    "commitClear": "Rensa"
   },
   "investorProfile": {
     "back": "Tillbaka till investerare",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Nytt dealdokument: {name}",
     "dealDocBody": "Motparten lade till ett dokument i ert delade datarum.",
     "contractSentTitle": "Avtal skickat för signering: {title}",
-    "contractSignedTitle": "Avtal signerat: {title}"
+    "contractSignedTitle": "Avtal signerat: {title}",
+    "roundReopenedTitle": "{name} har öppnat rundan igen",
+    "roundOversubTitle": "{name} är övertecknad",
+    "roundPausedTitle": "{name} har pausat rundan",
+    "roundClosedTitle": "{name} har stängt rundan",
+    "roundBodyRoom": "Du sparade det här bolaget, det kan finnas plats kvar.",
+    "roundBodySaved": "Du har det här bolaget på din bevakningslista.",
+    "waitlistOpenTitle": "{name} är öppen igen, du står på väntelistan",
+    "waitlistOpenBody": "Rundan är öppen för nya investerare igen. Du bad om att få veta."
   },
   "match": {
     "title": "Vem som väntar på dig",

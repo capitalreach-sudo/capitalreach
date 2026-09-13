@@ -783,7 +783,7 @@
     "viewStartup": "عرض الشركة الناشئة",
     "membershipBilling": "العضوية والفوترة",
     "accessLevel": "مستوى الوصول",
-    "upgradeAngel": "الترقية إلى Angel — 99$ شهرياً",
+    "upgradeAngel": "الترقية إلى Angel، 99 €/شهر",
     "upgradeAngelSub": "افتح الملفات الكاملة والبيانات المالية والعروض التقديمية والمراسلة المباشرة مع المؤسسين.",
     "viewAllPlans": "عرض جميع الخطط",
     "billingPortalError": "تعذر فتح بوابة الفوترة",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "تعديل المبلغ",
     "amountSaved": "تم تحديث المبلغ",
     "contractYouSigned": "وقّعت؛ بانتظار الطرف الآخر",
-    "ndaClickwrapHint": "التوقيع الإلكتروني غير مفعّل في هذا النشر. يمكن للمستثمر قبول اتفاقية عدم الإفصاح مباشرة على إدراج الشركة الناشئة، فتُفتح غرفة البيانات فورًا."
+    "ndaClickwrapHint": "التوقيع الإلكتروني غير مفعّل في هذا النشر. يمكن للمستثمر قبول اتفاقية عدم الإفصاح مباشرة على إدراج الشركة الناشئة، فتُفتح غرفة البيانات فورًا.",
+    "commitCleared": "تم مسح الالتزام",
+    "commitClear": "مسح"
   },
   "investorProfile": {
     "back": "العودة إلى المستثمرين",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "مستند صفقة جديد: {name}",
     "dealDocBody": "أضاف الطرف الآخر مستندًا إلى غرفة البيانات المشتركة.",
     "contractSentTitle": "أُرسل العقد للتوقيع: {title}",
-    "contractSignedTitle": "وُقع العقد: {title}"
+    "contractSignedTitle": "وُقع العقد: {title}",
+    "roundReopenedTitle": "أعاد {name} فتح الجولة",
+    "roundOversubTitle": "{name} تجاوز حد الاكتتاب",
+    "roundPausedTitle": "أوقف {name} الجولة مؤقتًا",
+    "roundClosedTitle": "أغلق {name} الجولة",
+    "roundBodyRoom": "لقد حفظت هذه الشركة، وقد يظل هناك متسع.",
+    "roundBodySaved": "لقد حفظت هذه الشركة في قائمة المتابعة.",
+    "waitlistOpenTitle": "{name} مفتوح من جديد، أنت على قائمة الانتظار",
+    "waitlistOpenBody": "أُعيد فتح الجولة للمستثمرين الجدد. لقد طلبت إبلاغك."
   },
   "match": {
     "title": "من ينتظرك",

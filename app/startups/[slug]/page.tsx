@@ -29,7 +29,7 @@ interface Props {
   searchParams?: { preview?: string; share?: string };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
 
   // Metadata is rendered BEFORE the page body, so the body's redirect cannot
@@ -40,33 +40,52 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // courtesy, but an anonymous response naming a company was the one
   // exception to the masking rule every other anonymous surface follows
   // (sector teaser, pulse, sitemap, the page itself), and it doubled as a
-  // slug-existence oracle. The row is not read at all on this branch, so a
-  // real slug and a fake one answer identically. Founder-consented sharing is
-  // the share-token link; flipping public_listing_detail to "open" restores
-  // named previews with the page.
+  // slug-existence oracle. The row is not read at all on the tokenless
+  // branch, so a real slug and a fake one answer identically. The one
+  // exception is founder consent itself: a live share token minted for THIS
+  // startup names the unfurl, validated exactly as the page body's gate
+  // validates it (same startup, not revoked, not expired), and an invalid
+  // token answers identically to no token. Flipping public_listing_detail to
+  // "open" restores named previews for everyone with the page.
   //
   // noindex because this URL answers an anonymous crawler with a redirect to
   // sign-in; the browse index and sector pages carry the public SEO instead.
   const { data: { user } } = await supabase.auth.getUser();
+  let guestViaShareToken = false;
   if (!user && !(await listingDetailPublic())) {
-    return {
-      robots: { index: false, follow: false },
-      title: "A company raising on CapitalReach",
-      description: "Sign in to view this listing.",
-      openGraph: {
-        title: "CapitalReach",
-        description: "Founders raising. Investors deploying. Deals that close in one place.",
-        type: "website",
-        url: `/startups/${params.slug}`,
-      },
-      alternates: { canonical: `/startups/${params.slug}` },
-    };
+    const gateToken = typeof searchParams?.share === "string" ? searchParams.share.slice(0, 64) : null;
+    if (gateToken) {
+      const admin = createAdminClient();
+      const [{ data: target }, { data: gateShare }] = await Promise.all([
+        admin.from("startups").select("id").eq("slug", params.slug).maybeSingle(),
+        admin.from("round_shares").select("startup_id, expires_at, revoked_at").eq("token", gateToken).maybeSingle(),
+      ]);
+      guestViaShareToken = !!target && !!gateShare
+        && gateShare.startup_id === target.id
+        && !gateShare.revoked_at
+        && (!gateShare.expires_at || new Date(gateShare.expires_at) > new Date());
+    }
+    if (!guestViaShareToken) {
+      return {
+        robots: { index: false, follow: false },
+        title: "A company raising on CapitalReach",
+        description: "Sign in to view this listing.",
+        openGraph: {
+          title: "CapitalReach",
+          description: "Founders raising. Investors deploying. Deals that close in one place.",
+          type: "website",
+          url: `/startups/${params.slug}`,
+        },
+        alternates: { canonical: `/startups/${params.slug}` },
+      };
+    }
   }
 
   // Admin client: the members-only case returned above, so whoever reaches
-  // this read is entitled to named metadata -- a member, or anyone once the
-  // flag is "open". The 129 policies stop the anon session key from reading
-  // startups at all, which would silently blank this branch in open mode.
+  // this read is entitled to named metadata -- a member, a guest holding a
+  // live share token, or anyone once the flag is "open". The 129 policies
+  // stop the anon session key from reading startups at all, which would
+  // silently blank this branch in open mode.
   const { data: startup } = await createAdminClient()
     .from("startups")
     .select("name, tagline, industry, stage, funding_target, is_demo")
@@ -76,8 +95,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!startup) return {};
 
   return {
-    // A fictional sample company must never appear in a search result.
-    ...(startup.is_demo ? { robots: { index: false, follow: false } } : {}),
+    // A fictional sample company must never appear in a search result. A
+    // token-bearing share URL must not enter one either: the token in the
+    // address is the key to the room, and the canonical below already points
+    // crawlers at the tokenless URL.
+    ...(startup.is_demo || guestViaShareToken ? { robots: { index: false, follow: false } } : {}),
     title: `${startup.name} — ${startup.tagline}`,
     description: `${startup.name} is raising for ${startup.stage}. Browse their pitch, traction, and team on CapitalReach.`,
     openGraph: {

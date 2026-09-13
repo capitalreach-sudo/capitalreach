@@ -10,6 +10,7 @@ import {
   Send, Plus, Search, X, ArrowLeft,
   Building2, Loader2, Users, AlertCircle, Paperclip, Archive, Star, Search as SearchIcon } from "lucide-react";
 import { getInitials } from "@/lib/utils";
+import { displayLocale } from "@/lib/display-locale";
 import type { Profile, Thread, ThreadStatus, Message } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -1158,7 +1159,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       {showTime && (
                         <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
                           <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", padding: "3px 8px" }}>
-                            {new Date(msg.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                            {/* Locale-default hour cycle on purpose: 12h in en-US, 24h in de. */}
+                            {new Date(msg.created_at).toLocaleString(displayLocale(), { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
                       )}
@@ -1208,7 +1210,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           ) : null}
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", marginTop: "4px" }}>
                             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>
-                              {new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                              {new Date(msg.created_at).toLocaleTimeString(displayLocale(), { hour: "2-digit", minute: "2-digit" })}
                             </span>
                           </div>
                         </div>

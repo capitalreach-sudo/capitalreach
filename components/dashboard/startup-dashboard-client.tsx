@@ -28,7 +28,7 @@ import { FounderAttestationModal } from "@/components/review/FounderAttestationM
 interface Props {
   profile:      Profile;
   startup:      Startup | null;
-  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number }; funnel?: { views: number; termSheets: number; closed: number } };
+  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; saveSeries?: number[]; dealSeries?: number[]; raise?: { softCircled: number; committed: number }; funnel?: { views: number; deals: number; termSheets: number; closed: number } };
   isLaunchMode: boolean;
   /**
    * Set when an admin is looking at someone else's dashboard. Carries the
@@ -1622,10 +1622,12 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             {startup && <ErrorBoundary labelKey="sections.raiseProgress"><RoundControls startup={startup} /></ErrorBoundary>}
             {startup && analytics.funnel && (
               <ErrorBoundary labelKey="sections.raiseProgress">
-                {/* funnel.views, not the strip's views: the strip is a 30-day
-                    window, every other funnel step is all-time, and one mixed
-                    window makes a conversion step read over 100%. */}
-                <RaiseFunnel views={analytics.funnel.views} saves={analytics.saves} deals={analytics.deals} termSheets={analytics.funnel.termSheets} closed={analytics.funnel.closed} />
+                {/* funnel.views and funnel.deals, not the strip's: the
+                    strip's Views is a 30-day window and its Deals excludes
+                    closed, while every funnel step must share one all-time
+                    definition -- a mixed definition makes a conversion step
+                    read over 100%, or narrow to zero before Closed. */}
+                <RaiseFunnel views={analytics.funnel.views} saves={analytics.saves} deals={analytics.funnel.deals} termSheets={analytics.funnel.termSheets} closed={analytics.funnel.closed} />
               </ErrorBoundary>
             )}
             {benchmarks && benchmarks.entries.length > 0 && (

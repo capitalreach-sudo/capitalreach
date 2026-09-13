@@ -783,7 +783,7 @@
     "viewStartup": "スタートアップを見る",
     "membershipBilling": "メンバーシップと請求",
     "accessLevel": "アクセスレベル",
-    "upgradeAngel": "Angelにアップグレード — 月額$99",
+    "upgradeAngel": "Angelにアップグレード: 月額99ユーロ",
     "upgradeAngelSub": "完全なプロフィール、財務、ピッチデッキ、創業者との直接メッセージを解放。",
     "viewAllPlans": "すべてのプランを見る",
     "billingPortalError": "請求ポータルを開けません",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "金額を編集",
     "amountSaved": "金額を更新しました",
     "contractYouSigned": "署名済み（相手側の署名待ち）",
-    "ndaClickwrapHint": "この環境では電子署名が接続されていません。投資家はスタートアップの掲載ページで直接NDAを承諾でき、データルームはすぐに開きます。"
+    "ndaClickwrapHint": "この環境では電子署名が接続されていません。投資家はスタートアップの掲載ページで直接NDAを承諾でき、データルームはすぐに開きます。",
+    "commitCleared": "コミットメントを解除",
+    "commitClear": "解除"
   },
   "investorProfile": {
     "back": "投資家一覧に戻る",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "新しいディール資料：{name}",
     "dealDocBody": "相手側が共有データルームに資料を追加しました。",
     "contractSentTitle": "契約書が署名のため送付されました：{title}",
-    "contractSignedTitle": "契約書が署名されました：{title}"
+    "contractSignedTitle": "契約書が署名されました：{title}",
+    "roundReopenedTitle": "{name}がラウンドを再開しました",
+    "roundOversubTitle": "{name}は応募超過です",
+    "roundPausedTitle": "{name}がラウンドを一時停止しました",
+    "roundClosedTitle": "{name}がラウンドをクローズしました",
+    "roundBodyRoom": "保存済みの企業です。まだ枠が残っている可能性があります。",
+    "roundBodySaved": "ウォッチリストに保存済みの企業です。",
+    "waitlistOpenTitle": "{name}が再開しました。あなたは順番待ちリストに登録されています",
+    "waitlistOpenBody": "ラウンドが新規投資家に再開されました。通知をご希望でした。"
   },
   "match": {
     "title": "あなたを待つ投資家",

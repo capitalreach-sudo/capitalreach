@@ -29,10 +29,18 @@ const DiamondLogo = ({ size = 10 }: { size?: number }) => (
   </svg>
 );
 
-export function Navbar() {
+interface NavbarProps {
+  /** Server-rendered seed: an authenticated page that already holds the
+      viewer's profile passes it so the first paint shows the signed-in bar
+      rather than Sign in until the client-side auth fetch resolves. Pages
+      that pass nothing start signed-out, exactly as before the prop. */
+  initialProfile?: Profile | null;
+}
+
+export function Navbar({ initialProfile = null }: NavbarProps = {}) {
   const { t, locale } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profile, setProfile]       = useState<Profile | null>(null);
+  const [profile, setProfile]       = useState<Profile | null>(initialProfile);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
   const router   = useRouter();
@@ -57,6 +65,10 @@ export function Navbar() {
         const { data: p } = await supabase
           .from("profiles").select("*").eq("id", data.user.id).single();
         setProfile(p);
+      } else {
+        // The client session is authoritative: a server seed must not keep
+        // the signed-in bar alive once the session is gone.
+        setProfile(null);
       }
     });
   }, [supabase]);

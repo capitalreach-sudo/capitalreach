@@ -774,7 +774,7 @@
     "viewStartup": "Zobacz startup",
     "membershipBilling": "Członkostwo i rozliczenia",
     "accessLevel": "Poziom dostępu",
-    "upgradeAngel": "Ulepsz do Angel — $99/mies.",
+    "upgradeAngel": "Ulepsz do Angel: 99 EUR/mies.",
     "upgradeAngelSub": "Odblokuj pełne profile, finanse, pitch decki i bezpośrednie wiadomości z founderami.",
     "viewAllPlans": "Zobacz wszystkie plany",
     "billingPortalError": "Nie można otworzyć portalu rozliczeniowego",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Edytuj kwotę",
     "amountSaved": "Kwota zaktualizowana",
     "contractYouSigned": "Podpisałeś; czekamy na drugą stronę",
-    "ndaClickwrapHint": "Podpis elektroniczny nie jest podłączony w tej instalacji. Inwestor może zaakceptować NDA bezpośrednio na ogłoszeniu startupu, co od razu otwiera data room."
+    "ndaClickwrapHint": "Podpis elektroniczny nie jest podłączony w tej instalacji. Inwestor może zaakceptować NDA bezpośrednio na ogłoszeniu startupu, co od razu otwiera data room.",
+    "commitCleared": "Zobowiązanie wycofane",
+    "commitClear": "Wyczyść"
   },
   "investorProfile": {
     "back": "Wróć do inwestorów",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Nowy dokument deala: {name}",
     "dealDocBody": "Druga strona dodała dokument do wspólnego data roomu.",
     "contractSentTitle": "Umowa wysłana do podpisu: {title}",
-    "contractSignedTitle": "Umowa podpisana: {title}"
+    "contractSignedTitle": "Umowa podpisana: {title}",
+    "roundReopenedTitle": "{name} ponownie otworzył rundę",
+    "roundOversubTitle": "{name} ma nadsubskrypcję",
+    "roundPausedTitle": "{name} wstrzymał rundę",
+    "roundClosedTitle": "{name} zamknął rundę",
+    "roundBodyRoom": "Zapisałeś tę firmę, może być jeszcze miejsce.",
+    "roundBodySaved": "Zapisałeś tę firmę na swojej liście obserwowanych.",
+    "waitlistOpenTitle": "{name} jest znów otwarta, jesteś na liście oczekujących",
+    "waitlistOpenBody": "Runda znów jest otwarta dla nowych inwestorów. Prosiłeś o powiadomienie."
   },
   "match": {
     "title": "Kto na Ciebie czeka",

@@ -150,7 +150,10 @@ async function saveSchedule(body: Record<string, unknown>, deal: DealRow, party:
   const others = [party.startupOwner, party.investorOwner].filter((id): id is string => !!id && id !== userId);
   if (others.length && rows.length) {
     await notifyUsers(others, {
-      type: "deal_closed",
+      // deal_stage, not deal_closed: nothing closed here, and the type drives
+      // both the bell icon and the mute setting ("Deals" group), so a
+      // proposed schedule must not wear the close's checkmark or its mute.
+      type: "deal_stage",
       title: "A funding schedule was proposed",
       body: `${rows.length} tranches on ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}.`,
       titleKey: "notif.scheduleProposedTitle",
@@ -219,7 +222,9 @@ async function confirmTranche(body: Record<string, unknown>, deal: DealRow, part
   const others = [party.startupOwner, party.investorOwner].filter((id): id is string => !!id && id !== userId);
   if (others.length) {
     await notifyUsers(others, {
-      type: "deal_closed",
+      // deal_closed is reserved for the fully-funded moment; a single
+      // tranche's leg confirmation is progress, not a close.
+      type: complete ? "deal_closed" : "deal_stage",
       title: complete
         ? `Fully funded: ${(deal.startup as unknown as { name: string } | null)?.name ?? "your deal"}`
         : step === "sent" ? `${label}: the investor confirmed funds sent` : `${label}: the founder confirmed funds received`,

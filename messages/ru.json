@@ -774,7 +774,7 @@
     "viewStartup": "Смотреть стартап",
     "membershipBilling": "Членство и оплата",
     "accessLevel": "Уровень доступа",
-    "upgradeAngel": "Обновление до Angel — $99/мес.",
+    "upgradeAngel": "Обновление до Angel: 99 €/мес.",
     "upgradeAngelSub": "Откройте полные профили, финансы, питч-деки и прямые сообщения с основателями.",
     "viewAllPlans": "Все тарифы",
     "billingPortalError": "Не удаётся открыть портал оплаты",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Изменить сумму",
     "amountSaved": "Сумма обновлена",
     "contractYouSigned": "Вы подписали; ждём другую сторону",
-    "ndaClickwrapHint": "Электронная подпись не подключена в этой среде. Инвестор может принять NDA прямо на объявлении стартапа, и комната данных откроется сразу."
+    "ndaClickwrapHint": "Электронная подпись не подключена в этой среде. Инвестор может принять NDA прямо на объявлении стартапа, и комната данных откроется сразу.",
+    "commitCleared": "Обязательство снято",
+    "commitClear": "Снять"
   },
   "investorProfile": {
     "back": "Назад к инвесторам",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Новый документ сделки: {name}",
     "dealDocBody": "Другая сторона добавила документ в вашу общую комнату данных.",
     "contractSentTitle": "Договор отправлен на подпись: {title}",
-    "contractSignedTitle": "Договор подписан: {title}"
+    "contractSignedTitle": "Договор подписан: {title}",
+    "roundReopenedTitle": "{name} снова открыл раунд",
+    "roundOversubTitle": "{name} переподписан",
+    "roundPausedTitle": "{name} приостановил раунд",
+    "roundClosedTitle": "{name} закрыл раунд",
+    "roundBodyRoom": "Вы сохранили эту компанию, места ещё могут быть.",
+    "roundBodySaved": "Эта компания в вашем списке наблюдения.",
+    "waitlistOpenTitle": "{name} снова открыт, вы в листе ожидания",
+    "waitlistOpenBody": "Раунд снова открыт для новых инвесторов. Вы просили сообщить."
   },
   "match": {
     "title": "Кто вас ждёт",

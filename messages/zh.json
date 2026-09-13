@@ -783,7 +783,7 @@
     "viewStartup": "查看初创公司",
     "membershipBilling": "会员与账单",
     "accessLevel": "访问级别",
-    "upgradeAngel": "升级到Angel — 每月$99",
+    "upgradeAngel": "升级到Angel:每月99欧元",
     "upgradeAngelSub": "解锁完整初创公司资料、财务、路演文稿和与创始人的直接消息。",
     "viewAllPlans": "查看所有套餐",
     "billingPortalError": "无法打开账单门户",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "编辑金额",
     "amountSaved": "金额已更新",
     "contractYouSigned": "你已签署，等待对方",
-    "ndaClickwrapHint": "此部署未接入电子签名。投资者可以直接在创业公司的挂牌页接受 NDA，数据室随即开放。"
+    "ndaClickwrapHint": "此部署未接入电子签名。投资者可以直接在创业公司的挂牌页接受 NDA，数据室随即开放。",
+    "commitCleared": "承诺已清除",
+    "commitClear": "清除"
   },
   "investorProfile": {
     "back": "返回投资者列表",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "新的交易文件：{name}",
     "dealDocBody": "对方在你们的共享数据室中添加了一份文件。",
     "contractSentTitle": "合同已发送待签署：{title}",
-    "contractSignedTitle": "合同已签署：{title}"
+    "contractSignedTitle": "合同已签署：{title}",
+    "roundReopenedTitle": "{name}重新开放了轮次",
+    "roundOversubTitle": "{name}已超额认购",
+    "roundPausedTitle": "{name}暂停了轮次",
+    "roundClosedTitle": "{name}关闭了轮次",
+    "roundBodyRoom": "您收藏了这家公司,可能仍有额度。",
+    "roundBodySaved": "您已将这家公司加入关注列表。",
+    "waitlistOpenTitle": "{name}再次开放,您在候补名单中",
+    "waitlistOpenBody": "轮次已重新向新投资者开放。您曾要求收到通知。"
   },
   "match": {
     "title": "谁在等你",

@@ -88,21 +88,28 @@ export async function GET(req: NextRequest) {
   }
 
   // ── 093: scores learn to age ────────────────────────────────────────────
-  // Re-score listings whose content moved after the model last looked. A few
-  // per run keeps the cost bounded; oldest drift first means nothing waits
-  // forever. Skipped entirely while the model is unconfigured — the stale
-  // score stays, which is still better than no score.
+  // Re-score listings whose content moved after the model last looked, and
+  // score the ones the model has NEVER seen. Never-scored actives exist
+  // whenever approval ran while the model was down (approve deliberately
+  // survives a scoring failure), and the old scored_at-not-null filter made
+  // them invisible to this loop forever - approved during an outage meant
+  // unscored for life. A few per run keeps the cost bounded; never-scored
+  // first, then oldest drift, means nothing waits forever. Skipped entirely
+  // while the model is unconfigured - the stale score stays, which is still
+  // better than no score.
   let rescored = 0;
   if (isOpenAIConfigured) {
     const { data: stale } = await admin
       .from("startups")
       .select("id, name, problem, solution, market, competitive_advantage, mrr, arr, user_count, growth_rate, stage, updated_at, scored_at, founders:startup_founders(name, role, linkedin_url), documents:startup_documents(type), milestones:startup_milestones(description)")
       .eq("status", "active")
-      .not("scored_at", "is", null)
       .limit(200);
     const drifted = (stale ?? [])
-      .filter(s => s.updated_at && s.scored_at && s.updated_at > s.scored_at)
-      .sort((a, b) => (a.scored_at! < b.scored_at! ? -1 : 1))
+      .filter(s => !s.scored_at || (s.updated_at && s.updated_at > s.scored_at))
+      .sort((a, b) => {
+        if (!a.scored_at !== !b.scored_at) return a.scored_at ? 1 : -1;
+        return (a.scored_at ?? "") < (b.scored_at ?? "") ? -1 : 1;
+      })
       .slice(0, 10);
     let lastRescoreError: string | null = null;
     for (const s of drifted) {

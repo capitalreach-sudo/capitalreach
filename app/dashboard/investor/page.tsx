@@ -145,7 +145,9 @@ export default async function InvestorDashboardPage() {
 
   return (
     <>
-      <Navbar />
+      {/* Seeded so SSR paints the signed-in bar; this page already proved
+          the session and holds the profile. */}
+      <Navbar initialProfile={profile} />
       <InvestorDashboardClient
         isLaunchMode={isLaunch}
         allocation={allocation}

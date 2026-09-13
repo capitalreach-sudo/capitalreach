@@ -97,13 +97,25 @@ export async function POST(req: NextRequest) {
           paused: `${before.name} paused its round`,
           closed: `${before.name} closed its round`,
         };
+        // Keyed like every other sender: the stored English is the fallback,
+        // the key renders the reader's own language.
+        const titleKeys: Record<RoundState, string> = {
+          open: "notif.roundReopenedTitle",
+          oversubscribed: "notif.roundOversubTitle",
+          paused: "notif.roundPausedTitle",
+          closed: "notif.roundClosedTitle",
+        };
+        const stillRoom = !(roundState === "closed" || roundState === "paused");
         await admin.from("notifications").insert(ids.map(uid => ({
           user_id: uid,
           type: "listing_update",
           title: titles[roundState],
-          body: roundState === "closed" || roundState === "paused"
-            ? "You saved this company to your watchlist."
-            : "You saved this company — there may still be room.",
+          title_key: titleKeys[roundState],
+          body: stillRoom
+            ? "You saved this company, there may still be room."
+            : "You saved this company to your watchlist.",
+          body_key: stillRoom ? "notif.roundBodyRoom" : "notif.roundBodySaved",
+          params: { name: before.name },
           href: `/startups/${before.slug}`,
         })));
       }
@@ -121,7 +133,10 @@ export async function POST(req: NextRequest) {
           user_id: uid,
           type: "listing_update",
           title: `${before.name} is open again - you are on the waitlist`,
+          title_key: "notif.waitlistOpenTitle",
           body: "The round reopened to new investors. You asked to be told.",
+          body_key: "notif.waitlistOpenBody",
+          params: { name: before.name },
           href: `/startups/${before.slug}`,
         })));
       } catch (e) {

@@ -1733,7 +1733,12 @@ function ActivitySection({ dealId }: { dealId: string }) {
                     verbal: "deals.commitVerbal", committed: "deals.commitCommitted",
                   };
                   let m: RegExpMatchArray | null;
-                  if ((m = a.body.match(/^commitment:([a-z_]+)(?: · (.+))?$/))) {
+                  // Checked before the commitment regex, which would
+                  // otherwise catch "cleared" as a level id and render it
+                  // raw. tOr because the key is newer than the dictionaries.
+                  if (a.body === "commitment:cleared") {
+                    body = tOr(t, "deals.commitCleared", "Commitment cleared");
+                  } else if ((m = a.body.match(/^commitment:([a-z_]+)(?: · (.+))?$/))) {
                     body = `${CM[m[1]] ? t(CM[m[1]]) : m[1]}${m[2] ? ` · ${m[2]}` : ""}`;
                   } else if ((m = a.body.match(/^funding:(sent|received)(?: · (.+))?$/))) {
                     body = `${t(m[1] === "sent" ? "funding.sent" : "funding.received")}${m[2] ? ` · ${m[2]}` : ""}`;
@@ -1903,7 +1908,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
   }, [deepLinked]);
   // What this card was told, held until the record catches up. Both fall back
   // to the server row, so a refusal puts the old value back by itself.
-  const [commitDraft, setCommitDraft] = useState<CommitmentType | null>(null);
+  // undefined = no local draft (show the server's value); null = the user
+  // cleared it and the request is out. Two distinct absent states, so the
+  // optimistic clear cannot be confused with "nothing touched yet".
+  const [commitDraft, setCommitDraft] = useState<CommitmentType | null | undefined>(undefined);
   const [followUpSaved, setFollowUpSaved] = useState<string | null | undefined>(undefined);
 
   const { investorName, startupName } = dealNames(deal, t);
@@ -2174,8 +2182,11 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {/* B17: commitment level — "we're in for X". Both sides can set it;
           the raise tracker on the founder dashboard reads it from day 0. */}
       {onSetCommitment && isActive && (() => {
-        const serverCt = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? "interest") as CommitmentType;
-        const ct = commitDraft ?? serverCt;
+        // null renders with NO active chip: a deal without a recorded
+        // commitment must look different from one at "interest", or the
+        // clear below would appear to snap back to interest on save.
+        const serverCt = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? null) as CommitmentType | null;
+        const ct = commitDraft === undefined ? serverCt : commitDraft;
         const chipStyle = (active: boolean): React.CSSProperties => ({
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", cursor: "pointer",
           background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -2199,6 +2210,21 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
                   {t(COMMITMENT_KEY[c])}
                 </button>
               ))}
+              {ct !== null && (
+                <button style={{ ...chipStyle(false), color: "var(--cr-ink-4)" }}
+                  onClick={async () => {
+                    const previous = commitDraft;
+                    setCommitDraft(null);
+                    // The prop's param stays CommitmentType: the portal's
+                    // handler types it as plain string, which strict
+                    // contravariance cannot widen to admit null. The wire
+                    // contract (deals/update) takes null as the explicit
+                    // clear, and JSON carries the null through verbatim.
+                    if (await onSetCommitment(deal.id, null as unknown as CommitmentType) === false) setCommitDraft(previous);
+                  }}>
+                  {tOr(t, "deals.commitClear", "Clear")}
+                </button>
+              )}
             </div>
           </div>
         );

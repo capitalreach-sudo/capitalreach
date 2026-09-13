@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { getLocale, getTranslator } from "@/lib/locale-server";
-import type { Deal } from "@/types";
+import type { Deal, Profile } from "@/types";
 import { buildAccessContext, canExportData, founderCan, isSuspended } from "@/lib/access";
 import { resolveAdmin } from "@/lib/admin-guard";
 import { Navbar } from "@/components/shared/navbar";
@@ -38,7 +38,9 @@ export default async function DealsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?redirect=/deals");
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+    // The role/tier union narrowings are licensed by the DB CHECK constraints.
+    .returns<Profile>();
   if (!profile) redirect("/auth/login?redirect=/deals");
 
   const { isLaunch } = await getLaunchStatus();
@@ -73,7 +75,7 @@ export default async function DealsPage() {
 
     return (
       <>
-        <Navbar />
+        <Navbar initialProfile={profile} />
         <main style={MAIN}>
           <div style={WRAP}>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("deals.portalLabel")}</div>
@@ -124,7 +126,7 @@ export default async function DealsPage() {
 
     return (
       <>
-        <Navbar />
+        <Navbar initialProfile={profile} />
         <main style={MAIN}>
           <div style={WRAP}>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("deals.portalLabel")}</div>
@@ -184,7 +186,7 @@ export default async function DealsPage() {
 
     return (
       <>
-        <Navbar />
+        <Navbar initialProfile={profile} />
         <main style={MAIN}>
           <div style={WRAP}>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("deals.portalLabel")}</div>
@@ -205,7 +207,7 @@ export default async function DealsPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar initialProfile={profile} />
       <main style={{ ...MAIN, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ padding: "96px 24px", textAlign: "center" }}>
           <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "14px", marginBottom: "12px" }}>✦</span>

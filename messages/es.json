@@ -783,7 +783,7 @@
     "viewStartup": "Ver startup",
     "membershipBilling": "Membresía y Facturación",
     "accessLevel": "Nivel de acceso",
-    "upgradeAngel": "Mejora a Angel — $99/mes",
+    "upgradeAngel": "Mejora a Angel: 99 €/mes",
     "upgradeAngelSub": "Desbloquea perfiles completos, finanzas, pitch decks y mensajería directa con fundadores.",
     "viewAllPlans": "Ver todos los planes",
     "billingPortalError": "No se puede abrir el portal de facturación",
@@ -2118,7 +2118,9 @@
     "editAmountAria": "Editar el importe",
     "amountSaved": "Importe actualizado",
     "contractYouSigned": "Firmaste; falta la otra parte",
-    "ndaClickwrapHint": "La firma electrónica no está conectada en este despliegue. El inversor puede aceptar el NDA directamente en la ficha de la startup, lo que abre la sala de datos al instante."
+    "ndaClickwrapHint": "La firma electrónica no está conectada en este despliegue. El inversor puede aceptar el NDA directamente en la ficha de la startup, lo que abre la sala de datos al instante.",
+    "commitCleared": "Compromiso retirado",
+    "commitClear": "Quitar"
   },
   "investorProfile": {
     "back": "Volver a inversores",
@@ -3947,7 +3949,15 @@
     "dealDocTitle": "Nuevo documento del deal: {name}",
     "dealDocBody": "La otra parte añadió un documento a la sala de datos compartida.",
     "contractSentTitle": "Contrato enviado para firma: {title}",
-    "contractSignedTitle": "Contrato firmado: {title}"
+    "contractSignedTitle": "Contrato firmado: {title}",
+    "roundReopenedTitle": "{name} reabrió su ronda",
+    "roundOversubTitle": "{name} está sobresuscrita",
+    "roundPausedTitle": "{name} pausó su ronda",
+    "roundClosedTitle": "{name} cerró su ronda",
+    "roundBodyRoom": "Guardaste esta empresa, puede que aún haya sitio.",
+    "roundBodySaved": "Guardaste esta empresa en tu lista de seguimiento.",
+    "waitlistOpenTitle": "{name} está abierta de nuevo, estás en la lista de espera",
+    "waitlistOpenBody": "La ronda se reabrió a nuevos inversores. Pediste que te avisáramos."
   },
   "match": {
     "title": "Quién te espera",
