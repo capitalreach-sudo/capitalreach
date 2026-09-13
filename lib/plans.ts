@@ -1,5 +1,13 @@
 // Single source of truth for plan definitions, feature flags, and tier helpers.
 
+/** The billing currency, decided ONCE. The stage ladder was priced in EUR
+ * (lib/pricing-stage.ts) while every pricing surface hardcoded "$" -- a
+ * visitor saw "Rises to $12/mo" a scroll away from the fee calculator's
+ * EUR figures. Every plan price renders through formatMoney with this. */
+export const PLAN_CURRENCY = "EUR";
+
+
+
 // ── Founder plans ─────────────────────────────────────────────────────────────
 
 export interface FounderFeatures {

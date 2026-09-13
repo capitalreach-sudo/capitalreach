@@ -132,14 +132,35 @@ export function autoRetryable(d: FeeDeal, hasStripeCustomer: boolean): boolean {
   return d.fee_billing_status === "no_customer" || d.fee_billing_status === "failed" || d.fee_billing_status == null;
 }
 
-export interface LedgerTotals { outstanding: number; unbillable: number; waived: number; collected: number; disputed: number; reversed: number }
+/** Per state, per CURRENCY. Fees are recorded in the deal's own currency, and
+ *  adding EUR to USD to JPY produces a unitless number wearing whatever symbol
+ *  the renderer guesses -- the admin ledger did exactly that. Each state now
+ *  carries one entry per currency, largest first, and the renderer prints each
+ *  in its own symbol. */
+export interface LedgerTotals {
+  outstanding: Array<{ currency: string; amount: number }>;
+  unbillable: Array<{ currency: string; amount: number }>;
+  waived: Array<{ currency: string; amount: number }>;
+  collected: Array<{ currency: string; amount: number }>;
+  disputed: Array<{ currency: string; amount: number }>;
+  reversed: Array<{ currency: string; amount: number }>;
+}
 
 export function ledgerTotals(deals: FeeDeal[]): LedgerTotals {
-  const totals: LedgerTotals = { outstanding: 0, unbillable: 0, waived: 0, collected: 0, disputed: 0, reversed: 0 };
+  const acc: Record<keyof LedgerTotals, Map<string, number>> = {
+    outstanding: new Map(), unbillable: new Map(), waived: new Map(),
+    collected: new Map(), disputed: new Map(), reversed: new Map(),
+  };
   for (const d of deals) {
     const s = feeState(d);
     if (s === "none") continue;
-    totals[s] += feeMajor(d);
+    const cur = ((d as { currency?: string | null }).currency ?? "USD").toUpperCase();
+    acc[s].set(cur, (acc[s].get(cur) ?? 0) + feeMajor(d));
   }
-  return totals;
+  const out = {} as LedgerTotals;
+  (Object.keys(acc) as Array<keyof LedgerTotals>).forEach((k) => {
+    out[k] = Array.from(acc[k], ([currency, amount]) => ({ currency, amount }))
+      .sort((a, b) => b.amount - a.amount);
+  });
+  return out;
 }

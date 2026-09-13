@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase";
 import { Navbar } from "@/components/shared/navbar";
 import { ArrowLeft } from "lucide-react";
 import { useLaunchMode } from "@/hooks/useLaunchMode";
-import { getFounderPlan, FOUNDER_PLANS_LIST } from "@/lib/plans";
+import { getFounderPlan, FOUNDER_PLANS_LIST, PLAN_CURRENCY } from "@/lib/plans";
 import { notify } from "@/components/ui/toast-notify";
 import { formatMoney } from "@/lib/currency";
 import type { Profile } from "@/types";
@@ -171,7 +171,7 @@ export default function StartupBillingPage() {
                       ? t("dashboard.freeDuringLaunch")
                       : currentPlan.price === 0
                         ? t("common.free")
-                        : (<><span style={{ ...MONO, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>${currentPlan.price}</span>{t("pricing.perMonth")}</>)}
+                        : (<><span style={{ ...MONO, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{formatMoney(currentPlan.price, PLAN_CURRENCY)}</span>{t("pricing.perMonth")}</>)}
                   </p>
                 </div>
                 {profile?.stripe_customer_id && (
@@ -210,7 +210,7 @@ export default function StartupBillingPage() {
                     <div>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", margin: 0 }}>{p.name}</p>
                       <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "2px" }}>
-                        <span style={{ ...MONO, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>${p.price}</span>{t("pricing.perMonth")}
+                        <span style={{ ...MONO, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{formatMoney(p.price, PLAN_CURRENCY)}</span>{t("pricing.perMonth")}
                       </p>
                     </div>
                     <button onClick={() => handleUpgrade(p.id)} style={BTN_OUTLINE}>{t("common.upgrade")}</button>

@@ -101,6 +101,12 @@ export async function GET(req: NextRequest) {
     sha256: sealHash(loaded.text),
     sealed: state.sealed,
     sealedAt: state.sealedAt,
+    // The conflict state must REACH the client: both parties signed but over
+    // different bytes (a name changed mid-seal). Without this field the UI
+    // showed two completed signatures under "waiting on the other side",
+    // forever, with no control that could resolve it.
+    conflict: state.conflict,
+    awaiting: state.awaiting,
     startup: state.startup,
     investor: state.investor,
     mine: party === "startup" ? state.startup : state.investor,

@@ -5,6 +5,7 @@ import { STAGE_LABELS } from "@/lib/utils";
 import { RefreshCw, AlertTriangle, Download, Building2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
+import { getCurrency } from "@/lib/currency";
 import { InfoTip } from "@/components/shared/info-tip";
 import { LiveClock } from "@/components/ui/LiveClock";
 import { LedgerLoader } from "@/components/ui/LedgerLoader";
@@ -156,7 +157,9 @@ function exportPlatformCsv(d: PlatformData) {
     // "Investors", which broke this function's own rule above and exported a
     // verification claim the platform does not make.
     ["headline", "Investors", d.investorCount],
-    ["headline", "Total raised", d.totalRaised],
+    // The currency rides in the label: an unlabelled 1,655,000 in a CSV is
+    // whatever the reader's spreadsheet assumes.
+    ["headline", `Total raised${d.closedCurrencies?.length ? ` (${d.closedCurrencies.join("+")})` : ""}`, d.totalRaised],
     ["headline", "Deals closed", d.dealsCount],
     ["headline", "Active deals", d.activeDeals],
     // lib/platform-data already rounds this to whole percent; multiplying by
@@ -659,8 +662,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   hover, focus and tap, in the same InfoTip idiom the browse
                   filters use -- a headline figure with no definition invites
                   the most generous possible misreading. */}
-              <StatCard lead label={t("data.raised")} value={data.totalRaised} prefix="$"
+              {/* The symbol comes from the DEALS, not from a hardcode: all
+                  closed rounds to date are EUR, and the page was claiming the
+                  sum in dollars. One currency -> its own symbol; a mixed book
+                  -> no symbol, with the mix disclosed right here rather than
+                  two tabs away. */}
+              <StatCard lead label={t("data.raised")} value={data.totalRaised}
+                prefix={data.closedCurrencies?.length === 1 ? getCurrency(data.closedCurrencies[0]).symbol : ""}
                 tip={<InfoTip termKey={tipKey(t, "glossary.totalRaised", "Every amount confirmed at the close of a deal here, summed to date. Money still being negotiated or soft-circled is not counted, and passed deals never enter the figure.")} />} />
+              {(data.closedCurrencies?.length ?? 0) > 1 && (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                  {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
+                </p>
+              )}
               {/* The three supporting totals as one hairline-divided strip:
                   vertical rules between the figures, not a grid of tiles.
                   The crop trick (overflow hidden + a negative margin equal to

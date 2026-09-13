@@ -77,11 +77,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not record signature" }, { status: 500 });
   }
 
-  // A contract is executed only when a signer from the OPPOSITE MARKET SIDE
-  // has signed — not merely "someone other than the creator". The old check
-  // let an attacker add a sockpuppet to their OWN team and self-execute the
-  // agreement (and, downstream, force-close the deal and raise the founder's
-  // 2% fee). "Side" = which entity the person owns or is a team member of.
+  // A contract is executed only when a signature row from EACH market side is
+  // on file. The earlier rule -- one signer from the side opposite the
+  // CREATOR -- treated drafting as implicit assent, so an investor could send
+  // a term sheet, the founder typed a name once, and a fee-bearing close
+  // gated on "both parties signed" was satisfied by ONE typed signature. That
+  // is beneath the platform's own seal standard, whose stated rationale is
+  // that one party's acceptance click is not a signed record. Deciding by the
+  // SIGNERS' sides (never the creator's) also un-wedges admin-drafted
+  // contracts, whose creator has no side and which could previously never
+  // reach 'signed' at all. "Side" = which entity the person owns or is a team
+  // member of; both-sides is checked against every signature on file, so
+  // sockpuppets on one side still cannot self-execute.
   const sideOf = async (uid: string): Promise<"startup" | "investor" | null> => {
     if (uid === startupOwner) return "startup";
     if (uid === investorOwner) return "investor";
@@ -89,10 +96,18 @@ export async function POST(req: NextRequest) {
     if (await isTeamMemberOfEither(uid, null, contract.investor_id)) return "investor";
     return null;
   };
-  const [creatorSide, signerSide] = await Promise.all([sideOf(contract.created_by), sideOf(user.id)]);
-  const counterpartSigned = !!signerSide && !!creatorSide && signerSide !== creatorSide;
+  const { data: allSigs } = await admin
+    .from("contract_signatures")
+    .select("signer_id")
+    .eq("contract_id", contractId);
+  const signerSides = new Set(
+    (await Promise.all(
+      Array.from(new Set((allSigs ?? []).map((r) => r.signer_id as string))).map((uid) => sideOf(uid)),
+    )).filter(Boolean),
+  );
+  const bothSidesSigned = signerSides.has("startup") && signerSides.has("investor");
   let updated = contract;
-  if (counterpartSigned && contract.status !== "signed") {
+  if (bothSidesSigned && contract.status !== "signed") {
     const { data: row } = await admin
       .from("contracts")
       .update({ status: "signed" })

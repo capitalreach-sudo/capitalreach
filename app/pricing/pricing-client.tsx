@@ -1,4 +1,5 @@
 "use client";
+import { formatMoney } from "@/lib/currency";
 
 import { BROKER_BENCHMARK_PERCENT, SUCCESS_FEE_PERCENT } from "@/lib/circumvention-text";
 import { useState, useEffect, useRef, useMemo, type CSSProperties } from "react";
@@ -6,7 +7,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Zap, TrendingUp, Info, Building2, ArrowRight, Brain, Sparkles } from "lucide-react";
-import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, annualPricingFrom } from "@/lib/plans";
+import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, annualPricingFrom, PLAN_CURRENCY} from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 // Type only: lib/pricing-stage reaches the database, so the value side of it
 // must never be pulled into the client bundle. The numbers arrive as props,
@@ -256,9 +257,9 @@ function PlanCard({
           ) : (
             <div style={{ display: "flex", alignItems: "flex-end", gap: "4px" }}>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
-                ${price}
+                {formatMoney(price, PLAN_CURRENCY)}
               </span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("pricing.perMonth")}{annual && yearly ? ` · ${t("pricing.billedYearly", { amount: yearly.total })}` : ""}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("pricing.perMonth")}{annual && yearly ? ` · ${t("pricing.billedYearly", { amount: formatMoney(yearly.total, PLAN_CURRENCY) })}` : ""}</span>
             </div>
           )}
         </div>
@@ -266,12 +267,12 @@ function PlanCard({
         {rising !== null && (
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
             {risingParts[0]}
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-3)" }}>${rising}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-3)" }}>{formatMoney(rising, PLAN_CURRENCY)}</span>
             {risingParts[1]}
           </p>
         )}
         {annual && saved > 0 && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: Math.round(saved) })} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{yearly?.percentOff}%</span></p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: formatMoney(Math.round(saved), PLAN_CURRENCY) })} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{yearly?.percentOff}%</span></p>
         )}
 
         <div style={{ height: "1px", background: "var(--cr-rule)", margin: "16px 0 24px" }} />

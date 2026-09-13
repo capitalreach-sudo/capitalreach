@@ -437,7 +437,7 @@
     "earlyAccess": "抢先体验",
     "finalCtaLaunchSub": "加入首批 {target} 名会员，免费获得完整访问权限 — 无需信用卡。",
     "finalCtaSub": "加入 CapitalReach 上创始人和投资者的早期社区。立即免费开始。",
-    "saveAnnual": "年付可节省 ${amount}/年",
+    "saveAnnual": "年付可节省 {amount}/年",
     "feature_investorBrowse": "浏览项目列表",
     "feature_investorFinancials": "完整财务数据",
     "feature_investorMessaging": "创始人消息",

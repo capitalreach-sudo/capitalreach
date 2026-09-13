@@ -88,7 +88,10 @@ export function founderCan(ctx: AccessContext): FounderCapabilities {
 
   return {
     listStartup:         true,
-    listingLimit:        tier === "growth" ? Infinity : 1,
+    // ONE for every tier: /api/startups/save hard-enforces one listing per
+    // founder, so the old Infinity here made the Growth pricing card claim
+    // "Unlimited startup listings" -- a lie with a checkmark next to it.
+    listingLimit:        1,
     // documentsLimit lives on the plan itself — don't duplicate the numbers.
     docLimit:            tier === "growth" ? Infinity : plan.features.documentsLimit,
     useNDA:              paid,

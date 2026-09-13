@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@/lib/currency";
+import { PLAN_CURRENCY } from "@/lib/plans";
 import { Fragment, useState } from "react";
 import { Check, Minus } from "lucide-react";
 import { founderMatrix, investorMatrix, type CellValue, type MatrixRow } from "@/lib/plan-matrix";
@@ -55,11 +57,11 @@ export function PlanComparison({ side, isLaunch }: { side: "founder" | "investor
                     <th key={p.id} style={th}>
                       <span style={{ display: "block", color: "var(--cr-ink)", fontSize: "12px", fontWeight: 700 }}>{p.name}</span>
                       <span style={{ display: "block", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "2px", fontWeight: 400 }}>
-                        {isLaunch || p.price === 0 ? t("pricing.free") : `$${p.price}${t("pricing.perMonth")}`}
+                        {isLaunch || p.price === 0 ? t("pricing.free") : `${formatMoney(p.price, PLAN_CURRENCY)}${t("pricing.perMonth")}`}
                       </span>
                       {!isLaunch && yearly && (
                         <span style={{ display: "block", fontSize: "9px", color: "var(--cr-copper)", marginTop: "1px", fontWeight: 600 }}>
-                          {t("compare.orYearly", { total: yearly.total, percent: yearly.percentOff })}
+                          {t("compare.orYearly", { total: formatMoney(yearly.total, PLAN_CURRENCY), percent: yearly.percentOff })}
                         </span>
                       )}
                     </th>

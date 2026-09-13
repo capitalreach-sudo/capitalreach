@@ -47,6 +47,7 @@ interface SealPayload {
   sha256: string;
   sealed: boolean;
   sealedAt: string | null;
+  conflict?: boolean;
   startup: Signature | null;
   investor: Signature | null;
   mine: Signature | null;
@@ -254,7 +255,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
             color: "var(--cr-band-ink)", textDecoration: "none",
           }}>{t("seal.openConversation")}</Link>
         </div>
-      ) : data.mine ? (
+      ) : data.mine && !data.conflict ? (
         <div style={{ padding: "16px", borderTop: "1px solid var(--cr-rule)" }}>
           <p style={{ ...BODY, margin: 0 }}>{t("seal.waitingOnThem")}</p>
         </div>
@@ -270,6 +271,15 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
               from a refused message needs the two halves in one place: what
               the signature buys, and that nothing else they can do here is
               being held. */}
+          {/* Conflict: the two signatures cover different documents. The
+              form below shows the CURRENT record; re-signing it (the POST
+              upserts per party) is exactly how the conflict resolves. */}
+          {data.conflict && (
+            <p style={{ ...BODY, fontSize: "13px", margin: "0 0 16px", maxWidth: "62ch", color: "var(--cr-down)", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+              <span aria-hidden style={{ flexShrink: 0 }}>{"⟳"}</span>
+              <span>{t("seal.recordChanged")}</span>
+            </p>
+          )}
           <p style={{ ...BODY, fontSize: "13px", margin: "0 0 16px", maxWidth: "62ch", display: "flex", gap: "8px", alignItems: "flex-start" }}>
             <span aria-hidden style={{ color: "var(--cr-copper)", flexShrink: 0 }}>{"✦"}</span>
             <span>{t("seal.opensMessaging")}</span>

@@ -437,7 +437,7 @@
     "earlyAccess": "早期アクセス",
     "finalCtaLaunchSub": "最初の{target}名に参加し、無料でフルアクセスを取得 — クレジットカード不要。",
     "finalCtaSub": "CapitalReachの創業者と投資家の早期コミュニティに参加。今すぐ無料で開始。",
-    "saveAnnual": "年払いで${amount}/年節約",
+    "saveAnnual": "年払いで{amount}/年節約",
     "feature_investorBrowse": "掲載一覧を閲覧",
     "feature_investorFinancials": "完全な財務情報",
     "feature_investorMessaging": "創業者へのメッセージ",

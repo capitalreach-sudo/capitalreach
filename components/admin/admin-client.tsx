@@ -15,6 +15,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { notify } from "@/components/ui/toast-notify";
 import { CheckCircle2, XCircle, AlertCircle, DollarSign, Users, Building2, TrendingUp } from "lucide-react";
 import { formatCurrency, formatDate, STATUS_COLORS } from "@/lib/utils";
+import { formatMoney } from "@/lib/currency";
+import type { LedgerTotals } from "@/lib/fees";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RevenueSummary } from "@/lib/revenue";
 import { LineChart } from "@/components/charts/line-chart";
@@ -931,13 +933,18 @@ const STATE_STYLE: Record<LedgerRow["state"], string> = {
 function FeeLedger() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<LedgerRow[] | null>(null);
-  const [totals, setTotals] = useState<Record<string, number> | null>(null);
+  const [totals, setTotals] = useState<LedgerTotals | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [filter, setFilter] = useState<"open" | "all">("open");
 
+  const [loadFailed, setLoadFailed] = useState(false);
   const load = useCallback(async () => {
-    const res = await fetch("/api/admin/fees");
-    if (!res.ok) { setRows([]); return; }
+    // A failed read must never wear the green "All settled" checkmark -- an
+    // unread ledger is not an empty one (the founder portal's rule, applied
+    // to the operator's own view of money owed).
+    setLoadFailed(false);
+    const res = await fetch("/api/admin/fees").catch(() => null);
+    if (!res || !res.ok) { setRows(null); setLoadFailed(true); return; }
     const j = await res.json();
     setRows(j.rows ?? []); setTotals(j.totals ?? null);
   }, []);
@@ -964,6 +971,13 @@ function FeeLedger() {
     void load();
   }
 
+  if (loadFailed) return (
+    <div className="py-10 text-center">
+      <p className="text-sm text-cr-down font-medium">{t("feePortal.loadFailed")}</p>
+      <p className="text-xs text-cr-i4 mt-1">{t("feePortal.loadFailedNote")}</p>
+      <button onClick={() => void load()} className="mt-3 text-xs font-semibold text-cr-copper">{t("fees.retry")}</button>
+    </div>
+  );
   if (rows === null) return <div className="py-8 text-center"><LedgerLoader /></div>;
   // A dispute is open business too -- it is the one state that needs a person.
   const shown = filter === "open" ? rows.filter(r => r.state === "outstanding" || r.state === "unbillable" || r.state === "disputed" || r.state === "reversed") : rows;
@@ -972,12 +986,21 @@ function FeeLedger() {
     <div>
       {totals && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          {(["outstanding", "unbillable", "disputed", "reversed"] as const).map(k => (
-            <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
-              <p className="font-mono text-lg font-bold text-cr-ink">{formatCurrency(totals[k] ?? 0)}</p>
-              <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
-            </div>
-          ))}
+          {(["outstanding", "unbillable", "disputed", "reversed"] as const).map(k => {
+            const parts = totals[k] ?? [];
+            return (
+              <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
+                {/* Per currency, each in its own symbol. The old single figure
+                    summed EUR+USD+JPY and printed the result as dollars. */}
+                {parts.length === 0
+                  ? <p className="font-mono text-lg font-bold text-cr-ink">0</p>
+                  : parts.map(ppp => (
+                      <p key={ppp.currency} className="font-mono text-lg font-bold text-cr-ink leading-tight">{formatMoney(ppp.amount, ppp.currency)}</p>
+                    ))}
+                <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
+              </div>
+            );
+          })}
         </div>
       )}
       <div className="flex items-center gap-3 mb-3">
@@ -1000,7 +1023,7 @@ function FeeLedger() {
                 <div className="min-w-0">
                   <p className="font-medium text-cr-ink text-sm truncate">{row.startupName ?? t("admin.amountTBD")}</p>
                   <p className="text-xs text-cr-i4">
-                    <span className="font-mono">{formatCurrency(row.feeMajor)}</span>
+                    <span className="font-mono">{formatMoney(row.feeMajor, row.currency ?? "USD")}</span>
                     {row.closed_at && <>{" · "}{t("fees.closed")} <span className="font-mono">{formatDate(row.closed_at)}</span></>}
                     {(row.fee_reminder_count ?? 0) > 0 && ` · ${t("fees.chased", { count: row.fee_reminder_count ?? 0 })}`}
                   </p>

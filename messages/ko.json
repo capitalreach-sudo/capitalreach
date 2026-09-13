@@ -428,7 +428,7 @@
     "earlyAccess": "얼리 액세스",
     "finalCtaLaunchSub": "첫 {target}명의 회원으로 가입하고 무료로 완전한 접근 권한을 받으세요 — 카드 불필요.",
     "finalCtaSub": "CapitalReach의 창업자와 투자자로 구성된 초기 커뮤니티에 참여하세요. 오늘 무료로 시작하세요.",
-    "saveAnnual": "연간 결제 시 ${amount}/년 절약",
+    "saveAnnual": "연간 결제 시 {amount}/년 절약",
     "feature_investorBrowse": "목록 탐색",
     "feature_investorFinancials": "전체 재무 정보",
     "feature_investorMessaging": "창업자 메시지",
