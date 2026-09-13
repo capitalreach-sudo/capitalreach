@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { InvestorDashboardClient } from "@/components/dashboard/investor-dashboard-client";
 import { getLaunchStatus } from "@/lib/launchMode";
+import { STARTUP_LIST_COLUMNS, stripBrowseFinancials, viewerCanSeeFinancials } from "@/lib/browse-data";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { postMoney } from "@/lib/round-math";
@@ -37,16 +38,33 @@ export default async function InvestorDashboardPage() {
 
   if (!investor) redirect(profile?.role === "admin" ? "/admin" : "/onboarding/investor");
 
-  // Watchlist
-  const { data: watchlist } = await supabase
+  // Watchlist. Service-role read with an EXPLICIT column list: the session
+  // client's `startups(*)` embed requested columns migration 109 revoked from
+  // authenticated (legal_entity_name, attestation fields...), so PostgREST
+  // refused the WHOLE query with 42501 and the swallowed error rendered every
+  // investor's watchlist as permanently empty -- saves existed, the tab showed
+  // "no saved startups yet" forever. Ownership is established above
+  // (investor.id belongs to this user); financials are stripped per viewer
+  // below, exactly as the browse API does.
+  const adminForJoin = createAdminClient();
+  const { data: watchlist, error: watchlistError } = await adminForJoin
     .from("watchlists")
-    .select("*, startup:startups(*)")
+    .select(`*, startup:startups(${STARTUP_LIST_COLUMNS})`)
     .eq("investor_id", investor.id)
     // C26: was capped at 20 — a real shortlist outgrows that in a week.
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(300)
     .returns<Watchlist[]>();
+  // A grant regression must be VISIBLE, not an empty state.
+  if (watchlistError) console.error("[dashboard/investor] watchlist read failed:", watchlistError.message);
+  const canSeeFinancials = await viewerCanSeeFinancials();
+  const safeWatchlist = (watchlist ?? []).map((w) => ({
+    ...w,
+    startup: w.startup
+      ? (stripBrowseFinancials([w.startup as never], canSeeFinancials)[0] as typeof w.startup)
+      : w.startup,
+  }));
 
   // Deals
   const { data: deals } = await supabase
@@ -131,7 +149,7 @@ export default async function InvestorDashboardPage() {
         portfolio={portfolio}
         profile={profile}
         investor={investor}
-        watchlist={watchlist ?? []}
+        watchlist={safeWatchlist}
         deals={deals ?? []}
         aiReports={aiReports ?? []}
       />

@@ -90,7 +90,12 @@ export function TranslatedContent({
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entityType, entityId, locale }),
       });
-      if (res.status === 503) { setUnavailable(true); return; }
+      // 503 = not configured; 502 = the pipeline cannot produce a translation
+      // right now (a key with no credits answers this on every cache miss).
+      // Both mean the same thing to the reader: stop offering. The old
+      // silent-return on 502 left a live-looking button that span briefly and
+      // did nothing, forever.
+      if (res.status === 503 || res.status === 502) { setUnavailable(true); return; }
       if (!res.ok) return;
       const j = await res.json();
       setFields(j.fields ?? {});

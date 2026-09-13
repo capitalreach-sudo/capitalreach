@@ -118,8 +118,13 @@ export default async function OnePagerPage({ params, searchParams }: Props) {
   // sheet carries the same prose -- problem, solution, market, use of funds.
   // Gating one and not the other left the wall with a door beside it.
   if (gateUser && !reveal) {
+    // `id` is load-bearing: buildAccessContext sets ctx.userId from it, and
+    // the launch-mode promotion fires only for `isLaunchMode && ctx.userId`.
+    // Without it every launch member resolved to the free tier here and the
+    // one-pager bounced them back to the listing the detail page had just
+    // shown them in full.
     const { data: prof } = await createAdminClient()
-      .from("profiles").select("role, subscription_tier, suspended").eq("id", gateUser.id).maybeSingle();
+      .from("profiles").select("id, role, subscription_tier, suspended, account_status").eq("id", gateUser.id).maybeSingle();
     if (prof && prof.role !== "admin" && prof.role !== "startup") {
       const { isLaunch } = await getLaunchStatus();
       const caps = investorCan(buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], isLaunch));

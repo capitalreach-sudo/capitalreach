@@ -807,7 +807,7 @@
     "docFinModel": "財務モデル（XLSX）",
     "docCapTable": "資本政策表（PDF/XLSX）",
     "docOther": "その他",
-    "editReviewNotice": "大きな変更を保存すると、リスティングは再度管理者審査に提出されます。",
+    "editReviewNotice": "編集が終わったら、ダッシュボードから審査に提出してください。承認後に掲載されます。",
     "editNoStartup": "スタートアップが見つかりません。",
     "editCreateOne": "作成する",
     "editChangesSubmitted": "変更を審査に提出しました。",
@@ -1049,7 +1049,10 @@
     "attnOffers": "返信待ちのオファー",
     "attnNegotiating": "交渉中の取引",
     "noDocsBody": "デック、財務資料、データルームのファイルがここに並び、それぞれ開いた投資家の数が表示されます。",
-    "uploadFirstDoc": "最初の書類をアップロード"
+    "uploadFirstDoc": "最初の書類をアップロード",
+    "submitting": "送信中…",
+    "closureDeclarationDue": "ラウンドはクローズ済みです。記録を完成させるため、調達額を申告してください。",
+    "declareClosure": "クローズを申告"
   },
   "settings": {
     "pageTitle": "アカウント設定",

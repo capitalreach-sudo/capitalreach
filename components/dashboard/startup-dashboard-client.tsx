@@ -39,6 +39,7 @@ interface Props {
   viewingAs?: string;
   /** Latest admin rejection reason still in force (draft listings only). */
   rejectionReason?: string | null;
+  needsClosureDeclaration?: boolean;
   /** F10: percentiles against same-stage live listings; null when the cohort is too small. */
   benchmarks?: BenchmarkResult | null;
 }
@@ -552,6 +553,35 @@ function RaiseGlance({ target, softCircled, committed, live, onOpenRaise }: { ta
  * oversubscribed / paused / closed) is separate from admin moderation; the
  * momentum toggle publishes an aggregate progress bar on the listing.
  */
+/**
+ * The queue re-entry. Both draft banners used to LINK to the edit page and
+ * call it "Submit for review" -- but saving never changed status, so a draft
+ * (and every rejected listing, which rejection sets back to draft) could
+ * never reach the review queue again. This button actually submits.
+ */
+function SubmitForReviewButton({ label, sending, primary = false }: { label: string; sending: string; primary?: boolean }) {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const [busy, setBusy] = useState(false);
+  async function submit() {
+    if (busy) return;
+    setBusy(true);
+    const res = await fetch("/api/startups/submit", { method: "POST" }).catch(() => null);
+    setBusy(false);
+    if (!res || !res.ok) { notify.error(t("errors.generic")); return; }
+    notify.success(t("dashboard.profileUnderReview"));
+    router.refresh();
+  }
+  return (
+    <button onClick={submit} disabled={busy}
+      style={primary
+        ? { ...primaryBtn, fontSize: "12px", whiteSpace: "nowrap", opacity: busy ? 0.6 : 1, cursor: busy ? "wait" : "pointer" }
+        : { display: "inline-flex", alignItems: "center", minHeight: "40px", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", background: "none", border: "none", padding: 0, cursor: busy ? "wait" : "pointer" }}>
+      {busy ? sending : label} →
+    </button>
+  );
+}
+
 function RoundControls({ startup }: { startup: Startup }) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -567,6 +597,15 @@ function RoundControls({ startup }: { startup: Startup }) {
     if (!res.ok) { notify.error(t("errors.generic")); return; }
     if (patch.roundState) setState(patch.roundState);
     if (patch.showMomentum !== undefined) setMomentum(patch.showMomentum);
+    // The API answers a close by asking for the closure declaration -- the
+    // moment the platform's fee is either claimed or quietly leaks. This
+    // response used to be discarded, so the one page built for that moment
+    // (/dashboard/startup/close-round) had no inbound path at all.
+    const body = await res.json().catch(() => null) as { closureDeclaration?: { required?: boolean; declaredAt?: string | null } } | null;
+    if (body?.closureDeclaration?.required && !body.closureDeclaration.declaredAt) {
+      router.push("/dashboard/startup/close-round");
+      return;
+    }
     notify.success(t("dashboard.roundSaved"));
     router.refresh();
   }
@@ -1045,7 +1084,7 @@ function DocAnalyticsPanel() {
   );
 }
 
-export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs, rejectionReason = null, benchmarks = null }: Props) {
+export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs, rejectionReason = null, needsClosureDeclaration = false, benchmarks = null }: Props) {
   const { t }        = useTranslation();
   const router       = useRouter();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
@@ -1228,7 +1267,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusRejectedTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", marginTop: "4px", lineHeight: 1.5 }}>“{rejectionReason}”</p>
-              <Link href="/dashboard/startup/edit" style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.editAndResubmit")} →</Link>
+              <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+                <Link href="/dashboard/startup/edit" style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.editAndResubmit")} →</Link>
+                {/* The queue re-entry itself. The edit link alone was a
+                    dead end: saving never changed status, so a rejected
+                    listing could never reach review again. */}
+                <SubmitForReviewButton label={t("dashboard.submitForReview")} sending={t("dashboard.submitting")} />
+              </div>
             </div>
           </div>
         )}
@@ -1239,10 +1284,20 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.statusDraftTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusDraftBody")}</p>
             </div>
-            <Link href="/dashboard/startup/edit" style={{ ...primaryBtn, fontSize: "12px", whiteSpace: "nowrap" }}>{t("dashboard.submitForReview")} →</Link>
+            <SubmitForReviewButton primary label={t("dashboard.submitForReview")} sending={t("dashboard.submitting")} />
           </div>
         )}
 
+        {/* A closed round with no closure declaration: the fee's claim is
+            waiting on the founder's word. Standing task, hairline register --
+            same reasoning as the attestation row below. */}
+        {needsClosureDeclaration && (
+          <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "0 0 16px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <AlertCircle style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
+            <p style={{ flex: 1, minWidth: 220, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t("dashboard.closureDeclarationDue")}</p>
+            <Link href="/dashboard/startup/close-round" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", minHeight: "40px", display: "inline-flex", alignItems: "center" }}>{t("dashboard.declareClosure")} →</Link>
+          </div>
+        )}
         {/* The founder's signature on their own figures. A hairline row, not a
             tinted banner: it is a standing task rather than something wrong,
             and the coloured slabs above are reserved for states that need

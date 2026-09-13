@@ -814,7 +814,7 @@
     "docFinModel": "Finanzmodell (XLSX)",
     "docCapTable": "Cap Table (PDF/XLSX)",
     "docOther": "Sonstiges",
-    "editReviewNotice": "Beim Speichern größerer Änderungen wird dein Listing erneut zur Admin-Prüfung eingereicht.",
+    "editReviewNotice": "Wenn Sie fertig sind, reichen Sie das Listing über Ihr Dashboard zur Prüfung ein. Es geht nach Freigabe live.",
     "editNoStartup": "Kein Startup gefunden.",
     "editCreateOne": "Jetzt erstellen",
     "editChangesSubmitted": "Änderungen zur Prüfung eingereicht.",
@@ -1056,7 +1056,10 @@
     "attnOffers": "Angebote, die auf Ihre Antwort warten",
     "attnNegotiating": "Deals in Verhandlung",
     "noDocsBody": "Ihr Deck, Ihre Finanzen und Datenraum-Dateien erscheinen hier, jeweils mit der Zahl der Investoren, die sie geöffnet haben.",
-    "uploadFirstDoc": "Erstes Dokument hochladen"
+    "uploadFirstDoc": "Erstes Dokument hochladen",
+    "submitting": "Wird eingereicht…",
+    "closureDeclarationDue": "Ihre Runde ist als geschlossen markiert. Geben Sie an, was eingesammelt wurde, damit der Eintrag vollständig ist.",
+    "declareClosure": "Abschluss melden"
   },
   "settings": {
     "pageTitle": "Kontoeinstellungen",

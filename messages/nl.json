@@ -798,7 +798,7 @@
     "docFinModel": "Financieel model (XLSX)",
     "docCapTable": "Cap table (PDF/XLSX)",
     "docOther": "Overig",
-    "editReviewNotice": "Bij het opslaan van grote wijzigingen wordt uw vermelding opnieuw ingediend voor beoordeling.",
+    "editReviewNotice": "Klaar met bewerken? Dien uw vermelding ter beoordeling in via uw dashboard. Na goedkeuring gaat deze live.",
     "editNoStartup": "Geen startup gevonden.",
     "editCreateOne": "Maak er een",
     "editChangesSubmitted": "Wijzigingen ingediend voor beoordeling.",
@@ -1040,7 +1040,10 @@
     "attnOffers": "Aanbiedingen die op je antwoord wachten",
     "attnNegotiating": "Deals in onderhandeling",
     "noDocsBody": "Je deck, financiën en dataroombestanden verschijnen hier, elk met het aantal investeerders dat ze opende.",
-    "uploadFirstDoc": "Upload je eerste document"
+    "uploadFirstDoc": "Upload je eerste document",
+    "submitting": "Versturen…",
+    "closureDeclarationDue": "Uw ronde is gemarkeerd als gesloten. Geef op wat is opgehaald zodat het dossier compleet is.",
+    "declareClosure": "Sluiting opgeven"
   },
   "settings": {
     "pageTitle": "Instellingen",

@@ -807,7 +807,7 @@
     "docFinModel": "Modèle financier (XLSX)",
     "docCapTable": "Cap table (PDF/XLSX)",
     "docOther": "Autre",
-    "editReviewNotice": "L'enregistrement de changements majeurs soumettra à nouveau votre annonce à l'examen admin.",
+    "editReviewNotice": "Une fois vos modifications terminées, soumettez la fiche à la revue depuis votre tableau de bord. Elle sera publiée après approbation.",
     "editNoStartup": "Aucune startup trouvée.",
     "editCreateOne": "En créer une",
     "editChangesSubmitted": "Modifications soumises pour examen.",
@@ -1049,7 +1049,10 @@
     "attnOffers": "Offres en attente de votre réponse",
     "attnNegotiating": "Opérations en négociation",
     "noDocsBody": "Votre deck, vos états financiers et vos fichiers de data room s'affichent ici, avec le nombre d'investisseurs les ayant ouverts.",
-    "uploadFirstDoc": "Déposer votre premier document"
+    "uploadFirstDoc": "Déposer votre premier document",
+    "submitting": "Envoi…",
+    "closureDeclarationDue": "Votre tour est marqué comme clôturé. Déclarez le montant levé pour compléter le dossier.",
+    "declareClosure": "Déclarer la clôture"
   },
   "settings": {
     "pageTitle": "Paramètres du compte",

@@ -131,6 +131,11 @@ function LoginForm() {
     if (user) await finishLogin(user.id);
   }
 
+  // Rendered only when the provider is actually configured: with Google
+  // disabled on the Supabase project, this button navigated the user to a
+  // raw 400 JSON page outside the app. Flip NEXT_PUBLIC_GOOGLE_AUTH=1 once
+  // the OAuth client is set up in Supabase.
+  const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH === "1";
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -204,7 +209,7 @@ function LoginForm() {
         </form>
         )}
 
-        {!mfaFactorId && (
+        {!mfaFactorId && googleEnabled && (
         <>
         <div style={{ position: "relative", margin: "24px 0" }}>
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center" }}>

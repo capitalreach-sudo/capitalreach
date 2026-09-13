@@ -798,7 +798,7 @@
     "docFinModel": "Finansiell modell (XLSX)",
     "docCapTable": "Cap table (PDF/XLSX)",
     "docOther": "Övrigt",
-    "editReviewNotice": "Att spara större ändringar skickar in din listning för admingranskning igen.",
+    "editReviewNotice": "När du är klar skickar du in för granskning från din instrumentpanel. Din notering publiceras efter godkännande.",
     "editNoStartup": "Ingen startup hittades.",
     "editCreateOne": "Skapa en",
     "editChangesSubmitted": "Ändringar inskickade för granskning.",
@@ -1040,7 +1040,10 @@
     "attnOffers": "Bud som väntar på ditt svar",
     "attnNegotiating": "Affärer i förhandling",
     "noDocsBody": "Din deck, ekonomi och datarumsfiler listas här, var och en med hur många investerare som öppnat den.",
-    "uploadFirstDoc": "Ladda upp ditt första dokument"
+    "uploadFirstDoc": "Ladda upp ditt första dokument",
+    "submitting": "Skickar…",
+    "closureDeclarationDue": "Din runda är markerad som stängd. Uppge vad som togs in så att registret blir komplett.",
+    "declareClosure": "Anmäl stängningen"
   },
   "settings": {
     "pageTitle": "Inställningar",

@@ -798,7 +798,7 @@
     "docFinModel": "재무 모델 (XLSX)",
     "docCapTable": "지분 구조표 (PDF/XLSX)",
     "docOther": "기타",
-    "editReviewNotice": "주요 변경 사항을 저장하면 등록이 관리자 검토를 위해 다시 제출됩니다.",
+    "editReviewNotice": "수정을 마치면 대시보드에서 검토를 요청하세요. 승인 후 게시됩니다.",
     "editNoStartup": "스타트업을 찾을 수 없습니다.",
     "editCreateOne": "만들기",
     "editChangesSubmitted": "변경 사항이 검토를 위해 제출되었습니다.",
@@ -1040,7 +1040,10 @@
     "attnOffers": "회신을 기다리는 오퍼",
     "attnNegotiating": "협상 중인 거래",
     "noDocsBody": "덱, 재무 자료, 데이터룸 파일이 여기에 나열되며, 각각 몇 명의 투자자가 열었는지 표시됩니다.",
-    "uploadFirstDoc": "첫 문서 업로드"
+    "uploadFirstDoc": "첫 문서 업로드",
+    "submitting": "제출 중…",
+    "closureDeclarationDue": "라운드가 마감으로 표시되었습니다. 기록을 완성하려면 조달 금액을 신고하세요.",
+    "declareClosure": "마감 신고"
   },
   "settings": {
     "pageTitle": "설정",

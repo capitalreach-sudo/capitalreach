@@ -253,6 +253,11 @@ function SignupForm() {
     setResendIn(60);
   }
 
+  // Rendered only when the provider is actually configured: with Google
+  // disabled on the Supabase project, this button navigated the user to a
+  // raw 400 JSON page outside the app. Flip NEXT_PUBLIC_GOOGLE_AUTH=1 once
+  // the OAuth client is set up in Supabase.
+  const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH === "1";
   async function handleGoogleSignup() {
     if (!role) return;
     await supabase.auth.signInWithOAuth({
@@ -551,8 +556,12 @@ function SignupForm() {
           </button>
         </form>
 
-        <Divider />
-        <GoogleButton onClick={handleGoogleSignup} disabled={!isSupabaseConfigured} />
+        {googleEnabled && (
+          <>
+            <Divider />
+            <GoogleButton onClick={handleGoogleSignup} disabled={!isSupabaseConfigured} />
+          </>
+        )}
 
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center", marginTop: "16px", lineHeight: 1.6 }}>
           {t("auth.feeNote")}

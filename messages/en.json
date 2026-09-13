@@ -814,7 +814,7 @@
     "docFinModel": "Financial Model (XLSX)",
     "docCapTable": "Cap Table (PDF/XLSX)",
     "docOther": "Other",
-    "editReviewNotice": "Saving major changes will re-submit your listing for admin review.",
+    "editReviewNotice": "When you are done editing, submit for review from your dashboard. Your listing goes live once approved.",
     "editNoStartup": "No startup found.",
     "editCreateOne": "Create one",
     "editChangesSubmitted": "Changes submitted for review.",
@@ -1056,7 +1056,10 @@
     "attnOffers": "Offers awaiting your reply",
     "attnNegotiating": "Deals mid-negotiation",
     "noDocsBody": "Your deck, financials and data-room files list here, each with how many investors opened it.",
-    "uploadFirstDoc": "Upload your first document"
+    "uploadFirstDoc": "Upload your first document",
+    "submitting": "Submitting…",
+    "closureDeclarationDue": "Your round is marked closed. Declare what was raised so the record is complete.",
+    "declareClosure": "Declare the closure"
   },
   "settings": {
     "pageTitle": "Account Settings",

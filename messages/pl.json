@@ -798,7 +798,7 @@
     "docFinModel": "Model finansowy (XLSX)",
     "docCapTable": "Cap table (PDF/XLSX)",
     "docOther": "Inne",
-    "editReviewNotice": "Zapisanie większych zmian spowoduje ponowne przesłanie oferty do weryfikacji przez administratora.",
+    "editReviewNotice": "Po zakończeniu edycji prześlij ofertę do weryfikacji z poziomu panelu. Po zatwierdzeniu zostanie opublikowana.",
     "editNoStartup": "Nie znaleziono startupu.",
     "editCreateOne": "Utwórz",
     "editChangesSubmitted": "Zmiany przesłane do weryfikacji.",
@@ -1040,7 +1040,10 @@
     "attnOffers": "Oferty czekające na Twoją odpowiedź",
     "attnNegotiating": "Transakcje w negocjacjach",
     "noDocsBody": "Twój deck, finanse i pliki data room pojawią się tutaj, każdy z liczbą inwestorów, którzy go otworzyli.",
-    "uploadFirstDoc": "Prześlij pierwszy dokument"
+    "uploadFirstDoc": "Prześlij pierwszy dokument",
+    "submitting": "Wysyłanie…",
+    "closureDeclarationDue": "Runda jest oznaczona jako zamknięta. Zadeklaruj zebraną kwotę, aby uzupełnić rejestr.",
+    "declareClosure": "Zgłoś zamknięcie"
   },
   "settings": {
     "pageTitle": "Ustawienia",

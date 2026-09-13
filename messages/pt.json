@@ -798,7 +798,7 @@
     "docFinModel": "Modelo financeiro (XLSX)",
     "docCapTable": "Cap table (PDF/XLSX)",
     "docOther": "Outro",
-    "editReviewNotice": "Guardar alterações importantes reenviará a sua listagem para revisão do administrador.",
+    "editReviewNotice": "Quando terminar de editar, submeta para revisão a partir do painel. A sua listagem fica ativa após aprovação.",
     "editNoStartup": "Nenhuma startup encontrada.",
     "editCreateOne": "Criar uma",
     "editChangesSubmitted": "Alterações submetidas para revisão.",
@@ -1040,7 +1040,10 @@
     "attnOffers": "Ofertas à espera da sua resposta",
     "attnNegotiating": "Negócios em negociação",
     "noDocsBody": "O seu deck, as finanças e os ficheiros da data room aparecem aqui, cada um com quantos investidores o abriram.",
-    "uploadFirstDoc": "Carregue o seu primeiro documento"
+    "uploadFirstDoc": "Carregue o seu primeiro documento",
+    "submitting": "A enviar…",
+    "closureDeclarationDue": "A sua ronda está marcada como encerrada. Declare o valor angariado para completar o registo.",
+    "declareClosure": "Declarar o encerramento"
   },
   "settings": {
     "pageTitle": "Configurações",

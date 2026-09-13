@@ -807,7 +807,7 @@
     "docFinModel": "财务模型（XLSX）",
     "docCapTable": "股权结构表（PDF/XLSX）",
     "docOther": "其他",
-    "editReviewNotice": "保存重大更改将重新提交您的列表以供管理员审核。",
+    "editReviewNotice": "编辑完成后,请在控制台提交审核。审核通过后即会上线。",
     "editNoStartup": "未找到初创公司。",
     "editCreateOne": "创建一个",
     "editChangesSubmitted": "更改已提交审核。",
@@ -1049,7 +1049,10 @@
     "attnOffers": "等待您回复的报价",
     "attnNegotiating": "谈判中的交易",
     "noDocsBody": "您的路演材料、财务资料和数据室文件会列在这里，并显示各有多少投资人打开过。",
-    "uploadFirstDoc": "上传第一份文件"
+    "uploadFirstDoc": "上传第一份文件",
+    "submitting": "提交中…",
+    "closureDeclarationDue": "您的轮次已标记为关闭。请申报募集金额以完善记录。",
+    "declareClosure": "申报关闭"
   },
   "settings": {
     "pageTitle": "账号设置",

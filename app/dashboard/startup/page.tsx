@@ -156,6 +156,21 @@ export default async function StartupDashboardPage() {
     }
   }
 
+  // A closed round with no closure declaration is the moment the platform's
+  // fee either gets claimed or quietly leaks -- and the page built for it had
+  // no inbound link. The save-time redirect covers the moment of closing;
+  // this standing flag covers the founder who navigated away first.
+  let needsClosureDeclaration = false;
+  if (startup && (startup as { round_state?: string | null }).round_state === "closed") {
+    const { data: declared } = await createAdminClient()
+      .from("round_closures")
+      .select("id")
+      .eq("startup_id", startup.id)
+      .limit(1)
+      .maybeSingle();
+    needsClosureDeclaration = !declared;
+  }
+
   return (
     <>
       <Navbar />
@@ -165,6 +180,7 @@ export default async function StartupDashboardPage() {
         analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise, funnel }}
         isLaunchMode={isLaunch}
         rejectionReason={rejectionReason}
+        needsClosureDeclaration={needsClosureDeclaration}
         benchmarks={benchmarks}
       />
     </>
