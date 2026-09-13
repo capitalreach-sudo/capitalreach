@@ -295,7 +295,7 @@
       "statDDLabel": "尽职调查",
       "statSpeedLabel": "分析速度",
       "tablePlansTitle": "各计划AI访问权限",
-      "tablePlansSub": "免费开始——按需升级",
+      "tablePlansSub": "免费开始,按需升级",
       "startInvestor": "以投资者身份开始",
       "listStartup": "发布您的初创公司",
       "viewPricing": "查看所有定价",
@@ -305,8 +305,8 @@
       "statSpeedVal": "约3秒",
       "tierFreeSub": "永久免费",
       "tierAngelName": "Angel",
-      "tierAngelSub": "99美元/月",
-      "tierProSub": "249美元/月"
+      "tierAngelSub": "99欧元/月",
+      "tierProSub": "249欧元/月"
     },
     "tier": {
       "pitchAnalyzer": "路演分析器",

@@ -920,7 +920,10 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
                     <tr key={row.feature} className="pricing-row" style={{ borderBottom: "1px solid var(--cr-rule)", background: i % 2 === 0 ? "transparent" : "var(--cr-paper-2)" }}>
                       <td style={{ padding: "14px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)" }}>{row.feature}</td>
                       <td style={{ padding: "14px", textAlign: "center" }}><TierCheck val={row.free} /></td>
-                      <td style={{ padding: "14px", textAlign: "center", background: "var(--cr-copper-bg)" }}><TierCheck val={row.angel} /></td>
+                      {/* Only the recommended column wears the tint: the header
+                          highlights Pro alone, and a second tinted column read
+                          as smudge rather than emphasis. */}
+                      <td style={{ padding: "14px", textAlign: "center" }}><TierCheck val={row.angel} /></td>
                       <td style={{ padding: "14px", textAlign: "center", background: "var(--cr-copper-bg)" }}><TierCheck val={row.pro} /></td>
                     </tr>
                   ))}

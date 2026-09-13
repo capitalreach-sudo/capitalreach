@@ -295,7 +295,7 @@
       "statDDLabel": "デューデリジェンス",
       "statSpeedLabel": "分析速度",
       "tablePlansTitle": "プラン別AIアクセス",
-      "tablePlansSub": "無料から始める — 必要に応じてアップグレード",
+      "tablePlansSub": "無料から始めて、必要に応じてアップグレード",
       "startInvestor": "投資家として始める",
       "listStartup": "スタートアップを掲載",
       "viewPricing": "すべての料金を見る",
@@ -305,8 +305,8 @@
       "statSpeedVal": "約3秒",
       "tierFreeSub": "常に無料",
       "tierAngelName": "Angel",
-      "tierAngelSub": "月99ドル",
-      "tierProSub": "月249ドル"
+      "tierAngelSub": "月99ユーロ",
+      "tierProSub": "月249ユーロ"
     },
     "tier": {
       "pitchAnalyzer": "ピッチ分析ツール",

@@ -295,7 +295,7 @@
       "statDDLabel": "Due Diligence",
       "statSpeedLabel": "Velocidad de análisis",
       "tablePlansTitle": "Acceso IA por plan",
-      "tablePlansSub": "Gratis para empezar — mejora cuando necesites más",
+      "tablePlansSub": "Gratis para empezar, mejora cuando lo necesites",
       "startInvestor": "Empezar como inversor",
       "listStartup": "Listar tu startup",
       "viewPricing": "Ver todos los precios",
@@ -305,8 +305,8 @@
       "statSpeedVal": "~3 segundos",
       "tierFreeSub": "Siempre gratis",
       "tierAngelName": "Angel",
-      "tierAngelSub": "$99/mes",
-      "tierProSub": "$249/mes"
+      "tierAngelSub": "99 €/mes",
+      "tierProSub": "249 €/mes"
     },
     "tier": {
       "pitchAnalyzer": "Analizador de Pitch",

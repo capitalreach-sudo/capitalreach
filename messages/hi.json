@@ -286,7 +286,7 @@
       "statDDLabel": "उचित परिश्रम",
       "statSpeedLabel": "विश्लेषण गति",
       "tablePlansTitle": "प्लान के अनुसार AI पहुँच",
-      "tablePlansSub": "मुफ्त शुरू करें — जरूरत पड़ने पर अपग्रेड करें",
+      "tablePlansSub": "मुफ्त शुरू करें, जरूरत पड़ने पर अपग्रेड करें",
       "startInvestor": "निवेशक के रूप में शुरू करें",
       "listStartup": "अपना स्टार्टअप लिस्ट करें",
       "viewPricing": "सभी मूल्य देखें",
@@ -296,8 +296,8 @@
       "statSpeedVal": "~3 सेकंड",
       "tierFreeSub": "हमेशा मुफ्त",
       "tierAngelName": "Angel",
-      "tierAngelSub": "$99/माह",
-      "tierProSub": "$249/माह"
+      "tierAngelSub": "€99/माह",
+      "tierProSub": "€249/माह"
     },
     "tier": {
       "pitchAnalyzer": "पिच विश्लेषक",

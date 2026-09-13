@@ -295,7 +295,7 @@
       "statDDLabel": "العناية الواجبة",
       "statSpeedLabel": "سرعة التحليل",
       "tablePlansTitle": "الوصول إلى الذكاء الاصطناعي حسب الخطة",
-      "tablePlansSub": "ابدأ مجاناً — قم بالترقية عند الحاجة",
+      "tablePlansSub": "ابدأ مجاناً، قم بالترقية عند الحاجة",
       "startInvestor": "ابدأ كمستثمر",
       "listStartup": "أدرج شركتك الناشئة",
       "viewPricing": "عرض جميع الأسعار",
@@ -305,8 +305,8 @@
       "statSpeedVal": "~3 ثوانٍ",
       "tierFreeSub": "مجاني دائماً",
       "tierAngelName": "Angel",
-      "tierAngelSub": "99 دولار/شهر",
-      "tierProSub": "249 دولار/شهر"
+      "tierAngelSub": "99 يورو/شهر",
+      "tierProSub": "249 يورو/شهر"
     },
     "tier": {
       "pitchAnalyzer": "محلل العروض",

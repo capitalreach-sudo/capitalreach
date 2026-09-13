@@ -286,7 +286,7 @@
       "statDDLabel": "Due Diligence",
       "statSpeedLabel": "Analysesnelheid",
       "tablePlansTitle": "AI-toegang per plan",
-      "tablePlansSub": "Gratis starten — upgrade wanneer u meer nodig heeft",
+      "tablePlansSub": "Gratis starten, upgrade wanneer u meer nodig heeft",
       "startInvestor": "Starten als investeerder",
       "listStartup": "Startup plaatsen",
       "viewPricing": "Alle prijzen bekijken",
@@ -296,8 +296,8 @@
       "statSpeedVal": "~3 seconden",
       "tierFreeSub": "Altijd gratis",
       "tierAngelName": "Angel",
-      "tierAngelSub": "$99/mnd",
-      "tierProSub": "$249/mnd"
+      "tierAngelSub": "€99/mnd",
+      "tierProSub": "€249/mnd"
     },
     "tier": {
       "pitchAnalyzer": "Pitch-analysator",

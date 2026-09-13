@@ -286,7 +286,7 @@
       "statDDLabel": "실사",
       "statSpeedLabel": "분석 속도",
       "tablePlansTitle": "플랜별 AI 접근",
-      "tablePlansSub": "무료로 시작 — 필요시 업그레이드",
+      "tablePlansSub": "무료로 시작, 필요시 업그레이드",
       "startInvestor": "투자자로 시작",
       "listStartup": "스타트업 등록",
       "viewPricing": "모든 요금제 보기",
@@ -296,8 +296,8 @@
       "statSpeedVal": "약 3초",
       "tierFreeSub": "항상 무료",
       "tierAngelName": "Angel",
-      "tierAngelSub": "월 $99",
-      "tierProSub": "월 $249"
+      "tierAngelSub": "월 €99",
+      "tierProSub": "월 €249"
     },
     "tier": {
       "pitchAnalyzer": "피치 분석기",

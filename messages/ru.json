@@ -286,7 +286,7 @@
       "statDDLabel": "Due Diligence",
       "statSpeedLabel": "Скорость анализа",
       "tablePlansTitle": "Доступ к ИИ по планам",
-      "tablePlansSub": "Бесплатный старт — обновляйте по необходимости",
+      "tablePlansSub": "Бесплатный старт, обновляйте по необходимости",
       "startInvestor": "Начать как инвестор",
       "listStartup": "Разместить стартап",
       "viewPricing": "Все тарифы",
@@ -296,8 +296,8 @@
       "statSpeedVal": "~3 секунды",
       "tierFreeSub": "Всегда бесплатно",
       "tierAngelName": "Angel",
-      "tierAngelSub": "99$/мес",
-      "tierProSub": "249$/мес"
+      "tierAngelSub": "99 €/мес",
+      "tierProSub": "249 €/мес"
     },
     "tier": {
       "pitchAnalyzer": "Анализатор питча",

@@ -286,7 +286,7 @@
       "statDDLabel": "Due Diligence",
       "statSpeedLabel": "Analyshastighet",
       "tablePlansTitle": "AI-åtkomst per plan",
-      "tablePlansSub": "Gratis att starta — uppgradera när du behöver mer",
+      "tablePlansSub": "Gratis att starta, uppgradera när du behöver mer",
       "startInvestor": "Börja som investerare",
       "listStartup": "Lista din startup",
       "viewPricing": "Se alla priser",
@@ -296,8 +296,8 @@
       "statSpeedVal": "~3 sekunder",
       "tierFreeSub": "Alltid gratis",
       "tierAngelName": "Angel",
-      "tierAngelSub": "99 USD/mån",
-      "tierProSub": "249 USD/mån"
+      "tierAngelSub": "99 EUR/mån",
+      "tierProSub": "249 EUR/mån"
     },
     "tier": {
       "pitchAnalyzer": "Pitchanalysator",

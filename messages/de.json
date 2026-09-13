@@ -302,7 +302,7 @@
       "statDDLabel": "Due Diligence",
       "statSpeedLabel": "Analysegeschwindigkeit",
       "tablePlansTitle": "KI-Zugang nach Plan",
-      "tablePlansSub": "Kostenlos starten — Upgrade bei Bedarf",
+      "tablePlansSub": "Kostenlos starten, Upgrade bei Bedarf",
       "startInvestor": "Als Investor starten",
       "listStartup": "Startup listen",
       "viewPricing": "Alle Preise ansehen",
@@ -312,8 +312,8 @@
       "statSpeedVal": "~3 Sekunden",
       "tierFreeSub": "Immer kostenlos",
       "tierAngelName": "Angel",
-      "tierAngelSub": "99 $/Monat",
-      "tierProSub": "249 $/Monat"
+      "tierAngelSub": "99 €/Monat",
+      "tierProSub": "249 €/Monat"
     },
     "tier": {
       "pitchAnalyzer": "Pitch-Analyse",
