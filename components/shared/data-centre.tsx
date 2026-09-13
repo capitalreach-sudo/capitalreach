@@ -1,5 +1,6 @@
 "use client";
 
+import { displayLocale } from "@/lib/display-locale";
 import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { STAGE_LABELS } from "@/lib/utils";
 import { RefreshCw, AlertTriangle, Download, Building2 } from "lucide-react";
@@ -131,14 +132,14 @@ function medianMoney(n: number): string {
 /** "2026-08" → "Aug". The year only where it changes, so twelve labels stay short. */
 function monthLabel(key: string): string {
   const [y, m] = key.split("-");
-  const name = new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString("en", { month: "short", timeZone: "UTC" });
+  const name = new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString(displayLocale(), { month: "short", timeZone: "UTC" });
   return m === "01" ? `${name} ${y.slice(2)}` : name;
 }
 
 /** "2026-09" → "Sep 2026", for captions that name a month in prose. */
 function monthLong(key: string): string {
   const [y, m] = key.split("-");
-  return new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString("en", { month: "short", year: "numeric", timeZone: "UTC" });
+  return new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString(displayLocale(), { month: "short", year: "numeric", timeZone: "UTC" });
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -232,11 +233,21 @@ const STAGE_TIP: Record<(typeof DEAL_STAGES)[number]["key"], { key: string; fall
 function fmtRaising(n: number | null | undefined) { return safeFormatCurrency(n); }
 
 function timeAgo(iso: string) {
-  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 7 * 86400) return `${Math.floor(diff / 86400)}d ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  // Localized: the old English "0m ago" was interpolated INTO localized
+  // sentences ("0m agoに更新" on the Japanese page).
+  const secs = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  try {
+    const rtf = new Intl.RelativeTimeFormat(displayLocale(), { numeric: "auto", style: "narrow" });
+    if (secs < 60) return rtf.format(0, "second").replace(/^in /, "");
+    if (secs < 3600) return rtf.format(-Math.floor(secs / 60), "minute");
+    if (secs < 86400) return rtf.format(-Math.floor(secs / 3600), "hour");
+    return rtf.format(-Math.floor(secs / 86400), "day");
+  } catch {
+    if (secs < 60) return "just now";
+    if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+    if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+    return `${Math.floor(secs / 86400)}d ago`;
+  }
 }
 
 // ── Animated count-up ─────────────────────────────────────────────────────────

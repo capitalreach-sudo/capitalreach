@@ -1,3 +1,4 @@
+import { setDisplayLocale } from "@/lib/display-locale";
 import { LocaleMessagesProvider } from "./locale-context";
 import { loadDictionary } from "@/lib/i18n-dictionary";
 import type { Locale } from "@/lib/locale";
@@ -52,6 +53,8 @@ export async function LocaleProvider({
   children: React.ReactNode;
 }) {
   const messages = initialMessages ?? (await loadDictionary(initialLocale));
+  // Dates below this provider render in the request's locale (lib/display-locale).
+  setDisplayLocale(initialLocale);
 
   return (
     <LocaleMessagesProvider locale={initialLocale} messages={messages}>

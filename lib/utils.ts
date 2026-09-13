@@ -1,3 +1,4 @@
+import { displayLocale } from "@/lib/display-locale";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -44,11 +45,16 @@ export function formatPercent(n: number): string {
 }
 
 export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  // The viewer's locale, not en-US: see lib/display-locale.
+  try {
+    return new Date(dateStr).toLocaleDateString(displayLocale(), {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return new Date(dateStr).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  }
 }
 
 export function daysSince(dateStr: string): number {

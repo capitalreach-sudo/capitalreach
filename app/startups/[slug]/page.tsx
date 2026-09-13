@@ -15,7 +15,7 @@ import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
 import { protectFounders } from "@/lib/identity";
 import { ListingLocked } from "@/components/startup/listing-locked";
-import { getLocale } from "@/lib/locale-server";
+import { getLocale, getTranslator } from "@/lib/locale-server";
 import { detectLanguage } from "@/lib/detect-language";
 import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
 import type { Startup, SubscriptionTier } from "@/types";
@@ -143,7 +143,13 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     // Union narrowings below are licensed by the DB CHECK constraints.
     .returns<Startup>();
 
-  if (!startup || startup.status !== "active") {
+  // The OWNER may preview their own non-active listing: every founder starts
+  // in pending_review, the dashboard's "View listing" and "Preview as
+  // investor" links point here, and the hard 404 hit them exactly when they
+  // most wanted to check what the reviewer would see.
+  const ownerPreviewingInactive =
+    !!startup && startup.status !== "active" && !!user && startup.owner_id === user.id;
+  if (!startup || (startup.status !== "active" && !ownerPreviewingInactive)) {
     // A guest holding a token gets the redirect, not the 404, when the slug is
     // dead -- an anonymous caller must not learn existence from the refusal.
     if (!user && !detailPublic) redirect(`/auth/login?redirect=/startups/${params.slug}`);
@@ -522,9 +528,19 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     metricHistory = mh ?? [];
   }
 
+  const tServer = await getTranslator(getLocale());
+
   return (
     <>
       <Navbar />
+      {/* The not-live strip for the owner's preview of a draft or
+          pending listing -- without it the preview is indistinguishable
+          from being live. */}
+      {ownerPreviewingInactive && (
+        <div style={{ background: "var(--cr-copper-bg)", borderBottom: "1px solid var(--cr-copper-br)", padding: "10px 24px", textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}>
+          {startup.status === "pending_review" ? tServer("dashboard.profileUnderReview") : tServer("dashboard.statusDraftTitle")}
+        </div>
+      )}
       <JsonLdScript data={startupJsonLd({
         name: safeStartup.name,
         slug: safeStartup.slug,

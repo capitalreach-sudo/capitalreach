@@ -1,3 +1,4 @@
+import { displayLocale } from "@/lib/display-locale";
 /**
  * Display-layer safety net for numbers.
  *
@@ -70,25 +71,45 @@ export function formatDate(
   const date = d instanceof Date ? d : new Date(d);
   if (Number.isNaN(date.getTime())) return "—";
 
+  // The viewer's locale (lib/display-locale), not hardcoded English: these
+  // strings render mid-sentence in localized prose, and "3h ago" inside a
+  // Japanese sentence was the giveaway the whole page was half-translated.
+  const loc = displayLocale();
   if (opts.relative) {
     const secs = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (secs < 60) return "just now";
-    const mins = Math.floor(secs / 60);
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    const days = Math.floor(hrs / 24);
-    if (days < 7) return `${days}d ago`;
-    if (days < 30) return `${Math.floor(days / 7)}w ago`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months}mo ago`;
-    return `${Math.floor(months / 12)}y ago`;
+    try {
+      const rtf = new Intl.RelativeTimeFormat(loc, { numeric: "auto", style: "narrow" });
+      if (secs < 60) return rtf.format(0, "second").replace(/^in /, "");
+      const mins = Math.floor(secs / 60);
+      if (mins < 60) return rtf.format(-mins, "minute");
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return rtf.format(-hrs, "hour");
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return rtf.format(-days, "day");
+      if (days < 30) return rtf.format(-Math.floor(days / 7), "week");
+      const months = Math.floor(days / 30);
+      if (months < 12) return rtf.format(-months, "month");
+      return rtf.format(-Math.floor(months / 12), "year");
+    } catch {
+      // A runtime without the locale falls back to the compact English forms.
+      if (secs < 60) return "just now";
+      const mins = Math.floor(secs / 60);
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      return `${days}d ago`;
+    }
   }
 
   const sameYear = date.getFullYear() === new Date().getFullYear();
-  return date.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: sameYear ? undefined : "numeric",
-  });
+  try {
+    return date.toLocaleDateString(loc, {
+      day: "numeric",
+      month: "short",
+      year: sameYear ? undefined : "numeric",
+    });
+  } catch {
+    return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: sameYear ? undefined : "numeric" });
+  }
 }

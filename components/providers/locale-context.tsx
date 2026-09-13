@@ -1,5 +1,6 @@
 "use client";
 
+import { setDisplayLocale } from "@/lib/display-locale";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { LOCALES, DEFAULT_LOCALE, isRTL } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
@@ -36,6 +37,7 @@ export function LocaleMessagesProvider({
   messages: Dictionary;
   children: React.ReactNode;
 }) {
+  setDisplayLocale(locale);
   const [state, setState] = useState<LocaleState>({ locale, messages });
 
   // Latest locale without re-arming the effect: the effect subscribes once and
