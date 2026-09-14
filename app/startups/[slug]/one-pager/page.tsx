@@ -70,17 +70,34 @@ export default async function OnePagerPage({ params, searchParams }: Props) {
   const { data: startup } = await createAdminClient()
     .from("startups")
     .select(`
-      name, slug, tagline, industry, stage, country, website, status,
+      name, slug, tagline, industry, stage, country, website, status, owner_id,
       funding_target, equity_offered, min_check_size, round_close_date,
       mrr, arr, growth_rate, runway_months, team_size, paying_customers, user_count,
       problem, solution, market, competitive_advantage, use_of_funds,
       founders:startup_founders(name, role)
     `)
     .eq("slug", params.slug)
-    .eq("status", "active")
     .single();
 
   if (!startup) notFound();
+
+  // STATUS IS ENTITLEMENT. A draft, pending or suspended listing is readable
+  // by its owner and by admins only, the same rule the detail page's owner
+  // preview follows, because the dashboard links the owner here before the
+  // listing is live. Every other caller gets the answer an unknown slug gets.
+  if (startup.status !== "active") {
+    let entitled = false;
+    if (gateUser) {
+      if (startup.owner_id === gateUser.id) {
+        entitled = true;
+      } else {
+        const { data: viewerProfile } = await supabase
+          .from("profiles").select("role").eq("id", gateUser.id).maybeSingle();
+        entitled = viewerProfile?.role === "admin";
+      }
+    }
+    if (!entitled) notFound();
+  }
 
   // Identity protection (Phase 1): the printable one-pager is the easiest
   // artefact to hand around, so founder names are masked ("Sarah K.") unless

@@ -24,7 +24,8 @@
     "browse": "さがす",
     "alerts": "通知",
     "primaryMobile": "メインナビ",
-    "unreadCount": "未読 {count} 件"
+    "unreadCount": "未読 {count} 件",
+    "accountStatus": "アカウントの状態"
   },
   "hero": {
     "eyebrow": "プライベートキャピタル · 2024年設立",
@@ -287,7 +288,8 @@
       "descLong": "CapitalReachネットワーク内のあらゆるスタートアップについて、数秒で包括的な投資メモを取得できます。市場分析、チーム、競合状況、リスク、買い/様子見/見送りの判定をカバーします。Pro InvestorおよびInstitutionプランでは無制限に含まれます。",
       "generationFailed": "レポートの生成に失敗しました。",
       "networkError": "ネットワークエラーです。もう一度お試しください。",
-      "searchPlaceholder": "例：Vaultrise、HealthAI、ClimateOS…"
+      "searchPlaceholder": "例：Vaultrise、HealthAI、ClimateOS…",
+      "investorTool": "デューデリジェンスレポートは投資家向けのツールです"
     },
     "hub": {
       "heroPowered": "GPT-4o mini搭載",
@@ -509,7 +511,11 @@
     "cmpTradPaidBy": "スタートアップ",
     "cmpTradTracking": "ブローカー側",
     "cmpTradUpfront": "リテイナー",
-    "cmpTypical": "が一般的"
+    "cmpTypical": "が一般的",
+    "forFounderAccounts": "創業者アカウント向け",
+    "forInvestorAccounts": "投資家アカウント向け",
+    "fullAccessIncluded": "フルアクセス込み",
+    "memberFullAccess": "創設期間中は、すでにすべての機能をご利用いただけます。"
   },
   "cta": {
     "headline": "適切な資本を、適切なステージで。",
@@ -629,7 +635,10 @@
     "mustConfirmAge": "18 歳以上であることを確認してください。",
     "resetLinkDeadTitle": "このリンクは期限切れです",
     "resetLinkDeadBody": "リセットリンクは一度だけ、短時間のみ有効です。リクエストしたブラウザでのみ機能します。新しいリンクをリクエストし、この端末で開いてください。",
-    "requestNewLink": "新しいリンクをリクエスト"
+    "requestNewLink": "新しいリンクをリクエスト",
+    "linkExpiredNotice": "このリンクは期限切れか、すでに使用されています。サインインするか、確認メールを再送信してください。",
+    "linkExpiredResend": "確認メールを再送信する",
+    "linkExpiredEnterEmail": "まず下にメールアドレスを入力してから、新しいリンクを請求してください。"
   },
   "dashboard": {
     "overview": "概要",
@@ -1340,7 +1349,12 @@
     "marketTotal": "市場全体の規模",
     "minCheckNone": "下限なし",
     "moreActions": "その他",
-    "moreCompany": "会社について"
+    "moreCompany": "会社について",
+    "finishInvestorProfile": "投資家プロフィールを完成させる",
+    "investorProfileUnfinished": "投資家プロフィールはまだ完成していません",
+    "finishInvestorProfileToSave": "スタートアップを保存するには投資家プロフィールを完成させてください",
+    "saveInvestorsOnly": "スタートアップの保存は投資家アカウント向けの機能です",
+    "documentLocked": "ロック中"
   },
   "investors": {
     "pageTitle": "投資家一覧",

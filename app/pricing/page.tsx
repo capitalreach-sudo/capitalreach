@@ -5,7 +5,8 @@ import {
   investorStagePrice,
   nextStagePrice,
 } from "@/lib/pricing-stage";
-import { PricingClient, type StagePrice, type StagePricing } from "./pricing-client";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { PricingClient, type PricingViewer, type StagePrice, type StagePricing } from "./pricing-client";
 
 /**
  * The stage decides every price on this page, so it is resolved here and
@@ -50,5 +51,17 @@ export default async function PricingPage() {
     investor,
   };
 
-  return <PricingClient pricing={pricing} />;
+  // The viewer decides the default tab, the marked plan and every call to
+  // action, so it is resolved with the prices for the same reason: a member
+  // must never be shown a sign-up CTA while the client catches up.
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  let viewer: PricingViewer | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles").select("role, subscription_tier, stripe_customer_id").eq("id", user.id).maybeSingle();
+    viewer = { role: profile?.role ?? null, tier: profile?.subscription_tier ?? null, hasBillingAccount: !!profile?.stripe_customer_id };
+  }
+
+  return <PricingClient pricing={pricing} viewer={viewer} />;
 }

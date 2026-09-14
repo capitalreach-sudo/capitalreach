@@ -9,6 +9,7 @@ import { cookies, headers } from "next/headers";
 import { deploymentIndexable, requestHost } from "@/lib/indexing";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { LocaleProvider } from "@/components/providers/locale-provider";
+import { SessionHintProvider } from "@/components/providers/session-hint";
 import { isRTL, getLocaleFont } from "@/lib/locale";
 import { fontVariables } from "@/lib/fonts";
 import { getLocale, getMessages } from "@/lib/locale-server";
@@ -103,11 +104,18 @@ export default async function RootLayout({
   // expect. Editorial survives per user via the toggle's explicit cookie.
   // Server-stamped like the theme so there is no flash of the wrong style.
   let style: "editorial" | "business" = "business";
+  // Cookie presence only, no auth or database call: chrome that has not
+  // resolved the viewer yet reads this to avoid showing sign-up CTAs to a
+  // member. Must match SESSION_COOKIE in components/providers/session-hint.tsx.
+  let hasSession = false;
   try {
     // Dark is the DEFAULT: the professional register of the product. The
     // toggle still writes an explicit choice, so "light" survives per user.
     theme = cookies().get("cr_theme")?.value === "light" ? "light" : "dark";
     style = cookies().get("cr_style")?.value === "editorial" ? "editorial" : "business";
+    hasSession = cookies()
+      .getAll()
+      .some((c) => /^sb-.+-auth-token(?:\.\d+)?$/.test(c.name));
   } catch { /* static rendering contexts have no cookies */ }
   const rtl = isRTL(locale);
   const extraFont = getLocaleFont(locale);
@@ -156,6 +164,7 @@ export default async function RootLayout({
         {/* Seeds every client component with the server-resolved locale, so the
             first paint is already correct rather than English-then-swap. */}
         <LocaleProvider initialLocale={locale} initialMessages={messages}>
+        <SessionHintProvider hasSession={hasSession}>
         {/* First stop in the tab order, so it cannot wait for anything. */}
         <SkipToContent />
         <DeferredBanner />
@@ -166,6 +175,7 @@ export default async function RootLayout({
         {/* Server-rendered and empty: a filter that resolves before hydration
             still needs a region to announce into. */}
         <LiveRegion />
+        </SessionHintProvider>
         </LocaleProvider>
         {/* The paper-grain source: an SVG turbulence filter referenced by
             body::before. Rendered once, invisible, zero layout cost. */}

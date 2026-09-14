@@ -24,7 +24,8 @@
     "browse": "둘러보기",
     "alerts": "알림",
     "primaryMobile": "기본 메뉴",
-    "unreadCount": "읽지 않음 {count}개"
+    "unreadCount": "읽지 않음 {count}개",
+    "accountStatus": "계정 상태"
   },
   "hero": {
     "eyebrow": "프라이빗 캐피탈 · 2024년 설립",
@@ -278,7 +279,8 @@
       "descLong": "CapitalReach 네트워크의 모든 스타트업에 대한 종합 투자 메모를 몇 초 만에 받아보세요. 시장 분석, 팀, 경쟁 환경, 리스크, 매수/관망/보류 결론을 다룹니다. Pro Investor 및 Institution 플랜에서 무제한 포함됩니다.",
       "generationFailed": "보고서 생성에 실패했습니다.",
       "networkError": "네트워크 오류입니다. 다시 시도해 주세요.",
-      "searchPlaceholder": "예: Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "예: Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "실사 보고서는 투자자용 도구입니다"
     },
     "hub": {
       "heroPowered": "GPT-4o mini 기반",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "스타트업",
     "cmpTradTracking": "브로커 쪽",
     "cmpTradUpfront": "착수금",
-    "cmpTypical": "일반적"
+    "cmpTypical": "일반적",
+    "forFounderAccounts": "창업자 계정용",
+    "forInvestorAccounts": "투자자 계정용",
+    "fullAccessIncluded": "전체 이용 포함",
+    "memberFullAccess": "창립 단계가 진행되는 동안 이미 모든 기능을 이용할 수 있습니다."
   },
   "cta": {
     "headline": "적절한 단계의 적절한 자본.",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "만 18세 이상임을 확인해 주세요.",
     "resetLinkDeadTitle": "이 링크는 만료되었습니다",
     "resetLinkDeadBody": "재설정 링크는 한 번만, 짧은 시간 동안만 작동하며 요청한 브라우저에서만 유효합니다. 새 링크를 요청해 이 기기에서 여세요.",
-    "requestNewLink": "새 링크 요청"
+    "requestNewLink": "새 링크 요청",
+    "linkExpiredNotice": "링크가 만료되었거나 이미 사용되었습니다. 로그인하거나 새 확인 이메일을 요청하세요.",
+    "linkExpiredResend": "새 확인 이메일 요청",
+    "linkExpiredEnterEmail": "먼저 아래에 이메일 주소를 입력한 다음 새 링크를 요청하세요."
   },
   "dashboard": {
     "overview": "개요",
@@ -1297,7 +1306,12 @@
     "marketTotal": "전체 시장",
     "minCheckNone": "최소 금액 없음",
     "moreActions": "더 보기",
-    "moreCompany": "회사 정보"
+    "moreCompany": "회사 정보",
+    "finishInvestorProfile": "투자자 프로필 완성하기",
+    "investorProfileUnfinished": "투자자 프로필이 아직 완성되지 않았습니다",
+    "finishInvestorProfileToSave": "스타트업을 저장하려면 투자자 프로필을 완성하세요",
+    "saveInvestorsOnly": "스타트업 저장은 투자자 계정 전용입니다",
+    "documentLocked": "잠김"
   },
   "filters": {
     "industry": "산업",

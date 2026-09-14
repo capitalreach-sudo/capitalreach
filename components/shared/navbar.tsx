@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
-import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell, Flag, Bookmark } from "lucide-react";
+import { Menu, X, LogOut, Settings, LayoutDashboard, MessageSquare, ChevronDown, Rocket, Users, Brain, Tag, BarChart3, Handshake, Bell, Flag, Bookmark, ShieldAlert } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -15,6 +15,9 @@ import { GlobalSearch } from "@/components/shared/global-search";
 import { MessagesIcon } from "@/components/shared/messages-icon";
 import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { useSessionHint } from "@/components/providers/session-hint";
+import { buildAccessContext, isSuspended } from "@/lib/access";
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import type { Profile } from "@/types";
 
 const DiamondLogo = ({ size = 10 }: { size?: number }) => (
@@ -34,14 +37,24 @@ interface NavbarProps {
   /** Server-rendered seed: an authenticated page that already holds the
       viewer's profile passes it so the first paint shows the signed-in bar
       rather than Sign in until the client-side auth fetch resolves. Pages
-      that pass nothing start signed-out, exactly as before the prop. */
+      that pass nothing start from the session cookie hint: a neutral
+      placeholder when a session cookie is present, the signed-out bar
+      otherwise. */
   initialProfile?: Profile | null;
 }
 
 export function Navbar({ initialProfile = null }: NavbarProps = {}) {
   const { t, locale } = useTranslation();
+  // English until the key exists in messages/*.json.
+  const tf = (key: string, english: string) => {
+    const v = t(key);
+    return v === key ? english : v;
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const [profile, setProfile]       = useState<Profile | null>(initialProfile);
+  // null until the client auth fetch answers; a server seed is an answer.
+  const [signedIn, setSignedIn]     = useState<boolean | null>(initialProfile ? true : null);
+  const sessionHint = useSessionHint();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
   const router   = useRouter();
@@ -50,6 +63,9 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
   const supabase    = supabaseRef.current;
   // Messages is an entry only for a member who has messaging at all.
   const messagingAvailable = useMessagingAvailable(!!profile);
+  // A suspended account is offered its status page and sign-out, never a
+  // workspace destination.
+  const suspended = !!profile && isSuspended(buildAccessContext(profile, false));
 
   const NAV_LINKS = [
     { href: "/startups",  label: t("nav.startups")  },
@@ -57,21 +73,28 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
     { href: "/ai",        label: t("nav.aiTools")   },
     { href: "/pricing",   label: t("nav.pricing")   },
     { href: "/data",      label: t("nav.data")      },
-    ...(profile?.role === "startup" || profile?.role === "investor" || profile?.role === "admin"
+    ...(!suspended && (profile?.role === "startup" || profile?.role === "investor" || profile?.role === "admin")
       ? [{ href: "/deals", label: t("nav.deals") }]
       : []),
   ];
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
+    supabase.auth.getUser().then(async ({ data, error }) => {
       if (data.user) {
+        const userId = data.user.id;
         const { data: p } = await supabase
-          .from("profiles").select("*").eq("id", data.user.id).single();
-        setProfile(p);
+          .from("profiles").select("*").eq("id", userId).single();
+        // A failed profile read must not drop a server seed for the same user.
+        setProfile((prev) => p ?? (prev?.id === userId ? prev : null));
+        setSignedIn(true);
+      } else if (isAuthRetryableFetchError(error)) {
+        // A network failure says nothing about the session: keep what the bar
+        // already shows rather than falling back to sign-up CTAs.
       } else {
         // The client session is authoritative: a server seed must not keep
         // the signed-in bar alive once the session is gone.
         setProfile(null);
+        setSignedIn(false);
       }
     });
   }, [supabase]);
@@ -89,6 +112,8 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
 
   async function signOut() {
     await supabase.auth.signOut();
+    setProfile(null);
+    setSignedIn(false);
     router.push("/");
     router.refresh();
   }
@@ -97,6 +122,16 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
     profile?.role === "startup" ? "/dashboard/startup"
     : profile?.role === "admin" ? "/admin"
     : "/dashboard/investor";
+
+  // What the account slot may show. Sign-up CTAs render only for "anonymous":
+  // the client fetch found no session, or no session cookie was sent and the
+  // fetch has not answered yet. "session" is a signed-in user whose profile
+  // row did not load, and gets sign-out only.
+  const view: "member" | "session" | "pending" | "anonymous" =
+    profile ? "member"
+    : signedIn === true ? "session"
+    : signedIn === false ? "anonymous"
+    : sessionHint ? "pending" : "anonymous";
 
   const isActive = (href: string) => pathname.startsWith(href);
 
@@ -194,8 +229,12 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
             <LanguageSwitcher currentLocale={locale} />
             {profile ? (
               <>
-                <ErrorBoundary fallback={null}><NotificationBell /></ErrorBoundary>
-                <ErrorBoundary fallback={null}><MessagesIcon /></ErrorBoundary>
+                {!suspended && (
+                  <>
+                    <ErrorBoundary fallback={null}><NotificationBell /></ErrorBoundary>
+                    <ErrorBoundary fallback={null}><MessagesIcon /></ErrorBoundary>
+                  </>
+                )}
                 <div className="relative group">
                   <button
                     className="flex items-center gap-2 px-2 py-1 rounded-[4px] transition-colors"
@@ -241,7 +280,10 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                         {profile.email}
                       </p>
                     </div>
-                    {[
+                    {(suspended ? [
+                      // Complaints stay reachable from the /suspended page.
+                      { href: "/suspended", Icon: ShieldAlert, label: tf("nav.accountStatus", "Account status") },
+                    ] : [
                       { href: dashboardPath,         Icon: LayoutDashboard, label: t("nav.dashboard") },
                       // An admin's own saves live on the investor dashboard,
                       // which their Dashboard link (-> /admin) never reaches.
@@ -253,7 +295,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                         : []),
                       { href: "/dashboard/complaints", Icon: Flag,          label: t("complaints.title") },
                       { href: "/dashboard/settings", Icon: Settings,        label: t("nav.settings")  },
-                    ].map(({ href, Icon, label }) => (
+                    ]).map(({ href, Icon, label }) => (
                       <Link key={href} href={href}
                         className="flex items-center gap-3 px-4 py-2 mx-1 rounded-[3px] transition-colors"
                         style={{ fontSize: "13px", fontFamily: "'DM Sans', sans-serif", color: "var(--cr-ink-3)", textDecoration: "none" }}
@@ -282,7 +324,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                   </div>
                 </div>
               </>
-            ) : (
+            ) : view === "anonymous" ? (
               <>
                 <Link href="/auth/login" style={{
                     display:     "inline-block",
@@ -323,6 +365,20 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                     {t("nav.listStartup")}
                 </Link>
               </>
+            ) : view === "session" ? (
+              <button onClick={signOut} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+                  color: "var(--cr-ink-3)", background: "none", border: "none", cursor: "pointer", padding: 0,
+                }}>
+                {t("nav.logOut")}
+              </button>
+            ) : (
+              // Holds the avatar button's footprint while the session
+              // resolves, so a member sees neither sign-up CTAs nor a jump.
+              <div aria-hidden className="flex items-center gap-2 px-2 py-1">
+                <div className="h-7 w-7 rounded-full flex-shrink-0" style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)" }} />
+                <div className="h-3 w-3" />
+              </div>
             )}
           </div>
 
@@ -394,7 +450,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
             {/* Signed-in identity -- who you are and where your work lives,
                 before any navigation. */}
             {profile && (
-              <Link href={dashboardPath} onClick={() => setMobileOpen(false)}
+              <Link href={suspended ? "/suspended" : dashboardPath} onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-6 py-4 flex-shrink-0"
                 style={{ borderBottom: "1px solid var(--cr-rule)", textDecoration: "none" }}>
                 {/* Same avatar treatment as the desktop bar: paper disc,
@@ -425,7 +481,10 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                   { href: "/ai",      label: t("nav.aiTools"), Icon: Brain },
                   { href: "/pricing", label: t("nav.pricing"), Icon: Tag   },
                 ] },
-                ...(profile ? [{ header: t("nav.secWorkspace"), items: [
+                ...(profile && suspended ? [{ header: t("nav.secWorkspace"), items: [
+                  { href: "/suspended", label: tf("nav.accountStatus", "Account status"), Icon: ShieldAlert },
+                ] }] : []),
+                ...(profile && !suspended ? [{ header: t("nav.secWorkspace"), items: [
                   { href: dashboardPath,              label: t("nav.dashboard"),       Icon: LayoutDashboard },
                   ...(profile?.role === "admin"
                     ? [{ href: "/dashboard/investor", label: t("dashboard.watchlist"), Icon: Bookmark }]
@@ -479,7 +538,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                 (bottom-0, above the tab bar), so the footer takes the iPhone
                 home-indicator inset itself -- without it the last control
                 sits in the swipe zone. */}
-            {!profile ? (
+            {view === "anonymous" ? (
               <div className="px-6 py-4 flex flex-col gap-3 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)", paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
@@ -505,7 +564,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                   <Link href="/contact" onClick={() => setMobileOpen(false)} style={{ color: "inherit" }}>{t("footer.contact")}</Link>
                 </p>
               </div>
-            ) : (
+            ) : view === "pending" ? null : (
               <div className="px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid var(--cr-rule)", paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
                 <button
                   onClick={() => { signOut(); setMobileOpen(false); }}

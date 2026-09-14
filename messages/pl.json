@@ -24,7 +24,8 @@
     "browse": "Przeglądaj",
     "alerts": "Alerty",
     "primaryMobile": "Główna",
-    "unreadCount": "{count} nieprzeczytanych"
+    "unreadCount": "{count} nieprzeczytanych",
+    "accountStatus": "Status konta"
   },
   "hero": {
     "eyebrow": "Prywatny kapitał · Est. 2024",
@@ -278,7 +279,8 @@
       "descLong": "Uzyskaj w kilka sekund szczegółowe memorandum inwestycyjne dla dowolnego startupu w sieci CapitalReach. Obejmuje analizę rynku, zespół, krajobraz konkurencyjny, ryzyka oraz werdykt Kup / Obserwuj / Pomiń. Nielimitowane w planach Pro Investor i Institution.",
       "generationFailed": "Generowanie raportu nie powiodło się.",
       "networkError": "Błąd sieci. Spróbuj ponownie.",
-      "searchPlaceholder": "np. Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "np. Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Raporty due diligence to narzędzie dla inwestorów"
     },
     "hub": {
       "heroPowered": "Zasilany przez GPT-4o mini",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "Startup",
     "cmpTradTracking": "U brokera",
     "cmpTradUpfront": "Retainer",
-    "cmpTypical": "typowo"
+    "cmpTypical": "typowo",
+    "forFounderAccounts": "Dla kont założycieli",
+    "forInvestorAccounts": "Dla kont inwestorów",
+    "fullAccessIncluded": "Pełny dostęp w cenie",
+    "memberFullAccess": "Masz już pełny dostęp, dopóki trwa etap założycielski."
   },
   "cta": {
     "headline": "Właściwy kapitał, na właściwym etapie.",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "Potwierdź, że masz ukończone 18 lat.",
     "resetLinkDeadTitle": "Ten link wygasł",
     "resetLinkDeadBody": "Linki do resetu działają raz i krótko — i tylko w przeglądarce, która o nie poprosiła. Poproś o nowy i otwórz go na tym urządzeniu.",
-    "requestNewLink": "Poproś o nowy link"
+    "requestNewLink": "Poproś o nowy link",
+    "linkExpiredNotice": "Ten link wygasł lub został już użyty. Zaloguj się lub poproś o nowy e-mail potwierdzający.",
+    "linkExpiredResend": "Poproś o nowy e-mail potwierdzający",
+    "linkExpiredEnterEmail": "Najpierw wpisz poniżej swój adres e-mail, a potem poproś o nowy link."
   },
   "dashboard": {
     "overview": "Przegląd",
@@ -1297,7 +1306,12 @@
     "marketTotal": "Rynek całkowity",
     "minCheckNone": "Bez minimum",
     "moreActions": "Więcej",
-    "moreCompany": "Spółka"
+    "moreCompany": "Spółka",
+    "finishInvestorProfile": "Dokończ profil inwestora",
+    "investorProfileUnfinished": "Twój profil inwestora nie jest jeszcze gotowy",
+    "finishInvestorProfileToSave": "Dokończ profil inwestora, aby zapisywać startupy",
+    "saveInvestorsOnly": "Zapisywanie startupów jest dla kont inwestorów",
+    "documentLocked": "Zablokowane"
   },
   "filters": {
     "industry": "Branża",

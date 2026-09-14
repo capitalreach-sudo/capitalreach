@@ -5,10 +5,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Search, Rocket, Users, Brain, Tag, BarChart3, Handshake,
   LayoutDashboard, MessageSquare, Bell, Settings, CornerDownLeft,
+  ShieldAlert, LogOut,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
 import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
+import { createClient } from "@/lib/supabase";
+import { buildAccessContext, isSuspended } from "@/lib/access";
 
 /**
  * ⌘K / Ctrl-K palette: one keystroke to any listing, any investor, or any page.
@@ -46,6 +49,15 @@ export function CommandPalette() {
     : profile?.role === "admin" ? "/admin"
     : "/dashboard/investor";
 
+  // A suspended account is offered its status page and sign-out, never a
+  // workspace destination.
+  const suspended = !!profile && isSuspended(buildAccessContext(profile, false));
+  // English until the key exists in messages/*.json.
+  const tf = useCallback((key: string, english: string) => {
+    const v = t(key);
+    return v === key ? english : v;
+  }, [t]);
+
   // The terminal remembers: the last five entities opened through it.
   const [recents, setRecents] = useState<Array<{ kind: "startup" | "investor"; slug: string; name: string }>>([]);
   useEffect(() => {
@@ -80,8 +92,11 @@ export function CommandPalette() {
           document.documentElement.dataset.style = next;
           document.cookie = `cr_style=${next};path=/;max-age=31536000;SameSite=Lax`;
         } },
+      ...(suspended ? [{ type: "action" as const, id: "signout", label: t("nav.logOut"), Icon: LogOut, run: () => {
+          void createClient().auth.signOut().then(() => { router.push("/"); router.refresh(); });
+        } }] : []),
     ];
-  }, [open, t]);
+  }, [open, t, suspended, router]);
 
   // Messages is a destination only for a member who has messaging at all.
   const messagingAvailable = useMessagingAvailable(!!profile);
@@ -95,6 +110,12 @@ export function CommandPalette() {
       { type: "route", href: "/data", label: t("nav.data"), Icon: BarChart3 },
     ];
     if (!profile) return pub;
+    if (suspended) {
+      return [
+        { type: "route", href: "/suspended", label: tf("nav.accountStatus", "Account status"), Icon: ShieldAlert },
+        ...pub,
+      ];
+    }
     const messages: Row[] = messagingAvailable === true
       ? [{ type: "route", href: "/dashboard/messages", label: t("nav.messages"), Icon: MessageSquare }]
       : [];
@@ -106,7 +127,7 @@ export function CommandPalette() {
       ...pub,
       { type: "route", href: "/dashboard/settings", label: t("nav.settings"), Icon: Settings },
     ];
-  }, [profile, dashboardPath, messagingAvailable, t]);
+  }, [profile, suspended, dashboardPath, messagingAvailable, t, tf]);
 
   // ── Open / close ────────────────────────────────────────────────────────
   useEffect(() => {

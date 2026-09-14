@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, Compass, Handshake, MessageSquare, Bell } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, Compass, Handshake, MessageSquare, Bell, ShieldAlert, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
 import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
+import { createClient } from "@/lib/supabase";
+import { buildAccessContext, isSuspended } from "@/lib/access";
 
 /**
  * Mobile tab bar for signed-in users.
@@ -20,6 +22,9 @@ import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
  * Messages is a tab only for a member who has messaging at all (a sealed deal,
  * or an admin), and not while that is still being asked. Every tab is flex: 1,
  * so four tabs share the bar as evenly as five.
+ *
+ * A suspended account gets exactly two tabs, its status page and sign-out: no
+ * workspace destination, and no unread counts fetched for one.
  *
  * No glyph set: the label already says what each tab is, so the marker above
  * it only says where you are -- the product's own devices, a mono index per
@@ -36,34 +41,68 @@ type Tab = {
   Icon: typeof LayoutDashboard;
 };
 
+const tabStyle = (active: boolean): React.CSSProperties => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "4px",
+  minHeight: "52px",
+  textDecoration: "none",
+  color: active ? "var(--cr-copper)" : "var(--cr-ink-4)",
+  position: "relative",
+});
+
+const labelStyle = (active: boolean): React.CSSProperties => ({
+  fontFamily: "'DM Sans', sans-serif",
+  fontWeight: active ? 600 : 400,
+  fontSize: "11px",
+  letterSpacing: "0.01em",
+});
+
+const glyphStyle: React.CSSProperties = {
+  position: "relative",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
 export function BottomNav() {
   const { t } = useTranslation();
+  // English until the key exists in messages/*.json.
+  const tf = (key: string, english: string) => {
+    const v = t(key);
+    return v === key ? english : v;
+  };
   const { profile } = useProfile();
   const pathname = usePathname();
+  const router = useRouter();
+  const suspended = !!profile && isSuspended(buildAccessContext(profile, false));
   const messagingAvailable = useMessagingAvailable(!!profile);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadAlerts, setUnreadAlerts] = useState(0);
 
   // Re-counted on navigation: opening the messages page clears its badge.
   useEffect(() => {
-    if (!profile || messagingAvailable !== true) return;
+    if (!profile || suspended || messagingAvailable !== true) return;
     let alive = true;
     fetch("/api/messages/unread")
       .then((r) => (r.ok ? r.json() : null))
       .then((m) => { if (alive && m) setUnreadMessages(m.unread ?? 0); })
       .catch(() => {});
     return () => { alive = false; };
-  }, [profile, pathname, messagingAvailable]);
+  }, [profile, suspended, pathname, messagingAvailable]);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || suspended) return;
     let alive = true;
     fetch("/api/notifications")
       .then((r) => (r.ok ? r.json() : null))
       .then((n) => { if (alive && n) setUnreadAlerts(n.unread ?? 0); })
       .catch(() => {});
     return () => { alive = false; };
-  }, [profile, pathname]);
+  }, [profile, suspended, pathname]);
 
   // Tells the stylesheet a tab bar is present, so --cr-tabbar-h stops being 0
   // and the spacer, the fee badge and the compare tray all move up together.
@@ -75,6 +114,39 @@ export function BottomNav() {
   }, [profile]);
 
   if (!profile) return null;
+
+  async function signOut() {
+    await createClient().auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
+
+  if (suspended) {
+    const onStatus = pathname === "/suspended";
+    return (
+      <>
+        <div className="cr-bottom-nav-spacer" aria-hidden />
+        <nav className="cr-bottom-nav lg:hidden" aria-label={t("nav.primaryMobile")}>
+          <Link href="/suspended" aria-current={onStatus ? "page" : undefined} style={tabStyle(onStatus)}>
+            <span aria-hidden style={glyphStyle}>
+              <ShieldAlert size={20} strokeWidth={onStatus ? 2.1 : 1.6} />
+            </span>
+            <span style={labelStyle(onStatus)}>{tf("nav.accountStatus", "Account status")}</span>
+          </Link>
+          <button
+            type="button"
+            onClick={signOut}
+            style={{ ...tabStyle(false), background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+          >
+            <span aria-hidden style={glyphStyle}>
+              <LogOut size={20} strokeWidth={1.6} />
+            </span>
+            <span style={labelStyle(false)}>{t("nav.logOut")}</span>
+          </button>
+        </nav>
+      </>
+    );
+  }
 
   const dashboardPath =
     profile.role === "startup" ? "/dashboard/startup"
@@ -115,24 +187,13 @@ export function BottomNav() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "4px",
-              minHeight: "52px",
-              textDecoration: "none",
-              color: active ? "var(--cr-copper)" : "var(--cr-ink-4)",
-              position: "relative",
-            }}
+            style={tabStyle(active)}
           >
             {/* The glyph, not an index: numbering a nav asserts a sequence
                 its destinations do not have, and the owner read it as
                 exactly that. Weight carries the active state; the label's
                 copper does the rest. */}
-            <span aria-hidden style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+            <span aria-hidden style={glyphStyle}>
               <Icon size={20} strokeWidth={active ? 2.1 : 1.6} />
               {!!badge && badge > 0 && (
                 <span
@@ -159,14 +220,7 @@ export function BottomNav() {
                 </span>
               )}
             </span>
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: active ? 600 : 400,
-                fontSize: "11px",
-                letterSpacing: "0.01em",
-              }}
-            >
+            <span style={labelStyle(active)}>
               {label}
             </span>
             {!!badge && badge > 0 && (

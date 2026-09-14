@@ -24,7 +24,8 @@
     "browse": "تصفح",
     "alerts": "التنبيهات",
     "primaryMobile": "التنقل الرئيسي",
-    "unreadCount": "{count} غير مقروءة"
+    "unreadCount": "{count} غير مقروءة",
+    "accountStatus": "حالة الحساب"
   },
   "hero": {
     "eyebrow": "رأس المال الخاص · تأسست 2024",
@@ -287,7 +288,8 @@
       "descLong": "احصل على مذكرة استثمارية شاملة لأي شركة ناشئة في شبكة CapitalReach خلال ثوانٍ. تغطي تحليل السوق والفريق والمشهد التنافسي والمخاطر وقرار شراء / مراقبة / تجاوز. غير محدود ضمن خطط Pro Investor وInstitution.",
       "generationFailed": "فشل إنشاء التقرير.",
       "networkError": "خطأ في الشبكة. حاول مرة أخرى.",
-      "searchPlaceholder": "مثال: Vaultrise، HealthAI، ClimateOS…"
+      "searchPlaceholder": "مثال: Vaultrise، HealthAI، ClimateOS…",
+      "investorTool": "تقارير العناية الواجبة أداة للمستثمرين"
     },
     "hub": {
       "heroPowered": "مدعوم بـ GPT-4o mini",
@@ -509,7 +511,11 @@
     "cmpTradPaidBy": "الشركة الناشئة",
     "cmpTradTracking": "لدى الوسيط",
     "cmpTradUpfront": "أتعاب مقدّمة",
-    "cmpTypical": "معتاد"
+    "cmpTypical": "معتاد",
+    "forFounderAccounts": "لحسابات المؤسسين",
+    "forInvestorAccounts": "لحسابات المستثمرين",
+    "fullAccessIncluded": "وصول كامل مشمول",
+    "memberFullAccess": "لديك بالفعل وصول كامل طوال مرحلة التأسيس."
   },
   "cta": {
     "headline": "رأس المال المناسب في المرحلة المناسبة.",
@@ -629,7 +635,10 @@
     "mustConfirmAge": "يرجى تأكيد أن عمرك 18 عامًا أو أكثر.",
     "resetLinkDeadTitle": "انتهت صلاحية هذا الرابط",
     "resetLinkDeadBody": "روابط إعادة التعيين تعمل مرة واحدة ولفترة قصيرة — وفقط في المتصفح الذي طلبها. اطلب رابطًا جديدًا وافتحه على هذا الجهاز.",
-    "requestNewLink": "طلب رابط جديد"
+    "requestNewLink": "طلب رابط جديد",
+    "linkExpiredNotice": "انتهت صلاحية هذا الرابط أو استُخدم بالفعل. سجّل الدخول أو اطلب رسالة تأكيد جديدة.",
+    "linkExpiredResend": "اطلب رسالة تأكيد جديدة",
+    "linkExpiredEnterEmail": "أدخل بريدك الإلكتروني أدناه أولًا، ثم اطلب الرابط الجديد."
   },
   "dashboard": {
     "overview": "نظرة عامة",
@@ -1340,7 +1349,12 @@
     "marketTotal": "إجمالي السوق",
     "minCheckNone": "لا حد أدنى",
     "moreActions": "المزيد",
-    "moreCompany": "الشركة"
+    "moreCompany": "الشركة",
+    "finishInvestorProfile": "أكمل ملفك كمستثمر",
+    "investorProfileUnfinished": "لم يكتمل ملفك كمستثمر بعد",
+    "finishInvestorProfileToSave": "أكمل ملفك كمستثمر لحفظ الشركات الناشئة",
+    "saveInvestorsOnly": "حفظ الشركات الناشئة متاح لحسابات المستثمرين",
+    "documentLocked": "مقفل"
   },
   "investors": {
     "pageTitle": "دليل المستثمرين",

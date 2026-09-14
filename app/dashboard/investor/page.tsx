@@ -7,6 +7,23 @@ import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { postMoney } from "@/lib/round-math";
 
+/**
+ * A save whose listing is no longer active (draft, pending review, suspended):
+ * the save's own identity and nothing read from the listing. No status is
+ * carried, so a missing status is what marks the save as no longer listed.
+ * stage is an empty string rather than absent because StartupCard calls string
+ * methods on it; every financial is null, which the card and the CSV export
+ * already render as empty.
+ */
+function unlistedSave(s: { id: string; name: string; slug: string }): NonNullable<Watchlist["startup"]> {
+  return {
+    id: s.id, name: s.name, slug: s.slug,
+    stage: "", tagline: null, industry: null,
+    funding_target: null, mrr: null, arr: null, growth_rate: null, runway_months: null,
+    vaultrise_score: null, round_close_date: null, round_state: null,
+  } as unknown as NonNullable<Watchlist["startup"]>;
+}
+
 export default async function InvestorDashboardPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -45,11 +62,14 @@ export default async function InvestorDashboardPage() {
   // investor's watchlist as permanently empty -- saves existed, the tab showed
   // "no saved startups yet" forever. Ownership is established above
   // (investor.id belongs to this user); financials are stripped per viewer
-  // below, exactly as the browse API does.
+  // below, exactly as the browse API does. This read bypasses the status gate
+  // the directory applies, and everything returned here lands in the RSC
+  // payload, so only an active listing keeps its row; any other save is
+  // reduced to unlistedSave() before it leaves the server.
   const adminForJoin = createAdminClient();
   const { data: watchlist, error: watchlistError } = await adminForJoin
     .from("watchlists")
-    .select(`*, startup:startups(${STARTUP_LIST_COLUMNS})`)
+    .select(`*, startup:startups(${STARTUP_LIST_COLUMNS},status)`)
     .eq("investor_id", investor.id)
     // C26: was capped at 20 — a real shortlist outgrows that in a week.
     .order("priority", { ascending: false })
@@ -59,12 +79,14 @@ export default async function InvestorDashboardPage() {
   // A grant regression must be VISIBLE, not an empty state.
   if (watchlistError) console.error("[dashboard/investor] watchlist read failed:", watchlistError.message);
   const canSeeFinancials = await viewerCanSeeFinancials();
-  const safeWatchlist = (watchlist ?? []).map((w) => ({
-    ...w,
-    startup: w.startup
-      ? (stripBrowseFinancials([w.startup as never], canSeeFinancials)[0] as typeof w.startup)
-      : w.startup,
-  }));
+  const safeWatchlist = (watchlist ?? []).map((w) => {
+    if (!w.startup) return w;
+    if (w.startup.status !== "active") return { ...w, startup: unlistedSave(w.startup) };
+    return {
+      ...w,
+      startup: stripBrowseFinancials([w.startup as never], canSeeFinancials)[0] as typeof w.startup,
+    };
+  });
 
   // Deals
   const { data: deals } = await supabase

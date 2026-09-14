@@ -24,7 +24,8 @@
     "browse": "Bladeren",
     "alerts": "Meldingen",
     "primaryMobile": "Hoofdnavigatie",
-    "unreadCount": "{count} ongelezen"
+    "unreadCount": "{count} ongelezen",
+    "accountStatus": "Accountstatus"
   },
   "hero": {
     "eyebrow": "Privaat kapitaal · Est. 2024",
@@ -278,7 +279,8 @@
       "descLong": "Krijg in enkele seconden een uitgebreid investeringsmemo over elke startup in het CapitalReach-netwerk. Omvat marktanalyse, team, concurrentielandschap, risico's en een Kopen / Volgen / Overslaan-oordeel. Onbeperkt inbegrepen bij Pro Investor- en Institution-abonnementen.",
       "generationFailed": "Rapport genereren mislukt.",
       "networkError": "Netwerkfout. Probeer het opnieuw.",
-      "searchPlaceholder": "bijv. Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "bijv. Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Due-diligencerapporten zijn een tool voor investeerders"
     },
     "hub": {
       "heroPowered": "Aangedreven door GPT-4o mini",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "De startup",
     "cmpTradTracking": "Bij de broker",
     "cmpTradUpfront": "Een retainer",
-    "cmpTypical": "gebruikelijk"
+    "cmpTypical": "gebruikelijk",
+    "forFounderAccounts": "Voor oprichtersaccounts",
+    "forInvestorAccounts": "Voor investeerdersaccounts",
+    "fullAccessIncluded": "Volledige toegang inbegrepen",
+    "memberFullAccess": "U hebt al volledige toegang zolang de oprichtingsfase loopt."
   },
   "cta": {
     "headline": "Het juiste kapitaal, op het juiste moment.",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "Bevestig dat u 18 jaar of ouder bent.",
     "resetLinkDeadTitle": "Deze link is verlopen",
     "resetLinkDeadBody": "Herstellinks werken één keer en kort — en alleen in de browser die ze aanvroeg. Vraag een nieuwe aan en open die op dit apparaat.",
-    "requestNewLink": "Nieuwe link aanvragen"
+    "requestNewLink": "Nieuwe link aanvragen",
+    "linkExpiredNotice": "Deze link is verlopen of al gebruikt. Log in of vraag een nieuwe bevestigingsmail aan.",
+    "linkExpiredResend": "Nieuwe bevestigingsmail aanvragen",
+    "linkExpiredEnterEmail": "Vul eerst hieronder uw e-mailadres in en vraag daarna de nieuwe link aan."
   },
   "dashboard": {
     "overview": "Overzicht",
@@ -1297,7 +1306,12 @@
     "marketTotal": "Totale markt",
     "minCheckNone": "Geen minimum",
     "moreActions": "Meer",
-    "moreCompany": "De onderneming"
+    "moreCompany": "De onderneming",
+    "finishInvestorProfile": "Rond uw investeerdersprofiel af",
+    "investorProfileUnfinished": "Uw investeerdersprofiel is nog niet af",
+    "finishInvestorProfileToSave": "Rond uw investeerdersprofiel af om startups op te slaan",
+    "saveInvestorsOnly": "Startups opslaan is voor investeerdersaccounts",
+    "documentLocked": "Vergrendeld"
   },
   "filters": {
     "industry": "Industrie",

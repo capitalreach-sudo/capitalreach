@@ -107,7 +107,7 @@ export async function POST() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, role, created_at")
+      .select("full_name, created_at")
       .eq("id", user.id)
       .single();
 
@@ -142,9 +142,11 @@ export async function POST() {
 
     // The claim row stays whether or not the send works, so a bounced provider
     // cannot turn into a second welcome on the next page load. Its status is
-    // the only place that difference is recorded.
+    // the only place that difference is recorded. No role is passed: this
+    // runs on the first authenticated load, before the member can switch role,
+    // so the mail is role-neutral and links to /dashboard.
     try {
-      await sendWelcomeEmail(user.email!, profile.full_name || "", profile.role);
+      await sendWelcomeEmail(user.email!, profile.full_name || "");
     } catch (err) {
       await createAdminClient().from("email_logs").update({ status: "failed" }).eq("id", claimId);
       throw err;

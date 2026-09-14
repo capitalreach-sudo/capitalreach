@@ -647,7 +647,14 @@ export function StartupDetailClient({
 
 
   async function toggleSave() {
-    if (!investorId) { notify.info(t("startupDetail.signInToSave")); return; }
+    if (!investorId) {
+      notify.info(
+        !viewerUserId ? t("startupDetail.signInToSave")
+        : investorMidOnboarding ? tf("startupDetail.finishInvestorProfileToSave", "Finish your investor profile to save startups")
+        : tf("startupDetail.saveInvestorsOnly", "Saving startups is for investor accounts"),
+      );
+      return;
+    }
     // Through the API rather than a direct table write, so the plan's
     // watchlist cap (Explorer: 5) and the founder's "saved" notification apply
     // here exactly as they do on the browse page. Optimistic, rolled back on
@@ -701,8 +708,28 @@ export function StartupDetailClient({
   }
 
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const { notifyRefusal } = useRefusal();
   const score = startup.vaultrise_score ?? null;
+
+  // A signed-in member without an investor row is a founder or an investor
+  // who has not finished onboarding. Neither is ever offered a sign-up or a
+  // sign-in; the investor is sent to finish the profile. The server sets
+  // investorTier only for investor and admin roles, so a tier settles the
+  // role without a round trip and a null tier is read from the profile. Until
+  // the role is known, no sign-up prompt renders for a signed-in viewer.
+  const [viewerRole, setViewerRole] = useState<string | null>(
+    investorTier !== null && !viewerIsAdmin ? "investor" : null,
+  );
+  useEffect(() => {
+    if (!viewerUserId || investorId || viewerIsAdmin || viewerRole !== null) return;
+    let live = true;
+    supabase.from("profiles").select("role").eq("id", viewerUserId).maybeSingle()
+      .then(({ data }) => { if (live) setViewerRole((data as { role?: string | null } | null)?.role ?? null); });
+    return () => { live = false; };
+  }, [viewerUserId, investorId, viewerIsAdmin, viewerRole, supabase]);
+  const investorMidOnboarding = !!viewerUserId && !investorId && viewerRole === "investor";
 
   const TAB_LABELS: Record<Tab, string> = {
     overview:   t("startupDetail.overview"),
@@ -1620,7 +1647,11 @@ export function StartupDetailClient({
                 (stripLockedUrl), so any openable document means "sign up to
                 view the deck" would sit above a deck the viewer can open --
                 the teaser is for viewers with nothing openable at all. */}
-            {!investorId && startup.documents && startup.documents.length > 0
+            {/* A signed-in viewer is never asked to create an account: an
+                investor mid-onboarding gets the one step they have left, and
+                any other member gets no teaser at all. */}
+            {!investorId && (!viewerUserId || investorMidOnboarding)
+              && startup.documents && startup.documents.length > 0
               && !startup.documents.some((d) => !d.locked) && (
               <div style={{ position: "relative", borderRadius: "6px", overflow: "hidden", border: "1px solid var(--cr-rule-dark)", marginBottom: "16px", minHeight: "120px" }}>
                 <div style={{ position: "absolute", inset: 0, filter: "blur(4px)", background: "var(--cr-paper-3)", display: "flex", alignItems: "center", padding: "24px" }}>
@@ -1631,9 +1662,15 @@ export function StartupDetailClient({
                   </div>
                 </div>
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, color-mix(in srgb, var(--cr-paper) 95%, transparent) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "16px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("startupDetail.signUpPitchDeck")}</p>
-                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "8px 24px", borderRadius: "4px", textDecoration: "none" }}>
-                    {t("startupDetail.createFreeAccount")} →
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>
+                    {investorMidOnboarding
+                      ? tf("startupDetail.investorProfileUnfinished", "Your investor profile is not finished yet")
+                      : t("startupDetail.signUpPitchDeck")}
+                  </p>
+                  <Link href={investorMidOnboarding ? "/onboarding/investor" : "/auth/signup"} style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "8px 24px", borderRadius: "4px", textDecoration: "none" }}>
+                    {investorMidOnboarding
+                      ? tf("startupDetail.finishInvestorProfile", "Finish your investor profile")
+                      : t("startupDetail.createFreeAccount")} →
                   </Link>
                 </div>
               </div>
@@ -1667,7 +1704,7 @@ export function StartupDetailClient({
                         </button>
                       ) : !doc.file_url ? (
                         <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 4px" }}>
-                          <Lock style={{ width: 11, height: 11 }} /> {t("startupDetail.signInToView")}
+                          <Lock style={{ width: 11, height: 11 }} /> {viewerUserId ? tf("startupDetail.documentLocked", "Locked") : t("startupDetail.signInToView")}
                         </span>
                       ) : (
                         (doc.is_pdf ?? /\.pdf(\?|$)/i.test(doc.file_url)) ? (

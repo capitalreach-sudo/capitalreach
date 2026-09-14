@@ -24,7 +24,8 @@
     "browse": "ब्राउज़",
     "alerts": "अलर्ट",
     "primaryMobile": "मुख्य",
-    "unreadCount": "{count} अपठित"
+    "unreadCount": "{count} अपठित",
+    "accountStatus": "खाते की स्थिति"
   },
   "hero": {
     "eyebrow": "प्राइवेट कैपिटल · 2024 में स्थापित",
@@ -278,7 +279,8 @@
       "descLong": "सेकंडों में CapitalReach नेटवर्क में किसी भी स्टार्टअप पर एक व्यापक निवेश मेमो प्राप्त करें। इसमें बाज़ार विश्लेषण, टीम, प्रतिस्पर्धी परिदृश्य, जोखिम और खरीदें/देखें/छोड़ें का निर्णय शामिल है। Pro Investor और Institution योजनाओं में असीमित शामिल।",
       "generationFailed": "रिपोर्ट बनाना विफल रहा।",
       "networkError": "नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।",
-      "searchPlaceholder": "जैसे Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "जैसे Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "ड्यू डिलिजेंस रिपोर्ट निवेशकों के लिए एक टूल है"
     },
     "hub": {
       "heroPowered": "GPT-4o mini द्वारा संचालित",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "स्टार्टअप",
     "cmpTradTracking": "ब्रोकर के पास",
     "cmpTradUpfront": "रिटेनर",
-    "cmpTypical": "सामान्यतः"
+    "cmpTypical": "सामान्यतः",
+    "forFounderAccounts": "संस्थापक खातों के लिए",
+    "forInvestorAccounts": "निवेशक खातों के लिए",
+    "fullAccessIncluded": "पूर्ण एक्सेस शामिल",
+    "memberFullAccess": "संस्थापक चरण के दौरान आपके पास पहले से पूर्ण एक्सेस है।"
   },
   "cta": {
     "headline": "सही चरण में सही पूंजी।",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "कृपया पुष्टि करें कि आप 18 या उससे अधिक उम्र के हैं।",
     "resetLinkDeadTitle": "यह लिंक समाप्त हो गया है",
     "resetLinkDeadBody": "रीसेट लिंक केवल एक बार और थोड़े समय के लिए काम करते हैं — और केवल उसी ब्राउज़र में जिसने उन्हें मांगा था। नया लिंक मांगें और इसी डिवाइस पर खोलें।",
-    "requestNewLink": "नया लिंक मांगें"
+    "requestNewLink": "नया लिंक मांगें",
+    "linkExpiredNotice": "यह लिंक समाप्त हो गया है या पहले ही उपयोग हो चुका है। साइन इन करें या नया पुष्टिकरण ईमेल मांगें।",
+    "linkExpiredResend": "नया पुष्टिकरण ईमेल मांगें",
+    "linkExpiredEnterEmail": "पहले नीचे अपना ईमेल पता दर्ज करें, फिर नया लिंक मांगें।"
   },
   "dashboard": {
     "overview": "अवलोकन",
@@ -1297,7 +1306,12 @@
     "marketTotal": "कुल बाज़ार",
     "minCheckNone": "कोई न्यूनतम नहीं",
     "moreActions": "अधिक",
-    "moreCompany": "कंपनी"
+    "moreCompany": "कंपनी",
+    "finishInvestorProfile": "अपनी निवेशक प्रोफ़ाइल पूरी करें",
+    "investorProfileUnfinished": "आपकी निवेशक प्रोफ़ाइल अभी पूरी नहीं है",
+    "finishInvestorProfileToSave": "स्टार्टअप सहेजने के लिए अपनी निवेशक प्रोफ़ाइल पूरी करें",
+    "saveInvestorsOnly": "स्टार्टअप सहेजना निवेशक खातों के लिए है",
+    "documentLocked": "लॉक"
   },
   "filters": {
     "industry": "उद्योग",

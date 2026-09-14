@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { LISTING_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
 import { sanitizeUrlFields } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
@@ -32,6 +32,41 @@ const NOT_FROM_THE_FORM = new Set([
   "listed_at", "edited_since_review_at", "round_state", "round_state_changed_at",
   "search_vector", "draft_nudged_at", "draft_nudge_count",
 ]);
+
+/**
+ * Creating a listing is a founder act. The role is read with the service role
+ * because it is the caller's own row being judged, never a value the request
+ * carries. A team seat on a startup already places the account inside one, and
+ * a second listing of its own would split every gate that resolves through
+ * membership. Admins keep the create they have always had. Updates to a row
+ * the caller owns never reach this.
+ */
+async function refuseListingCreate(userId: string): Promise<NextResponse | null> {
+  const admin = createAdminClient();
+  const [{ data: profile, error: profileErr }, { count: seats, error: seatErr }] = await Promise.all([
+    admin.from("profiles").select("role").eq("id", userId).maybeSingle(),
+    admin.from("team_members").select("id", { count: "exact", head: true })
+      .eq("user_id", userId).eq("entity_type", "startup"),
+  ]);
+  if (profileErr || seatErr) {
+    console.error("[startups/save:create-gate]", (profileErr ?? seatErr)?.message);
+    return NextResponse.json({ error: "Could not verify the account." }, { status: 500 });
+  }
+  if (profile?.role === "admin") return null;
+  if (profile?.role !== "startup") {
+    return NextResponse.json(
+      { error: "Only founder accounts can create a startup listing.", code: "wrong_role" },
+      { status: 403 },
+    );
+  }
+  if ((seats ?? 0) > 0) {
+    return NextResponse.json(
+      { error: "This account is on a startup's team and cannot create a listing of its own.", code: "team_seat" },
+      { status: 403 },
+    );
+  }
+  return null;
+}
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -75,6 +110,12 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (!existing && !create) return NextResponse.json({ error: "No listing" }, { status: 404 });
+
+  // Checked before masking, which records a trust signal against the account.
+  if (!existing) {
+    const refused = await refuseListingCreate(user.id);
+    if (refused) return refused;
+  }
 
   const safe = await maskProse({
     fields: patch,

@@ -2,7 +2,7 @@
 import { formatMoney } from "@/lib/currency";
 
 import { BROKER_BENCHMARK_PERCENT, SUCCESS_FEE_PERCENT } from "@/lib/circumvention-text";
-import { useState, useEffect, useRef, useMemo, type CSSProperties } from "react";
+import { useState, useEffect, useMemo, type CSSProperties } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
@@ -14,7 +14,6 @@ import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 // must never be pulled into the client bundle. The numbers arrive as props,
 // resolved on the server by app/pricing/page.tsx.
 import type { PricingStage } from "@/lib/pricing-stage";
-import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import { PlanComparison } from "@/components/pricing/plan-comparison";
@@ -37,6 +36,23 @@ export interface StagePricing {
   isFounding: boolean;
   founder: Record<string, StagePrice>;
   investor: Record<string, StagePrice>;
+}
+
+/** The signed-in viewer, resolved on the server; null for an anonymous visitor. */
+export interface PricingViewer {
+  /** Holds a Stripe customer: only then can the billing portal open. A tier set
+   *  by an admin or a grant has none, and the portal would only error. */
+  hasBillingAccount?: boolean;
+  role: string | null;
+  tier: string | null;
+}
+
+/** Where a member's own work lives. A member with no role yet goes to the fork. */
+function dashboardHref(role: string | null): string {
+  return role === "startup" ? "/dashboard/startup"
+    : role === "investor" ? "/dashboard/investor"
+    : role === "admin" ? "/admin"
+    : "/onboarding";
 }
 
 // ── Feature row builders ──────────────────────────────────────
@@ -160,7 +176,7 @@ async function startCheckout(planId: string, userType: "founder" | "investor", e
 // ── Plan Card ──────────────────────────────────────────────────
 
 function PlanCard({
-  plan, money, features, annual, isFounding, isInstitution, userType, isCurrent,
+  plan, money, features, annual, isFounding, isInstitution, userType, isCurrent, viewer,
 }: {
   plan: FounderPlan | InvestorPlan;
   money: StagePrice;
@@ -170,8 +186,11 @@ function PlanCard({
   isInstitution: boolean;
   userType: "founder" | "investor";
   isCurrent?: boolean;
+  viewer: PricingViewer | null;
 }) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const hi = plan.highlightKey !== undefined;
   // Every figure on the card is the STAGE price, never plan.price: lib/plans.ts
   // stays the source of truth for what a tier can do, lib/pricing-stage.ts for
@@ -186,18 +205,43 @@ function PlanCard({
   const rising  = !isInstitution && money.nextPrice !== null && money.nextPrice > money.price ? money.nextPrice : null;
   const risingParts = t("pricing.risingTo").split("{amount}");
 
+  // A member is never routed to sign-up. A card on the other side is for an
+  // account type they do not hold, and nobody creates the other side's entity
+  // from here. While the founding stage runs, their own side has nothing to
+  // sell them: every paywall is already lifted. A member with neither side
+  // (an admin, or no role yet) is sent to their own dashboard.
+  const signedIn   = viewer !== null;
+  const viewerSide = viewer?.role === "startup" ? "founder" : viewer?.role === "investor" ? "investor" : null;
+  const otherSide  = signedIn && viewerSide !== null && viewerSide !== userType;
+  const noSide     = signedIn && viewerSide === null;
+  const included   = signedIn && viewerSide === userType && isFounding && !isInstitution;
+  // A member on their own side whose plan was granted (no Stripe customer) has
+  // no billing portal to open, so the Free card is not a downgrade they can make.
+  const grantedFree = signedIn && viewerSide === userType && free && !viewer?.hasBillingAccount;
+  const inert      = !isCurrent && (otherSide || included || grantedFree);
+  const fill       = hi && !inert;
+
+  async function openPortal() {
+    const res = await fetch("/api/checkout/portal", { method: "POST" });
+    const data = await res.json().catch(() => null);
+    if (data?.url) window.location.href = data.url;
+    else notify.error(t("errors.generic"));
+  }
+
   async function handleClick() {
     // The viewer already has this plan: the only sensible action is managing
     // it, not buying it again. Free current plans have nothing to manage.
     if (isCurrent) {
       if (free) return;
-      const res = await fetch("/api/checkout/portal", { method: "POST" });
-      const data = await res.json().catch(() => null);
-      if (data?.url) window.location.href = data.url;
-      else notify.error(t("errors.generic"));
+      await openPortal();
       return;
     }
+    if (inert) return;
+    if (noSide) { window.location.href = dashboardHref(viewer?.role ?? null); return; }
     if (isInstitution) { window.location.href = "/contact?type=institutional"; return; }
+    // A member on their own side who does not hold the free plan holds a paid
+    // one, so the free card is a change to that subscription, not a sign-up.
+    if (signedIn && free) { await openPortal(); return; }
 
     // Carry the chosen plan into signup. It used to be dropped entirely --
     // clicking a plan landed you on a bare signup form with no sign that a
@@ -214,10 +258,16 @@ function PlanCard({
 
   const ctaLabel = isCurrent
     ? (free ? t("dashboard.currentPlan") : t("dashboard.manageBilling"))
+    : otherSide
+    ? (userType === "founder" ? tf("pricing.forFounderAccounts", "For founder accounts") : tf("pricing.forInvestorAccounts", "For investor accounts"))
+    : included || grantedFree
+    ? tf("pricing.fullAccessIncluded", "Full access included")
+    : noSide
+    ? t("hero.ctaDashboard")
     : isInstitution
     ? t("pricing.contactSales")
     : free
-      ? t("pricing.getStartedFree")
+      ? (signedIn ? t("dashboard.manageBilling") : t("pricing.getStartedFree"))
       : `${t("pricing.getStarted")} · ${plan.name}`; // house separator, no dash
 
   return (
@@ -312,26 +362,31 @@ function PlanCard({
 
         {/* One filled primary per card row: the featured card only. During
             the founding stage every card used to fill copper, which is four
-            primaries and therefore none; siblings hold the quiet outline. */}
+            primaries and therefore none; siblings hold the quiet outline. A
+            button that states a fact rather than acting never fills and
+            never answers hover. */}
         <button onClick={handleClick}
-          className={hi ? "btn-copper-shimmer" : ""}
+          disabled={inert}
+          className={fill ? "btn-copper-shimmer" : ""}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: "100%", height: "42px", borderRadius: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-            textDecoration: "none", transition: "opacity 150ms", border: "none", cursor: "pointer",
-            background: hi ? "var(--cr-copper)" : "transparent",
-            color: hi ? "var(--cr-on-accent)" : "var(--cr-ink-3)",
-            borderColor: hi ? "transparent" : "var(--cr-rule-dark)",
-            borderWidth: hi ? 0 : "1px",
+            textDecoration: "none", transition: "opacity 150ms", border: "none", cursor: inert ? "default" : "pointer",
+            background: fill ? "var(--cr-copper)" : "transparent",
+            color: fill ? "var(--cr-on-accent)" : "var(--cr-ink-3)",
+            borderColor: fill ? "transparent" : "var(--cr-rule-dark)",
+            borderWidth: fill ? 0 : "1px",
             borderStyle: "solid",
           }}
           onMouseEnter={e => {
-            if (hi) e.currentTarget.style.opacity = "0.88";
+            if (inert) return;
+            if (fill) e.currentTarget.style.opacity = "0.88";
             else { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }
           }}
           onMouseLeave={e => {
-            if (hi) e.currentTarget.style.opacity = "1";
+            if (inert) return;
+            if (fill) e.currentTarget.style.opacity = "1";
             else { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }
           }}>
           {ctaLabel}
@@ -408,10 +463,15 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 // ── Page ──────────────────────────────────────────────────────
-export function PricingClient({ pricing }: { pricing: StagePricing }) {
+export function PricingClient({ pricing, viewer }: { pricing: StagePricing; viewer: PricingViewer | null }) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const [annual,    setAnnual]    = useState(false);
-  const [activeTab, setActiveTab] = useState<"startup" | "investor">("startup");
+  // The viewer's own side on first paint; the hash below still selects either.
+  const [activeTab, setActiveTab] = useState<"startup" | "investor">(viewer?.role === "investor" ? "investor" : "startup");
+  // A member's one action wherever an anonymous visitor is offered sign-up.
+  const dashboard = viewer ? dashboardHref(viewer.role) : null;
   const { isFounding, memberCount, target } = pricing;
 
   // The badge on the annual toggle has to be true of at least one plan and no
@@ -437,21 +497,10 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Who is looking, and what do they already pay for? Signed-in viewers get
-  // their own plan marked and its CTA routed to the billing portal instead of
-  // a second checkout -- and land on the tab for their own role.
-  const [viewer, setViewer] = useState<{ role: string; tier: string | null } | null>(null);
-  const supabaseRef = useRef(createClient());
+  // Who is looking, and what do they already pay for, arrives from the server
+  // (app/pricing/page.tsx). Signed-in viewers get their own plan marked and
+  // its CTA routed to the billing portal instead of a second checkout.
   useEffect(() => {
-    const supabase = supabaseRef.current;
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return;
-      const { data: p } = await supabase
-        .from("profiles").select("role, subscription_tier").eq("id", data.user.id).maybeSingle();
-      if (!p) return;
-      setViewer({ role: p.role, tier: p.subscription_tier });
-      if (p.role === "investor") setActiveTab("investor");
-    });
     // Footer links promise /pricing#founders and /pricing#investors; the hash
     // both scrolls here and selects the matching tab, so the link keeps its
     // whole promise rather than landing on the wrong table.
@@ -614,6 +663,15 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
               )}
             </div>
 
+            {/* A member is told what they already hold rather than routed to
+                sign-up for it. Quiet on purpose: the fee callout below and the
+                featured card own this band's accent. */}
+            {viewer && isFounding && (
+              <p role="note" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "12px 16px", marginBottom: "16px" }}>
+                {tf("pricing.memberFullAccess", "You already have full access while the founding stage runs.")}
+              </p>
+            )}
+
             {/* 2% success fee callout */}
             <div style={{
               display: "flex", alignItems: "center", gap: "16px",
@@ -665,7 +723,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 <>
                   <div className="grid-plans-3" style={{ maxWidth: "900px", marginBottom: "24px" }}>
                     {FOUNDER_PLANS_LIST.map((p) => (
-                      <PlanCard key={p.id} plan={p} money={pricing.founder[p.id]} features={founderFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
+                      <PlanCard key={p.id} plan={p} money={pricing.founder[p.id]} features={founderFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} viewer={viewer} />
                     ))}
                   </div>
                   <PlanComparison side="founder" isLaunch={isFounding} />
@@ -674,7 +732,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 <>
                   <div className="grid-plans-4" style={{ marginBottom: "24px" }}>
                     {INVESTOR_PLANS_LIST.map((p) => (
-                      <PlanCard key={p.id} plan={p} money={pricing.investor[p.id]} features={investorFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
+                      <PlanCard key={p.id} plan={p} money={pricing.investor[p.id]} features={investorFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} viewer={viewer} />
                     ))}
                   </div>
                   <PlanComparison side="investor" isLaunch={isFounding} />
@@ -783,19 +841,31 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
             </div>
 
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              <Link href="/auth/signup"
-                className="btn-copper-shimmer"
-                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
-                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-                {t("hero.ctaPrimary")} <ArrowRight style={{ width: 14, height: 14 }} />
-              </Link>
-              <Link href="/auth/signup"
-                style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
-                {t("pricing.browseAsInvestor")}
-              </Link>
+              {dashboard ? (
+                <Link href={dashboard}
+                  className="btn-copper-shimmer"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                  {t("hero.ctaDashboard")} <ArrowRight style={{ width: 14, height: 14 }} />
+                </Link>
+              ) : (
+                <>
+                  <Link href="/auth/signup"
+                    className="btn-copper-shimmer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                    {t("hero.ctaPrimary")} <ArrowRight style={{ width: 14, height: 14 }} />
+                  </Link>
+                  <Link href="/auth/signup"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
+                    {t("pricing.browseAsInvestor")}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </section>
@@ -855,24 +925,40 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4.5vw,60px)", lineHeight: 0.93, letterSpacing: "-0.03em", maxWidth: "560px", margin: "0 auto 16px" }}>
                   {t("pricing.ctaHeadline")}
                 </h2>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "360px", margin: "0 auto 32px", lineHeight: 1.7 }}>
-                  {isFounding
-                    ? t("pricing.finalCtaLaunchSub", { target })
-                    : t("pricing.finalCtaSub")}
-                </p>
-                <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-                  <Link href="/auth/signup"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-                    {t("pricing.listStartupFree")} <ArrowRight style={{ width: 14, height: 14 }} />
-                  </Link>
-                  <Link href="/auth/signup"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
-                    {t("pricing.browseAsInvestor")}
-                  </Link>
+                {/* Both subs invite the reader to join. A member already has,
+                    and during the founding stage the plans band has already
+                    told them what they hold, so they get the action alone. */}
+                {!viewer && (
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "360px", margin: "0 auto 32px", lineHeight: 1.7 }}>
+                    {isFounding
+                      ? t("pricing.finalCtaLaunchSub", { target })
+                      : t("pricing.finalCtaSub")}
+                  </p>
+                )}
+                <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginTop: viewer ? "32px" : 0 }}>
+                  {dashboard ? (
+                    <Link href={dashboard}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
+                      onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                      onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                      {t("hero.ctaDashboard")} <ArrowRight style={{ width: 14, height: 14 }} />
+                    </Link>
+                  ) : (
+                    <>
+                      <Link href="/auth/signup"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none" }}
+                        onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                        {t("pricing.listStartupFree")} <ArrowRight style={{ width: 14, height: 14 }} />
+                      </Link>
+                      <Link href="/auth/signup"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 32px", height: "48px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
+                        {t("pricing.browseAsInvestor")}
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

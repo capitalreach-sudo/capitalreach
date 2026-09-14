@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { PROFILE_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
 import { sanitizeUrlFields } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
@@ -27,6 +27,41 @@ const NOT_FROM_THE_FORM = new Set([
   "is_demo", "is_external", "is_public", "managed_by_startup_id",
   "contact_email", "contact_note", "search_vector",
 ]);
+
+/**
+ * Creating an investor profile is an investor act. The role is read with the
+ * service role because it is the caller's own row being judged, never a value
+ * the request carries. A team seat on an investor already places the account
+ * inside one, and a second profile of its own would split every gate that
+ * resolves through membership. Admins keep the create they have always had.
+ * Updates to a row the caller owns never reach this.
+ */
+async function refuseProfileCreate(userId: string): Promise<NextResponse | null> {
+  const admin = createAdminClient();
+  const [{ data: profile, error: profileErr }, { count: seats, error: seatErr }] = await Promise.all([
+    admin.from("profiles").select("role").eq("id", userId).maybeSingle(),
+    admin.from("team_members").select("id", { count: "exact", head: true })
+      .eq("user_id", userId).eq("entity_type", "investor"),
+  ]);
+  if (profileErr || seatErr) {
+    console.error("[investors/save:create-gate]", (profileErr ?? seatErr)?.message);
+    return NextResponse.json({ error: "Could not verify the account." }, { status: 500 });
+  }
+  if (profile?.role === "admin") return null;
+  if (profile?.role !== "investor") {
+    return NextResponse.json(
+      { error: "Only investor accounts can create an investor profile.", code: "wrong_role" },
+      { status: 403 },
+    );
+  }
+  if ((seats ?? 0) > 0) {
+    return NextResponse.json(
+      { error: "This account is on an investor's team and cannot create a profile of its own.", code: "team_seat" },
+      { status: 403 },
+    );
+  }
+  return null;
+}
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -58,6 +93,12 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (!existing && !create) return NextResponse.json({ error: "No profile" }, { status: 404 });
+
+  // Checked before masking, which records a trust signal against the account.
+  if (!existing) {
+    const refused = await refuseProfileCreate(user.id);
+    if (refused) return refused;
+  }
 
   const safe = await maskProse({
     fields: patch,

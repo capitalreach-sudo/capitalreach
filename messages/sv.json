@@ -24,7 +24,8 @@
     "browse": "Bläddra",
     "alerts": "Aviseringar",
     "primaryMobile": "Huvudmeny",
-    "unreadCount": "{count} olästa"
+    "unreadCount": "{count} olästa",
+    "accountStatus": "Kontostatus"
   },
   "hero": {
     "eyebrow": "Privat kapital · Est. 2024",
@@ -278,7 +279,8 @@
       "descLong": "Få ett omfattande investeringsmemo om vilken startup som helst i CapitalReach-nätverket på några sekunder. Täcker marknadsanalys, team, konkurrenslandskap, risker och ett Köp / Bevaka / Avstå-utlåtande. Obegränsat ingår i Pro Investor- och Institution-planerna.",
       "generationFailed": "Det gick inte att generera rapporten.",
       "networkError": "Nätverksfel. Försök igen.",
-      "searchPlaceholder": "t.ex. Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "t.ex. Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Due diligence-rapporter är ett verktyg för investerare"
     },
     "hub": {
       "heroPowered": "Drivs av GPT-4o mini",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "Startupen",
     "cmpTradTracking": "Hos mäklaren",
     "cmpTradUpfront": "Ett förskottsarvode",
-    "cmpTypical": "typiskt"
+    "cmpTypical": "typiskt",
+    "forFounderAccounts": "För grundarkonton",
+    "forInvestorAccounts": "För investerarkonton",
+    "fullAccessIncluded": "Full åtkomst ingår",
+    "memberFullAccess": "Du har redan full åtkomst så länge grundarfasen pågår."
   },
   "cta": {
     "headline": "Rätt kapital, i rätt fas.",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "Bekräfta att du är 18 år eller äldre.",
     "resetLinkDeadTitle": "Den här länken har gått ut",
     "resetLinkDeadBody": "Återställningslänkar fungerar en gång och kort — och bara i webbläsaren som begärde dem. Begär en ny och öppna den på den här enheten.",
-    "requestNewLink": "Begär en ny länk"
+    "requestNewLink": "Begär en ny länk",
+    "linkExpiredNotice": "Länken har gått ut eller har redan använts. Logga in eller begär ett nytt bekräftelsemejl.",
+    "linkExpiredResend": "Begär ett nytt bekräftelsemejl",
+    "linkExpiredEnterEmail": "Ange först din e-postadress nedan och begär sedan den nya länken."
   },
   "dashboard": {
     "overview": "Översikt",
@@ -1297,7 +1306,12 @@
     "marketTotal": "Total marknad",
     "minCheckNone": "Inget minimibelopp",
     "moreActions": "Mer",
-    "moreCompany": "Bolaget"
+    "moreCompany": "Bolaget",
+    "finishInvestorProfile": "Slutför din investerarprofil",
+    "investorProfileUnfinished": "Din investerarprofil är inte klar ännu",
+    "finishInvestorProfileToSave": "Slutför din investerarprofil för att spara startups",
+    "saveInvestorsOnly": "Att spara startups är för investerarkonton",
+    "documentLocked": "Låst"
   },
   "filters": {
     "industry": "Bransch",

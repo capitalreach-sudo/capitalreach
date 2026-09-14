@@ -24,7 +24,8 @@
     "browse": "浏览",
     "alerts": "提醒",
     "primaryMobile": "主导航",
-    "unreadCount": "{count} 条未读"
+    "unreadCount": "{count} 条未读",
+    "accountStatus": "账户状态"
   },
   "hero": {
     "eyebrow": "私募资本 · 成立于 2024",
@@ -287,7 +288,8 @@
       "descLong": "几秒钟内获取 CapitalReach 网络中任何初创公司的全面投资备忘录。涵盖市场分析、团队、竞争格局、风险以及买入/观察/放弃的结论。Pro Investor 和 Institution 计划包含无限次使用。",
       "generationFailed": "报告生成失败。",
       "networkError": "网络错误，请重试。",
-      "searchPlaceholder": "例如 Vaultrise、HealthAI、ClimateOS…"
+      "searchPlaceholder": "例如 Vaultrise、HealthAI、ClimateOS…",
+      "investorTool": "尽职调查报告是面向投资者的工具"
     },
     "hub": {
       "heroPowered": "由GPT-4o mini驱动",
@@ -509,7 +511,11 @@
     "cmpTradPaidBy": "由创业公司支付",
     "cmpTradTracking": "在经纪人处",
     "cmpTradUpfront": "预付聘用费",
-    "cmpTypical": "典型值"
+    "cmpTypical": "典型值",
+    "forFounderAccounts": "适用于创始人账户",
+    "forInvestorAccounts": "适用于投资者账户",
+    "fullAccessIncluded": "包含完整访问权限",
+    "memberFullAccess": "创始阶段期间,您已拥有完整访问权限。"
   },
   "cta": {
     "headline": "合适的资本，在合适的阶段。",
@@ -629,7 +635,10 @@
     "mustConfirmAge": "请确认您已年满 18 周岁。",
     "resetLinkDeadTitle": "此链接已过期",
     "resetLinkDeadBody": "重置链接只能使用一次且有效期很短——并且只在发起请求的浏览器中有效。请重新申请并在本设备上打开。",
-    "requestNewLink": "申请新链接"
+    "requestNewLink": "申请新链接",
+    "linkExpiredNotice": "该链接已过期或已被使用。请登录,或重新申请确认邮件。",
+    "linkExpiredResend": "重新申请确认邮件",
+    "linkExpiredEnterEmail": "请先在下方输入邮箱地址,然后申请新链接。"
   },
   "dashboard": {
     "overview": "概览",
@@ -1340,7 +1349,12 @@
     "marketTotal": "整体市场",
     "minCheckNone": "无最低限额",
     "moreActions": "更多",
-    "moreCompany": "公司信息"
+    "moreCompany": "公司信息",
+    "finishInvestorProfile": "完成您的投资者档案",
+    "investorProfileUnfinished": "您的投资者档案尚未完成",
+    "finishInvestorProfileToSave": "完成投资者档案后即可收藏初创公司",
+    "saveInvestorsOnly": "收藏初创公司仅限投资者账户",
+    "documentLocked": "已锁定"
   },
   "investors": {
     "pageTitle": "投资者目录",

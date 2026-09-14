@@ -45,9 +45,15 @@ export async function middleware(request: NextRequest) {
   // can only bounce an anonymous visitor client-side, under a 200 carrying the
   // page title. Only middleware can answer that request with a real 307.
   const memberOnlyPages = ["/investors", "/data"];
+  // Member-only sections, matched by whole path segment: the deal room and
+  // every deal, any contract, the verification application and the suspension
+  // notice. An anonymous visitor gets the same real 307 to sign-in as the
+  // pages above.
+  const memberOnlySections = ["/deals", "/contracts", "/verify", "/suspended"];
   const normalizedPath = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
   const isMemberOnlyPage = memberOnlyPages.includes(normalizedPath);
-  const isGatedPage = isMemberOnlyPage || gatedPrefixes.some((p) => pathname.startsWith(p));
+  const isMemberOnlySection = memberOnlySections.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isGatedPage = isMemberOnlyPage || isMemberOnlySection || gatedPrefixes.some((p) => pathname.startsWith(p));
   const isApi = pathname.startsWith("/api");
   // Only authenticated API calls pay the auth round trip; anonymous and webhook
   // calls (no session cookie) fast-lane, and a route that needs auth enforces
@@ -96,10 +102,10 @@ export async function middleware(request: NextRequest) {
     );
 
     // The fast lane: middleware's auth round-trip runs ONLY where it gates
-    // something — the protected areas, /deals, and authenticated API calls.
-    // Public pages and anonymous/webhook API calls skip it entirely: the
-    // browser client refreshes tokens itself and server pages read the cookies
-    // directly.
+    // something: the protected areas, the member-only pages and sections, and
+    // authenticated API calls. Public pages and anonymous/webhook API calls
+    // skip it entirely: the browser client refreshes tokens itself and server
+    // pages read the cookies directly.
     if (!isGatedPage && !apiWithSession && !(isAuthEntryPage && hasSession)) {
       return supabaseResponse;
     }
@@ -112,7 +118,7 @@ export async function middleware(request: NextRequest) {
     const protectedPaths = ["/dashboard", "/onboarding", "/admin"];
     const isProtected = isMemberOnlyPage || protectedPaths.some(p => pathname.startsWith(p));
 
-    if (isProtected && !user) {
+    if ((isProtected || isMemberOnlySection) && !user) {
       return loginRedirect();
     }
 
@@ -134,8 +140,13 @@ export async function middleware(request: NextRequest) {
     // Suspension + admin guard — one profile read covers both.
     // /suspended and /auth are exempt so a suspended user can still reach the
     // explanation page and sign out instead of bouncing in a redirect loop.
+    // /dashboard/complaints is exempt so a suspended user can read and file an
+    // appeal.
     const exemptFromSuspensionCheck =
-      pathname.startsWith("/suspended") || pathname.startsWith("/auth");
+      pathname.startsWith("/suspended") ||
+      pathname.startsWith("/auth") ||
+      pathname === "/dashboard/complaints" ||
+      pathname.startsWith("/dashboard/complaints/");
 
     // Pages only: this is a navigation redirect, and it costs a profile read.
     // API routes enforce suspension themselves (isAccountSuspended) and must

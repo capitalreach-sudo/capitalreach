@@ -180,10 +180,24 @@ export default function InvestorSettingsPage() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
-      const [{ data }, { data: profile }] = await Promise.all([
+      const [{ data }, { data: profile }, { data: roleRow, error: roleErr }] = await Promise.all([
         supabase.from("investors").select("*").eq("owner_id", user.id).single(),
         supabase.from("profiles").select("investor_type,portfolio_count,lead_investor,check_size_min,check_size_max,languages,accreditation_certified").eq("id", user.id).single(),
+        supabase.from("profiles").select("role").eq("id", user.id).maybeSingle(),
       ]);
+      // Investor settings belong to an investor account. Any other role goes
+      // to its own dashboard before anything renders; an admin who owns an
+      // investor entity stays, as on app/dashboard/investor/page.tsx. An
+      // unreadable role goes to /dashboard, which resolves it server-side.
+      const accountRole = roleErr ? null : roleRow?.role;
+      if (accountRole !== "investor" && !(accountRole === "admin" && data)) {
+        router.replace(
+          accountRole === "startup" ? "/dashboard/startup"
+            : accountRole === "admin" ? "/admin"
+            : "/dashboard",
+        );
+        return;
+      }
       if (data) {
         // Ensure arrays / json default properly
         data.industries = data.industries || [];

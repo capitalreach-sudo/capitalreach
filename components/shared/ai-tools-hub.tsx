@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import Link from "next/link";
 import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 import {
@@ -51,6 +52,20 @@ function ErrorBox({ msg }: { msg: string }) {
   );
 }
 
+// ── Viewer ─────────────────────────────────────────────────────
+// Resolved on the server by app/ai/page.tsx. A signed-in member is sent to
+// their own dashboard, or to /pricing where a plan upgrade is the point, and
+// never to sign-up; founders are never shown investor prompts and investors
+// never founder ones.
+interface Viewer { signedIn: boolean; role: string | null }
+
+function dashboardHref(role: string | null): string {
+  return role === "startup" ? "/dashboard/startup"
+    : role === "investor" ? "/dashboard/investor"
+    : role === "admin" ? "/admin"
+    : "/onboarding";
+}
+
 // ── Pitch Analyzer ─────────────────────────────────────────────
 interface PitchResult {
   overall_score: number; clarity_score: number; market_score: number;
@@ -58,7 +73,7 @@ interface PitchResult {
   verdict: string; strengths: string[]; improvements: string[]; key_insight: string;
 }
 
-function PitchTab() {
+function PitchTab({ viewer }: { viewer: Viewer }) {
   const { t } = useTranslation();
   const [pitch, setPitch]     = useState("");
   const [loading, setLoading] = useState(false);
@@ -252,7 +267,7 @@ function PitchTab() {
               </div>
             )}
 
-            <Link href="/auth/signup?role=startup"
+            <Link href={viewer.signedIn ? dashboardHref(viewer.role) : "/auth/signup?role=startup"}
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                 width: "100%", height: "42px", background: "var(--cr-copper)", color: "var(--cr-on-accent)",
@@ -261,7 +276,7 @@ function PitchTab() {
               }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-              {t("ai.pitch.saveShare")}
+              {viewer.signedIn ? t("hero.ctaDashboard") : t("ai.pitch.saveShare")}
               <ArrowRight style={{ width: 14, height: 14 }} />
             </Link>
           </div>
@@ -326,7 +341,7 @@ function StageChip({ value, active, onClick }: { value: string; active: boolean;
   );
 }
 
-function MatchingTab() {
+function MatchingTab({ viewer }: { viewer: Viewer }) {
   const { t } = useTranslation();
   const [industry, setIndustry]       = useState("B2B SaaS");
   const [stage, setStage]             = useState("Seed");
@@ -468,6 +483,23 @@ function MatchingTab() {
               </Link>
             ))}
           </div>
+          {viewer.signedIn ? (
+            // The anonymous pitch beside this button asks the reader to create
+            // a startup profile; a member already has an account, and an
+            // investor must never be handed a founder prompt, so members get
+            // the one action alone.
+            <Link href={dashboardHref(viewer.role)}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "8px",
+                background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px",
+                borderRadius: "4px", textDecoration: "none", transition: "opacity 150ms",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+              {t("hero.ctaDashboard")} <ArrowRight style={{ width: 14, height: 14 }} />
+            </Link>
+          ) : (
           <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("ai.matching.messageCta")}</p>
@@ -485,6 +517,7 @@ function MatchingTab() {
               {t("pricing.getStartedFree")} <ArrowRight style={{ width: 14, height: 14 }} />
             </Link>
           </div>
+          )}
         </div>
       )}
     </div>
@@ -496,8 +529,11 @@ interface StartupSuggestion {
   id: string; slug: string; name: string; industry: string | null; stage: string | null;
 }
 
-function DiligenceTab() {
+function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolean }) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
+  const isFounder = viewer.role === "startup";
   const DD_STEPS = [
     t("ai.diligence.step1"),
     t("ai.diligence.step2"),
@@ -639,26 +675,44 @@ function DiligenceTab() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("ai.diligence.signInTitle")}</p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>{t("ai.diligence.signInSub")}</p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-            <Link href="/auth/login"
+            <Link href="/auth/login?redirect=/ai"
               style={{ border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
               {t("auth.signIn")}
             </Link>
-            <Link href="/auth/signup?role=investor"
-              style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
-              {t("auth.register")}
-            </Link>
+            {/* A 401 for a member is a session that ended mid-visit: they
+                sign back in to the account they have, never register another. */}
+            {!viewer.signedIn && (
+              <Link href="/auth/signup?role=investor"
+                style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+                {t("auth.register")}
+              </Link>
+            )}
           </div>
         </div>
       )}
+      {/* The refusal names an investor plan. A founder cannot hold one, so
+          they are told whose tool this is and sent home, not upsold. */}
       {error === "upgrade_required" && (
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", textAlign: "center" }}>
           <Zap style={{ width: 28, height: 28, color: "var(--cr-copper)", margin: "0 auto 12px" }} />
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("ai.diligence.upgradeTitle")}</p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>{t("ai.diligence.signInSub")}</p>
-          <Link href="/pricing"
-            style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
-            {t("ai.diligence.viewPlans")}
-          </Link>
+          {isFounder ? (
+            <>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "16px" }}>{tf("ai.diligence.investorTool", "Due diligence reports are an investor tool")}</p>
+              <Link href={dashboardHref(viewer.role)}
+                style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+                {t("hero.ctaDashboard")}
+              </Link>
+            </>
+          ) : (
+            <>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("ai.diligence.upgradeTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>{t("ai.diligence.signInSub")}</p>
+              <Link href="/pricing"
+                style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+                {t("ai.diligence.viewPlans")}
+              </Link>
+            </>
+          )}
         </div>
       )}
       {error && error !== "auth_required" && error !== "upgrade_required" && <ErrorBox msg={error} />}
@@ -692,15 +746,21 @@ function DiligenceTab() {
             ))}
           </div>
           <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <div>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("ai.diligence.proInvestor")}</span>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{t("ai.diligence.unlimitedIncluded")}</p>
-            </div>
-            <Link href="/auth/signup?role=investor"
+            {/* The plan line is an investor offer: a founder never sees it. */}
+            {!isFounder && (
+              <div>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{t("ai.diligence.proInvestor")}</span>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{t("ai.diligence.unlimitedIncluded")}</p>
+              </div>
+            )}
+            {/* Anonymous: sign up. An investor below the plan this line names:
+                the plans, since the upgrade is the point. Every other member:
+                their own dashboard. */}
+            <Link href={!viewer.signedIn ? "/auth/signup?role=investor" : viewer.role === "investor" && !unlimited ? "/pricing" : dashboardHref(viewer.role)}
               style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "40px", borderRadius: "4px", textDecoration: "none", flexShrink: 0 }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-              {t("pricing.getStartedFree")} <ArrowRight style={{ width: 13, height: 13 }} />
+              {!viewer.signedIn ? t("pricing.getStartedFree") : viewer.role === "investor" && !unlimited ? t("ai.diligence.viewPlans") : t("hero.ctaDashboard")} <ArrowRight style={{ width: 13, height: 13 }} />
             </Link>
           </div>
         </div>
@@ -724,16 +784,19 @@ function TierCheck({ val }: { val: string | boolean }) {
 type Tab = "pitch" | "matching" | "diligence";
 
 // ── Main Hub ───────────────────────────────────────────────────
-export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) {
+export function AiToolsHub({ initialAuthed, viewerRole = null }: { initialAuthed?: boolean; viewerRole?: string | null } = {}) {
   const { t } = useTranslation();
   // Renders the fallback until the key lands in every locale.
   const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
-  const [activeTab, setActiveTab] = useState<Tab>("pitch");
+  // An investor's tool is due diligence; the pitch analyzer is a founder's.
+  // Only the default follows the role: the hash below still selects any tool.
+  const [activeTab, setActiveTab] = useState<Tab>(viewerRole === "investor" ? "diligence" : "pitch");
   // The routes already answer 401 to anonymous calls; hiding the forms too
   // stops signed-out visitors from typing a pitch into a tool that can only
   // refuse them. The server page passes the answer so the very first paint
   // is right; the client re-checks in case the session changed.
   const [isAuthed, setIsAuthed] = useState<boolean | null>(initialAuthed ?? null);
+  const viewer: Viewer = { signedIn: isAuthed === true, role: viewerRole };
   // Footer + homepage link to /ai#match and /ai#due-diligence (and #score):
   // the hash selects the tab, so those links keep their promise.
   useEffect(() => {
@@ -751,7 +814,12 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
   // rather than discovered as a 429 afterwards.
   const [usage, setUsage] = useState<{ unlimited: boolean; used: number; limit: number; remaining: number } | null>(null);
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => setIsAuthed(!!data.user));
+    createClient().auth.getUser().then(({ data, error }) => {
+      // A network failure says nothing about the session: keep the server's
+      // answer rather than showing a member the sign-up panel.
+      if (!data.user && isAuthRetryableFetchError(error)) return;
+      setIsAuthed(!!data.user);
+    });
     fetch("/api/ai/usage")
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => { if (j?.signedIn) setUsage(j); })
@@ -904,9 +972,9 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
           // TabPanel wires the strip's aria-controls ids and remounts on every
           // swap, so all three tools share the strip's 160ms crossfade.
           <TabPanel idBase="ai-tools" active={activeTab}>
-            {activeTab === "pitch"     && <PitchTab />}
-            {activeTab === "matching"  && <MatchingTab />}
-            {activeTab === "diligence" && <DiligenceTab />}
+            {activeTab === "pitch"     && <PitchTab viewer={viewer} />}
+            {activeTab === "matching"  && <MatchingTab viewer={viewer} />}
+            {activeTab === "diligence" && <DiligenceTab viewer={viewer} unlimited={usage?.unlimited === true} />}
           </TabPanel>
         )}
       </div>
@@ -961,18 +1029,29 @@ export function AiToolsHub({ initialAuthed }: { initialAuthed?: boolean } = {}) 
           </div>
 
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "32px", flexWrap: "wrap" }}>
-            <Link href="/auth/signup?role=investor"
-              style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none" }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-              <Users style={{ width: 15, height: 15 }} /> {t("ai.hub.startInvestor")}
-            </Link>
-            <Link href="/auth/signup?role=startup"
-              style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
-              <TrendingUp style={{ width: 15, height: 15 }} /> {t("ai.hub.listStartup")}
-            </Link>
+            {viewer.signedIn ? (
+              <Link href={dashboardHref(viewer.role)}
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none" }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                {t("hero.ctaDashboard")} <ArrowRight style={{ width: 15, height: 15 }} />
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth/signup?role=investor"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none" }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+                  <Users style={{ width: 15, height: 15 }} /> {t("ai.hub.startInvestor")}
+                </Link>
+                <Link href="/auth/signup?role=startup"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", height: "48px", padding: "0 24px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
+                  <TrendingUp style={{ width: 15, height: 15 }} /> {t("ai.hub.listStartup")}
+                </Link>
+              </>
+            )}
             <Link href="/pricing"
               style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", height: "48px", padding: "0 16px", borderRadius: "4px", textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--cr-copper)")}

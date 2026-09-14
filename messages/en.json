@@ -31,7 +31,8 @@
     "browse": "Browse",
     "alerts": "Alerts",
     "primaryMobile": "Primary",
-    "unreadCount": "{count} unread"
+    "unreadCount": "{count} unread",
+    "accountStatus": "Account status"
   },
   "hero": {
     "eyebrow": "Private Capital · Est. 2024",
@@ -294,7 +295,8 @@
       "descLong": "Get a comprehensive investment memo on any startup in the CapitalReach network in seconds. Covers market analysis, team, competitive landscape, risks, and a Buy / Watch / Pass verdict. Included unlimited with Pro Investor and Institution plans.",
       "generationFailed": "Report generation failed.",
       "networkError": "Network error. Please try again.",
-      "searchPlaceholder": "e.g. Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "e.g. Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Due diligence reports are an investor tool"
     },
     "hub": {
       "heroPowered": "Powered by GPT-4o mini",
@@ -516,7 +518,11 @@
     "cmpDiyUpfront": "None",
     "cmpDiyOngoing": "None",
     "cmpDiyIntros": "Your own list",
-    "cmpDiyTracking": "Wherever you keep it"
+    "cmpDiyTracking": "Wherever you keep it",
+    "forFounderAccounts": "For founder accounts",
+    "forInvestorAccounts": "For investor accounts",
+    "fullAccessIncluded": "Full access included",
+    "memberFullAccess": "You already have full access while the founding stage runs."
   },
   "cta": {
     "headline": "The right capital, at the right stage.",
@@ -636,7 +642,10 @@
     "mustConfirmAge": "Please confirm you are 18 or older.",
     "resetLinkDeadTitle": "This reset link has expired",
     "resetLinkDeadBody": "Password links work once and only briefly — and only in the browser that requested them. Request a fresh one and open it on this device.",
-    "requestNewLink": "Request a new link"
+    "requestNewLink": "Request a new link",
+    "linkExpiredNotice": "That link has expired or was already used. Sign in, or request a new confirmation email.",
+    "linkExpiredResend": "Request a new confirmation email",
+    "linkExpiredEnterEmail": "Enter your email address below first, then request the new link."
   },
   "dashboard": {
     "overview": "Overview",
@@ -1347,7 +1356,12 @@
     "minCheckNone": "No minimum",
     "marketTotal": "Total market",
     "marketServiceable": "Serviceable market",
-    "marketObtainable": "Obtainable market"
+    "marketObtainable": "Obtainable market",
+    "finishInvestorProfile": "Finish your investor profile",
+    "investorProfileUnfinished": "Your investor profile is not finished yet",
+    "finishInvestorProfileToSave": "Finish your investor profile to save startups",
+    "saveInvestorsOnly": "Saving startups is for investor accounts",
+    "documentLocked": "Locked"
   },
   "investors": {
     "pageTitle": "Investor directory",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { safeRedirect } from "@/lib/safe-redirect";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -60,6 +60,33 @@ function LoginForm() {
   // admitted "/\\evil.com", which browsers resolve off-site.
   const redirect = safeRedirect(rawRedirect, "/");
   const supabase = createClient();
+
+  // Set only by /auth/callback for a code it could not exchange. Compared
+  // against the literal; the query value itself is never rendered.
+  const linkExpired = searchParams.get("error") === "link_expired";
+  const [resendNeedsEmail, setResendNeedsEmail] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const tf = (key: string, english: string) => {
+    const value = t(key);
+    return value === key ? english : value;
+  };
+
+  // The resend screen reads the address from sessionStorage, the same handover
+  // the unconfirmed-sign-in path uses. With nothing typed and nothing stored
+  // it would open with resend disabled, so the email field is asked for first.
+  function openResend(e: React.MouseEvent<HTMLAnchorElement>) {
+    const typed = email.trim();
+    if (typed) {
+      try { sessionStorage.setItem("cr_pending_email", typed); } catch {}
+      return;
+    }
+    let stored = "";
+    try { stored = sessionStorage.getItem("cr_pending_email") ?? ""; } catch {}
+    if (stored) return;
+    e.preventDefault();
+    setResendNeedsEmail(true);
+    emailRef.current?.focus();
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -171,6 +198,23 @@ function LoginForm() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.signInSub")}</p>
         </div>
 
+        {linkExpired && !mfaFactorId && (
+          <div role="status" style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderLeft: "3px solid var(--cr-copper)", borderRadius: "4px", padding: "12px 16px", marginBottom: "20px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.6, margin: 0 }}>
+              {tf("auth.linkExpiredNotice", "That link has expired or was already used. Sign in, or request a new confirmation email.")}
+            </p>
+            <Link href="/auth/verify-email" onClick={openResend}
+              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px", display: "inline-block", padding: "10px 0", marginBottom: "-10px" }}>
+              {tf("auth.linkExpiredResend", "Request a new confirmation email")}
+            </Link>
+            {resendNeedsEmail && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5, margin: "8px 0 0" }}>
+                {tf("auth.linkExpiredEnterEmail", "Enter your email address below first, then request the new link.")}
+              </p>
+            )}
+          </div>
+        )}
+
         {mfaFactorId ? (
           <form onSubmit={handleMfaVerify} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
@@ -196,7 +240,7 @@ function LoginForm() {
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
             <label style={labelSt}>{t("auth.email")}</label>
-            <input type="email" placeholder="you@example.com" value={email}
+            <input ref={emailRef} type="email" placeholder="you@example.com" value={email}
               onChange={e => setEmail(e.target.value)} required autoComplete="email"
               onFocus={onFocusCopper} onBlur={onBlurRule} style={iStyle} />
           </div>

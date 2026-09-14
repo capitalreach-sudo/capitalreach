@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { createCheckoutSession, getOrCreateCustomer } from "@/lib/stripe";
 import { getStageStatus, resolveStagePriceId } from "@/lib/pricing-stage";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, priceEnvKey, type BillingInterval } from "@/lib/plans";
@@ -28,6 +28,32 @@ export async function POST(req: NextRequest) {
   const plans: AnyPlan[] = userType === "founder" ? FOUNDER_PLANS_LIST : INVESTOR_PLANS_LIST;
   const plan = plans.find(p => p.id === planId);
   if (!plan) return NextResponse.json({ error: "Unknown plan" }, { status: 400 });
+
+  // A plan family belongs to one account type: founder plans to role startup,
+  // investor plans to role investor. userType is whatever the page sent, so
+  // the role is read fresh with the service role, and a mismatch reaches
+  // neither Stripe nor the free-plan redirect into the other side's dashboard.
+  const { data: roleRow, error: roleErr } = await createAdminClient()
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (roleErr) {
+    console.error("[checkout] role read failed:", roleErr.message);
+    return NextResponse.json({ error: "Could not verify the account." }, { status: 500 });
+  }
+  const planRole = userType === "founder" ? "startup" : "investor";
+  if (roleRow?.role !== planRole) {
+    return NextResponse.json(
+      {
+        error: userType === "founder"
+          ? "Founder plans are only available to founder accounts."
+          : "Investor plans are only available to investor accounts.",
+        code: "role_mismatch",
+      },
+      { status: 409 },
+    );
+  }
 
   const dashboardPath = userType === "founder" ? "/dashboard/startup" : "/dashboard/investor";
 

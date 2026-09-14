@@ -24,7 +24,8 @@
     "browse": "Parcourir",
     "alerts": "Alertes",
     "primaryMobile": "Principal",
-    "unreadCount": "{count} non lus"
+    "unreadCount": "{count} non lus",
+    "accountStatus": "Statut du compte"
   },
   "hero": {
     "eyebrow": "Capital privé · Est. 2024",
@@ -287,7 +288,8 @@
       "descLong": "Obtenez en quelques secondes un mémo d'investissement complet sur n'importe quelle startup du réseau CapitalReach. Couvre l'analyse de marché, l'équipe, le paysage concurrentiel, les risques et un verdict Acheter / Observer / Passer. Illimité avec les plans Pro Investor et Institution.",
       "generationFailed": "Échec de la génération du rapport.",
       "networkError": "Erreur réseau. Veuillez réessayer.",
-      "searchPlaceholder": "ex. Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "ex. Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Les rapports de due diligence sont un outil pour investisseurs"
     },
     "hub": {
       "heroPowered": "Propulsé par GPT-4o mini",
@@ -509,7 +511,11 @@
     "cmpTradPaidBy": "La startup",
     "cmpTradTracking": "Chez le courtier",
     "cmpTradUpfront": "Une provision sur honoraires",
-    "cmpTypical": "en général"
+    "cmpTypical": "en général",
+    "forFounderAccounts": "Pour les comptes fondateur",
+    "forInvestorAccounts": "Pour les comptes investisseur",
+    "fullAccessIncluded": "Accès complet inclus",
+    "memberFullAccess": "Vous avez déjà un accès complet pendant la phase de lancement."
   },
   "cta": {
     "headline": "Le bon capital, au bon stade.",
@@ -629,7 +635,10 @@
     "mustConfirmAge": "Veuillez confirmer que vous avez 18 ans ou plus.",
     "resetLinkDeadTitle": "Ce lien a expiré",
     "resetLinkDeadBody": "Les liens de réinitialisation ne fonctionnent qu'une fois et brièvement — et uniquement dans le navigateur qui les a demandés. Demandez-en un nouveau et ouvrez-le sur cet appareil.",
-    "requestNewLink": "Demander un nouveau lien"
+    "requestNewLink": "Demander un nouveau lien",
+    "linkExpiredNotice": "Ce lien a expiré ou a déjà été utilisé. Connectez-vous ou demandez un nouvel e-mail de confirmation.",
+    "linkExpiredResend": "Demander un nouvel e-mail de confirmation",
+    "linkExpiredEnterEmail": "Saisissez d'abord votre adresse e-mail ci-dessous, puis demandez le nouveau lien."
   },
   "dashboard": {
     "overview": "Aperçu",
@@ -1340,7 +1349,12 @@
     "marketTotal": "Marché total",
     "minCheckNone": "Aucun minimum",
     "moreActions": "Plus",
-    "moreCompany": "La société"
+    "moreCompany": "La société",
+    "finishInvestorProfile": "Terminez votre profil investisseur",
+    "investorProfileUnfinished": "Votre profil investisseur n'est pas encore terminé",
+    "finishInvestorProfileToSave": "Terminez votre profil investisseur pour enregistrer des startups",
+    "saveInvestorsOnly": "L'enregistrement de startups est réservé aux comptes investisseur",
+    "documentLocked": "Verrouillé"
   },
   "investors": {
     "pageTitle": "Annuaire des investisseurs",

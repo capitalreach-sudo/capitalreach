@@ -90,18 +90,26 @@ export async function sendDigestEmail(to: string, subject: string, html: string)
   return send(to, subject, html, [{ name: "type", value: "digest" }]);
 }
 
-export async function sendWelcomeEmail(to: string, name: string, role: string) {
-  const isStartup = role === "startup";
+/**
+ * The welcome mail. It links to /dashboard, which routes by the role the
+ * account holds when the mail is opened: the role chosen at signup can still
+ * be switched before then, and a member who has already onboarded must land on
+ * their dashboard, not the profile editor. The copy is role-neutral for the
+ * same reason. The third parameter is ignored and stays optional only so
+ * callers that still pass a role compile.
+ */
+export async function sendWelcomeEmail(to: string, name: string, _role?: string) {
+  // The name is member-supplied text going into HTML.
+  const safeName = name.trim().replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   return send(
     to,
     "Welcome to CapitalReach",
-    `<h2>Welcome to CapitalReach, ${name}!</h2>
-    <p>You've joined as a${isStartup ? " startup founder" : "n investor"}.</p>
-    <p>${isStartup
-      ? "Complete your startup profile to get listed and start attracting investors."
-      : "Set up your investor profile and start discovering exceptional startups."}</p>
-    <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/onboarding/${role}" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">Complete Your Profile →</a></p>
-    <p>The CapitalReach Team</p>`
+    `<h2>Welcome to CapitalReach${safeName ? `, ${safeName}` : ""}</h2>
+    <p>Your account is ready.</p>
+    <p>Your dashboard always shows the next step for your account, whether that is finishing your setup or getting straight to work.</p>
+    <p><a href="${brand.url}/dashboard" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">Go to your dashboard</a></p>
+    <p>The CapitalReach Team</p>`,
+    [{ name: "type", value: "welcome" }],
   );
 }
 

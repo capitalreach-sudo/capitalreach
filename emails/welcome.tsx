@@ -1,22 +1,27 @@
 import {
   Body, Button, Container, Head, Heading, Hr, Html,
-  Img, Link, Preview, Section, Text,
+  Link, Preview, Section, Text,
 } from "@react-email/components";
 import { brand } from "@/lib/brand";
 
+/**
+ * Role-neutral by design, and it links to /dashboard rather than an onboarding
+ * route: the role chosen at signup can be switched before the mail is opened,
+ * and /dashboard routes by the role the account holds at that moment. Keep it
+ * in step with sendWelcomeEmail in lib/resend.ts, which is the version sent.
+ */
 interface WelcomeEmailProps {
   name: string;
-  role: "startup" | "investor";
 }
 
-export default function WelcomeEmail({ name, role }: WelcomeEmailProps) {
-  const isStartup = role === "startup";
+export default function WelcomeEmail({ name }: WelcomeEmailProps) {
   const appUrl = brand.url;
+  const greetingName = name.trim();
 
   return (
     <Html>
       <Head />
-      <Preview>Welcome to CapitalReach — {isStartup ? "get funded" : "discover startups"}</Preview>
+      <Preview>Welcome to CapitalReach: your account is ready</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Logo */}
@@ -24,41 +29,29 @@ export default function WelcomeEmail({ name, role }: WelcomeEmailProps) {
             <Text style={logoText}>⚡ CapitalReach</Text>
           </Section>
 
-          <Heading style={h1}>Welcome to CapitalReach, {name}!</Heading>
+          <Heading style={h1}>
+            Welcome to CapitalReach{greetingName ? `, ${greetingName}` : ""}
+          </Heading>
 
           <Text style={text}>
-            {isStartup
-              ? "You've taken the first step toward connecting with investors who believe in your vision. Let's get your startup listed."
-              : "You're now part of the CapitalReach investor network. Discover exceptional early-stage companies raising right now."}
+            Your account is ready. Your dashboard always shows the next step for
+            your account, whether that is finishing your setup or getting straight
+            to work.
           </Text>
 
           <Section style={ctaSection}>
-            <Button
-              style={button}
-              href={`${appUrl}/onboarding/${role}`}
-            >
-              {isStartup ? "Complete Your Startup Profile →" : "Set Up Your Investor Profile →"}
+            <Button style={button} href={`${appUrl}/dashboard`}>
+              Go to your dashboard
             </Button>
           </Section>
 
           <Hr style={hr} />
 
           <Text style={subtext}>
-            {isStartup ? (
-              <>
-                <strong>What happens next:</strong><br />
-                1. Complete your profile (takes ~10 minutes)<br />
-                2. Our team reviews your listing (1-2 business days)<br />
-                3. Go live and start receiving investor interest
-              </>
-            ) : (
-              <>
-                <strong>What you can do:</strong><br />
-                1. Browse 500+ vetted startups<br />
-                2. Set your investment preferences<br />
-                3. Connect directly with founders
-              </>
-            )}
+            <strong>What happens next:</strong><br />
+            1. Open your dashboard<br />
+            2. Finish any setup step it shows you<br />
+            3. Pick up from there whenever you come back
           </Text>
 
           <Hr style={hr} />
@@ -75,7 +68,6 @@ export default function WelcomeEmail({ name, role }: WelcomeEmailProps) {
 
 WelcomeEmail.PreviewProps = {
   name: "Jane Smith",
-  role: "startup",
 } as WelcomeEmailProps;
 
 const main = { backgroundColor: "#f6f9fc", fontFamily: "'Inter', sans-serif" };

@@ -24,7 +24,8 @@
     "browse": "Explorar",
     "alerts": "Alertas",
     "primaryMobile": "Principal",
-    "unreadCount": "{count} por ler"
+    "unreadCount": "{count} por ler",
+    "accountStatus": "Estado da conta"
   },
   "hero": {
     "eyebrow": "Capital privado · Est. 2024",
@@ -278,7 +279,8 @@
       "descLong": "Obtenha em segundos um memorando de investimento abrangente sobre qualquer startup na rede CapitalReach. Cobre análise de mercado, equipa, panorama competitivo, riscos e um veredito Comprar / Observar / Passar. Incluído ilimitado nos planos Pro Investor e Institution.",
       "generationFailed": "Falha ao gerar o relatório.",
       "networkError": "Erro de rede. Tente novamente.",
-      "searchPlaceholder": "ex.: Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "ex.: Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Os relatórios de due diligence são uma ferramenta para investidores"
     },
     "hub": {
       "heroPowered": "Desenvolvido com GPT-4o mini",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "A startup",
     "cmpTradTracking": "Com o corretor",
     "cmpTradUpfront": "Uma avença",
-    "cmpTypical": "habitual"
+    "cmpTypical": "habitual",
+    "forFounderAccounts": "Para contas de fundador",
+    "forInvestorAccounts": "Para contas de investidor",
+    "fullAccessIncluded": "Acesso total incluído",
+    "memberFullAccess": "Já tem acesso total enquanto decorre a fase fundadora."
   },
   "cta": {
     "headline": "O capital certo, no estágio certo.",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "Confirme que tem 18 anos ou mais.",
     "resetLinkDeadTitle": "Este link expirou",
     "resetLinkDeadBody": "Os links de redefinição funcionam uma única vez e por pouco tempo — e apenas no navegador que os pediu. Peça um novo e abra-o neste dispositivo.",
-    "requestNewLink": "Pedir novo link"
+    "requestNewLink": "Pedir novo link",
+    "linkExpiredNotice": "Esse link expirou ou já foi usado. Inicie sessão ou peça um novo email de confirmação.",
+    "linkExpiredResend": "Pedir um novo email de confirmação",
+    "linkExpiredEnterEmail": "Introduza primeiro o seu email abaixo e depois peça o novo link."
   },
   "dashboard": {
     "overview": "Visão geral",
@@ -1297,7 +1306,12 @@
     "marketTotal": "Mercado total",
     "minCheckNone": "Sem mínimo",
     "moreActions": "Mais",
-    "moreCompany": "A empresa"
+    "moreCompany": "A empresa",
+    "finishInvestorProfile": "Conclua o seu perfil de investidor",
+    "investorProfileUnfinished": "O seu perfil de investidor ainda não está concluído",
+    "finishInvestorProfileToSave": "Conclua o seu perfil de investidor para guardar startups",
+    "saveInvestorsOnly": "Guardar startups é para contas de investidor",
+    "documentLocked": "Bloqueado"
   },
   "filters": {
     "industry": "Indústria",

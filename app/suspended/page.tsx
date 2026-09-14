@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
@@ -103,6 +104,17 @@ export default async function SuspendedPage() {
             fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px",
             color: "var(--cr-copper)", textDecoration: "none",
           }}>{brand.support}</a>
+
+          {/* Middleware exempts /dashboard/complaints from the suspension
+              redirect so the decision can be contested in the product. This
+              is the only entry point a suspended account is shown. */}
+          <p style={{ marginTop: "12px" }}>
+            <Link href="/dashboard/complaints" style={{
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px",
+              color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px",
+              display: "inline-block", padding: "8px 0",
+            }}>File a complaint about this decision</Link>
+          </p>
 
           <SuspendedActions />
         </div>

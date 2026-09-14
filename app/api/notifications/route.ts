@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { messagingAvailable } from "@/lib/messaging-access";
 
 /**
  * The signed-in user's notifications.
@@ -8,12 +9,25 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
  * the navbar badge renders, and it is deliberately part of the same response
  * so opening a page costs one request rather than two.
  *
+ * Messaging exists only after a sealed deal (lib/messaging-access). Until the
+ * member has Messages, GET withholds every "message" row and every row linking
+ * into /dashboard/messages, from the feed and from the unread count alike.
+ * PATCH and DELETE are deliberately not scoped that way: a withheld row must
+ * stay markable and removable, or it could never leave the unread state.
+ *
  * PATCH marks read: one id, or all of them.
  */
 
 // Notification ids are uuids; anything else is rejected before it reaches a
 // query. Shared by GET's cursor, DELETE and PATCH so the three cannot drift.
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// NOT LIKE on a NULL href is NULL, which would also drop every row without a
+// link, so the NULL arm is explicit. `*` is PostgREST's LIKE wildcard.
+const OUTSIDE_INBOX = "href.is.null,href.not.like./dashboard/messages*";
+// Deal-note @mentions are raised with type "message" but link to /deals, where
+// every party already belongs; only inbox messages are withheld.
+const MESSAGE_ONLY_ON_DEALS = "type.neq.message,href.like./deals*";
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -49,6 +63,10 @@ export async function GET(req: NextRequest) {
   const validBefore = before && !Number.isNaN(Date.parse(before)) ? before : null;
   const validBeforeId = beforeId && UUID_RE.test(beforeId) ? beforeId : null;
 
+  // Filtered in the query rather than after it, so a page of 30 stays 30 and
+  // the load-more cursor still sees a full page when more rows exist.
+  const withholdMessaging = !(await messagingAvailable(user.id));
+
   let query = supabase
     .from("notifications")
     .select("id, type, title, body, href, read_at, created_at, title_key, body_key, params")
@@ -66,13 +84,19 @@ export async function GET(req: NextRequest) {
     query = query.lt("created_at", validBefore);
   }
 
-  const [{ data: rows }, { count }] = await Promise.all([
-    query,
-    supabase
-      .from("notifications")
-      .select("id", { count: "exact", head: true })
-      .is("read_at", null),
-  ]);
+  let unreadQuery = supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .is("read_at", null);
+
+  // or() appends a second `or` parameter, which PostgREST ANDs with the
+  // cursor's or() above rather than replacing it.
+  if (withholdMessaging) {
+    query = query.or(MESSAGE_ONLY_ON_DEALS).or(OUTSIDE_INBOX);
+    unreadQuery = unreadQuery.or(MESSAGE_ONLY_ON_DEALS).or(OUTSIDE_INBOX);
+  }
+
+  const [{ data: rows }, { count }] = await Promise.all([query, unreadQuery]);
 
   return NextResponse.json({ notifications: rows ?? [], unread: count ?? 0 });
 }

@@ -1,23 +1,42 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { sendWelcomeEmail } from "@/lib/resend";
 import { NextResponse } from "next/server";
 import { LOCALES, type Locale } from "@/lib/locale";
+import { safeRedirect } from "@/lib/safe-redirect";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const explicitRedirect = requestUrl.searchParams.get("redirect");
 
-  if (!code) {
-    return NextResponse.redirect(new URL("/", requestUrl.origin));
-  }
+  // Only a same-origin path is honoured. new URL() drops the base for absolute
+  // or protocol-relative input ("//evil.com") and folds "/\evil.com" off-site
+  // too, and this redirect fires right after login, the exact polished moment
+  // a phishing page wants. lib/safe-redirect refuses every one of those.
+  const redirectPath = safeRedirect(requestUrl.searchParams.get("redirect"), "/");
+
+  // A link that cannot become a session here (opened on another device,
+  // expired, already used, or refused by the provider) lands on sign-in, which
+  // explains it and offers a new confirmation email. The destination survives.
+  const linkExpired = () => {
+    const url = new URL("/auth/login", requestUrl.origin);
+    url.searchParams.set("error", "link_expired");
+    if (redirectPath !== "/") url.searchParams.set("redirect", redirectPath);
+    return NextResponse.redirect(url);
+  };
+
+  const providerError =
+    requestUrl.searchParams.get("error") ||
+    requestUrl.searchParams.get("error_code") ||
+    requestUrl.searchParams.get("error_description");
+  if (!code || providerError) return linkExpired();
 
   const supabase = await createServerSupabaseClient();
-  const { data } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (!data.user) {
-    return NextResponse.redirect(new URL("/", requestUrl.origin));
-  }
+  const exchange = await supabase.auth.exchangeCodeForSession(code).catch((err: unknown) => {
+    console.error("[auth/callback] code exchange threw:", err instanceof Error ? err.message : err);
+    return null;
+  });
+  if (!exchange || exchange.error || !exchange.data.user) return linkExpired();
+  const data = { user: exchange.data.user };
 
   const { data: existing } = await supabase
     .from("profiles")
@@ -54,27 +73,31 @@ export async function GET(request: Request) {
   const isFreshAccount =
     !!data.user.created_at &&
     Date.now() - new Date(data.user.created_at).getTime() < 10 * 60 * 1000;
+  const isArrival = isFreshAccount && !metaRole && (!!queryRole || !!inviteFromQuery);
 
-  if (isFreshAccount && !metaRole && (queryRole || inviteFromQuery)) {
-    // The role chosen on the signup page beats the trigger's investor
-    // default this once; writing it to metadata records the choice so a
-    // later login cannot re-litigate it, and invite_code lands where the
-    // /api/auth/welcome redemption path -- the same one the password flow
-    // triggers on first authenticated load -- already looks for it.
-    if (queryRole) role = queryRole;
-    try {
-      await supabase.auth.updateUser({
-        data: {
-          ...(queryRole ? { role: queryRole } : {}),
-          ...(inviteFromQuery ? { invite_code: inviteFromQuery } : {}),
-        },
-      });
-      if (existing && queryRole && existing.role !== queryRole) {
-        await supabase.from("profiles").update({ role: queryRole }).eq("id", data.user.id);
+  // True once profiles.role actually holds queryRole. Routing and the metadata
+  // stash both wait for it: metadata that says startup over a profile that
+  // says investor is a split every gate resolves differently.
+  let roleSettled = false;
+
+  if (isArrival && queryRole && existing) {
+    if (existing.role === queryRole) {
+      roleSettled = true;
+    } else if (existing.role !== "admin") {
+      // The role chosen on the signup page beats the trigger's investor
+      // default this once. role is server-only on profiles
+      // (reject_client_column_write refuses a client-key UPDATE of it), so the
+      // write goes through the service role.
+      const { error: roleErr } = await createAdminClient()
+        .from("profiles")
+        .update({ role: queryRole })
+        .eq("id", data.user.id);
+      if (roleErr) {
+        console.error("[auth/callback] role override failed:", roleErr.message);
+      } else {
+        role = queryRole;
+        roleSettled = true;
       }
-    } catch (err) {
-      // Best-effort: a lost stash costs the attribution, never the login.
-      console.error("[auth/callback] arrival stash failed:", err);
     }
   }
 
@@ -83,7 +106,7 @@ export async function GET(request: Request) {
       data.user.user_metadata?.full_name ||
       data.user.user_metadata?.name ||
       "";
-    await supabase.from("profiles").insert({
+    const { error: insertErr } = await supabase.from("profiles").insert({
       id: data.user.id,
       email: data.user.email!,
       full_name: fullName,
@@ -95,19 +118,47 @@ export async function GET(request: Request) {
       terms_accepted_at:
         data.user.user_metadata?.terms_accepted_at || new Date().toISOString(),
     });
+    if (insertErr) {
+      // Routing follows the stored row, never the row this request hoped to
+      // write.
+      console.error("[auth/callback] profile insert failed:", insertErr.message);
+      const { data: stored } = await createAdminClient()
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      if (stored?.role) role = stored.role;
+    } else if (isArrival && queryRole && role === queryRole) {
+      roleSettled = true;
+    }
     sendWelcomeEmail(data.user.email!, fullName, role).catch(() => {});
+  }
+
+  if (isArrival) {
+    // Writing the settled role to metadata records the choice so a later login
+    // cannot re-litigate it, and invite_code lands where the /api/auth/welcome
+    // redemption path -- the same one the password flow triggers on first
+    // authenticated load -- already looks for it.
+    const stash = {
+      ...(roleSettled && queryRole ? { role: queryRole } : {}),
+      ...(inviteFromQuery ? { invite_code: inviteFromQuery } : {}),
+    };
+    if (Object.keys(stash).length > 0) {
+      try {
+        const { error: stashErr } = await supabase.auth.updateUser({ data: stash });
+        if (stashErr) console.error("[auth/callback] arrival stash failed:", stashErr.message);
+      } catch (err) {
+        // Best-effort: a lost stash costs the attribution, never the login.
+        console.error("[auth/callback] arrival stash failed:", err);
+      }
+    }
   }
 
   // Determine destination URL
   let destination: URL;
 
-  // Only a same-origin, single-slash path is honoured. new URL() drops the
-  // base for absolute or protocol-relative input ("//evil.com"), so an
-  // unvalidated ?redirect= was an open redirect fired right after login —
-  // the exact polished moment a phishing page wants.
-  const safeRedirect = explicitRedirect && /^\/(?!\/)/.test(explicitRedirect) ? explicitRedirect : null;
-  if (safeRedirect && safeRedirect !== "/") {
-    destination = new URL(safeRedirect, requestUrl.origin);
+  if (redirectPath !== "/") {
+    destination = new URL(redirectPath, requestUrl.origin);
   } else if (role === "investor") {
     const { data: inv } = await supabase
       .from("investors")

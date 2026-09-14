@@ -4,6 +4,7 @@ import { legalEntity } from "@/lib/brand";
 import Link from "next/link";
 import { SECTOR_SLUGS } from "@/lib/industry-slugs";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useSessionHint } from "@/components/providers/session-hint";
 
 const DiamondLogo = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
@@ -15,6 +16,7 @@ const DiamondLogo = () => (
 
 export function Footer() {
   const { t } = useTranslation();
+  const sessionHint = useSessionHint();
 
   const LINK_GROUPS: [string, [string, string][]][] = [
     // The sector landing pages are the site's search-traffic catchers --
@@ -30,7 +32,9 @@ export function Footer() {
       [t("footer.pricing"),        "/pricing"],
     ]],
     [t("footer.founders"), [
-      [t("footer.listYourStartup"), "/auth/signup"],
+      // Sign-up is for visitors: a request carrying a session cookie gets no
+      // sign-up link at all.
+      ...(sessionHint ? [] : [[t("footer.listYourStartup"), "/auth/signup"] as [string, string]]),
       [t("footer.howItWorks"),      "/about#how-it-works"],
       [t("footer.pricing"),         "/pricing#founders"],
       // "Success stories" (/about#stories) and "Platform stats" (/stats) both

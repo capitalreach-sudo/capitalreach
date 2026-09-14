@@ -31,7 +31,8 @@
     "browse": "Entdecken",
     "alerts": "Hinweise",
     "primaryMobile": "Hauptnavigation",
-    "unreadCount": "{count} ungelesen"
+    "unreadCount": "{count} ungelesen",
+    "accountStatus": "Kontostatus"
   },
   "hero": {
     "eyebrow": "Privates Kapital · Gegr. 2024",
@@ -294,7 +295,8 @@
       "descLong": "Erhalten Sie in Sekunden ein umfassendes Investment-Memo zu jedem Startup im CapitalReach-Netzwerk. Deckt Marktanalyse, Team, Wettbewerbslandschaft, Risiken und ein Kaufen/Beobachten/Ablehnen-Urteil ab. Unbegrenzt inklusive bei Pro-Investor- und Institution-Plänen.",
       "generationFailed": "Berichtserstellung fehlgeschlagen.",
       "networkError": "Netzwerkfehler. Bitte versuche es erneut.",
-      "searchPlaceholder": "z. B. Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "z. B. Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Due-Diligence-Berichte sind ein Werkzeug für Investoren"
     },
     "hub": {
       "heroPowered": "Betrieben von GPT-4o mini",
@@ -516,7 +518,11 @@
     "cmpTradPaidBy": "Das Startup",
     "cmpTradTracking": "Beim Broker",
     "cmpTradUpfront": "Ein Retainer",
-    "cmpTypical": "üblich"
+    "cmpTypical": "üblich",
+    "forFounderAccounts": "Für Gründerkonten",
+    "forInvestorAccounts": "Für Investorenkonten",
+    "fullAccessIncluded": "Voller Zugang inklusive",
+    "memberFullAccess": "Sie haben bereits vollen Zugang, solange die Gründungsphase läuft."
   },
   "cta": {
     "headline": "Das richtige Kapital, zur richtigen Phase.",
@@ -636,7 +642,10 @@
     "mustConfirmAge": "Bitte bestätigen Sie, dass Sie mindestens 18 sind.",
     "resetLinkDeadTitle": "Dieser Link ist abgelaufen",
     "resetLinkDeadBody": "Passwort-Links funktionieren nur einmal und nur kurz — und nur im Browser, der sie angefordert hat. Fordern Sie einen neuen an und öffnen Sie ihn auf diesem Gerät.",
-    "requestNewLink": "Neuen Link anfordern"
+    "requestNewLink": "Neuen Link anfordern",
+    "linkExpiredNotice": "Dieser Link ist abgelaufen oder wurde bereits verwendet. Melden Sie sich an oder fordern Sie eine neue Bestätigungs-E-Mail an.",
+    "linkExpiredResend": "Neue Bestätigungs-E-Mail anfordern",
+    "linkExpiredEnterEmail": "Geben Sie zuerst unten Ihre E-Mail-Adresse ein und fordern Sie dann den neuen Link an."
   },
   "dashboard": {
     "overview": "Übersicht",
@@ -1347,7 +1356,12 @@
     "marketTotal": "Gesamtmarkt",
     "minCheckNone": "Kein Mindestbetrag",
     "moreActions": "Mehr",
-    "moreCompany": "Das Unternehmen"
+    "moreCompany": "Das Unternehmen",
+    "finishInvestorProfile": "Investorenprofil fertigstellen",
+    "investorProfileUnfinished": "Ihr Investorenprofil ist noch nicht fertig",
+    "finishInvestorProfileToSave": "Stellen Sie Ihr Investorenprofil fertig, um Startups zu speichern",
+    "saveInvestorsOnly": "Das Speichern von Startups ist Investorenkonten vorbehalten",
+    "documentLocked": "Gesperrt"
   },
   "investors": {
     "pageTitle": "Investorenverzeichnis",

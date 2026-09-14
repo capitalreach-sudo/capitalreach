@@ -24,7 +24,8 @@
     "browse": "Каталог",
     "alerts": "Оповещения",
     "primaryMobile": "Основное меню",
-    "unreadCount": "{count} непрочитанных"
+    "unreadCount": "{count} непрочитанных",
+    "accountStatus": "Статус аккаунта"
   },
   "hero": {
     "eyebrow": "Частный капитал · Основан в 2024",
@@ -278,7 +279,8 @@
       "descLong": "Получите исчерпывающий инвестиционный меморандум по любому стартапу сети CapitalReach за секунды. Включает анализ рынка, команды, конкурентной среды, рисков и вердикт «Купить / Наблюдать / Пропустить». Безлимитно в тарифах Pro Investor и Institution.",
       "generationFailed": "Не удалось сформировать отчёт.",
       "networkError": "Ошибка сети. Попробуйте снова.",
-      "searchPlaceholder": "например, Vaultrise, HealthAI, ClimateOS…"
+      "searchPlaceholder": "например, Vaultrise, HealthAI, ClimateOS…",
+      "investorTool": "Отчёты due diligence предназначены для инвесторов"
     },
     "hub": {
       "heroPowered": "Работает на GPT-4o mini",
@@ -500,7 +502,11 @@
     "cmpTradPaidBy": "Стартап",
     "cmpTradTracking": "У брокера",
     "cmpTradUpfront": "Фиксированный аванс",
-    "cmpTypical": "обычно"
+    "cmpTypical": "обычно",
+    "forFounderAccounts": "Для аккаунтов основателей",
+    "forInvestorAccounts": "Для аккаунтов инвесторов",
+    "fullAccessIncluded": "Полный доступ включён",
+    "memberFullAccess": "У вас уже есть полный доступ, пока идёт этап основания."
   },
   "cta": {
     "headline": "Правильный капитал на нужной стадии.",
@@ -620,7 +626,10 @@
     "mustConfirmAge": "Подтвердите, что вам 18 лет или больше.",
     "resetLinkDeadTitle": "Ссылка устарела",
     "resetLinkDeadBody": "Ссылки для сброса пароля работают один раз и недолго — и только в браузере, из которого их запросили. Запросите новую и откройте её на этом устройстве.",
-    "requestNewLink": "Запросить новую ссылку"
+    "requestNewLink": "Запросить новую ссылку",
+    "linkExpiredNotice": "Срок действия ссылки истёк или она уже использована. Войдите или запросите новое письмо с подтверждением.",
+    "linkExpiredResend": "Запросить новое письмо с подтверждением",
+    "linkExpiredEnterEmail": "Сначала введите адрес электронной почты ниже, затем запросите новую ссылку."
   },
   "dashboard": {
     "overview": "Обзор",
@@ -1297,7 +1306,12 @@
     "marketTotal": "Общий объём рынка",
     "minCheckNone": "Без минимума",
     "moreActions": "Ещё",
-    "moreCompany": "Компания"
+    "moreCompany": "Компания",
+    "finishInvestorProfile": "Завершите профиль инвестора",
+    "investorProfileUnfinished": "Ваш профиль инвестора ещё не завершён",
+    "finishInvestorProfileToSave": "Завершите профиль инвестора, чтобы сохранять стартапы",
+    "saveInvestorsOnly": "Сохранять стартапы могут только инвесторы",
+    "documentLocked": "Закрыто"
   },
   "filters": {
     "industry": "Отрасль",
