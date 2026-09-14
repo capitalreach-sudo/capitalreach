@@ -30,7 +30,11 @@
     --cr-ink-4: #9C8E82;
 
     /* Copper — single accent */
-    --cr-copper:    #B5651D;
+    /* #B2621B rather than #B5651D: white on the old copper measured
+       4.34:1, just under AA for the button labels that sit on it, and dark
+       ink measures worse. Two percent of luminance buys 4.51:1 at a shift
+       no eye reads as a different colour. */
+    --cr-copper:    #B2621B;
     --cr-copper-l:  #D4842A;
     --cr-copper-d:  #8A4A15;
     --cr-copper-bg: color-mix(in srgb, var(--cr-copper) 8%, transparent);

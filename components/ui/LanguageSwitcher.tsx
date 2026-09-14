@@ -96,7 +96,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
         {loading ? (
           <div style={{
             width: 14, height: 14,
-            border: "2px solid #B5651D", borderTopColor: "transparent",
+            border: "2px solid #B2621B", borderTopColor: "transparent",
             borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0,
           }} />
         ) : (

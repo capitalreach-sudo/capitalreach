@@ -18,7 +18,7 @@ const PALETTE = `
   :root {
     --ge-paper: #F5F0E8; --ge-paper-4: #D8D0C4;
     --ge-ink: #1A1612; --ge-ink-3: #6B6056; --ge-ink-4: #9C8E82;
-    --ge-copper: #B5651D; --ge-on-copper: #FFFFFF;
+    --ge-copper: #B2621B; --ge-on-copper: #FFFFFF;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {

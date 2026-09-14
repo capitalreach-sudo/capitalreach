@@ -20,7 +20,7 @@ export const contentType = "image/png";
 const PAPER = "#F5F0E8";
 const INK = "#1A1612";
 const INK_3 = "#6B6056";
-const COPPER = "#B5651D";
+const COPPER = "#B2621B";
 
 async function playfair(): Promise<ArrayBuffer | null> {
   try {
