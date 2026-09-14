@@ -55,11 +55,6 @@ const MEDIAN_MIN_N = 3; // lib/platform-data withholds smaller stages before the
 const CLOSE_RATE_MIN_CONCLUDED = 5;
 const SCORE_MIN_SCORED = 3;
 const STRIP_MAX_UNITS = 12;
-// A month-by-month picture needs several lit months to read as a pattern;
-// below this, it is one or two squares adrift in a mostly-blank 12-column
-// grid, which reads as broken rather than quiet. The lead sentence and the
-// rounds ledger (with its own "Listed" date) already carry those numbers.
-const STRIP_MIN_ACTIVE_MONTHS = 3;
 
 const OPEN_STAGES = [
   { key: "intro", tkey: "data.lead.dealsIntro", one: "{count} deal at introduction.", other: "{count} deals at introduction." },
@@ -391,8 +386,6 @@ function Report({ data, canListRound, t, tf, tp }: { data: PlatformData; canList
   const currentKey = data.lastUpdated.slice(0, 7);
   const inProgressKey = monthly.length > 0 && monthly[monthly.length - 1].month === currentKey ? currentKey : null;
   const anyActivity = monthly.some(m => m.listings > 0 || m.closed > 0);
-  const activeMonths = monthly.filter(m => m.listings > 0 || m.closed > 0).length;
-  const showStrip = activeMonths >= STRIP_MIN_ACTIVE_MONTHS;
   const anyClosedMonth = monthly.some(m => m.closed > 0);
   const asLine = monthly.some(m => m.listings + m.closed > STRIP_MAX_UNITS);
   const currencies = data.closedCurrencies ?? [];
@@ -506,7 +499,7 @@ function Report({ data, canListRound, t, tf, tp }: { data: PlatformData; canList
         )}
       </div>
 
-      {showStrip && (
+      {anyActivity && (
         <Section title={stripTitle} meta={monthRange || undefined}>
           {asLine ? (
             <div style={{ paddingBlockStart: "1.5rem" }}>
