@@ -11,6 +11,7 @@ import { HomepageClient }    from "@/components/homepage/homepage-client";
 import { buildAccessContext, investorCan } from "@/lib/access";
 import type { Metadata }     from "next";
 import { getLocale, getTranslator } from "@/lib/locale-server";
+import { SECTOR_SLUGS } from "@/lib/industry-slugs";
 
 export const dynamic = "force-dynamic";
 
@@ -43,11 +44,17 @@ const NO_LAUNCH   = { isLaunch: false, memberCount: 0, target: 100 };
  * Promise.all -- never serial awaits -- and a database outage renders the
  * shell rather than an error page.
  */
+/** Open rounds per sector for the hero panel: anonymous aggregates only, the
+ *  same counts the public sector pages already state. null industry = the
+ *  folded remainder. */
+export type MarketSector = { industry: string | null; slug: string | null; count: number };
+
 export type TickerSnippet = Pick<ListingSnippet, "id" | "name" | "slug" | "stage" | "funding_target">;
 
 export default async function HomePage() {
   let listings: ListingSnippet[] = [];
   let raisingTotal: number | null = null;
+  let marketSectors: MarketSector[] = [];
   let stats = EMPTY_STATS;
   let launch = NO_LAUNCH;
 
@@ -90,7 +97,7 @@ export default async function HomePage() {
     try {
       const { data: raiseRows } = await supabase
         .from("startups")
-        .select("funding_target")
+        .select("funding_target, industry")
         .eq("status", "active")
         .neq("round_state", "paused")
         .limit(2000);
@@ -98,6 +105,16 @@ export default async function HomePage() {
       // junk 10^17 target must not carry the whole total past
       // safeFormatTotal's ceiling and blank the tile for everyone.
       // All rows discarded is unknown, not zero: null hides the tile.
+      const bySector = new Map<string, number>();
+      for (const r of (raiseRows ?? []) as Array<{ industry: string | null }>) {
+        if (r.industry) bySector.set(r.industry, (bySector.get(r.industry) ?? 0) + 1);
+      }
+      const ranked = Array.from(bySector.entries()).sort((a, b) => b[1] - a[1]);
+      const top: MarketSector[] = ranked.slice(0, 4).map(([industry, count]) => ({
+        industry, count, slug: SECTOR_SLUGS.find((x) => x.industry === industry)?.slug ?? null,
+      }));
+      const otherCount = ranked.slice(4).reduce((n, [, c]) => n + c, 0);
+      marketSectors = otherCount > 0 ? [...top, { industry: null, slug: null, count: otherCount }] : top;
       raisingTotal = sumPlausibleFundingTargets(
         (raiseRows ?? []).map((r: { funding_target: number | null }) =>
           r.funding_target == null ? null : Number(r.funding_target)),
@@ -151,6 +168,7 @@ export default async function HomePage() {
         stats={stats}
         listings={canSeeMarket ? listings : []}
         raisingTotal={raisingTotal}
+        marketSectors={marketSectors}
         launch={launch}
         viewerRole={viewerRole}
         canSeeMarket={canSeeMarket}

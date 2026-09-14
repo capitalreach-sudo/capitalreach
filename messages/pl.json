@@ -56,7 +56,11 @@
     "proofVetted": "data roomów za umową NDA",
     "whoPays": "Prowizję od sukcesu 2% płaci startup otrzymujący inwestycję — fakturowaną dopiero po zamknięciu rundy. Inwestorzy nigdy jej nie płacą.",
     "ctaDashboard": "Otwórz panel",
-    "proofAria": "CapitalReach w trzech liczbach"
+    "proofAria": "CapitalReach w trzech liczbach",
+    "marketNow": "Rynek teraz",
+    "marketRaising": "Pozyskiwane w otwartych rundach",
+    "marketBySector": "Otwarte rundy według sektora",
+    "marketOther": "Inne"
   },
   "trustIndicators": {
     "startupsListed": "startupów na liście",

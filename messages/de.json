@@ -63,7 +63,11 @@
     "proofVetted": "der Datenräume hinter einem NDA",
     "whoPays": "Die Erfolgsgebühr von 2% zahlt das Startup, das die Investition erhält — in Rechnung gestellt erst nach Abschluss der Runde. Investoren zahlen sie nie.",
     "ctaDashboard": "Zum Dashboard",
-    "proofAria": "CapitalReach in drei Zahlen"
+    "proofAria": "CapitalReach in drei Zahlen",
+    "marketNow": "Markt aktuell",
+    "marketRaising": "In offenen Runden gesucht",
+    "marketBySector": "Offene Runden nach Branche",
+    "marketOther": "Sonstige"
   },
   "feeStrip": {
     "tagline": "Erfolgsgebühr, zahlt das Startup — erst nach dem Abschluss. Branchenschnitt: 5–7% vorab.",

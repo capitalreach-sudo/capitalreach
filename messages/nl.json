@@ -56,7 +56,11 @@
     "proofVetted": "van de datarooms achter een NDA",
     "whoPays": "De succesfee van 2% wordt betaald door de startup die de investering ontvangt — pas gefactureerd na sluiting van de ronde. Investeerders betalen die nooit.",
     "ctaDashboard": "Naar je dashboard",
-    "proofAria": "CapitalReach in drie cijfers"
+    "proofAria": "CapitalReach in drie cijfers",
+    "marketNow": "Markt nu",
+    "marketRaising": "Opgehaald in open rondes",
+    "marketBySector": "Open rondes per sector",
+    "marketOther": "Overig"
   },
   "trustIndicators": {
     "startupsListed": "startups geplaatst",

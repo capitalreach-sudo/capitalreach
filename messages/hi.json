@@ -56,7 +56,11 @@
     "proofVetted": "डेटा रूम NDA के पीछे",
     "whoPays": "2% सफलता शुल्क निवेश पाने वाला स्टार्टअप देता है — बिल केवल राउंड बंद होने के बाद। निवेशक इसे कभी नहीं देते।",
     "ctaDashboard": "डैशबोर्ड खोलें",
-    "proofAria": "तीन आँकड़ों में CapitalReach"
+    "proofAria": "तीन आँकड़ों में CapitalReach",
+    "marketNow": "अभी का बाज़ार",
+    "marketRaising": "खुले राउंड में जुटाई जा रही राशि",
+    "marketBySector": "सेक्टर अनुसार खुले राउंड",
+    "marketOther": "अन्य"
   },
   "trustIndicators": {
     "startupsListed": "स्टार्टअप सूचीबद्ध",

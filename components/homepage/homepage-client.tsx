@@ -15,6 +15,7 @@ import { MAX_PLAUSIBLE_TOTAL, safeFormatTotal, sumPlausibleFundingTargets } from
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
 import type { ListingSnippet } from "@/app/page";
+import type { MarketSector } from "@/app/page";
 
 // ── Primitives ────────────────────────────────────────────────
 
@@ -105,7 +106,7 @@ interface Props {
  * a bad test value renders "—", never "$100000000B". Counts are shown only
  * when they are greater than zero -- "0 startups listed" is not a trust signal.
  */
-export function HomepageClient({ stats, listings, launch, viewerRole = null, canSeeMarket = false, raisingTotal = null }: Props & { viewerRole?: string | null; canSeeMarket?: boolean; raisingTotal?: number | null }) {
+export function HomepageClient({ stats, listings, launch, viewerRole = null, canSeeMarket = false, raisingTotal = null, marketSectors = [] }: Props & { viewerRole?: string | null; canSeeMarket?: boolean; raisingTotal?: number | null; marketSectors?: MarketSector[] }) {
   // The marquee ticker was removed (65d47b2); this file used to keep its
   // 150-row lane computation alive, and the page kept fetching 500 rows to
   // feed it. Gone with the feature -- the raising figure is a server
@@ -147,7 +148,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
         : null;
   const liveTiles: [string, string][] = [];
   if (raisingSum !== null && raisingSum > 0 && raisingSum <= MAX_PLAUSIBLE_TOTAL) {
-    liveTiles.push([safeFormatTotal(raisingSum), t("listings.raising")]);
+    liveTiles.push([safeFormatTotal(raisingSum), t("hero.marketRaising")]);
   }
   if (stats.totalRaised > 0 && stats.totalRaised <= MAX_PLAUSIBLE_AMOUNT) {
     liveTiles.push([safeFormatCurrency(stats.totalRaised), t("stats.capitalRaised")]);
@@ -307,38 +308,74 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
             data -- so it reads as the ledger beside the claim, not a second
             headline arguing with the first. When every figure hides itself
             the whole panel goes: an empty LIVE ledger is also a claim. */}
-        {liveTiles.length > 0 && (
-        <aside className="hidden lg:block lg:col-span-5 animate-fade-up-2" aria-label={t("stats.capitalRaised")}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)" }}>
-                {t("nav.data")}
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>
-                {/* Not green: green and red mean money direction on this
-                    product, and a heartbeat is not a direction. Not accent
-                    either: the CTA holds the hero's one accent moment. */}
-                <span className="animate-pulse" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-ink-4)", display: "inline-block" }} />
-                LIVE
+        {/* Market now: real, anonymous figures only, desktop only. No company
+            names (a shortlist beside the headline reads as endorsement, per
+            Jack), no account counts (Jack's call), no accent and no green (the
+            CTA owns the hero's accent; green means money direction). A single
+            figure in a box sized for three read as broken, so the lead figure is
+            set as a figure and open rounds by sector fill the panel with what is
+            actually true, each row a door to its public sector page. */}
+        {(liveTiles.length > 0 || marketSectors.length > 0) && (() => {
+          const CAPS: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)" };
+          const MONO = "'JetBrains Mono', monospace";
+          const [lead, ...rest] = liveTiles;
+          const sectorTotal = marketSectors.reduce((n, x) => n + x.count, 0) || 1;
+          return (
+        <aside className="hidden lg:block lg:col-span-5 animate-fade-up-2" aria-label={t("hero.marketNow")}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", padding: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+              <span style={CAPS}>{t("hero.marketNow")}</span>
+              <span style={{ ...CAPS, display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-ink-3)", display: "inline-block" }} />
+                {t("data.live")}
               </span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${liveTiles.length}, 1fr)`, gap: "1px", background: "var(--cr-rule)" }}>
-              {liveTiles.map(([v, label]) => (
-                <div key={label} style={{ background: "var(--cr-paper-2)", padding: "16px" }}>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>{label}</div>
-                </div>
-              ))}
-            </div>
-            {/* No named rows here, per Jack. The hero's side panel is the
-                market's WEATHER, and three company names under it made it a
-                shortlist -- which reads as endorsement in the most prominent
-                spot on the site. The aggregates carry the panel; the named
-                table further down is where companies appear, labelled for
-                what its order actually is. */}
+            {lead && (
+              <div>
+                <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: "28px", lineHeight: 1, letterSpacing: "-0.02em", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{lead[0]}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "8px" }}>{lead[1]}</div>
+              </div>
+            )}
+            {rest.length > 0 && (
+              <div style={{ display: "grid", gridTemplateColumns: `repeat(${rest.length}, minmax(0, 1fr))`, gap: "16px", marginTop: "24px" }}>
+                {rest.map(([v, label]) => (
+                  <div key={label}>
+                    <div style={{ fontFamily: MONO, fontWeight: 700, fontSize: "15px", lineHeight: 1, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{v}</div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "8px" }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {marketSectors.length > 0 && (
+              <div style={{ marginTop: lead || rest.length ? "24px" : 0, paddingTop: lead || rest.length ? "16px" : 0, borderTop: lead || rest.length ? "1px solid var(--cr-rule)" : "none" }}>
+                <div style={{ ...CAPS, marginBottom: "8px" }}>{t("hero.marketBySector")}</div>
+                <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                  {marketSectors.map((x) => {
+                    const label = x.industry ?? t("hero.marketOther");
+                    const row = (
+                      <span style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 96px 24px", alignItems: "center", gap: "12px", minHeight: "32px" }}>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</span>
+                        <span aria-hidden style={{ height: "4px", borderRadius: "2px", background: "var(--cr-paper-4)", overflow: "hidden" }}>
+                          <span style={{ display: "block", height: "100%", width: `${Math.max(8, Math.round((x.count / sectorTotal) * 100))}%`, background: "var(--cr-ink-3)", borderRadius: "2px" }} />
+                        </span>
+                        <span style={{ fontFamily: MONO, fontSize: "13px", color: "var(--cr-ink-3)", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{x.count}</span>
+                      </span>
+                    );
+                    return (
+                      <li key={label}>
+                        {x.slug
+                          ? <Link href={`/startups/sector/${x.slug}`} style={{ display: "block", textDecoration: "none" }}>{row}</Link>
+                          : row}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </div>
         </aside>
-        )}
+          );
+        })()}
         </div>
       </section>
 

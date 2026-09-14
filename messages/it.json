@@ -56,7 +56,11 @@
     "proofVetted": "delle data room dietro un NDA",
     "whoPays": "La success fee del 2% è pagata dalla startup che riceve l'investimento — fatturata solo dopo la chiusura del round. Gli investitori non la pagano mai.",
     "ctaDashboard": "Apri la dashboard",
-    "proofAria": "CapitalReach in tre numeri"
+    "proofAria": "CapitalReach in tre numeri",
+    "marketNow": "Mercato ora",
+    "marketRaising": "In raccolta nei round aperti",
+    "marketBySector": "Round aperti per settore",
+    "marketOther": "Altri"
   },
   "trustIndicators": {
     "startupsListed": "startup elencate",

@@ -56,7 +56,11 @@
     "proofVetted": "de las data rooms tras un NDA",
     "whoPays": "La comisión de éxito del 2% la paga la startup que recibe la inversión — facturada solo tras el cierre de la ronda. Los inversores nunca la pagan.",
     "ctaDashboard": "Abrir el panel",
-    "proofAria": "CapitalReach en tres cifras"
+    "proofAria": "CapitalReach en tres cifras",
+    "marketNow": "Mercado ahora",
+    "marketRaising": "En captación en rondas abiertas",
+    "marketBySector": "Rondas abiertas por sector",
+    "marketOther": "Otros"
   },
   "feeStrip": {
     "tagline": "comisión de éxito, pagada por la startup — solo tras el cierre. Media del sector: 5–7% por adelantado.",

@@ -63,7 +63,11 @@
     "proofVetted": "of data rooms behind an NDA",
     "whoPays": "The 2% success fee is paid by the startup that receives the investment — invoiced only after the round closes. Investors never pay it.",
     "ctaDashboard": "Open your dashboard",
-    "proofAria": "CapitalReach in three numbers"
+    "proofAria": "CapitalReach in three numbers",
+    "marketNow": "Market now",
+    "marketRaising": "Being raised across open rounds",
+    "marketBySector": "Open rounds by sector",
+    "marketOther": "Other"
   },
   "feeStrip": {
     "tagline": "success fee, paid by the startup — only after it closes. Industry average: 5–7% upfront.",

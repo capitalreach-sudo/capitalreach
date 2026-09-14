@@ -56,7 +56,11 @@
     "proofVetted": "av datarummen ligger bakom ett NDA",
     "whoPays": "Framgångsavgiften på 2% betalas av startupen som tar emot investeringen — faktureras först efter att rundan stängts. Investerare betalar den aldrig.",
     "ctaDashboard": "Öppna instrumentpanelen",
-    "proofAria": "CapitalReach i tre siffror"
+    "proofAria": "CapitalReach i tre siffror",
+    "marketNow": "Marknaden nu",
+    "marketRaising": "Reses i öppna rundor",
+    "marketBySector": "Öppna rundor per sektor",
+    "marketOther": "Övrigt"
   },
   "trustIndicators": {
     "startupsListed": "startups listade",
