@@ -118,6 +118,44 @@ describe("dealSealText", () => {
     expect(flat(t)).not.toContain("months after that date, being");
   });
 
+  it("names the platform record date when no introduction row is behind it", () => {
+    // The route falls back to the deal's creation date. A document that called
+    // that "the recorded introduction date" would cite a record nobody can
+    // produce, which is the one thing this document exists to survive.
+    const t = flat(dealSealText({ ...BASE, introductionOnRecord: false, tailEndsAt: null }));
+    expect(t).toContain("No separate introduction record exists for this pair");
+    expect(t).toContain("2026-09-01, the date the deal was recorded on the CapitalReach platform");
+    expect(t).not.toContain("records that introduction with its date");
+    // Every clause that points back at clause 2 follows it.
+    expect(t).toContain(`within ${NON_CIRCUMVENTION_MONTHS} months of the date in clause 2`);
+    expect(t).toContain("predates the date in clause 2");
+  });
+
+  it("stays grammatical off record when the date itself is missing", () => {
+    const t = flat(dealSealText({
+      companyName: "X", investorName: "Y", amount: 1, currency: "GBP",
+      introductionOnRecord: false,
+    }));
+    expect(t).toContain("this record runs from the date the deal was recorded on the CapitalReach platform");
+    expect(t).not.toContain("from , ");
+    expect(t).not.toContain("undefined");
+    // The on-record phrasing must not leak into an off-record document.
+    expect(t).not.toContain("the date of first contact recorded by CapitalReach");
+  });
+
+  it("keeps both fee-window branches grammatical off record", () => {
+    const dated = flat(dealSealText({ ...BASE, introductionOnRecord: false }));
+    expect(dated).toContain(`on or before 2028-09-01, being ${NON_CIRCUMVENTION_MONTHS} months from the date in clause 2`);
+    const undated = flat(dealSealText({ ...BASE, introductionOnRecord: false, tailEndsAt: null }));
+    expect(undated).toContain(`within ${NON_CIRCUMVENTION_MONTHS} months of the date in clause 2`);
+  });
+
+  it("renders the on-record document exactly as an unflagged caller does", () => {
+    // Signatures hash these bytes: a deal with a real introductions row must
+    // not be re-rendered by the off-record branch's wording.
+    expect(dealSealText({ ...BASE, introductionOnRecord: true })).toBe(dealSealText(BASE));
+  });
+
   it("keeps the dated fee window byte-for-byte when a tail end is on record", () => {
     // Signatures hash this text: a mid-seal deal with a recorded tail must
     // produce the same bytes before and after the undated branch was fixed.
@@ -145,6 +183,9 @@ describe("sealHash", () => {
       { ...BASE, companyName: "Verity Grid Ltd" },
       { ...BASE, investorName: "Northgate Partners II" },
       { ...BASE, introducedAt: "2026-09-02T10:00:00Z" },
+      // Same dates, different claim about what that date is: a document
+      // asserting a recorded introduction is not the one that disclaims it.
+      { ...BASE, introductionOnRecord: false },
     ];
     for (const c of cases) {
       expect(sealHash(dealSealText(c)), JSON.stringify(c).slice(0, 60)).not.toBe(base);

@@ -4909,6 +4909,7 @@
     "loginTitle": "Iniciar sessão",
     "signupTitle": "Criar conta",
     "homeTitle": "CapitalReach - Mercado de capital privado",
-    "homeDesc": "O mercado revisto onde as startups angariam e os investidores encontram a próxima ronda. 2% de comissão de sucesso no fecho, nada antes."
+    "homeDesc": "O mercado revisto onde as startups angariam e os investidores encontram a próxima ronda. 2% de comissão de sucesso no fecho, nada antes.",
+    "dataDescNoCloseRate": "Números em direto da plataforma: rondas abertas, capital procurado e o funil de deals."
   }
 }

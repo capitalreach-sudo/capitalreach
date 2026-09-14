@@ -5,7 +5,8 @@ import type { Metadata, Viewport } from "next";
 import { DeferredBanner, DeferredChrome } from "@/components/shared/deferred-chrome";
 import "./globals.css";
 import { SkipToContent } from "@/components/ui/SkipToContent";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { deploymentIndexable, requestHost } from "@/lib/indexing";
 import { LiveRegion } from "@/components/ui/LiveRegion";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { isRTL, getLocaleFont } from "@/lib/locale";
@@ -34,7 +35,17 @@ export const viewport: Viewport = {
   ],
 };
 
-export const metadata: Metadata = {
+// Resolved per request so a staging or preview host is never indexed; the
+// rest of the metadata is static.
+export async function generateMetadata(): Promise<Metadata> {
+  let host: string | null = null;
+  try { host = requestHost(headers()); } catch { /* outside a request: default rules */ }
+  return deploymentIndexable(host)
+    ? baseMetadata
+    : { ...baseMetadata, robots: { index: false, follow: false } };
+}
+
+const baseMetadata: Metadata = {
   title: {
     default: "CapitalReach — Private Capital Marketplace",
     template: "%s | CapitalReach",

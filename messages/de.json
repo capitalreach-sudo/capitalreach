@@ -4909,6 +4909,7 @@
     "loginTitle": "Anmelden",
     "signupTitle": "Konto erstellen",
     "homeTitle": "CapitalReach - Privater Kapitalmarktplatz",
-    "homeDesc": "Der geprüfte Marktplatz, auf dem Startups Kapital aufnehmen und Investoren ihre nächste Runde finden. 2% Erfolgsgebühr beim Abschluss, vorher nichts."
+    "homeDesc": "Der geprüfte Marktplatz, auf dem Startups Kapital aufnehmen und Investoren ihre nächste Runde finden. 2% Erfolgsgebühr beim Abschluss, vorher nichts.",
+    "dataDescNoCloseRate": "Live-Zahlen der Plattform: laufende Runden, gesuchtes Kapital und der Deal-Funnel."
   }
 }

@@ -4909,6 +4909,7 @@
     "loginTitle": "Sign in",
     "signupTitle": "Create account",
     "homeTitle": "CapitalReach - Private Capital Marketplace",
-    "homeDesc": "The reviewed marketplace where startups raise and investors find their next round. 2% success fee at close, nothing before."
+    "homeDesc": "The reviewed marketplace where startups raise and investors find their next round. 2% success fee at close, nothing before.",
+    "dataDescNoCloseRate": "Live platform figures: rounds raising, capital being sought and the deal funnel."
   }
 }

@@ -34,6 +34,29 @@ interface Props {
   searchParams?: { preview?: string; share?: string };
 }
 
+/**
+ * The generic tags a caller who may not be told about this listing gets.
+ *
+ * One function rather than a literal per branch: the anonymous branch was
+ * masked and the member branch was not, and two copies of a masking rule are
+ * how that happens. A slug that does not exist, a slug whose listing is not
+ * live, and a slug the caller may not read all answer identically.
+ */
+function maskedMetadata(slug: string): Metadata {
+  return {
+    robots: { index: false, follow: false },
+    title: "A company raising on CapitalReach",
+    description: "Sign in to view this listing.",
+    openGraph: {
+      title: "CapitalReach",
+      description: "Founders raising. Investors deploying. Deals that close in one place.",
+      type: "website",
+      url: `/startups/${slug}`,
+    },
+    alternates: { canonical: `/startups/${slug}` },
+  };
+}
+
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const supabase = await createServerSupabaseClient();
 
@@ -70,20 +93,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         && !gateShare.revoked_at
         && (!gateShare.expires_at || new Date(gateShare.expires_at) > new Date());
     }
-    if (!guestViaShareToken) {
-      return {
-        robots: { index: false, follow: false },
-        title: "A company raising on CapitalReach",
-        description: "Sign in to view this listing.",
-        openGraph: {
-          title: "CapitalReach",
-          description: "Founders raising. Investors deploying. Deals that close in one place.",
-          type: "website",
-          url: `/startups/${params.slug}`,
-        },
-        alternates: { canonical: `/startups/${params.slug}` },
-      };
-    }
+    if (!guestViaShareToken) return maskedMetadata(params.slug);
   }
 
   // Admin client: the members-only case returned above, so whoever reaches
@@ -93,11 +103,38 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   // silently blank this branch in open mode.
   const { data: startup } = await createAdminClient()
     .from("startups")
-    .select("name, tagline, industry, stage, funding_target, is_demo")
+    .select("name, tagline, industry, stage, funding_target, is_demo, status, owner_id")
     .eq("slug", params.slug)
     .single();
 
-  if (!startup) return {};
+  if (!startup) return maskedMetadata(params.slug);
+
+  // STATUS IS ENTITLEMENT, not a column that happens to be selected. The body
+  // 404s a non-active listing for everyone except its owner and an admin,
+  // while this read was filtered on slug alone -- so a draft's name, tagline
+  // and stage reached every signed-in member through the title and og tags of
+  // a page whose body they could not see. Exactly the leak the note above
+  // records, on the branch that note did not cover.
+  //
+  // Owner and admin are decided the way the body decides them (owner_id, then
+  // profiles.role), so the founder's own "View listing" preview of a pending
+  // round keeps its real tags.
+  if (startup.status !== "active") {
+    let entitled = false;
+    if (user) {
+      if (startup.owner_id === user.id) {
+        entitled = true;
+      } else {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
+        entitled = profile?.role === "admin";
+      }
+    }
+    if (!entitled) return maskedMetadata(params.slug);
+  }
 
   return {
     // A fictional sample company must never appear in a search result. A

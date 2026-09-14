@@ -4909,6 +4909,7 @@
     "loginTitle": "Se connecter",
     "signupTitle": "Créer un compte",
     "homeTitle": "CapitalReach - Place de marché du capital privé",
-    "homeDesc": "La place de marché vérifiée où les startups lèvent des fonds et où les investisseurs trouvent leur prochain tour. 2% de commission au succès à la clôture, rien avant."
+    "homeDesc": "La place de marché vérifiée où les startups lèvent des fonds et où les investisseurs trouvent leur prochain tour. 2% de commission au succès à la clôture, rien avant.",
+    "dataDescNoCloseRate": "Chiffres en direct de la plateforme : levées en cours, capital recherché et entonnoir des deals."
   }
 }

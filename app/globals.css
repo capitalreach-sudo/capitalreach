@@ -23,11 +23,37 @@
     --cr-paper-3: #E4DDD2;
     --cr-paper-4: #D8D0C4;
 
-    /* Ink — dark warm tones */
+    /* Ink ramp, dark warm tones.
+       FLOOR, measured, do not regress: ink-3 and ink-4 carry body and label
+       text (.body, .caption, .label, .ruled-label, .listing-row-num,
+       .pull-quote-attribution), so each must clear WCAG AA 4.5:1 on every
+       surface text lands on: paper, paper-2, paper-3, and --cr-copper-bg
+       composited over paper and paper-2. The binding surface is the darkest
+       of those in a light register, the lightest in a dark register.
+       Before this pass ink-4 failed in all four registers (2.36 editorial
+       light, 2.81 editorial dark, 2.26 business light, 2.65 business dark)
+       and ink-3 failed the business light tints (4.26 on #EBF2F0, the
+       copper-bg tint over paper-2). Now, in that same register order:
+       ink-4 4.56 / 4.55 / 4.52 / 4.50, ink-3 6.19 / 5.96 / 6.11 / 5.88.
+       Every ratio here is measured on the final 8-bit value, not on an
+       unrounded candidate: rounding to hex costs up to 0.02 and can drop a
+       token back under the line.
+       ink-3 moved even where it already passed (editorial light was 4.54)
+       because ink-4 had to darken past it; the ramp must stay monotonic, so
+       ink-3 keeps at least 8 L* of separation from both neighbours. Step
+       gaps ink-3 to ink-4 are 8.2 / 8.1 / 8.2 / 8.0 L*, and ink-2 to ink-3
+       10.0 / 15.4 / 11.2 / 20.4 L*. Collapsing ink-3 into ink-4 to buy
+       contrast would invert the hierarchy and cost more than the bug.
+       paper-4 and --cr-up-bg are excluded above on purpose: paper-4 is a
+       border and scrollbar token, and up-bg carries --cr-up green, not ink.
+       These are PAPER inks. Never use ink-3 or ink-4 bare on --cr-band-bg:
+       the band inverts in the light registers, where ink-3 measures 2.19 and
+       ink-4 2.92 against it. Text on a band takes --cr-band-ink, or
+       --cr-band-ink-dim for the quiet voice (4.78 / 4.62 / 5.15 / 4.95). */
     --cr-ink:   #1A1612;
     --cr-ink-2: #3D3630;
-    --cr-ink-3: #6B6056;
-    --cr-ink-4: #9C8E82;
+    --cr-ink-3: #574C42;
+    --cr-ink-4: #6D5F53;
 
     /* Copper — single accent */
     /* #B2621B rather than #B5651D: white on the old copper measured
@@ -108,7 +134,14 @@
     --border:                 26 22% 18%;
     --input:                  37 33% 93%;
     --ring:                   25 73% 41%;
-    --radius:                 0.25rem;
+    /* One control geometry for the house. Every button, input and card
+       corner in globals.css is 4px, so the shadcn/radix --radius aliases to
+       it rather than carrying its own value: tailwind.config maps
+       rounded-lg/xl/2xl to --radius and md/sm to it minus 2px/4px, and
+       inline styles across the app read var(--radius) directly. Keep them
+       tied, or those consumers drift from the CSS controls again. */
+    --cr-radius-control:      4px;
+    --radius:                 var(--cr-radius-control);
   }
 
   /* ── Dark: the "terminal" direction (design option B, finally shipped) ──
@@ -127,10 +160,12 @@
     --cr-paper-3: #1E1A14;
     --cr-paper-4: #2A241B;
 
+    /* Binding surface here is copper-bg over paper-2 (#2A1F13), the lightest
+       ground light ink sits on. ink-4 4.55, ink-3 5.96. */
     --cr-ink:   #F0EAE0;
     --cr-ink-2: #CFC6B8;
-    --cr-ink-3: #998F81;
-    --cr-ink-4: #6E6558;
+    --cr-ink-3: #A69C8E;
+    --cr-ink-4: #90877A;
 
     --cr-copper:    #D98C33;
     --cr-copper-l:  #EDA452;
@@ -212,10 +247,14 @@
     --cr-paper-3: #F4F4F5;
     --cr-paper-4: #E4E4E7;
 
+    /* Zinc neutrals: lightness moves, hue does not. Binding surface is
+       copper-bg over paper-2 (#EBF2F0), which is darker than paper-3
+       (#F4F4F5), so clearing it clears the banded surfaces too.
+       ink-4 4.52, ink-3 6.11. */
     --cr-ink:   #18181B;
     --cr-ink-2: #3F3F46;
-    --cr-ink-3: #71717A;
-    --cr-ink-4: #A1A1AA;
+    --cr-ink-3: #595962;
+    --cr-ink-4: #6D6D76;
 
     /* The accent tokens keep their copper NAMES (they are wired through the
        whole codebase) but paint a private-bank emerald: the colour of money,
@@ -275,7 +314,12 @@
     --border:                 240 6% 16%;
     --input:                  0 0% 100%;
     --ring:                   161 94% 24%;
-    --radius:                 0.125rem;
+    /* Was 0.125rem, which resolved to 2px and made every --radius consumer
+       in this register disagree with the 4px controls in this file; it also
+       drove tailwind's sm step (--radius minus 4px) negative. The Swiss
+       register's sharper corner is carried by the components that want it,
+       not by redefining the shared control radius. */
+    --radius:                 var(--cr-radius-control);
   }
 
   /* Business × dark: slate night, blue brightened for contrast on the dark
@@ -290,10 +334,12 @@
     --cr-paper-3: #1A1A1D;
     --cr-paper-4: #26262B;
 
+    /* Binding surface is copper-bg over paper-2 (#142420). ink-4 4.50,
+       ink-3 5.88, the tightest headroom in the four registers. */
     --cr-ink:   #F4F4F5;
     --cr-ink-2: #D4D4D8;
-    --cr-ink-3: #8E8E96;
-    --cr-ink-4: #62626A;
+    --cr-ink-3: #9C9CA4;
+    --cr-ink-4: #87878F;
 
     --cr-copper:    #34D399;
     --cr-copper-l:  #6EE7B7;
@@ -555,7 +601,9 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
 
 .btn-copper {
   background: var(--cr-copper);
-  color: #fff;
+  /* Same reason as .cr-skip: white on the brightened dark-register accent
+     measures 1.92. On-accent ink is a token, never a literal. */
+  color: var(--cr-on-accent);
   font-family: var(--font-dm-sans), sans-serif;
   font-weight: 600;
   font-size: 14px;
@@ -1287,7 +1335,11 @@ html { scroll-behavior: smooth; }
   padding: 12px 16px;
   border-radius: 4px;
   background: var(--cr-copper);
-  color: #fff;
+  /* The accent flips bright in the dark registers, so hardcoded white
+     measured 2.71 editorial dark and 1.92 business dark. The token is the
+     same white in both light registers and dark ink where the accent is
+     bright: 4.51 / 6.61 / 5.48 / 8.90. */
+  color: var(--cr-on-accent);
   font-family: var(--font-dm-sans), sans-serif;
   font-weight: 600;
   font-size: 13px;

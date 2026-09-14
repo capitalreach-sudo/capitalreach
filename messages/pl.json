@@ -4909,6 +4909,7 @@
     "loginTitle": "Zaloguj się",
     "signupTitle": "Utwórz konto",
     "homeTitle": "CapitalReach - Prywatny rynek kapitału",
-    "homeDesc": "Zweryfikowany rynek, na którym startupy pozyskują kapitał, a inwestorzy znajdują kolejną rundę. 2% prowizji od sukcesu przy zamknięciu, wcześniej nic."
+    "homeDesc": "Zweryfikowany rynek, na którym startupy pozyskują kapitał, a inwestorzy znajdują kolejną rundę. 2% prowizji od sukcesu przy zamknięciu, wcześniej nic.",
+    "dataDescNoCloseRate": "Dane platformy na żywo: otwarte rundy, poszukiwany kapitał i lejek deali."
   }
 }

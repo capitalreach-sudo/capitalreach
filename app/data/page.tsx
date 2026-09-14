@@ -13,12 +13,21 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator(getLocale());
+  // The close-rate row renders only when the figure exists, so the description
+  // must not promise it: meta.dataDesc advertises "deal funnel and close rate"
+  // on a page that correctly hides the row when it is null. English until the
+  // replacement key lands in messages/*.json -- the translator returns the key
+  // itself when it is missing, which is what this compares against.
+  const descKey = "meta.dataDescNoCloseRate";
+  const description = t(descKey) === descKey
+    ? "Live platform figures: rounds raising, capital being sought and the deal funnel."
+    : t(descKey);
   return {
     // Canonical: the app answers on more than one hostname (vercel.app plus
     // whatever domain it ends up on), and duplicate URLs split their own ranking.
     alternates: { canonical: "/data" },
     title: t("meta.dataTitle"),
-    description: t("meta.dataDesc"),
+    description,
   };
 }
 

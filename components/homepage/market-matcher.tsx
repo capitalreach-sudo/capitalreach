@@ -216,9 +216,11 @@ export function MarketMatcher() {
               </div>
               {reading !== null && reading.total > 0 && (
                 /* Demand gauge: this combination's share of every live
-                   investor. Same two numbers as the sentence below, drawn. */
+                   investor. Same two numbers as the sentence below, drawn --
+                   so it reads in ink. The readout figure is this view's one
+                   accent, and an accent hairline beside it is a second. */
                 <div style={{ width: "min(240px, 80%)", height: "2px", background: "var(--cr-rule-dark)", marginTop: "16px", position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", insetInlineStart: 0, top: 0, bottom: 0, width: `${Math.max(reading.count > 0 ? 2 : 0, Math.min(100, (reading.count / reading.total) * 100))}%`, background: "var(--cr-copper)", transition: "width 400ms ease" }} />
+                  <div style={{ position: "absolute", insetInlineStart: 0, top: 0, bottom: 0, width: `${Math.max(reading.count > 0 ? 2 : 0, Math.min(100, (reading.count / reading.total) * 100))}%`, background: "var(--cr-ink-3)", transition: "width 400ms ease" }} />
                 </div>
               )}
               {reading !== null && (
@@ -259,10 +261,11 @@ export function MarketMatcher() {
           <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px" }}>
             <Link
               href={directoryHref}
-              className="btn-copper-shimmer"
-              // Same pill CTA as the hero's primary action: this is the page's
-              // established CTA shape, not a rectangular control being pilled.
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", minHeight: "48px" }}
+              // The quiet outline, not a second filled accent: the readout
+              // figure above is this view's accent moment, and the one filled
+              // CTA in this stretch of the page is the closing one. 4px is the
+              // control radius; a 48px-tall rectangle is not a pill.
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 24px", borderRadius: "4px", border: "1px solid var(--cr-paper-4)", minHeight: "48px" }}
             >
               {tf("match.cta", "See the matching rounds")} →
             </Link>

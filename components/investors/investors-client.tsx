@@ -693,7 +693,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                 {t("investors.compare2")} (<span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{compareIds.length}</span>)
               </button>
               <button onClick={() => setCompareIds([])} aria-label={t("investors.clearCompareAria")}
-                style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex", padding: 0 }}>
+                style={{ background: "none", border: "none", color: "var(--cr-band-ink-dim)", cursor: "pointer", display: "flex", padding: 0 }}>
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>

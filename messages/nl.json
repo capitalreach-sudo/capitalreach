@@ -4909,6 +4909,7 @@
     "loginTitle": "Inloggen",
     "signupTitle": "Account aanmaken",
     "homeTitle": "CapitalReach - Private kapitaalmarktplaats",
-    "homeDesc": "De beoordeelde marktplaats waar startups kapitaal ophalen en investeerders hun volgende ronde vinden. 2% succesfee bij sluiting, daarvoor niets."
+    "homeDesc": "De beoordeelde marktplaats waar startups kapitaal ophalen en investeerders hun volgende ronde vinden. 2% succesfee bij sluiting, daarvoor niets.",
+    "dataDescNoCloseRate": "Live platformcijfers: lopende rondes, gezocht kapitaal en de dealfunnel."
   }
 }

@@ -1,4 +1,6 @@
 import { MetadataRoute } from "next";
+import { headers } from "next/headers";
+import { deploymentIndexable, requestHost } from "@/lib/indexing";
 
 // Read at request time, not at build. This file's contents depend on a
 // platform_config row, and Next prerenders it by default -- so a config read
@@ -11,6 +13,11 @@ import { brand } from "@/lib/brand";
 import { browseIndexPublic } from "@/lib/listing-visibility";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
+  // A staging or preview deployment asks for nothing to be crawled and
+  // advertises no sitemap, so it cannot compete with production in search.
+  if (!deploymentIndexable(requestHost(headers()))) {
+    return { rules: { userAgent: "*", disallow: "/" } };
+  }
   const baseUrl = brand.url;
   // When the catalogue is members-only there is nothing behind /startups for
   // a crawler to read, so allowing it only spends crawl budget on redirects

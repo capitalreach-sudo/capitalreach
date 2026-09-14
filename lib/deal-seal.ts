@@ -45,6 +45,12 @@ export interface SealTermsInput {
   conditions?: string | null;
   /** The recorded introduction date, so the tail runs from a real row. */
   introducedAt?: string | Date | null;
+  /**
+   * False when no introductions row backs `introducedAt` and the caller is
+   * passing the deal's own creation date instead. Defaults to true, so a
+   * caller that does have a row renders the bytes signatures already hash.
+   */
+  introductionOnRecord?: boolean;
   tailEndsAt?: string | Date | null;
 }
 
@@ -73,19 +79,41 @@ export function dealSealText(input: SealTermsInput): string {
   const company = input.companyName?.trim() || "the Company";
   const investor = input.investorName?.trim() || "the Investor";
   const introduced = asDay(input.introducedAt, "the date of first contact recorded by CapitalReach");
+  // With no introductions row behind the date, no clause may call it a
+  // recorded introduction date: a signed document would cite a record that
+  // does not exist. Every clause pointing back at clause 2 names the date
+  // through this phrase, and the on-record wording stays byte-identical to
+  // what existing signatures hash.
+  const onRecord = input.introductionOnRecord !== false;
+  const dateRef = onRecord ? "the recorded introduction date" : "the date in clause 2";
   // Empty when no introductions row supplied a tail end (or the value does
   // not parse). Clause 3 branches on it: interpolating a phrase into the date
   // slot rendered "on or before 24 months after that date, being 24 months
   // from the recorded introduction date" into signed documents.
   const tailEnds = input.tailEndsAt ? asDay(input.tailEndsAt, "") : "";
-  // The dated branch must keep its exact bytes: signatures hash this text,
-  // and a mid-seal deal completes only if both hashes match across this
-  // change. Only the previously garbled undated branch is reworded.
+  // Both branches must read as a sentence under either date reference:
+  // signatures hash these bytes exactly as rendered.
   const feeWindow = tailEnds
     ? `on or before ${tailEnds},
-   being ${NON_CIRCUMVENTION_MONTHS} months from the recorded introduction date`
+   being ${NON_CIRCUMVENTION_MONTHS} months from ${dateRef}`
     : `within ${NON_CIRCUMVENTION_MONTHS} months
-   of the recorded introduction date`;
+   of ${dateRef}`;
+  // Off record the clause names the date for what it is. Empty when the value
+  // does not parse, so the sentence drops the date rather than rendering a
+  // descriptive phrase where a day belongs.
+  const recordedDay = asDay(input.introducedAt, "");
+  const introClause = onRecord
+    ? `CapitalReach introduced these parties and records that
+   introduction with its date -- ${introduced} -- the channel it happened
+   through, and the version of these terms in force at the time. That date is
+   fixed at introduction and is not restated by any later change to these
+   terms.`
+    : `CapitalReach introduced these parties. No separate
+   introduction record exists for this pair, so this record runs from
+   ${recordedDay ? `${recordedDay}, ` : ""}the date the deal was recorded on the CapitalReach
+   platform, and not from a recorded introduction date. That date is fixed
+   when the deal is recorded and is not restated by any later change to these
+   terms.`;
 
   const terms: string[] = [`   Amount:      ${money(input.amount, input.currency)}`];
   if (input.equityPct !== null && input.equityPct !== undefined) {
@@ -111,11 +139,7 @@ ${terms.join("\n")}
    Either party may renegotiate any of them. This clause fixes what was
    agreed when the conversation opened, not what must happen at the end of it.
 
-2. THE INTRODUCTION. CapitalReach introduced these parties and records that
-   introduction with its date -- ${introduced} -- the channel it happened
-   through, and the version of these terms in force at the time. That date is
-   fixed at introduction and is not restated by any later change to these
-   terms.
+2. THE INTRODUCTION. ${introClause}
 
 3. THE FEE. A ${SUCCESS_FEE_PERCENT}% success fee is due to CapitalReach on capital the Company
    raises from the Investor where the round closes ${feeWindow}. The fee is charged
@@ -152,7 +176,7 @@ ${terms.join("\n")}
    between them; where both apply, the stricter governs.
 
 7. WHAT IS NOT COVERED. A relationship between these parties that demonstrably
-   predates the recorded introduction date -- a prior investment, a term sheet,
+   predates ${dateRef} -- a prior investment, a term sheet,
    a signed confidentiality undertaking, or documented substantive contact.
    Capital raised from a party the Investor did not introduce and does not
    control, manage or advise. A round closing after the date in clause 3.

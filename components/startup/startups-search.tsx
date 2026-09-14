@@ -1743,7 +1743,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {t("startups.compare")} ({compareIds.length})
           </button>
           <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
-            style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex", padding: 0 }}>
+            style={{ background: "none", border: "none", color: "var(--cr-band-ink-dim)", cursor: "pointer", display: "flex", padding: 0 }}>
             <X style={{ width: 14, height: 14 }} />
           </button>
         </div>

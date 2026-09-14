@@ -24,6 +24,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function InvestorsPage() {
   // The directory names real people and their check sizes. Jack's call:
   // signed-in users only -- anonymous visitors browse startups, not backers.
+  //
+  // The anonymous case is answered by middleware.ts with a real 307: this
+  // route has a loading.tsx, so a redirect thrown here lands after the
+  // streamed shell has committed a 200. This check remains the authoritative
+  // gate for a present-but-invalid session, which middleware cannot judge
+  // without the same round trip.
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?redirect=/investors");

@@ -267,7 +267,10 @@ function PlanCard({
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: rising ? "var(--cr-copper)" : "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
           ) : (
             <div style={{ display: "flex", alignItems: "flex-end", gap: "4px" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
+              {/* Every card price is ink. The featured card's accent bar and
+                  its badge are what own the accent in this band; a copper
+                  price under them is a third claim on the same card. */}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1, letterSpacing: "-0.04em", color: "var(--cr-ink)" }}>
                 {formatMoney(price, PLAN_CURRENCY)}
               </span>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>{t("pricing.perMonth")}{annual && yearly ? ` · ${t("pricing.billedYearly", { amount: formatMoney(yearly.total, PLAN_CURRENCY) })}` : ""}</span>
@@ -283,7 +286,7 @@ function PlanCard({
           </p>
         )}
         {annual && saved > 0 && (
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: formatMoney(Math.round(saved), PLAN_CURRENCY) })} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{yearly?.percentOff}%</span></p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", marginBottom: "4px" }}>{t("pricing.saveAnnual", { amount: formatMoney(Math.round(saved), PLAN_CURRENCY) })} · <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{yearly?.percentOff}%</span></p>
         )}
 
         <div style={{ height: "1px", background: "var(--cr-rule)", margin: "16px 0 24px" }} />
@@ -529,13 +532,23 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "32px", textAlign: "center" }}>
                   {isFounding ? (
                     <>
-                      <Sparkles style={{ width: 40, height: 40, color: "var(--cr-copper)", margin: "0 auto 8px" }} />
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", lineHeight: 1, marginBottom: "8px", fontSize: "40px", letterSpacing: "-0.05em" }}>{Math.max(target - memberCount, 0)}</p>
+                      {/* The card's lead figure reads in ink, in both stages:
+                          this band's accent is the accent word in the h1
+                          beside it, and a copper counter under a copper icon
+                          spends it twice more. The size is a clamp like every
+                          other display figure on the page -- a bare 40px sat
+                          off the ramp. */}
+                      <Sparkles style={{ width: 40, height: 40, color: "var(--cr-ink-3)", margin: "0 auto 8px" }} />
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-ink)", lineHeight: 1, marginBottom: "8px", fontSize: "clamp(28px, 3.5vw, 40px)", letterSpacing: "-0.05em" }}>{Math.max(target - memberCount, 0)}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("pricing.spotsLeftFree")}</p>
                     </>
                   ) : (
                     <>
-                      <p className="copper-foil" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, lineHeight: 1, marginBottom: "8px", fontSize: "72px", letterSpacing: "-0.05em" }}>2%</p>
+                      {/* Ink, not foil: the h1 beside this card already holds
+                          the band's accent word, and the hero cannot spend it
+                          on both. The copper card border is what marks the
+                          figure as the offer. */}
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-ink)", lineHeight: 1, marginBottom: "8px", fontSize: "72px", letterSpacing: "-0.05em" }}>2%</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("pricing.successFeeLabel")}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("pricing.afterClosingUpfront")}</p>
                     </>
@@ -588,9 +601,12 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                   </button>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: annual ? "var(--cr-ink)" : "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "6px" }}>
                     {t("pricing.annual")}
-                    {/* Savings chip: a money fact, so it keeps its voice but
-                        joins the scale floor (11px) and control radius (4px). */}
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "11px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "2px 8px" }}>
+                    {/* Savings chip: a money fact at the scale floor (11px)
+                        and the control radius (4px), in the quiet chip
+                        treatment the "Current plan" chip uses. It sits in the
+                        same eyeful as the featured card's bar and badge, which
+                        are this band's accent. */}
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink-2)", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px" }}>
                       {t("pricing.saveUpTo", { percent: bestAnnualDiscount })}
                     </span>
                   </span>
@@ -610,7 +626,10 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                 background: "var(--cr-copper-bg)", borderRadius: "4px",
                 border: "1px solid var(--cr-copper-br)",
               }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)", letterSpacing: "-0.03em" }}>2%</span>
+                {/* The tinted panel is what marks this note; the numeral in it
+                    reads in ink, so the band's accent stays with the featured
+                    card's bar and badge. */}
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", letterSpacing: "-0.03em" }}>2%</span>
               </div>
               <div>
                 {activeTab === "startup" ? (
@@ -620,7 +639,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                     </p>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
                       {t("pricing.founderFeeBody").split("{bold}")[0]}
-                      <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>{t("pricing.founderFeeBodyBold")}</strong>
+                      <strong style={{ fontWeight: 600, color: "var(--cr-ink)" }}>{t("pricing.founderFeeBodyBold")}</strong>
                       {t("pricing.founderFeeBody").split("{bold}")[1]}
                     </p>
                   </>
@@ -631,7 +650,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                     </p>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
                       {t("pricing.investorFeeBody").split("{bold}")[0]}
-                      <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>{t("pricing.investorFeeBodyBold")}</strong>
+                      <strong style={{ fontWeight: 600, color: "var(--cr-ink)" }}>{t("pricing.investorFeeBodyBold")}</strong>
                       {t("pricing.investorFeeBody").split("{bold}")[1]}
                     </p>
                   </>

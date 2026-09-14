@@ -3,7 +3,7 @@ import { JsonLdScript } from "@/components/shared/json-ld";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { getPlatformStats }  from "@/lib/stats";
-import { sumFundingTargets } from "@/lib/validators";
+import { sumPlausibleFundingTargets } from "@/lib/validators";
 import { getLaunchStatus }   from "@/lib/launchMode";
 import { Navbar }            from "@/components/shared/navbar";
 import { Footer }            from "@/components/shared/footer";
@@ -97,7 +97,8 @@ export default async function HomePage() {
       // Each row is bounded before it lands in the sum (lib/validators): one
       // junk 10^17 target must not carry the whole total past
       // safeFormatTotal's ceiling and blank the tile for everyone.
-      raisingTotal = sumFundingTargets(
+      // All rows discarded is unknown, not zero: null hides the tile.
+      raisingTotal = sumPlausibleFundingTargets(
         (raiseRows ?? []).map((r: { funding_target: number | null }) =>
           r.funding_target == null ? null : Number(r.funding_target)),
       );

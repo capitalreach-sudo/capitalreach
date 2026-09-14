@@ -71,6 +71,31 @@ export function sumFundingTargets(targets: Array<number | null | undefined>): nu
 }
 
 /**
+ * The same sum for a surface that states it as a fact beside a count.
+ *
+ * A sum whose inputs were ALL discarded is unknown, not zero. sumFundingTargets
+ * answers 0 there, which renders as a literal "$0 being raised" next to "1
+ * active round" -- the page asserting that a round is open and no capital is
+ * sought, while the median and the card beside it correctly show an absence.
+ * Null instead, which every money formatter here already renders as the dash.
+ *
+ * An empty input is the OTHER case and stays 0: nothing was discarded, no
+ * listings at all is a measured zero, and the surface's own empty state is what
+ * speaks for it.
+ *
+ * Kept beside sumFundingTargets rather than replacing it: a chart axis and a
+ * running total want the number, and both must judge a row by the same bound.
+ */
+export function sumPlausibleFundingTargets(
+  targets: Array<number | null | undefined>,
+): number | null {
+  if (targets.length === 0) return 0;
+  const usable = targets.filter(isValidFundingTarget);
+  if (usable.length === 0) return null;
+  return usable.reduce<number>((sum, n) => sum + n, 0);
+}
+
+/**
  * The y-axis ceiling for a chart, rounded up to a number a person would say.
  *
  * Every series in a frame shares one scale, which makes one bad value

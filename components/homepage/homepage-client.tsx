@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { CountUp } from "@/components/ui/count-up";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useReveal } from "@/hooks/useReveal";
@@ -12,12 +11,41 @@ import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
 import { MarketMatcher } from "@/components/homepage/market-matcher";
 import { MAX_PLAUSIBLE_AMOUNT, safeFormatCurrency } from "@/lib/format";
-import { MAX_PLAUSIBLE_TOTAL, safeFormatTotal, sumFundingTargets } from "@/lib/validators";
+import { MAX_PLAUSIBLE_TOTAL, safeFormatTotal, sumPlausibleFundingTargets } from "@/lib/validators";
 import type { PlatformStats } from "@/lib/stats";
 import type { LaunchStatus } from "@/lib/launchMode";
 import type { ListingSnippet } from "@/app/page";
 
 // ── Primitives ────────────────────────────────────────────────
+
+/**
+ * A count that is already itself on the server. The number in the SSR HTML is
+ * the real one, so a crawler or a JS-less client reads the market as it is
+ * rather than as a component's starting zero -- the same rule the data centre
+ * holds: a page that promises its numbers must not perform them. The
+ * 0-to-target sweep is a client effect only, and reduced motion skips it.
+ */
+function SeededCount({ value }: { value: number }) {
+  const [shown, setShown] = useState(value);
+  const raf = useRef(0);
+
+  useEffect(() => {
+    if (value <= 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(value);
+      return;
+    }
+    const t0 = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / 1200);
+      setShown(Math.round(value * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [value]);
+
+  return <span style={{ fontVariantNumeric: "tabular-nums" }}>{shown}</span>;
+}
 
 function DiamondDot() {
   return (
@@ -115,7 +143,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
     raisingTotal !== null
       ? raisingTotal
       : canSeeMarket
-        ? sumFundingTargets(listings.map((l) => l.funding_target))
+        ? sumPlausibleFundingTargets(listings.map((l) => l.funding_target))
         : null;
   const liveTiles: [string, string][] = [];
   if (raisingSum !== null && raisingSum > 0 && raisingSum <= MAX_PLAUSIBLE_TOTAL) {
@@ -216,8 +244,10 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
             {t("hero.oneLiner")}
           </p>
 
-          {/* One primary action. Browse is a hairline pill, the demo is a text
-              link -- three steps of loudness, not three buttons. */}
+          {/* One primary action. Browse is a hairline outline, the demo is a
+              text link -- three steps of loudness, not three buttons. 4px is
+              the control radius everywhere: 999 belongs to chips and status
+              pills, never to a 414x48 rectangle. */}
           <div
             className="animate-fade-up-3 flex flex-col sm:flex-row items-center justify-center w-full sm:w-auto"
             style={{ gap: "12px", marginTop: "32px" }}
@@ -225,14 +255,14 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
             <Link
               href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : viewerRole === "admin" ? "/admin" : "/auth/signup?role=startup"}
               className="btn-copper-shimmer w-full sm:w-auto"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "4px", border: "none", minHeight: "48px" }}
             >
               {viewerRole ? t("hero.ctaDashboard") : t("hero.ctaPrimary")}
             </Link>
             <Link
               href="/startups"
               className="w-full sm:w-auto"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)", minHeight: "48px" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 24px", borderRadius: "4px", border: "1px solid var(--cr-paper-4)", minHeight: "48px" }}
             >
               {t("hero.ctaSecondary")} →
             </Link>
@@ -250,7 +280,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               <div className="flex flex-wrap items-center justify-center lg:justify-start" style={{ gap: "24px" }}>
                 {trustCounts.map(([v, label]) => (
                   <span key={label} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}><CountUp value={v} /></span>{" "}{label}
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}><SeededCount value={v} /></span>{" "}{label}
                   </span>
                 ))}
               </div>
@@ -382,8 +412,11 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               {tr.steps.map((step, si) => (
                 <div key={step.title}>
                   {/* Numbered rail as a label, not a giant ghosted numeral:
-                      the order is information, not decoration. */}
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", letterSpacing: "0.12em", color: "var(--cr-copper)", marginBottom: "12px" }}>
+                      the order is information, not decoration. Ink, not
+                      copper: four numerals beside the proof strip's "2%" put
+                      five accent moments in one viewport, and the stat is the
+                      one this band is spending its accent on. */}
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", letterSpacing: "0.12em", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
                     {String(si + 1).padStart(2, "0")}
                   </div>
                   <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "8px" }}>{step.title}</h3>
@@ -539,7 +572,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               <Link
                 href={viewerRole === "startup" ? "/dashboard/startup" : viewerRole === "investor" ? "/dashboard/investor" : "/admin"}
                 className="btn-copper-shimmer w-full sm:w-auto"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "4px", border: "none", minHeight: "48px" }}
               >
                 {t("hero.ctaDashboard")}
               </Link>
@@ -548,14 +581,14 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                 <Link
                   href="/auth/signup?role=startup"
                   className="btn-copper-shimmer w-full sm:w-auto"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "none", minHeight: "48px" }}
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", padding: "12px 24px", borderRadius: "4px", border: "none", minHeight: "48px" }}
                 >
                   {t("cta.listStartup")}
                 </Link>
                 <Link
                   href="/auth/signup?role=investor"
                   className="w-full sm:w-auto"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 24px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)", minHeight: "48px" }}
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", padding: "12px 24px", borderRadius: "4px", border: "1px solid var(--cr-paper-4)", minHeight: "48px" }}
                 >
                   {t("cta.exploreInvestor")} →
                 </Link>

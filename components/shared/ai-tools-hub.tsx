@@ -193,7 +193,10 @@ function PitchTab() {
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                    <Sparkles style={{ width: 14, height: 14, color: "var(--cr-copper)" }} />
+                    {/* The score, the verdict chip and the bars already spend
+                        this band's accent; a decorative glyph beside a title
+                        is the cheapest of them to demote. */}
+                    <Sparkles style={{ width: 14, height: 14, color: "var(--cr-ink-3)" }} />
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("ai.pitch.reportTitle")}</span>
                   </div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("ai.pitch.generatedBy")}</p>
@@ -218,7 +221,10 @@ function PitchTab() {
             <div className="grid md:grid-cols-2" style={{ gap: "12px" }}>
               <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-copper)" }} /> {t("ai.pitch.whatsWorking")}
+                  {/* A bullet beside a caps label states nothing the label
+                      does not; the tinted panel and the CTA beside it are the
+                      accents this band can afford. */}
+                  <CheckCircle2 style={{ width: 12, height: 12, color: "var(--cr-ink-3)" }} /> {t("ai.pitch.whatsWorking")}
                 </p>
                 <ul style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {result.strengths.map((s) => (
@@ -432,7 +438,10 @@ function MatchingTab() {
                 }}
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)")}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}>
-                <div style={{ width: 40, height: 40, borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", flexShrink: 0, background: "var(--cr-copper-bg)", color: "var(--cr-copper)" }}>
+                {/* Initials identify a firm; the colour adds nothing, and one
+                    tinted tile per result card put six accent moments in a
+                    band that also carries the count badge and the CTA. */}
+                <div style={{ width: 40, height: 40, borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", flexShrink: 0, background: "var(--cr-paper-3)", color: "var(--cr-ink-2)" }}>
                   {m.initials}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -585,7 +594,9 @@ function DiligenceTab() {
                   }}
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
-                  <div style={{ width: 28, height: 28, borderRadius: "4px", background: "var(--cr-copper-bg)", color: "var(--cr-copper)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "11px", flexShrink: 0 }}>
+                  {/* paper-4, not paper-3: the row ground turns paper-3 on
+                      hover and a paper-3 tile would vanish into it. */}
+                  <div style={{ width: 28, height: 28, borderRadius: "4px", background: "var(--cr-paper-4)", color: "var(--cr-ink-2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "11px", flexShrink: 0 }}>
                     {s.name[0]}
                   </div>
                   <div>
@@ -700,12 +711,13 @@ function DiligenceTab() {
 
 // ── Tier check ─────────────────────────────────────────────────
 
-// Included/excluded is a capability, not a money direction: the check is
-// copper, the absence is a quiet ink dash.
+// A check carries its meaning in its shape and a value cell in its words, so
+// both speak in ink. The table's single accent is the recommended column, and
+// a dozen copper marks in one band compete with it rather than support it.
 function TierCheck({ val }: { val: string | boolean }) {
   if (val === false) return <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink-4)", fontSize: "13px" }}>—</span>;
-  if (val === true)  return <CheckCircle2 style={{ width: 15, height: 15, color: "var(--cr-copper)", margin: "0 auto", display: "block" }} />;
-  return <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>{val}</span>;
+  if (val === true)  return <CheckCircle2 style={{ width: 15, height: 15, color: "var(--cr-ink-2)", margin: "0 auto", display: "block" }} />;
+  return <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)" }}>{val}</span>;
 }
 
 // ── Tabs config ────────────────────────────────────────────────

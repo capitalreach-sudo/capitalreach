@@ -39,7 +39,15 @@ export async function middleware(request: NextRequest) {
   // suspension + AAL gate lives only here), and authenticated API traffic (so
   // the second factor is enforced for API calls, not just page navigation).
   const gatedPrefixes = ["/dashboard", "/onboarding", "/admin", "/deals"];
-  const isGatedPage = gatedPrefixes.some((p) => pathname.startsWith(p));
+  // Member-only pages, matched exactly rather than by prefix: /investors/<slug>
+  // profiles decide their own visibility. Both sit under a loading.tsx, so the
+  // page's own redirect() lands after the streamed shell has committed a 200 and
+  // can only bounce an anonymous visitor client-side, under a 200 carrying the
+  // page title. Only middleware can answer that request with a real 307.
+  const memberOnlyPages = ["/investors", "/data"];
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
+  const isMemberOnlyPage = memberOnlyPages.includes(normalizedPath);
+  const isGatedPage = isMemberOnlyPage || gatedPrefixes.some((p) => pathname.startsWith(p));
   const isApi = pathname.startsWith("/api");
   // Only authenticated API calls pay the auth round trip; anonymous and webhook
   // calls (no session cookie) fast-lane, and a route that needs auth enforces
@@ -102,7 +110,7 @@ export async function middleware(request: NextRequest) {
 
     // Protect dashboard, onboarding, admin routes
     const protectedPaths = ["/dashboard", "/onboarding", "/admin"];
-    const isProtected = protectedPaths.some(p => pathname.startsWith(p));
+    const isProtected = isMemberOnlyPage || protectedPaths.some(p => pathname.startsWith(p));
 
     if (isProtected && !user) {
       return loginRedirect();

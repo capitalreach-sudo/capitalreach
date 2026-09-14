@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildMonthlySeries } from "@/lib/platform-data";
-import { MAX_PLAUSIBLE_TOTAL, plotCeiling, safeFormatTotal, sumFundingTargets } from "@/lib/validators";
+import { MAX_PLAUSIBLE_TOTAL, plotCeiling, safeFormatTotal, sumFundingTargets, sumPlausibleFundingTargets } from "@/lib/validators";
 
 /** The placeholder the display layer renders for a figure it will not claim. */
 const ABSENT = "—";
@@ -77,5 +77,29 @@ describe("sumFundingTargets", () => {
       [],
     );
     expect(months[11].sought).toBe(sumFundingTargets(targets));
+  });
+});
+
+describe("sumPlausibleFundingTargets", () => {
+  it("is unknown, not zero, when every contributing row was discarded", () => {
+    // The AI sector page: one active round carrying a 10^17 target. The panel
+    // said "1 Active round" and "$0 Being raised" on the same row while the
+    // median beside it correctly showed an absence.
+    expect(sumPlausibleFundingTargets([1e17])).toBeNull();
+    expect(safeFormatTotal(sumPlausibleFundingTargets([1e17]))).toBe(ABSENT);
+    expect(sumPlausibleFundingTargets([null, undefined, 0, -5, NaN])).toBeNull();
+  });
+
+  it("still reads no listings at all as a measured zero", () => {
+    // The other case, and it is a different one: nothing was discarded.
+    expect(sumPlausibleFundingTargets([])).toBe(0);
+    expect(safeFormatTotal(sumPlausibleFundingTargets([]))).toBe("$0");
+  });
+
+  it("agrees with sumFundingTargets whenever anything survives the bound", () => {
+    const targets = [1e17, 2_000_000, null, undefined, 0, -5, NaN];
+    expect(sumPlausibleFundingTargets(targets)).toBe(sumFundingTargets(targets));
+    expect(sumPlausibleFundingTargets([5_000_000_000, 5_000_000_000, 2_000_000_000]))
+      .toBe(12_000_000_000);
   });
 });

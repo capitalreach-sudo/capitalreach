@@ -185,9 +185,16 @@ export function FeeSlider() {
             </span>
           </div>
 
+          {/* The input carries its own touch height (44px, from .cr-range's
+              28) rather than the wrapper carrying padding: the wrapper's box
+              is not what a finger hits, and the audit measures the input.
+              Track and thumb are pseudo-elements centred in that box, so the
+              visual hairline stays 2px. The 8px the taller box adds above and
+              below the track is taken back here and on the tick scale, which
+              keeps the figure, the track and the ticks where they were. */}
           <div
             style={{
-              marginTop: "8px",
+              marginTop: 0,
               borderRadius: "var(--radius)",
               boxShadow: sliderRing ? RING : "none",
               transition: `box-shadow ${ease}`,
@@ -202,13 +209,13 @@ export function FeeSlider() {
               aria-label={t("feeCalc.inputRaise")}
               aria-valuetext={money(raise)}
               className="cr-range"
-              style={{ display: "block", cursor: dragging ? "grabbing" : "grab", "--fill": `${(idx / LAST) * 100}%` } as React.CSSProperties}
+              style={{ display: "block", height: "44px", cursor: dragging ? "grabbing" : "grab", "--fill": `${(idx / LAST) * 100}%` } as React.CSSProperties}
             />
           </div>
 
           {/* Machined scale: every step is a tick, the ones behind the handle
               are lit, the labelled ones stand taller. */}
-          <div aria-hidden="true" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", height: "10px", paddingInline: THUMB_INSET }}>
+          <div aria-hidden="true" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", height: "10px", marginTop: "-8px", paddingInline: THUMB_INSET }}>
             {STEPS.map((step, i) => (
               <span
                 key={step}
@@ -256,9 +263,15 @@ export function FeeSlider() {
                     border: "none",
                     cursor: "pointer",
                     padding: "8px 4px",
+                    /* A preset is a tap target before it is a label: the short
+                       ones ("€100k") measured 29px wide on a phone, under the
+                       floor. Width grows around the label's centre, so each
+                       one stays over its own tick. */
+                    minWidth: "44px",
                     minHeight: "40px",
                     display: "flex",
                     alignItems: "center",
+                    justifyContent: "center",
                     borderRadius: "var(--radius)",
                     boxShadow: anchorRing === i ? RING : "none",
                     transition: `color ${ease}`,

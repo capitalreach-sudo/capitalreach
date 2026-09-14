@@ -89,7 +89,10 @@ export function Footer() {
               <span style={{
                 fontFamily:    "'Playfair Display', Georgia, serif",
                 fontWeight:    700,
-                fontSize:      "16px",
+                /* 18, not 16: the wordmark leads the footer's brand block, and
+                   16 is off the type scale -- it also read level with the
+                   15px tagline directly beneath it. */
+                fontSize:      "18px",
                 color:         "var(--cr-ink)",
                 letterSpacing: "-0.02em",
               }}>

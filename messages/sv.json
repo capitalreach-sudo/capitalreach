@@ -4909,6 +4909,7 @@
     "loginTitle": "Logga in",
     "signupTitle": "Skapa konto",
     "homeTitle": "CapitalReach - Privat kapitalmarknadsplats",
-    "homeDesc": "Den granskade marknadsplatsen där startups reser kapital och investerare hittar sin nästa runda. 2% framgångsavgift vid stängning, inget innan."
+    "homeDesc": "Den granskade marknadsplatsen där startups reser kapital och investerare hittar sin nästa runda. 2% framgångsavgift vid stängning, inget innan.",
+    "dataDescNoCloseRate": "Liveuppgifter från plattformen: pågående rundor, sökt kapital och affärstratten."
   }
 }

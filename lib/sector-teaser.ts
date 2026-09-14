@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase-server";
-import { isValidFundingTarget, sumFundingTargets } from "@/lib/validators";
+import { isValidFundingTarget, sumPlausibleFundingTargets } from "@/lib/validators";
 import { STAGE_LABELS } from "@/lib/utils";
 
 /**
@@ -27,8 +27,14 @@ export type SectorTeaserEntry = {
 export type SectorTeaser = {
   /** True count of active, unpaused rounds in the sector. */
   activeCount: number;
-  /** Sum of plausible funding targets (bad rows excluded, lib/validators). */
-  totalRaise: number;
+  /**
+   * Sum of plausible funding targets (bad rows excluded, lib/validators).
+   * Null when rows exist but not one of them carries a usable figure: the
+   * panel states this beside the active count, and an unknown total must not
+   * read as "$0 being raised" under "1 active round". Zero only when the
+   * sector has no rounds at all, where the empty state renders instead.
+   */
+  totalRaise: number | null;
   /** Median plausible funding target; null when no row carries one. */
   medianRaise: number | null;
   /** Stage distribution in canonical stage order, zero-count stages omitted. */
@@ -101,7 +107,7 @@ export async function loadSectorTeaser(industry: string): Promise<SectorTeaser> 
 
   return {
     activeCount: count ?? rows.length,
-    totalRaise: sumFundingTargets(rows.map((r) => r.funding_target)),
+    totalRaise: sumPlausibleFundingTargets(rows.map((r) => r.funding_target)),
     medianRaise,
     stages,
     // Rebuilt field by field rather than spread: the masked shape is a

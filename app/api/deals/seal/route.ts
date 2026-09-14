@@ -88,6 +88,10 @@ async function loadDeal(dealId: string) {
     instrument: proposal?.instrument ?? null,
     conditions: proposal?.conditions ?? null,
     introducedAt: intro?.first_contact_at ?? deal.created_at,
+    // Without an introductions row the date above is the deal's own creation
+    // date, and the document must say so rather than assert a recorded
+    // introduction it cannot produce.
+    introductionOnRecord: !!intro?.first_contact_at,
     tailEndsAt: intro?.tail_ends_at ?? null,
   });
 

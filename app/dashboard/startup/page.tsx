@@ -39,8 +39,15 @@ export default async function StartupDashboardPage() {
     .maybeSingle()
     .returns<Startup>();
 
-  // Analytics: pageviews last 30 days
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  // Analytics: pageviews over the 30 calendar days the tile's label promises.
+  // The window opens on a day boundary so the headline figure counts exactly
+  // the rows the sparkline under it buckets; a rolling instant pulled part of
+  // a 31st day into the number but not into the shape.
+  const DAY = 24 * 60 * 60 * 1000;
+  const windowStart = new Date();
+  windowStart.setHours(0, 0, 0, 0);
+  windowStart.setDate(windowStart.getDate() - 29);
+  const thirtyDaysAgo = windowStart.toISOString();
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
   const viewSeries: number[] = Array(30).fill(0);
   const saveSeries: number[] = Array(30).fill(0);
@@ -67,6 +74,9 @@ export default async function StartupDashboardPage() {
       .eq("startup_id", startup.id)
       .gte("created_at", thirtyDaysAgo)
       .limit(10000);
+    // The tile is labelled (30d), so it counts rows inside the window above.
+    // startups.pageviews is a lifetime counter and would contradict that
+    // label; all-time belongs to the funnel step below, which says so.
     viewsCount = viewRows?.length || 0;
     // The strip's Views tile is a 30-day figure, but every later funnel step
     // is all-time -- feeding the 30-day number in let Saves "convert" at over
@@ -77,7 +87,6 @@ export default async function StartupDashboardPage() {
       .select("id", { count: "exact", head: true })
       .eq("startup_id", startup.id);
     funnel.views = allTimeViews ?? 0;
-    const DAY = 24 * 60 * 60 * 1000;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     for (const r of viewRows ?? []) {
       const idx = 29 - Math.floor((today.getTime() - new Date(r.created_at).setHours(0, 0, 0, 0)) / DAY);
