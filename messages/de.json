@@ -2623,7 +2623,9 @@
     "deepLinkMissingTitle": "Dieser Link hat kein Gespräch geöffnet",
     "emptyGateTitle": "Unterhaltungen öffnen sich, sobald beide Seiten einen Deal unterschrieben haben",
     "emptyGateBody": "Ein Investor macht ein Angebot, der Gründer nimmt es an, und beide Seiten unterschreiben den Deal; bis dahin bleiben Nachrichten geschlossen.",
-    "emptyGateCta": "Deals ansehen"
+    "emptyGateCta": "Deals ansehen",
+    "emptySealedTitle": "Beginnen Sie das Gespräch über Ihren besiegelten Deal",
+    "emptySealedBody": "Nachrichten sind nur mit der Partei möglich, mit der Sie einen Deal besiegelt haben. Öffnen Sie diesen Deal und wählen Sie Nachricht, um das Gespräch zu beginnen."
   },
   "presets": {
     "preseedAi": "Pre-Seed KI",

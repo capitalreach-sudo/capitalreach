@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "Ce lien n'a ouvert aucune conversation",
     "emptyGateTitle": "Les conversations s'ouvrent une fois l'accord signé par les deux parties",
     "emptyGateBody": "Un investisseur fait une offre, le fondateur l'accepte, et les deux parties signent l'accord ; d'ici là, la messagerie reste fermée.",
-    "emptyGateCta": "Voir les opérations"
+    "emptyGateCta": "Voir les opérations",
+    "emptySealedTitle": "Commencez la conversation depuis votre deal scellé",
+    "emptySealedBody": "La messagerie n'est ouverte qu'avec la partie avec laquelle vous avez scellé un deal. Ouvrez ce deal et choisissez Message pour commencer."
   },
   "completeness": {
     "nextBest": "À faire ensuite",

@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "Die link heeft geen gesprek geopend",
     "emptyGateTitle": "Gesprekken openen zodra beide partijen een deal hebben ondertekend",
     "emptyGateBody": "Een investeerder doet een aanbod, de oprichter accepteert het, en beide partijen ondertekenen de deal; tot die tijd blijven berichten gesloten.",
-    "emptyGateCta": "Deals bekijken"
+    "emptyGateCta": "Deals bekijken",
+    "emptySealedTitle": "Begin het gesprek vanuit uw verzegelde deal",
+    "emptySealedBody": "Berichten zijn alleen mogelijk met de partij met wie u een deal hebt verzegeld. Open die deal en kies Bericht om te beginnen."
   },
   "completeness": {
     "nextBest": "Doe dit hierna",

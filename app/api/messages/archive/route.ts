@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
-import { myThreadIds } from "@/lib/threads";
+import { messagingAccess, usableThreadIds } from "@/lib/messaging-access";
 
 /**
  * Per-user thread archive (thread_archives, migration 052).
@@ -10,8 +10,10 @@ import { myThreadIds } from "@/lib/threads";
  * POST   { threadId } → archive it for the caller only.
  * DELETE { threadId } → unarchive.
  *
- * Membership goes through lib/threads like every other message operation —
- * archiving a thread you can guess the id of must not reveal that it exists.
+ * Membership is the usable-thread rule every message operation shares
+ * (lib/messaging-access): archiving a thread you can guess the id of must not
+ * reveal that it exists, and a thread the inbox does not list for this member
+ * is not theirs to act on.
  */
 export async function GET() {
   const supabase = await createServerSupabaseClient();
@@ -32,7 +34,7 @@ async function mutate(req: NextRequest, action: "archive" | "unarchive") {
   const { threadId } = await req.json().catch(() => ({}));
   if (!isUuid(threadId)) return NextResponse.json({ error: "threadId required" }, { status: 400 });
 
-  const ids = await myThreadIds(user.id);
+  const ids = await usableThreadIds(user.id, await messagingAccess(user.id));
   if (!ids.includes(threadId)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const admin = createAdminClient();

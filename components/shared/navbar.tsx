@@ -13,6 +13,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { NotificationBell } from "@/components/shared/notification-bell";
 import { GlobalSearch } from "@/components/shared/global-search";
 import { MessagesIcon } from "@/components/shared/messages-icon";
+import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import type { Profile } from "@/types";
 
@@ -47,6 +48,8 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
   const pathname = usePathname();
   const supabaseRef = useRef(createClient());
   const supabase    = supabaseRef.current;
+  // Messages is an entry only for a member who has messaging at all.
+  const messagingAvailable = useMessagingAvailable(!!profile);
 
   const NAV_LINKS = [
     { href: "/startups",  label: t("nav.startups")  },
@@ -245,7 +248,9 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                       ...(profile?.role === "admin"
                         ? [{ href: "/dashboard/investor", Icon: Bookmark, label: t("dashboard.watchlist") }]
                         : []),
-                      { href: "/dashboard/messages", Icon: MessageSquare,   label: t("nav.messages")  },
+                      ...(messagingAvailable === true
+                        ? [{ href: "/dashboard/messages", Icon: MessageSquare, label: t("nav.messages") }]
+                        : []),
                       { href: "/dashboard/complaints", Icon: Flag,          label: t("complaints.title") },
                       { href: "/dashboard/settings", Icon: Settings,        label: t("nav.settings")  },
                     ].map(({ href, Icon, label }) => (
@@ -426,7 +431,9 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                     ? [{ href: "/dashboard/investor", label: t("dashboard.watchlist"), Icon: Bookmark }]
                     : []),
                   { href: "/deals",                   label: t("nav.deals"),           Icon: Handshake       },
-                  { href: "/dashboard/messages",      label: t("nav.messages"),        Icon: MessageSquare   },
+                  ...(messagingAvailable === true
+                    ? [{ href: "/dashboard/messages", label: t("nav.messages"), Icon: MessageSquare }]
+                    : []),
                   { href: "/dashboard/notifications", label: t("notifications.title"), Icon: Bell            },
                   { href: "/dashboard/complaints",    label: t("complaints.title"),    Icon: Flag            },
                   { href: "/dashboard/settings",      label: t("nav.settings"),        Icon: Settings        },

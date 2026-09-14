@@ -14,6 +14,8 @@ import { formatMoney } from "@/lib/currency";
 import { allocationSummary } from "@/lib/round-math";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useProfile } from "@/hooks/useProfile";
+import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 import { InvitePanel } from "@/components/shared/invite-panel";
 import { Sparkline } from "@/components/ui/sparkline";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -346,6 +348,10 @@ function WhoViewedYou() {
 
 function SharedWithYou() {
   const { t } = useTranslation();
+  // A share's thread is between two investors, which no member may use; only
+  // an admin is offered the way into it.
+  const { profile } = useProfile();
+  const shareThreadsOpen = profile?.role === "admin";
   type Share = { id: string; note: string | null; created_at: string; thread_id: string | null; startup: { name: string; slug: string } | null; from_investor?: { slug: string; display_name: string | null; firm_name: string | null } | null };
   const [received, setReceived] = useState<Share[]>([]);
   useEffect(() => {
@@ -370,7 +376,7 @@ function SharedWithYou() {
               {sh.from_investor ? <Link href={`/investors/${sh.from_investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{sh.from_investor.display_name || sh.from_investor.firm_name || t("deals.investorFallback")}</Link> : t("deals.investorFallback")}
             </p>
             {sh.note && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", marginTop: 8, lineHeight: 1.5 }}>“{sh.note}”</p>}
-            {sh.thread_id && (
+            {sh.thread_id && shareThreadsOpen && (
               <Link href={`/dashboard/messages?thread=${sh.thread_id}`} style={{ display: "inline-block", marginTop: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
                 {t("coInvestors.continueThread")} →
               </Link>
@@ -679,6 +685,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
+  const messagingAvailable = useMessagingAvailable();
   const [activeTab, setActiveTab] = useState<InvestorTab>("watchlist");
   // C26: local triage state so status/priority edits are instant.
   const [wlState, setWlState] = useState<Record<string, { status: WlStatus; priority: number }>>(() =>
@@ -842,7 +849,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
           {/* Hidden in view-as: these navigate the ADMIN's own surfaces and
               silently leave the impersonation -- the banner owns the exit. */}
           {!viewingAs && <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <Link href="/dashboard/messages" style={outlineBtn}>{t("dashboard.messages")}</Link>
+            {messagingAvailable === true && <Link href="/dashboard/messages" style={outlineBtn}>{t("dashboard.messages")}</Link>}
             <Link href="/dashboard/team" style={outlineBtn}>{t("team.navLabel")}</Link>
             <Link href="/dashboard/investor/settings" style={outlineBtn}>{t("dashboard.settings")}</Link>
           </div>}

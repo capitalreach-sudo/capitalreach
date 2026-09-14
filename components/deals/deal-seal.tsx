@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
 import { WaxSeal } from "@/components/ui/WaxSeal";
+import { refreshMessagingAvailable } from "@/hooks/useMessagingAvailable";
 
 /**
  * Where a deal becomes a record both sides signed.
@@ -42,6 +43,9 @@ interface Signature { signedAt: string; name: string }
 
 interface SealPayload {
   dealId: string;
+  /** The pair, so a sealed record opens that pair's own conversation. */
+  startupId?: string;
+  investorId?: string;
   party: "startup" | "investor";
   companyName: string | null;
   text: string;
@@ -123,6 +127,9 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
         await load();
         setSealing(false);
         notify.success(t("seal.sealed"));
+        // The seal is what gives both parties Messages, so every entry point
+        // on this page re-asks now rather than on the next reload.
+        refreshMessagingAvailable();
         onSealed?.();
       } else {
         await load();
@@ -249,10 +256,12 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
             }}>{t("seal.doneTitle")}</div>
             <p style={{ ...BODY, fontSize: "13px", margin: 0 }}>{t("seal.doneBody")}</p>
           </div>
-          <Link href="/dashboard/messages" style={{
+          <Link href={data.startupId && data.investorId
+            ? `/dashboard/messages?startupId=${data.startupId}&investorId=${data.investorId}`
+            : "/dashboard/messages"} style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
             background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)",
-            borderRadius: "999px", padding: "0 24px", minHeight: "40px",
+            borderRadius: "4px", padding: "0 24px", minHeight: "40px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
             color: "var(--cr-on-accent)", textDecoration: "none",
           }}>{t("seal.openConversation")}</Link>

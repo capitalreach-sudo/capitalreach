@@ -96,10 +96,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Startup not available" }, { status: 404 });
   }
 
-  // Offer before contact. This route is the investor to founder direction by
-  // construction (the investor row's owner is verified above), so the sender
-  // is exactly the party the rule addresses: they may speak once an offer of
-  // theirs is accepted, or a deal already exists. Placed before the thread is
+  // Seal before contact. This route is the investor to founder direction by
+  // construction (the investor row's owner is verified above), and the pair
+  // may talk only once their deal is sealed. Placed before the thread is
   // looked up or created so a refusal leaves no empty conversation behind and
   // spends none of the monthly new-thread allowance. Admins pass, as they do
   // on the trust gate above.

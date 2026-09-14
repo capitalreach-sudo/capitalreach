@@ -50,25 +50,22 @@ async function newThreadLimitResponse(ctx: AccessContext, investorEntityId: stri
 }
 
 /**
- * POST { investorId, body } — founder outbound (B23): start (or continue)
- * the thread with an investor straight from their profile. /api/messages/
- * send is the investor→founder direction with its tier gate; this is the
- * founder→investor direction, which has no paywall but does notify + email
- * the investor (a browser-side insert did neither).
+ * POST { investorId, body } from a founder: start (or continue) the thread
+ * with that investor, notifying and emailing them. POST { startupId, body }
+ * from an investor: the same pair from the other end. /api/messages/send is
+ * the older investor to founder door with its own tier gate. Every door opens
+ * only for a sealed pair (lib/contact-policy); admins pass for support.
  *
- * POST { startupId, body } — founder→founder (migration 012 gave threads a
- * recipient_startup_id for exactly this; the route finally uses it). Two
- * founders comparing notes is how a marketplace becomes a community.
- *
- * Since 098 the sender may also be an INVESTOR: investor→startup opens the
- * classic (startup, investor) pair, investor→investor opens a direct thread
- * with no startup anchor. Every pairing on the platform can now talk.
+ * The peer pairings the thread schema can express (founder to founder through
+ * recipient_startup_id, 012; investor to investor through
+ * recipient_investor_id, 098) are refused for everyone but admins: two parties
+ * who cannot sign a deal with each other can never reach a seal.
  *
  * Investor senders carry the same tier gate as /api/messages/send: the plan
  * must include messaging at all, and every NEW thread spends from the same
  * monthly allowance (newThreadLimitResponse below). Founder senders have no
- * paywall, and still do not: what a founder now needs to reach an investor is
- * a signed deal, not a plan.
+ * paywall: what a founder needs to reach an investor is a sealed deal, not a
+ * plan.
  */
 /**
  * Opening a conversation is always first contact, so no deal exists yet and
@@ -244,12 +241,12 @@ export async function POST(req: NextRequest) {
         .select("id, owner_id, name, status").eq("id", targetStartupId).maybeSingle();
       if (!st || st.status !== "active") return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-      // Offer before contact. Opening the thread IS the contact -- open:true
+      // Seal before contact. Opening the thread IS the contact -- open:true
       // opens one and records the introduction without a word being typed --
       // so this sits above the thread lookup, before any row exists and
       // before recordIntroduction fires. The founder to investor branch below
-      // is gated on the same verdict from the other end; investor to investor
-      // and founder to founder are not contact with a company at all.
+      // asks the same question from the other end; both peer pairings are
+      // refused outright for everyone but admins.
       if (senderProfile?.role !== "admin") {
         const contact = await mayInvestorContact({ startupId: st.id, investorId: me.id });
         if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });

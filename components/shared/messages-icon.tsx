@@ -3,21 +3,27 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
+import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 
 /**
  * The navbar messages icon with an unread count, matching the bell's badge.
- * Renders the plain icon when signed out or when the count endpoint fails --
- * a wrong zero is worse than no badge.
+ * Absent unless this member has messaging at all (a sealed deal, or an
+ * admin), including while that is still being asked. Renders the plain icon
+ * when the count endpoint fails -- a wrong zero is worse than no badge.
  */
 export function MessagesIcon() {
+  const available = useMessagingAvailable();
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
+    if (available !== true) return;
     fetch("/api/messages/unread")
       .then((r) => (r.ok ? r.json() : { unread: 0 }))
       .then((d) => setUnread(d.unread ?? 0))
       .catch(() => {});
-  }, []);
+  }, [available]);
+
+  if (available !== true) return null;
 
   return (
     <Link href="/dashboard/messages"

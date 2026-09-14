@@ -6,6 +6,7 @@ import { LayoutDashboard, Compass, Handshake, MessageSquare, Bell } from "lucide
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
+import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 
 /**
  * Mobile tab bar for signed-in users.
@@ -13,8 +14,12 @@ import { useProfile } from "@/hooks/useProfile";
  * Everything a member does daily -- check the dashboard, browse the other side
  * of the marketplace, move a deal, answer a message, clear alerts -- was
  * previously two taps deep behind the hamburger. On a phone that is the whole
- * product hidden behind a menu button. These five destinations are now one
+ * product hidden behind a menu button. These destinations are now one
  * thumb-reach tap from anywhere.
+ *
+ * Messages is a tab only for a member who has messaging at all (a sealed deal,
+ * or an admin), and not while that is still being asked. Every tab is flex: 1,
+ * so four tabs share the bar as evenly as five.
  *
  * No glyph set: the label already says what each tab is, so the marker above
  * it only says where you are -- the product's own devices, a mono index per
@@ -35,26 +40,29 @@ export function BottomNav() {
   const { t } = useTranslation();
   const { profile } = useProfile();
   const pathname = usePathname();
+  const messagingAvailable = useMessagingAvailable(!!profile);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadAlerts, setUnreadAlerts] = useState(0);
+
+  // Re-counted on navigation: opening the messages page clears its badge.
+  useEffect(() => {
+    if (!profile || messagingAvailable !== true) return;
+    let alive = true;
+    fetch("/api/messages/unread")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => { if (alive && m) setUnreadMessages(m.unread ?? 0); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [profile, pathname, messagingAvailable]);
 
   useEffect(() => {
     if (!profile) return;
     let alive = true;
-    const load = async () => {
-      const [m, n] = await Promise.allSettled([
-        fetch("/api/messages/unread").then((r) => (r.ok ? r.json() : null)),
-        fetch("/api/notifications").then((r) => (r.ok ? r.json() : null)),
-      ]);
-      if (!alive) return;
-      if (m.status === "fulfilled" && m.value) setUnreadMessages(m.value.unread ?? 0);
-      if (n.status === "fulfilled" && n.value) setUnreadAlerts(n.value.unread ?? 0);
-    };
-    load();
-    // Re-count on navigation: opening the messages page clears its badge.
-    return () => {
-      alive = false;
-    };
+    fetch("/api/notifications")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((n) => { if (alive && n) setUnreadAlerts(n.unread ?? 0); })
+      .catch(() => {});
+    return () => { alive = false; };
   }, [profile, pathname]);
 
   // Tells the stylesheet a tab bar is present, so --cr-tabbar-h stops being 0
@@ -82,7 +90,9 @@ export function BottomNav() {
     { href: dashboardPath, label: t("nav.home"), Icon: LayoutDashboard },
     { href: browseHref, label: t("nav.browse"), Icon: Compass },
     { href: "/deals", label: t("nav.deals"), Icon: Handshake },
-    { href: "/dashboard/messages", label: t("nav.messages"), badge: unreadMessages, Icon: MessageSquare },
+    ...(messagingAvailable === true
+      ? [{ href: "/dashboard/messages", label: t("nav.messages"), badge: unreadMessages, Icon: MessageSquare }]
+      : []),
     { href: "/dashboard/notifications", label: t("nav.alerts"), badge: unreadAlerts, Icon: Bell },
   ];
 
@@ -119,7 +129,7 @@ export function BottomNav() {
             }}
           >
             {/* The glyph, not an index: numbering a nav asserts a sequence
-                its five destinations do not have, and the owner read it as
+                its destinations do not have, and the owner read it as
                 exactly that. Weight carries the active state; the label's
                 copper does the rest. */}
             <span aria-hidden style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>

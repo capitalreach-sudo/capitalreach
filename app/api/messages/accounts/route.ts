@@ -52,6 +52,10 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
   const { data: me } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
   if (!me) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // A recipient picker exists only for someone who may open a conversation
+  // with anyone, which is an admin. A member's conversations start from their
+  // sealed deal, never from a search of the market.
+  if (me.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const q = clean(req.nextUrl.searchParams.get("q") ?? "");
   const kind = req.nextUrl.searchParams.get("kind") === "startup" ? "startup" : "investor";

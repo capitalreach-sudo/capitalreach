@@ -76,8 +76,7 @@ interface ListingState {
    *  stranger and one of them is a deal waiting for a signature. A refusal
    *  this button cannot name falls through to the primary action, which is an
    *  offer the POST is going to refuse. */
-  reason?: "policy_off" | "deal_exists" | "deal_sealed" | "offer_accepted"
-    | "admin" | "needs_accepted_offer" | "needs_seal";
+  reason?: "deal_sealed" | "admin" | "needs_accepted_offer" | "needs_seal";
   proposal: {
     id: string;
     fromSide: "startup" | "investor";
@@ -215,9 +214,8 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
       </button>
     );
   } else if (state.contactOpen) {
-    // An accepted offer, or a deal that already existed: the conversation is
-    // the thing they want, and the pipeline is where it lives if no thread has
-    // been opened yet.
+    // A sealed deal: the conversation is the thing they want, and the deal is
+    // where it starts if no thread has been opened yet.
     const href = state.threadId
       ? `/dashboard/messages?thread=${state.threadId}`
       : state.dealId ? `/deals?deal=${state.dealId}` : "/deals";

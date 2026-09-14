@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "링크로 대화를 열지 못했습니다",
     "emptyGateTitle": "대화는 양측이 거래에 서명하면 열립니다",
     "emptyGateBody": "투자자가 오퍼를 내고 창업자가 수락한 뒤 양측이 거래에 서명합니다. 그때까지 메시지는 닫혀 있습니다.",
-    "emptyGateCta": "거래 보기"
+    "emptyGateCta": "거래 보기",
+    "emptySealedTitle": "체결된 딜에서 대화를 시작하세요",
+    "emptySealedBody": "메시지는 딜을 체결한 상대와만 주고받을 수 있습니다. 해당 딜을 열고 메시지를 선택해 대화를 시작하세요."
   },
   "completeness": {
     "nextBest": "다음에 할 일",

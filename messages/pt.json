@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "Esse link não abriu nenhuma conversa",
     "emptyGateTitle": "As conversas abrem quando ambas as partes assinam um acordo",
     "emptyGateBody": "Um investidor faz uma oferta, o fundador aceita-a e ambas as partes assinam o acordo; até lá, as mensagens permanecem fechadas.",
-    "emptyGateCta": "Ver negócios"
+    "emptyGateCta": "Ver negócios",
+    "emptySealedTitle": "Comece a conversa a partir do seu deal selado",
+    "emptySealedBody": "As mensagens só estão abertas com a parte com quem selou um deal. Abra esse deal e escolha Mensagem para começar."
   },
   "completeness": {
     "nextBest": "Faz isto a seguir",

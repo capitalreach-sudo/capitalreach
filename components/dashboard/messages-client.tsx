@@ -41,25 +41,31 @@ function EmptyDiamond() {
 }
 
 /**
- * The zero-threads answer. Every member sees this tab, but under the seal
- * rule most have no threads yet, and a bare "no conversations" reads as
- * messaging being open and simply unused. The empty pane has to say the
- * rule itself: conversations open once a deal is signed by both sides.
+ * The zero-threads answer. A member reaches this page only with a sealed deal
+ * (the page sends everyone else to /deals), so zero threads means that deal's
+ * conversation has not been started, and it starts from the deal. An admin's
+ * empty inbox means nothing of the kind and is told only that it is empty.
  */
-function ZeroThreadsNotice({ tf }: { tf: (key: string, fallback: string) => string }) {
+function ZeroThreadsNotice({ tf, admin }: { tf: (key: string, fallback: string) => string; admin: boolean }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textAlign: "center", padding: "24px" }}>
       <EmptyDiamond />
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
-        {tf("messages.emptyGateTitle", "Conversations open once a deal is signed by both sides")}
+        {admin
+          ? tf("dashboard.noConversationsYet", "No conversations yet")
+          : tf("messages.emptySealedTitle", "Start the conversation from your sealed deal")}
       </p>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "44ch" }}>
-        {tf("messages.emptyGateBody", "An investor makes an offer, the founder accepts it, and both sides sign the deal; until then, messaging stays closed.")}
+        {admin
+          ? tf("dashboard.orStartNew", "Or start a new one above")
+          : tf("messages.emptySealedBody", "Messaging is open only with the party you sealed a deal with. Open that deal and choose Message to start the conversation.")}
       </p>
-      <Link href="/deals"
-        style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
-        {tf("messages.emptyGateCta", "View deals")} →
-      </Link>
+      {!admin && (
+        <Link href="/deals"
+          style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+          {tf("messages.emptyGateCta", "View deals")} →
+        </Link>
+      )}
     </div>
   );
 }
@@ -117,6 +123,9 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
+  // Conversations start from a sealed deal for everyone else; only an admin
+  // opens one from here, so only an admin gets the composer and its picker.
+  const isAdmin = profile.role === "admin";
   // Renders sensibly before the keys land in messages/; the orchestrated
   // dictionary pass replaces the fallbacks with localized strings.
   const tf = (key: string, fallback: string) => {
@@ -169,13 +178,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
   const [showNewModal, setShowNewModal]     = useState(false);
   useEscapeKey(showNewModal, () => setShowNewModal(false));
   const [newBody, setNewBody]               = useState("");
-  // Each role's OPEN channel is the other side of the table: a founder
-  // reaches investors (via a sealed deal), an investor reaches startups (via
-  // an accepted offer). The peer tab is closed by the seal rule either way,
-  // so defaulting a founder into "startups" opened the modal on a tab where
-  // every send is refused.
-  const defaultTargetKind: "investor" | "startup" = profile.role === "investor" ? "startup" : "investor";
-  const [targetKind, setTargetKind]         = useState<"investor" | "startup">(defaultTargetKind);
+  const [targetKind, setTargetKind]         = useState<"investor" | "startup">("investor");
   const [accountSearch, setAccountSearch]   = useState("");
   const [accountResults, setAccountResults] = useState<SearchAccount[]>([]);
   const [accountSearching, setAccountSearching] = useState(false);
@@ -801,7 +804,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
   function closeNewModal() {
     setShowNewModal(false); setSelectedAccount(null); setAccountSearch("");
-    setNewBody(""); setAccountResults([]); setSendNewError(""); setTargetKind(defaultTargetKind);
+    setNewBody(""); setAccountResults([]); setSendNewError(""); setTargetKind("investor");
   }
 
   async function sendNewMessage() {
@@ -857,10 +860,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               {initialThreads.length === 0 ? t("dashboard.noConversationsYet") : initialThreads.length === 1 ? t("dashboard.conversationCountOne") : t("dashboard.conversationsCount", { count: initialThreads.length })}
             </p>
           </div>
-          <button onClick={() => setShowNewModal(true)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "12px 24px", cursor: "pointer" }}>
-            <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
-          </button>
+          {isAdmin && (
+            <button onClick={() => setShowNewModal(true)}
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "12px 24px", cursor: "pointer" }}>
+              <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
+            </button>
+          )}
         </div>
 
         {/* A link that named a conversation this account cannot open. Above
@@ -937,16 +942,17 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             <div ref={threadListRef} style={{ flex: 1, overflowY: "auto" }}>
               {filteredThreads.length === 0 ? (
                 <>
-                  {/* No threads at all is the seal rule at work, not an unused
-                      inbox, and only the true zero case may say so: a search
-                      or filter that matched nothing keeps the quiet mark.
-                      Below md this list IS the page, so the explanation lives
-                      here; from md up the wide pane carries it and this
-                      column stays quiet. `display` stays in the class, never
-                      the inline style -- an inline display beats md:flex. */}
+                  {/* No threads at all means the sealed deal's conversation
+                      has not been started, and only the true zero case may
+                      say so: a search or filter that matched nothing keeps
+                      the quiet mark. Below md this list IS the page, so the
+                      explanation lives here; from md up the wide pane carries
+                      it and this column stays quiet. `display` stays in the
+                      class, never the inline style -- an inline display beats
+                      md:flex. */}
                   {initialThreads.length === 0 && (
                     <div className="flex md:hidden" style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                      <ZeroThreadsNotice tf={tf} />
+                      <ZeroThreadsNotice tf={tf} admin={isAdmin} />
                     </div>
                   )}
                   <div className={initialThreads.length === 0 ? "hidden md:flex" : "flex"}
@@ -1403,12 +1409,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               {/* "Select a conversation" presumes there is one. With zero
                   threads the pane answers the seal rule instead. */}
               {initialThreads.length === 0 ? (
-                <ZeroThreadsNotice tf={tf} />
+                <ZeroThreadsNotice tf={tf} admin={isAdmin} />
               ) : (
                 <div style={{ textAlign: "center" }}>
                   <div style={{ marginBottom: "12px" }}><EmptyDiamond /></div>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
+                  {isAdmin && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
+                  )}
                 </div>
               )}
             </div>
@@ -1417,10 +1425,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
       </div>
 
       {/* ── New Message Modal ── */}
-      {/* Enter only, and centred: the dialog is not anchored to its trigger,
+      {/* Admin only: every other conversation starts from a sealed deal.
+          Enter only, and centred: the dialog is not anchored to its trigger,
           and it unmounts on close, where an instant dismissal is the right
           asymmetry. The two classes are the house recipe. */}
-      {showNewModal && (
+      {isAdmin && showNewModal && (
         <div role="dialog" aria-modal="true" className="cr-dialog-scrim" style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: "16px" }}>
           <div className="cr-dialog-panel" style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
@@ -1437,10 +1446,8 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {/* Recipient type toggle. Both tabs stay: the peer one is
-                  closed by the seal rule, and the note below says so rather
-                  than a removed tab leaving people to wonder where their
-                  counterparts went. */}
+              {/* Recipient type toggle: an admin reaches either side of the
+                  table. */}
               {!selectedAccount && (
                 <div style={{ display: "flex", gap: "8px" }}>
                   {(["investor", "startup"] as const).map(k => (
@@ -1457,21 +1464,6 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     </button>
                   ))}
                 </div>
-              )}
-
-              {/* The chosen tab's gate rule, stated BEFORE anything is
-                  composed: every send out of this modal is metered by the
-                  seal rule, and a picker that lets someone write a message
-                  the route then refuses is a trap. Admins moderate rather
-                  than transact, so no rule applies to them and none is
-                  claimed at them. */}
-              {profile.role !== "admin" && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, margin: 0 }}>
-                  <span aria-hidden style={{ color: "var(--cr-copper)", marginRight: "8px" }}>✦</span>
-                  {profile.role === "investor"
-                    ? (targetKind === "startup" ? t("gate.offerBody") : t("contactGate.peerClosed"))
-                    : (targetKind === "investor" ? t("founderContact.dealRequired") : t("contactGate.peerClosed"))}
-                </p>
               )}
 
               {/* To field */}
@@ -1502,7 +1494,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       <input value={accountSearch}
                         onChange={e => { setAccountSearch(e.target.value); setAccountDropOpen(true); setSendNewError(""); }}
                         onFocus={() => setAccountDropOpen(true)}
-                        placeholder={profile.role === "investor" ? t("dashboard.searchStartupsPh") : targetKind === "investor" ? t("dashboard.searchInvestorsPh") : t("dashboard.searchStartupsPh")}
+                        placeholder={targetKind === "investor" ? t("dashboard.searchInvestorsPh") : t("dashboard.searchStartupsPh")}
                         autoFocus
                         style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "12px", paddingBottom: "12px", outline: "none", boxSizing: "border-box" }} />
                     </>

@@ -2380,7 +2380,9 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         </span>
       )}
 
-      {viewAs !== "admin" && !isExternal && (
+      {/* Messaging exists only for a sealed pair, and starts from its deal. An
+          unsealed deal shows nothing here: the seal panel says what is missing. */}
+      {viewAs !== "admin" && !isExternal && !!deal.sealed_at && (
         <a href={`/dashboard/messages?startupId=${deal.startup_id}&investorId=${deal.investor_id}`}
           style={{ display: "inline-block", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
           {t("deals.messageCounterpart")}

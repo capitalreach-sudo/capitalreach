@@ -4,7 +4,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { getSafetyConfig, applyMessageSafety } from "@/lib/message-safety";
 import { sanitiseAttachmentName, type SanitisedAttachmentName } from "@/lib/attachment-name";
 import { dealRegistrationRequired } from "@/lib/deal-registration";
-import { mayInvestorContact, contactRefusal, contactsUnlocked, mayPairContact } from "@/lib/contact-policy";
+import { contactRefusal, contactsUnlocked, mayPairContact } from "@/lib/contact-policy";
 import { notifyUser } from "@/lib/notify-user";
 import { sendNewMessageEmail } from "@/lib/resend";
 import { uploadRatelimit } from "@/lib/redis";
@@ -100,19 +100,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "This conversation is closed" }, { status: 409 });
   }
 
-  // Co-investor threads have a second investor as the counterparty; two
-  // investors talking about a company are not transacting with it, so
-  // neither the offer rule nor the deal-registration masking applies.
+  // Co-investor threads have a second investor as the counterparty, and there
+  // is nothing to withhold between two investors, so masking does not apply.
   const coInvestorThread = !!thread.recipient_investor_id;
   const pairStartupId = thread.startup_id;
   const pairInvestorId = thread.investor_id;
   const isPair = !coInvestorThread && !!pairStartupId && !!pairInvestorId;
 
-  // Offer before contact, enforced BEFORE the upload so a refusal costs the
-  // caller nothing and leaves no object in the bucket. Only the investor
-  // side of a startup/investor thread is gated: the founder side may always
-  // answer, and admins moderate rather than transact.
-  if (isPair && pairStartupId && pairInvestorId) {
+  // The messaging rule, enforced BEFORE the upload so a refusal costs the
+  // caller nothing and leaves no object in the bucket. Messaging exists only
+  // between the startup and the investor of a sealed deal: a thread with a
+  // second party of either kind can never have one, and a pair thread waits
+  // for its seal from either end, since an attachment with a caption is a
+  // message. Admins moderate rather than transact and are never held to it.
+  const { data: senderProfile } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (senderProfile?.role !== "admin") {
+    if (!isPair || thread.recipient_startup_id || !pairStartupId || !pairInvestorId) {
+      return NextResponse.json({
+        error: "Messaging opens once a deal between you and the other party is signed.",
+        messageKey: "contactGate.peerClosed",
+      }, { status: 403 });
+    }
     const [{ data: inv }, { data: st }] = await Promise.all([
       admin.from("investors").select("owner_id").eq("id", pairInvestorId).maybeSingle(),
       admin.from("startups").select("owner_id").eq("id", pairStartupId).maybeSingle(),
@@ -121,7 +129,7 @@ export async function POST(req: NextRequest) {
     if (!investorSide && st?.owner_id !== user.id) {
       // An associate acting for a fund is the investor side just as much as
       // its owner. A STARTUP seat wins a tie, so nobody on the founder side
-      // is gated by an incidental seat on an investor's roster.
+      // is handed the investor's way out by an incidental roster seat.
       const { data: seats } = await admin
         .from("team_members").select("entity_type")
         .eq("user_id", user.id)
@@ -129,22 +137,14 @@ export async function POST(req: NextRequest) {
       const kinds = new Set((seats ?? []).map((s) => s.entity_type));
       investorSide = !kinds.has("startup") && kinds.has("investor");
     }
-    // Asked of the PAIR, from whichever end is posting. Gating only the
-    // investor side left the file upload as a way through the wall: a founder
-    // on an unsealed pair could attach a document with a caption and land a
-    // message in a thread the reply route would have refused. The side now
-    // decides only which way out of the refusal is offered.
-    {
-      const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
-      if (prof?.role !== "admin") {
-        const contact = await mayPairContact({
-          startupId: pairStartupId,
-          investorId: pairInvestorId,
-          side: investorSide ? "investor" : "startup",
-        });
-        if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
-      }
-    }
+    // Asked of the PAIR; the side decides only which way out of the refusal
+    // is offered.
+    const contact = await mayPairContact({
+      startupId: pairStartupId,
+      investorId: pairInvestorId,
+      side: investorSide ? "investor" : "startup",
+    });
+    if (!contact.allowed) return NextResponse.json(contactRefusal(contact), { status: 403 });
   }
 
   // The stored name is opaque; the human name lives on the message row. That

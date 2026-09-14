@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
+import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 
 /**
  * ⌘K / Ctrl-K palette: one keystroke to any listing, any investor, or any page.
@@ -82,6 +83,9 @@ export function CommandPalette() {
     ];
   }, [open, t]);
 
+  // Messages is a destination only for a member who has messaging at all.
+  const messagingAvailable = useMessagingAvailable(!!profile);
+
   const routes = useMemo<Row[]>(() => {
     const pub: Row[] = [
       { type: "route", href: "/startups", label: t("nav.startups"), Icon: Rocket },
@@ -91,15 +95,18 @@ export function CommandPalette() {
       { type: "route", href: "/data", label: t("nav.data"), Icon: BarChart3 },
     ];
     if (!profile) return pub;
+    const messages: Row[] = messagingAvailable === true
+      ? [{ type: "route", href: "/dashboard/messages", label: t("nav.messages"), Icon: MessageSquare }]
+      : [];
     return [
       { type: "route", href: dashboardPath, label: t("nav.dashboard"), Icon: LayoutDashboard },
       { type: "route", href: "/deals", label: t("nav.deals"), Icon: Handshake },
-      { type: "route", href: "/dashboard/messages", label: t("nav.messages"), Icon: MessageSquare },
+      ...messages,
       { type: "route", href: "/dashboard/notifications", label: t("notifications.title"), Icon: Bell },
       ...pub,
       { type: "route", href: "/dashboard/settings", label: t("nav.settings"), Icon: Settings },
     ];
-  }, [profile, dashboardPath, t]);
+  }, [profile, dashboardPath, messagingAvailable, t]);
 
   // ── Open / close ────────────────────────────────────────────────────────
   useEffect(() => {

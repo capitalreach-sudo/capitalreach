@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "Ten link nie otworzył rozmowy",
     "emptyGateTitle": "Rozmowy otwierają się, gdy obie strony podpiszą umowę",
     "emptyGateBody": "Inwestor składa ofertę, założyciel ją przyjmuje, a obie strony podpisują umowę; do tego czasu wiadomości pozostają zamknięte.",
-    "emptyGateCta": "Zobacz transakcje"
+    "emptyGateCta": "Zobacz transakcje",
+    "emptySealedTitle": "Rozpocznij rozmowę z poziomu przypieczętowanego deala",
+    "emptySealedBody": "Wiadomości są dostępne tylko ze stroną, z którą przypieczętowałeś deal. Otwórz ten deal i wybierz Wiadomość, aby zacząć."
   },
   "completeness": {
     "nextBest": "Zrób to teraz",

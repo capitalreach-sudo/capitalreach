@@ -10,6 +10,7 @@ import { Sparkline } from "@/components/ui/sparkline";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Profile, Startup } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 import { InvitePanel } from "@/components/shared/invite-panel";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ShareLinks } from "@/components/startup/share-links";
@@ -1107,6 +1108,7 @@ function DocAnalyticsPanel() {
 export function StartupDashboardClient({ profile, startup, analytics, isLaunchMode, viewingAs, rejectionReason = null, needsClosureDeclaration = false, benchmarks = null }: Props) {
   const { t }        = useTranslation();
   const router       = useRouter();
+  const messagingAvailable = useMessagingAvailable();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
@@ -1546,28 +1548,38 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               <div style={panel}>
                 <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.quickActions")}</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "24px" }}>
-                  {[
+                  {(() => {
                     /* Offers first, and across both columns. It is the only
                        screen where an incoming offer is answered, and an
-                       accepted offer is what opens the conversation, so a
-                       founder who cannot find it cannot be reached at all.
-                       The span also keeps an odd count from leaving a bare
-                       rule-coloured cell at the end of the grid. */
-                    { href: "/dashboard/startup/offers",  label: t("dashboard.offersInbox"), wide: true },
-                    { href: "/deals",                    label: t("dashboard.dealPipeline") },
-                    { href: "/dashboard/messages",       label: t("dashboard.messages")    },
-                    { href: "/dashboard/startup/edit",   label: t("dashboard.editProfile") },
-                    { href: "/dashboard/team",           label: t("team.navLabel")        },
-                    { href: "/pricing",                  label: t("dashboard.upgradePlan") },
-                    { href: `/startups/${startup.slug}`, label: t("dashboard.publicView"), ext: true },
-                  ].map(({ href, label, ext, wide }) => (
-                    <Link key={label} href={href} {...(ext ? { target: "_blank" } : {})}
-                      style={{ display: "flex", alignItems: "center", minHeight: "48px", fontFamily: "'DM Sans', sans-serif", fontWeight: wide ? 500 : 400, fontSize: "12px", color: wide ? "var(--cr-ink)" : "var(--cr-ink-3)", textDecoration: "none", ...(wide ? { gridColumn: "1 / -1" } : null) }}
-                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
-                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = wide ? "var(--cr-ink)" : "var(--cr-ink-3)")}>
-                      {label}
-                    </Link>
-                  ))}
+                       accepted offer is what starts a deal, so a founder who
+                       cannot find it cannot be reached at all. Messages is
+                       listed only for a founder who has messaging at all. An
+                       odd number of the remaining tiles spans the last one,
+                       so no half row is left bare. */
+                    const actions: Array<{ href: string; label: string; ext?: boolean; wide?: boolean }> = [
+                      { href: "/dashboard/startup/offers",  label: t("dashboard.offersInbox"), wide: true },
+                      { href: "/deals",                    label: t("dashboard.dealPipeline") },
+                      ...(messagingAvailable === true
+                        ? [{ href: "/dashboard/messages", label: t("dashboard.messages") }]
+                        : []),
+                      { href: "/dashboard/startup/edit",   label: t("dashboard.editProfile") },
+                      { href: "/dashboard/team",           label: t("team.navLabel")        },
+                      { href: "/pricing",                  label: t("dashboard.upgradePlan") },
+                      { href: `/startups/${startup.slug}`, label: t("dashboard.publicView"), ext: true },
+                    ];
+                    const oddRemainder = actions.filter((a) => !a.wide).length % 2 === 1;
+                    return actions.map(({ href, label, ext, wide }, i) => {
+                      const span = wide || (oddRemainder && i === actions.length - 1);
+                      return (
+                        <Link key={label} href={href} {...(ext ? { target: "_blank" } : {})}
+                          style={{ display: "flex", alignItems: "center", minHeight: "48px", fontFamily: "'DM Sans', sans-serif", fontWeight: wide ? 500 : 400, fontSize: "12px", color: wide ? "var(--cr-ink)" : "var(--cr-ink-3)", textDecoration: "none", ...(span ? { gridColumn: "1 / -1" } : null) }}
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = wide ? "var(--cr-ink)" : "var(--cr-ink-3)")}>
+                          {label}
+                        </Link>
+                      );
+                    });
+                  })()}
                 </div>
               </div>
 

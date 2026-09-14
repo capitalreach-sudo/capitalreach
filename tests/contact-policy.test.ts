@@ -6,6 +6,10 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
  * test is that they agree. A single-sided assertion here would pass against
  * exactly the bug this file exists to prevent.
  *
+ * The rule under test: only a sealed deal for the pair opens messaging. No
+ * config switch, accepted offer or existing thread does, and an unreadable
+ * record refuses.
+ *
  * The Supabase client is replaced by an in-memory table set rather than
  * stubbing the policy's own helpers, so sealState runs for real against
  * deal_seals and the grandfathered-deal branch is exercised rather than
@@ -30,7 +34,8 @@ const h = vi.hoisted(() => {
             rows = rows.filter((r) => Object.entries(m).every(([k, v]) => r[k] === v));
             return b;
           },
-          lt: (col: string, val: string) => { rows = rows.filter((r) => String(r[col] ?? "") < val); return b; },
+          // Nulls sort as the empty string: last when descending, which is
+          // what nullsFirst: false asks PostgREST for.
           order: (col: string, opts?: { ascending?: boolean }) => {
             const dir = opts?.ascending === false ? -1 : 1;
             rows = rows.slice().sort((x, y) => {
@@ -65,16 +70,21 @@ vi.mock("@/lib/supabase-server", () => ({
 // Imported statically: vi.mock is hoisted above the imports, so the policy
 // module already sees the fake client when it is first evaluated.
 import {
-  mayPairContact, mayInvestorContact, contactRefusal, contactsUnlocked, SYMMETRIC_GATE_FROM,
+  mayPairContact, mayInvestorContact, contactRefusal, contactsUnlocked,
 } from "@/lib/contact-policy";
 
 const S = "11111111-1111-4111-8111-111111111111";
 const I = "22222222-2222-4222-8222-222222222222";
 const DEAL = "33333333-3333-4333-8333-333333333333";
+const OLD_DEAL = "44444444-4444-4444-8444-444444444444";
 
 const BOTH_ON = [
   { key: "offer_before_contact", value: "on" },
   { key: "seal_before_contact", value: "on" },
+];
+const BOTH_OFF = [
+  { key: "offer_before_contact", value: "off" },
+  { key: "seal_before_contact", value: "off" },
 ];
 
 function seed(db: Db) {
@@ -87,11 +97,11 @@ const bothEnds = async () => [await asFounder(), await asInvestor()] as const;
 
 const unsealedDeal = [{ id: DEAL, startup_id: S, investor_id: I, sealed_at: null, seal_version: null }];
 // Both parties carry the SAME seal hash: a completed seal is both signatures
-// over one document, which is what sealState now requires (a mismatch is a
+// over one document, which is what sealState requires (a mismatch is a
 // conflict, not a seal). Pass a distinct hash to `signature` to model a party
 // that signed different bytes.
-const signature = (party: "startup" | "investor", sha = "sha-of-the-agreed-record") => ({
-  deal_id: DEAL, party, signed_name: party === "startup" ? "A Founder" : "An Investor",
+const signature = (party: "startup" | "investor", sha = "sha-of-the-agreed-record", dealId = DEAL) => ({
+  deal_id: dealId, party, signed_name: party === "startup" ? "A Founder" : "An Investor",
   signed_at: "2026-09-10T12:00:00.000Z", seal_sha256: sha,
 });
 
@@ -100,34 +110,48 @@ beforeEach(() => {
   h.state.clientFails = false;
 });
 
-describe("the switch", () => {
-  it("lets both ends through when neither half of the rule is on", async () => {
-    seed({ platform_config: [{ key: "offer_before_contact", value: "off" }, { key: "seal_before_contact", value: "off" }] });
+describe("no switch opens messaging", () => {
+  it("refuses both ends with both switches off and nothing on the record", async () => {
+    seed({ platform_config: BOTH_OFF });
+    const [founder, investor] = await bothEnds();
+    expect(!founder.allowed && founder.reason).toBe("needs_deal");
+    expect(!investor.allowed && investor.reason).toBe("needs_accepted_offer");
+  });
+
+  it("refuses an unsealed deal with the seal switch off", async () => {
+    seed({
+      platform_config: [{ key: "offer_before_contact", value: "on" }, { key: "seal_before_contact", value: "off" }],
+      deals: unsealedDeal, deal_seals: [],
+    });
     for (const v of await bothEnds()) {
-      expect(v.allowed).toBe(true);
-      expect(v.allowed && v.reason).toBe("policy_off");
+      expect(v.allowed).toBe(false);
+      expect(!v.allowed && v.reason === "needs_seal" && v.dealId).toBe(DEAL);
     }
   });
 
-  it("treats a missing config row as off, not as on", async () => {
+  it("refuses when the config rows are missing", async () => {
     seed({ platform_config: [] });
-    for (const v of await bothEnds()) expect(v.allowed).toBe(true);
+    for (const v of await bothEnds()) expect(v.allowed).toBe(false);
   });
 
-  it("fails OPEN when the config cannot be read at all", async () => {
-    // Silently closing every conversation on the platform because one row was
-    // unreadable is the worse of the two failures.
+  it("refuses, and still offers each side its way in, when the record cannot be read", async () => {
     seed({});
     h.state.clientFails = true;
-    for (const v of await bothEnds()) {
-      expect(v.allowed).toBe(true);
-      expect(v.allowed && v.reason).toBe("policy_off");
-    }
+    const [founder, investor] = await bothEnds();
+    expect(founder.allowed).toBe(false);
+    expect(investor.allowed).toBe(false);
+    expect(!founder.allowed && founder.reason).toBe("needs_deal");
+    expect(!investor.allowed && investor.reason).toBe("needs_accepted_offer");
+  });
+
+  it("lets a sealed pair through whatever the switches say", async () => {
+    seed({ platform_config: BOTH_OFF, deals: unsealedDeal, deal_seals: [signature("startup"), signature("investor")] });
+    for (const v of await bothEnds()) expect(v.allowed && v.reason).toBe("deal_sealed");
   });
 });
 
 describe("nothing on the record", () => {
-  it("refuses BOTH ends, which is the whole point of the lane", async () => {
+  it("refuses BOTH ends", async () => {
     seed({});
     const [founder, investor] = await bothEnds();
     expect(founder.allowed).toBe(false);
@@ -170,14 +194,6 @@ describe("a deal that is not sealed", () => {
       expect(!v.allowed && v.reason === "needs_seal" && v.awaiting).toEqual(["startup"]);
     }
   });
-
-  it("opens on the deal alone when the seal half of the rule is off", async () => {
-    seed({
-      platform_config: [{ key: "offer_before_contact", value: "on" }, { key: "seal_before_contact", value: "off" }],
-      deals: unsealedDeal, deal_seals: [],
-    });
-    for (const v of await bothEnds()) expect(v.allowed && v.reason).toBe("deal_exists");
-  });
 });
 
 describe("a sealed deal", () => {
@@ -208,46 +224,35 @@ describe("a sealed deal", () => {
     for (const v of await bothEnds()) expect(v.allowed).toBe(true);
   });
 
+  it("finds the sealed deal when an older unsigned one sits beside it", async () => {
+    seed({
+      deals: [
+        { id: OLD_DEAL, startup_id: S, investor_id: I, sealed_at: null, seal_version: null },
+        { id: DEAL, startup_id: S, investor_id: I, sealed_at: "2026-09-11T00:00:00.000Z", seal_version: "2026-09-13" },
+      ],
+      deal_seals: [signature("startup"), signature("investor")],
+    });
+    for (const v of await bothEnds()) expect(v.allowed && v.reason).toBe("deal_sealed");
+  });
+
   it("does not confuse another pair's deal for this one", async () => {
-    seed({ deals: [{ id: DEAL, startup_id: S, investor_id: "someone-else", sealed_at: null, seal_version: null }] });
+    seed({ deals: [{ id: DEAL, startup_id: S, investor_id: "someone-else", sealed_at: "2026-09-11T00:00:00.000Z", seal_version: "grandfathered" }] });
     for (const v of await bothEnds()) expect(v.allowed).toBe(false);
   });
 });
 
-describe("an accepted offer whose deal row never landed", () => {
-  it("lets the pair talk rather than stranding them on a deal that does not exist", async () => {
+describe("what does not open messaging", () => {
+  it("an accepted offer whose deal row never landed", async () => {
     seed({ deal_proposals: [{ id: "p1", startup_id: S, investor_id: I, status: "accepted", from_side: "investor", created_at: "2026-09-02T00:00:00.000Z" }] });
-    for (const v of await bothEnds()) {
-      expect(v.allowed).toBe(true);
-      expect(v.allowed && v.reason).toBe("offer_accepted");
-    }
-  });
-});
-
-describe("grandfathering the founder half", () => {
-  const olderThread = [{ id: "t1", startup_id: S, investor_id: I, created_at: "2026-08-20T00:00:00.000Z" }];
-
-  it("keeps a conversation that was legitimate the day before the rule changed", async () => {
-    seed({ threads: olderThread });
-    const founder = await asFounder();
-    expect(founder.allowed).toBe(true);
-    expect(founder.allowed && founder.reason).toBe("predates_gate");
-  });
-
-  it("does not reopen what the seal deliberately closed on the investor side", async () => {
-    seed({ threads: olderThread });
-    const investor = await asInvestor();
-    expect(investor.allowed).toBe(false);
-  });
-
-  it("is not a bypass anyone can mint, since any client may insert a thread row", async () => {
-    seed({ threads: [{ id: "t2", startup_id: S, investor_id: I, created_at: SYMMETRIC_GATE_FROM }] });
-    const founder = await asFounder();
+    const [founder, investor] = await bothEnds();
     expect(founder.allowed).toBe(false);
+    expect(investor.allowed).toBe(false);
+    expect(!investor.allowed && investor.reason).toBe("needs_accepted_offer");
   });
 
-  it("runs from a fixed past instant, so the boundary cannot drift forward", () => {
-    expect(new Date(SYMMETRIC_GATE_FROM).getTime()).toBeLessThanOrEqual(Date.now());
+  it("a thread that existed before the rule, from either end", async () => {
+    seed({ threads: [{ id: "t1", startup_id: S, investor_id: I, created_at: "2026-08-20T00:00:00.000Z" }] });
+    for (const v of await bothEnds()) expect(v.allowed).toBe(false);
   });
 });
 
@@ -301,6 +306,7 @@ describe("contactRefusal", () => {
       {},
       { deal_proposals: [{ id: "p1", startup_id: S, investor_id: I, status: "pending", from_side: "investor", created_at: "2026-09-03T00:00:00.000Z" }] },
       { deal_proposals: [{ id: "p2", startup_id: S, investor_id: I, status: "countered", from_side: "startup", created_at: "2026-09-03T00:00:00.000Z" }] },
+      { deal_proposals: [{ id: "p3", startup_id: S, investor_id: I, status: "accepted", from_side: "investor", created_at: "2026-09-03T00:00:00.000Z" }] },
       { deals: unsealedDeal, deal_seals: [] },
     ];
     for (const db of states) {
@@ -338,12 +344,12 @@ describe("contactsUnlocked", () => {
     expect(await contactsUnlocked({ startupId: S, investorId: I })).toBe(true);
   });
 
-  it("withholds them when there is no deal at all, including for a grandfathered thread", async () => {
+  it("withholds them when there is no deal at all, including for an old thread", async () => {
     seed({ threads: [{ id: "t1", startup_id: S, investor_id: I, created_at: "2026-08-20T00:00:00.000Z" }] });
     expect(await contactsUnlocked({ startupId: S, investorId: I })).toBe(false);
   });
 
-  it("fails CLOSED, unlike the messaging gate: a published phone number is permanent", async () => {
+  it("fails CLOSED: a published phone number is permanent", async () => {
     seed({ deals: unsealedDeal });
     h.state.clientFails = true;
     expect(await contactsUnlocked({ startupId: S, investorId: I })).toBe(false);

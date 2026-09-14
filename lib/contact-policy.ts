@@ -2,29 +2,22 @@ import { createAdminClient } from "@/lib/supabase-server";
 import { sealState } from "@/lib/deal-seal";
 
 /**
- * Contact costs an accepted offer.
+ * Messaging costs a sealed deal.
  *
- * The old order was backwards: an investor could talk to a founder for weeks
- * and only later, maybe, record a deal. The conversation is the valuable
- * thing the platform provides, so the conversation is what the record should
- * buy -- not the other way round.
+ * An investor opens with an OFFER, the founder accepts, declines or counters,
+ * and acceptance creates a DEAL. The deal is a draft until both parties
+ * countersign it (120). Free-form messaging between the pair opens on that
+ * second signature and on nothing else: not an accepted offer, not a deal row,
+ * not a thread that already exists, and not a platform_config switch.
  *
- * From here an investor opens with an OFFER, the founder accepts, declines or
- * counters, and only an accepted offer opens a thread. Circumvention stops
- * being something to detect afterwards, because there is no conversation that
- * is not already on the record. It also fixes the founder's inbox: every
- * approach now arrives with a number attached instead of "love what you're
- * building, quick call?".
- *
- * SEAL BEFORE CONTACT goes one step further, and is the rule as it now
- * stands: an accepted offer creates the deal, but a deal is DRAFT until both
- * parties countersign it (120). Free-form messaging, and the unmasking of
- * contact details that comes with it, waits for that second signature.
+ * That last point is an invariant of this code, not a setting. The switches
+ * (offer_before_contact, seal_before_contact) still exist for the surfaces
+ * that read them, masking included, but mayPairContact never consults them,
+ * and a record it cannot read answers with a refusal. A gate whose disabled or
+ * broken state means "everyone may talk" is not a gate.
  *
  * The rule is asked of the PAIR, not of a direction. A conversation has two
- * ends and only one record, so "may these two talk" cannot have two answers;
- * gating only the investor left the founder able to open a thread with anyone
- * on the platform, which is the same conversation with the same fee attached.
+ * ends and only one record, so "may these two talk" cannot have two answers.
  *
  * What differs by side is the way out of a refusal, and only that. An investor
  * makes an offer. A founder cannot -- /api/deals/proposals answers "Only
@@ -33,13 +26,12 @@ import { sealState } from "@/lib/deal-seal";
  * contactRefusal below names whichever of those applies, because a refusal
  * that does not is a wall with no door.
  *
- * Founder to founder is outside all of this. No capital moves between two
- * companies comparing notes, there is no deal to seal, and the live-listing
- * check on that path is the only admission it needs.
+ * Founder to founder and investor to investor never open: two parties who
+ * cannot sign a deal with each other have no seal to reach, so the message
+ * routes refuse those pairings outright for everyone but admins.
  *
- * The obvious objection is that people cannot negotiate without talking. They
- * are not silent in the meantime: offers and counters carry amount, equity,
- * valuation, instrument and conditions; listing questions and document
+ * Nobody negotiates in silence meanwhile: offers and counters carry amount,
+ * equity, valuation, instrument and conditions; listing questions and document
  * requests both work and are both masked. What waits for the seal is the
  * unstructured channel -- the one with no record of what was agreed, and the
  * only one through which two people can quietly arrange to finish elsewhere.
@@ -49,19 +41,17 @@ import { sealState } from "@/lib/deal-seal";
 export type ContactSide = "startup" | "investor";
 
 /**
- * "admin" is never returned from this file, and that is deliberate rather than
- * an omission. Every function here answers one question -- may this STARTUP and
- * this INVESTOR talk -- and an admin is neither of them, so there is nothing in
- * the pair for the exception to hang off. The bypass therefore lives at each
- * call site, where the viewer is known: messages/send, start, reply and attach
- * each test the sender's role before consulting the gate, and so does
- * listingState in api/deals/proposals, which decides whether the control even
- * renders. Adding a viewer argument here would put the answer in two places and
- * let them drift; a caller that forgets the check is a visible bug, which is
- * how the missing one in listingState was eventually found.
+ * "admin" is never returned from this file. Every function here answers one
+ * question -- may this STARTUP and this INVESTOR talk -- and an admin is
+ * neither of them, so there is nothing in the pair for the exception to hang
+ * off. The bypass lives at each call site, where the viewer is known:
+ * messages/send, start, reply and attach each test the sender's role before
+ * consulting the gate, and so does listingState in api/deals/proposals, which
+ * decides whether the control even renders. A caller that forgets the check
+ * refuses an admin, which is a visible bug rather than a silent opening.
  */
 export type ContactVerdict =
-  | { allowed: true; reason: "policy_off" | "founder_side" | "offer_accepted" | "deal_exists" | "admin" | "deal_sealed" | "predates_gate" }
+  | { allowed: true; reason: "deal_sealed" }
   | { allowed: false; reason: "needs_accepted_offer"; openProposalId: string | null; openStatus: string | null }
   | {
       allowed: false;
@@ -74,22 +64,11 @@ export type ContactVerdict =
     }
   | { allowed: false; reason: "needs_seal"; dealId: string; awaiting: Array<"startup" | "investor"> };
 
-/**
- * The day the gate stopped being investor-only.
- *
- * A pair already talking before it keeps their thread, for the same reason
- * migration 120 backfilled every existing deal as sealed: a rule introduced
- * today is about what happens next, and retroactively closing a conversation
- * that was legitimate when it started punishes people for our change of mind.
- * A timestamp rather than mere thread existence, because any authenticated
- * client may insert a `threads` row (102), so "a thread exists" would be a
- * bypass anyone could mint on demand; a row dated before this cannot be.
- */
-export const SYMMETRIC_GATE_FROM = "2026-09-10T00:00:00.000Z";
+type Refused = Extract<ContactVerdict, { allowed: false }>;
 
 /**
- * Two switches, read together, so the rule can be tightened in one step and
- * loosened in one step without a deploy.
+ * Two switches, read together. The messaging gate does not read them; masking
+ * (contactsUnlocked) and the offer surfaces do.
  */
 export async function contactPolicyConfig(): Promise<{ offerRequired: boolean; sealRequired: boolean }> {
   try {
@@ -103,7 +82,6 @@ export async function contactPolicyConfig(): Promise<{ offerRequired: boolean; s
       sealRequired: map["seal_before_contact"] === "on",
     };
   } catch {
-    // Fail OPEN, both of them. See the note below.
     return { offerRequired: false, sealRequired: false };
   }
 }
@@ -115,80 +93,68 @@ export async function offerBeforeContactEnabled(): Promise<boolean> {
       .from("platform_config").select("value").eq("key", "offer_before_contact").maybeSingle();
     return data?.value === "on";
   } catch {
-    // Fail OPEN. Silently closing every conversation on the platform because
-    // one config row was unreadable is a far worse outcome than a few
-    // ungated messages.
     return false;
   }
 }
 
-/** Grandfathering, kept to one query and to the founder side. See SYMMETRIC_GATE_FROM. */
-async function threadPredatesGate(startupId: string, investorId: string): Promise<boolean> {
-  const admin = createAdminClient();
-  const { data } = await admin
-    .from("threads").select("id")
-    .match({ startup_id: startupId, investor_id: investorId })
-    .lt("created_at", SYMMETRIC_GATE_FROM)
-    .limit(1).maybeSingle();
-  return !!data;
+/**
+ * The refusal given when the record could not be read at all. It names no
+ * proposal and no deal, because nothing was learned, and it still offers each
+ * side its own way in.
+ */
+function unreadableRefusal(opts: { investorId: string; side: ContactSide }): Refused {
+  return opts.side === "startup"
+    ? { allowed: false, reason: "needs_deal", investorId: opts.investorId, investorSlug: null, openProposalId: null, openFromSide: null }
+    : { allowed: false, reason: "needs_accepted_offer", openProposalId: null, openStatus: null };
 }
 
 /**
- * May these two talk yet?
+ * May these two talk?
  *
- * One question, one answer, asked from either end. An existing deal in any
- * state counts: the pair is already on the record, which is the whole point of
- * the rule, and re-gating an active deal because its originating proposal was
- * archived would be nonsense.
+ * Only a sealed deal for this exact pair says yes, and sealState is the
+ * authority on sealed. `side` never changes the verdict; it selects which
+ * refusal the caller gets back.
  *
- * `side` never changes the verdict. It selects which refusal the caller gets
- * back, and whether the grandfather clause applies -- that clause covers the
- * half of the rule introduced today, so it is the founder's. Extending it to
- * the investor would reopen threads the seal deliberately closed.
+ * Any failure to read the record is a refusal, never an allowance.
  */
 export async function mayPairContact(opts: {
   startupId: string;
   investorId: string;
   side: ContactSide;
 }): Promise<ContactVerdict> {
-  const config = await contactPolicyConfig();
-  if (!config.offerRequired && !config.sealRequired) return { allowed: true, reason: "policy_off" };
+  try {
+    return await pairVerdict(opts);
+  } catch {
+    return unreadableRefusal(opts);
+  }
+}
 
+async function pairVerdict(opts: {
+  startupId: string;
+  investorId: string;
+  side: ContactSide;
+}): Promise<ContactVerdict> {
   const admin = createAdminClient();
 
+  // A pair can hold more than one deal row (a passed deal, then a new one).
+  // The sealed one, if any, is read first so an older unsigned row cannot
+  // hide it.
   const { data: deal } = await admin
     .from("deals").select("id")
     .match({ startup_id: opts.startupId, investor_id: opts.investorId })
+    .order("sealed_at", { ascending: false, nullsFirst: false })
     .limit(1).maybeSingle();
   if (deal) {
-    if (!config.sealRequired) return { allowed: true, reason: "deal_exists" };
-    // A deal exists, so the offer half of the rule is satisfied. What is left
-    // is whether both parties have signed it.
     const seal = await sealState(deal.id);
     if (seal.sealed) return { allowed: true, reason: "deal_sealed" };
     return { allowed: false, reason: "needs_seal", dealId: deal.id, awaiting: seal.awaiting };
   }
 
-  // An accepted offer with no deal row should not happen -- acceptance creates
-  // the deal in the same request -- but if the insert ever failed, the pair
-  // are stuck with a yes and nothing to sign. Let them through on the
-  // acceptance rather than stranding them on a deal that does not exist.
-  const { data: accepted } = await admin
-    .from("deal_proposals").select("id")
-    .match({ startup_id: opts.startupId, investor_id: opts.investorId, status: "accepted" })
-    .limit(1).maybeSingle();
-  if (accepted) return { allowed: true, reason: "offer_accepted" };
-
-  // Nothing on the record at all. Checked here rather than at the top so a
-  // pair who are through the gate never pay for the query.
-  if (opts.side === "startup" && await threadPredatesGate(opts.startupId, opts.investorId)) {
-    return { allowed: true, reason: "predates_gate" };
-  }
-
-  // Which proposal is open, and whose move it is -- so the UI can say "your
-  // offer is waiting" rather than repeating "make an offer" at somebody who
-  // already has, and so a founder is sent to the offer in their inbox rather
-  // than told to open a second deal beside it.
+  // No deal. Which proposal is open, and whose move it is, so the UI can say
+  // "your offer is waiting" rather than repeating "make an offer" at somebody
+  // who already has, and so a founder is sent to the offer in their inbox
+  // rather than told to open a second deal beside it. An accepted proposal
+  // with no deal row is not a deal and opens nothing.
   const { data: pending } = await admin
     .from("deal_proposals").select("id, status, from_side")
     .match({ startup_id: opts.startupId, investor_id: opts.investorId })
@@ -218,9 +184,8 @@ export async function mayPairContact(opts: {
 }
 
 /**
- * The investor end of the same question. Kept as its own name because four
- * routes call it, and delegating rather than repeating is what stops the two
- * ends of one conversation from drifting into two different rules.
+ * The investor end of the same question. Delegates rather than repeats, so the
+ * two ends of one conversation cannot drift into two different rules.
  */
 export async function mayInvestorContact(opts: {
   startupId: string;
@@ -230,7 +195,7 @@ export async function mayInvestorContact(opts: {
 }
 
 /** The refusal body, so every entry point says the same thing. */
-export function contactRefusal(v: Extract<ContactVerdict, { allowed: false }>) {
+export function contactRefusal(v: Refused) {
   if (v.reason === "needs_seal") {
     return {
       error: "seal_required",
@@ -244,10 +209,10 @@ export function contactRefusal(v: Extract<ContactVerdict, { allowed: false }>) {
     };
   }
   if (v.reason === "needs_deal") {
-    // `error` carries the sentence, not a code, and that is deliberate here.
-    // Several callers render json.error straight into a toast, so a founder
-    // who is refused would otherwise read the word "deal_required" and be
-    // given nothing to do about it. errorCode is what machines branch on.
+    // `error` carries the sentence, not a code. Several callers render
+    // json.error straight into a toast, so a founder who is refused would
+    // otherwise read the word "deal_required" and be given nothing to do about
+    // it. errorCode is what machines branch on.
     //
     // The three cases are three different next moves, and telling somebody to
     // do a thing they have already done is worse than saying nothing.
@@ -294,9 +259,9 @@ export function contactRefusal(v: Extract<ContactVerdict, { allowed: false }>) {
 /**
  * May these two exchange contact details yet?
  *
- * The same question as messaging, and deliberately the same answer: the point
- * of the seal is that the obligation is captured before the relationship
- * becomes theirs to run. Once it is signed we stop rewriting their sentences.
+ * The point of the seal is that the obligation is captured before the
+ * relationship becomes theirs to run. Once it is signed we stop rewriting
+ * their sentences.
  */
 export async function contactsUnlocked(opts: {
   startupId: string;
@@ -313,9 +278,8 @@ export async function contactsUnlocked(opts: {
     if (!config.sealRequired) return true;
     return (await sealState(deal.id)).sealed;
   } catch {
-    // Fail CLOSED here, unlike the messaging gate. The cost of being wrong is
-    // asymmetric: withholding a phone number for one message is a small
-    // annoyance, publishing one is permanent.
+    // Fail CLOSED. Withholding a phone number for one message is a small
+    // annoyance; publishing one is permanent.
     return false;
   }
 }

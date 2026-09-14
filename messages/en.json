@@ -2623,7 +2623,9 @@
     "deepLinkMissingBody": "The conversation it points to is not in this inbox, and nothing has been opened in its place. If you hold more than one account, check that you are signed in to the one the link was sent to.",
     "emptyGateTitle": "Conversations open once a deal is signed by both sides",
     "emptyGateBody": "An investor makes an offer, the founder accepts it, and both sides sign the deal; until then, messaging stays closed.",
-    "emptyGateCta": "View deals"
+    "emptyGateCta": "View deals",
+    "emptySealedTitle": "Start the conversation from your sealed deal",
+    "emptySealedBody": "Messaging is open only with the party you sealed a deal with. Open that deal and choose Message to start the conversation."
   },
   "presets": {
     "preseedAi": "Pre-seed AI",

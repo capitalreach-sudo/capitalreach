@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
-import { myThreadIds } from "@/lib/threads";
+import { messagingAccess, usableThreadIds } from "@/lib/messaging-access";
 
 /**
  * Download an attachment: ?id=<message id> → 302 to a short-lived signed URL.
  *
  * The bucket is private, so this route IS the read-side access control: it
- * re-checks that the caller belongs to the message's thread before minting
- * the URL. Sixty seconds of validity is enough for the redirect to land and
- * useless to paste anywhere.
+ * re-checks that the caller may still use the message's thread before minting
+ * the URL. Belonging to the thread is not enough: a member reads a
+ * conversation only while it is a sealed pair's (lib/messaging-access), the
+ * same test the inbox lists by. Sixty seconds of validity is enough for the
+ * redirect to land and useless to paste anywhere.
  */
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -29,7 +31,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const ids = await myThreadIds(user.id);
+  const ids = await usableThreadIds(user.id, await messagingAccess(user.id));
   if (!ids.includes(message.thread_id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

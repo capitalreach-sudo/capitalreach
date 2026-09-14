@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "そのリンクからは会話を開けませんでした",
     "emptyGateTitle": "会話は双方が取引に署名すると開きます",
     "emptyGateBody": "投資家がオファーを出し、創業者が受諾し、双方が取引に署名します。それまでメッセージは閉じられています。",
-    "emptyGateCta": "取引を見る"
+    "emptyGateCta": "取引を見る",
+    "emptySealedTitle": "締結済みのディールから会話を始めましょう",
+    "emptySealedBody": "メッセージはディールを締結した相手とのみ利用できます。そのディールを開き、「メッセージ」を選んで会話を始めてください。"
   },
   "completeness": {
     "nextBest": "次にやること",

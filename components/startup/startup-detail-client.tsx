@@ -225,8 +225,9 @@ function SharePickerPanel({ startupId, onBack, onDone }: { startupId: string; on
       const { data } = await createClient().from("investors").select("id").eq("slug", inv.slug).maybeSingle();
       invId = data?.id;
     }
-    // C31: the note travels — it becomes the first message of the thread the
-    // share opens, so "look at this" has somewhere to continue.
+    // C31: the note travels on the share record and in the recipient's
+    // notification. It never becomes a message: two investors have no deal
+    // to seal, so no conversation opens between them.
     const res = invId ? await fetch("/api/deals/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, toInvestorId: invId, note: shareNote.trim() || undefined }) }) : null;
     setBusy(false);
     // No id means the directory row never resolved, so no request was made and

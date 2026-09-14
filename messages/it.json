@@ -2629,7 +2629,9 @@
     "deepLinkMissingTitle": "Quel link non ha aperto alcuna conversazione",
     "emptyGateTitle": "Le conversazioni si aprono quando entrambe le parti firmano un accordo",
     "emptyGateBody": "Un investitore fa un'offerta, il fondatore la accetta ed entrambe le parti firmano l'accordo; fino ad allora la messaggistica resta chiusa.",
-    "emptyGateCta": "Vedi le operazioni"
+    "emptyGateCta": "Vedi le operazioni",
+    "emptySealedTitle": "Avvia la conversazione dal tuo deal sigillato",
+    "emptySealedBody": "La messaggistica è aperta solo con la parte con cui hai sigillato un deal. Apri quel deal e scegli Messaggio per iniziare."
   },
   "completeness": {
     "nextBest": "Fai questo ora",

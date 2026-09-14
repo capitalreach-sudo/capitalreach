@@ -117,6 +117,9 @@ export async function GET(req: NextRequest) {
   const state = await sealState(dealId);
   return NextResponse.json({
     dealId,
+    // The pair, so a sealed record can open the pair's own conversation.
+    startupId: loaded.deal.startup_id,
+    investorId: loaded.deal.investor_id,
     party,
     companyName: loaded.companyName,
     text: loaded.text,

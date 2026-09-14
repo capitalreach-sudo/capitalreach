@@ -75,13 +75,36 @@ export async function POST(req: NextRequest) {
     isAdmin = prof?.role === "admin";
     if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+  // The role is read at most once: above for a non-party, and below for a
+  // party only on a path that would otherwise refuse.
+  let roleKnown = !isParty;
+  const userId = user.id;
+  const senderIsAdmin = async (): Promise<boolean> => {
+    if (!roleKnown) {
+      const { data: prof } = await admin.from("profiles").select("role").eq("id", userId).maybeSingle();
+      isAdmin = prof?.role === "admin";
+      roleKnown = true;
+    }
+    return isAdmin;
+  };
 
-  // Seal before contact, both ways: on a startup/investor thread neither side
-  // continues until the pair's deal is signed by both of them. One
-  // conversation cannot have two answers to "may these two talk", and a thread
-  // one party may write in and the other may not is not a conversation.
-  // Co-investor threads are not contact with a company at all. Checked before
-  // the insert so a refusal leaves no half-sent message.
+  // Messaging exists only between the startup and the investor of a sealed
+  // deal. A thread with a second party of either kind (founder to founder,
+  // investor to investor, co-investor) can never have one, so no member may
+  // write in it, however old the thread is. Admins moderate rather than
+  // transact and keep every thread. Checked before the insert so a refusal
+  // leaves no half-sent message.
+  const pairThread = !coInvestorThread && !thread.recipient_startup_id && !!thread.startup_id && !!thread.investor_id;
+  if (!pairThread && !(await senderIsAdmin())) {
+    return NextResponse.json({
+      error: "Messaging opens once a deal between you and the other party is signed.",
+      messageKey: "contactGate.peerClosed",
+    }, { status: 403 });
+  }
+
+  // On a pair thread neither side continues until the pair's deal is sealed.
+  // One conversation cannot have two answers to "may these two talk", and a
+  // thread one party may write in and the other may not is not a conversation.
   const pairStartupId = thread.startup_id;
   const pairInvestorId = thread.investor_id;
   // Ownership answers "which side is this" for almost everyone; the roster
@@ -94,7 +117,7 @@ export async function POST(req: NextRequest) {
   // the founder side's name pre-seal, so a tie must land on "startup".
   let investorSide = user.id === investorOwner || user.id === recipientInvestorOwner;
   let startupSide = user.id === startupOwner || user.id === recipientStartupOwner;
-  if (!investorSide && !startupSide && !coInvestorThread && !isAdmin && pairStartupId && pairInvestorId) {
+  if (!investorSide && !startupSide && pairThread && !isAdmin && pairStartupId && pairInvestorId) {
     const { data: seats } = await admin
       .from("team_members").select("entity_type")
       .eq("user_id", user.id)
@@ -103,18 +126,16 @@ export async function POST(req: NextRequest) {
     startupSide = kinds.has("startup");
     investorSide = !startupSide && kinds.has("investor");
   }
-  if (!coInvestorThread && !isAdmin && pairStartupId && pairInvestorId) {
+  if (pairThread && !isAdmin && pairStartupId && pairInvestorId) {
     const contact = await mayPairContact({
       startupId: pairStartupId,
       investorId: pairInvestorId,
       side: investorSide ? "investor" : "startup",
     });
-    if (!contact.allowed) {
-      // Admins moderate rather than transact, so they are never held to the
-      // rule. Read only on the refusal path: the block is unreachable for the
-      // one caller whose role was already resolved above (a non-party admin).
-      const { data: prof } = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
-      if (prof?.role !== "admin") return NextResponse.json(contactRefusal(contact), { status: 403 });
+    // Admins moderate rather than transact, so they are never held to the
+    // rule; the role is read only on the refusal path.
+    if (!contact.allowed && !(await senderIsAdmin())) {
+      return NextResponse.json(contactRefusal(contact), { status: 403 });
     }
   }
 
